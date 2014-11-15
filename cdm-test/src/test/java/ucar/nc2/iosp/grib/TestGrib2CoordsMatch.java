@@ -47,6 +47,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -55,7 +56,11 @@ import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.Misc;
+import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -68,6 +73,36 @@ import java.util.Formatter;
  * @since 11/7/2014
  */
 public class TestGrib2CoordsMatch {
+
+  @BeforeClass
+   static public void before() {
+     RandomAccessFile.enableDefaultGlobalFileCache();
+     RandomAccessFile.setDebugLeaks(true);
+     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+     GribCdmIndex.initGribCollectionCache(50, 700, -1);
+   }
+
+   @AfterClass
+   static public void after() {
+     GribIosp.setDebugFlags(new DebugFlagsImpl());
+     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+     if (cache == null) return;
+
+     Formatter out = new Formatter(System.out);
+     cache.showCache(out);
+     cache.showTracking(out);
+     cache.clearCache(false);
+     RandomAccessFile.getGlobalFileCache().showCache(out);
+     TestDir.checkLeaks();
+
+     System.out.printf("countGC=%d%n", GribCollectionImmutable.countGC);
+     System.out.printf("countPC=%d%n", PartitionCollectionImmutable.countPC);
+
+     FileCache.shutdown();
+     RandomAccessFile.setDebugLeaks(false);
+     RandomAccessFile.setGlobalFileCache(null);
+   }
+
 
   @BeforeClass
   public static void setup() {

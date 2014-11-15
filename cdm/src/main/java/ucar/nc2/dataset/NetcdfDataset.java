@@ -1288,7 +1288,18 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     agg = null;
     if (orgFile != null) orgFile.close();
     orgFile = null;
+  }
 
+   // optionally release any resources like file handles
+  public void release() throws IOException {
+    if (orgFile != null)
+      orgFile.release();
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    if (orgFile != null)
+      orgFile.reacquire();
   }
 
 

@@ -86,6 +86,7 @@ import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCache;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.xml.RuntimeConfigParser;
+import ucar.unidata.io.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.ComboBox;
@@ -6446,6 +6447,8 @@ public class ToolsUI extends JPanel {
     ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
+    // caching
+    ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
     GribCdmIndex.initGribCollectionCache(100, 200, -1);
 
     /* No longer needed

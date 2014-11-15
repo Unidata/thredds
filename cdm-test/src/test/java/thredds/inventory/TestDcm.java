@@ -124,7 +124,7 @@ public class TestDcm {
 
     FeatureCollectionConfig config = new FeatureCollectionConfig("testOlderThanInDirectoryCollection", "path", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2",
-            null, "10 sec", null, null, null);
+            null, "30 sec", null, null, null);
 
     Formatter errlog = new Formatter(System.out);
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);

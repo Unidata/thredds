@@ -239,6 +239,11 @@ public abstract class CollectionAbstract implements MCollection {
 
   ////////////////////////////////////////////
 
+  /**
+   * parse the "olderThan" TimeDuration, meaning files must not have been modified since this amount of time
+   * @param olderThan  TimeDuration string
+   * @return  TimeDuration in millisecs
+   */
   public long parseOlderThanString(String olderThan) {
     if (olderThan != null) {
       try {

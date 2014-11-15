@@ -44,6 +44,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
 
 /**
@@ -54,13 +55,13 @@ import java.util.*;
  */
 public class CollectionGeneral extends CollectionAbstract {
   private final Path rootPath;
-  private final long lastModifiedTime;
+  private final long olderThanMillis;
 
   public CollectionGeneral(String collectionName, Path rootPath, String olderThan, Logger logger) {
     super(collectionName, logger);
     this.rootPath = rootPath;
     this.root = rootPath.toString();
-    this.lastModifiedTime = parseOlderThanString(olderThan);
+    this.olderThanMillis = parseOlderThanString(olderThan);
   }
 
   @Override
@@ -88,6 +89,8 @@ public class CollectionGeneral extends CollectionAbstract {
     }
 
     public boolean hasNext() {
+      long now = System.currentTimeMillis();
+
       while (true) {
         if (!dirStreamIterator.hasNext()) {
           nextMFile = null;
@@ -98,7 +101,11 @@ public class CollectionGeneral extends CollectionAbstract {
           Path nextPath = dirStreamIterator.next();
           BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
           if (attr.isDirectory()) continue;  // LOOK fix this
-          if (attr.lastModifiedTime().toMillis() < lastModifiedTime) continue;
+
+          FileTime last = attr.lastModifiedTime();
+          long millisSinceModified = now - last.toMillis();
+          if (millisSinceModified < olderThanMillis)
+            continue;
           nextMFile = new MFileOS7(nextPath, attr);
 
        } catch (IOException e) {

@@ -63,9 +63,10 @@ public class TestGribCollectionsDense {
 
   @BeforeClass
    static public void before() {
+     RandomAccessFile.enableDefaultGlobalFileCache();
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    GribCdmIndex.initGribCollectionCache(50, 700, -1);
+     GribCdmIndex.initGribCollectionCache(50, 700, -1);
    }
 
    @AfterClass
@@ -86,6 +87,7 @@ public class TestGribCollectionsDense {
 
      FileCache.shutdown();
      RandomAccessFile.setDebugLeaks(false);
+     RandomAccessFile.setGlobalFileCache(null);
    }
 
   @Test

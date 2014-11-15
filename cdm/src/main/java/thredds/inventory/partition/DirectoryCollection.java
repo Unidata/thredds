@@ -46,6 +46,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
 
 /**
@@ -85,7 +86,7 @@ public class DirectoryCollection extends CollectionAbstract {
 
   final String topCollection;
   final Path topDir;
-  final long lastModifiedTime;
+  final long olderThanMillis;
 
 
   public DirectoryCollection(String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger) {
@@ -97,7 +98,7 @@ public class DirectoryCollection extends CollectionAbstract {
     this.topCollection = cleanName(topCollectionName);
     this.topDir = topDir;
     this.collectionName = makeCollectionName(collectionName, topDir);
-    this.lastModifiedTime = parseOlderThanString(olderThan);
+    this.olderThanMillis = parseOlderThanString(olderThan);
     if (debug) System.out.printf("Open DirectoryCollection %s%n", topCollectionName);
   }
 
@@ -140,7 +141,7 @@ public class DirectoryCollection extends CollectionAbstract {
   @Override
   public void close() { }
 
-  // returns everything in the current directory
+  // returns everything in the current directory, subject to sfilter
   private class MyFileIterator implements CloseableIterator<MFile> {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
@@ -167,8 +168,11 @@ public class DirectoryCollection extends CollectionAbstract {
           Path nextPath = dirStreamIterator.next();
           BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
           if (attr.isDirectory()) continue;
-          long since = now - attr.lastModifiedTime().toMillis();
-          if (since < lastModifiedTime) continue;
+          FileTime last = attr.lastModifiedTime();
+          //System.out.printf("%s%n", last);
+          long millisSinceModified = now - last.toMillis();
+          if (millisSinceModified < olderThanMillis)
+            continue;
           nextMFile = new MFileOS7(nextPath, attr);
 
        } catch (IOException e) {

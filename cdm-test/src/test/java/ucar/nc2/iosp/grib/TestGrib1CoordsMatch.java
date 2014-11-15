@@ -33,6 +33,8 @@
 
 package ucar.nc2.iosp.grib;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
@@ -44,14 +46,15 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.collection.Grib1Iosp;
-import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollectionImmutable;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -65,10 +68,38 @@ import java.util.Formatter;
  */
 public class TestGrib1CoordsMatch {
 
+  @BeforeClass
+   static public void before() {
+     RandomAccessFile.enableDefaultGlobalFileCache();
+     RandomAccessFile.setDebugLeaks(true);
+     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+     GribCdmIndex.initGribCollectionCache(50, 700, -1);
+   }
+
+   @AfterClass
+   static public void after() {
+     GribIosp.setDebugFlags(new DebugFlagsImpl());
+     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+     if (cache == null) return;
+
+     Formatter out = new Formatter(System.out);
+     cache.showCache(out);
+     cache.showTracking(out);
+     cache.clearCache(false);
+     RandomAccessFile.getGlobalFileCache().showCache(out);
+     TestDir.checkLeaks();
+
+     System.out.printf("countGC=%d%n", GribCollectionImmutable.countGC);
+     System.out.printf("countPC=%d%n", PartitionCollectionImmutable.countPC);
+
+     FileCache.shutdown();
+     RandomAccessFile.setDebugLeaks(false);
+     RandomAccessFile.setGlobalFileCache(null);
+   }
+
   @Test
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
-    // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
     String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();

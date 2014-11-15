@@ -129,7 +129,7 @@ public class TestNetcdfFileCache {
     assert map.values().size() == saveCount;
 
     // close all
-    List<FileCacheable> files = new ArrayList<FileCacheable>();
+    List<FileCacheable> files = new ArrayList<>();
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
       assert elem.list.size() == 1;
@@ -179,7 +179,7 @@ public class TestNetcdfFileCache {
     FileCache.CacheElement.CacheFile first = null;
     for (FileCache.CacheElement.CacheFile file : list) {
       assert file.isLocked.get();
-      assert file.countAccessed == 1 : file.countAccessed;
+      assert file.countAccessed == 0 : file.countAccessed;  // countAccessed not incremented until its closed, so == 0
       assert file.lastAccessed != 0;
 
       if (first == null)

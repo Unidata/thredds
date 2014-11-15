@@ -56,7 +56,6 @@ import java.nio.ByteBuffer;
 public class Nidsiosp extends AbstractIOServiceProvider {
 
   protected boolean readonly;
-  private ucar.nc2.NetcdfFile ncfile;
   protected Nidsheader headerParser;
 
   private int pcode;

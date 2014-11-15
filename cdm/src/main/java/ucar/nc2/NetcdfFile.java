@@ -866,12 +866,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
   // optionally release any resources like file handles
   public void release() throws IOException {
-    spi.release();
+    if (spi != null)
+      spi.release();
   }
 
   // reacquire any resources like file handles
   public void reacquire() throws IOException {
-    spi.reacquire();
+    if (spi != null)
+      spi.reacquire();
   }
 
   /**
