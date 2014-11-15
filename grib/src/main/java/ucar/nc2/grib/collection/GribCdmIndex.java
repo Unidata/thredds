@@ -104,14 +104,19 @@ public class GribCdmIndex implements IndexReader {
       // object cache for index files - these are opened only as GribCollection
   static public FileCacheIF gribCollectionCache;
 
-  static public void initGribCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    gribCollectionCache = new ucar.nc2.util.cache.FileCache("PartitionCollectionImmutable", minElementsInMemory, maxElementsInMemory, -1, period);
+  static public void initDefaultCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+    gribCollectionCache = new ucar.nc2.util.cache.FileCache("DefaultGribCollectionCache", minElementsInMemory, maxElementsInMemory, -1, period);
     // gribCollectionCache = new ucar.nc2.util.cache.FileCacheGuava("PartitionCollectionImmutable", maxElementsInMemory);
   }
 
   static public void disableGribCollectionCache() {
     if (null != gribCollectionCache) gribCollectionCache.disable();
     gribCollectionCache = null;
+  }
+
+  static public void setGribCollectionCache(FileCacheIF cache) {
+    if (null != gribCollectionCache) gribCollectionCache.disable();
+    gribCollectionCache = cache;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////

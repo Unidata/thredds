@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.iosp.grib;
+package ucar.nc2.grib;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -73,7 +73,7 @@ public class TestGribCollections {
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-    GribCdmIndex.initGribCollectionCache(50, 700, -1);
+    GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
   }
 

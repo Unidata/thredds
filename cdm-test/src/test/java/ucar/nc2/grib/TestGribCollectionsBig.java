@@ -30,13 +30,11 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.iosp.grib;
+package ucar.nc2.grib;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
@@ -53,20 +51,20 @@ import java.util.Formatter;
 /**
  * Look for missing data in Grib Collections.
  *
- * Indicates that coordinates are not matching, because DGEX_CONUS is dense (has data for each coordinate).
- * Note that not all grib collections will be dense.
+ * Indicates that coordinates are not matching,
  *
  * @author John
  * @since 10/13/2014
  */
-public class TestGribCollectionsDense {
+public class TestGribCollectionsBig {
+  String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
 
   @BeforeClass
    static public void before() {
-     RandomAccessFile.enableDefaultGlobalFileCache();
+    RandomAccessFile.enableDefaultGlobalFileCache();
      RandomAccessFile.setDebugLeaks(true);
      GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     GribCdmIndex.initGribCollectionCache(50, 700, -1);
+    GribCdmIndex.initDefaultCollectionCache(50, 700, -1);
    }
 
    @AfterClass
@@ -91,47 +89,50 @@ public class TestGribCollectionsDense {
    }
 
   @Test
-  public void testLeaf() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2");
-    assert count.nread == 1009;
-    assert count.nmiss == 0;
-  }
-
-  @Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX-test-20141011-20141011-060000.ncx2");
-    assert count.nread == 1009;
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
+    TestDir.checkLeaks();
+
+    assert count.nread == 286;
     assert count.nmiss == 0;
   }
 
   @Test
   public void testPofG() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX-test-20141011.ncx2");
-    assert count.nread == 3140;
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
+    TestDir.checkLeaks();
+
+    // jenkins: that took 18 secs total, 0.261603 msecs per record
+    assert count.nread == 70928;
     assert count.nmiss == 0;
   }
 
   @Test
   public void testPofP() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/DGEX-test-dgex.ncx2");
-    TestDir.checkLeaks();
-    assert count.nread == 5384;
-    assert count.nmiss == 0;
+    try {
+      TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
+      TestDir.checkLeaks();
+
+      // jenkins:  that took 496 secs total, 0.592712 msecs per record
+      // that took 581 secs total, 0.694249 msecs per record (total == 0/837408) (cache size 500)
+      assert count.nread == 837408;
+      assert count.nmiss == 0;
+
+    } catch (Throwable t) {
+      t.printStackTrace();
+      // TestDir.checkLeaks();
+    }
+
   }
 
   // @Test
-  public void problem() throws IOException {
-    String filename = "/gribCollections/dgex/DGEX-test-dgex.ncx2";
-    //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx2";
-    try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
-      GridDatatype gdt = gds.findGridByName("Best/Total_precipitation_surface_6_Hour_Accumulation");
-      assert gdt != null;
-      TestGribCollections.Count count = TestGribCollections.read(gdt);
-      System.out.printf("%n%50s == %d/%d%n", "total", count.nmiss, count.nread);
-      assert count.nread == 24;
-      assert count.nmiss == 0;
-    }
-  }
+  public void testPofPofP() throws IOException {
+    RandomAccessFile.setDebugLeaks(true);
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
+    TestDir.checkLeaks();
 
+    // that took 1312 secs total, 0.784602 msecs per record (total == 0/1672528) (cache size 500)
+    assert count.nread == 1672528;
+    assert count.nmiss == 0;
+  }
 }

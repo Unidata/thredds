@@ -97,7 +97,7 @@ public class FileCacheGuava implements FileCacheIF {
   @Override
   public void showCache(Formatter f) {
     CacheStats stats = cache.stats();
-    f.format("%n%s%n", stats);
+    f.format("%n%s%n%s%n", name, stats);
   }
 
   @Override

@@ -31,7 +31,7 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.iosp.grib;
+package ucar.nc2.grib;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -44,8 +44,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.grib.GribStatType;
-import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -73,7 +71,7 @@ public class TestGrib1CoordsMatch {
      RandomAccessFile.enableDefaultGlobalFileCache();
      RandomAccessFile.setDebugLeaks(true);
      // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     GribCdmIndex.initGribCollectionCache(50, 700, -1);
+     GribCdmIndex.initDefaultCollectionCache(50, 700, -1);
    }
 
    @AfterClass

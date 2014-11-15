@@ -86,7 +86,6 @@ import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCache;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.xml.RuntimeConfigParser;
-import ucar.unidata.io.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.ComboBox;
@@ -98,7 +97,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
-import java.awt.Dimension;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -6449,7 +6447,7 @@ public class ToolsUI extends JPanel {
 
     // caching
     ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
-    GribCdmIndex.initGribCollectionCache(100, 200, -1);
+    GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
 
     /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");

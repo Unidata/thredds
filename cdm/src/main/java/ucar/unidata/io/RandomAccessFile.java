@@ -198,13 +198,11 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
   static public void enableDefaultGlobalFileCache() {
     if (cache != null) cache.disable();
-    cache = null;
     cache = new FileCache("RandomAccessFile", 200, 300, 400, 60 * 60); // default; override for higher performance, or set to null for no caching;
   }
 
   static public void setGlobalFileCache(FileCacheIF _cache) {
     if (cache != null) cache.disable();
-    cache = null;
     cache = _cache;
    }
 
