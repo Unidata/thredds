@@ -66,6 +66,8 @@ public abstract class CollectionAbstract implements MCollection {
   protected long lastModified;
   protected MFileFilter filter;
   protected DirectoryStream.Filter<Path> sfilter;
+  private boolean useGribFilter = true;
+  private boolean isLeaf = true;
 
   protected CollectionAbstract(String collectionName, org.slf4j.Logger logger) {
     this.collectionName = cleanName(collectionName);
@@ -81,7 +83,9 @@ public abstract class CollectionAbstract implements MCollection {
     this.isLeaf = isLeaf;
   }
 
-  private boolean isLeaf = true;
+  public void setUseGribFilter(boolean useGribFilter) {
+    this.useGribFilter = useGribFilter;
+  }
 
   @Override
   public String getCollectionName() {
@@ -216,8 +220,9 @@ public abstract class CollectionAbstract implements MCollection {
   public class MyGribFilter implements DirectoryStream.Filter<Path> {
     public boolean accept(Path entry) throws IOException {
       if (sfilter != null && !sfilter.accept(entry)) return false;
+      if (!useGribFilter) return true;
       String last = entry.getName(entry.getNameCount() - 1).toString();
-      return !last.endsWith(".gbx9") && !last.endsWith(".gbx8") && !last.endsWith(".ncx") && !last.endsWith(".ncx2") &&  // LOOK GRIB specific
+      return !last.endsWith(".gbx9") && !last.endsWith(".gbx8") && !last.endsWith(".ncx") && !last.endsWith(".ncx2") &&
               !last.endsWith(".xml");
     }
   }

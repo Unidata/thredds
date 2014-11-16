@@ -51,6 +51,7 @@ import java.util.*;
 
 /**
  * Manage MFiles from one directory.
+ * Doesnt know about parents or children.
  * Use getFileIterator() for best performance on large directories
  *
  * @author caron
@@ -88,7 +89,6 @@ public class DirectoryCollection extends CollectionAbstract {
   final Path topDir;
   final long olderThanMillis;
 
-
   public DirectoryCollection(String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger) {
     this(topCollectionName, Paths.get(topDirS), olderThan, logger);
   }
@@ -102,18 +102,19 @@ public class DirectoryCollection extends CollectionAbstract {
     if (debug) System.out.printf("Open DirectoryCollection %s%n", topCollectionName);
   }
 
-
   public Path getIndexPath() {
     return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);
   }
 
   public boolean isLeafDirectory() throws IOException {
     int countDir=0, countFile=0, count =0;
-    try (CloseableIterator<MFile> iter = getFileIterator()) {
-      while (iter.hasNext() && count++ < 100) {
-        MFile file = iter.next();
-        if (file.isDirectory()) countDir++; else countFile++;
-      }
+    DirectoryStream<Path> dirStream = Files.newDirectoryStream(topDir);
+    Iterator<Path> iterator = dirStream.iterator();
+    while (iterator.hasNext()&& count++ < 100) {
+      Path p = iterator.next();
+      BasicFileAttributes attr =  Files.readAttributes(p, BasicFileAttributes.class);
+      if (attr.isDirectory()) countDir++;
+      else countFile++;
     }
     return countFile > countDir;
   }
@@ -178,7 +179,8 @@ public class DirectoryCollection extends CollectionAbstract {
        } catch (IOException e) {
          throw new RuntimeException(e);
        }
-       if (filter == null || filter.accept(nextMFile)) return true;
+       if (filter == null || filter.accept(nextMFile))
+         return true;
       }
     }
 
