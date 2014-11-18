@@ -328,7 +328,7 @@ public class DirectoryPartitionViewer extends JPanel {
            GribCdmIndex indexReader = new GribCdmIndex(logger);
            final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, indexReader, logger);
            dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-           Formatter errlog = new Formatter();
+           Formatter errlog = new Formatter();                          // LOOK does it really need to be mutable ??
            PartitionCollectionMutable tp = (PartitionCollectionMutable)  GribCdmIndex.openMutableGCFromIndex(dpart.getIndexFilename(), config, false, true, logger);
            for (MCollection dcmp : dpart.makePartitions(null)) {
              dcmp.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);

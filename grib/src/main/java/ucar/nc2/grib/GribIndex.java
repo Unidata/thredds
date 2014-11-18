@@ -36,9 +36,9 @@ import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
-import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -60,7 +60,7 @@ public abstract class GribIndex {
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      File idxFile = GribCdmIndex.getFileInCache(file.getPath() + GBX9_IDX);
+      File idxFile = getFileInCache(file.getPath() + GBX9_IDX);
       if (!idxFile.exists()) return true;
       long idxLastModified =  idxFile.lastModified();
       if (idxLastModified < file.getLastModified()) return true;
@@ -68,13 +68,15 @@ public abstract class GribIndex {
       return false;
     }
     public boolean hasntChangedSince(MFile file, long when) {
-      File idxFile = GribCdmIndex.getFileInCache(file.getPath() + GBX9_IDX);
+      File idxFile = getFileInCache(file.getPath() + GBX9_IDX);
       if (!idxFile.exists()) return true;
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && idxFile.lastModified() < when) return true;
       return false;
     }
   };
+  /////////////////////////////////////////////////////////////////////////
+  public static DiskCache2 diskCache;
 
   static public CollectionManager.ChangeChecker getChangeChecker() {
     return gribCC;
@@ -115,6 +117,30 @@ public abstract class GribIndex {
     gc.close(); // dont need this right now */
 
     return index;
+  }
+
+  static synchronized public void setDiskCache2(DiskCache2 dc) {
+    diskCache = dc;
+  }
+
+  static synchronized public DiskCache2 getDiskCache2() {
+    if (diskCache == null)
+      diskCache = DiskCache2.getDefault();
+    return diskCache;
+  }
+
+  /**
+   * Get index file, may be in cache directory, may not exist
+   *
+   * @param path full path of index file
+   * @return File, possibly in cache
+   */
+  static public File getFileInCache(String path) {
+    return getDiskCache2().getFile(path);     // diskCache manages where the index file lives
+  }
+
+  static public File getExistingFileOrCache(String path) {
+    return getDiskCache2().getExistingFileOrCache(path);
   }
 
   /**

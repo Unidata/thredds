@@ -43,14 +43,11 @@ import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCacheIF;
-import ucar.nc2.util.cache.FileCacheable;
-import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
@@ -72,36 +69,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class GribCdmIndex implements IndexReader {
   static public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
 
-  /////////////////////////////////////////////////////////////////////////
-  private static DiskCache2 diskCache;
-
-  static synchronized public void setDiskCache2(DiskCache2 dc) {
-    diskCache = dc;
-  }
-
-  static synchronized public DiskCache2 getDiskCache2() {
-    if (diskCache == null)
-      diskCache = DiskCache2.getDefault();
-    return diskCache;
-  }
-
-  /**
-   * Get index file, may be in cache directory, may not exist
-   *
-   * @param path full path of index file
-   * @return File, possibly in cache
-   */
-  static public File getFileInCache(String path) {
-    return getDiskCache2().getFile(path);     // diskCache manages where the index file lives
-  }
-
-  static public File getExistingFileOrCache(String path) {
-    return getDiskCache2().getExistingFileOrCache(path);
-  }
-
   /////////////////////////////////////////////////////////////////////////////
 
-      // object cache for index files - these are opened only as GribCollection
+      // object cache for ncx2 files - these are opened only as GribCollection
   static public FileCacheIF gribCollectionCache;
 
   static public void initDefaultCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
@@ -127,7 +97,7 @@ public class GribCdmIndex implements IndexReader {
    * @param config use this FeatureCollectionConfig
    * @return index File
    */
-  static public File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
+  static private File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
@@ -142,8 +112,7 @@ public class GribCdmIndex implements IndexReader {
     return new File(directory, nameNoBlanks + CollectionAbstract.NCX_SUFFIX);
   }
 
-
-  static public String makeNameFromIndexFilename(String idxPathname) {
+  static private String makeNameFromIndexFilename(String idxPathname) {
     idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
     int pos = idxPathname.lastIndexOf('/');
     String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
@@ -201,7 +170,7 @@ public class GribCdmIndex implements IndexReader {
 
     // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? getFileInCache(indexFilename) : new File(indexFilename);
+    File indexFileInCache = useCache ? GribIndex.getFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionImmutable result = null;
@@ -238,9 +207,10 @@ public class GribCdmIndex implements IndexReader {
     return result;
   }
 
-      // open GribCollectionImmutable from an existing index file. return null on failure
+    // used by PartitionCollectionMutable.Partition
+  // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionMutable openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? getFileInCache(indexFilename) : new File(indexFilename);
+    File indexFileInCache = useCache ? GribIndex.getFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionMutable result = null;
@@ -281,76 +251,36 @@ public class GribCdmIndex implements IndexReader {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // used by PartitionCollection
 
-  /**
-    * Create a GribCollection from an MCollection.
-    * full metadata is read in.
-    *
-    * @param isGrib1 true if files are grib1, else grib2
-    * @param dcm     the MCollection : files or other collections
-    * @param updateType   should index file be used or remade?
-    * @return GribCollection
-    * @throws IOException on io error
-    *
-  static public GribCollectionImmutable openGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
+  // used (only) by GribCollectionBuilder
+  static public boolean updateGribCollectionFromPCollection(boolean isGrib1, PartitionManager dcm, CollectionUpdateType updateType,
                                                                  Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-
-    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
-      return openCdmIndex(dcm.getIndexFilename(), config, true, logger);  // then just open the existing index file
-    }
-
-    // update if needed
-    boolean changed = updateGribCollectionFromMCollection(isGrib1, dcm, updateType, errlog, logger);
-
-    // now open the index
-    return openCdmIndex(dcm.getIndexFilename(), config, true, logger);
-  } */
-
-
-  static public boolean updateGribCollectionFromMCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType,
-                                                                 Formatter errlog, org.slf4j.Logger logger) throws IOException {
-
-    //FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-
-    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // would isIndexFile() be better ?
+    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // LOOK would isIndexFile() be better ?
       // then just open the existing index file
       return false;
     }
 
     boolean changed;
-    // otherwise got to check
-    if (isGrib1) {
-      if (dcm.isLeaf()) {
-        Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-        changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
 
-      } else {
-        Grib1PartitionBuilder builder = new Grib1PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), (PartitionManager) dcm, logger);
+    if (isGrib1) {
+        Grib1PartitionBuilder builder = new Grib1PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), dcm, logger);
         changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, updateType, errlog);
-      }
 
     } else {
-      if (dcm.isLeaf()) {
-        Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-        changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
-
-      } else {
-        Grib2PartitionBuilder builder = new Grib2PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), (PartitionManager) dcm, logger);
+        Grib2PartitionBuilder builder = new Grib2PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), dcm, logger);
         changed = builder.updateNeeded(updateType) && builder.createPartitionedIndex(updateType, updateType, errlog);
-      }
-    }
-    if (errlog != null) errlog.format("GribCollection %s was recreated %s%n", dcm.getCollectionName(), changed);
 
-    // now open the index
+    }
+    if (errlog != null) errlog.format("PartitionCollection %s was recreated %s%n", dcm.getCollectionName(), changed);
+
     return changed;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  // used by Tdm
+  // used by Tdm (indirectly by InvDatasetFcGrib)
 
   /**
-   * update the collection if needed
+   * update the collection as needed
    * @return true if the collection was updated
    * @throws IOException
    */
@@ -369,6 +299,7 @@ public class GribCdmIndex implements IndexReader {
 
     if (config.ptype == FeatureCollectionConfig.PartitionType.none) {
 
+      // LOOK how well tested is this?
       CollectionAbstract dcm = specp.wantSubdirs() ? new CollectionGeneral(config.name, rootPath, config.olderThan, logger) :
               new DirectoryCollection(config.name, rootPath, config.olderThan, logger);
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
@@ -376,7 +307,7 @@ public class GribCdmIndex implements IndexReader {
       if (specp.getFilter() != null)
         dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
 
-      if (isGrib1) {
+      if (isGrib1) {  // existing case handles correctly - make seperate index for each runtime (OR) partition == runtime
         Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
         changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
       } else {
@@ -386,6 +317,7 @@ public class GribCdmIndex implements IndexReader {
 
     } else {
 
+      // LOOK assume wantSubdirs makes it into a Partition. Isnt there something better ??
       if (specp.wantSubdirs()) {
         // its a partition
         DirectoryPartition dpart = new DirectoryPartition(config, rootPath, new GribCdmIndex(logger), logger);
@@ -435,7 +367,7 @@ public class GribCdmIndex implements IndexReader {
     for (MCollection part : dpart.makePartitions(forceCollection)) {
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       try {
-        if (part.isLeaf()) {
+        if (part.isLeaf()) {  // LOOK here we use isLeaf() to decide if its a leaf or partition (maybe ok)
           Path partPath = Paths.get(part.getRoot());
           updateLeafCollection(isGrib1, config, forceCollection, logger, partPath);
 
@@ -479,7 +411,7 @@ public class GribCdmIndex implements IndexReader {
       return updateFilePartition(isGrib1, config, forceCollection, logger, dirPath);
 
     } else {
-      return updateLeafDirectoryCollection(isGrib1, config, forceCollection, logger, dirPath);
+      return updateDirectoryPartition(isGrib1, config, forceCollection, logger, dirPath);
     }
 
   }
@@ -491,9 +423,9 @@ public class GribCdmIndex implements IndexReader {
    * @param dirPath directory path
    * @throws IOException
    */
-  static private boolean updateLeafDirectoryCollection(boolean isGrib1, FeatureCollectionConfig config,
-                                                       CollectionUpdateType forceCollection,
-                                                       Logger logger, Path dirPath) throws IOException {
+  static private boolean updateDirectoryPartition(boolean isGrib1, FeatureCollectionConfig config,
+                                                  CollectionUpdateType forceCollection,
+                                                  Logger logger, Path dirPath) throws IOException {
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
 
@@ -551,7 +483,7 @@ public class GribCdmIndex implements IndexReader {
 
     final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
 
-    // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
+    // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if theres an advantage
     if (updateType != CollectionUpdateType.never && updateType != CollectionUpdateType.testIndexOnly) {
       partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
         public void consume(MFile mfile) {
@@ -597,22 +529,6 @@ public class GribCdmIndex implements IndexReader {
     return recreated;
   }
 
-
-  ///////////
-  // used by InvDatasetFcGrib
-
-  /**
-   * Open GribCollection from config.
-   * dataOnly
-   */
-  static public GribCollectionImmutable openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
-
-    // update if needed
-    updateGribCollection(config, updateType, logger);
-
-    File idxFile = makeTopIndexFileFromConfig(config);
-    return openCdmIndex(idxFile.getPath(), config, true, logger);
-  }
 
   ////////////////////////////////////////////////////////////////////////////////////
 
@@ -717,11 +633,27 @@ public class GribCdmIndex implements IndexReader {
     return true;
   }  */
 
-  ////////////////////////////////////////////////////////////////////////////////////
-  // Used by IOSPs; dataOnly
+    ///////////////////////////////////////////////////////
+  // used by InvDatasetFcGrib
 
-  public static GribCollectionImmutable makeGribCollectionFromRaf(RandomAccessFile raf,
-            FeatureCollectionConfig config, CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
+  /**
+   * Open GribCollection from config.
+   * dataOnly
+   */
+  static public GribCollectionImmutable openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
+
+    // update if needed
+    updateGribCollection(config, updateType, logger);
+
+    File idxFile = makeTopIndexFileFromConfig(config);
+    return openCdmIndex(idxFile.getPath(), config, true, logger);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  // Used by IOSPs
+
+  public static GribCollectionImmutable openGribCollectionFromRaf(RandomAccessFile raf,
+         FeatureCollectionConfig config, CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
 
     GribCollectionImmutable result;
 
@@ -747,7 +679,6 @@ public class GribCdmIndex implements IndexReader {
   /**
    * Open a grib collection from a single grib1 or grib2 file.
    * Create the gbx9 and ncx2 files if needed.
-   * dataOnly
    *
    * @param isGrib1 true if grib1
    * @param dataRaf the data file already open
@@ -766,7 +697,7 @@ public class GribCdmIndex implements IndexReader {
     return openGribCollectionFromDataFile(isGrib1, mfile, updateType, config, errlog, logger);
   }
 
-    // for InvDatasetFeatureCollection.getNetcdfDataset() and getGridDataset()
+   // for InvDatasetFeatureCollection.getNetcdfDataset() and getGridDataset()
 
   // from a single file, read in the index, create if it doesnt exist; return null on failure
   static public GribCollectionImmutable openGribCollectionFromDataFile(boolean isGrib1, MFile mfile, CollectionUpdateType updateType,

@@ -54,6 +54,7 @@ import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribData;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
@@ -1046,7 +1047,7 @@ public class ToolsUI extends JPanel {
   DiskCache2Form diskCache2Form = null;
   private void setGribDiskCache() {
     if (diskCache2Form == null) {
-      diskCache2Form = new DiskCache2Form(parentFrame, GribCdmIndex.getDiskCache2());
+      diskCache2Form = new DiskCache2Form(parentFrame, GribIndex.getDiskCache2());
     }
     diskCache2Form.setVisible(true);
   }

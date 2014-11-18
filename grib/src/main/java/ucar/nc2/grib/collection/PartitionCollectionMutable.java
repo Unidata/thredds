@@ -41,6 +41,7 @@ import thredds.inventory.MCollection;
 import ucar.coord.CoordinateTime2D;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Misc;
@@ -534,7 +535,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     public String getIndexFilenameInCache() {
       File file = new File(directory, filename);
-      File existingFile = GribCdmIndex.getExistingFileOrCache( file.getPath());
+      File existingFile = GribIndex.getExistingFileOrCache(file.getPath());
       if (existingFile == null) {
         // try reletive to index file
         File parent = getIndexParentFile();

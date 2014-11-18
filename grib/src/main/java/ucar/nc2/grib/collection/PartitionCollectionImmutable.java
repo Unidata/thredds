@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.coord.*;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
@@ -71,7 +72,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
         Partition p = (Partition) iospMessage;
-        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // dataOnly = true
+        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // do we know its a partition ?
 
       } catch (Throwable t) {
         RandomAccessFile.eject(location);
@@ -231,7 +232,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       private String getIndexFilenameInCache() throws FileNotFoundException {
         File file = new File(partDirectory, filename);
-        File existingFile = GribCdmIndex.getExistingFileOrCache(file.getPath());
+        File existingFile = GribIndex.getExistingFileOrCache(file.getPath());
 
         if (existingFile == null) {
           existingFile = new File(directory, filename); // try the Collection directory

@@ -186,7 +186,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     } else if (gribCollection == null) { // may have been set in the constructor
 
-      this.gribCollection = GribCdmIndex.makeGribCollectionFromRaf(raf, config, CollectionUpdateType.testIndexOnly, logger);
+      this.gribCollection = GribCdmIndex.openGribCollectionFromRaf(raf, config, CollectionUpdateType.testIndexOnly, logger);
       if (gribCollection == null)
         throw new IllegalStateException("Not a GRIB data file or ncx2 file " + raf.getLocation());
 

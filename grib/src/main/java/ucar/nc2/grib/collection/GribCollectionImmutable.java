@@ -87,7 +87,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   protected final Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
   protected final GribTables cust;
   //protected Map<String, MFile> filenameMap;
-  // protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected final String indexFilename;
 
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS

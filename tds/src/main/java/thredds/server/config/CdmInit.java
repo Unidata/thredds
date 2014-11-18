@@ -46,6 +46,7 @@ import thredds.server.ncss.format.SupportedFormat;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.LoggerFactorySpecial;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
@@ -187,7 +188,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     gribCache.setPolicy(gribIndexPolicy);
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);
-    GribCdmIndex.setDiskCache2(gribCache);
+    GribIndex.setDiskCache2(gribCache);
     startupLog.info("CdmInit: GribIndex="+gribCache);
 
     // LOOK is this used ??

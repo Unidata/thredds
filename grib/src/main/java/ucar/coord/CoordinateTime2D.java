@@ -61,7 +61,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final List<Coordinate> times; // time coordinates - original offsets
   private final CoordinateTimeAbstract otime; // time coordinates - orthogonal
   private final SortedMap<Integer,CoordinateTimeAbstract> regTimes; // time coordinates - regular by offset
-  private int[] offset;  // the offset of each CoordinateTime from the base/first runtime
+  private final int[] offset;  // the offset of each CoordinateTime from the base/first runtime
 
   private final boolean isRegular;
   private final boolean isOrthogonal;
@@ -97,7 +97,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.nruns = runtime.getSize();
     assert nruns == times.size();
 
-    makeOffsets(times);
+    this.offset = makeOffsets(times);
     this.vals = (vals == null) ? null : Collections.unmodifiableList(vals);
   }
 
@@ -116,7 +116,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.ntimes = otime.getSize();
 
     this.nruns = runtime.getSize();
-    makeOffsets(timeUnit);
+    this.offset = makeOffsets(timeUnit);
     this.vals = null;
   }
 
@@ -149,26 +149,28 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       this.regTimes.put(hour, time);
     }
 
-    makeOffsets(timeUnit);
+    this.offset = makeOffsets(timeUnit);
     this.vals = null;
   }
 
-  private void makeOffsets(List<Coordinate> orgTimes) {
+  private int[] makeOffsets(List<Coordinate> orgTimes) {
     CalendarDate firstDate = runtime.getFirstDate();
-    offset = new int[nruns];
+    int[] offsets = new int[nruns];
     for (int idx=0; idx<nruns; idx++) {
       CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) orgTimes.get(idx);
       CalendarPeriod period = coordTime.getPeriod(); // LOOK are we assuming all have same period ??
-      offset[idx] = period.getOffset(firstDate, runtime.getDate(idx)); // LOOK possible loss of precision
+      offsets[idx] = period.getOffset(firstDate, runtime.getDate(idx)); // LOOK possible loss of precision
     }
+    return offsets;
   }
 
-  private void makeOffsets(CalendarPeriod period) {
+  private int[] makeOffsets(CalendarPeriod period) {
     CalendarDate firstDate = runtime.getFirstDate();
-    offset = new int[nruns];
+    int[] offsets = new int[nruns];
     for (int idx=0; idx<nruns; idx++) {
-      offset[idx] = period.getOffset(firstDate, runtime.getDate(idx)); // LOOK possible loss of precision
+      offsets[idx] = period.getOffset(firstDate, runtime.getDate(idx)); // LOOK possible loss of precision
     }
+    return offsets;
   }
 
   public CoordinateRuntime getRuntimeCoordinate() {

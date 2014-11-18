@@ -44,6 +44,7 @@ import thredds.inventory.partition.PartitionManager;
 import ucar.coord.*;
 import ucar.ma2.Section;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
@@ -84,7 +85,7 @@ abstract class GribPartitionBuilder  {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribCdmIndex.getFileInCache(partitionManager.getIndexFilename());
+    File collectionIndexFile = GribIndex.getFileInCache(partitionManager.getIndexFilename());
     if (!collectionIndexFile.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
@@ -97,7 +98,7 @@ abstract class GribPartitionBuilder  {
     Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
       String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
-      File partitionIndexFile = GribCdmIndex.getFileInCache(partitionIndexFilename);
+      File partitionIndexFile = GribIndex.getFileInCache(partitionIndexFilename);
       if (!partitionIndexFile.exists())                                 // make sure each partition has an index
         return true;
       if (collectionLastModified < partitionIndexFile.lastModified())  // and the partition index is earlier than the collection index
@@ -558,7 +559,7 @@ abstract class GribPartitionBuilder  {
   GribCollectionIndex (sizeIndex bytes)
   */
   protected boolean writeIndex(PartitionCollectionMutable pc, Formatter f) throws IOException {
-    File idxFile = GribCdmIndex.getFileInCache(partitionManager.getIndexFilename());
+    File idxFile = GribIndex.getFileInCache(partitionManager.getIndexFilename());
     if (idxFile.exists()) {
       if (!idxFile.delete())
         logger.error("gc2tp cant delete " + idxFile.getPath());

@@ -468,8 +468,9 @@ message Coord {
       ntimes = time.getSize();
     }
 
+
     // 2d only  LOOK this is the big memory hog - but not needed except when building or for debug. can we make optional ??
-    if (!dataOnly) {
+    if (!dataOnly) {   // LOOK probably dont need this anymore, since we have moved to using GribCollectionImmutable
       List<Integer> invCountList = pv.getInvCountList();
       if (invCountList.size() > 0) {
         result.twot = new TwoDTimeInventory(invCountList, runtime.getSize(), ntimes);

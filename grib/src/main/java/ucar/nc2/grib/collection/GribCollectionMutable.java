@@ -244,9 +244,9 @@ public class GribCollectionMutable implements AutoCloseable {
    *
    * @return index filename; may not exist; may be in disk cache
    */
-  public String getIndexFilepathInCache() {
+  private String getIndexFilepathInCache() {
     File indexFile = GribCdmIndex.makeIndexFile(name, directory);
-    return GribCdmIndex.getFileInCache(indexFile.getPath()).getPath();
+    return GribIndex.getFileInCache(indexFile.getPath()).getPath();
   }
 
   // set from GribCollectionBuilderFromIndex.readFromIndex()

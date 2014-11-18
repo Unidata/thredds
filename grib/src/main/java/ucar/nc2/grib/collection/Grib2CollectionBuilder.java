@@ -228,7 +228,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
     List<Grib2CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib2CollectionWriter.Group) g);
-    File indexFileInCache = GribCdmIndex.getFileInCache(indexFilepath);
+    File indexFileInCache = GribIndex.getFileInCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
   }
 

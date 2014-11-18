@@ -15,6 +15,8 @@ import java.util.List;
 public interface MCollection extends AutoCloseable {
 
   /**
+   * LOOK this seems bogus. trying to figure out if we need to use a GribCollectionBuilder or GribPartitionBuilder
+   *
    * Consider MCollections as a tree. At the leaves are a single mfile or mfile collection.
    * A leaf MCollection will be a GC if it has a single runtime, or a PofGC otherwise.
    * A non-leaf is a directory with other directories under it. It will either be a PofGC (Partition of GC) or PofP (Partition of Partition).

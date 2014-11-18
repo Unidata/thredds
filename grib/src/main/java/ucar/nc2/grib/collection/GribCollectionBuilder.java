@@ -86,7 +86,7 @@ abstract class GribCollectionBuilder {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribCdmIndex.getFileInCache(dcm.getIndexFilename());
+    File collectionIndexFile = GribIndex.getFileInCache(dcm.getIndexFilename());
     if (!collectionIndexFile.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
@@ -139,6 +139,7 @@ abstract class GribCollectionBuilder {
     return false;
   }
 
+  // LOOK HERE1 probably what you need to do for partition = none
   public boolean createIndex(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
 
@@ -179,7 +180,7 @@ abstract class GribCollectionBuilder {
       Collections.sort(partitions); // ??
       PartitionManager part = new PartitionManagerFromIndexList(dcm, partitions, logger);
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
-      ok = GribCdmIndex.updateGribCollectionFromMCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);
+      ok = GribCdmIndex.updateGribCollectionFromPCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);  // LOOK HERE1
     }
 
     long took = System.currentTimeMillis() - start;
