@@ -91,6 +91,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     return value;
   }
 
+  // LOOK HERE1 assumes only one runtime
   // read all records in all files,
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.

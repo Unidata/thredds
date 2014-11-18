@@ -481,7 +481,7 @@ abstract class GribPartitionBuilder  {
      // do each group
     for (GribCollectionMutable.GroupGC group2D : ds2D.groups) {
       GribCollectionMutable.GroupGC groupB = dsa.addGroupCopy(group2D);  // make copy of group, add to dataset
-      groupB.isTwod = false;
+      groupB.isCanonicalGroup = false;
 
       // runtime offsets
       CoordinateRuntime rtc = null;
@@ -700,7 +700,7 @@ abstract class GribPartitionBuilder  {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGdsIndex(pc.findHorizCS(g.horizCoordSys));
-    b.setIsTwod(g.isTwod);
+    b.setIsTwod(g.isCanonicalGroup);
 
     for (GribCollectionMutable.VariableIndex vb : g.variList) {
       b.addVariables(writeVariableProto((PartitionCollectionMutable.VariableIndexPartitioned) vb));

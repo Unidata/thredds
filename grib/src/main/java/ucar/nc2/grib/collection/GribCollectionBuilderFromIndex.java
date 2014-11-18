@@ -47,7 +47,6 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -245,7 +244,7 @@ message Group {
 
     int gdsIndex = p.getGdsIndex();
     group.horizCoordSys = gc.getHorizCS(gdsIndex);
-    group.isTwod = p.getIsTwod();
+    group.isCanonicalGroup = p.getIsTwod();
 
     // read coords before variables
     group.coords = new ArrayList<>();
@@ -308,7 +307,7 @@ message Group {
       }
     }
     assignVertNames(vertCoords);
-    assignRuntimeNames(runtimes, time2DCoords, group.getId() + "-" + (group.isTwod ? "TwoD" : "Best"));
+    assignRuntimeNames(runtimes, time2DCoords, group.getId() + "-" + (group.isCanonicalGroup ? "TwoD" : "Best"));
 
     return group;
   }

@@ -901,7 +901,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       if (debugRead) {
         System.out.printf("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
       }
-      if (record != null)
+      if (record != null)   // LOOK why not just store the Record ??
         records.add(new DataRecord(resultIndex, record.fileno, record.pos, record.bmsPos, record.scanMode, vindex.group.getGdsHorizCoordSys()));
     }
 

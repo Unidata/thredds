@@ -444,7 +444,7 @@ public class GribCollectionMutable implements AutoCloseable {
     List<Coordinate> coords;      // shared coordinates
     int[] filenose;               // key for GC.fileMap
     Map<Integer, GribCollectionMutable.VariableIndex> varMap;
-    boolean isTwod = true;        // true for GC and twoD; so should be called "reference" dataset or something
+    boolean isCanonicalGroup = true;        // true for GC and twoD; so should be called "reference" dataset or something
 
     GroupGC() {
       this.variList = new ArrayList<>();
@@ -456,7 +456,7 @@ public class GribCollectionMutable implements AutoCloseable {
       this.horizCoordSys = from.horizCoordSys;     // reference
       this.variList = new ArrayList<>(from.variList.size());
       this.coords = new ArrayList<>(from.coords.size());
-      this.isTwod = from.isTwod;
+      this.isCanonicalGroup = from.isCanonicalGroup;
     }
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
@@ -572,7 +572,7 @@ public class GribCollectionMutable implements AutoCloseable {
     }
 
     public void show(Formatter f) {
-      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwod);
+      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isCanonicalGroup);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }
@@ -581,7 +581,7 @@ public class GribCollectionMutable implements AutoCloseable {
     public String toString() {
       final StringBuilder sb = new StringBuilder("GroupGC{");
       sb.append(GribCollectionMutable.this.getName());
-      sb.append(" isTwoD=").append(isTwod);
+      sb.append(" isTwoD=").append(isCanonicalGroup);
       sb.append('}');
       return sb.toString();
     }

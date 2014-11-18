@@ -392,12 +392,12 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      */
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
-      if (GribIosp.debugRead) System.out.printf("%nPartitionCollection.getDataRecord index wanted = (%s) on %s isTwod=%s%n", Misc.showInts(indexWanted), indexFilename, group.isTwod);
+      if (GribIosp.debugRead) System.out.printf("%nPartitionCollection.getDataRecord index wanted = (%s) on %s isTwod=%s%n", Misc.showInts(indexWanted), indexFilename, group.isCanonicalGroup);
 
       // find the runtime index
       int firstIndex = indexWanted[0];
-      int runIdx = group.isTwod ? firstIndex : time2runtime.get(firstIndex) - 1; // time2runtime is for oneD
-      if (GribIosp.debugRead && !group.isTwod) System.out.printf("  firstIndex = %d runIdx=%d %n", firstIndex, runIdx);
+      int runIdx = group.isCanonicalGroup ? firstIndex : time2runtime.get(firstIndex) - 1; // time2runtime is for oneD
+      if (GribIosp.debugRead && !group.isCanonicalGroup) System.out.printf("  firstIndex = %d runIdx=%d %n", firstIndex, runIdx);
       if (runIdx < 0) {
         return null; // LOOK why is this possible?
       }
@@ -423,7 +423,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       }
 
       // translate to coordinates in vindex
-      int[] sourceIndex = group.isTwod ? translateIndex2D(indexWanted, compVindex2D) : translateIndex1D(indexWanted, compVindex2D);
+      int[] sourceIndex = group.isCanonicalGroup ? translateIndex2D(indexWanted, compVindex2D) : translateIndex1D(indexWanted, compVindex2D);
       if (sourceIndex == null) return null; // missing
       GribCollectionImmutable.Record record = compVindex2D.getRecordAt(sourceIndex);
       if (record == null) {
@@ -443,7 +443,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      * @throws IOException
      */
     private DataRecord getDataRecordPofP(int[] indexWanted, VariableIndexPartitioned compVindex2Dp) throws IOException {
-      if (group.isTwod) {
+      if (group.isCanonicalGroup) {
         // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
         if (GribIosp.debugRead) System.out.printf("  (2D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));

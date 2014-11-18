@@ -129,8 +129,6 @@ abstract class GribCollectionBuilder {
     return false;
   }
 
-
-
   private boolean collectionWasChanged(long idxLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
@@ -148,7 +146,7 @@ abstract class GribCollectionBuilder {
     List<? extends Group> groups = makeGroups(files, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
 
-    // gather into collections with a single runtime
+    // gather into collections with a single runtime  LOOK HERE1
     Map<Long, List<Group>> runGroups = new HashMap<>();
     for (Group g : groups) {
       List<Group> runGroup = runGroups.get(g.getRuntime().getMillis());
@@ -164,11 +162,12 @@ abstract class GribCollectionBuilder {
     List<MFile> partitions = new ArrayList<>();
     for (List<Group> runGroupList : runGroups.values()) {
       Group g = runGroupList.get(0);
-      // if multiple groups, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
+      // if multiple Runtimes, we will write a partition. otherwise, we need to use the standard name (without runtime) so we know the filename from the collection
       String gcname = multipleRuntimes ? GribCollectionMutable.makeName(this.name, g.getRuntime()) : this.name;
-      MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(gcname, directory); // not in cache
+      MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(gcname, directory); // not using disk cache LOOK why ?
       partitions.add(indexFileForRuntime);
 
+      // for each Group write an index file
       boolean ok = writeIndex(gcname, indexFileForRuntime.getPath(), g.getCoordinateRuntime(), runGroupList, allFiles);
       logger.info("GribCollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
     }
@@ -188,6 +187,7 @@ abstract class GribCollectionBuilder {
     return ok;
   }
 
+  // LOOK HERE1 a single runtime
   static public interface Group {
     CalendarDate getRuntime();
     CoordinateRuntime getCoordinateRuntime();

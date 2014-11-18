@@ -74,7 +74,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
   static class Group implements GribCollectionBuilder.Group {
     final Grib1SectionGridDefinition gdss;
     final int gdsHash; // may have been modified
-    final CalendarDate runtime;
+    final CalendarDate runtime;      // LOOK HERE1 single runtime
 
     public List<Grib1CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
@@ -251,7 +251,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       Grib1SectionIndicator is = gr.getIs();
       br.setPos(is.getStartPos()); // start of entire message
 
-      // br.setScanMode(gr.getScanMode()); // added 2/6/2014  LOOK
+      // br.setScanMode(gr.getScanMode()); // added 2/6/2014  LOOK dont need scan for GRIB1 I think ??
       b.addRecords(br);
     }
     return b.build();

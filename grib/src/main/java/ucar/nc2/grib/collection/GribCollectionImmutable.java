@@ -272,14 +272,14 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
     final private Map<Integer, VariableIndex> varMap;
-    final boolean isTwod;        // true for GC and twoD; so should be called "reference" dataset or something
+    final boolean isCanonicalGroup;        // true for GC and twoD; so should be called "reference" dataset or something
 
     public GroupGC(GribCollectionMutable.GroupGC gc) {
       this.horizCoordSys = gc.horizCoordSys;
       this.coords = gc.coords;
       this.filenose = gc.filenose;
       this.varMap = new HashMap<>(gc.variList.size() * 2);
-      this.isTwod = gc.isTwod;
+      this.isCanonicalGroup = gc.isCanonicalGroup;
 
       List<GribCollectionMutable.VariableIndex> gcVars = gc.variList;
       List<VariableIndex> work = new ArrayList<>(gcVars.size());
@@ -354,19 +354,19 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public String toString() {
       final StringBuilder sb = new StringBuilder("GroupGC{");
       sb.append(GribCollectionImmutable.this.getName());
-      sb.append(" isTwoD=").append(isTwod);
+      sb.append(" isTwoD=").append(isCanonicalGroup);
       sb.append('}');
       return sb.toString();
     }
 
     public void show(Formatter f) {
-      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), isTwod);
+      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), isCanonicalGroup);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }
   }
 
-  @Immutable
+  @Immutable      // except for sa
   public class VariableIndex {
     final GroupGC group;     // belongs to this group
     final VariableIndex.Info info;

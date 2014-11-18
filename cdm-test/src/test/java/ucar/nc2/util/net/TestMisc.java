@@ -116,6 +116,7 @@ public class TestMisc extends UnitTestCommon
            System.out.printf("cat = %s%n", content);
        }  catch (Throwable t) {
            t.printStackTrace();
+         assert false;
        }
      } finally {
        if (client != null) client.close();

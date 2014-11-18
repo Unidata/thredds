@@ -57,10 +57,10 @@ message Coord {
 }
 
 message MFile {
-  required string filename = 1;   // reletive to topDir
+  required string filename = 1;           // reletive to topDir
   required uint64 lastModified = 2;
-  required uint32 index = 3;         // the records use this number
-  optional int64 length = 4 [default = 0];
+  required uint32 index = 3;             // the records use this number
+  optional uint64 length = 4 [default = 0];
 }
 
 message Parameter {
@@ -70,9 +70,9 @@ message Parameter {
 }
 
 message Gds {
-  optional bytes gds = 1;            // raw gds
+  optional bytes gds = 1;                        // raw gds
   optional sint32 gdsHash = 2 [default = 0];
-  optional string nameOverride = 3;  // only when user overrides default name
+  optional string nameOverride = 3;              // only when user overrides default name  LOOK: remove ??
   optional uint32 predefinedGridDefinition = 4;  // only grib1; instead of gds raw bytes
 }
 
