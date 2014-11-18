@@ -591,7 +591,7 @@ public class DConnect2
         return command.dds;
     }
 
-    private class DDSCommand implements Command
+    static private class DDSCommand implements Command
     {
         DDS dds = new DDS();
         String url = null;
