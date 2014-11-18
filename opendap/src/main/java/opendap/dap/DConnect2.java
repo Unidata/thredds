@@ -799,7 +799,7 @@ public class DConnect2
         ParseException, DDSException, DAP2Exception
     {
 
-        DataDDXCommand command = new DataDDXCommand(btf);
+        DataDDXCommand command = new DataDDXCommand(btf,this.ver);
         openConnection(urlString + ".ddx" + (getCompleteCE(CE)), command);
         return command.dds;
     }
@@ -808,7 +808,7 @@ public class DConnect2
     {
         DataDDS dds;
 
-        DataDDXCommand(BaseTypeFactory btf)
+        DataDDXCommand(BaseTypeFactory btf,ServerVersion ver)
         {
             dds = new DataDDS(ver, btf);
         }
