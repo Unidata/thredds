@@ -532,7 +532,7 @@ public class DConnect2
         return command.das;
     }
 
-    private class DASCommand implements Command
+    static private class DASCommand implements Command
     {
         DAS das = new DAS();
 
@@ -591,7 +591,7 @@ public class DConnect2
         return command.dds;
     }
 
-    private class DDSCommand implements Command
+    static private class DDSCommand implements Command
     {
         DDS dds = new DDS();
         String url = null;
@@ -804,7 +804,7 @@ public class DConnect2
         return command.dds;
     }
 
-    private class DataDDXCommand implements Command
+    static private class DataDDXCommand implements Command
     {
         DataDDS dds;
 
