@@ -390,8 +390,12 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       flattened = v0.findDimensionIndex("n_points") == 0;
 
       for (int i = 0; i < nsweeps; i++) {
-        if (flattened)
+        // For flattened (1D stored data) find max number of gates
+        if (flattened) {
             ngates = ray_n_gates[rayStartIdx[i]];
+            for (int ray = rayStartIdx[i]; ray <= rayEndIdx[i]; ++ray)
+                ngates = ray_n_gates[ray] > ngates ? ray_n_gates[ray] : ngates;
+        }
         sweeps.add(new CFRadial2Sweep(v0, i, ngates, rayStartIdx[i],
                 rayEndIdx[i]));
       }
@@ -447,9 +451,11 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       Array allData;
       Sweep spn = sweeps.get(0);
       Variable v = spn.getsweepVar();
+      Attribute missing = v.findAttribute("_FillValue");
+      float missingVal = missing == null ?
+              Float.NaN : missing.getNumericValue().floatValue();
 
       int minRadial = getMinRadialNumber();
-      int minRadials = minRadial * nsweeps;
       int radials = getNumRadials();
       int gates = range.length;
       try {
@@ -457,18 +463,30 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       } catch (IOException e) {
         throw new IOException(e.getMessage());
       }
-      if (minRadials == radials || flattened) {
+      if (flattened) {
+          float[] fa0 = (float[]) allData.get1DJavaArray(float.class);
+          float[] fa = new float[minRadial * gates * nsweeps];
+          Arrays.fill(fa, missingVal);
+          for (int s = 0; s < nsweeps; ++s) {
+              for (int r = 0; r < minRadial; ++r) {
+                  System.arraycopy(fa0, ray_start_index[rayStartIdx[s] + r],
+                          fa, s * minRadial * gates + r * gates,
+                          ray_n_gates[rayStartIdx[s] + r]);
+              }
+          }
+
+          return fa;
+      } else if (minRadial == radials) {
         return (float[]) allData.get1DJavaArray(float.class);
       } else {
-
+        float[] fa = new float[minRadial * gates * nsweeps];
         float[] fa0 = (float[]) allData.get1DJavaArray(float.class);
-        float[] fa = new float[minRadials * gates * nsweeps];
         int pos = 0;
         for (int i = 0; i < nsweeps; i++) {
 
           int startIdx = rayStartIdx[i];
           // int endIdx = rayEndIdx[i];
-          int len = (minRadial) * gates;
+          int len = minRadial * gates;
           System.arraycopy(fa0, startIdx * gates, fa, pos, len);
           pos = pos + len;
         }
@@ -478,7 +496,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
 
 
     public int getMinRadialNumber() {
-      int minRadialNumber = 1000;
+      int minRadialNumber = Integer.MAX_VALUE;
       for (int i = 0; i < nsweeps; i++) {
         Sweep swp = this.sweeps.get(i);
         int radialNumber = swp.getRadialNumber();
@@ -602,32 +620,49 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         int[] shape;
 
         // init section
-        if (flattened) {
-            origin = new int[1];
-            origin[0] = ray_start_index[startIdx];
-            shape = new int[1];
-            shape[0] = ray_start_index[endIdx] + ray_n_gates[endIdx] -
-                    origin[0];
-        } else {
-            origin = new int[2];
-            origin[0] = startIdx;
-            shape = sweepVar.getShape();
-            shape[0] = numRays;
-        }
-
         try {
-          Array sweepTmp = sweepVar.read(origin, shape).reduce();
-          return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
+            if (flattened) {
+                // Get the 1D data for the sweep
+                origin = new int[1];
+                origin[0] = ray_start_index[startIdx];
+                shape = new int[1];
+                shape[0] = ray_start_index[endIdx] + ray_n_gates[endIdx] -
+                        origin[0];
+                Array tempArray = sweepVar.read(origin, shape).reduce();
+                float[] tempD = (float[]) tempArray.get1DJavaArray(Float.TYPE);
+
+                // Figure out what to use as the initializer
+                float missingVal = Float.NaN;
+                Attribute missing = sweepVar.findAttribute("_FillValue");
+                if (missing != null)
+                    missingVal = missing.getNumericValue().floatValue();
+
+                // Create evenly strided output array and fill
+                float[] ret = new float[ngates * numRays];
+                Arrays.fill(ret, missingVal);
+                int srcInd = 0;
+                for (int ray = 0; ray < numRays; ++ray) {
+                    int gates = ray_n_gates[startIdx + ray];
+                    System.arraycopy(tempD, srcInd, ret, ray * ngates, gates);
+                    srcInd += gates;
+                }
+
+                return ret;
+            } else {
+                origin = new int[2];
+                origin[0] = startIdx;
+                shape = sweepVar.getShape();
+                shape[0] = numRays;
+                Array sweepTmp = sweepVar.read(origin, shape).reduce();
+                return (float[]) sweepTmp.get1DJavaArray(Float.TYPE);
+            }
         } catch (ucar.ma2.InvalidRangeException e) {
           throw new IOException(e);
         }
       }
 
-      //  private Object MUTEX =new Object();
-            /* read 1d data ngates */
-
       /**
-       * _more_
+       * Return data for 1 ray
        *
        * @param ray _more_
        * @return _more_
