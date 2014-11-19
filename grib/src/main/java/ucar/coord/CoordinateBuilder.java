@@ -27,4 +27,8 @@ public interface CoordinateBuilder<T> {
   public void addAll(Coordinate coord);
 
   public void addAll(List<Object> coords);
+
+  static public interface TwoD<T> {
+    public int[] getCoordIndices(T gr);
+  }
 }

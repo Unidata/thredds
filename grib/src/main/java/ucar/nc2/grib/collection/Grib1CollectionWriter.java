@@ -112,7 +112,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
    */
 
   // indexFile is in the cache
-  boolean writeIndex(String name, File indexFileInCache, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
+  boolean writeIndex(String name, File indexFileInCache, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
+                     GribCollectionImmutable.Type type) throws IOException {
     Grib1Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
@@ -186,7 +187,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
         indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
 
       // the GC dataset
-      indexBuilder.addDataset( writeDatasetProto(GribCollectionProto.Dataset.Type.GC, groups));
+      indexBuilder.addDataset( writeDatasetProto(type, groups));
 
       /* int count = 0;
       for (DatasetCollectionManager dcm : collections) {
@@ -262,10 +263,11 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     required Type type = 1;
     repeated Group groups = 2;
    */
-  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionProto.Dataset.Type type, List<Group> groups) throws IOException {
+  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type, List<Group> groups) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
-    b.setType(type);
+    GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
+    b.setType(ptype);
 
     int count = 0 ;
     for (Group group : groups)

@@ -220,10 +220,11 @@ public abstract class CollectionAbstract implements MCollection {
   public class MyGribFilter implements DirectoryStream.Filter<Path> {
     public boolean accept(Path entry) throws IOException {
       if (sfilter != null && !sfilter.accept(entry)) return false;
-      if (!useGribFilter) return true;
-      String last = entry.getName(entry.getNameCount() - 1).toString();
+      return true;
+      /* if (!useGribFilter) return true;
+      String last = entry.getName(entry.getNameCount() - 1).toString();  // LOOK get rid of this
       return !last.endsWith(".gbx9") && !last.endsWith(".gbx8") && !last.endsWith(".ncx") && !last.endsWith(".ncx2") &&
-              !last.endsWith(".xml");
+              !last.endsWith(".xml"); */
     }
   }
 

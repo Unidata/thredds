@@ -36,6 +36,9 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import thredds.catalog.parser.jdom.FeatureCollectionReader;
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.nc2.Attribute;
@@ -147,6 +150,17 @@ public class TestGrib2CoordsMatch {
       assert count.nerrs == 0;
     }
 
+  }
+
+  @Test
+  public void testMRC() throws IOException {
+    // CFSR dataset: 0-6 hour forecasts  x 124 runtimes (4x31)
+    // there are  2 groups, likely miscoded, the smaller group has duplicate 0 hour, probably miscoded
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/pwat.gdas.199612.grb2.ncx2");
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 868;
+    assert count.nmiss == 0;
+    assert count.nerrs == 0;
   }
 
   @Test

@@ -80,7 +80,6 @@ abstract class GribPartitionBuilder  {
     this.logger = logger;
   }
 
-  // LOOK need an option to only look at last partition or something
   public boolean updateNeeded(CollectionUpdateType ff) throws IOException {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
@@ -90,9 +89,11 @@ abstract class GribPartitionBuilder  {
 
     if (ff == CollectionUpdateType.nocheck) return false;
 
+    // now check children
     return needsUpdate(ff, collectionIndexFile);
   }
 
+  // LOOK need an option to only scan latest last partition or something
   private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
     long collectionLastModified = collectionIndexFile.lastModified();
     Set<String> newFileSet = new HashSet<>();
@@ -482,7 +483,7 @@ abstract class GribPartitionBuilder  {
      // do each group
     for (GribCollectionMutable.GroupGC group2D : ds2D.groups) {
       GribCollectionMutable.GroupGC groupB = dsa.addGroupCopy(group2D);  // make copy of group, add to dataset
-      groupB.isCanonicalGroup = false;
+      groupB.isTwoD = false;
 
       // runtime offsets
       CoordinateRuntime rtc = null;
@@ -701,7 +702,7 @@ abstract class GribPartitionBuilder  {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGdsIndex(pc.findHorizCS(g.horizCoordSys));
-    b.setIsTwod(g.isCanonicalGroup);
+    b.setIsTwod(g.isTwoD);
 
     for (GribCollectionMutable.VariableIndex vb : g.variList) {
       b.addVariables(writeVariableProto((PartitionCollectionMutable.VariableIndexPartitioned) vb));

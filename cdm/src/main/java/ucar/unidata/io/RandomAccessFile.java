@@ -40,6 +40,7 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.nio.ByteOrder;
@@ -188,6 +189,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
   static private final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      location = StringUtil2.replace(location, "\\", "/"); // canonicalize the name
       RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
       result.cacheState = 1;  // in use
       return result;

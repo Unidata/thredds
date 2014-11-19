@@ -73,6 +73,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   static private final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
   public static int countGC; // debug
 
+  public enum Type {GC, SRC, MRC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
+
+
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
   protected final File directory;
@@ -91,6 +94,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
 
+  // LOOK possible we could use the Proto equivalents, and eliminate GribCollectionMutable ?
   GribCollectionImmutable(GribCollectionMutable gc) {
     countGC++;
 
@@ -188,8 +192,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return info.backProcessId;
   }
 
-  public enum Type {GC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
-
   public static class Info {
     final int version; // the ncx version
     final int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
@@ -271,14 +273,14 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
     final private Map<Integer, VariableIndex> varMap;
-    final boolean isCanonicalGroup;        // true for GC and twoD; so should be called "reference" dataset or something
+    final boolean isTwoD;        // true if you should use time2runtime
 
     public GroupGC(GribCollectionMutable.GroupGC gc) {
       this.horizCoordSys = gc.horizCoordSys;
       this.coords = gc.coords;
       this.filenose = gc.filenose;
       this.varMap = new HashMap<>(gc.variList.size() * 2);
-      this.isCanonicalGroup = gc.isCanonicalGroup;
+      this.isTwoD = gc.isTwoD;
 
       List<GribCollectionMutable.VariableIndex> gcVars = gc.variList;
       List<VariableIndex> work = new ArrayList<>(gcVars.size());
@@ -353,13 +355,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public String toString() {
       final StringBuilder sb = new StringBuilder("GroupGC{");
       sb.append(GribCollectionImmutable.this.getName());
-      sb.append(" isTwoD=").append(isCanonicalGroup);
+      sb.append(" isTwoD=").append(isTwoD);
       sb.append('}');
       return sb.toString();
     }
 
     public void show(Formatter f) {
-      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), isCanonicalGroup);
+      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), isTwoD);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }

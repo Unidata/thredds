@@ -14,7 +14,9 @@ import java.util.*;
  */
 public class CoordinateSharer<T> {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateSharer.class);
-  boolean runtimeUnion;
+
+  //////////////////////////////////////////
+  boolean runtimeUnion;   // currently only false
 
   /**
    * Ctor

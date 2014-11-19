@@ -192,8 +192,7 @@ public class GribCollectionMutable implements AutoCloseable {
 
   public GribCollectionMutable.Dataset getDatasetCanonical() {
     for (GribCollectionMutable.Dataset ds : datasets) {
-      if (ds.type == GribCollectionImmutable.Type.GC) return ds;
-      if (ds.type == GribCollectionImmutable.Type.TwoD) return ds;
+      if (ds.type != GribCollectionImmutable.Type.Best) return ds;  // LOOK WTF ??
     }
     throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
   }
@@ -444,7 +443,7 @@ public class GribCollectionMutable implements AutoCloseable {
     List<Coordinate> coords;      // shared coordinates
     int[] filenose;               // key for GC.fileMap
     Map<Integer, GribCollectionMutable.VariableIndex> varMap;
-    boolean isCanonicalGroup = true;        // true for GC and twoD; so should be called "reference" dataset or something
+    boolean isTwoD = true;        // true except for Best (?)
 
     GroupGC() {
       this.variList = new ArrayList<>();
@@ -456,7 +455,7 @@ public class GribCollectionMutable implements AutoCloseable {
       this.horizCoordSys = from.horizCoordSys;     // reference
       this.variList = new ArrayList<>(from.variList.size());
       this.coords = new ArrayList<>(from.coords.size());
-      this.isCanonicalGroup = from.isCanonicalGroup;
+      this.isTwoD = from.isTwoD;
     }
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
@@ -572,7 +571,7 @@ public class GribCollectionMutable implements AutoCloseable {
     }
 
     public void show(Formatter f) {
-      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isCanonicalGroup);
+      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwoD);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }
@@ -581,7 +580,7 @@ public class GribCollectionMutable implements AutoCloseable {
     public String toString() {
       final StringBuilder sb = new StringBuilder("GroupGC{");
       sb.append(GribCollectionMutable.this.getName());
-      sb.append(" isTwoD=").append(isCanonicalGroup);
+      sb.append(" isTwoD=").append(isTwoD);
       sb.append('}');
       return sb.toString();
     }
@@ -610,7 +609,7 @@ public class GribCollectionMutable implements AutoCloseable {
     private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
     // partition only
-    TwoDTimeInventory twot;  // twoD only  LOOK is this needed except when building ?? LOOK can we move to Partition ??
+    TwoDTimeInventory twot;  // twoD only
     SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
                              // index into the corresponding 2D variable's runtime coordinate
 

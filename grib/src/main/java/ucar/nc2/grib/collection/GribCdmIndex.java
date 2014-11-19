@@ -309,10 +309,10 @@ public class GribCdmIndex implements IndexReader {
 
       if (isGrib1) {  // existing case handles correctly - make seperate index for each runtime (OR) partition == runtime
         Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-        changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
+        changed = builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.none, errlog);
       } else {
         Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-        changed = builder.updateNeeded(updateType) && builder.createIndex(errlog);
+        changed = builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.none,  errlog);
       }
 
     } else {
@@ -449,10 +449,10 @@ public class GribCdmIndex implements IndexReader {
     boolean changed;
     if (isGrib1) {
       Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-      changed = builder.updateNeeded(forceCollection) && builder.createIndex(errlog);
+      changed = builder.updateNeeded(forceCollection) && builder.createIndex(FeatureCollectionConfig.PartitionType.directory, errlog);
     } else {
       Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-      changed = builder.updateNeeded(forceCollection) && builder.createIndex(errlog);
+      changed = builder.updateNeeded(forceCollection) && builder.createIndex(FeatureCollectionConfig.PartitionType.directory, errlog);
     }
 
     if (debug) System.out.printf("  GribCdmIndex.updateLeafDirectoryCollection was updated=%s on %s%n", changed, dirPath);
@@ -484,7 +484,7 @@ public class GribCdmIndex implements IndexReader {
     final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
 
     // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if theres an advantage
-    if (updateType != CollectionUpdateType.never && updateType != CollectionUpdateType.testIndexOnly) {
+    if (updateType == CollectionUpdateType.always || updateType == CollectionUpdateType.test) {
       partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
         public void consume(MFile mfile) {
           MCollection dcm = new CollectionSingleFile(mfile, logger);
@@ -493,14 +493,14 @@ public class GribCdmIndex implements IndexReader {
           if (isGrib1) {
             Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
             try {
-              boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
+              boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
               if (changed) anyChange.set(true);
             } catch (IOException e) { e.printStackTrace(); }
 
           } else {
             Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
             try {
-              boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
+              boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
               if (changed) anyChange.set(true);
             } catch (IOException e) { e.printStackTrace(); }
 
@@ -508,6 +508,8 @@ public class GribCdmIndex implements IndexReader {
         }
       });
     }
+
+    // LOOK what if theres only one file or partition ??
 
     // redo partition index if needed, will detect if children have changed
     boolean recreated = false;
@@ -707,10 +709,10 @@ public class GribCdmIndex implements IndexReader {
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (isGrib1) {
       Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-      boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
+      boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
     } else {
       Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-      boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
+      boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
     }
 
     // the index file should now exist, open it

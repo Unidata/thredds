@@ -91,13 +91,12 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     return value;
   }
 
-  // LOOK HERE1 assumes only one runtime
   // read all records in all files,
-  // divide into groups based on GDS hash
+  // divide into groups based on GDS hash and runtime
   // each group has an arraylist of all records that belong to it.
-  // for each group, run rectlizer to derive the coordinates and variables
+  // for each group, call rectlizer to derive the coordinates and variables
   @Override
-  public List<Grib1CollectionWriter.Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
+  public List<Grib1CollectionWriter.Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException {
     Map<GroupAndRuntime, Grib1CollectionWriter.Group> gdsMap = new HashMap<>();
 
     logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
@@ -116,8 +115,13 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       while (iter.hasNext()) {
         MFile mfile = iter.next();
         Grib1Index index;
-        try {                  // LOOK here is where gbx9 files get recreated; do not make collection index
-          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, false, mfile, config.gribConfig, CollectionUpdateType.test, logger);
+        try {
+          if (GribIosp.debugGbxIndexOnly) {
+            index = (Grib1Index) GribIndex.open(true, mfile);
+          } else {
+            // LOOK here is where gbx9 files get recreated
+            index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, mfile, CollectionUpdateType.test, logger);
+          }
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {
@@ -127,7 +131,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         int n = index.getNRecords();
         totalRecords += n;
 
-        for (Grib1Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
+        for (Grib1Record gr : index.getRecords()) { // we are using entire Grib1Record - likely this is the memory bottleneck for how big a collection can handle
           if (this.cust == null) {
             cust = Grib1Customizer.factory(gr, null);
             cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
@@ -143,11 +147,12 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           if (0 == gdsHash)
             continue; // skip this group
 
-          CalendarDate runtime = gr.getReferenceDate();
-          GroupAndRuntime gar = new GroupAndRuntime(gdsHash, runtime.getMillis());
+          CalendarDate runtimeDate = gr.getReferenceDate();
+          long runtime = singleRuntime ? runtimeDate.getMillis() : 0;  // seperate Groups for each runtime, if singleRuntime is true
+          GroupAndRuntime gar = new GroupAndRuntime(gdsHash, runtime);
           Grib1CollectionWriter.Group g = gdsMap.get(gar);
           if (g == null) {
-            g = new Grib1CollectionWriter.Group(gr.getGDSsection(), gdsHash, runtime);
+            g = new Grib1CollectionWriter.Group(gr.getGDSsection(), gdsHash, runtimeDate);
             gdsMap.put(gar, g);
           }
           g.records.add(gr);
@@ -213,9 +218,9 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends GribCollectionBuilder.Group> groups, List<MFile> files) throws IOException {
     Grib1CollectionWriter writer = new Grib1CollectionWriter(dcm, logger);
     List<Grib1CollectionWriter.Group> groups2 = new ArrayList<>();
-    for (Object g : groups) groups2.add((Grib1CollectionWriter.Group) g);
+    for (Object g : groups) groups2.add((Grib1CollectionWriter.Group) g);  // why copy ?
     File indexFileInCache = GribIndex.getFileInCache(indexFilepath);
-    return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
+    return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type);
   }
 
   public static class VariableBag implements Comparable<VariableBag> {
@@ -254,7 +259,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
-      boolean isDense = "dense".equals(config.getParameter("CoordSys"));
+      // boolean isDense = false; // "dense".equals(config.getParameter("CoordSys"));  LOOK isDense not implemented
       CalendarPeriod userTimeUnit = config.getUserTimeUnit();
 
       // assign each record to unique variable using cdmVariableHash()
@@ -281,17 +286,18 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         CoordinateND.Builder<Grib1Record> coordNBuilder = new CoordinateND.Builder<>();
 
         boolean isTimeInterval = ptime.isInterval();
-        if (isDense) { // time is runtime X time coord  LOOK isDense not implemented
+        /* if (isDense) { // time is runtime X time coord
           coordNBuilder.addBuilder(new CoordinateRuntime.Builder1(vb.timeUnit));
           if (isTimeInterval)
-            coordNBuilder.addBuilder(new CoordinateTimeIntv.Builder1(cust, unit, vb.timeUnit, null)); // LOOK null refdate not ok
+            coordNBuilder.addBuilder(new CoordinateTimeIntv.Builder1(cust, unit, vb.timeUnit, null)); // null refdate not ok
           else
-            coordNBuilder.addBuilder(new CoordinateTime.Builder1(cust, pdss.getTimeUnit(), vb.timeUnit, null)); // LOOK null refdate not ok
+            coordNBuilder.addBuilder(new CoordinateTime.Builder1(cust, pdss.getTimeUnit(), vb.timeUnit, null)); // null refdate not ok
 
-        } else {  // time is kept as 2D coordinate, separate list of times for each runtime
-          coordNBuilder.addBuilder(new CoordinateRuntime.Builder1(vb.timeUnit));
-          coordNBuilder.addBuilder(new CoordinateTime2D.Builder1(isTimeInterval, cust, vb.timeUnit, unit));
-        }
+        } else {  */
+          // time is kept as 2D coordinate, separate list of times for each runtime
+        CoordinateTime2D.Builder1 builder2D = new CoordinateTime2D.Builder1(isTimeInterval, cust, vb.timeUnit, unit);
+        coordNBuilder.addBuilder(builder2D);
+        //}
 
         if (vb.first.getPDSsection().isEnsemble())
           coordNBuilder.addBuilder(new CoordinateEns.Builder1(cust, 0));
@@ -308,7 +314,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       }
 
       // make shared coordinates across variables
-      CoordinateSharer<Grib1Record> sharify = new CoordinateSharer<>(isDense);
+      CoordinateSharer<Grib1Record> sharify = new CoordinateSharer<>(false);
       for (VariableBag vb : gribvars) {
         sharify.addCoords(vb.coordND.getCoordinates());
       }
@@ -334,7 +340,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       counter.recordsTotal += total;
     }
 
-    public void showInfo(Formatter f, Grib1Customizer tables) {
+    // debugging only
+    public void showInfo(Formatter f, Grib1Customizer cust1) {
       //f.format("%nVariables%n");
       //f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
       Counter all = new Counter();

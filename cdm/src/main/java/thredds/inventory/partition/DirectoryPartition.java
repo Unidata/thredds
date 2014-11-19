@@ -12,8 +12,7 @@ import java.util.*;
 /**
  * A Partition that uses directories to do the partitioning.
  * Intended for very large collections - does not scan more than one directory at a time.
- * May be a TimePartition or a collection of MFiles
- * LOOK: should this extend DirectoryCollection? Use DirectoryCollection at leaves ?
+ * The partitions may be DirectoryPartitions or DirectoryCollections
  *
  * @author caron
  * @since 11/9/13
@@ -35,9 +34,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     this.collectionName = DirectoryCollection.makeCollectionName(topCollection, topDir);
   }
 
-  public String getTopCollectionName() {
-    return topCollection;
-  }
+  // public String getTopCollectionName() { return topCollection; }
 
   public Path getIndexPath() {
     return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);

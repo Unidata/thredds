@@ -157,7 +157,7 @@ public class DirectoryCollection extends CollectionAbstract {
 
     public boolean hasNext() {
       while (true) {
-        if (debug && count % 100 == 0) System.out.printf("%d ", count);
+        // if (debug && count % 100 == 0) System.out.printf("%d ", count);
         count++;
         if (!dirStreamIterator.hasNext()) {
           nextMFile = null;

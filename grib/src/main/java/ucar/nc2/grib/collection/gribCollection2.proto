@@ -81,7 +81,7 @@ message Group {
   repeated Variable variables = 2;    // list of variables
   repeated Coord coords = 3;          // list of coordinates
   repeated int32 fileno = 4;          // the component files that are in this group, key into gc.mfiles
-  required bool isTwod = 5;           // has 2 time dimensions
+  required bool isTwod = 5;           // has 2 time dimensions  -- not used
 
   repeated Parameter params = 20;      // not used yet
   extensions 100 to 199;
@@ -89,10 +89,12 @@ message Group {
 
 message Dataset {
   enum Type {
-    GC = 0;
-    TwoD = 1;
-    Best = 2;
-    Analysis = 3;
+    GC = 0;          // not used after 4.5
+    TwoD = 1;        // TP
+    Best = 2;        // TP
+    Analysis = 3;    // not implemented yet
+    SRC = 4;         // single runtime collection
+    MRC = 5;         // multiple runtime collection
   }
 
   required Type type = 1;

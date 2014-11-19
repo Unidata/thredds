@@ -19,10 +19,9 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * A Builder of Directory Partitions and Collections
+ * A Builder of DirectoryPartitions and DirectoryCollections.
  * Each DirectoryBuilder is associated with one directory, and one ncx2 index.
- * This may contain collections of files, or subdirectories.
- * If there are subdirectories, these are children DirectoryBuilders.
+ * This may contain collections of files (MFiles in a DirectoryCollection), or subdirctories (MCollections in a DirectoryPartition).
  *
  * @author caron
  * @since 11/10/13
@@ -92,9 +91,7 @@ public class DirectoryBuilder {
     findIndex();
   }
 
-  public void setChildrenConstructed(boolean childrenConstructed) {
-    this.childrenConstructed = childrenConstructed;
-  }
+  //public void setChildrenConstructed(boolean childrenConstructed) { this.childrenConstructed = childrenConstructed; }
 
   /**
    * Find the index file, using its canonical name
@@ -114,7 +111,7 @@ public class DirectoryBuilder {
   }
 
   /**
-   * Read the index file to find out if a partition or collection of files
+   * Scans first 100 files to decide if its a leaf. If so, it becomes a DirectoryCollection, else a PartitionCollection.
    * @param indexReader reads the index
    * @return true if partition, false if file collection
    * @throws IOException on IO error
@@ -128,7 +125,7 @@ public class DirectoryBuilder {
       } else { // no index file  */
         // temporary - just to scan 100 files in the directory
         DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null, null);
-        dc.setUseGribFilter(false); // LOOK
+        dc.setUseGribFilter(false); // LOOK not needed anymore
         partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
       // }
     }
@@ -139,6 +136,7 @@ public class DirectoryBuilder {
   /**
    * Find all children directories. Does not recurse.
    * We separate this from the constructor so it can be done on demand
+   * Public for debugging.
    *
    * Look for children by:
    * <ol>
@@ -193,8 +191,7 @@ public class DirectoryBuilder {
       Path indexPath = Paths.get(dirName, indexFilename);
       if (substituteParentDir) {
         Path parent = index.getParent();
-        Path indexPath2 = parent.resolve( indexFilename);
-        indexPath = indexPath2;
+        indexPath = parent.resolve( indexFilename);
       }
       DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified);
       children.add(child);

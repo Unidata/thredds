@@ -79,6 +79,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   static public int debugIndexOnlyCount = 0;  // count number of data accesses
   static boolean debugIndexOnly = false;  // we are running with only index files, no data
   static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
+  static boolean debugGbxIndexOnly = false;  // we are running with only index files, no data
 
   static private final boolean debug = false, debugTime = false, debugName = false;
 
@@ -86,6 +87,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     debugRead = debugFlag.isSet("Grib/showRead");
     debugIndexOnly = debugFlag.isSet("Grib/indexOnly");
     debugIndexOnlyShow = debugFlag.isSet("Grib/indexOnlyShow");
+    debugGbxIndexOnly = debugFlag.isSet("Grib/debugGbxIndexOnly");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -297,7 +299,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
-    boolean is2Dtime = (gctype == GribCollectionImmutable.Type.TwoD);
+    boolean is2Dtime = (gctype == GribCollectionImmutable.Type.TwoD) || (gctype == GribCollectionImmutable.Type.MRC);
     CoordinateRuntime runtime = null;
     for (Coordinate coord : group.coords) {
       Coordinate.Type ctype = coord.getType();

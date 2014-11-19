@@ -6542,13 +6542,13 @@ public final class GribCollectionProto {
      */
     int getIndex();
 
-    // optional int64 length = 4 [default = 0];
+    // optional uint64 length = 4 [default = 0];
     /**
-     * <code>optional int64 length = 4 [default = 0];</code>
+     * <code>optional uint64 length = 4 [default = 0];</code>
      */
     boolean hasLength();
     /**
-     * <code>optional int64 length = 4 [default = 0];</code>
+     * <code>optional uint64 length = 4 [default = 0];</code>
      */
     long getLength();
   }
@@ -6620,7 +6620,7 @@ public final class GribCollectionProto {
             }
             case 32: {
               bitField0_ |= 0x00000008;
-              length_ = input.readInt64();
+              length_ = input.readUInt64();
               break;
             }
           }
@@ -6758,17 +6758,17 @@ public final class GribCollectionProto {
       return index_;
     }
 
-    // optional int64 length = 4 [default = 0];
+    // optional uint64 length = 4 [default = 0];
     public static final int LENGTH_FIELD_NUMBER = 4;
     private long length_;
     /**
-     * <code>optional int64 length = 4 [default = 0];</code>
+     * <code>optional uint64 length = 4 [default = 0];</code>
      */
     public boolean hasLength() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional int64 length = 4 [default = 0];</code>
+     * <code>optional uint64 length = 4 [default = 0];</code>
      */
     public long getLength() {
       return length_;
@@ -6814,7 +6814,7 @@ public final class GribCollectionProto {
         output.writeUInt32(3, index_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt64(4, length_);
+        output.writeUInt64(4, length_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -6839,7 +6839,7 @@ public final class GribCollectionProto {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(4, length_);
+          .computeUInt64Size(4, length_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7258,22 +7258,22 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // optional int64 length = 4 [default = 0];
+      // optional uint64 length = 4 [default = 0];
       private long length_ ;
       /**
-       * <code>optional int64 length = 4 [default = 0];</code>
+       * <code>optional uint64 length = 4 [default = 0];</code>
        */
       public boolean hasLength() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional int64 length = 4 [default = 0];</code>
+       * <code>optional uint64 length = 4 [default = 0];</code>
        */
       public long getLength() {
         return length_;
       }
       /**
-       * <code>optional int64 length = 4 [default = 0];</code>
+       * <code>optional uint64 length = 4 [default = 0];</code>
        */
       public Builder setLength(long value) {
         bitField0_ |= 0x00000008;
@@ -7282,7 +7282,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>optional int64 length = 4 [default = 0];</code>
+       * <code>optional uint64 length = 4 [default = 0];</code>
        */
       public Builder clearLength() {
         bitField0_ = (bitField0_ & ~0x00000008);
@@ -8175,7 +8175,7 @@ public final class GribCollectionProto {
      * <code>optional string nameOverride = 3;</code>
      *
      * <pre>
-     * only when user overrides default name
+     * only when user overrides default name  LOOK: remove ??
      * </pre>
      */
     boolean hasNameOverride();
@@ -8183,7 +8183,7 @@ public final class GribCollectionProto {
      * <code>optional string nameOverride = 3;</code>
      *
      * <pre>
-     * only when user overrides default name
+     * only when user overrides default name  LOOK: remove ??
      * </pre>
      */
     java.lang.String getNameOverride();
@@ -8191,7 +8191,7 @@ public final class GribCollectionProto {
      * <code>optional string nameOverride = 3;</code>
      *
      * <pre>
-     * only when user overrides default name
+     * only when user overrides default name  LOOK: remove ??
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -8373,7 +8373,7 @@ public final class GribCollectionProto {
      * <code>optional string nameOverride = 3;</code>
      *
      * <pre>
-     * only when user overrides default name
+     * only when user overrides default name  LOOK: remove ??
      * </pre>
      */
     public boolean hasNameOverride() {
@@ -8383,7 +8383,7 @@ public final class GribCollectionProto {
      * <code>optional string nameOverride = 3;</code>
      *
      * <pre>
-     * only when user overrides default name
+     * only when user overrides default name  LOOK: remove ??
      * </pre>
      */
     public java.lang.String getNameOverride() {
@@ -8404,7 +8404,7 @@ public final class GribCollectionProto {
      * <code>optional string nameOverride = 3;</code>
      *
      * <pre>
-     * only when user overrides default name
+     * only when user overrides default name  LOOK: remove ??
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -8816,7 +8816,7 @@ public final class GribCollectionProto {
        * <code>optional string nameOverride = 3;</code>
        *
        * <pre>
-       * only when user overrides default name
+       * only when user overrides default name  LOOK: remove ??
        * </pre>
        */
       public boolean hasNameOverride() {
@@ -8826,7 +8826,7 @@ public final class GribCollectionProto {
        * <code>optional string nameOverride = 3;</code>
        *
        * <pre>
-       * only when user overrides default name
+       * only when user overrides default name  LOOK: remove ??
        * </pre>
        */
       public java.lang.String getNameOverride() {
@@ -8844,7 +8844,7 @@ public final class GribCollectionProto {
        * <code>optional string nameOverride = 3;</code>
        *
        * <pre>
-       * only when user overrides default name
+       * only when user overrides default name  LOOK: remove ??
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -8864,7 +8864,7 @@ public final class GribCollectionProto {
        * <code>optional string nameOverride = 3;</code>
        *
        * <pre>
-       * only when user overrides default name
+       * only when user overrides default name  LOOK: remove ??
        * </pre>
        */
       public Builder setNameOverride(
@@ -8881,7 +8881,7 @@ public final class GribCollectionProto {
        * <code>optional string nameOverride = 3;</code>
        *
        * <pre>
-       * only when user overrides default name
+       * only when user overrides default name  LOOK: remove ??
        * </pre>
        */
       public Builder clearNameOverride() {
@@ -8894,7 +8894,7 @@ public final class GribCollectionProto {
        * <code>optional string nameOverride = 3;</code>
        *
        * <pre>
-       * only when user overrides default name
+       * only when user overrides default name  LOOK: remove ??
        * </pre>
        */
       public Builder setNameOverrideBytes(
@@ -9111,7 +9111,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions
+     * has 2 time dimensions  -- not used
      * </pre>
      */
     boolean hasIsTwod();
@@ -9119,7 +9119,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions
+     * has 2 time dimensions  -- not used
      * </pre>
      */
     boolean getIsTwod();
@@ -9505,7 +9505,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions
+     * has 2 time dimensions  -- not used
      * </pre>
      */
     public boolean hasIsTwod() {
@@ -9515,7 +9515,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions
+     * has 2 time dimensions  -- not used
      * </pre>
      */
     public boolean getIsTwod() {
@@ -10841,7 +10841,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions
+       * has 2 time dimensions  -- not used
        * </pre>
        */
       public boolean hasIsTwod() {
@@ -10851,7 +10851,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions
+       * has 2 time dimensions  -- not used
        * </pre>
        */
       public boolean getIsTwod() {
@@ -10861,7 +10861,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions
+       * has 2 time dimensions  -- not used
        * </pre>
        */
       public Builder setIsTwod(boolean value) {
@@ -10874,7 +10874,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions
+       * has 2 time dimensions  -- not used
        * </pre>
        */
       public Builder clearIsTwod() {
@@ -11364,38 +11364,102 @@ public final class GribCollectionProto {
         implements com.google.protobuf.ProtocolMessageEnum {
       /**
        * <code>GC = 0;</code>
+       *
+       * <pre>
+       * not used after 4.5
+       * </pre>
        */
       GC(0, 0),
       /**
        * <code>TwoD = 1;</code>
+       *
+       * <pre>
+       * TP
+       * </pre>
        */
       TwoD(1, 1),
       /**
        * <code>Best = 2;</code>
+       *
+       * <pre>
+       * TP
+       * </pre>
        */
       Best(2, 2),
       /**
        * <code>Analysis = 3;</code>
+       *
+       * <pre>
+       * not implemented yet
+       * </pre>
        */
       Analysis(3, 3),
+      /**
+       * <code>SRC = 4;</code>
+       *
+       * <pre>
+       * single runtime collection
+       * </pre>
+       */
+      SRC(4, 4),
+      /**
+       * <code>MRC = 5;</code>
+       *
+       * <pre>
+       * multiple runtime collection
+       * </pre>
+       */
+      MRC(5, 5),
       ;
 
       /**
        * <code>GC = 0;</code>
+       *
+       * <pre>
+       * not used after 4.5
+       * </pre>
        */
       public static final int GC_VALUE = 0;
       /**
        * <code>TwoD = 1;</code>
+       *
+       * <pre>
+       * TP
+       * </pre>
        */
       public static final int TwoD_VALUE = 1;
       /**
        * <code>Best = 2;</code>
+       *
+       * <pre>
+       * TP
+       * </pre>
        */
       public static final int Best_VALUE = 2;
       /**
        * <code>Analysis = 3;</code>
+       *
+       * <pre>
+       * not implemented yet
+       * </pre>
        */
       public static final int Analysis_VALUE = 3;
+      /**
+       * <code>SRC = 4;</code>
+       *
+       * <pre>
+       * single runtime collection
+       * </pre>
+       */
+      public static final int SRC_VALUE = 4;
+      /**
+       * <code>MRC = 5;</code>
+       *
+       * <pre>
+       * multiple runtime collection
+       * </pre>
+       */
+      public static final int MRC_VALUE = 5;
 
 
       public final int getNumber() { return value; }
@@ -11406,6 +11470,8 @@ public final class GribCollectionProto {
           case 1: return TwoD;
           case 2: return Best;
           case 3: return Analysis;
+          case 4: return SRC;
+          case 5: return MRC;
           default: return null;
         }
       }
@@ -15676,26 +15742,27 @@ public final class GribCollectionProto {
       "d\022\024\n\014isOrthogonal\030\010 \001(\010\022\021\n\tisRegular\030\t \001" +
       "(\010\"Q\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastMod" +
       "ified\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\022\021\n\006length\030\004 \001" +
-      "(\003:\0010\"6\n\tParameter\022\014\n\004name\030\001 \002(\t\022\014\n\004data" +
+      "(\004:\0010\"6\n\tParameter\022\014\n\004name\030\001 \002(\t\022\014\n\004data" +
       "\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"^\n\003Gds\022\013\n\003gds\030\001 \001(",
       "\014\022\022\n\007gdsHash\030\002 \001(\021:\0010\022\024\n\014nameOverride\030\003 " +
       "\001(\t\022 \n\030predefinedGridDefinition\030\004 \001(\r\"\222\001" +
       "\n\005Group\022\020\n\010gdsIndex\030\001 \002(\r\022\034\n\tvariables\030\002" +
       " \003(\0132\t.Variable\022\026\n\006coords\030\003 \003(\0132\006.Coord\022" +
       "\016\n\006fileno\030\004 \003(\005\022\016\n\006isTwod\030\005 \002(\010\022\032\n\006param" +
-      "s\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"p\n\007Dataset\022\033\n" +
-      "\004type\030\001 \002(\0162\r.Dataset.Type\022\026\n\006groups\030\002 \003" +
-      "(\0132\006.Group\"0\n\004Type\022\006\n\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n\004" +
-      "Best\020\002\022\014\n\010Analysis\020\003\"\275\002\n\016GribCollection\022" +
-      "\014\n\004name\030\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030",
-      "\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004 \003(\0132\010.Dataset" +
-      "\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\rmasterRuntime\030\025 \002" +
-      "(\0132\006.Coord\022\016\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030" +
-      "\007 \002(\005\022\016\n\006master\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016" +
-      "genProcessType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001" +
-      "(\005\022\025\n\rbackProcessId\030\014 \001(\005\022\032\n\006params\030\024 \003(" +
-      "\0132\n.Parameter*\005\010d\020\310\001B/\n\030ucar.nc2.grib.co" +
-      "llectionB\023GribCollectionProto"
+      "s\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"\202\001\n\007Dataset\022\033" +
+      "\n\004type\030\001 \002(\0162\r.Dataset.Type\022\026\n\006groups\030\002 " +
+      "\003(\0132\006.Group\"B\n\004Type\022\006\n\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n" +
+      "\004Best\020\002\022\014\n\010Analysis\020\003\022\007\n\003SRC\020\004\022\007\n\003MRC\020\005\"" +
+      "\275\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topD",
+      "ir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007data" +
+      "set\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035" +
+      "\n\rmasterRuntime\030\025 \002(\0132\006.Coord\022\016\n\006center\030" +
+      "\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002(\005" +
+      "\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001(\005\022" +
+      "\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014" +
+      " \001(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001B" +
+      "/\n\030ucar.nc2.grib.collectionB\023GribCollect" +
+      "ionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

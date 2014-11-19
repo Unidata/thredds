@@ -199,7 +199,7 @@ public class Grib1Index extends GribIndex {
       fout.write(MAGIC_START.getBytes(CDM.utf8Charset));
       NcStream.writeVInt(fout, version);
 
-      Map<Long, Integer> gdsMap = new HashMap<Long, Integer>();
+      Map<Long, Integer> gdsMap = new HashMap<>();
       gdsList = new ArrayList<>();
       records = new ArrayList<>(200);
 

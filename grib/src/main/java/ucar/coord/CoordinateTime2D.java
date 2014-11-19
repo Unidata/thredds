@@ -50,7 +50,7 @@ import ucar.nc2.util.Indent;
 import java.util.*;
 
 /**
- * Both runtime and time coordinates are tracked here
+ * Both runtime and time coordinates are tracked here. The time coordinate is assumed to be dependent on the runtime.
  *
  * @author caron
  * @since 1/22/14
@@ -58,10 +58,10 @@ import java.util.*;
 @Immutable
 public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordinate {
   private final CoordinateRuntime runtime;
-  private final List<Coordinate> times; // time coordinates - original offsets
-  private final CoordinateTimeAbstract otime; // time coordinates - orthogonal
-  private final SortedMap<Integer,CoordinateTimeAbstract> regTimes; // time coordinates - regular by offset
-  private final int[] offset;  // the offset of each CoordinateTime from the base/first runtime
+  private final List<Coordinate> times;       // time coordinates - original offsets
+  private final CoordinateTimeAbstract otime; // time coordinates - only when isOrthogonal
+  private final SortedMap<Integer,CoordinateTimeAbstract> regTimes; // only when isRegular: <hour of day, time coordinate offset>
+  private final int[] offset;          // the offset of each CoordinateTime from the base/first runtime  (LOOK can we use SmartArrayInt ?)
 
   private final boolean isRegular;
   private final boolean isOrthogonal;
@@ -69,10 +69,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final int nruns;
   private final int ntimes;
 
-  private final List<Time2D> vals; // only needed when building the GC, otherwise null
+  private final List<Time2D> vals;  // only present when building the GC, otherwise null
 
   /**
-   * Ctor
+   * Ctor. Most general, a CoordinateTime for each runtime.
+   *
    * @param code          pdsFirst.getTimeUnit()
    * @param timeUnit      time duration, based on code
    * @param vals          complete set of time coordinates, or null when reading from ncx2
@@ -101,7 +102,15 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.vals = (vals == null) ? null : Collections.unmodifiableList(vals);
   }
 
-  // orthogonal - all offsets are the same
+  /**
+   * Ctor. orthogonal - all offsets are the same for all runtimes, so 2d time array is (runtime X otime)
+   *
+   * @param code          pdsFirst.getTimeUnit()
+   * @param timeUnit      time duration, based on code
+   * @param runtime       list of runtimes
+   * @param otime         list of offsets, all the same for each runtime
+   * @param times         list of times, one for each runtime, offsets reletive to its runtime (Only available during creation, not stored in index)
+   */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, CoordinateTimeAbstract otime, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
 
@@ -120,7 +129,16 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.vals = null;
   }
 
-  // regular by offset hour
+  /**
+   * Ctor. regular - all offsets are the same for each "runtime hour of day", eg all 0Z runtimes have the same offsets, all 6Z runtimes have the same offsets, etc.
+   * 2d time array is (runtime X otime(hour), where hour = runtime hour of day
+   *
+   * @param code          pdsFirst.getTimeUnit()
+   * @param timeUnit      time duration, based on code
+   * @param runtime       list of runtimes
+   * @param regList       list of offsets, one each for each possible runtime hour of day.
+   * @param times         list of times, one for each runtime, offsets reletive to its runtime (Only available during creation, not stored in index)
+   */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, List<Coordinate> regList, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
 
@@ -604,7 +622,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return result;
   }
 
-  ///////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public static class Time2D implements Comparable<Time2D> {
     CalendarDate run;
@@ -660,9 +678,9 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> implements CoordinateBuilder.TwoD<Grib2Record> {
     private final boolean isTimeInterval;
     private final Grib2Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
@@ -736,9 +754,25 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
      }
     }
 
+    @Override
+    public int[] getCoordIndices(Grib2Record gr) {
+      CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+      CalendarDate run = (CalendarDate) runBuilder.extract(gr);
+      int runIdx = coord2D.runtime.getIndex(run);
+      CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
+
+      CoordinateBuilderImpl<Grib2Record> timeBuilder = timeBuilders.get(run);
+      Object time = timeBuilder.extract(gr);
+      int timeIdx = timeCoord.getIndex(time);
+
+      return  new int[] {runIdx, timeIdx};
+    }
+
   }
 
-  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> implements CoordinateBuilder.TwoD<Grib1Record> {
     private final boolean isTimeInterval;
     private final Grib1Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
@@ -812,6 +846,19 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
      }
     }
 
+    @Override
+    public int[] getCoordIndices(Grib1Record gr) {
+      CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+      CalendarDate run = (CalendarDate) runBuilder.extract(gr);
+      int runIdx = coord2D.runtime.getIndex(run);
+      CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
+
+      CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(run);
+      Object time = timeBuilder.extract(gr);
+      int timeIdx = timeCoord.getIndex(time);
+
+      return  new int[] {runIdx, timeIdx};
+    }
   }
 
 }

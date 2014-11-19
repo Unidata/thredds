@@ -244,7 +244,7 @@ message Group {
 
     int gdsIndex = p.getGdsIndex();
     group.horizCoordSys = gc.getHorizCS(gdsIndex);
-    group.isCanonicalGroup = p.getIsTwod();
+    group.isTwoD = p.getIsTwod();
 
     // read coords before variables
     group.coords = new ArrayList<>();
@@ -307,7 +307,7 @@ message Group {
       }
     }
     assignVertNames(vertCoords);
-    assignRuntimeNames(runtimes, time2DCoords, group.getId() + "-" + (group.isCanonicalGroup ? "TwoD" : "Best"));
+    assignRuntimeNames(runtimes, time2DCoords, group.getId() + "-" + (group.isTwoD ? "TwoD" : "Best"));
 
     return group;
   }

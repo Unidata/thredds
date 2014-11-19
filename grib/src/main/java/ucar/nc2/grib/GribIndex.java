@@ -33,13 +33,13 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
-import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,8 +78,22 @@ public abstract class GribIndex {
   /////////////////////////////////////////////////////////////////////////
   public static DiskCache2 diskCache;
 
-  static public CollectionManager.ChangeChecker getChangeChecker() {
+  public static CollectionManager.ChangeChecker getChangeChecker() {
     return gribCC;
+  }
+
+  public static GribIndex open(boolean isGrib1, MFile mfile) throws IOException {
+
+    GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
+    String path = mfile.getPath();
+    if (path.endsWith(Grib1Index.GBX9_IDX))
+      path = StringUtil2.removeFromEnd(path, Grib1Index.GBX9_IDX);
+
+    if (!index.readIndex(path, mfile.getLastModified(), CollectionUpdateType.never)) {
+      return null;
+    }
+
+    return index;
   }
 
   /**
@@ -87,15 +101,12 @@ public abstract class GribIndex {
    * Use the existing index is it already exists.
    *
    * @param isGrib1 true if grib1
-   * @param createCollectionIndex true is you also want the ncx file to be created
    * @param mfile the grib file
-   * @param config  special configuration
    * @param force  force writing index
    * @return the resulting GribIndex
    * @throws IOException on io error
    */
-  public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, boolean createCollectionIndex,
-         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
+  public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, MFile mfile, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
 
@@ -106,7 +117,7 @@ public abstract class GribIndex {
       logger.debug("  Index read: {} == {} records", mfile.getName() + GBX9_IDX, index.getNRecords());
     }
 
-    if (!createCollectionIndex) return index;
+    // if (!createCollectionIndex) return index;
 
      /* heres where the ncx file date is checked against the data file
     GribCollection gc;

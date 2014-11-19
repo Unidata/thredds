@@ -2,6 +2,7 @@ package ucar.coord;
 
 import net.jcip.annotations.Immutable;
 import ucar.ma2.Section;
+import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.util.Indent;
 
 import java.util.*;
@@ -54,15 +55,6 @@ public class CoordinateND<T> {
 
   ////////////////////
 
-  /* public CoordinateND( List<Coordinate> coordinates) {
-    this.coordinates = coordinates;
-    // make the new sparse array object
-    int[] sizeArray = new int[coordinates.size()];
-    for (int i = 0; i < coordinates.size(); i++)
-      sizeArray[i] = coordinates.get(i).getSize();
-    sa = new SparseArray<>(sizeArray);
-  } */
-
   public static class Builder<T> {
     private List<CoordinateBuilder<T>> builders = new ArrayList<>();
     private List<Coordinate> coordb = new ArrayList<>();
@@ -83,8 +75,8 @@ public class CoordinateND<T> {
     public CoordinateND<T> finish(List<T> records, Formatter info) {
       for (CoordinateBuilder builder : builders) {
         Coordinate coord = builder.finish();
-        // if (coord.getType() == Coordinate.Type.time2D)
-        //   coordinates.add(((CoordinateTime2D) coord).getRuntimeCoordinate());
+        if (coord.getType() == Coordinate.Type.time2D)
+          coordb.add(((CoordinateTime2D) coord).getRuntimeCoordinate());
         coordb.add(coord);
       }
 
@@ -94,15 +86,28 @@ public class CoordinateND<T> {
 
     public SparseArray<T> buildSparseArray(List<T> records, Formatter info) {
       int[] sizeArray = new int[coordb.size()];
-      for (int i = 0; i < coordb.size(); i++)
-        sizeArray[i] = coordb.get(i).getSize();
+      for (int i = 0; i < coordb.size(); i++) {
+        Coordinate coord = coordb.get(i);
+        if (coord.getType() == Coordinate.Type.time2D)
+          sizeArray[i] = ((CoordinateTime2D) coord).getNtimes();
+        else
+          sizeArray[i] = coordb.get(i).getSize();
+      }
       SparseArray.Builder<T> saBuilder = new SparseArray.Builder<>(sizeArray);
 
       int[] index = new int[coordb.size()];
       for (T gr : records) {
         int count = 0;
         for (CoordinateBuilder<T> builder : builders) {
-          index[count++] = builder.getIndex(gr);
+          if (builder instanceof CoordinateBuilder.TwoD) {
+            CoordinateBuilder.TwoD<T> builder2D  = (CoordinateBuilder.TwoD<T>) builder;
+            int[] coordsIdx = builder2D.getCoordIndices(gr);
+            index[count++] = coordsIdx[0];
+            index[count++] = coordsIdx[1];
+
+          } else {
+            index[count++] = builder.getIndex(gr);
+          }
         }
 
         saBuilder.add(gr, info, index);
@@ -111,9 +116,50 @@ public class CoordinateND<T> {
       return saBuilder.finish();
     }
 
-    /**
+    /* private SparseArray<T> buildSparseArray(List<T> records, Formatter info) {
+       int count = 0;
+       for (Coordinate coord : coordb) {
+         if (coord.getType() == Coordinate.Type.time2D) count++;
+         count++;
+       }
+       int[] sizeArray = new int[count];
+       count = 0;
+       for (Coordinate coord : coordb) {
+          if (coord.getType() == Coordinate.Type.time2D) {
+            CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+            sizeArray[count++] = coord2D.getNruns();
+            sizeArray[count++] = coord2D.getNtimes();
+
+          } else {
+            sizeArray[count++] = coord.getSize();
+          }
+        }
+
+       SparseArray.Builder<T> saBuilder = new SparseArray.Builder<>(sizeArray);
+
+       int[] index = new int[coordb.size()];
+       for (T gr : records) {
+         int count2 = 0;
+         for (CoordinateBuilder<T> builder : builders) {
+           if (coord.getType() == Coordinate.Type.time2D) {
+            CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+            sizeArray[count++] = coord2D.getNruns();
+            sizeArray[count++] = coord2D.getNtimes();
+
+          } else {
+             index[count2++] = builder.getIndex(gr);
+           }
+         }
+
+         saBuilder.add(gr, info, index);
+       }
+
+       return saBuilder.finish();
+     }  */
+
+     /**
      * Reindex the sparse array, based on the new Coordinates.
-     * Do this by running all the Records through the Coordinates, assigning each to a possible new spot in the sparse array.
+     * Do this by running all the Records through the Coordinates, assigning each to a new spot in the new sparse array.
      *
      * @param prev must have same list of Coordinates, with possibly additional values.
      */

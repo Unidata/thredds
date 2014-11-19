@@ -15,7 +15,7 @@ import java.util.*;
  * This is a builder helper class, the result is obtained from List<Coordinate> finish().
  *
  * So if theres a lot of missing records in that cross-product, we may have the variable wrong (?),
- *  or our assumption that the data comprises a multdim array may be wrong
+ *  or our assumption that the data comprises a multidim array may be wrong
  *
  * @author John
  * @since 12/10/13

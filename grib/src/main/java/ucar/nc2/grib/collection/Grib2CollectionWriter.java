@@ -71,13 +71,12 @@ class Grib2CollectionWriter extends GribCollectionWriter {
 
   public static class Group implements GribCollectionBuilder.Group {
     public Grib2SectionGridDefinition gdss;
-    public int gdsHash; // may have been modified
+    public int gdsHash;       // may have been modified
     public CalendarDate runtime;
 
     public List<Grib2CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
     public List<Grib2Record> records = new ArrayList<>();
-    // public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
     Group(Grib2SectionGridDefinition gdss, int gdsHash) {
@@ -116,7 +115,8 @@ class Grib2CollectionWriter extends GribCollectionWriter {
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  public boolean writeIndex(String name, File indexFileInCache, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
+  public boolean writeIndex(String name, File indexFileInCache, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
+                            GribCollectionImmutable.Type type) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
@@ -233,7 +233,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
       }
 
       // the GC dataset
-      indexBuilder.addDataset(writeDatasetProto(GribCollectionProto.Dataset.Type.GC, groups));
+      indexBuilder.addDataset(writeDatasetProto(type, groups));
 
       // what about just storing first ??
       Grib2SectionIdentification ids = first.getId();
@@ -308,10 +308,11 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     required Type type = 1;
     repeated Group groups = 2;
    */
-  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionProto.Dataset.Type type, List<Group> groups) throws IOException {
+  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type, List<Group> groups) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
-    b.setType(type);
+    GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
+    b.setType(ptype);
 
     int count = 0 ;
     for (Group group : groups)
@@ -335,7 +336,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGdsIndex(groupIndex); // index into gds list
-    b.setIsTwod(true);         // LOOK
+    b.setIsTwod(true);         // LOOK not used ... can we make it optional ??
 
     for (Grib2CollectionBuilder.VariableBag vbag : g.gribVars) {
       b.addVariables(writeVariableProto(vbag));
