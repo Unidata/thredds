@@ -82,7 +82,7 @@ public class FileManager {
 
   // for override
   protected JPanel main;
-  protected boolean selectedURL = false;
+  //protected boolean selectedURL = false;
   //protected ComboBox urlComboBox;
 
   private boolean readOk = true, selectedFile = false;
@@ -283,7 +283,7 @@ public class FileManager {
   public String chooseFilename() {
     if (!readOk) return null;
     selectedFile = false;
-    selectedURL = false;
+    //selectedURL = false;
     w.setVisible(true); // modal, so blocks; listener calls hide(), which unblocks.
 
     if (selectedFile) {

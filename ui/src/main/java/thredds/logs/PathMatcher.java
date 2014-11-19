@@ -35,6 +35,7 @@ package thredds.logs;
 
 import ucar.unidata.util.StringUtil2;
 
+import java.io.Serializable;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.SortedMap;
@@ -113,7 +114,7 @@ public class PathMatcher {
   }
 
 
-  private static class PathComparator implements Comparator<String> {
+  private static class PathComparator implements Comparator<String>, Serializable {
     public int compare(String o1, String o2) {
       int compare = -1 * o1.compareTo(o2); // reverse sort
       if (debug) System.out.println(" compare "+o1+" to "+o2+" = "+compare);

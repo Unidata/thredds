@@ -32,11 +32,14 @@
  */
 package ucar.nc2.ui.widget;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.Serializable;
 
-public class MyMouseAdapter extends java.awt.event.MouseAdapter {
+public class MyMouseAdapter extends java.awt.event.MouseAdapter implements Serializable {
   private int startx, starty;
   private int minMove = 4;
   private boolean debugEvent = false;

@@ -34,13 +34,14 @@ package ucar.nc2.ui.geoloc;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serializable;
 
 /**
  * Implements XOR rubberbanding.
  * @author David M. Geary
  * @author John Caron
  */
-abstract public class Rubberband {
+abstract public class Rubberband implements Serializable {
   protected Point anchorPt    = new Point(0,0);
   protected Point stretchedPt = new Point(0,0);
   protected Point lastPt      = new Point(0,0);
