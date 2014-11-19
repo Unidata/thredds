@@ -69,14 +69,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private Calendar cal = null;
   private DateFormatter dateFormatter = new DateFormatter();
   private Date refDate; // from the header
-  private String refString; // debug
 
-  private List<StructureCode> catStructures = new ArrayList<StructureCode>(10);
+  private List<StructureCode> catStructures = new ArrayList<>(10);
 
   private boolean showObs = false, showSkip = false, showOverflow = false, showData = false,
           showHeader = false, showTime = false;
-  private boolean readData = false, summarizeData = false, showTimes = false;
-  private boolean checkType = false, checkSort = false, checkPositions = false;
+  private boolean checkType = false, checkPositions = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
@@ -198,7 +196,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.LONG_NAME, "number of records"));
     v.addAttribute(new Attribute("standard_name", "npts"));
     v.setSPobject(new Vinfo(pos));
-    pos += 4;
 
     return station;
   }
@@ -221,7 +218,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.UNITS, "secs since 1970-01-01 00:00"));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "observation time"));
     v.setSPobject(new Vinfo(pos));
-    pos += 4;
 
     return reportIndex;
   }
@@ -272,7 +268,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     pos = makeInnerSequence(report, records, 7, pos);
     pos = makeInnerSequence(report, records, 8, pos);
     pos = makeInnerSequence(report, records, 51, pos);
-    pos = makeInnerSequence(report, records, 52, pos);
+    makeInnerSequence(report, records, 52, pos);
     report.calcElementSize(); // recalc since we added new members
 
     return report;
@@ -442,7 +438,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     readHeader(raf);
 
     // read through all the reports, construct unique stations
-    Map<String, Station> map = new HashMap<String, Station>();
+    Map<String, Station> map = new HashMap<>();
     while (true) {
       Report report = new Report();
       if (!report.readId(raf)) break;
@@ -559,7 +555,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     int reportLen;
     long filePos;
     Date date;
-    String rString; // refString, for debugging
 
     boolean readId(RandomAccessFile raf) throws IOException {
 
@@ -604,7 +599,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         cal.set(Calendar.HOUR_OF_DAY, obsTime / 100);
         cal.set(Calendar.MINUTE, 6 * (obsTime % 100));
         date = cal.getTime();
-        rString = refString; // temp debugg
 
         if (showObs) System.out.println(this);
         else if (showTime) System.out.print("  time=" + obsTime + " date= " + dateFormatter.toDateTimeString(date));
@@ -628,7 +622,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     // heres where the data for this Report is read into memory
 
     List<Record> readData() throws IOException {
-      List<Record> records = new ArrayList<Record>();
+      List<Record> records = new ArrayList<>();
 
       raf.seek(filePos + 40);
       byte[] b = raf.readBytes(reportLen - 40);
@@ -955,7 +949,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.setDimensionsAnonymous(new int[]{4});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=geopot, 1=temp, 2=dewpoint, 3=wind"));
       v.setSPobject(new Vinfo(pos));
-      pos += 4;
 
       return seq;
     }
@@ -1022,7 +1015,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.setDimensionsAnonymous(new int[]{3});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=temp, 2=dewpoint"));
       v.setSPobject(new Vinfo(pos));
-      pos += 3;
 
       return seq;
     }
@@ -1086,7 +1078,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=wind"));
       v.setSPobject(new Vinfo(pos));
-      pos += 2;
 
       return seq;
     }
@@ -1149,7 +1140,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=geopot, 1=wind"));
       v.setSPobject(new Vinfo(pos));
-      pos += 2;
 
       return seq;
     }
@@ -1231,7 +1221,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.setDimensionsAnonymous(new int[]{4});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=temp, 2=dewpoint, 3=wind"));
       v.setSPobject(new Vinfo(pos));
-      pos += 4;
 
       return seq;
     }
@@ -1288,7 +1277,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=percentClouds"));
       v.setSPobject(new Vinfo(pos));
-      pos += 2;
 
       return seq;
     }
@@ -1340,7 +1328,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=data, 1=form"));
       v.setSPobject(new Vinfo(pos));
-      pos += 2;
 
       return seq;
     }
@@ -1543,7 +1530,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("accuracy", "mbars/10"));
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99.9f));
       v.setSPobject(new Vinfo(pos));
-      pos += 4;
 
       return seq;
     }
@@ -1729,7 +1715,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("accuracy", "inch/100"));
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99999.99f));
       v.setSPobject(new Vinfo(pos));
-      pos += 4;
 
       return seq;
     }
@@ -1788,7 +1773,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     cal.clear();
     cal.set(fullyear, month - 1, day, hour, minute);
     refDate = cal.getTime();
-    refString = new String(h, 0, 10, CDM.utf8Charset);
 
     if (showHeader) System.out.println("\nhead=" + new String(h, CDM.utf8Charset) +
             " date= " + dateFormatter.toDateTimeString(refDate));

@@ -387,7 +387,7 @@ public class GradsDataDescriptorFile {
    */
   private void parseDDF() throws IOException {
 
-    long start2 = System.currentTimeMillis();
+    //long start2 = System.currentTimeMillis();
 
     variableList = new ArrayList<>();
     dimList = new ArrayList<>();
@@ -952,7 +952,7 @@ public class GradsDataDescriptorFile {
         //                   + (System.currentTimeMillis() - start));
         fileNames.addAll(fileSet);
       }
-      long start2 = System.currentTimeMillis();
+      //long start2 = System.currentTimeMillis();
       // now make sure they exist
       for (String file : fileNames) {
         File f = new File(file);
@@ -995,7 +995,7 @@ public class GradsDataDescriptorFile {
    */
   private String getFullPath(String filename) {
 
-    String file = filename;
+    String file;
     String ddfPath = getDDFPath();
     if (filename.startsWith("^")) {
       file = filename.replace("^", "");
