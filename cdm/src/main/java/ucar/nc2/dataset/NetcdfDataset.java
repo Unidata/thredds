@@ -957,7 +957,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         fragment = fragment.substring(1);
       String[] pairs = fragment.split("[ \t]*[&][ \t]*");
       for (String pair : pairs) {
-        String[] pieces = fragment.split("[ \t]*[=][ \t]*");
+        String[] pieces = pair.split("[ \t]*[=][ \t]*");
         switch (pieces.length) {
           case 1:
             map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
