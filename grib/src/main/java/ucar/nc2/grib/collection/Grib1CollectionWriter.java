@@ -79,8 +79,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     public List<Grib1CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
 
-    public List<Grib1Record> records = new ArrayList<Grib1Record>();
-    // public String nameOverride;
+    public Set<CalendarDate> runtimes = new HashSet<>();
+    public List<Grib1Record> records = new ArrayList<>();
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
     Group(Grib1SectionGridDefinition gdss, int gdsHash, CalendarDate runtime) {
@@ -95,10 +95,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     }
 
     @Override
-    public CoordinateRuntime getCoordinateRuntime() {
-      List<CalendarDate> runtimes = new ArrayList<>(1);
-      runtimes.add(runtime);
-      return new CoordinateRuntime(runtimes, null);
+    public Set<CalendarDate> getCoordinateRuntimes() {
+      return runtimes;
     }
   }
 

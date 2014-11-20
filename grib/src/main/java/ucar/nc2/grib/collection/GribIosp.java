@@ -323,7 +323,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           makeEnsembleCoordinate(ncfile, g, (CoordinateEns) coord);
           break;
         case time2D:
-          makeTime2D(ncfile, g, (CoordinateTime2D) coord, is2Dtime);
+          makeTime2DVariable(ncfile, g, (CoordinateTime2D) coord, is2Dtime);
           break;
       }
     }
@@ -458,7 +458,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
   }
 
-  private void makeTime2D(NetcdfFile ncfile, Group g, CoordinateTime2D time2D, boolean is2Dtime) {
+  private void makeTime2DVariable(NetcdfFile ncfile, Group g, CoordinateTime2D time2D, boolean is2Dtime) {
     CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
     int ntimes = time2D.getNtimes();
     String tcName = time2D.getName();

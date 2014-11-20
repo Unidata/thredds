@@ -89,6 +89,15 @@ public class GribCdmIndex implements IndexReader {
     gribCollectionCache = cache;
   }
 
+      // open GribCollectionImmutable from an existing index file. return null on failure
+  static public GribCollectionImmutable acquireGribCollection(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
+    if (gribCollectionCache != null) {
+      return null;  // TBD
+    }  else {
+      return openCdmIndex(indexFilename, config, dataOnly, useCache, logger);
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -157,15 +166,6 @@ public class GribCdmIndex implements IndexReader {
     // open GribCollection from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, Logger logger) {
     return openCdmIndex(indexFilename, config, dataOnly, true, logger);
-  }
-
-      // open GribCollectionImmutable from an existing index file. return null on failure
-  static public GribCollectionImmutable acquireGribCollection(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    if (gribCollectionCache != null) {
-      return null;  // TBD
-    }  else {
-      return openCdmIndex(indexFilename, config, dataOnly, useCache, logger);
-    }
   }
 
     // open GribCollectionImmutable from an existing index file. return null on failure
@@ -441,7 +441,7 @@ public class GribCdmIndex implements IndexReader {
     Path idxFile = dcm.getIndexPath();
     if (Files.exists(idxFile)) {
       if (forceCollection == CollectionUpdateType.nocheck) { // use if index exists
-        if (debug) System.out.printf("  GribCdmIndex.updateLeafDirectoryCollection %s use existing index%n", dirPath);
+        if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition %s use existing index%n", dirPath);
         return false;
       }
     }
@@ -455,7 +455,7 @@ public class GribCdmIndex implements IndexReader {
       changed = builder.updateNeeded(forceCollection) && builder.createIndex(FeatureCollectionConfig.PartitionType.directory, errlog);
     }
 
-    if (debug) System.out.printf("  GribCdmIndex.updateLeafDirectoryCollection was updated=%s on %s%n", changed, dirPath);
+    if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition was updated=%s on %s%n", changed, dirPath);
     return changed;
   }
 
@@ -761,7 +761,7 @@ public class GribCdmIndex implements IndexReader {
 
   /////////////////////////////////////////////////////////////////////////////////////
   // manipulate the ncx without building a gc
-  private static final boolean debug = false;
+  private static final boolean debug = true;
   private byte[] magic;
   private int version;
   private GribCollectionProto.GribCollection gribCollectionIndex;

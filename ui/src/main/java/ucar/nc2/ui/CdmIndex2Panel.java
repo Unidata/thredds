@@ -310,6 +310,7 @@ public class CdmIndex2Panel extends JPanel {
     gc.showIndex(f);
     f.format("%n");
 
+    f.format("Groups%n");
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
       f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
@@ -320,6 +321,19 @@ public class CdmIndex2Panel extends JPanel {
     // showFiles(f);
   }
 
+  private class SortBySize implements Comparable<SortBySize> {
+    Object obj;
+    int size;
+
+    private SortBySize(Object obj, int size) {
+      this.obj = obj;
+      this.size = size;
+    }
+
+    public int compareTo(SortBySize o) {
+      return Integer.compare(size, o.size);
+    }
+  }
   public void showMemoryEst(Formatter f) {
     if (gc == null) return;
 
@@ -332,14 +346,20 @@ public class CdmIndex2Panel extends JPanel {
       for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
         f.format(" Group %s%n", g.getDescription());
 
+        List<SortBySize> sortList = new ArrayList<>(g.getCoordinates().size());
+        for (Coordinate vc : g.getCoordinates())
+           sortList.add(new SortBySize(vc, vc.estMemorySize()));
+        Collections.sort(sortList);
+
         int coordsTotal = 0;
-        f.format(" total  type Coordinate%n");
-        for (Coordinate vc : g.getCoordinates()) {
-          f.format(" %6d %-8s %-40s%n", vc.estMemorySize(), vc.getType(), vc.getName());
+        f.format("  totalKB  type Coordinate%n");
+        for (SortBySize ss : sortList) {
+          Coordinate vc = (Coordinate) ss.obj;
+          f.format("  %6d %-8s %-40s%n", vc.estMemorySize()/1000, vc.getType(), vc.getName());
           bytesTotal += vc.estMemorySize();
           coordsTotal += vc.estMemorySize();
         }
-        f.format(" %6d%n", coordsTotal);
+        f.format(" %7d KBytes%n", coordsTotal/1000);
         f.format("%n");
         coordsAllTotal += coordsTotal;
 
@@ -379,7 +399,7 @@ public class CdmIndex2Panel extends JPanel {
         }
       }
       int noSA =  bytesTotal - bytesSATotal;
-      f.format("%n total bytes=%d bytesSATotal=%d bytesNoSA=%d coordsAllTotal=%d%n", bytesTotal, bytesSATotal, noSA, coordsAllTotal);
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal/1000, bytesSATotal/1000, noSA/1000, coordsAllTotal/1000);
       f.format("%n");
     }
   }
@@ -694,7 +714,6 @@ public class CdmIndex2Panel extends JPanel {
     String type;
     float density, avgDensity;
     int nrecords = 0;
-    int nfiles;
 
     public GroupBean() {
     }
@@ -702,8 +721,6 @@ public class CdmIndex2Panel extends JPanel {
     public GroupBean(GribCollectionImmutable.GroupGC g, String type) {
       this.group = g;
       this.type = type;
-
-      this.nfiles = group.getFiles().size();
 
       /* int nvars = 0;
       int total = 0;
@@ -736,7 +753,11 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getNFiles() {
-      return nfiles;
+      return group.getNFiles();
+    }
+
+    public int getNruntimes() {
+      return group.getNruntimes();
     }
 
     public int getNCoords() {

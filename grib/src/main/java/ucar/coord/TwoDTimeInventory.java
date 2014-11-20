@@ -18,7 +18,7 @@ public class TwoDTimeInventory {
   static private final Logger logger = LoggerFactory.getLogger(TwoDTimeInventory.class);
 
   private final int nruns, ntimes;
-  private final int[] count;        // count number of records for each (run,time). more than one for vert, ens, etc.
+  private final int[] count;        // count number of records for each (run,time). > 1 when theres for vert, ens, etc.
 
   public TwoDTimeInventory(int nruns, int ntimes) {
     this.nruns = nruns;

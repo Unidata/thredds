@@ -32,13 +32,26 @@ public class TestGribIndexCreation {
 
 
   @Test
-  public void testRdvam() throws IOException {
+  public void testRdvamds083p2() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("B:/rdavm/ds083.2/catalog_ds083.2.xml#ds083.2_Aggregation_MRC");
+    assert (config != null);
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(null);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
+
+  @Test
+  public void testRdvamds627p0() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("B:/rdavm/ds627.0/catalog_ds627.0.xml#ds627.0_an_pv");
+    assert (config != null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
 }

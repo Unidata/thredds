@@ -50,6 +50,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
 import ucar.nc2.grib.grib2.Grib2Utils;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
@@ -74,7 +75,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public static int countGC; // debug
 
   public enum Type {GC, SRC, MRC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
-
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
@@ -323,6 +323,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public List<Coordinate> getCoordinates() {
       return coords;
+    }
+
+    public int getNruntimes() {
+      return masterRuntime.getSize();
+    }
+
+    public int getNFiles() {
+      if (filenose == null) return 0;
+      return filenose.length;
     }
 
     public List<MFile> getFiles() {
@@ -711,12 +720,16 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     f.format("Class (%s)%n", getClass().getName());
     f.format("%s%n%n", toString());
 
+    f.format("masterRuntime: size=%d%n", masterRuntime.getSize());
+    if (masterRuntime.getSize() < 200)
+      masterRuntime.showCoords(f);
+
     for (Dataset ds : datasets) {
-      f.format("Dataset %s%n", ds.getType());
+      f.format("%nDataset %s%n", ds.getType());
       for (GroupGC g : ds.groups) {
         f.format(" Group %s%n", g.horizCoordSys.getId());
         for (VariableIndex v : g.variList) {
-          f.format("  %s%n", v);
+          f.format("  %s%n", v.toStringFrom());
         }
       }
     }

@@ -92,7 +92,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   }
 
   // read all records in all files,
-  // divide into groups based on GDS hash and runtime
+  // divide into groups based on GDS hash and optionally the runtime
   // each group has an arraylist of all records that belong to it.
   // for each group, call rectlizer to derive the coordinates and variables
   @Override
@@ -156,6 +156,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
             gdsMap.put(gar, g);
           }
           g.records.add(gr);
+          g.runtimes.add(runtimeDate);
         }
         fileno++;
         statsAll.recordsTotal += index.getRecords().size();

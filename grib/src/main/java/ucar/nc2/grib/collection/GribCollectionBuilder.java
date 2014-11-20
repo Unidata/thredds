@@ -146,15 +146,19 @@ abstract class GribCollectionBuilder {
     List<? extends Group> groups = makeGroups(files, false, errlog); // populate files
     List<MFile> allFiles = Collections.unmodifiableList(files);
 
-    Group canon = null;
+    // create the master runtimes
+    Set<CalendarDate> allDates = new HashSet<>();
     for (Group g : groups) {
-      // LOOK if multiple groups, probably need to combine all runtimes ?
-      canon = g;   // fake it for now
+      for (CalendarDate cd : g.getCoordinateRuntimes())
+        allDates.add(cd);
     }
-    assert canon != null;
+    List<CalendarDate> sortedList = new ArrayList<>();
+    for (CalendarDate cd : allDates) sortedList.add(cd);
+    Collections.sort(sortedList);
 
+    CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);
-    boolean ok = writeIndex(this.name, indexFileForRuntime.getPath(), canon.getCoordinateRuntime(), groups, allFiles);
+    boolean ok = writeIndex(this.name, indexFileForRuntime.getPath(), masterRuntimes, groups, allFiles);
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);
@@ -190,8 +194,13 @@ abstract class GribCollectionBuilder {
       MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(gcname, directory); // not using disk cache LOOK why ?
       partitions.add(indexFileForRuntime);
 
+     // create the master runtimes, consisting of the single runtime
+      List<CalendarDate> runtimes = new ArrayList<>(1);
+      runtimes.add(g.getRuntime());
+      CoordinateRuntime masterRuntimes = new CoordinateRuntime(runtimes, null);
+
       // for each Group write an index file
-      boolean ok = writeIndex(gcname, indexFileForRuntime.getPath(), g.getCoordinateRuntime(), runGroupList, allFiles);
+      boolean ok = writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles);
       logger.info("GribCollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
     }
 
@@ -213,7 +222,7 @@ abstract class GribCollectionBuilder {
 
   static public interface Group {
     CalendarDate getRuntime();             // LOOK HERE1 a single runtime
-    CoordinateRuntime getCoordinateRuntime();
+    Set<CalendarDate> getCoordinateRuntimes() ;
   }
 
   static protected class GroupAndRuntime {

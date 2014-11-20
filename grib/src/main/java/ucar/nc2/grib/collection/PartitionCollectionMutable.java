@@ -565,10 +565,11 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
         }
       }
 
+      // LOOK not cached
       return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory.open(path, -1, null, this);
     }
 
-    // LOOK force not used, equivilent to  force = never
+    // LOOK force not used, equivilent to  force = never. Why not use getGribCollection() ??
     public GribCollectionMutable makeGribCollection(CollectionUpdateType force) throws IOException {
       return GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger); // caller must close
     }
@@ -700,7 +701,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, from, nparts);
     group.addVariable(vip);
 
-    if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {
+    if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {    // LOOK dont really understandd this
       VariableIndexPartitioned vipFrom = (VariableIndexPartitioned) from;
       for (int i=0; i<vipFrom.nparts; i++)
         vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i)); // LOOK we dont know if vipFrom has been finished

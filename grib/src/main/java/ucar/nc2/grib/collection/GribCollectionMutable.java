@@ -65,6 +65,7 @@ import java.util.*;
 
 /**
  * A mutable class for building.
+ * The indexRAF is left open until collection is closed. These are not cached.
  *
  * @author John
  * @since 12/1/13
@@ -609,9 +610,9 @@ public class GribCollectionMutable implements AutoCloseable {
     private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
     // partition only
-    TwoDTimeInventory twot;  // twoD only
-    SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
-                             // index into the corresponding 2D variable's runtime coordinate
+    TwoDTimeInventory twot;     // Partition/twoD only
+    SmartArrayInt time2runtime; // Partition/Best only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
+                                // index into the corresponding 2D variable's runtime coordinate
 
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -1000,7 +1001,7 @@ public class GribCollectionMutable implements AutoCloseable {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("GribCollection{");
+    final StringBuilder sb = new StringBuilder("GribCollectionMutable{");
     sb.append("\nname='").append(name).append('\'');
     sb.append("\n directory=").append(directory);
     sb.append("\n config=").append(config);
