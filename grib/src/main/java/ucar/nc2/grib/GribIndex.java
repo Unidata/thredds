@@ -39,7 +39,6 @@ import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,13 +53,15 @@ import java.io.IOException;
  * @since 9/5/11
  */
 public abstract class GribIndex {
-  //static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribIndex.class);
   public static final String GBX9_IDX = ".gbx9";
   public static final boolean debug = false;
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      File idxFile = getFileInCache(file.getPath() + GBX9_IDX);
+      String idxPath = file.getPath();
+      if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+      File idxFile = getFileInCache(idxPath);
+
       if (!idxFile.exists()) return true;
       long idxLastModified =  idxFile.lastModified();
       if (idxLastModified < file.getLastModified()) return true;
@@ -68,7 +69,10 @@ public abstract class GribIndex {
       return false;
     }
     public boolean hasntChangedSince(MFile file, long when) {
-      File idxFile = getFileInCache(file.getPath() + GBX9_IDX);
+      String idxPath = file.getPath();
+      if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+      File idxFile = getFileInCache(idxPath);
+
       if (!idxFile.exists()) return true;
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && idxFile.lastModified() < when) return true;
@@ -85,11 +89,8 @@ public abstract class GribIndex {
   public static GribIndex open(boolean isGrib1, MFile mfile) throws IOException {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
-    String path = mfile.getPath();
-    if (path.endsWith(Grib1Index.GBX9_IDX))
-      path = StringUtil2.removeFromEnd(path, Grib1Index.GBX9_IDX);
 
-    if (!index.readIndex(path, mfile.getLastModified(), CollectionUpdateType.never)) {
+    if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), CollectionUpdateType.never)) {
       return null;
     }
 
@@ -116,16 +117,6 @@ public abstract class GribIndex {
     } else if (debug) {
       logger.debug("  Index read: {} == {} records", mfile.getName() + GBX9_IDX, index.getNRecords());
     }
-
-    // if (!createCollectionIndex) return index;
-
-     /* heres where the ncx file date is checked against the data file
-    GribCollection gc;
-    if (isGrib1)
-      gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
-    else
-      gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
-    gc.close(); // dont need this right now */
 
     return index;
   }

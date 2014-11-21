@@ -213,7 +213,6 @@ class GribCollectionWriter {
     b.setPdsIntvMerge(gribConfig.intvMerge);
     b.setPdsUseCenter(gribConfig.useCenter);
 
-
     if (gribConfig.intvFilter != null) {
       b.setIntvExcludeZero(gribConfig.intvFilter.isZeroExcluded());
       for (FeatureCollectionConfig.GribIntvFilterParam intvFilter : gribConfig.intvFilter.filter) {
@@ -235,6 +234,9 @@ class GribCollectionWriter {
         b.addTimeUnitConvert(bIntMap);
       }
     }
+
+    if (gribConfig.userTimeUnit != null)
+      b.setUserTimeUnit(gribConfig.userTimeUnit.toString());
 
     return b.build();
   }
@@ -278,6 +280,9 @@ class GribCollectionWriter {
         config.gribConfig.tuc.map.put(pIntMap.getFrom(), pIntMap.getTo());
       }
     }
+
+    if (pconfig.hasUserTimeUnit())
+      config.gribConfig.setUserTimeUnit(pconfig.getUserTimeUnit());
 
     return config;
   }

@@ -57,7 +57,6 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,7 +71,7 @@ import java.util.*;
  */
 public class GribCollectionMutable implements AutoCloseable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollectionMutable.class);
-  static public  final long MISSING_RECORD = -1;
+  static public final long MISSING_RECORD = -1;
 
   //////////////////////////////////////////////////////////
 
@@ -193,9 +192,9 @@ public class GribCollectionMutable implements AutoCloseable {
 
   public GribCollectionMutable.Dataset getDatasetCanonical() {
     for (GribCollectionMutable.Dataset ds : datasets) {
-      if (ds.type != GribCollectionImmutable.Type.Best) return ds;  // LOOK WTF ??
+      if (ds.type != GribCollectionImmutable.Type.Best) return ds;
     }
-    throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
+    throw new IllegalStateException("GC.getDatasetCanonical failed on=" + name);
   }
 
   public GribHorizCoordSystem getHorizCS(int index) {
@@ -219,8 +218,16 @@ public class GribCollectionMutable implements AutoCloseable {
   }
 
   public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, int predefinedGridDefinition) {
-                // GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String id, String description, int predefinedGridDefinition
-    horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHash, hcs.makeId(), hcs.makeDescription(), predefinedGridDefinition));
+
+    String hcsName = makeHorizCoordSysName(hcs);
+
+    // check for user defined group names
+    String desc = null;
+    if (config.gribConfig.gdsNamer != null)
+      desc = config.gribConfig.gdsNamer.get(gdsHash);
+    if (desc == null) desc = hcs.makeDescription(); // default desc
+
+    horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHash, hcsName, desc, predefinedGridDefinition));
   }
 
   public void setFileMap(Map<Integer, MFile> fileMap) {
@@ -253,50 +260,13 @@ public class GribCollectionMutable implements AutoCloseable {
   public File setOrgDirectory(String orgDirectory) {
     this.orgDirectory = orgDirectory;
     directory = new File(orgDirectory);
-    if (!directory.exists())  {
+    if (!directory.exists()) {
       File indexFile = new File(indexFilename);
       File parent = indexFile.getParentFile();
       if (parent.exists())
         directory = parent;
     }
     return directory;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // stuff for Iosp
-
-  public RandomAccessFile getDataRaf(int fileno) throws IOException {
-    // absolute location
-    MFile mfile = fileMap.get(fileno);
-    String filename = mfile.getPath();
-    File dataFile = new File(filename);
-
-    // if data file does not exist, check reletive location - eg may be /upc/share instead of Q:
-    if (!dataFile.exists() && indexRaf != null) {
-      File index = new File(indexRaf.getLocation());
-      File parent = index.getParentFile();
-      if (fileMap.size() == 1) {
-        dataFile = new File(parent, name); // single file case
-      } else {
-        dataFile = new File(parent, dataFile.getName()); // must be in same directory as the ncx file
-      }
-    }
-
-    // data file not here
-    if (!dataFile.exists()) {
-      throw new FileNotFoundException("data file not found = " + dataFile.getPath());
-    }
-
-    RandomAccessFile want = RandomAccessFile.acquire(dataFile.getPath());
-    want.order(RandomAccessFile.BIG_ENDIAN);
-    return want;
-  }
-
-  // debugging
-  public String getDataFilename(int fileno) throws IOException {
-    // absolute location
-    MFile mfile = fileMap.get(fileno);
-    return mfile.getPath();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -313,7 +283,21 @@ public class GribCollectionMutable implements AutoCloseable {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // these objects are created from the ncx index. lame - should only be in the builder i think
-  private Set<String> groupNames = new HashSet<>(5);
+  private Set<String> hcsNames = new HashSet<>(5);
+
+  private String makeHorizCoordSysName(GdsHorizCoordSys hcs) {
+    // default id
+    String base = hcs.makeId();
+    // ensure uniqueness
+    String tryit = base;
+    int count = 1;
+    while (hcsNames.contains(tryit)) {
+      count++;
+      tryit = base + "-" + count;
+    }
+    hcsNames.add(tryit);
+    return tryit;
+  }
 
   public class Dataset {
     final GribCollectionImmutable.Type type;
@@ -339,18 +323,6 @@ public class GribCollectionMutable implements AutoCloseable {
       return type == GribCollectionImmutable.Type.TwoD;
     }
 
-    public GroupGC getGroup(int index) {
-      return groups.get(index);
-    }
-
-    public GroupGC findGroupById(String id) {
-      for (GroupGC g : groups) {
-        if (g.getId().equals(id))
-          return g;
-      }
-      return null;
-    }
-
     public GribCollectionImmutable.Type getType() {
       return type;
     }
@@ -360,84 +332,6 @@ public class GribCollectionMutable implements AutoCloseable {
     }
   }
 
- /*  @Immutable
-  public class HorizCoordSys { // encapsolates the gds; shared by the GroupHcs
-    private final GdsHorizCoordSys hcs;
-    private final byte[] rawGds;
-    private final int gdsHash;
-    private final String id, description;
-    private final String nameOverride;
-    private final int predefinedGridDefinition;
-
-    public HorizCoordSys(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
-      this.hcs = hcs;
-      this.rawGds = rawGds;
-      this.gdsHash = gdsHash;
-      this.nameOverride = nameOverride;
-      this.predefinedGridDefinition = predefinedGridDefinition;
-
-      this.id = makeId();
-      this.description = makeDescription();
-    }
-
-    public GdsHorizCoordSys getHcs() {
-      return hcs;
-    }
-
-    public byte[] getRawGds() {
-      return rawGds;
-    }
-
-    public int getGdsHash() {
-      return gdsHash;
-    }
-
-    // unique name for Group
-    public String getId() {
-      return id;
-    }
-
-    // human readable
-    public String getDescription() {
-      return description;
-    }
-
-    public String getNameOverride() {
-      return nameOverride;
-    }
-
-    public int getPredefinedGridDefinition() {
-      return predefinedGridDefinition;
-    }
-
-    private String makeId() {
-      if (nameOverride != null) return nameOverride;
-
-      // default id
-      String base = hcs.makeId();
-      // ensure uniqueness
-      String tryit = base;
-      int count = 1;
-      while (groupNames.contains(tryit)) {
-        count++;
-        tryit = base + "-" + count;
-      }
-      groupNames.add(tryit);
-      return tryit;
-    }
-
-    private String makeDescription() {
-      // check for user defined group names
-      String result = null;
-      if (config.gribConfig.gdsNamer != null)
-        result = config.gribConfig.gdsNamer.get(gdsHash);
-      if (result != null) return result;
-
-      return hcs.makeDescription(); // default desc
-    }
-  }  */
-
-  // this class should be immutable, because it escapes
   public class GroupGC implements Comparable<GroupGC> {
     GribHorizCoordSystem horizCoordSys;
     List<VariableIndex> variList;
@@ -457,17 +351,6 @@ public class GribCollectionMutable implements AutoCloseable {
       this.variList = new ArrayList<>(from.variList.size());
       this.coords = new ArrayList<>(from.coords.size());
       this.isTwoD = from.isTwoD;
-    }
-
-    public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
-           // check for user defined group names
-      String desc = null;
-      if (config.gribConfig.gdsNamer != null)
-        desc = config.gribConfig.gdsNamer.get(gdsHash);
-      if (desc == null) desc = hcs.makeDescription(); // default desc
-
-                     // GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String id, String description, int predefinedGridDefinition
-      horizCoordSys = new GribHorizCoordSystem(hcs, rawGds, gdsHash, nameOverride, desc, predefinedGridDefinition);
     }
 
     public VariableIndex addVariable(VariableIndex vi) {
@@ -495,10 +378,6 @@ public class GribCollectionMutable implements AutoCloseable {
     // human readable
     public String getDescription() {
       return horizCoordSys.getDescription();
-    }
-
-    public GdsHorizCoordSys getGdsHorizCoordSys() {
-      return horizCoordSys.getHcs();
     }
 
     public int getGdsHash() {
@@ -563,14 +442,6 @@ public class GribCollectionMutable implements AutoCloseable {
       return filenose.length;
     }
 
-    public int getNCoords() {
-      return coords.size();
-    }
-
-    public int getNVariables() {
-      return variList.size();
-    }
-
     public void show(Formatter f) {
       f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwoD);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
@@ -588,7 +459,7 @@ public class GribCollectionMutable implements AutoCloseable {
   }
 
   public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,
-                                                        byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
+                                                               byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
     return new VariableIndex(g, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
   }
 
@@ -612,7 +483,7 @@ public class GribCollectionMutable implements AutoCloseable {
     // partition only
     TwoDTimeInventory twot;     // Partition/twoD only
     SmartArrayInt time2runtime; // Partition/Best only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
-                                // index into the corresponding 2D variable's runtime coordinate
+    // index into the corresponding 2D variable's runtime coordinate
 
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -664,7 +535,7 @@ public class GribCollectionMutable implements AutoCloseable {
 
       } else {
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
-        Grib2Pds pds = null;
+        Grib2Pds pds;
         try {
           pds = pdss.getPDS();
         } catch (IOException e) {
@@ -765,10 +636,6 @@ public class GribCollectionMutable implements AutoCloseable {
       return -1;
     }
 
-    public Iterable<Integer> getCoordinateIndex() {
-      return coordIndex;
-    }
-
     public String getTimeIntvName() {
       if (intvName != null) return intvName;
       CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) getCoordinate(Coordinate.Type.timeIntv);
@@ -841,7 +708,7 @@ public class GribCollectionMutable implements AutoCloseable {
       if (time2runtime == null) sb.append("time2runtime is null");
       else {
         sb.append("time2runtime=");
-        for (int idx=0; idx < time2runtime.getN(); idx++)
+        for (int idx = 0; idx < time2runtime.getN(); idx++)
           sb.append(time2runtime.get(idx)).append(",");
       }
       return sb.toString();

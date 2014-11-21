@@ -131,6 +131,7 @@ message FcConfig {
   optional bool intvExcludeZero = 16 [default = false];
   repeated IntvFilter intvFilter = 17;
   repeated IntMap timeUnitConvert = 18;
+  optional string userTimeUnit = 19;
 }
 
 message GribCollection {

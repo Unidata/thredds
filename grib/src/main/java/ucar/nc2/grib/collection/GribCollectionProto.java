@@ -14057,6 +14057,21 @@ public final class GribCollectionProto {
      */
     ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder getTimeUnitConvertOrBuilder(
         int index);
+
+    // optional string userTimeUnit = 19;
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    boolean hasUserTimeUnit();
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    java.lang.String getUserTimeUnit();
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    com.google.protobuf.ByteString
+        getUserTimeUnitBytes();
   }
   /**
    * Protobuf type {@code FcConfig}
@@ -14176,6 +14191,11 @@ public final class GribCollectionProto {
                 mutable_bitField0_ |= 0x00000800;
               }
               timeUnitConvert_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.IntMap.PARSER, extensionRegistry));
+              break;
+            }
+            case 154: {
+              bitField0_ |= 0x00000200;
+              userTimeUnit_ = input.readBytes();
               break;
             }
           }
@@ -14587,6 +14607,49 @@ public final class GribCollectionProto {
       return timeUnitConvert_.get(index);
     }
 
+    // optional string userTimeUnit = 19;
+    public static final int USERTIMEUNIT_FIELD_NUMBER = 19;
+    private java.lang.Object userTimeUnit_;
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    public boolean hasUserTimeUnit() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    public java.lang.String getUserTimeUnit() {
+      java.lang.Object ref = userTimeUnit_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          userTimeUnit_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    public com.google.protobuf.ByteString
+        getUserTimeUnitBytes() {
+      java.lang.Object ref = userTimeUnit_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        userTimeUnit_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       name_ = "";
       collectionSpec_ = "";
@@ -14600,6 +14663,7 @@ public final class GribCollectionProto {
       intvExcludeZero_ = false;
       intvFilter_ = java.util.Collections.emptyList();
       timeUnitConvert_ = java.util.Collections.emptyList();
+      userTimeUnit_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -14679,6 +14743,9 @@ public final class GribCollectionProto {
       for (int i = 0; i < timeUnitConvert_.size(); i++) {
         output.writeMessage(18, timeUnitConvert_.get(i));
       }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeBytes(19, getUserTimeUnitBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -14735,6 +14802,10 @@ public final class GribCollectionProto {
       for (int i = 0; i < timeUnitConvert_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(18, timeUnitConvert_.get(i));
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(19, getUserTimeUnitBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -14891,6 +14962,8 @@ public final class GribCollectionProto {
         } else {
           timeUnitConvertBuilder_.clear();
         }
+        userTimeUnit_ = "";
+        bitField0_ = (bitField0_ & ~0x00001000);
         return this;
       }
 
@@ -14982,6 +15055,10 @@ public final class GribCollectionProto {
         } else {
           result.timeUnitConvert_ = timeUnitConvertBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.userTimeUnit_ = userTimeUnit_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -15110,6 +15187,11 @@ public final class GribCollectionProto {
               timeUnitConvertBuilder_.addAllMessages(other.timeUnitConvert_);
             }
           }
+        }
+        if (other.hasUserTimeUnit()) {
+          bitField0_ |= 0x00001000;
+          userTimeUnit_ = other.userTimeUnit_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -16347,6 +16429,80 @@ public final class GribCollectionProto {
           timeUnitConvert_ = null;
         }
         return timeUnitConvertBuilder_;
+      }
+
+      // optional string userTimeUnit = 19;
+      private java.lang.Object userTimeUnit_ = "";
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public boolean hasUserTimeUnit() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public java.lang.String getUserTimeUnit() {
+        java.lang.Object ref = userTimeUnit_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          userTimeUnit_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public com.google.protobuf.ByteString
+          getUserTimeUnitBytes() {
+        java.lang.Object ref = userTimeUnit_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          userTimeUnit_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public Builder setUserTimeUnit(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        userTimeUnit_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public Builder clearUserTimeUnit() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        userTimeUnit_ = getDefaultInstance().getUserTimeUnit();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public Builder setUserTimeUnitBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        userTimeUnit_ = value;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:FcConfig)
@@ -20180,7 +20336,7 @@ public final class GribCollectionProto {
       "(\n\tStringMap\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(",
       "\t\"\"\n\006IntMap\022\014\n\004from\030\001 \002(\021\022\n\n\002to\030\002 \002(\021\"F\n" +
       "\nIntvFilter\022\022\n\nintvLength\030\001 \002(\021\022\022\n\nvaria" +
-      "bleId\030\002 \002(\r\022\020\n\010intvProb\030\003 \001(\021\"\327\002\n\010FcConf" +
+      "bleId\030\002 \002(\r\022\020\n\010intvProb\030\003 \001(\021\"\355\002\n\010FcConf" +
       "ig\022\014\n\004name\030\001 \002(\t\022\026\n\016collectionSpec\030\002 \002(\t" +
       "\022\025\n\rpartitionType\030\003 \002(\t\022\026\n\016dateFormatMar" +
       "k\030\004 \001(\t\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\034\n\r" +
@@ -20189,17 +20345,17 @@ public final class GribCollectionProto {
       "(\010:\004true\022\032\n\014pdsUseCenter\030\017 \001(\010:\004true\022\036\n\017" +
       "intvExcludeZero\030\020 \001(\010:\005false\022\037\n\nintvFilt",
       "er\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitConvert" +
-      "\030\022 \003(\0132\007.IntMap\"\330\002\n\016GribCollection\022\014\n\004na" +
-      "me\030\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\013" +
-      "2\006.MFile\022\031\n\007dataset\030\004 \003(\0132\010.Dataset\022\021\n\003g" +
-      "ds\030\005 \003(\0132\004.Gds\022\035\n\rmasterRuntime\030\025 \002(\0132\006." +
-      "Coord\022\016\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005" +
-      "\022\016\n\006master\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genPr" +
-      "ocessType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n" +
-      "\rbackProcessId\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.P" +
-      "arameter\022\031\n\006config\030\026 \001(\0132\t.FcConfig*\005\010d\020",
-      "\310\001B/\n\030ucar.nc2.grib.collectionB\023GribColl" +
-      "ectionProto"
+      "\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(\t\"\330\002" +
+      "\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topDir" +
+      "\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007datase" +
+      "t\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\r" +
+      "masterRuntime\030\025 \002(\0132\006.Coord\022\016\n\006center\030\006 " +
+      "\002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002(\005\022\r" +
+      "\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001(\005\022\024\n" +
+      "\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014 \001" +
+      "(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter\022\031\n\006config",
+      "\030\026 \001(\0132\t.FcConfig*\005\010d\020\310\001B/\n\030ucar.nc2.gri" +
+      "b.collectionB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -20283,7 +20439,7 @@ public final class GribCollectionProto {
           internal_static_FcConfig_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_FcConfig_descriptor,
-              new java.lang.String[] { "Name", "CollectionSpec", "PartitionType", "DateFormatMark", "GdsConvert", "PdsUseGenType", "PdsUseTableVersion", "PdsIntvMerge", "PdsUseCenter", "IntvExcludeZero", "IntvFilter", "TimeUnitConvert", });
+              new java.lang.String[] { "Name", "CollectionSpec", "PartitionType", "DateFormatMark", "GdsConvert", "PdsUseGenType", "PdsUseTableVersion", "PdsIntvMerge", "PdsUseCenter", "IntvExcludeZero", "IntvFilter", "TimeUnitConvert", "UserTimeUnit", });
           internal_static_GribCollection_descriptor =
             getDescriptor().getMessageTypes().get(13);
           internal_static_GribCollection_fieldAccessorTable = new

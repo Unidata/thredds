@@ -477,9 +477,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      */
     private GribCollectionImmutable.VariableIndex getVindex2D(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
+
       // the 2D vip for this variable
       VariableIndexPartitioned vip =  isPartitionOfPartitions ?
-        (VariableIndexPartitioned) getVariable2DByHash(group.horizCoordSys, info.cdmHash) :
+        getVariable2DByHash(group.horizCoordSys, info.cdmHash) :
         this;
 
       int idx = vip.partnoSA.findIdx(partno);
@@ -487,6 +488,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         if (GribIosp.debugRead) System.out.printf("  cant find partition=%d in vip=%s%n", partno, vip);
         return null;
       }
+      // LOOK was partVar = new PartitionForVariable2D(partnoSA.get(idx), groupnoSA.get(idx), varnoSA.get(idx));
+      //        GroupGC g = ds.groups.get(partVar.groupno);
+      //        GribCollection.VariableIndex vindex = g.variList.get(partVar.varno);
+      // now
 
       Partition p = getPartition(partno);
       try (GribCollectionImmutable gc = p.getGribCollection()) { // ensure that its read in try-with

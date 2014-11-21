@@ -36,7 +36,6 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
@@ -75,7 +74,6 @@ public class FeatureCollectionConfig {
   public static void setRegularizeDefault(boolean t) {
     regularizeDefault = t;
   }
-
   public static boolean getRegularizeDefault() {
     return regularizeDefault;
   }
@@ -159,6 +157,34 @@ public class FeatureCollectionConfig {
     }
 
     return f.toString();
+  }
+
+  public void show(Formatter f) {
+    f.format("FeatureCollectionConfig name ='%s' type='%s'%n", name, type);
+    f.format("  spec='%s'%n", spec);
+    if (dateFormatMark != null)
+      f.format("  dateFormatMark ='%s'%n", dateFormatMark);
+    if (olderThan != null)
+      f.format("  olderThan =%s%n", olderThan);
+    f.format("  timePartition =%s%n", ptype);
+
+    if (type != null) {
+      switch (type) {
+        case GRIB1:
+        case GRIB2:
+          gribConfig.show(f);
+          break;
+        case FMRC:
+          f.format("  fmrcConfig =%s%n", fmrcConfig);
+          break;
+        case Point:
+        case Station:
+        case Station_Profile:
+          f.format("  pointConfig =%s%n", pointConfig);
+          break;
+      }
+    }
+
   }
 
   // finished reading - do anything needed
@@ -372,9 +398,15 @@ public class FeatureCollectionConfig {
           Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Latest));
 
   static public class GribConfig {                                                // LOOK make Immutable
+    private final boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
+
     public Map<Integer, Integer> gdsHash;  // map one gds hash to another
     public Map<Integer, String> gdsNamer;  // hash, group name
-    public boolean useGenType, useTableVersion, intvMerge, useCenter;
+    public boolean useGenType = useGenTypeDef;
+    public boolean useTableVersion = useTableVersionDef;
+    public boolean intvMerge = intvMergeDef;
+    public boolean useCenter = useCenterDef;
+
     public GribIntvFilter intvFilter;
     public TimeUnitConverterHash tuc;
 
@@ -387,7 +419,7 @@ public class FeatureCollectionConfig {
 
     private boolean explicitDatasets = false;
 
-    private Map<String, String> params;
+    public CalendarPeriod userTimeUnit;
 
     public GribConfig() { // defaults
     }
@@ -454,17 +486,25 @@ public class FeatureCollectionConfig {
 
       List<Element> paramElems = configElem.getChildren("parameter", ns);
       for (Element param : paramElems) {
-        if (params == null) params = new HashMap<>();
         String name = param.getAttributeValue("name");
         String value = param.getAttributeValue("value");
-        if (name != null && value != null) params.put(name,value);
+        if (name != null && value != null) {
+          if (name.equalsIgnoreCase("timeUnit")) {
+            setUserTimeUnit(value);  // eg "10 min" or "minute"
+          }
+        }
       }
 
       Element pdsHashElement = configElem.getChild("pdsHash", ns);
-      useGenType = readValue(pdsHashElement, "useGenType", ns, false);
-      useTableVersion = readValue(pdsHashElement, "useTableVersion", ns, true);  // LOOK maybe default should be false ??
-      intvMerge = readValue(pdsHashElement, "intvMerge", ns, true);
-      useCenter = readValue(pdsHashElement, "useCenter", ns, true);
+      useGenType = readValue(pdsHashElement, "useGenType", ns, useGenTypeDef);
+      useTableVersion = readValue(pdsHashElement, "useTableVersion", ns, useTableVersionDef);  // LOOK maybe default should be false ??
+      intvMerge = readValue(pdsHashElement, "intvMerge", ns, intvMergeDef);
+      useCenter = readValue(pdsHashElement, "useCenter", ns, useCenterDef);
+    }
+
+    public void setUserTimeUnit(String value) {
+      if (value != null)
+        userTimeUnit = CalendarPeriod.of(value);  // eg "10 min" or "minute
     }
 
     public void setExcludeZero(boolean val) {
@@ -549,10 +589,17 @@ public class FeatureCollectionConfig {
       }
     }
 
-    public String toString2() {
-      Formatter f = new Formatter();
-      f.format("GribConfig: datasetTypes=%s", datasets);
-      return f.toString();
+    public void show(Formatter f) {
+      f.format("GribConfig ");
+      if (useGenType != useGenTypeDef) f.format(" useGenType=%s", useGenType);
+      if (useTableVersion != useTableVersionDef) f.format(" useTableVersion=%s", useTableVersion);
+      if (intvMerge != intvMergeDef) f.format(" intvMerge=%s", intvMerge);
+      if (useCenter != useCenterDef) f.format(" useCenter=%s", useCenter);
+      if (userTimeUnit != null) f.format(" userTimeUnit= %s", userTimeUnit);
+      f.format("%n");
+      if (gdsHash != null) f.format("  gdsHash=%s%n", gdsHash);
+      if (gdsNamer != null) f.format("  gdsNamer=%s%n", gdsNamer);
+      if (intvFilter != null) f.format("  intvFilter=%s%n", intvFilter);
     }
 
     @Override
@@ -572,8 +619,7 @@ public class FeatureCollectionConfig {
       if (paramTable != null) sb.append(", paramTable=").append(paramTable);
       if (filesSortIncreasing != null) sb.append(", filesSortIncreasing=").append(filesSortIncreasing);
       if (intvFilter != null) sb.append(", intvFilter=").append(intvFilter);
-      CalendarPeriod tu = getUserTimeUnit();
-      if (tu != null) sb.append(", userTimeUnit='").append(tu).append('\'');
+      if (userTimeUnit != null) sb.append(", userTimeUnit='").append(userTimeUnit).append('\'');
       sb.append('}');
       return sb.toString();
     }
@@ -582,20 +628,6 @@ public class FeatureCollectionConfig {
       if (lookupTablePath != null) return "gribParameterTableLookup="+lookupTablePath;
       if (paramTablePath != null) return "gribParameterTable="+paramTablePath;
       return null;
-    }
-
-    public String getParameter(String name) {
-      if (params == null) return null;
-      return params.get(name);
-    }
-
-    public CalendarPeriod getUserTimeUnit() {
-      CalendarPeriod result = null;
-      String timeUnitS = getParameter("timeUnit");
-      if (timeUnitS != null) {
-        result = CalendarPeriod.of(timeUnitS);  // eg "10 min" or "minute"
-      }
-      return result;
     }
 
     public int convertGdsHash(int hashcode) {

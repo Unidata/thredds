@@ -44,13 +44,6 @@ import ucar.coord.CoordinateTimeAbstract;
 import ucar.coord.SparseArray;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib1.Grib1ParamTime;
-import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
-import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib2.Grib2Pds;
-import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
-import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
@@ -94,7 +87,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
 
-  // LOOK possible we could use the Proto equivalents, and eliminate GribCollectionMutable ?
+  // possible we could use the Proto equivalents, and eliminate GribCollectionMutable ?
   GribCollectionImmutable(GribCollectionMutable gc) {
     countGC++;
 
@@ -581,74 +574,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         this.genProcessType = gcVar.genProcessType;
       }
 
-      private Info(GribTables customizer, int discipline, String intvName, byte[] rawPds, int cdmHash) {
-        this.discipline = discipline;
-        this.intvName = intvName;
-        this.rawPds = rawPds;
-        this.cdmHash = cdmHash;
-
-        if (isGrib1) {
-          Grib1Customizer cust = (Grib1Customizer) customizer;
-          Grib1SectionProductDefinition pds = new Grib1SectionProductDefinition(rawPds);
-
-          // quantities that are stored in the pds
-          this.category = 0;
-          this.tableVersion = pds.getTableVersion();
-          this.parameter = pds.getParameterNumber();
-          this.levelType = pds.getLevelType();
-          Grib1ParamTime ptime = pds.getParamTime(cust);
-          if (ptime.isInterval()) {
-            this.intvType = pds.getTimeRangeIndicator();
-          } else {
-            this.intvType = -1;
-          }
-          this.isLayer = cust.isLayer(pds.getLevelType());
-
-          this.ensDerivedType = -1;
-          this.probType = -1;
-          this.probabilityName = null;
-
-          this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
-          this.isEnsemble = pds.isEnsemble();
-
-        } else {
-          Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
-          Grib2Pds pds = null;
-          try {
-            pds = pdss.getPDS();
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-          this.tableVersion = -1;
-
-          // quantities that are stored in the pds
-          this.category = pds.getParameterCategory();
-          this.parameter = pds.getParameterNumber();
-          this.levelType = pds.getLevelType1();
-          this.intvType = pds.getStatisticalProcessType();
-          this.isLayer = Grib2Utils.isLayer(pds);
-
-          if (pds.isEnsembleDerived()) {
-            Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
-            ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
-          } else {
-            this.ensDerivedType = -1;
-          }
-
-          if (pds.isProbability()) {
-            Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
-            probabilityName = pdsProb.getProbabilityName();
-            probType = pdsProb.getProbabilityType();
-          } else {
-            this.probType = -1;
-            this.probabilityName = null;
-          }
-
-          this.genProcessType = pds.getGenProcessType();
-          this.isEnsemble = pds.isEnsemble();
-        }
-      }
-
     }
   }
 
@@ -677,9 +602,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return sb.toString();
     }
   }
-
-  ////////////////////////////
-  // File Cacheable
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for FileCacheable

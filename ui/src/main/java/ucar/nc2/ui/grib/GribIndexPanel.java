@@ -145,9 +145,6 @@ public class GribIndexPanel extends JPanel {
   }
 
   public void readIndex1(String filename) throws IOException {
-    if (filename.endsWith(GribIndex.GBX9_IDX))
-      filename = filename.substring(0, filename.length()-GribIndex.GBX9_IDX.length());
-
     Grib1Index g1idx =  new Grib1Index();
     g1idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 
@@ -158,9 +155,6 @@ public class GribIndexPanel extends JPanel {
   }
 
   public void readIndex2(String filename) throws IOException {
-    if (filename.endsWith(GribIndex.GBX9_IDX))
-      filename = filename.substring(0, filename.length()-GribIndex.GBX9_IDX.length());
-
     Grib2Index g2idx =  new Grib2Index();
     g2idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 

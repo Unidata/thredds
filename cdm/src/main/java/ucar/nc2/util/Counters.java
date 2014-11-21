@@ -70,6 +70,10 @@ public class Counters {
 
     public int getUnique();
 
+    public Comparable getFirst();
+
+    public Comparable getLast();
+
     public int getTotal();
 
     public Counter setShowRange(boolean showRange);
@@ -78,6 +82,7 @@ public class Counters {
   private static class CounterImpl implements Counter {
     protected String name;
     protected boolean showRange;
+    private Comparable first, last;
 
     public String getName() {
       return name;
@@ -90,7 +95,6 @@ public class Counters {
 
     private Map<Comparable, Integer> set = new HashMap<>();
     private String range;
-
 
     public CounterImpl(String name) {
       this.name = name;
@@ -118,6 +122,7 @@ public class Counters {
       java.util.List<Comparable> list = new ArrayList<>(set.keySet());
       f.format("%n%s (%d)%n", name, list.size());
       Collections.sort(list);
+
       if (showRange) {
         int n = list.size();
         if (n == 0)
@@ -126,9 +131,13 @@ public class Counters {
           f.format("   %10s - %10s: count = %d%n", list.get(0), list.get(n - 1), getUnique());
 
       } else {
-        for (Object key : list) {
+        Comparable prev = null;
+        for (Comparable key : list) {
           int count = set.get(key);
-          f.format("   %10s: count = %d%n", key, count);
+          boolean isHashDup = (prev != null) && key.hashCode() == prev.hashCode();
+          boolean isNameDup = (prev != null) && key.toString().equals(prev.toString());
+          f.format("  %s %10s: count = %d%n", isHashDup != isNameDup ? "*" : " ", key, count);
+          prev = key;
         }
       }
     }
@@ -138,8 +147,13 @@ public class Counters {
         java.util.List<Comparable> list = new ArrayList<>(set.keySet());
         Collections.sort(list);
         int n = list.size();
+        if (n == 0)
+          return "none";
+
         Formatter f = new Formatter();
-        f.format("%10s - %10s", list.get(0), list.get(n - 1));
+        this.first =  list.get(0);
+        this.last =  list.get(n-1);
+        f.format("%10s - %10s", first, last);
         range = f.toString();
       }
       return range;
@@ -148,6 +162,16 @@ public class Counters {
     @Override
     public int getUnique() {
       return set.size();
+    }
+
+    @Override
+    public Comparable getFirst() {
+      return first;
+    }
+
+    @Override
+    public Comparable getLast() {
+      return last;
     }
 
     @Override

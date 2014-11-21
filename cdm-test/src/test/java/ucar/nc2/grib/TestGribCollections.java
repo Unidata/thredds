@@ -57,7 +57,7 @@ import java.util.List;
 /**
  * Look for missing data in Grib Collections.
  * <p/>
- * Indicates that coordinates are not matching, because DGEX_CONUS is dense (hass data for each coordinate).
+ * Indicates that coordinates are not matching, because DGEX_CONUS is dense (has data for each coordinate).
  * Note that not all grib collections will be dense.
  *
  * @author John

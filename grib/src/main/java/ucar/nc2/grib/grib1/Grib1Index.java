@@ -110,7 +110,9 @@ public class Grib1Index extends GribIndex {
   }
 
   public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) throws IOException {
-    File idxFile = getFileInCache(filename + GBX9_IDX);
+    String idxPath = filename;
+    if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+    File idxFile = getFileInCache(idxPath);
     if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
     if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
@@ -190,10 +192,12 @@ public class Grib1Index extends GribIndex {
 
   // LOOK what about extending an index ??
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
-    File idxFile = getFileInCache(filename + GBX9_IDX);
-    File idxFileTmp = getFileInCache(filename + GBX9_IDX + ".tmp");
-    RandomAccessFile raf = null;
+    String idxPath = filename;
+    if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+    File idxFile = getFileInCache(idxPath);
+    File idxFileTmp = getFileInCache(idxFile+ ".tmp");
 
+    RandomAccessFile raf = null;
     try (FileOutputStream fout = new FileOutputStream(idxFileTmp)) {
       //// header message
       fout.write(MAGIC_START.getBytes(CDM.utf8Charset));

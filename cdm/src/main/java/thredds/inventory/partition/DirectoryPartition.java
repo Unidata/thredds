@@ -55,13 +55,19 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     List<MCollection> result = new ArrayList<>();
     for (DirectoryBuilder child : builder.getChildren()) {
       try {
-        MCollection dc = DirectoryBuilder.factory(config, child.getDir(), indexReader, logger);
+        MCollection dc = DirectoryBuilder.factory(config, child.getDir(), indexReader, logger);  // DirectoryPartitions or DirectoryCollections
         result.add(dc);
         lastModified = Math.max(lastModified, dc.getLastModified());
       } catch (IOException ioe) {
         logger.warn("DirectoryBuilder on "+child.getDir()+" failed: skipping", ioe);
       }
     }
+
+    Collections.sort(result, new Comparator<MCollection>() {
+      public int compare(MCollection o1, MCollection o2) {
+        return o1.getCollectionName().compareTo(o2.getCollectionName());
+      }
+    });
 
     return result;
   }

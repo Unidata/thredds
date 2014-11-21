@@ -161,7 +161,7 @@ public class TestGrib1CoordsMatch {
     assert count.nerrs == 0;
   }
 
-  // @Test
+  @Test
   public void testRdavmDS083() throws IOException {
     TestGribCollections.Count count = read("B:/rdavm/ds083.2/sampleMonth/rda_ds083.2-sampleMonth.ncx2");
 

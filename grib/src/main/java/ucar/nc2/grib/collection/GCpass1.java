@@ -15,6 +15,7 @@ import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
@@ -36,16 +37,37 @@ public class GCpass1 {
   static private final Logger logger = LoggerFactory.getLogger(GCpass1.class);
 
   public static void main(String[] args) throws IOException {
+    String usage = "usage: ucar.nc2.grib.collection.GCpass1 -spec <collectionSpec> [-isGrib2] -partition [none|file|directory]";
+    String def = "default: -isGrib1 partition=directory";
+    if (args.length < 2) {
+      System.out.printf("%s%n%s%n", usage, def);
+      System.exit(0);
+    }
+
+    // String spec = "Q:/cdmUnitTest/gribCollections/cfsr/.*gbx9";
+    // String spec = "B:/lead/NDFD-CONUS_5km/.*gbx9";
+    // String spec = "B:/motherlode/rfc/kalr/.*gbx9";
+    String spec = null; // "B:/rdavm/ds083.2/grib1/**/.*gbx9";
+    FeatureCollectionType type = FeatureCollectionType.GRIB1;
+    String partition = "directory";
+    String useTableVersionS = null;
+    for (int i = 0; i < args.length; i++) {
+      String s = args[i];
+      if (s.equalsIgnoreCase("-spec")) spec = args[i + 1];
+      if (s.equalsIgnoreCase("-isGrib2")) type = FeatureCollectionType.GRIB2;
+      if (s.equalsIgnoreCase("-partition")) partition = args[i + 1];
+      if (s.equalsIgnoreCase("-useTableVersion")) useTableVersionS = args[i + 1];
+    }
+
+    Boolean useTableVersion = (useTableVersionS != null) ? Boolean.parseBoolean(useTableVersionS) : null;  // default true
+
     Formatter fm = new Formatter(System.out);
-    //GCpass1 pass1 = new GCpass1("B:/rdavm/ds083.2/grib1/**/.*gbx9", FeatureCollectionType.GRIB1, null);
-    GCpass1 pass1 = new GCpass1("B:/rdavm/ds627.0/ei.oper.an.pv/**/.*gbx9", FeatureCollectionType.GRIB1, null);
-    // GCpass1 pass1 = new GCpass1("B:/motherlode/rfc/kalr/.*gbx9", FeatureCollectionType.GRIB1, "file");
-    // GCpass1 pass1 = new GCpass1("B:/lead/NDFD-CONUS_5km/.*gbx9", FeatureCollectionType.GRIB2, "file");
-    //GCpass1 pass1 = new GCpass1("Q:/cdmUnitTest/gribCollections/cfsr/.*gbx9", FeatureCollectionType.GRIB2, null);
-    pass1.scanAndReport(fm);
+    GCpass1 pass1 = new GCpass1(spec, type, partition, useTableVersion, fm);
+    pass1.scanAndReport();
   }
 
   class Accum {
+    CalendarDate last = null;
     int[] count;
 
     Accum(int n) {
@@ -98,12 +120,19 @@ public class GCpass1 {
 
   ///////////////////////////////////
   FeatureCollectionConfig config;
+  FeatureCollectionConfig.GribConfig gribConfig;
+  Formatter fm;
   Counters countersAll;
   Accum accumAll = new Accum(2);
 
-  public GCpass1(String spec, FeatureCollectionType fcType, String timePartition) {
+  public GCpass1(String spec, FeatureCollectionType fcType, String timePartition, Boolean useTableVersion, Formatter fm) {
+    this.config = new FeatureCollectionConfig("GCpass1", "test/GCpass1", fcType, spec, null, null, timePartition, null, null);
+    this.gribConfig =  this.config.gribConfig;
+    if (useTableVersion != null) this.gribConfig.useTableVersion = useTableVersion;
+    this.fm = fm;
 
-    this.config = new FeatureCollectionConfig("testPass1", "grib/testPass1", fcType, spec, null, null, timePartition, null, null);
+    this.config.show(fm);
+    fm.format("%n");
 
     countersAll = new Counters();
     countersAll.add("referenceDate").setShowRange(true);
@@ -134,7 +163,7 @@ public class GCpass1 {
     fm.format("%s%40s #files  #records   #vars  #runtimes    #gds%n", indent, "");
   }
 
-  public void reportOneDir(String dir, Accum accum, Counters countersOne, Indent indent, Formatter fm) {
+  public CalendarDate reportOneDir(String dir, Accum accum, Counters countersOne, Indent indent, CalendarDate last) {
     fm.format("%s%40s", indent, dir + " total");
     fm.format("%8d ", accum.count[0]);
     fm.format("%8d ", accum.count[1]);
@@ -142,7 +171,13 @@ public class GCpass1 {
     fm.format("%8d ", countersOne.get("referenceDate").getUnique());
     fm.format("%8d ", countersOne.get("gds").getUnique());
     fm.format("%s ", countersOne.get("referenceDate").showRange());
+
+    CalendarDate first = (CalendarDate) countersOne.get("referenceDate").getFirst();
+    if (last != null && first.isBefore(last))
+      fm.format(" ***");
     fm.format("%n");
+
+    return (CalendarDate) countersOne.get("referenceDate").getLast();
   }
 
   public void reportOneFileHeader(Indent indent, Formatter fm) {
@@ -165,7 +200,7 @@ public class GCpass1 {
     fm.format("%n");
   }
 
-  public void scanAndReport(Formatter fm) throws IOException {
+  public void scanAndReport() throws IOException {
     Indent indent = new Indent(2);
     if (config.ptype != FeatureCollectionConfig.PartitionType.file)
       reportOneHeader(indent, fm);
@@ -215,10 +250,8 @@ public class GCpass1 {
       }
     }   // loop over partitions
 
-    // do this partition; we just did children so never update them
-
     countersParent.addTo(countersPart);
-    reportOneDir(dpart.getRoot(), accum, countersPart, indent, fm);
+    accum.last = reportOneDir(dpart.getRoot(), accum, countersPart, indent, accum.last);
     indent.decr();
     return accum;
   }
@@ -349,7 +382,7 @@ public class GCpass1 {
         int nrecords = 0;
 
         if (isGrib1) {
-          Grib1Index grib1Index = createGrib1Index(mfile, true);
+          Grib1Index grib1Index = readGrib1Index(mfile, true);
           if (grib1Index == null) {
             System.out.printf("%s%s: read or create failed%n", indent, mfile.getPath());
             continue;
@@ -359,7 +392,7 @@ public class GCpass1 {
             nrecords++;
           }
         } else {
-          Grib2Index grib2Index = createGrib2Index(mfile, true);
+          Grib2Index grib2Index = readGrib2Index(mfile, true);
           if (grib2Index == null) {
             System.out.printf("%s%s: read or create failed%n", indent, mfile.getPath());
             continue;
@@ -380,7 +413,7 @@ public class GCpass1 {
 
     parentCounters.addTo(countersThisDir);
     accum.add(0, nfiles);
-    reportOneDir(dirPath.toString(), accum, countersThisDir, indent, fm);
+    accum.last = reportOneDir(dirPath.toString(), accum, countersThisDir, indent, accum.last);
     return accum;
   }
 
@@ -399,7 +432,7 @@ public class GCpass1 {
     counters.count("referenceDate", pds.getReferenceDate());
 
     int gdsHash = gdss.getGDS().hashCode();
-    int cdmHash = Grib1Iosp.cdmVariableHash(cust1, gr, gdsHash, true, true, true);
+    int cdmHash = Grib1Iosp.cdmVariableHash(cust1, gr, gdsHash, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
     String name =  Grib1Iosp.makeVariableName(cust1, pds);
     counters.count("variable", new Variable(cdmHash, name));
     counters.count("gds", gdsHash);
@@ -438,14 +471,14 @@ public class GCpass1 {
 
     //counters.countS("param", gr.getDiscipline() + "-" + pdss.getParameterCategory() + "-" + pdss.getParameterNumber());
     int gdsHash = gr.getGDSsection().getGDS().hashCode();
-    int cdmHash = Grib2Iosp.cdmVariableHash(cust2, gr, gdsHash, false, false, logger);
+    int cdmHash = Grib2Iosp.cdmVariableHash(cust2, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
     String name = GribUtils.makeNameFromDescription(cust2.getVariableName(gr));
     counters.count("variable", new Variable(cdmHash, name));
     counters.count("gds", gdsHash);
   }
 
 
-  private Grib1Index createGrib1Index(MFile mf, boolean readOnly) throws IOException {
+  private Grib1Index readGrib1Index(MFile mf, boolean readOnly) throws IOException {
     String path = mf.getPath();
     if (path.endsWith(Grib1Index.GBX9_IDX))
       path = StringUtil2.removeFromEnd(path, Grib1Index.GBX9_IDX);
@@ -461,7 +494,7 @@ public class GCpass1 {
     return index;
   }
 
-  private Grib2Index createGrib2Index(MFile mf, boolean readOnly) throws IOException {
+  private Grib2Index readGrib2Index(MFile mf, boolean readOnly) throws IOException {
     String path = mf.getPath();
     if (path.endsWith(Grib1Index.GBX9_IDX))
       path = StringUtil2.removeFromEnd(path, Grib1Index.GBX9_IDX);

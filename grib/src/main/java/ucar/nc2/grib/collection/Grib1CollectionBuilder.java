@@ -240,7 +240,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
       // boolean isDense = false; // "dense".equals(config.getParameter("CoordSys"));  LOOK isDense not implemented
-      CalendarPeriod userTimeUnit = config.getUserTimeUnit();
+      CalendarPeriod userTimeUnit = config.userTimeUnit;
 
       // assign each record to unique variable using cdmVariableHash()
       Map<Integer, VariableBag> vbHash = new HashMap<>(100);
