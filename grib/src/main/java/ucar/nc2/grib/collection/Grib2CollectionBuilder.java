@@ -62,9 +62,6 @@ import java.util.*;
 class Grib2CollectionBuilder extends GribCollectionBuilder {
   // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
 
-  private final boolean intvMerge;
-  private final boolean useGenType;
-
   private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib2Customizer cust;
 
@@ -74,17 +71,6 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     gribConfig = config.gribConfig;
-    Map<String, Boolean> pdsConfig = gribConfig.pdsHash;
-    intvMerge = assignValue(pdsConfig, "intvMerge", true);
-    useGenType = assignValue(pdsConfig, "useGenType", false);
-  }
-
-  private boolean assignValue(Map<String, Boolean> pdsHash, String key, boolean value) {
-    if (pdsHash != null) {
-      Boolean b = pdsHash.get(key);
-      if (b != null) value = b;
-    }
-    return value;
   }
 
   // read all records in all files,
@@ -100,10 +86,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     Counter statsAll = new Counter(); // debugging
 
     logger.debug(" dcm={}", dcm);
-    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    //Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
-    Map<String, Boolean> pdsConvert = config.gribConfig.pdsHash;
-    FeatureCollectionConfig.GribIntvFilter intvMap = config.gribConfig.intvFilter;
+    FeatureCollectionConfig.GribIntvFilter intvMap = gribConfig.intvFilter;
 
     // place each record into its group
     int totalRecords = 0;
@@ -132,7 +115,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         for (Grib2Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
           if (this.cust == null) {
             this.cust = Grib2Customizer.factory(gr);
-            cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
+            cust.setTimeUnitConverter(gribConfig.getTimeUnitConverter());
           }
           if (filterOut(gr, intvMap)) {
             statsAll.filter++;
@@ -169,8 +152,8 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<Grib2CollectionWriter.Group> groups = new ArrayList<>(gdsMap.values());
     for (Grib2CollectionWriter.Group g : groups) {
       Counter stats = new Counter(); // debugging
-      Grib2Rectilyser rect = new Grib2Rectilyser(g.records, g.gdsHash, pdsConvert);
-      rect.make(config.gribConfig, stats, errlog);
+      Grib2Rectilyser rect = new Grib2Rectilyser(g.records, g.gdsHash);
+      rect.make(gribConfig, stats, errlog);
       g.gribVars = rect.gribvars;
       g.coords = rect.coords;
 
@@ -267,7 +250,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     private List<VariableBag> gribvars;
     private List<Coordinate> coords;
 
-    Grib2Rectilyser(List<Grib2Record> records, int gdsHash, Map<String, Boolean> pdsConfig) {
+    Grib2Rectilyser(List<Grib2Record> records, int gdsHash) {
       this.records = records;
       this.gdsHash = gdsHash;
     }
@@ -372,7 +355,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   private int cdmVariableHash(Grib2Record gr, int gdsHash) {
-    return Grib2Iosp.cdmVariableHash(cust, gr, gdsHash, intvMerge, useGenType, logger);
+    return Grib2Iosp.cdmVariableHash(cust, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
   }
 
 }

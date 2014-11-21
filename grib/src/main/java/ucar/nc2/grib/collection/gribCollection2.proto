@@ -101,6 +101,38 @@ message Dataset {
   repeated Group groups = 2;
 }
 
+message StringMap {
+  required string name = 1;
+  required string value = 2;
+}
+
+message IntMap {
+  required sint32 from = 1;
+  required sint32 to = 2;
+}
+
+message IntvFilter {
+  required sint32 intvLength = 1;
+  required uint32 variableId = 2;
+  optional sint32 intvProb = 3;
+}
+
+message FcConfig {
+  required string name = 1;
+  required string collectionSpec = 2;
+  required string partitionType = 3;
+  optional string dateFormatMark = 4;
+
+  repeated IntMap gdsConvert = 11;
+  optional bool pdsUseGenType = 12 [default = false];
+  optional bool pdsUseTableVersion = 13 [default = true];
+  optional bool pdsIntvMerge = 14 [default = true];
+  optional bool pdsUseCenter = 15 [default = true];
+  optional bool intvExcludeZero = 16 [default = false];
+  repeated IntvFilter intvFilter = 17;
+  repeated IntMap timeUnitConvert = 18;
+}
+
 message GribCollection {
   required string name = 1;         // must be unique - index filename is name.ncx
   required string topDir = 2;       // filenames are reletive to this
@@ -119,6 +151,7 @@ message GribCollection {
   optional int32 backProcessId = 12;
 
   repeated Parameter params = 20;      // not used yet
+  optional FcConfig config = 22;
 
   extensions 100 to 199;
 }

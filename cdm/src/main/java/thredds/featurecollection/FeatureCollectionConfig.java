@@ -65,7 +65,7 @@ public class FeatureCollectionConfig {
   }
 
   static public enum GribDatasetType {
-    TwoD, Best, Hour0, Files, Latest, LatestFile
+    TwoD, Best, Analysis, Files, Latest, LatestFile
   }
 
   static public enum PartitionType {
@@ -371,21 +371,23 @@ public class FeatureCollectionConfig {
   static private Set<GribDatasetType> defaultGribDatasetTypes =
           Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Latest));
 
-  static public class GribConfig {
-    public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
+  static public class GribConfig {                                                // LOOK make Immutable
+    public Map<Integer, Integer> gdsHash;  // map one gds hash to another
     public Map<Integer, String> gdsNamer;  // hash, group name
-    public Map<String, Boolean> pdsHash = new HashMap<>(); // featureName, yes/no
-    public String lookupTablePath, paramTablePath;         // user defined tables
-    public String latestNamer, bestNamer;
-    public Element paramTable;
-    public Boolean filesSortIncreasing = true;
+    public boolean useGenType, useTableVersion, intvMerge, useCenter;
     public GribIntvFilter intvFilter;
+    public TimeUnitConverterHash tuc;
 
-    private TimeUnitConverterHash tuc;
+    public String latestNamer, bestNamer;
+    public Boolean filesSortIncreasing = true;
+    public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
+
+    public String lookupTablePath, paramTablePath;         // user defined tables
+    public Element paramTable;                             // ??
+
     private boolean explicitDatasets = false;
-    private Map<Integer, Integer> gdsHash;  // map one gds hash to another
 
-    public Map<String, String> params;
+    private Map<String, String> params;
 
     public GribConfig() { // defaults
     }
@@ -422,12 +424,16 @@ public class FeatureCollectionConfig {
       if (configElem.getChild("bestNamer", ns) != null)
         bestNamer = configElem.getChild("bestNamer", ns).getAttributeValue("name");
 
-      List<Element> filesSortElems = configElem.getChildren("filesSort", ns);
-      if (filesSortElems != null) {
-        for (Element filesSort : filesSortElems) {
-          if (filesSort.getChild("lexigraphicByName", ns) != null) {
-            filesSortIncreasing = Boolean.valueOf(
-                    filesSort.getChild("lexigraphicByName", ns).getAttributeValue("increasing"));
+      Element filesSortElem = configElem.getChild("filesSort", ns);
+      if (filesSortElem != null) {
+        String orderByS = filesSortElem.getAttributeValue("orderBy");     // filename vs date ??
+        String increasingS = filesSortElem.getAttributeValue("increasing");
+        if (increasingS != null)
+          filesSortIncreasing = !increasingS.equalsIgnoreCase("false");   // default is true
+        else {
+          Element lexigraphicByName = filesSortElem.getChild("lexigraphicByName", ns);
+          if (lexigraphicByName != null) {
+            filesSortIncreasing = Boolean.valueOf(lexigraphicByName.getAttributeValue("increasing"));
           }
         }
       }
@@ -455,9 +461,10 @@ public class FeatureCollectionConfig {
       }
 
       Element pdsHashElement = configElem.getChild("pdsHash", ns);
-      readValue(pdsHashElement, "intvMerge", ns, true);
-      readValue(pdsHashElement, "useGenType", ns, false);
-      readValue(pdsHashElement, "useTableVersion", ns, true);
+      useGenType = readValue(pdsHashElement, "useGenType", ns, false);
+      useTableVersion = readValue(pdsHashElement, "useTableVersion", ns, true);  // LOOK maybe default should be false ??
+      intvMerge = readValue(pdsHashElement, "intvMerge", ns, true);
+      useCenter = readValue(pdsHashElement, "useCenter", ns, true);
     }
 
     public void setExcludeZero(boolean val) {
@@ -470,7 +477,7 @@ public class FeatureCollectionConfig {
       intvFilter.addVariable(intvLength, varId, null);
     }
 
-    private void readValue(Element pdsHashElement, String key, Namespace ns, boolean value) {
+    private boolean readValue(Element pdsHashElement, String key, Namespace ns, boolean value) {
       if (pdsHashElement != null) {
         Element e = pdsHashElement.getChild(key, ns);
         if (e != null) {
@@ -480,7 +487,7 @@ public class FeatureCollectionConfig {
           if (t != null && t.equalsIgnoreCase("false")) value = false;
         }
       }
-      pdsHash.put(key, value);
+      return value;
     }
 
     public void addDatasetType(String datasetTypes) {
@@ -554,7 +561,10 @@ public class FeatureCollectionConfig {
       sb.append("datasets=").append(datasets);
       if (gdsHash != null) sb.append(", gdsHash=").append(gdsHash);
       if (gdsNamer != null) sb.append(", gdsNamer=").append(gdsNamer);
-      if (pdsHash != null) sb.append(", pdsHash=").append(pdsHash);
+      sb.append(", useGenType=").append(useGenType);
+      sb.append(", useTableVersion=").append(useTableVersion);
+      sb.append(", intvMerge=").append(intvMerge);
+      sb.append(", useCenter=").append(useCenter);
       if (lookupTablePath != null) sb.append(", lookupTablePath='").append(lookupTablePath).append('\'');
       if (paramTablePath != null) sb.append(", paramTablePath='").append(paramTablePath).append('\'');
       if (latestNamer != null) sb.append(", latestNamer='").append(latestNamer).append('\'');
@@ -597,12 +607,12 @@ public class FeatureCollectionConfig {
 
   } // GribConfig
 
-  static class GribIntvFilterParam {
-    int id;
-    int intvLength;
-    int prob = Integer.MIN_VALUE;
+  static public class GribIntvFilterParam {
+    public final int id;
+    public final int intvLength;
+    public final int prob; // none = Integer.MIN_VALUE;
 
-    GribIntvFilterParam(int id, int intvLength, int prob) {
+   public GribIntvFilterParam(int id, int intvLength, int prob) {
       this.id = id;
       this.intvLength = intvLength;
       this.prob = prob;
@@ -610,8 +620,8 @@ public class FeatureCollectionConfig {
   }
 
   static public class GribIntvFilter {
-    List<GribIntvFilterParam> filter;
-    boolean isZeroExcluded;
+    public List<GribIntvFilterParam> filter;
+    public boolean isZeroExcluded;
 
     public boolean isZeroExcluded() {
       return isZeroExcluded;
@@ -660,12 +670,12 @@ public class FeatureCollectionConfig {
 
       try {
         int id;
-        if (s.length == 3) { // GRIB1
+        if (s.length == 3) { // GRIB2
           int discipline = Integer.parseInt(s[0]);
           int category = Integer.parseInt(s[1]);
           int number = Integer.parseInt(s[2]);
           id = (discipline << 16) + (category << 8) + number;
-        } else {   // GRIB2
+        } else {   // GRIB1
           int center = Integer.parseInt(s[0]);
           int subcenter = Integer.parseInt(s[1]);
           int version = Integer.parseInt(s[2]);
@@ -685,8 +695,8 @@ public class FeatureCollectionConfig {
 
   }
 
-  private static class TimeUnitConverterHash implements TimeUnitConverter {
-    Map<Integer, Integer> map = new HashMap<>(5);
+  public static class TimeUnitConverterHash implements TimeUnitConverter {
+    public Map<Integer, Integer> map = new HashMap<>(5);
 
     public int convertTimeUnit(int timeUnit) {
       if (map == null) return timeUnit;
