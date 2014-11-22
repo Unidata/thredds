@@ -32,21 +32,33 @@
  */
 package ucar.nc2.ncml;
 
+import org.jdom2.Element;
 import thredds.filesystem.MFileOS;
-import thredds.inventory.*;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import thredds.filesystem.MFileOS7;
+import thredds.inventory.DateExtractor;
+import thredds.inventory.DateExtractorFromName;
+import thredds.inventory.MFile;
+import thredds.inventory.MFileCollectionManager;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.ProxyReader;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Executor;
-import java.io.*;
-
-import org.jdom2.Element;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * Superclass for NcML Aggregation.
@@ -147,8 +159,8 @@ public abstract class Aggregation {
   protected Type type; // the aggregation type
   protected Object spiObject; // pass to NetcdfFile.open()
 
-  protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
-  protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // all : explicit and scanned
+  protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<>(); // explicitly created Dataset objects from netcdf elements
+  protected List<Aggregation.Dataset> datasets = new ArrayList<>(); // all : explicit and scanned
   protected MFileCollectionManager datasetManager; // manages scanning
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
@@ -286,7 +298,6 @@ public abstract class Aggregation {
   // LOOK could also use syncExtend()
   public long getLastModified() {
     try {
-      boolean wantScan = datasetManager.isScanNeeded();
       datasetManager.scanIfNeeded();
     } catch (IOException e) {
       logger.error("Aggregation scan failed, e");
@@ -432,7 +443,7 @@ public abstract class Aggregation {
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
 
     // heres where the results will go
-    datasets = new ArrayList<Dataset>();
+    datasets = new ArrayList<>();
 
     for (MFile cd : datasetManager.getFilesSorted()) {
       datasets.add( makeDataset(cd));
@@ -477,8 +488,29 @@ public abstract class Aggregation {
       datasets.add(dataset);
     }
 
+    // Remove unreadable files (i.e. due to permissions) from the aggregation.
+    // LOOK: Is this logic we should install "upstream", perhaps in MFileCollectionManager?
+    // It would affect other collections than just NcML aggregation in that case.
+    for (Iterator<Dataset> datasetsIter = datasets.iterator(); datasetsIter.hasNext(); ) {
+      Dataset dataset = datasetsIter.next();
+
+      Path datasetPath;
+      if (dataset.getMFile() instanceof MFileOS) {
+        datasetPath = ((MFileOS) dataset.getMFile()).getFile().toPath();
+      } else if (dataset.getMFile() instanceof MFileOS7) {
+        datasetPath = ((MFileOS7) dataset.getMFile()).getNioPath();
+      } else {
+        continue;
+      }
+
+      if (!Files.isReadable(datasetPath)) {  // File.canRead() is broken on Windows, but the JDK7 methods work.
+        logger.warn("Aggregation member isn't readable (permissions issue?). Skipping: " + datasetPath);
+        datasetsIter.remove();
+      }
+    }
+
     // check for duplicate location
-    Set<String> dset = new HashSet<String>( 2 * datasets.size());
+    Set<String> dset = new HashSet<>( 2 * datasets.size());
     for (Aggregation.Dataset dataset : datasets) {
       if (dset.contains(dataset.cacheLocation))
         logger.warn("Duplicate dataset in aggregation = "+dataset.cacheLocation);
@@ -753,6 +785,7 @@ public abstract class Aggregation {
       return getLocation().hashCode();
     }
 
+    @Override
     public int compareTo(Object o) {
       Dataset other = (Dataset) o;
       return getLocation().compareTo( other.getLocation());
@@ -808,6 +841,7 @@ public abstract class Aggregation {
       this.dataset = dataset;
     }
 
+    @Override
     public Array reallyRead(Variable mainV, CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile = null;
       try {
@@ -820,6 +854,7 @@ public abstract class Aggregation {
       }
     }
 
+    @Override
     public Array reallyRead(Variable mainV, Section section, CancelTask cancelTask) throws  IOException, InvalidRangeException {
       NetcdfFile ncfile = null;
       try {

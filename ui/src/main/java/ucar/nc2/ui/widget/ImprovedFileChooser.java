@@ -101,8 +101,6 @@ public class ImprovedFileChooser extends JFileChooser {
         // that our TableModelListener calculated. In that case, resize all of the columns an equal percentage.
         // This will ensure that the relative ratios of the *actual* widths match those of the *preferred* widths.
         detailsTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-
-
     }
 
     private static AbstractButton getDetailsViewButton(JFileChooser fileChooser) {
