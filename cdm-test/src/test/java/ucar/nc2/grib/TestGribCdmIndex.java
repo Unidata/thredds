@@ -65,7 +65,7 @@ public class TestGribCdmIndex {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    /* file partition
+    // file partition
     String dataDir = TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/";
     FeatureCollectionConfig config = new FeatureCollectionConfig("TestGribCdmIndex", "GFS_Global_onedeg/TestGribCdmIndex", FeatureCollectionType.GRIB2,
             dataDir + "GFS_Global_onedeg_#yyyyMMdd_HHmm#.grib2", null, null, "file", null, null);
@@ -78,11 +78,6 @@ public class TestGribCdmIndex {
             dataDir + "GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, null, null, null);
     result.add(new Object[]{dataDir, "GFS_CONUS_80km_20120227_0000.grib1", config, "TestGribCdmIndex-CONUS_80km.ncx2", "VAR_7-0-2-52_L100", 10, 9});  // */
 
-    // directory partition
-    String dataDir2 = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/";
-    FeatureCollectionConfig config2 = FeatureCollectionReader.readFeatureCollection(TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/config.xml#NDFD-CONUS_5km_conduit");
-    System.out.printf("%s%n", config2);
-    result.add(new Object[]{dataDir2, "NDFD_CONUS_5km_conduit_20141114_1300.grib2", config2, "TestGribCdmIndex-CONUS_80km.ncx2", "VAR_7-0-2-52_L100", 10, 9});  // */
 
     return result;
   }
@@ -112,12 +107,12 @@ public class TestGribCdmIndex {
     testRemoveFileFromCollection(CollectionUpdateType.always, orgLen, remLen);
   }
 
-  //@Test
+  @Test
   public void testRemoveFileFromCollectionTest() throws IOException {
     testRemoveFileFromCollection(CollectionUpdateType.test, orgLen, remLen);
   }
 
-  //@Test
+  @Test
   public void testRemoveFileFromCollectionTestOnly() throws IOException {
     testRemoveFileFromCollection(CollectionUpdateType.testIndexOnly, orgLen, orgLen);
   }

@@ -35,7 +35,6 @@ package ucar.nc2.stream;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.iosp.IospHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -176,7 +175,6 @@ public class NcStreamWriter {
     if (show) System.out.printf(" data starts at= %d%n", size);
 
     for (Variable v : ncfile.getVariables()) {
-      Attribute chunkAtt = null; // v.findAttribute(CDM.CHUNK);
       Attribute compressAtt = v.findAttribute(CDM.COMPRESS);
       boolean deflate = (compressAtt != null) && compressAtt.isString() && compressAtt.getStringValue().equalsIgnoreCase(CDM.COMPRESS_DEFLATE);
 
@@ -184,9 +182,7 @@ public class NcStreamWriter {
       //if (vsize < sizeToCache) continue; // in the header;
       if (show) System.out.printf(" var %s len=%d starts at= %d%n", v.getFullName(), vsize, size);
 
-      if (chunkAtt != null) {
-        size += copyChunks(out, v, compressAtt.getStringValue(), deflate);
-      } else if (vsize > maxChunk) {
+      if (vsize > maxChunk) {
         size += copyChunks(out, v, maxChunk, deflate);
       } else {
         size += sendData(v, v.getShapeAsSection(), out, deflate);
@@ -217,32 +213,10 @@ public class NcStreamWriter {
     return size;
   }
 
-  private long copyChunks(OutputStream out, Variable oldVar, String chunk, boolean deflate) throws IOException {
-    /*long maxChunkElems = maxChunkSize / oldVar.getElementSize();
-    FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(oldVar.getShape());
-    long size = 0;
-    while (index.currentElement() < index.getSize()) {
-      try {
-        int[] chunkOrigin = index.getCurrentCounter();
-        int[] chunkShape = index.computeChunkShape(maxChunkElems);
-        size += sendData(oldVar, new Section(chunkOrigin, chunkShape), out, deflate);
-        index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
-
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-        throw new IOException(e.getMessage());
-      }
-    }
-    return size; */
-    return 0;
-  }
-
-
   static public void main2(String args[]) throws InvalidRangeException {
     int[] totalShape = new int[] {1, 40, 530, 240};
     int[] chunkShape = new int[] {1, 1, 530, 240};
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(totalShape);
-    long size = 0;
     while (index.currentElement() < index.getSize()) {
       int[] chunkOrigin = index.getCurrentCounter();
       System.out.printf(" %s%n", new Section(chunkOrigin, chunkShape));
@@ -256,7 +230,6 @@ public class NcStreamWriter {
     int[] totalShape = new int[] {1, 40, 530, 240};
     //int[] chunkShape = new int[] {1, 1, 530, 240};
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(totalShape);
-    long size = 0;
     while (index.currentElement() < index.getSize()) {
       int[] chunkOrigin = index.getCurrentCounter();
       int[] chunkShape = index.computeChunkShape(maxChunkElems);

@@ -60,7 +60,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Parameter;
@@ -498,8 +497,8 @@ public class GridDatasetInfo {
 	private Element writeBoundingBox(LatLonRect bb) {
 
 		Element bbElem = new Element("LatLonBox");
-		LatLonPoint llpt = bb.getLowerLeftPoint();
-		LatLonPoint urpt = bb.getUpperRightPoint();
+		//LatLonPoint llpt = bb.getLowerLeftPoint();
+		//LatLonPoint urpt = bb.getUpperRightPoint();
 
 		//bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(llpt.getLongitude(), 4)));
 		bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMin() , 4)));

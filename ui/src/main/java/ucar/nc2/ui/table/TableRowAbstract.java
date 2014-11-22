@@ -32,6 +32,9 @@
  */
 package ucar.nc2.ui.table;
 
+import java.io.Serializable;
+import java.util.Comparator;
+
 public abstract class TableRowAbstract implements TableRow {
   protected int tieBreakerCol = -1;      // set this to column used to break ties
   protected int[] tryNext;               // set this to list of columns used to break ties
@@ -149,7 +152,7 @@ public abstract class TableRowAbstract implements TableRow {
 
   public String toString() { return ""; }
 
-  static public class Sorter implements java.util.Comparator {
+  static public class Sorter implements Comparator, Serializable {
     private int col;
     private boolean reverse;
 

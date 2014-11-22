@@ -682,10 +682,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       fragment = trueurl.substring(pos + 1, trueurl.length());
       trueurl = trueurl.substring(0, pos);
     }
-    String query = null;
     pos = location.lastIndexOf('?');
     if (pos >= 0) {
-      query = trueurl.substring(pos + 1, trueurl.length());
       trueurl = trueurl.substring(0, pos);
     }
 
@@ -959,7 +957,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         fragment = fragment.substring(1);
       String[] pairs = fragment.split("[ \t]*[&][ \t]*");
       for (String pair : pairs) {
-        String[] pieces = fragment.split("[ \t]*[=][ \t]*");
+        String[] pieces = pair.split("[ \t]*[=][ \t]*");
         switch (pieces.length) {
           case 1:
             map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
@@ -979,8 +977,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
 
   //////////////////////////////////////////////////
-
-  private static boolean isexternalclient = false;
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
@@ -1021,9 +1017,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile openDodsByReflection(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    Constructor con = null;
-    Class c = null;
-    NetcdfFile file = null;
+    Constructor con;
+    Class c;
+    NetcdfFile file;
     try {
       c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
       con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
@@ -1046,10 +1042,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private NetcdfFile openDap4ByReflection(String location, ucar.nc2.util.CancelTask cancelTask)
           throws IOException {
-    Constructor con = null;
-    Constructor constructormethod = null;
-    Class dap4class = null;
-    NetcdfFile file = null;
+    Constructor constructormethod;
+    Class dap4class;
+    NetcdfFile file;
     String target = DAP4_PATH + ".DapNetcdfFile";
     try {
       dap4class = NetcdfDataset.class.getClassLoader().loadClass(target);
