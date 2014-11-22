@@ -38,10 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.coord.Coordinate;
-import ucar.coord.CoordinateRuntime;
-import ucar.coord.CoordinateTimeAbstract;
-import ucar.coord.SparseArray;
+import ucar.coord.*;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.time.CalendarDateRange;
@@ -378,6 +375,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final long recordsPos;    // where the records array is stored in the index. 0 means no records
     final int recordsLen;
 
+        // stats
+    final int ndups, nrecords, nmissing;
+
     // read in on demand
     private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
@@ -387,6 +387,23 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.coordIndex = gcVar.coordIndex;
       this.recordsPos = gcVar.recordsPos;
       this.recordsLen = gcVar.recordsLen;
+
+      this.ndups = gcVar.ndups;
+      this.nrecords = gcVar.nrecords;
+      this.nmissing = gcVar.nmissing;
+    }
+
+    public int calcTotalSize() {
+      int totalSize = 1;
+      for (int idx : this.coordIndex) {
+        Coordinate coord = this.group.coords.get(idx);
+        if (coord instanceof CoordinateTime2D)
+          totalSize *= ((CoordinateTime2D) coord).getNtimes();
+        else
+          totalSize *= coord.getSize();
+      }
+      return totalSize;
+      //this.density = ((float) this.nrecords) / this.totalSize;
     }
 
     public synchronized void readRecords() throws IOException {
@@ -429,8 +446,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           GribCollectionProto.Record pr = proto.getRecords(i);
           records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
         }
-
-        this.sa = new SparseArray<>(size, track, records, 0);
+        int ndups = proto.hasNdups() ? proto.getNdups() : -1;
+        this.sa = new SparseArray<>(size, track, records, ndups);
       }
     }
 
@@ -531,6 +548,18 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public int getGenProcessType() {
       return info.genProcessType;
+    }
+
+    public int getNdups() {
+      return ndups;
+    }
+
+    public int getNrecords() {
+      return nrecords;
+    }
+
+    public int getNmissing() {
+      return nmissing;
     }
 
     public String toStringFrom() {

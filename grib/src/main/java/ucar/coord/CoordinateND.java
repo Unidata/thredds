@@ -170,7 +170,8 @@ public class CoordinateND<T> {
             // make a working sparse array with new shape
       int[] sizeArray = new int[newCoords.size()];
       for (int i = 0; i < newCoords.size(); i++) {
-        sizeArray[i] = newCoords.get(i).getSize();
+        Coordinate coord = newCoords.get(i);
+        sizeArray[i] = (coord instanceof CoordinateTime2D) ? ((CoordinateTime2D) coord).getNtimes() : coord.getSize();
       }
       SparseArray.Builder<T> workingSAbuilder = new SparseArray.Builder<>(sizeArray);
 
@@ -215,7 +216,7 @@ public class CoordinateND<T> {
         identity = curr.equals(prev);
         if (identity) return;
 
-        assert curr.getType() == prev.getType();
+        assert curr.getType() == prev.getType() : curr.getType()+" != "+prev.getType();
 
         int count = 0;
         Map<Object, Integer> currValMap = new HashMap<>();

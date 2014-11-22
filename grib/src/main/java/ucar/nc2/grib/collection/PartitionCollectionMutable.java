@@ -159,7 +159,6 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       }
       //sb.format("total: %4d %3d %3d %n", totalN, totalDups, totalMiss);
       sb.format("%n");
-      sb.format("totalSize = %4d density=%6.2f%n", this.totalSize, this.density);
 
       sb.format(super.toStringComplete());
       return sb.toString();

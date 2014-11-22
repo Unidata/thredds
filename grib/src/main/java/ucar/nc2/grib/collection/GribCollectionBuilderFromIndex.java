@@ -452,10 +452,9 @@ message Coord {
     List<Integer> index = pv.getCoordIdxList();
 
     GribCollectionMutable.VariableIndex result = gc.makeVariableIndex(group, cdmHash, discipline, tables, rawPds, index, recordsPos, recordsLen);
-    result.density = pv.getDensity();
     result.ndups = pv.getNdups();
     result.nrecords = pv.getNrecords();
-    result.missing = pv.getMissing();
+    result.nmissing = pv.getMissing();
 
     Coordinate runtime = result.getCoordinate(Coordinate.Type.runtime);
     Coordinate time = result.getCoordinate(Coordinate.Type.time);

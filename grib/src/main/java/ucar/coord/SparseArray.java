@@ -124,7 +124,8 @@ public class SparseArray<T> {
   }
 
   public void showInfo(Formatter info, Counter all) {
-    info.format("ndups=%d total=%d/%d density= %f%n", ndups, countNotMissing(), totalSize, getDensity());
+    info.format("SparseArray shape=[%s] ", Misc.showInts(shape));
+    info.format("ndups=%d, missing/total=%d/%d, density=%f%n", ndups, countMissing(), totalSize, getDensity());
 
     if (all != null) {
       all.dups += ndups;
@@ -133,18 +134,16 @@ public class SparseArray<T> {
       all.vars++;
     }
 
-    info.format("sizes=");
     List<Integer> sizes = new ArrayList<>();
     for (int s : shape) {
-      info.format("%d,", s);
       if (s == 1) continue; // skip dimension len 1
       sizes.add(s);
     }
-    info.format("%n%n");
-    showRecurse(0, sizes, info);
+    info.format("%n");
+    showMissingRecurse(0, sizes, info);
   }
 
-  int showRecurse(int offset, List<Integer> sizes, Formatter f) {
+  int showMissingRecurse(int offset, List<Integer> sizes, Formatter f) {
     if (sizes.size() == 0) return 0;
     if (sizes.size() == 1) {
       int len = sizes.get(0);
@@ -159,7 +158,7 @@ public class SparseArray<T> {
       int total = 0;
       int len = sizes.get(0);
       for (int i=0; i<len; i++) {
-        int count = showRecurse(offset, sizes.subList(1,sizes.size()), f);
+        int count = showMissingRecurse(offset, sizes.subList(1,sizes.size()), f);
         offset += count;
         total += count;
       }
@@ -192,7 +191,7 @@ public class SparseArray<T> {
       this.stride = calcStrides(shape);
 
       track = new int[totalSize];
-      this.content = new ArrayList<>(totalSize);  // LOOK could only allocate part of this.
+      this.content = new ArrayList<>(totalSize);  // LOOK could only allocate part of this
     }
 
     public void add(T thing, Formatter info, int... index) {
@@ -202,7 +201,7 @@ public class SparseArray<T> {
         logger.error("BAD index add=" + Misc.showInts(index), new Throwable());
       }
       if (track[where] > 0) {
-        ndups++;  // LOOK here is where we need to decide how to handle duplicates
+        ndups++;
         if (info != null) info.format(" duplicate %s%n     with %s%n%n", thing, content.get(track[where] - 1));
       }
       track[where] = content.size();  // 1-based so that 0 = missing, so content at where = content.get(track[where]-1)

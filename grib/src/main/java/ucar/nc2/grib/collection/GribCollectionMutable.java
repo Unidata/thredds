@@ -493,8 +493,7 @@ public class GribCollectionMutable implements AutoCloseable {
     public final int genProcessType;
 
     // stats
-    public int ndups, nrecords, missing, totalSize;
-    public float density;
+    public int ndups, nrecords, nmissing;
 
     // temporary storage while building - do not use
     List<Coordinate> coords;
@@ -781,7 +780,8 @@ public class GribCollectionMutable implements AutoCloseable {
         records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
       }
 
-      this.sa = new SparseArray<>(size, track, records, 0);
+      int ndups = proto.hasNdups() ? proto.getNdups() : -1;
+      this.sa = new SparseArray<>(size, track, records, ndups);
     }
 
     @Override
@@ -796,18 +796,6 @@ public class GribCollectionMutable implements AutoCloseable {
       if (r != 0) return r;
       r = intvType - o.intvType;
       return r;
-    }
-
-    public void calcTotalSize() {
-      this.totalSize = 1;
-      for (int idx : this.coordIndex) {
-        Coordinate coord = this.group.coords.get(idx);
-        if (coord instanceof CoordinateTime2D)
-          this.totalSize *= ((CoordinateTime2D) coord).getNtimes();
-        else
-          this.totalSize *= coord.getSize();
-      }
-      this.density = ((float) this.nrecords) / this.totalSize;
     }
   }  // VariableIndex
 

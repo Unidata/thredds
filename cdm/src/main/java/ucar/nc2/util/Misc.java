@@ -157,7 +157,7 @@ public class Misc {
   static public String showInts(int[] inta) {
     if (inta == null) return "null";
     Formatter f = new Formatter();
-    for (int i : inta) f.format("%d, ", i);
+    for (int i : inta) f.format("%d,", i);
     return f.toString();
   }
 

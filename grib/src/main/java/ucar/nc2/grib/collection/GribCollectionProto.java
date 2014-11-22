@@ -908,6 +908,24 @@ public final class GribCollectionProto {
      */
     ucar.nc2.grib.collection.GribCollectionProto.RecordOrBuilder getRecordsOrBuilder(
         int index);
+
+    // optional uint32 ndups = 5;
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     *
+     * <pre>
+     * duplicates found when creating
+     * </pre>
+     */
+    boolean hasNdups();
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     *
+     * <pre>
+     * duplicates found when creating
+     * </pre>
+     */
+    int getNdups();
   }
   /**
    * Protobuf type {@code SparseArray}
@@ -1017,6 +1035,11 @@ public final class GribCollectionProto {
                 mutable_bitField0_ |= 0x00000008;
               }
               records_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Record.PARSER, extensionRegistry));
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000002;
+              ndups_ = input.readUInt32();
               break;
             }
           }
@@ -1218,11 +1241,36 @@ public final class GribCollectionProto {
       return records_.get(index);
     }
 
+    // optional uint32 ndups = 5;
+    public static final int NDUPS_FIELD_NUMBER = 5;
+    private int ndups_;
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     *
+     * <pre>
+     * duplicates found when creating
+     * </pre>
+     */
+    public boolean hasNdups() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     *
+     * <pre>
+     * duplicates found when creating
+     * </pre>
+     */
+    public int getNdups() {
+      return ndups_;
+    }
+
     private void initFields() {
       cdmHash_ = 0;
       size_ = java.util.Collections.emptyList();
       track_ = java.util.Collections.emptyList();
       records_ = java.util.Collections.emptyList();
+      ndups_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1258,6 +1306,9 @@ public final class GribCollectionProto {
       for (int i = 0; i < records_.size(); i++) {
         output.writeMessage(4, records_.get(i));
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(5, ndups_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1292,6 +1343,10 @@ public final class GribCollectionProto {
       for (int i = 0; i < records_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, records_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, ndups_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1426,6 +1481,8 @@ public final class GribCollectionProto {
         } else {
           recordsBuilder_.clear();
         }
+        ndups_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -1477,6 +1534,10 @@ public final class GribCollectionProto {
         } else {
           result.records_ = recordsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.ndups_ = ndups_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1541,6 +1602,9 @@ public final class GribCollectionProto {
               recordsBuilder_.addAllMessages(other.records_);
             }
           }
+        }
+        if (other.hasNdups()) {
+          setNdups(other.getNdups());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2126,6 +2190,55 @@ public final class GribCollectionProto {
           records_ = null;
         }
         return recordsBuilder_;
+      }
+
+      // optional uint32 ndups = 5;
+      private int ndups_ ;
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       *
+       * <pre>
+       * duplicates found when creating
+       * </pre>
+       */
+      public boolean hasNdups() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       *
+       * <pre>
+       * duplicates found when creating
+       * </pre>
+       */
+      public int getNdups() {
+        return ndups_;
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       *
+       * <pre>
+       * duplicates found when creating
+       * </pre>
+       */
+      public Builder setNdups(int value) {
+        bitField0_ |= 0x00000010;
+        ndups_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       *
+       * <pre>
+       * duplicates found when creating
+       * </pre>
+       */
+      public Builder clearNdups() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        ndups_ = 0;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:SparseArray)
@@ -20307,55 +20420,56 @@ public final class GribCollectionProto {
       "\n.ucar/nc2/grib/collection/gribCollectio" +
       "n2.proto\"P\n\006Record\022\016\n\006fileno\030\001 \002(\r\022\013\n\003po" +
       "s\030\002 \002(\004\022\021\n\006bmsPos\030\003 \001(\004:\0010\022\026\n\010scanMode\030\004" +
-      " \001(\r:\0049999\"U\n\013SparseArray\022\017\n\007cdmHash\030\001 \002" +
+      " \001(\r:\0049999\"d\n\013SparseArray\022\017\n\007cdmHash\030\001 \002" +
       "(\007\022\014\n\004size\030\002 \003(\r\022\r\n\005track\030\003 \003(\r\022\030\n\007recor" +
-      "ds\030\004 \003(\0132\007.Record\"\204\002\n\010Variable\022\022\n\ndiscip" +
-      "line\030\001 \002(\r\022\013\n\003pds\030\002 \002(\014\022\017\n\007cdmHash\030\003 \002(\007" +
-      "\022\022\n\nrecordsPos\030\004 \002(\004\022\022\n\nrecordsLen\030\005 \002(\r" +
-      "\022\020\n\010coordIdx\030\006 \003(\r\022\017\n\007density\030\007 \001(\002\022\r\n\005n" +
-      "dups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030",
-      "\n \001(\r\022\020\n\010invCount\030\017 \003(\r\022\024\n\014time2runtime\030" +
-      "\020 \003(\r\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001" +
-      "\"\237\001\n\005Coord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014" +
-      "\n\004unit\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 " +
-      "\003(\002\022\r\n\005msecs\030\006 \003(\003\022\025\n\005times\030\007 \003(\0132\006.Coor" +
-      "d\022\024\n\014isOrthogonal\030\010 \001(\010\022\021\n\tisRegular\030\t \001" +
-      "(\010\"Q\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastMod" +
-      "ified\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\022\021\n\006length\030\004 \001" +
-      "(\004:\0010\"6\n\tParameter\022\014\n\004name\030\001 \002(\t\022\014\n\004data" +
-      "\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"^\n\003Gds\022\013\n\003gds\030\001 \001(",
-      "\014\022\022\n\007gdsHash\030\002 \001(\021:\0010\022\024\n\014nameOverride\030\003 " +
-      "\001(\t\022 \n\030predefinedGridDefinition\030\004 \001(\r\"\222\001" +
-      "\n\005Group\022\020\n\010gdsIndex\030\001 \002(\r\022\034\n\tvariables\030\002" +
-      " \003(\0132\t.Variable\022\026\n\006coords\030\003 \003(\0132\006.Coord\022" +
-      "\016\n\006fileno\030\004 \003(\005\022\016\n\006isTwod\030\005 \002(\010\022\032\n\006param" +
-      "s\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"\202\001\n\007Dataset\022\033" +
-      "\n\004type\030\001 \002(\0162\r.Dataset.Type\022\026\n\006groups\030\002 " +
-      "\003(\0132\006.Group\"B\n\004Type\022\006\n\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n" +
-      "\004Best\020\002\022\014\n\010Analysis\020\003\022\007\n\003SRC\020\004\022\007\n\003MRC\020\005\"" +
-      "(\n\tStringMap\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(",
-      "\t\"\"\n\006IntMap\022\014\n\004from\030\001 \002(\021\022\n\n\002to\030\002 \002(\021\"F\n" +
-      "\nIntvFilter\022\022\n\nintvLength\030\001 \002(\021\022\022\n\nvaria" +
-      "bleId\030\002 \002(\r\022\020\n\010intvProb\030\003 \001(\021\"\355\002\n\010FcConf" +
-      "ig\022\014\n\004name\030\001 \002(\t\022\026\n\016collectionSpec\030\002 \002(\t" +
-      "\022\025\n\rpartitionType\030\003 \002(\t\022\026\n\016dateFormatMar" +
-      "k\030\004 \001(\t\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\034\n\r" +
-      "pdsUseGenType\030\014 \001(\010:\005false\022 \n\022pdsUseTabl" +
-      "eVersion\030\r \001(\010:\004true\022\032\n\014pdsIntvMerge\030\016 \001" +
-      "(\010:\004true\022\032\n\014pdsUseCenter\030\017 \001(\010:\004true\022\036\n\017" +
-      "intvExcludeZero\030\020 \001(\010:\005false\022\037\n\nintvFilt",
-      "er\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitConvert" +
-      "\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(\t\"\330\002" +
-      "\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topDir" +
-      "\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007datase" +
-      "t\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\r" +
-      "masterRuntime\030\025 \002(\0132\006.Coord\022\016\n\006center\030\006 " +
-      "\002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002(\005\022\r" +
-      "\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001(\005\022\024\n" +
-      "\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014 \001" +
-      "(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter\022\031\n\006config",
-      "\030\026 \001(\0132\t.FcConfig*\005\010d\020\310\001B/\n\030ucar.nc2.gri" +
-      "b.collectionB\023GribCollectionProto"
+      "ds\030\004 \003(\0132\007.Record\022\r\n\005ndups\030\005 \001(\r\"\204\002\n\010Var" +
+      "iable\022\022\n\ndiscipline\030\001 \002(\r\022\013\n\003pds\030\002 \002(\014\022\017" +
+      "\n\007cdmHash\030\003 \002(\007\022\022\n\nrecordsPos\030\004 \002(\004\022\022\n\nr" +
+      "ecordsLen\030\005 \002(\r\022\020\n\010coordIdx\030\006 \003(\r\022\017\n\007den" +
+      "sity\030\007 \001(\002\022\r\n\005ndups\030\010 \001(\r\022\020\n\010nrecords\030\t ",
+      "\001(\r\022\017\n\007missing\030\n \001(\r\022\020\n\010invCount\030\017 \003(\r\022\024" +
+      "\n\014time2runtime\030\020 \003(\r\022\032\n\006params\030\024 \003(\0132\n.P" +
+      "arameter*\005\010d\020\310\001\"\237\001\n\005Coord\022\014\n\004type\030\001 \002(\005\022" +
+      "\014\n\004code\030\002 \002(\005\022\014\n\004unit\030\003 \001(\t\022\016\n\006values\030\004 " +
+      "\003(\002\022\r\n\005bound\030\005 \003(\002\022\r\n\005msecs\030\006 \003(\003\022\025\n\005tim" +
+      "es\030\007 \003(\0132\006.Coord\022\024\n\014isOrthogonal\030\010 \001(\010\022\021" +
+      "\n\tisRegular\030\t \001(\010\"Q\n\005MFile\022\020\n\010filename\030\001" +
+      " \002(\t\022\024\n\014lastModified\030\002 \002(\004\022\r\n\005index\030\003 \002(" +
+      "\r\022\021\n\006length\030\004 \001(\004:\0010\"6\n\tParameter\022\014\n\004nam" +
+      "e\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"^\n\003",
+      "Gds\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:\0010\022\024\n\014" +
+      "nameOverride\030\003 \001(\t\022 \n\030predefinedGridDefi" +
+      "nition\030\004 \001(\r\"\222\001\n\005Group\022\020\n\010gdsIndex\030\001 \002(\r" +
+      "\022\034\n\tvariables\030\002 \003(\0132\t.Variable\022\026\n\006coords" +
+      "\030\003 \003(\0132\006.Coord\022\016\n\006fileno\030\004 \003(\005\022\016\n\006isTwod" +
+      "\030\005 \002(\010\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310" +
+      "\001\"\202\001\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r.Dataset.Ty" +
+      "pe\022\026\n\006groups\030\002 \003(\0132\006.Group\"B\n\004Type\022\006\n\002GC" +
+      "\020\000\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\014\n\010Analysis\020\003\022\007\n\003" +
+      "SRC\020\004\022\007\n\003MRC\020\005\"(\n\tStringMap\022\014\n\004name\030\001 \002(",
+      "\t\022\r\n\005value\030\002 \002(\t\"\"\n\006IntMap\022\014\n\004from\030\001 \002(\021" +
+      "\022\n\n\002to\030\002 \002(\021\"F\n\nIntvFilter\022\022\n\nintvLength" +
+      "\030\001 \002(\021\022\022\n\nvariableId\030\002 \002(\r\022\020\n\010intvProb\030\003" +
+      " \001(\021\"\355\002\n\010FcConfig\022\014\n\004name\030\001 \002(\t\022\026\n\016colle" +
+      "ctionSpec\030\002 \002(\t\022\025\n\rpartitionType\030\003 \002(\t\022\026" +
+      "\n\016dateFormatMark\030\004 \001(\t\022\033\n\ngdsConvert\030\013 \003" +
+      "(\0132\007.IntMap\022\034\n\rpdsUseGenType\030\014 \001(\010:\005fals" +
+      "e\022 \n\022pdsUseTableVersion\030\r \001(\010:\004true\022\032\n\014p" +
+      "dsIntvMerge\030\016 \001(\010:\004true\022\032\n\014pdsUseCenter\030" +
+      "\017 \001(\010:\004true\022\036\n\017intvExcludeZero\030\020 \001(\010:\005fa",
+      "lse\022\037\n\nintvFilter\030\021 \003(\0132\013.IntvFilter\022 \n\017" +
+      "timeUnitConvert\030\022 \003(\0132\007.IntMap\022\024\n\014userTi" +
+      "meUnit\030\023 \001(\t\"\330\002\n\016GribCollection\022\014\n\004name\030" +
+      "\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006." +
+      "MFile\022\031\n\007dataset\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030" +
+      "\005 \003(\0132\004.Gds\022\035\n\rmasterRuntime\030\025 \002(\0132\006.Coo" +
+      "rd\022\016\n\006center\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n" +
+      "\006master\030\010 \002(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProce" +
+      "ssType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rba" +
+      "ckProcessId\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.Para",
+      "meter\022\031\n\006config\030\026 \001(\0132\t.FcConfig*\005\010d\020\310\001B" +
+      "/\n\030ucar.nc2.grib.collectionB\023GribCollect" +
+      "ionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -20373,7 +20487,7 @@ public final class GribCollectionProto {
           internal_static_SparseArray_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SparseArray_descriptor,
-              new java.lang.String[] { "CdmHash", "Size", "Track", "Records", });
+              new java.lang.String[] { "CdmHash", "Size", "Track", "Records", "Ndups", });
           internal_static_Variable_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_Variable_fieldAccessorTable = new

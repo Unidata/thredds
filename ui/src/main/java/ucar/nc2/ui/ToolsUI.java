@@ -704,16 +704,30 @@ public class ToolsUI extends JPanel {
     AbstractAction showCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        f.format("NetcdfFileCache contents%n");
-        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-        if (null != cache)
-          cache.showCache(f);
-        viewerPanel.detailTA.setText(f.toString());
+        f.format("RandomAccessFileCache contents%n");
+        ucar.nc2.util.cache.FileCacheIF rafCache = ucar.unidata.io.RandomAccessFile.getGlobalFileCache();
+        if (null != rafCache)
+          rafCache.showCache(f);
+        f.format("%nNetcdfFileCache contents%n");
+         ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+         if (null != cache)
+           cache.showCache(f);
+         viewerPanel.detailTA.setText(f.toString());
         viewerPanel.detailWindow.show();
       }
     };
     BAMutil.setActionProperties(showCacheAction, null, "Show Caches", false, 'S', -1);
     BAMutil.addActionToMenu(sysMenu, showCacheAction);
+
+    AbstractAction clearRafCacheAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ucar.nc2.util.cache.FileCacheIF rafCache = ucar.unidata.io.RandomAccessFile.getGlobalFileCache();
+        if (rafCache != null)
+          rafCache.clearCache(true);
+      }
+    };
+    BAMutil.setActionProperties(clearRafCacheAction, null, "Clear RandomAccessFileCache", false, 'C', -1);
+    BAMutil.addActionToMenu(sysMenu, clearRafCacheAction);
 
     AbstractAction clearCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {

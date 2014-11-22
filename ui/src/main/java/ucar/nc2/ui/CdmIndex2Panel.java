@@ -98,7 +98,7 @@ public class CdmIndex2Panel extends JPanel {
       public void valueChanged(ListSelectionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
         if (bean != null)
-          setGroup(bean.group);
+          setGroup(bean);
       }
     });
 
@@ -283,10 +283,12 @@ public class CdmIndex2Panel extends JPanel {
   }
 
   public void clear() {
-    if (gc != null) try {
-      gc.close();
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (gc != null) {
+      try {
+        gc.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
     gc = null;
     groupTable.clearBeans();
@@ -656,15 +658,21 @@ public class CdmIndex2Panel extends JPanel {
     coordTable.clearBeans();
   }
 
-  private void setGroup(GribCollectionImmutable.GroupGC group) {
+  private void setGroup(GroupBean bean) {
+    bean.clear();
     List<VarBean> vars = new ArrayList<>();
-    for (GribCollectionImmutable.VariableIndex v : group.getVariables())
-      vars.add(new VarBean(v, group));
+    for (GribCollectionImmutable.VariableIndex v : bean.group.getVariables()) {
+      VarBean vbean = new VarBean(v, bean.group);
+      vars.add(vbean);
+      bean.nrecords += vbean.getNrecords();
+      bean.ndups += vbean.getNdups();
+      bean.nmissing += vbean.getNmissing();
+    }
     varTable.setBeans(vars);
 
     int count = 0;
     List<CoordBean> coords = new ArrayList<>();
-    for (Coordinate vc : group.getCoordinates())
+    for (Coordinate vc : bean.group.getCoordinates())
       coords.add(new CoordBean(vc, count++));
     coordTable.setBeans(coords);
   }
@@ -712,8 +720,7 @@ public class CdmIndex2Panel extends JPanel {
   public class GroupBean {
     GribCollectionImmutable.GroupGC group;
     String type;
-    float density, avgDensity;
-    int nrecords = 0;
+    int nrecords, nmissing, ndups;
 
     public GroupBean() {
     }
@@ -734,6 +741,12 @@ public class CdmIndex2Panel extends JPanel {
       }
       if (nvars != 0) avgDensity /= nvars;
       density = (total == 0) ? 0 : ((float) nrecords) / total;  */
+    }
+
+    void clear() {
+      nmissing = 0;
+      ndups = 0;
+      nrecords = 0;
     }
 
     public String getGroupId() {
@@ -768,18 +781,17 @@ public class CdmIndex2Panel extends JPanel {
       return group.getVariables().size();
     }
 
-    public float getAvgDensity() {
-      return avgDensity;
-    }
-
-    public float getDensity() {
-      return density;
-    }
-
    public String getDescription() {
       return group.getDescription();
     }
 
+    public int getNmissing() {
+      return nmissing;
+    }
+
+    public int getNdups() {
+      return ndups;
+    }
   }
 
 
@@ -906,7 +918,7 @@ public class CdmIndex2Panel extends JPanel {
       return v.getIntvName();
     }
 
-    public int getHash() {
+    public int getCdmHash() {
       return v.getCdmHash();
     }
 
@@ -922,19 +934,31 @@ public class CdmIndex2Panel extends JPanel {
       return name;
     }
 
+    public int getNdups() {
+      return v.getNdups();
+    }
+
+    public int getNrecords() {
+      return v.getNrecords();
+    }
+
+    public int getNmissing() {
+      return v.getNmissing();
+    }
+
     public void makeGribConfig(Formatter f) {
       f.format("<variable id='%s'/>%n", getVariableId());
     }
 
     private void showSparseArray(Formatter f) {
 
-      int count = 0;
+      /* int count = 0;
       Indent indent = new Indent(2);
       for (Coordinate coord : v.getCoordinates()) {
         f.format("%d: ", count++);
         coord.showInfo(f, indent);
       }
-      f.format("%n");
+      f.format("%n");  */
 
       if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
         PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;

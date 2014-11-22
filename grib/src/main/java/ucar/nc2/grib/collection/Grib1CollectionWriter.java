@@ -253,6 +253,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       // br.setScanMode(gr.getScanMode()); // added 2/6/2014  LOOK dont need scan for GRIB1 I think ??
       b.addRecords(br);
     }
+
+    b.setNdups(sa.getNdups());
     return b.build();
   }
 
@@ -365,7 +367,6 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     // keep stats
     SparseArray sa = vb.coordND.getSparseArray();
     if (sa != null) {
-      b.setDensity(sa.getDensity());
       b.setNdups(sa.getNdups());
       b.setNrecords(sa.countNotMissing());
       b.setMissing(sa.countMissing());

@@ -59,8 +59,9 @@ public class TestGribIndexCreation {
   @Test
   public void testRdvamds627p1() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1-dir", "test/GCpass1", FeatureCollectionType.GRIB1, "B:/rdavm/ds627.1/.*gbx9", null, null, "directory", null, null);
+    FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1-union", "test/GCpass1", FeatureCollectionType.GRIB1, "B:/rdavm/ds627.1/.*gbx9", null, null, "directory", null, null);
     config.gribConfig.useTableVersion = false;
+    config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);

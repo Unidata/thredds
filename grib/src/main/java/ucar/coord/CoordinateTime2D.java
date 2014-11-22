@@ -58,10 +58,10 @@ import java.util.*;
 @Immutable
 public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordinate {
   private final CoordinateRuntime runtime;
-  private final List<Coordinate> times;       // time coordinates - original offsets
-  private final CoordinateTimeAbstract otime; // time coordinates - only when isOrthogonal
-  private final SortedMap<Integer,CoordinateTimeAbstract> regTimes; // only when isRegular: <hour of day, time coordinate offset>
-  private final int[] offset;          // the offset of each CoordinateTime from the base/first runtime  (LOOK can we use SmartArrayInt ?)
+  private final List<Coordinate> times;       // nruns time coordinates - original offsets
+  private final CoordinateTimeAbstract otime; // orthogonal time coordinates - only when isOrthogonal
+  private final SortedMap<Integer,CoordinateTimeAbstract> regTimes; // only when isRegular: <hour of day, time coordinate>
+  private final int[] offset;          // the offset of each CoordinateTime from the base/first runtime, length nruns  (LOOK can we use SmartArrayInt ?)
 
   private final boolean isRegular;
   private final boolean isOrthogonal;
@@ -76,7 +76,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    *
    * @param code          pdsFirst.getTimeUnit()
    * @param timeUnit      time duration, based on code
-   * @param vals          complete set of time coordinates, or null when reading from ncx2
+   * @param vals          complete set of Time2D values, may be null (used only during creation)
    * @param runtime       list of runtimes
    * @param times         list of times, one for each runtime, offsets reletive to its runtime
    */
@@ -109,7 +109,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param timeUnit      time duration, based on code
    * @param runtime       list of runtimes
    * @param otime         list of offsets, all the same for each runtime
-   * @param times         list of times, one for each runtime, offsets reletive to its runtime (Only available during creation, not stored in index)
+   * @param times         list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available during creation, not stored in index)
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, CoordinateTimeAbstract otime, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
@@ -355,6 +355,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     // are they the same length ?
     String firstValue = null;
     for (Coordinate timeCoord : times) {
+      if (times.size() == 0) continue; // skip empties
       CoordinateTimeIntv timeCoordi = (CoordinateTimeIntv) timeCoord;
       String value = timeCoordi.getTimeIntervalName();
       if (firstValue == null) firstValue = value;
@@ -581,7 +582,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       return times;
     }
   }
-
 
   /**
    * Get a sorted list of the unique time coordinates
@@ -858,6 +858,41 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       int timeIdx = timeCoord.getIndex(time);
 
       return  new int[] {runIdx, timeIdx};
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  static CoordinateTime2D resetRuntimes(CoordinateTime2D prev, CoordinateRuntime runtimes) {
+
+    List<Coordinate> times = null;
+    if (prev.times != null) {
+      int runIdx = 0;
+      CoordinateRuntime prevRuntime = prev.getRuntimeCoordinate();
+      Coordinate[] timesArray = new Coordinate[runtimes.getSize()];
+      for (CalendarDate cd : runtimes.getRuntimesSorted()) {
+        int prevIdx = prevRuntime.getIndex(cd);   // LOOK dont actually need a binary search, as the values are sorted
+        if (prevIdx >= 0) timesArray[runIdx] = prev.getTimeCoordinate(prevIdx);
+        else {
+          // need an empty coordinate of the correct type
+          Coordinate empty = (prev.isTimeInterval) ? new CoordinateTimeIntv(prev.code, prev.timeUnit, cd, new ArrayList<TimeCoord.Tinv>())
+                                                   : new CoordinateTime(prev.code, prev.timeUnit, cd, new ArrayList<Integer>());
+          timesArray[runIdx] = empty;
+        }
+        runIdx++;
+      }
+      times = Arrays.asList(timesArray);
+    }
+
+    if (prev.otime != null) {
+      return new CoordinateTime2D(prev.code, prev.timeUnit, runtimes, prev.otime, times);
+
+    } else if (prev.regTimes != null) {
+      List regList = new ArrayList<>(prev.regTimes.values());
+      return new CoordinateTime2D(prev.code, prev.timeUnit, runtimes, regList, times);
+
+    } else {
+      return new CoordinateTime2D(prev.code, prev.timeUnit, prev.vals, runtimes, times);
     }
   }
 

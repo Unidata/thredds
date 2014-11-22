@@ -406,10 +406,13 @@ public class FeatureCollectionConfig {
     public boolean useTableVersion = useTableVersionDef;
     public boolean intvMerge = intvMergeDef;
     public boolean useCenter = useCenterDef;
+    public boolean unionRuntimeCoord;
 
     public GribIntvFilter intvFilter;
     public TimeUnitConverterHash tuc;
+    public CalendarPeriod userTimeUnit;
 
+    // late binding
     public String latestNamer, bestNamer;
     public Boolean filesSortIncreasing = true;
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
@@ -418,8 +421,6 @@ public class FeatureCollectionConfig {
     public Element paramTable;                             // ??
 
     private boolean explicitDatasets = false;
-
-    public CalendarPeriod userTimeUnit;
 
     public GribConfig() { // defaults
     }

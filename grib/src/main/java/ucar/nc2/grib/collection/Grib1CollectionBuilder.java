@@ -211,7 +211,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     public CoordinateND<Grib1Record> coordND;
     CalendarPeriod timeUnit;
 
-    public List<Integer> coordIndex;
+    public List<Integer> coordIndex; // index into List<Coordinate>
     long pos;
     int length;
 
@@ -226,8 +226,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
+  // for a single group, create multidimensional (rectangular) variables
   private class Grib1Rectilyser {
-
     private final int gdsHash;
     private final List<Grib1Record> records;
     private List<VariableBag> gribvars;
@@ -239,7 +239,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
-      // boolean isDense = false; // "dense".equals(config.getParameter("CoordSys"));  LOOK isDense not implemented
       CalendarPeriod userTimeUnit = config.userTimeUnit;
 
       // assign each record to unique variable using cdmVariableHash()
@@ -262,7 +261,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       gribvars = new ArrayList<>(vbHash.values());
       Collections.sort(gribvars); // make it deterministic by sorting
 
-      // create coordinates for each variable
+      // create dense coordinates for each variable
       for (VariableBag vb : gribvars) {
         Grib1SectionProductDefinition pdss = vb.first.getPDSsection();
         Grib1ParamTime ptime = pdss.getParamTime(cust);
@@ -300,7 +299,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       }
 
       // make shared coordinates across variables
-      CoordinateSharer<Grib1Record> sharify = new CoordinateSharer<>(false);
+      CoordinateSharer<Grib1Record> sharify = new CoordinateSharer<>(config.unionRuntimeCoord);
       for (VariableBag vb : gribvars) {
         sharify.addCoords(vb.coordND.getCoordinates());
       }
@@ -313,7 +312,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
       // redo the variables against the shared coordinates
       for (VariableBag vb : gribvars) {
-        vb.coordND = sharify.reindex(vb.coordND);
+        vb.coordND = sharify.reindexCoordND(vb.coordND);
         vb.coordIndex = sharify.reindex2shared(vb.coordND.getCoordinates());
         tot_used += vb.coordND.getSparseArray().countNotMissing();
         tot_dups += vb.coordND.getSparseArray().getNdups();

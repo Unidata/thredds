@@ -14,6 +14,7 @@ message SparseArray {
   repeated uint32 size = 2;     // multidim sizes
   repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
   repeated Record records = 4;  // List<Record>
+  optional uint32 ndups = 5;       // duplicates found when creating
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -30,7 +31,7 @@ message Variable {
    repeated uint32 coordIdx = 6;    // indexes into Group.coords
 
    // optionally keep stats
-   optional float density = 7;
+   optional float density = 7;     // not used, can be calculated
    optional uint32 ndups = 8;
    optional uint32 nrecords = 9;
    optional uint32 missing = 10;

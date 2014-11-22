@@ -770,10 +770,9 @@ abstract class GribPartitionBuilder  {
     for (int idx : vp.coordIndex)
       b.addCoordIdx(idx);
 
-    b.setDensity(vp.density);
     b.setNdups(vp.ndups);
     b.setNrecords(vp.nrecords);
-    b.setMissing(vp.missing);
+    b.setMissing(vp.nmissing);
 
     if (vp.twot != null) { // only for 2D
       for (int invCount : vp.twot.getCount())
