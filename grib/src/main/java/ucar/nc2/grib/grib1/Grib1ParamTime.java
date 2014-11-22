@@ -53,9 +53,8 @@ public class Grib1ParamTime {
   private final int timeRangeIndicator; // code Table 5 (octet 21)
   private final int p1, p2; // octet 19 and 20
   private final boolean isInterval;
-  private final int start;
-  private final int end;
-  private final int forecastTime;
+  private final int start, end;     // for intervals
+  private final int forecastTime;   // for non-intervals
 
   /**
    * Handles GRIB-1 code table 5 : "Time range indicator".
@@ -232,7 +231,19 @@ public class Grib1ParamTime {
         isInterval = true;
         break;
 
-      // Average of N uninitialized analyses, starting at the reference time, at intervals of P2
+      // ECMWF "Average of N Forecast" added 11/21/2014
+      // see "http://emoslib.sourcearchive.com/documentation/000370.dfsg.2/grchk1_8F-source.html"
+      // C     Add Time range indicator = 120 Average of N Forecast. Each product
+      // C             is an accumulation from forecast lenght P1 to forecast
+      // C              lenght P2, with reference times at intervals P2-P1
+      case 120:
+        start = p1;
+        end = p2;
+        forecastTime = 0;
+        isInterval = true;
+        break;
+
+       // Average of N uninitialized analyses, starting at the reference time, at intervals of P2
       case 123:
         start = 0;
         end = n * p2;

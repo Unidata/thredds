@@ -58,7 +58,7 @@ import java.util.List;
  * @since 10/15/2014
  */
 @RunWith(Parameterized.class)
-public class TestGribCdmIndex {
+public class TestGribCdmIndexUpdating {
 
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
@@ -96,7 +96,7 @@ public class TestGribCdmIndex {
   String varIdValue;
   int orgLen, remLen;
 
-  public TestGribCdmIndex(String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen, int remLen) {
+  public TestGribCdmIndexUpdating(String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen, int remLen) {
     this.dataDir = dataDir;
     this.newModel = newModel;
     this.config = config;

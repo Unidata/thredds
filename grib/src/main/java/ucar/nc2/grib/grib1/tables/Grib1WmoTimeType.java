@@ -199,6 +199,15 @@ public class Grib1WmoTimeType {
         timeRange = "Standard Deviation of N forecasts, timeCoord = (refTime + P1 + i * P2)";
         break;
 
+      // ECMWF "Average of N Forecast" added 11/21/2014. pretend its standard. maybe should move to ecmwf ??
+      // see "http://emoslib.sourcearchive.com/documentation/000370.dfsg.2/grchk1_8F-source.html"
+      // C     Add Time range indicator = 120 Average of N Forecast. Each product
+      // C             is an accumulation from forecast lenght P1 to forecast
+      // C              lenght P2, with reference times at intervals P2-P1
+      case 120:
+        timeRange = "Average of N Forecast (ECMWF), accumulation from P1 to P2, with reference times at intervals P2-P1";
+        break;
+
       // Average of N uninitialized analyses, starting at the reference time, at intervals of P2
       case 123:
         timeRange = "Average of N uninitialized analyses, intervals = (refTime, refTime + i * P2)";

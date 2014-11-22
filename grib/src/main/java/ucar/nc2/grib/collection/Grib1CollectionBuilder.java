@@ -245,7 +245,13 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       // assign each record to unique variable using cdmVariableHash()
       Map<Integer, VariableBag> vbHash = new HashMap<>(100);
       for (Grib1Record gr : records) {
-        int cdmHash = cdmVariableHash(gr, gdsHash);
+        int cdmHash;
+        try {
+          cdmHash = cdmVariableHash(gr, gdsHash);
+        } catch (Throwable t) {
+          logger.warn("Exception on record ", t);
+          continue; // keep going
+        }
         VariableBag bag = vbHash.get(cdmHash);
         if (bag == null) {
           bag = new VariableBag(gr, cdmHash);

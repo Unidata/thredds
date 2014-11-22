@@ -3,6 +3,7 @@ package ucar.nc2.grib;
 import org.junit.Test;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribIosp;
@@ -48,6 +49,19 @@ public class TestGribIndexCreation {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("B:/rdavm/ds627.0/catalog_ds627.0.xml#ds627.0_an_pv");
     assert (config != null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
+
+  @Test
+  public void testRdvamds627p1() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1-dir", "test/GCpass1", FeatureCollectionType.GRIB1, "B:/rdavm/ds627.1/.*gbx9", null, null, "directory", null, null);
+    config.gribConfig.useTableVersion = false;
+
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
     System.out.printf("changed = %s%n", changed);
