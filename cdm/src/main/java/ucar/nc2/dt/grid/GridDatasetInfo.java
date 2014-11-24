@@ -33,21 +33,10 @@
 
 package ucar.nc2.dt.grid;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -63,6 +52,11 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Parameter;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
 
 /**
  * A helper class to GridDataset; creates a GridDataset XML document.
@@ -590,10 +584,11 @@ public class GridDatasetInfo {
 	}
 
 	private Element writeGrid(GridDatatype grid) {
-
 		Element varElem = new Element("grid");
 		varElem.setAttribute("name", grid.getFullName());
-		varElem.setAttribute("desc", grid.getDescription());
+
+        String desc = grid.getDescription() != null ? grid.getDescription() : "No description";
+        varElem.setAttribute("desc", desc);
 
 		StringBuilder buff = new StringBuilder();
 		List dims = grid.getDimensions();

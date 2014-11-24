@@ -70,8 +70,8 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
   public String getName();
 
   /**
-   * Get the description/long_name of the Grid
-   * @return the description/long_name of the Grid
+   * Get the description/long_name of the Grid, or null if none.
+   * @return the description/long_name of the Grid, or null if none.
    */
   public String getDescription();
 
