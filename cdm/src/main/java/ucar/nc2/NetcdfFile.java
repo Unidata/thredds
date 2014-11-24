@@ -1318,7 +1318,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     pw.write(f.toString());
   }
 
-  protected void toStringEnd(PrintWriter pw) {
+  public void toStringEnd(PrintWriter pw) {
     pw.print("}\n");
   }
 
