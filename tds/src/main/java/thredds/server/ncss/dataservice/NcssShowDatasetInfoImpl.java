@@ -149,16 +149,16 @@ public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo, Serv
     String infoString = null;
     GridDatasetInfo writer = new GridDatasetInfo(gds, "path");
 
-    Document datsetDescription;
-
     if (wantXml) {
 
-      datsetDescription = writer.makeDatasetDescription();
+      Document datasetDescription = writer.makeDatasetDescription();
+      Element root = datasetDescription.getRootElement();
+      root.setAttribute("location", datsetUrlPath);
 
       if (formatAvailable) {
-        addNetcdf4Format(datsetDescription, "/gridDataset");
+        addNetcdf4Format(datasetDescription, "/gridDataset");
       }
-      infoString = writer.writeXML(datsetDescription);
+      infoString = writer.writeXML(datasetDescription);
 
     } else {
 
