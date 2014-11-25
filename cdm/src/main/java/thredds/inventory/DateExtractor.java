@@ -45,4 +45,6 @@ import java.util.Date;
 public interface DateExtractor {
   public Date getDate( MFile mfile); // deprecate
   public CalendarDate getCalendarDate( MFile mfile);
+  public CalendarDate getCalendarDateFromPath(String path);
+
 }

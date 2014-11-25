@@ -15,8 +15,6 @@ import java.util.List;
 public interface MCollection extends AutoCloseable {
 
   /**
-   * LOOK this seems bogus. trying to figure out if we need to use a GribCollectionBuilder or GribPartitionBuilder
-   *
    * Consider MCollections as a tree. At the leaves are a single mfile or mfile collection.
    * A leaf MCollection will be a GC if it has a single runtime, or a PofGC otherwise.
    * A non-leaf is a directory with other directories under it. It will either be a PofGC (Partition of GC) or PofP (Partition of Partition).
@@ -53,11 +51,10 @@ public interface MCollection extends AutoCloseable {
   public boolean hasDateExtractor();
 
   /**
-   * The starting date of the collection.
-   * Only call if hasDateExtractor() == true.
-   * @return starting date of the collection
+   * The date to partition on, usually the starting date of the collection.
+   * @return partition date of the collection, or null if unknown
    */
-  public CalendarDate getStartCollection();
+  public CalendarDate getPartitionDate();
 
   /**
    * Close and release any resources. Do not make further calls on this object.

@@ -687,11 +687,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     if (fileMap == null) {
       f.format("Files empty%n");
     } else {
-      f.format("Files (%d)%n", fileMap.size());
-      for (int index : fileMap.keySet()) {
+      f.format("Files count = %d%n", fileMap.size());
+      /* for (int index : fileMap.keySet())
         f.format("  %d: %s%n", index, fileMap.get(index));
-      }
-      f.format("%n");
+      f.format("%n");  */
     }
 
   }

@@ -76,6 +76,12 @@ public class DateExtractorFromName implements DateExtractor {
   }
 
   @Override
+  public CalendarDate getCalendarDateFromPath(String path) {
+    Date d =  DateFromString.getDateUsingDemarkatedMatch(path, dateFormatMark, '#');
+    return (d == null) ? null : CalendarDate.of(d);
+  }
+
+  @Override
   public String toString() {
     return "DateExtractorFromName{" +
             "dateFormatMark='" + dateFormatMark + '\'' +

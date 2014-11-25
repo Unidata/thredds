@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * CollectionManager that is initialized by specific list of MFiles.
+ * MCollection that is initialized by specific list of MFiles.
  * Sorted by name. no date extractor.
  *
  * @author caron

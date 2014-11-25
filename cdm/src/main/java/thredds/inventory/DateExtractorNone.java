@@ -51,4 +51,7 @@ public class DateExtractorNone implements DateExtractor {
   public CalendarDate getCalendarDate(MFile mfile) {
     return null;
   }
+  public CalendarDate getCalendarDateFromPath(String path) {
+    return null;
+  }
 }

@@ -34,7 +34,7 @@ package thredds.featurecollection;
 
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import thredds.inventory.CollectionUpdateType;
+import thredds.inventory.*;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
@@ -209,6 +209,19 @@ public class FeatureCollectionConfig {
     updateConfig.startupType = updateConfig.updateType;
     tdmConfig.startupType = tdmConfig.updateType;
   }
+
+  public DateExtractor getDateExtractor() {
+    if (dateFormatMark != null)
+      return new DateExtractorFromName(dateFormatMark, false);
+    else {
+      CollectionSpecParser sp = new CollectionSpecParser(spec, null);
+      if (sp.getDateFormatMark() != null)
+        return new DateExtractorFromName(sp.getDateFormatMark(), true);
+    }
+    return new DateExtractorNone();
+  }
+
+
 
   // <update startup="nocheck" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {

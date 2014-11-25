@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -139,7 +140,8 @@ message Partition {
 }
    */
   private PartitionCollectionMutable.Partition makePartition(PartitionCollectionProto.Partition proto) {
-    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), proto.getDirectory());
+    CalendarDate partitionDate =  proto.hasPartitionDate() ? CalendarDate.of(proto.getPartitionDate()) : null;
+    return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getLength(), proto.getDirectory(), partitionDate);
   }
 
 }

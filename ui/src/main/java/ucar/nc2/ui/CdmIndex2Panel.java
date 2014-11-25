@@ -323,6 +323,12 @@ public class CdmIndex2Panel extends JPanel {
     // showFiles(f);
   }
 
+  private void showFileTable(GribCollectionImmutable gc, GribCollectionImmutable.GroupGC group) {
+    File dir = gc.getDirectory();
+    Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
+    fileTable.setFiles(dir, files);
+  }
+
   private class SortBySize implements Comparable<SortBySize> {
     Object obj;
     int size;
@@ -713,12 +719,6 @@ public class CdmIndex2Panel extends JPanel {
 
     f.format("============%n%s%n", gc);
   }  */
-
-  private void showFileTable(GribCollectionImmutable gc, GribCollectionImmutable.GroupGC group) {
-    File dir = gc.getDirectory();
-    Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
-    fileTable.setFiles(dir, files);
-  }
 
   ////////////////////////////////////////////////////////////////////////////
 

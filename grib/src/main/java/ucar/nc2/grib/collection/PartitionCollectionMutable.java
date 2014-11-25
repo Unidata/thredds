@@ -37,6 +37,7 @@ package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
+import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GribIndex;
@@ -210,19 +211,21 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   public class Partition implements Comparable<Partition> {
     final String name, directory;
     final String filename;
-    final long lastModified, length;
+    long lastModified, fileSize;
+    CalendarDate partitionDate;
     private boolean isBad;
 
     // temporary storage while building - do not use - must call getGribCollection()()
     // GribCollection gc;
 
     // constructor from ncx
-    public Partition(String name, String filename, long lastModified, long length, String directory) {
+    public Partition(String name, String filename, long lastModified, long fileSize, String directory, CalendarDate partitionDate) {
       this.name = name;
       this.filename = filename; // grib collection ncx
       this.lastModified = lastModified;
-      this.length = length;
+      this.fileSize = fileSize;
       this.directory = directory;
+      this.partitionDate = partitionDate;
     }
 
     public String getName() {
@@ -266,6 +269,14 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       return dcm;            // in GribCollection
     }
 
+    private DateExtractor extractor;
+    private DateExtractor getDateExtractor() {
+      if (extractor == null)
+         extractor = config.getDateExtractor();
+      return extractor;
+    }
+
+
     public String getIndexFilenameInCache() {
       File file = new File(directory, filename);
       File existingFile = GribIndex.getExistingFileOrCache(file.getPath());
@@ -301,13 +312,20 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory.open(path, -1, null, this);
     }
 
-    // LOOK force not used, equivilent to  force = never. Why not use getGribCollection() ??
+    // LOOK force not used, equivilent to  force = never. Why not use getGribCollection(): GribCollectionImmutable vs GribCollectionMutable
     public GribCollectionMutable makeGribCollection(CollectionUpdateType force) throws IOException {
-      return GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger); // caller must close
+      GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger);
+      lastModified = result.lastModified;
+      fileSize = result.fileSize;
+      if (result.masterRuntime != null)
+        partitionDate = result.masterRuntime.getFirstDate();
+      return result;
     }
 
     @Override
     public int compareTo(Partition o) {
+      if (partitionDate != null && o.partitionDate != null)
+        return partitionDate.compareTo(o.partitionDate);
       return name.compareTo(o.name);
     }
 
@@ -318,6 +336,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
               ", name='" + name + '\'' +
               ", directory='" + directory + '\'' +
               ", filename='" + filename + '\'' +
+              ", partitionDate='" + partitionDate + '\'' +
               ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
               ", isBad=" + isBad +
               '}';
@@ -329,22 +348,27 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     // constructor from a MCollection object
     public Partition(MCollection dcm) {
+      FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
+      if (config == null)
+        logger.warn("Partition missing FeatureCollectionConfig {}", dcm);
+
       this.dcm = dcm;
       this.name = dcm.getCollectionName();
       this.lastModified = dcm.getLastModified();
-      this.length = -1;
       this.directory = StringUtil2.replace(dcm.getRoot(), '\\', "/");
+      this.partitionDate = dcm.getPartitionDate();
 
       String indexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
+      if (partitionDate == null) {
+        partitionDate = getDateExtractor().getCalendarDateFromPath(indexFilename);  // LOOK dicey
+      }
+
+      // now remove the directory
       if (indexFilename.startsWith(directory)) {
         indexFilename = indexFilename.substring(directory.length());
         if (indexFilename.startsWith("/")) indexFilename = indexFilename.substring(1);
       }
       filename = indexFilename;
-
-      FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-      if (config == null)
-        logger.warn("HEY Partition missing a FeatureCollectionConfig {}", dcm);
     }
 
   }
@@ -376,8 +400,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     return result;
   }
 
-  public Partition addPartition(String name, String filename, long lastModified, long length, String directory) {
-    Partition partition = new Partition(name, filename, lastModified, length, directory);
+  public Partition addPartition(String name, String filename, long lastModified, long length, String directory, CalendarDate partitionDate) {
+    Partition partition = new Partition(name, filename, lastModified, length, directory, partitionDate);
     partitions.add(partition);
     return partition;
   }

@@ -62,7 +62,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
         logger.warn("DirectoryBuilder on "+child.getDir()+" failed: skipping", ioe);
       }
     }
-
+    // sort collection by name
     Collections.sort(result, new Comparator<MCollection>() {
       public int compare(MCollection o1, MCollection o2) {
         return o1.getCollectionName().compareTo(o2.getCollectionName());

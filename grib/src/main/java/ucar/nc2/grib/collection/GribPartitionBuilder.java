@@ -605,7 +605,7 @@ abstract class GribPartitionBuilder  {
         String pathRS = StringUtil2.replace(pathRelative.toString(), '\\', "/");
         b.setFilename(pathRS); // reletive to topDir
         b.setLastModified(part.getLastModified());
-        b.setLength(part.length);
+        b.setLength(part.fileSize);
         b.setIndex(count++);
         indexBuilder.addMfiles(b.build());
       }
@@ -825,16 +825,21 @@ message Partition {
   required string filename = 2;   // the gribCollection.ncx2 file
   required string directory = 3;   // top directory
   optional uint64 lastModified = 4;
+  optional int64 length = 5;
+  optional int64 partitionDate = 6;  // partition date added 11/25/14
 }
   }
    */
   private PartitionCollectionProto.Partition writePartitionProto(PartitionCollectionMutable.Partition p) throws IOException {
     PartitionCollectionProto.Partition.Builder b = PartitionCollectionProto.Partition.newBuilder();
 
-    b.setFilename(p.getFilename());
-    b.setName(p.getName());
-    b.setDirectory(p.getDirectory());
-    b.setLastModified(p.getLastModified());
+    b.setFilename(p.filename);
+    b.setName(p.name);
+    b.setDirectory(p.directory);
+    b.setLastModified(p.lastModified);
+    b.setLength(p.fileSize);
+    if (p.partitionDate != null)
+      b.setPartitionDate(p.partitionDate.getMillis());  // LOOK what about calendar ??
 
     return b.build();
   }

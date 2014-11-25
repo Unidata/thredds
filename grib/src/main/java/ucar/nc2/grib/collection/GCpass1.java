@@ -369,7 +369,7 @@ public class GCpass1 {
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
     DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, config.olderThan, logger);
-    dcm.setUseGribFilter(false);
+    // dcm.setUseGribFilter(false);
     dcm.setLeaf(true);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)

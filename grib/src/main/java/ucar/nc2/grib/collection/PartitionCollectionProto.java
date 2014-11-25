@@ -1150,6 +1150,24 @@ public final class PartitionCollectionProto {
      * <code>optional int64 length = 5;</code>
      */
     long getLength();
+
+    // optional int64 partitionDate = 6;
+    /**
+     * <code>optional int64 partitionDate = 6;</code>
+     *
+     * <pre>
+     * partition date added 11/25/14
+     * </pre>
+     */
+    boolean hasPartitionDate();
+    /**
+     * <code>optional int64 partitionDate = 6;</code>
+     *
+     * <pre>
+     * partition date added 11/25/14
+     * </pre>
+     */
+    long getPartitionDate();
   }
   /**
    * Protobuf type {@code Partition}
@@ -1225,6 +1243,11 @@ public final class PartitionCollectionProto {
             case 40: {
               bitField0_ |= 0x00000010;
               length_ = input.readInt64();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              partitionDate_ = input.readInt64();
               break;
             }
           }
@@ -1464,12 +1487,37 @@ public final class PartitionCollectionProto {
       return length_;
     }
 
+    // optional int64 partitionDate = 6;
+    public static final int PARTITIONDATE_FIELD_NUMBER = 6;
+    private long partitionDate_;
+    /**
+     * <code>optional int64 partitionDate = 6;</code>
+     *
+     * <pre>
+     * partition date added 11/25/14
+     * </pre>
+     */
+    public boolean hasPartitionDate() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional int64 partitionDate = 6;</code>
+     *
+     * <pre>
+     * partition date added 11/25/14
+     * </pre>
+     */
+    public long getPartitionDate() {
+      return partitionDate_;
+    }
+
     private void initFields() {
       name_ = "";
       filename_ = "";
       directory_ = "";
       lastModified_ = 0L;
       length_ = 0L;
+      partitionDate_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1510,6 +1558,9 @@ public final class PartitionCollectionProto {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeInt64(5, length_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeInt64(6, partitionDate_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1538,6 +1589,10 @@ public final class PartitionCollectionProto {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(5, length_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(6, partitionDate_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1665,6 +1720,8 @@ public final class PartitionCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000008);
         length_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000010);
+        partitionDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -1713,6 +1770,10 @@ public final class PartitionCollectionProto {
           to_bitField0_ |= 0x00000010;
         }
         result.length_ = length_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.partitionDate_ = partitionDate_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1749,6 +1810,9 @@ public final class PartitionCollectionProto {
         }
         if (other.hasLength()) {
           setLength(other.getLength());
+        }
+        if (other.hasPartitionDate()) {
+          setPartitionDate(other.getPartitionDate());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2149,6 +2213,55 @@ public final class PartitionCollectionProto {
         return this;
       }
 
+      // optional int64 partitionDate = 6;
+      private long partitionDate_ ;
+      /**
+       * <code>optional int64 partitionDate = 6;</code>
+       *
+       * <pre>
+       * partition date added 11/25/14
+       * </pre>
+       */
+      public boolean hasPartitionDate() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional int64 partitionDate = 6;</code>
+       *
+       * <pre>
+       * partition date added 11/25/14
+       * </pre>
+       */
+      public long getPartitionDate() {
+        return partitionDate_;
+      }
+      /**
+       * <code>optional int64 partitionDate = 6;</code>
+       *
+       * <pre>
+       * partition date added 11/25/14
+       * </pre>
+       */
+      public Builder setPartitionDate(long value) {
+        bitField0_ |= 0x00000020;
+        partitionDate_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 partitionDate = 6;</code>
+       *
+       * <pre>
+       * partition date added 11/25/14
+       * </pre>
+       */
+      public Builder clearPartitionDate() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        partitionDate_ = 0L;
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:Partition)
     }
 
@@ -2229,15 +2342,16 @@ public final class PartitionCollectionProto {
       "le\022\017\n\007groupno\030\001 \002(\r\022\r\n\005varno\030\002 \002(\r\022\014\n\004fl" +
       "ag\030\003 \002(\r\022\016\n\006partno\030\004 \002(\r\022\017\n\007density\030\007 \001(" +
       "\002\022\r\n\005ndups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007mi" +
-      "ssing\030\n \001(\r\"d\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020" +
+      "ssing\030\n \001(\r\"{\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020" +
       "\n\010filename\030\002 \002(\t\022\021\n\tdirectory\030\003 \002(\t\022\024\n\014l" +
-      "astModified\030\004 \001(\004\022\016\n\006length\030\005 \001(\003:0\n\tpar" +
-      "tition\022\t.Variable\030d \003(\0132\022.PartitionVaria",
-      "ble:/\n\npartitions\022\017.GribCollection\030d \003(\013" +
-      "2\n.Partition:0\n\027isPartitionOfPartitions\022" +
-      "\017.GribCollection\030e \002(\010:!\n\010run2part\022\017.Gri" +
-      "bCollection\030f \003(\rB4\n\030ucar.nc2.grib.colle" +
-      "ctionB\030PartitionCollectionProto"
+      "astModified\030\004 \001(\004\022\016\n\006length\030\005 \001(\003\022\025\n\rpar" +
+      "titionDate\030\006 \001(\003:0\n\tpartition\022\t.Variable",
+      "\030d \003(\0132\022.PartitionVariable:/\n\npartitions" +
+      "\022\017.GribCollection\030d \003(\0132\n.Partition:0\n\027i" +
+      "sPartitionOfPartitions\022\017.GribCollection\030" +
+      "e \002(\010:!\n\010run2part\022\017.GribCollection\030f \003(\r" +
+      "B4\n\030ucar.nc2.grib.collectionB\030PartitionC" +
+      "ollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2255,7 +2369,7 @@ public final class PartitionCollectionProto {
           internal_static_Partition_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Partition_descriptor,
-              new java.lang.String[] { "Name", "Filename", "Directory", "LastModified", "Length", });
+              new java.lang.String[] { "Name", "Filename", "Directory", "LastModified", "Length", "PartitionDate", });
           partition.internalInit(descriptor.getExtensions().get(0));
           partitions.internalInit(descriptor.getExtensions().get(1));
           isPartitionOfPartitions.internalInit(descriptor.getExtensions().get(2));

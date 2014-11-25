@@ -66,7 +66,6 @@ public abstract class CollectionAbstract implements MCollection {
   protected long lastModified;
   protected MFileFilter filter;
   protected DirectoryStream.Filter<Path> sfilter;
-  private boolean useGribFilter = true;
   private boolean isLeaf = true;
 
   protected CollectionAbstract(String collectionName, org.slf4j.Logger logger) {
@@ -81,10 +80,6 @@ public abstract class CollectionAbstract implements MCollection {
 
   public void setLeaf(boolean isLeaf) {
     this.isLeaf = isLeaf;
-  }
-
-  public void setUseGribFilter(boolean useGribFilter) {
-    this.useGribFilter = useGribFilter;
   }
 
   @Override
@@ -114,6 +109,7 @@ public abstract class CollectionAbstract implements MCollection {
     this.root = root;
   }
 
+  @Override
   public long getLastModified() {
     return lastModified;
   }
@@ -149,7 +145,7 @@ public abstract class CollectionAbstract implements MCollection {
   }
 
   @Override
-  public CalendarDate getStartCollection() {
+  public CalendarDate getPartitionDate() {
     return startCollection;
   }
 

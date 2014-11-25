@@ -46,16 +46,17 @@ public class TestGribIndexCreation {
   @Test
   public void testRdvamds627p0() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("B:/rdavm/ds627.0/catalog_ds627.0.xml#ds627.0_an_pv");
-    assert (config != null);
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds627.0_46", "test/ds627.0", FeatureCollectionType.GRIB1,
+            "B:/rdavm/ds627.0/ei.oper.an.pv/**/.*gbx9", "#ei.oper.an.pv/#yyyyMM", null, "directory", null, null);
+
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.testIndexOnly, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
 
-  @Test
+  @Test   // has one file for for each month, all in same directory
   public void testRdvamds627p1() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1-union", "test/GCpass1", FeatureCollectionType.GRIB1, "B:/rdavm/ds627.1/.*gbx9", null, null, "directory", null, null);
@@ -83,7 +84,8 @@ public class TestGribIndexCreation {
 
   @Test
   public void testDgex() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("dgex_46", "test/dgex", FeatureCollectionType.GRIB2, "Q:/cdmUnitTest/gribCollections/dgex/**/.*grib2", null, null, "file", null, null);
+    FeatureCollectionConfig config = new FeatureCollectionConfig("dgex_46", "test/dgex", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/dgex/**/.*grib2", null, null, "file", null, null);
     //config.gribConfig.useTableVersion = false;
     //config.gribConfig.unionRuntimeCoord = true;
 
@@ -94,7 +96,8 @@ public class TestGribIndexCreation {
 
   @Test
   public void testGFSconus80() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("gfsConus80_46", "test/gfsConus80", FeatureCollectionType.GRIB1, "Q:/cdmUnitTest/gribCollections/gfs_conus80/**/.*grib1", null, null, "file", null, null);
+    FeatureCollectionConfig config = new FeatureCollectionConfig("gfsConus80_46", "test/gfsConus80", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null, "file", null, null);
     //config.gribConfig.useTableVersion = false;
     //config.gribConfig.unionRuntimeCoord = true;
 
@@ -106,7 +109,8 @@ public class TestGribIndexCreation {
 
   @Test
   public void testCfrsAnalysis() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("cfrsAnalysis_46", "test/cfrsAnalysis", FeatureCollectionType.GRIB2, "Q:/cdmUnitTest/gribCollections/cfsr/.*grb2", null, null, "directory", null, null);
+    FeatureCollectionConfig config = new FeatureCollectionConfig("cfrsAnalysis_46", "test/cfrsAnalysis", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/cfsr/.*grb2", null, null, "directory", null, null);
     // <gdsHash from="1450192070" to="1450218978"/>
     config.gribConfig.addGdsHash("1450192070", "1450218978");
     //config.gribConfig.unionRuntimeCoord = true;

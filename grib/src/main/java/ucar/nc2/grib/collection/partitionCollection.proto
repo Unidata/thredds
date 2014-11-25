@@ -27,6 +27,7 @@ message Partition {
   required string directory = 3;  // top directory
   optional uint64 lastModified = 4;
   optional int64 length = 5;
+  optional int64 partitionDate = 6;  // partition date added 11/25/14
 }
 
 extend GribCollection {

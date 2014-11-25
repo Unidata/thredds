@@ -163,6 +163,15 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     return null;
   }
 
+  @Override
+  public void showIndex(Formatter f) {
+    super.showIndex(f);
+    f.format("%nPartition isPartitionOfPartitions = %s%n", isPartitionOfPartitions);
+    for (Partition p : partitions) {
+      f.format("  %s%n", p);
+    }
+  }
+
     //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
 
@@ -188,18 +197,17 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   public class Partition implements Comparable<Partition> {
       private final String name, partDirectory;
       private final String filename;
-      private final long lastModified;
+      private final long lastModified, fileSize;
+      private final CalendarDate partitionDate;
 
       // constructor from ncx
       public Partition(PartitionCollectionMutable.Partition pcPart) {
         this.name = pcPart.name;
         this.filename = pcPart.filename; // grib collection ncx
         this.lastModified = pcPart.lastModified;
+        this.fileSize = pcPart.fileSize;
         this.partDirectory = pcPart.directory;
-      }
-
-      public boolean isPartitionOfPartitions() {
-        return isPartitionOfPartitions;
+        this.partitionDate = pcPart.partitionDate;
       }
 
       public String getName() {
@@ -280,13 +288,15 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       @Override
       public String toString() {
-        return "Partition{" +
-                ", name='" + name + '\'' +
+        return "Partition{ " + name + '\'' +
                 ", directory='" + directory + '\'' +
                 ", filename='" + filename + '\'' +
+                ", partitionDate='" + partitionDate + '\'' +
                 ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
+                ", fileSize='" + fileSize + '\'' +
                 '}';
       }
+
     }
 
   @Immutable

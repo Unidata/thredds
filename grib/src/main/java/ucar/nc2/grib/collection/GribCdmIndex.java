@@ -235,6 +235,11 @@ public class GribCdmIndex implements IndexReader {
           logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFilenameInCache, type);
       }
 
+      if (result != null) {
+        result.lastModified = raf.getLastModified();
+        result.fileSize = raf.length();
+      }
+
     } catch (Throwable t) {
       logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFilenameInCache, t);
       try {
@@ -243,6 +248,7 @@ public class GribCdmIndex implements IndexReader {
         e.printStackTrace();
       }
     }
+
 
     return result;
   }

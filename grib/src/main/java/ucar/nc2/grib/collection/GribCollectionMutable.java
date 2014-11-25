@@ -108,6 +108,8 @@ public class GribCollectionMutable implements AutoCloseable {
   // not stored in index
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
   protected String indexFilename;
+  protected long lastModified;
+  protected long fileSize;
 
   public static int countGC;
 

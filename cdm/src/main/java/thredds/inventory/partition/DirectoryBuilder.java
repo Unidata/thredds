@@ -125,7 +125,7 @@ public class DirectoryBuilder {
       } else { // no index file  */
         // temporary - just to scan 100 files in the directory
         DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null, null);
-        dc.setUseGribFilter(false); // LOOK not needed anymore
+        // dc.setUseGribFilter(false); // LOOK not needed anymore
         partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
       // }
     }
