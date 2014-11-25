@@ -651,11 +651,16 @@ public class CdmIndex2Panel extends JPanel {
       for (GribCollectionImmutable.GroupGC g : ds.getGroups())
         groups.add(new GroupBean(g, ds.getType().toString()));
 
+    if (groups.size() > 0)
+      setGroup(groups.get(0));
+    else {
+      varTable.clearBeans();
+      coordTable.clearBeans();
+    }
+
     groupTable.setBeans(groups);
     groupTable.setHeader(indexFile.toString());
     gcFiles = gc.getFiles();
-    varTable.clearBeans();
-    coordTable.clearBeans();
   }
 
   private void setGroup(GroupBean bean) {
@@ -823,9 +828,18 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public String getValues() {
-      if (coord.getValues() == null) return "";
       Formatter f = new Formatter();
-      for (Object val : coord.getValues()) f.format("%s,", val);
+      if (coord instanceof CoordinateRuntime) {
+        CoordinateRuntime runtime = (CoordinateRuntime) coord;
+        f.format("%s-%s", runtime.getFirstDate(), runtime.getLastDate());
+      } else if (coord instanceof CoordinateTime2D) {
+        CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+        CoordinateRuntime runtime = coord2D.getRuntimeCoordinate();
+        f.format("%s-%s", runtime.getFirstDate(), runtime.getLastDate());
+      } else {
+        if (coord.getValues() == null) return "";
+        for (Object val : coord.getValues()) f.format("%s,", val);
+      }
       return f.toString();
     }
 

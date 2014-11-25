@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.catalog.DataFormatType;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.*;
@@ -64,7 +65,7 @@ public class Grib1Iosp extends GribIosp {
 
    // use defaults
   public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
-    return cdmVariableHash(cust, gr, 0, true, true, true);
+    return cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
   }
 
 

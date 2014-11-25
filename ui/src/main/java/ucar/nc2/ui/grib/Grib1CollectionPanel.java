@@ -32,6 +32,7 @@
 
 package ucar.nc2.ui.grib;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GdsHorizCoordSys;
@@ -674,7 +675,7 @@ public class Grib1CollectionPanel extends JPanel {
       records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = r.getGDSsection().getGDS().hashCode();
-      cdmHash =  Grib1Iosp.cdmVariableHash(cust, r, gdsHash, true, true, true);
+      cdmHash =  Grib1Iosp.cdmVariableHash(cust, r, gdsHash, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
     }
 
     void addRecord(Grib1Record r) {

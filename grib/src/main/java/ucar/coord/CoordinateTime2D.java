@@ -50,7 +50,7 @@ import ucar.nc2.util.Indent;
 import java.util.*;
 
 /**
- * Both runtime and time coordinates are tracked here. The time coordinate is assumed to be dependent on the runtime.
+ * Both runtime and time coordinates are tracked here. The time coordinate is dependent on the runtime, at least on the offset.
  *
  * @author caron
  * @since 1/22/14
@@ -111,7 +111,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param otime         list of offsets, all the same for each runtime
    * @param times         list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available during creation, not stored in index)
    */
-  public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, CoordinateTimeAbstract otime, List<Coordinate> times) {
+  public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, CoordinateTimeAbstract otime, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
@@ -126,7 +126,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
     this.nruns = runtime.getSize();
     this.offset = makeOffsets(timeUnit);
-    this.vals = null;
+    this.vals = (vals == null) ? null : Collections.unmodifiableList(vals);
   }
 
   /**
@@ -139,7 +139,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param regList       list of offsets, one each for each possible runtime hour of day.
    * @param times         list of times, one for each runtime, offsets reletive to its runtime (Only available during creation, not stored in index)
    */
-  public CoordinateTime2D(int code, CalendarPeriod timeUnit, CoordinateRuntime runtime, List<Coordinate> regList, List<Coordinate> times) {
+  public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> regList, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate());
 
     this.runtime = runtime;
@@ -168,7 +168,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
 
     this.offset = makeOffsets(timeUnit);
-    this.vals = null;
+    this.vals = (vals == null) ? null : Collections.unmodifiableList(vals);
   }
 
   private int[] makeOffsets(List<Coordinate> orgTimes) {
@@ -305,13 +305,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (o == null || getClass() != o.getClass()) return false;
 
     CoordinateTime2D that = (CoordinateTime2D) o;
-
+    if (isTimeInterval != that.isTimeInterval) return false;
+    if (!runtime.equals(that.runtime)) return false;
     if (isOrthogonal != that.isOrthogonal) return false;
     if (isRegular != that.isRegular) return false;
-    if (isTimeInterval != that.isTimeInterval) return false;
     if (otime != null ? !otime.equals(that.otime) : that.otime != null) return false;
     if (regTimes != null ? !regTimes.equals(that.regTimes) : that.regTimes != null) return false;
-    if (!runtime.equals(that.runtime)) return false;
     if (times != null ? !times.equals(that.times) : that.times != null) return false;
 
     return true;
@@ -863,7 +862,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  static CoordinateTime2D resetRuntimes(CoordinateTime2D prev, CoordinateRuntime runtimes) {
+  /* static CoordinateTime2D resetRuntimes(CoordinateTime2D prev, CoordinateRuntime runtimes) {
 
     List<Coordinate> times = null;
     if (prev.times != null) {
@@ -894,6 +893,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     } else {
       return new CoordinateTime2D(prev.code, prev.timeUnit, prev.vals, runtimes, times);
     }
-  }
+  }  */
 
 }

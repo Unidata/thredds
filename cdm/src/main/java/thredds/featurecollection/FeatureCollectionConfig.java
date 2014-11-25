@@ -397,8 +397,9 @@ public class FeatureCollectionConfig {
   static private Set<GribDatasetType> defaultGribDatasetTypes =
           Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Latest));
 
+  static public boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
+
   static public class GribConfig {                                                // LOOK make Immutable
-    private final boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
 
     public Map<Integer, Integer> gdsHash;  // map one gds hash to another
     public Map<Integer, String> gdsNamer;  // hash, group name

@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui.grib;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -364,7 +365,7 @@ public class Grib1DataTable extends JPanel {
 
     // public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
 
-      int id = Grib1Iosp.cdmVariableHash(cust, gr, 0, false, false, false);
+      int id = Grib1Iosp.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
       Grib1ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib1ParameterBean(gr);

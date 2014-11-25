@@ -125,6 +125,11 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
     List<PartitionCollectionProto.PartitionVariable> pvList = proto.getExtension(PartitionCollectionProto.partition);
     PartitionCollectionMutable.VariableIndexPartitioned vip = pc.makeVariableIndexPartitioned(group, vi, pvList.size());
     vip.setPartitions(pvList);
+
+    // cant put this in the constructor
+    vip.ndups = vi.ndups;
+    vip.nrecords = vi.nrecords;
+    vip.nmissing = vi.nmissing;
     return vip;
   }
 

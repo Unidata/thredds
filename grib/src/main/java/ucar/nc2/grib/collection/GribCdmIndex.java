@@ -342,6 +342,7 @@ public class GribCdmIndex implements IndexReader {
                                                           Logger logger) throws IOException {
 
     if (debug) System.out.printf("GribCdmIndex.updateDirectoryCollectionRecurse %s %s%n", dpart.getRoot(), forceCollection);
+    long start = System.currentTimeMillis();
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
 
@@ -392,6 +393,8 @@ public class GribCdmIndex implements IndexReader {
       changed = builder.updateNeeded(forceCollection) && builder.createPartitionedIndex(forceCollection, CollectionUpdateType.never, errlog);
     }
 
+    long took = System.currentTimeMillis() - start;
+    errlog.format(" INFO updateDirectoryCollectionRecurse %s took %d msecs%n", dpart.getRoot(), took);
     if (debug) System.out.printf("GribCdmIndex.updateDirectoryCollectionRecurse complete (%s) on %s errlog=%s%n", changed, dpart.getRoot(), errlog);
     return changed;
   }

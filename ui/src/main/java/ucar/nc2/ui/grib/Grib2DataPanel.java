@@ -32,6 +32,7 @@
 
 package ucar.nc2.ui.grib;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -380,7 +381,7 @@ public class Grib2DataPanel extends JPanel {
 
       gr.setFile(fileno);
 
-      int id = Grib2Iosp.cdmVariableHash(cust, gr, 0, false, false, logger);
+      int id = Grib2Iosp.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger);
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr, id);

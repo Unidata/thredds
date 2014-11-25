@@ -463,9 +463,9 @@ public class GribCollectionMutable implements AutoCloseable {
     return new VariableIndex(g, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
   }
 
-  public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, VariableIndex other) {
-    return new VariableIndex(g, other);
-  }
+  //public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, VariableIndex other) {
+  //  return new VariableIndex(g, other);
+  //}
 
   public class VariableIndex implements Comparable<VariableIndex> {
     public final GroupGC group;     // belongs to this group

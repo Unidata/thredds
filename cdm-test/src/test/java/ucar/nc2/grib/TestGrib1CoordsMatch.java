@@ -36,6 +36,7 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.nc2.Dimension;
@@ -162,7 +163,7 @@ public class TestGrib1CoordsMatch {
   }
 
   @Test
-  public void testRdavmDS083() throws IOException {
+  public void testRdavmDs083p2() throws IOException {
     TestGribCollections.Count count = read("B:/rdavm/ds083.2/sampleMonth/rda_ds083.2-sampleMonth.ncx2");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
@@ -170,6 +171,20 @@ public class TestGrib1CoordsMatch {
    // assert count.nmiss == 1126;
     assert count.nerrs == 0;
   }
+
+  /*
+  Currently doesnt work with gbx9 files
+  @Test
+  public void testRdavmDs627p1() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    TestGribCollections.Count count = read("B:/rdavm/ds627.1/GCpass1-union-ds627.1.ncx2");
+
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 14280;
+    assert count.nmiss == 14280;
+    assert count.nerrs == 0;
+    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+  }  */
 
   ///////////////////////////////////////////////////////////////
   private GribIosp iospGrib;
@@ -409,8 +424,8 @@ public class TestGrib1CoordsMatch {
       ptime = pds.getParamTime(cust);
 
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
-      gdsHash = r.getGDSsection().getGDS().hashCode();
-      cdmHash =  Grib1Iosp.cdmVariableHash(cust, r, gdsHash, true, true, true);
+      gdsHash = r.getGDSsection().getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
+      cdmHash =  Grib1Iosp.cdmVariableHash(cust, r, gdsHash, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
     }
 
     @Override

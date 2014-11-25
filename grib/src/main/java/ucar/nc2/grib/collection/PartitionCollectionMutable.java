@@ -126,9 +126,12 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     // only used by PartitionBuilder, not PartitionBuilderFromIndex
-    public void addPartition(int partno, int groupno, int varno) { // }, int flag, int ndups, int nrecords, int missing, float density) {
+    public void addPartition(int partno, int groupno, int varno, int ndups, int nrecords, int nmissing) {
       if (partList == null) partList = new ArrayList<>(nparts);
       partList.add(new PartitionForVariable2D(partno, groupno, varno));
+      this.ndups += ndups;
+      this.nrecords += nrecords;
+      this.nmissing += nmissing;
     }
 
     @Override
@@ -409,7 +412,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {    // LOOK dont really understand this
       VariableIndexPartitioned vipFrom = (VariableIndexPartitioned) from;
       for (int i=0; i<vipFrom.nparts; i++)
-        vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i)); // LOOK we dont know if vipFrom has been finished
+        vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i), 0, 0, 0); // LOOK we dont know if vipFrom has been finished
     }
 
     return vip;

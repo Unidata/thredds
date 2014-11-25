@@ -133,7 +133,6 @@ abstract class GribPartitionBuilder  {
   // build the index
 
   public boolean createPartitionedIndex(CollectionUpdateType forcePartition, CollectionUpdateType forceChildren, Formatter errlog) throws IOException {
-    long start = System.currentTimeMillis();
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 
     // create partitions from the partitionManager
@@ -178,9 +177,6 @@ abstract class GribPartitionBuilder  {
 
     // ready to write the index file
     writeIndex(result, errlog);
-
-    long took = System.currentTimeMillis() - start;
-    errlog.format(" INFO CreatePartitionedIndex took %d msecs%n", took);
     return true;
   }
 
@@ -288,7 +284,7 @@ abstract class GribPartitionBuilder  {
           GribCollectionMutable.VariableIndex vi = group.variList.get(varIdx);
           //int flag = 0;
           PartitionCollectionMutable.VariableIndexPartitioned vip = (PartitionCollectionMutable.VariableIndexPartitioned) resultGroup.findVariableByHash(vi.cdmHash);
-          vip.addPartition(partno, groupIdx, varIdx); // , flag, vi);
+          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing );
         } // loop over variable
       } // loop over partition
 

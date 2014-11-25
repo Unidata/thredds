@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -15,14 +16,16 @@ import java.util.*;
  */
 class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   boolean isTimeInterval;
+  boolean makeVals;
   CalendarPeriod timeUnit;
   int code;
   SortedMap<CalendarDate, CoordinateTimeAbstract> timeMap = new TreeMap<>();
 
-  public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code) {
+  public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code,  boolean makeVals) {
     this.isTimeInterval = isTimeInterval;
     this.timeUnit = timeUnit;
     this.code = code;
+    this.makeVals = makeVals;
   }
 
   @Override
@@ -39,26 +42,44 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     throw new RuntimeException();
   }
 
+  public void setRuntimeCoords(CoordinateRuntime runtimes) {
+    for (CalendarDate cd : runtimes.getRuntimesSorted()) {
+      CoordinateTimeAbstract time = timeMap.get(cd);
+      if (time == null) {
+        time = isTimeInterval ? new CoordinateTimeIntv(this.code, this.timeUnit, cd, new ArrayList<TimeCoord.Tinv>(0)) :
+                new CoordinateTime(this.code, this.timeUnit, cd, new ArrayList<Integer>(0));
+        timeMap.put(cd, time);
+      }
+    }
+  }
+
   @Override
   public Coordinate makeCoordinate(List<Object> values) {
 
-    // the set of unique runtimes
+    // the set of unique runtimes, sorted
     List<CalendarDate> runtimes = new ArrayList<>();
-    List<Coordinate> times = new ArrayList<>();
+    List<Coordinate> times = new ArrayList<>();  // the corresponding time coordinate for each runtime
+    List<CoordinateTime2D.Time2D> allVals = new ArrayList<>();  // optionally all Time2D coordinates
     for (CalendarDate cd : timeMap.keySet()) {
       runtimes.add(cd);
-      times.add(timeMap.get(cd));
+      CoordinateTimeAbstract time = timeMap.get(cd);
+      times.add(time);
+      if (makeVals) {
+        for (Object timeVal : time.getValues())
+          allVals.add( isTimeInterval ? new CoordinateTime2D.Time2D(cd, null, (TimeCoord.Tinv) timeVal) : new CoordinateTime2D.Time2D(cd, (Integer) timeVal, null));
+      }
     }
+    Collections.sort(allVals);
 
     CoordinateTimeAbstract maxCoord = testOrthogonal(timeMap.values());
     if (maxCoord != null)
-      return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes, timeUnit), maxCoord, times);
+      return new CoordinateTime2D(code, timeUnit, allVals, new CoordinateRuntime(runtimes, timeUnit), maxCoord, times);
 
     List<Coordinate> regCoords = testIsRegular();
     if (regCoords != null)
-      return new CoordinateTime2D(code, timeUnit, new CoordinateRuntime(runtimes, timeUnit), regCoords, times);
+      return new CoordinateTime2D(code, timeUnit, allVals, new CoordinateRuntime(runtimes, timeUnit), regCoords, times);
 
-    return new CoordinateTime2D(code, timeUnit, null, new CoordinateRuntime(runtimes, timeUnit), times);
+    return new CoordinateTime2D(code, timeUnit, allVals, new CoordinateRuntime(runtimes, timeUnit), times);
   }
 
   // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
@@ -90,6 +111,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
 
   // check if the coordinate with maximum # values includes all of the time in the collection
   // if so, we can store time2D as orthogonal
+  // LOOK not right I think, consider one coordinate every 6 hours, and one every 24; should not be merged.
   CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
     CoordinateTimeAbstract maxCoord = null;
     Set<Object> result = new HashSet<>(100);

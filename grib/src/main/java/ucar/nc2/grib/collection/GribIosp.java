@@ -77,9 +77,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   // do not use
   static public boolean debugRead = false;
   static public int debugIndexOnlyCount = 0;  // count number of data accesses
-  static boolean debugIndexOnly = false;  // we are running with only index files, no data
+  static boolean debugIndexOnly = false;  // we are running with only ncx2 index files, no data
   static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
-  static boolean debugGbxIndexOnly = false;  // we are running with only index files, no data
+  static boolean debugGbxIndexOnly = false;  // we are running with only ncx2 and gbx8 index files, no data
 
   static private final boolean debug = false, debugTime = false, debugName = false;
 
@@ -914,7 +914,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       RandomAccessFile rafData = null;
       try {
         for (DataRecord dr : records) {
-          if (debugIndexOnly) {
+          if (debugIndexOnly || debugGbxIndexOnly) {
             debugIndexOnlyCount++;
             // if (debugIndexOnlyShow) dr.show(gribCollection);
             GdsHorizCoordSys hcs = dr.hcs;
@@ -1071,7 +1071,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       try {
 
         for (PartitionCollectionImmutable.DataRecord dr : records) {
-          if (debugIndexOnly) {
+          if (debugIndexOnly || debugGbxIndexOnly) {
             debugIndexOnlyCount++;
             if (debugIndexOnlyShow) dr.show();
             GdsHorizCoordSys hcs = dr.hcs;

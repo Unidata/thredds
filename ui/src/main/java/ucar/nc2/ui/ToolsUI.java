@@ -1029,6 +1029,44 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionPropertiesToggle(a, null, "Use Cubic Interpolation on Thin Grids", useCubic, 'I', -1);
     BAMutil.addActionToMenu(subMenu, a);
 
+    //static public boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureCollectionConfig.useGenTypeDef = (Boolean) getValue(BAMutil.STATE);
+      }
+    };
+    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useGenTypeDef);
+    BAMutil.setActionPropertiesToggle(a, null, "useGenType", FeatureCollectionConfig.useGenTypeDef, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureCollectionConfig.useTableVersionDef = (Boolean) getValue(BAMutil.STATE);
+      }
+    };
+    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useTableVersionDef);
+    BAMutil.setActionPropertiesToggle(a, null, "useTableVersion", FeatureCollectionConfig.useTableVersionDef, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureCollectionConfig.intvMergeDef = (Boolean) getValue(BAMutil.STATE);
+      }
+    };
+    a.putValue(BAMutil.STATE, FeatureCollectionConfig.intvMergeDef);
+    BAMutil.setActionPropertiesToggle(a, null, "intvMerge", FeatureCollectionConfig.intvMergeDef, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureCollectionConfig.useCenterDef = (Boolean) getValue(BAMutil.STATE);
+      }
+    };
+    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useCenterDef);
+    BAMutil.setActionPropertiesToggle(a, null, "useCenter", FeatureCollectionConfig.useCenterDef, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
     /////////////////////////////////////
     subMenu = new JMenu("FMRC");
     modeMenu.add(subMenu);

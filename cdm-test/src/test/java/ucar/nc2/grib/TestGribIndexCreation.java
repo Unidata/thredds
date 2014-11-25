@@ -31,18 +31,17 @@ public class TestGribIndexCreation {
     // LOOK add check that records were combined
   }
 
-
   @Test
   public void testRdvamds083p2() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("B:/rdavm/ds083.2/catalog_ds083.2.xml#ds083.2_Aggregation_MRC");
-    assert (config != null);
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_46", "test/ds083.2", FeatureCollectionType.GRIB1, "B:/rdavm/ds083.2/grib1/**/.*gbx9", null, null, "directory", null, null);
+    config.gribConfig.useTableVersion = false;
+    // config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
-
 
   @Test
   public void testRdvamds627p0() throws IOException {
@@ -67,6 +66,54 @@ public class TestGribIndexCreation {
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Test
+  public void testRdvamds083p2_SampleMonth() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-union", "test/GCpass1", FeatureCollectionType.GRIB1, "B:/rdavm/ds083.2/sampleMonth/.*gbx9", null, null, "directory", null, null);
+    config.gribConfig.useTableVersion = false;
+    config.gribConfig.unionRuntimeCoord = true;
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Test
+  public void testDgex() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("dgex_46", "test/dgex", FeatureCollectionType.GRIB2, "Q:/cdmUnitTest/gribCollections/dgex/**/.*grib2", null, null, "file", null, null);
+    //config.gribConfig.useTableVersion = false;
+    //config.gribConfig.unionRuntimeCoord = true;
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void testGFSconus80() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("gfsConus80_46", "test/gfsConus80", FeatureCollectionType.GRIB1, "Q:/cdmUnitTest/gribCollections/gfs_conus80/**/.*grib1", null, null, "file", null, null);
+    //config.gribConfig.useTableVersion = false;
+    //config.gribConfig.unionRuntimeCoord = true;
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+
+  @Test
+  public void testCfrsAnalysis() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("cfrsAnalysis_46", "test/cfrsAnalysis", FeatureCollectionType.GRIB2, "Q:/cdmUnitTest/gribCollections/cfsr/.*grb2", null, null, "directory", null, null);
+    // <gdsHash from="1450192070" to="1450218978"/>
+    config.gribConfig.addGdsHash("1450192070", "1450218978");
+    //config.gribConfig.unionRuntimeCoord = true;
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
   }
 
 }
