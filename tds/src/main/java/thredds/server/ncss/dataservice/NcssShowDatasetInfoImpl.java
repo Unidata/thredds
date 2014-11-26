@@ -63,135 +63,138 @@ import java.io.InputStream;
 
 @Service
 public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo, ServletContextAware {
-    private ServletContext servletContext;
+  private ServletContext servletContext;
 
-    @Override
-    public String showForm(FeatureDataset fd, String datasetUrlPath, boolean wantXml, boolean isPoint)
-            throws IOException, TransformerException, JDOMException {
-        FeatureType ft = fd.getFeatureType();
-        String strResponse = "";
+  @Override
+  public String showForm(FeatureDataset fd, String datasetUrlPath, boolean wantXml, boolean isPoint)
+          throws IOException, TransformerException, JDOMException {
+    FeatureType ft = fd.getFeatureType();
+    String strResponse = "";
 
-        switch (ft) {
-            case GRID:
-                strResponse = showGridForm((GridDataset) fd, datasetUrlPath, wantXml, isPoint);
-                break;
+    switch (ft) {
+      case GRID:
+        strResponse = showGridForm((GridDataset) fd, datasetUrlPath, wantXml, isPoint);
+        break;
 
-            case STATION:
-                strResponse = showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml,
-                        "/WEB-INF/xsl/ncssSobs.xsl");
-                break;
+      case STATION:
+        strResponse = showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml,
+                "/WEB-INF/xsl/ncssSobs.xsl");
+        break;
 
-            case POINT:
-                strResponse = showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml,
-                        "/WEB-INF/xsl/ncssPobs.xsl");
-                break;
+      case POINT:
+        strResponse = showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml,
+                "/WEB-INF/xsl/ncssPobs.xsl");
+        break;
 
-            default:
-                // Feature not supported
-                break;
-        }
-
-        return strResponse;
+      default:
+        // Feature not supported
+        break;
     }
 
-    private String showPointForm(FeatureDatasetPoint fp, String datasetUrlPath, boolean wantXml, String xslt)
-            throws IOException, TransformerException, JDOMException {
-        FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fp, datasetUrlPath);
-        Document doc = xmlWriter.getCapabilitiesDocument();
+    return strResponse;
+  }
 
-        if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4)) {
-            String xPathForGridElement = "capabilities/AcceptList";
-            addElement(doc, xPathForGridElement,
-                    new Element("accept").addContent("netcdf4").setAttribute("displayName", "CF/NetCDF-4"));
+  private String showPointForm(FeatureDatasetPoint fp, String datasetUrlPath, boolean wantXml, String xslt)
+          throws IOException, TransformerException, JDOMException {
+    FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fp, datasetUrlPath);
+    Document doc = xmlWriter.getCapabilitiesDocument();
 
-            // TODO: Re-enable when NC4Ext bugs are ironed out.
-            // addElement(doc, xPathForGridElement,
-            //         new Element("accept").addContent("netcdf4ext").setAttribute("displayName", "NetCDF-4 Extended"));
-        }
+    if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4)) {
+      String xPathForGridElement = "capabilities/AcceptList";
+      addElement(doc, xPathForGridElement,
+              new Element("accept").addContent("netcdf4").setAttribute("displayName", "CF/NetCDF-4"));
 
-        if (wantXml) {
-            XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-            return fmt.outputString(doc);
-        } else {
-            InputStream is = getXSLT(xslt);
-            //XSLTransformer transformer = new XSLTransformer(is);
-
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(is));
-            String context = servletContext.getContextPath();
-            transformer.setParameter("tdsContext", context);
-
-            JDOMSource in = new JDOMSource(doc);
-            JDOMResult out = new JDOMResult();
-            transformer.transform(in, out);
-            Document html = out.getDocument();
-
-            XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-            return fmt.outputString(html);
-        }
+      // TODO: Re-enable when NC4Ext bugs are ironed out.
+      // addElement(doc, xPathForGridElement,
+      //         new Element("accept").addContent("netcdf4ext").setAttribute("displayName", "NetCDF-4 Extended"));
     }
 
-    private String showGridForm(GridDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint)
-            throws IOException, TransformerException, JDOMException {
-        boolean formatAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
-        GridDatasetInfo writer = new GridDatasetInfo(gds, "path");
+    if (wantXml) {
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      return fmt.outputString(doc);
+    } else {
+      InputStream is = getXSLT(xslt);
+      //XSLTransformer transformer = new XSLTransformer(is);
 
-        if (wantXml) {
-            Document datsetDescription = writer.makeDatasetDescription();
-            if (formatAvailable) {
-                addNetcdf4Format(datsetDescription, "/gridDataset");
-            }
+      Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(is));
+      String context = servletContext.getContextPath();
+      transformer.setParameter("tdsContext", context);
 
-            return writer.writeXML(datsetDescription);
-        } else {
-            InputStream xslt = getXSLT(isPoint ? "/WEB-INF/xsl/ncssGridAsPoint.xsl" : "/WEB-INF/xsl/ncssGrid.xsl");
-            Document doc = writer.makeGridForm();
+      JDOMSource in = new JDOMSource(doc);
+      JDOMResult out = new JDOMResult();
+      transformer.transform(in, out);
+      Document html = out.getDocument();
 
-            if (formatAvailable) {
-                addNetcdf4Format(doc, "/gridForm");
-            }
-
-            Element root = doc.getRootElement();
-            root.setAttribute("location", datsetUrlPath);
-            Transformer xslTransformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt));
-            String context = servletContext.getContextPath();
-            xslTransformer.setParameter("tdsContext", context);
-
-            xslTransformer.setParameter("gridWKT", writer.getDatasetBoundariesWKT());
-
-            JDOMSource in = new JDOMSource(doc);
-            JDOMResult out = new JDOMResult();
-            xslTransformer.transform(in, out);
-            Document html = out.getDocument();
-
-            XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-            return fmt.outputString(html);
-        }
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      return fmt.outputString(html);
     }
+  }
 
-    private InputStream getXSLT(String xslName) throws IOException {
-        ServletContextResource r = new ServletContextResource(servletContext, xslName);
-        return r.getInputStream();
+  private String showGridForm(GridDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint)
+          throws IOException, TransformerException, JDOMException {
+    boolean formatAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
+    GridDatasetInfo writer = new GridDatasetInfo(gds, "path");
+
+    if (wantXml) {
+      Document datasetDescription = writer.makeDatasetDescription();
+      Element root = datasetDescription.getRootElement();
+      root.setAttribute("location", datsetUrlPath);
+
+      if (formatAvailable) {
+        addNetcdf4Format(datasetDescription, "/gridDataset");
+      }
+
+      return writer.writeXML(datasetDescription);
+    } else {
+      InputStream xslt = getXSLT(isPoint ? "/WEB-INF/xsl/ncssGridAsPoint.xsl" : "/WEB-INF/xsl/ncssGrid.xsl");
+      Document doc = writer.makeGridForm();
+
+      if (formatAvailable) {
+        addNetcdf4Format(doc, "/gridForm");
+      }
+
+      Element root = doc.getRootElement();
+      root.setAttribute("location", datsetUrlPath);
+      Transformer xslTransformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt));
+      String context = servletContext.getContextPath();
+      xslTransformer.setParameter("tdsContext", context);
+
+      xslTransformer.setParameter("gridWKT", writer.getDatasetBoundariesWKT());
+
+      JDOMSource in = new JDOMSource(doc);
+      JDOMResult out = new JDOMResult();
+      xslTransformer.transform(in, out);
+      Document html = out.getDocument();
+
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      return fmt.outputString(html);
     }
+  }
 
-    @Override
-    public void setServletContext(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
+  private InputStream getXSLT(String xslName) throws IOException {
+    ServletContextResource r = new ServletContextResource(servletContext, xslName);
+    return r.getInputStream();
+  }
 
-    private void addNetcdf4Format(Document datasetDescriptionDoc, String rootElementName) throws JDOMException {
-        String xPathForGridElement = rootElementName + "/AcceptList/Grid";
-        addElement(datasetDescriptionDoc, xPathForGridElement, new Element("accept").addContent("netcdf4").setAttribute
-                ("displayName", "netcdf4"));
+  @Override
+  public void setServletContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
+  }
 
-        String xPathForGridAsPointElement = rootElementName + "/AcceptList/GridAsPoint";
-        addElement(datasetDescriptionDoc, xPathForGridAsPointElement, new Element("accept").addContent("netcdf4")
-                .setAttribute("displayName", "netcdf4"));
-    }
+  private void addNetcdf4Format(Document datasetDescriptionDoc, String rootElementName) throws JDOMException {
+    String xPathForGridElement = rootElementName + "/AcceptList/Grid";
+    addElement(datasetDescriptionDoc, xPathForGridElement, new Element("accept").addContent("netcdf4").setAttribute
+            ("displayName", "netcdf4"));
 
-    private void addElement(Document datasetDescriptionDoc, String xPath, Element element) throws JDOMException {
-        XPath gridXpath = XPath.newInstance(xPath);
-        Element acceptListParent = (Element) gridXpath
-                .selectSingleNode(datasetDescriptionDoc);
-        acceptListParent.addContent(element);
-    }
+    String xPathForGridAsPointElement = rootElementName + "/AcceptList/GridAsPoint";
+    addElement(datasetDescriptionDoc, xPathForGridAsPointElement, new Element("accept").addContent("netcdf4")
+            .setAttribute("displayName", "netcdf4"));
+  }
+
+  private void addElement(Document datasetDescriptionDoc, String xPath, Element element) throws JDOMException {
+    XPath gridXpath = XPath.newInstance(xPath);
+    Element acceptListParent = (Element) gridXpath
+            .selectSingleNode(datasetDescriptionDoc);
+    acceptListParent.addContent(element);
+  }
 }
