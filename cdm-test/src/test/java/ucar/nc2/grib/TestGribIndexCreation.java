@@ -50,7 +50,7 @@ public class TestGribIndexCreation {
             "B:/rdavm/ds627.0/ei.oper.an.pv/**/.*gbx9", "#ei.oper.an.pv/#yyyyMM", null, "directory", null, null);
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.testIndexOnly, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }

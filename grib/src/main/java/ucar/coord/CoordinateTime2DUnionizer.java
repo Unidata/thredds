@@ -7,7 +7,7 @@ import ucar.nc2.time.CalendarPeriod;
 import java.util.*;
 
 /**
- * Builder of CoordinateTime2D, from a set of CoordinateTime2D's.
+ * Create union  CoordinateTime2D's.
  * Will build orthogonal and regular if possible.
  * Does not actually depend on T.
  *
@@ -42,6 +42,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     throw new RuntimeException();
   }
 
+  // set the list of runtime coordinates; add any that are not lready present, and make an empty CoordinateTimeAbstract for it
   public void setRuntimeCoords(CoordinateRuntime runtimes) {
     for (CalendarDate cd : runtimes.getRuntimesSorted()) {
       CoordinateTimeAbstract time = timeMap.get(cd);
@@ -112,7 +113,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   // check if the coordinate with maximum # values includes all of the time in the collection
   // if so, we can store time2D as orthogonal
   // LOOK not right I think, consider one coordinate every 6 hours, and one every 24; should not be merged.
-  CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
+  static public CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
     CoordinateTimeAbstract maxCoord = null;
     Set<Object> result = new HashSet<>(100);
 

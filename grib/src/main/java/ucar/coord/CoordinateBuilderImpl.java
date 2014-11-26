@@ -11,7 +11,7 @@ import java.util.*;
  */
 public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
   protected Set<Object> valSet = new HashSet<>(100);
-  protected Map<Object, Integer> valMap;
+  protected Map<Object, Integer> valMap;    // map of values to index in Coordinate
   protected Coordinate coord;
 
   @Override

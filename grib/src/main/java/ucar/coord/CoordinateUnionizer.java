@@ -18,7 +18,7 @@ import java.util.*;
  * @author John
  * @since 12/10/13
  */
-public class CoordinateUnionizer<T> {
+public class CoordinateUnionizer {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateUnionizer.class);
 
   FeatureCollectionConfig.GribIntvFilter intvFilter;
@@ -30,7 +30,6 @@ public class CoordinateUnionizer<T> {
   }
 
   List<Coordinate> unionCoords = new ArrayList<>();
-  // CoordinateND<GribCollection.Record> result;
 
   CoordinateBuilder runtimeBuilder ;
   CoordinateBuilder timeBuilder;
@@ -114,18 +113,5 @@ public class CoordinateUnionizer<T> {
     // result = new CoordinateND<>(unionCoords);
     return unionCoords;
   }
-
-  /*
-   * Reindex with shared coordinates and return new CoordinateND
-   * @param prev  previous
-   * @return new CoordinateND containing shared coordinates and sparseArray for the new coordinates
-   *
-  public void addIndex(CoordinateND<GribCollection.Record> prev) {
-    result.reindex(prev);
-  }
-
-  public CoordinateND<GribCollection.Record> getCoordinateND() {
-    return result;
-  } */
 
 }

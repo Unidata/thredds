@@ -256,13 +256,18 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
-      // boolean isDense = "dense".equals(config.getParameter("CoordSys"));
       CalendarPeriod userTimeUnit = config.userTimeUnit;
 
       // assign each record to unique variable using cdmVariableHash()
       Map<Integer, VariableBag> vbHash = new HashMap<>(100);
       for (Grib2Record gr : records) {
-        int cdmHash = cdmVariableHash(gr, gdsHash);
+        int cdmHash;
+        try {
+          cdmHash = cdmVariableHash(gr, gdsHash);
+        } catch (Throwable t) {
+          logger.warn("Exception on record ", t);
+          continue; // keep going
+        }
         VariableBag bag = vbHash.get(cdmHash);
         if (bag == null) {
           bag = new VariableBag(gr, cdmHash);
@@ -312,7 +317,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       }
 
       // make shared coordinates across variables
-      CoordinateSharer<Grib2Record> sharify = new CoordinateSharer<>(false);
+      CoordinateSharer<Grib2Record> sharify = new CoordinateSharer<>(config.unionRuntimeCoord);
       for (VariableBag vb : gribvars) {
         sharify.addCoords(vb.coordND.getCoordinates());
       }
