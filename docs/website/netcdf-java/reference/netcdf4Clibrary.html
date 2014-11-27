@@ -9,12 +9,12 @@
 
 <body>
 <h1>NetCDF-4 C Library Loading</h1>
-<p align="justify">In order to write netCDF-4 files, you must have the <a href="https://www.unidata.ucar.edu/software/netcdf/">netCDF-4 C library</a>, version
-  4.3.1 or above, compiled and available on your system, along with all supporting libraries (HDF5 etc). The details of this differ for each operating system, and
+<p>In order to write NetCDF-4 files, you must have the <a href="https://www.unidata.ucar.edu/software/netcdf/">NetCDF-4 C library</a>, version
+  4.3.1 or above, compiled and available on your system, along with all supporting libraries (HDF5, etc). The details of this differ for each operating system, and
   our experience (so far) is documented below.</p>
 
-<p align="justify">The libraries must be in a directory that the operating system knows to look in, and the CDM needs to know the netcdf-4 library
-  name.<a name="pass" id="pass"></a></p>
+<p>The libraries must be in a directory that the operating system knows to look in, and the CDM needs to know the NetCDF-4 library
+  name.</p>
 <ul>
   <li>For TDS users, we recommend setting the library path and name in
     <em><a href="../../tds/reference/ThreddsConfigXMLFile.html#netcdfCLibrary">threddsConfig.xml.</a></em></li>
@@ -27,7 +27,7 @@
     </ol>
   </li>
 </ul>
-<p align="justify">We strongly recommend using 64-bit Java. In any case, use the
+<p>We strongly recommend using 64-bit Java. In any case, use the
   lastest update for Java, because security improvements are constantly being made.</p>
 
 <h2>A Note on HDF5</h2>
@@ -46,13 +46,13 @@
     them - but Java needs DLLs to load).
   </li>
   <li>Run the install.exe file, which puts everything from the <em>bin</em> and <em>deps</em> directories into a standard directory, which should be accesible
-    to anyone who wants to use the netCDF-C library.
+    to anyone who wants to use the NetCDF-4 C library.
   </li>
   <li>Add the install directory to the Windows System Variable Path.</li>
 </ol>
 <h2>Linux</h2>
 <ol>
-  <li>Download the latest netCDF4 C library release from <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">here. </a></li>
+  <li>Download the latest NetCDF-4 C library release from <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">here. </a></li>
   <li>Compile the library. See <a href="http://www.unidata.ucar.edu/software/netcdf/docs/building.html"> instructions.</a></li>
   <li>Set the <em>library path</em> to the directory where the libraries were built  and the library name to <strong><em>netcdf</em></strong>.</li>
 </ol>
@@ -78,32 +78,33 @@
 
 <p>&nbsp;</p>
 <hr/>
-<h2>Writing netCDF-4 files<a name="writing" id="writing"></a></h2>
+<h2><a name="writing" id="writing">Writing NetCDF-4 files</a></h2>
 <ul>
   <li>From the command line: see <a href="manPages.html#nccopy">nccopy man page</a></li>
-  <li>From ToolsUI: in <strong>Viewer</strong> tab, bring up the file to copy, then click &quot;write Netcdf File&quot; button to get dialog.</li>
-  <li>From TDS Netcdf Subset Service: choose <strong>netcdf-4</strong> output type.</li>
+  <li>From ToolsUI: in <strong>Viewer</strong> tab, bring up the file to copy, then click &quot;Write netCDF file&quot; button to get dialog.</li>
+  <li>From TDS NetCDF Subset Service: choose <strong>netcdf-4</strong> output type.</li>
   <li>From a Java program (see <em>ucar.nc2.dataset.NetcdfDataset.main()</em> for complete example) :
-    <pre>Nc4Chunking chunker = Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle);
+<pre>Nc4Chunking chunker = Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle);
 NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf4;
 
 FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, chunker);
 ...
 NetcdfFile ncfileOut = writer.write();
-ncfileIn.close();<br/>ncfileOut.close();</pre>
+ncfileIn.close();<br/>ncfileOut.close();
+</pre>
   </li>
 </ul>
 <h3>Chunking Strategy (version 4.5)</h3>
-<p>When writing netcdf-4 files, one must decide on how the variables are to be chunked. In the netcdf-java library this is done through the use of a Nc4Chunking strategy. The possibilities currently are:</p>
+<p>When writing NetCDF-4 files, one must decide on how the variables are to be chunked. In the NetCDF-Java library this is done through the use of a Nc4Chunking strategy. The possibilities currently are:</p>
 <ul>
   <li><strong>standard</strong> : this strategy is used by default (see below for description) </li>
-  <li><strong>grib</strong>: this strategy matches how GRIB files are stored: the chunking uses only the two rightmost dimensions, which for GRIB is the x and y dimension. Use this strategy when converting GRIB files to netcdf-4, in order to optimize conversion writing time, and to get similar access speed.</li>
+  <li><strong>grib</strong>: this strategy matches how GRIB files are stored: the chunking uses only the two rightmost dimensions, which for GRIB is the x and y dimension. Use this strategy when converting GRIB files to NetCDF-4, in order to optimize conversion writing time, and to get similar access speed.</li>
   <li><strong>custom</strong>: you may write your own inplementation of <strong>ucar.nc2.write.Nc4Chunking</strong> and pass it into <strong>FileWriter2</strong> or <strong>NetcdfFileWriter</strong>. This gives you complete control over chunking.</li>
 </ul>
 <p>Both <strong>standard</strong> and <strong>grib</strong> strategies allow you to override individual variable chunking if you want by setting the variable's <strong>_ChunkSizes </strong>attribute. </p>
-<p><strong>By default, the Java library will write chunked and compressed netcdf-4 files</strong>, using the default chunking algorithm. You may pass in a null for the chunking parameter to use the default.</p>
-<h3>Default chunking strategy<a name="defaultStrategy" id="defaultStrategy"></a><a name="chunking" id="chunking"></a></h3>
-<blockquote>
+<p><strong>By default, the Java library will write chunked and compressed NetCDF-4 files</strong>, using the default chunking algorithm. You may pass in a null for the chunking parameter to use the default.</p>
+<h3><a name="chunking" id="chunking">Default chunking strategy</a></h3>
+
   <p>For each Variable:</p>
   <ol>
     <li>Look for a variable attribute named &quot;<strong>_ChunkSizes&quot;</strong>, whose value is a vector of integer chunk sizes, one for each dimension. If it
@@ -123,8 +124,10 @@ ncfileIn.close();<br/>ncfileOut.close();</pre>
       </ol>
     </li>
   </ol>
+
   <p>The <em><strong>fillFastest</strong></em><strong></strong>( int[] shape,<strong> maxSize</strong>) algorithm fills the fastest varying (rightmost) dimensions first, until the chunkSize is as close to <strong>maxSize</strong> as possible without exceeding. The net effect is that the chunkSizes will be close to <strong>Nc4ChunkingDefault.defaultChunkSize</strong>, with a minimum of <strong>Nc4ChunkingDefault.minChunksize</strong>, and favoring read access along the fast dimensions. Any variable with an unlimited dimension will use at least <strong>Nc4ChunkingDefault.minChunksize</strong> bytes (approx, but if compressing, unused space should be mostly eliminated).</p>
   <p>Current default values (these can be overidden by the user):</p>
+
   <ul>
     <li><strong>minVariableSize</strong> = 65K</li>
     <li><strong>defaultChunkSize</strong> = 256K</li>
@@ -137,10 +140,10 @@ ncfileIn.close();<br/>ncfileOut.close();</pre>
 // set shuffle to true for the shuffle filter 
 Nc4Chunking chunker = Nc4Chunking factory(Nc4Chunking.Strategy.standard, int deflateLevel, boolean shuffle);
 </pre>
-</blockquote>
+
 <hr width="100%"/>
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated October 2014
+  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated November 2014
 </address>
 </body>
 </html>
