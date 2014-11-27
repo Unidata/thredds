@@ -47,8 +47,8 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     for (CalendarDate cd : runtimes.getRuntimesSorted()) {
       CoordinateTimeAbstract time = timeMap.get(cd);
       if (time == null) {
-        time = isTimeInterval ? new CoordinateTimeIntv(this.code, this.timeUnit, cd, new ArrayList<TimeCoord.Tinv>(0)) :
-                new CoordinateTime(this.code, this.timeUnit, cd, new ArrayList<Integer>(0));
+        time = isTimeInterval ? new CoordinateTimeIntv(this.code, this.timeUnit, cd, new ArrayList<TimeCoord.Tinv>(0), null) :
+                new CoordinateTime(this.code, this.timeUnit, cd, new ArrayList<Integer>(0), null);
         timeMap.put(cd, time);
       }
     }

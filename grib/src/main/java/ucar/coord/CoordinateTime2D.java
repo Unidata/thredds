@@ -82,7 +82,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param times         list of times, one for each runtime, offsets reletive to its runtime
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> times) {
-    super(code, timeUnit, runtime.getFirstDate());
+    super(code, timeUnit, runtime.getFirstDate(), null);
 
     this.runtime = runtime;
     this.times = Collections.unmodifiableList(times);
@@ -113,7 +113,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param times         list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available during creation, not stored in index)
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, CoordinateTimeAbstract otime, List<Coordinate> times) {
-    super(code, timeUnit, runtime.getFirstDate());
+    super(code, timeUnit, runtime.getFirstDate(), null);
 
     this.runtime = runtime;
     this.times = (times == null) ? null : Collections.unmodifiableList(times);    // need these for makeBest
@@ -141,7 +141,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param times         list of times, one for each runtime, offsets reletive to its runtime (Only available during creation, not stored in index)
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> regList, List<Coordinate> times) {
-    super(code, timeUnit, runtime.getFirstDate());
+    super(code, timeUnit, runtime.getFirstDate(), null);
 
     this.runtime = runtime;
     this.nruns = runtime.getSize();
@@ -471,38 +471,78 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   ///////////////////////////////////////////////////////////////////////////////////////
 
-  // making the coordinates, but losing track of which runtime it belongs to
-  public CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets) {
+  public CoordinateTimeAbstract makeBestTimeCoordinate(CoordinateRuntime master) {
     if (isTimeInterval) {
-      Set<TimeCoord.Tinv> values = new HashSet<>();
-      for (int runIdx=0; runIdx<nruns; runIdx++) {
-        CoordinateTimeIntv timeIntv = (times == null) ?  (CoordinateTimeIntv)  getTimeCoordinate(runIdx) :
-                (CoordinateTimeIntv) times.get(runIdx);  // use times array, passed into constructor, with original inventory, if possible
-        for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals())
-          values.add(tinv.offset(getOffset(runIdx)));
-      }
-
-      List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
-      Collections.sort(offsetSorted);
-      return new CoordinateTimeIntv(getCode(), getTimeUnit(), getRefDate(), offsetSorted);
-
+      return makeBestTimeIntv(master);
     } else {
-      Set<Integer> values = new HashSet<>();
-      for (int runIdx=0; runIdx<nruns; runIdx++) {
-        CoordinateTime timeInt = (times == null) ?  (CoordinateTime)  getTimeCoordinate(runIdx) :
-                (CoordinateTime) times.get(runIdx);  // use times array, passed into constructor, with original inventory, if possible
-        for (Integer offset : timeInt.getOffsetSorted())
-          values.add(offset+getOffset(runIdx));
-      }
-
-      List<Integer> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add( (Integer) val);
-      Collections.sort(offsetSorted);
-      return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted);
+      return makeBestTime(master);
     }
   }
 
+  private CoordinateTimeAbstract makeBestTime(CoordinateRuntime master) {
+    // make unique set of coordinates
+    Set<Integer> values = new HashSet<>();
+    for (int runIdx=0; runIdx<nruns; runIdx++) {   // use times array, passed into constructor, with original inventory, if possible
+      CoordinateTime timeCoord = (times == null) ?  (CoordinateTime)  getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
+      for (Integer offset : timeCoord.getOffsetSorted())
+        values.add(offset+getOffset(runIdx));
+    }
+    List<Integer> offsetSorted = new ArrayList<>(values.size());
+    for (Object val : values) offsetSorted.add( (Integer) val);
+    Collections.sort(offsetSorted);
+
+    // fast lookup
+    Map<Integer, Integer> map = new HashMap<>();
+    int count = 0;
+    for (Integer val : offsetSorted)
+      map.put(val, count++);
+
+    // now for each coordinate, use the latest runtime
+    int[] time2runtime = new int[ offsetSorted.size()];
+    for (int runIdx=0; runIdx<nruns; runIdx++) {
+      CoordinateTime timeCoord = (times == null) ? (CoordinateTime) getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
+      for (Integer offset : timeCoord.getOffsetSorted()) {
+        Integer bestValIdx = map.get(offset + getOffset(runIdx));
+        if (bestValIdx == null) throw new IllegalStateException();
+        time2runtime[bestValIdx] = runIdx + 1; // use this partition; later ones override; one based so 0 = missing
+      }
+    }
+
+    return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted, time2runtime);
+  }
+
+  private CoordinateTimeAbstract makeBestTimeIntv(CoordinateRuntime master) {
+     // make unique set of coordinates
+    Set<TimeCoord.Tinv> values = new HashSet<>();
+    for (int runIdx=0; runIdx<nruns; runIdx++) {        // use times array, passed into constructor, with original inventory, if possible
+      CoordinateTimeIntv timeIntv = (times == null) ?  (CoordinateTimeIntv)  getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
+      for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals())
+        values.add(tinv.offset(getOffset(runIdx)));
+    }
+    List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
+    for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
+    Collections.sort(offsetSorted);
+
+    // fast lookup
+    Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index
+    int count = 0;
+    for (TimeCoord.Tinv val : offsetSorted)
+      map.put(val, count++);
+
+    int[] time2runtime = new int[ offsetSorted.size()];
+    for (int runIdx=0; runIdx<nruns; runIdx++) {
+      CoordinateTimeIntv timeIntv = (times == null) ?  (CoordinateTimeIntv)  getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
+      for (TimeCoord.Tinv bestVal : timeIntv.getTimeIntervals()) {
+        Integer bestValIdx = map.get(bestVal.offset(getOffset(runIdx)));
+        if (bestValIdx == null) throw new IllegalStateException();
+        time2runtime[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
+      }
+    }
+
+    return new CoordinateTimeIntv(getCode(), getTimeUnit(), getRefDate(), offsetSorted, time2runtime);
+  }
+
+  /*
   public CoordinateRuntime makeCoordinateRuntimeForBest(SmartArrayInt time2runtime) {
     List<CalendarDate> bestRuntimes = new ArrayList<>();
     for (int i=0; i<time2runtime.getN(); i++) {
@@ -521,7 +561,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param coordBest the set of coordinates
    * @param timeInventory  whether records exist for each run, time
    * @return  array of runIdx+1, the size of cordBest
-   */
+   *
   public int[] makeTime2RuntimeMap(CoordinateTimeAbstract coordBest, TwoDTimeInventory timeInventory) {
     if (isTimeInterval)
       return makeTime2RuntimeMap((CoordinateTimeIntv) coordBest, timeInventory);
@@ -576,7 +616,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       }
     }
     return result;
-  }
+  }  */
 
   ////////////////////////////////////////////////////////
 

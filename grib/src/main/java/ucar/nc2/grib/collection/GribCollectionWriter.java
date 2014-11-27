@@ -111,9 +111,14 @@ class GribCollectionWriter {
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
     b.addMsecs(coord.getRefDate().getMillis());
-    for (Integer offset : coord.getOffsetSorted()) {
+    for (Integer offset : coord.getOffsetSorted())
       b.addValues(offset);
-    }
+
+    int[] time2runtime = coord.getTime2runtime();
+    if (time2runtime != null)
+      for (int val : time2runtime)
+        b.addTime2Runtime(val);
+
     return b.build();
   }
 
@@ -124,17 +129,16 @@ class GribCollectionWriter {
     b.setUnit(coord.getTimeUnit().toString());
     b.addMsecs(coord.getRefDate().getMillis());
 
-    // LOOK old way - do we need ?
-    /*     float scale = (float) tc.getTimeUnitScale(); // deal with, eg, "6 hours" by multiplying values by 6
-        if (tc.isInterval()) {
-          for (TimeCoord.Tinv tinv : tc.getIntervals()) {
-            b.addValues(tinv.getBounds1() * scale);
-            b.addBound(tinv.getBounds2() * scale);
-          } */
     for (TimeCoord.Tinv tinv : coord.getTimeIntervals()) {
       b.addValues(tinv.getBounds1());
       b.addBound(tinv.getBounds2());
     }
+
+    int[] time2runtime = coord.getTime2runtime();
+    if (time2runtime != null)
+      for (int val : time2runtime)
+        b.addTime2Runtime(val);
+
     return b.build();
   }
 

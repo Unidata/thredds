@@ -381,7 +381,7 @@ message Coord {
         if (unit == null)
            throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit = CalendarPeriod.of(unit);
-        return new CoordinateTime(code, timeUnit, refDate, offs);
+        return new CoordinateTime(code, timeUnit, refDate, offs, readTime2Runtime(pc));
 
       case timeIntv:
         List<TimeCoord.Tinv> tinvs = new ArrayList<>(pc.getValuesCount());
@@ -394,7 +394,7 @@ message Coord {
         if (unit == null)
            throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit2 = CalendarPeriod.of(unit);
-        return new CoordinateTimeIntv(code, timeUnit2, refDate, tinvs);
+        return new CoordinateTimeIntv(code, timeUnit2, refDate, tinvs, readTime2Runtime(pc));
 
       case time2D:
         dates = new ArrayList<>(pc.getMsecsCount());
@@ -439,6 +439,16 @@ message Coord {
 
     }
     throw new IllegalStateException("Unknown Coordinate type = " + type);
+  }
+
+  private int[] readTime2Runtime(GribCollectionProto.Coord pc) {
+    if (pc.getTime2RuntimeCount() > 0) {
+      int[] time2runtime = new int[pc.getTime2RuntimeCount()];
+      for (int i=0; i<pc.getTime2RuntimeCount(); i++)
+        time2runtime[i] = pc.getTime2Runtime(i);
+      return time2runtime;
+    }
+    return null;
   }
 
   protected GribCollectionMutable.VariableIndex readVariable(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable pv) {

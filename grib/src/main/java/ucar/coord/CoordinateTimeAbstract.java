@@ -57,15 +57,15 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   protected final CalendarPeriod timeUnit;   // time duration, based on code
   protected final String periodName;         // used to create the udunit
   protected final CalendarDate refDate;
-  //protected final int[] time2runtime;
+  protected final int[] time2runtime;
 
   protected String name = "time";
 
-  CoordinateTimeAbstract(int code, CalendarPeriod timeUnit, CalendarDate refDate) { // }, int[] time2runtime) {
+  CoordinateTimeAbstract(int code, CalendarPeriod timeUnit, CalendarDate refDate, int[] time2runtime) {
     this.code = code;
     this.timeUnit = timeUnit;
     this.refDate = refDate;
-    //this.time2runtime = time2runtime;
+    this.time2runtime = time2runtime;
 
     CalendarPeriod.Field cf = timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
@@ -108,12 +108,12 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     return timeUnit;
   }
 
-  //public int[] getTime2runtime() {
-  //  return time2runtime;
-  //}
+  public int[] getTime2runtime() {
+    return time2runtime;
+  }
 
   ////////////////////////////////////////
-  public abstract CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets);
+  // public abstract CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets);
 
   public abstract CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal);
 

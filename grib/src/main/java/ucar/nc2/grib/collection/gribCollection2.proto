@@ -55,6 +55,8 @@ message Coord {
   repeated Coord times = 7; // time2D only
   optional bool isOrthogonal = 8; // time2D only
   optional bool isRegular = 9; // time2D only
+
+  repeated uint32 time2runtime = 10;  // time index to runtime index
 }
 
 message MFile {

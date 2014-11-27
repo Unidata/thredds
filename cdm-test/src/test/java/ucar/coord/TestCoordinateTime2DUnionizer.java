@@ -100,7 +100,7 @@ public class TestCoordinateTime2DUnionizer {
   static public CoordinateTime makeTimeCoordinate(CalendarDate refDate, int size, int spacing) {
     List<Integer> offsetSorted = new ArrayList<>();
     for (int i=0; i<size; i++) offsetSorted.add(i * spacing);
-    return new CoordinateTime(code, timeUnit, refDate, offsetSorted);
+    return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
   }
 
   static public CoordinateTime2D makeTimeCoordinate2D(int nruns, int ntimes) {
