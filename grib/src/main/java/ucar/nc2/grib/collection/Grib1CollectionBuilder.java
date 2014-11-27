@@ -152,10 +152,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       g.coords = rect.coords;
 
       statsAll.add(stats);
-
-      // look for group name overrides
-      //if (config.gribConfig.gdsNamer != null)
-      //  g.nameOverride = config.gribConfig.gdsNamer.get(g.gdsHash);
     }
 
     // debugging and validation
@@ -319,6 +315,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         total += vb.coordND.getSparseArray().getTotalSize();
        }
 
+      // track stats
       counter.recordsUnique += tot_used;
       counter.dups += tot_dups;
       counter.vars += gribvars.size();

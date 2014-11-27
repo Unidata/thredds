@@ -771,7 +771,12 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getNFiles() {
-      return group.getNFiles();
+      int n = group.getNFiles();
+      if (n == 0) {
+        if (gc instanceof PartitionCollectionImmutable)
+          n = ((PartitionCollectionImmutable) gc).getPartitionSize();
+      }
+      return n;
     }
 
     public int getNruntimes() {

@@ -42,6 +42,34 @@ public class CoordinateSharer<T> {
   CoordinateRuntime runtimeAll;
   CoordinateTime2D time2Dall, timeIntv2Dall;
 
+  public void addCoordinate(Coordinate coord) {
+    switch (coord.getType()) {
+      case runtime:
+        runtimeBuilders.add(coord);   // unique coordinates
+        break;
+
+      case time:
+        timeBuilders.add(coord);
+        break;
+
+      case timeIntv:
+        timeIntvBuilders.add(coord);
+        break;
+
+      case time2D:
+          time2DBuilders.add(coord);
+        break;
+
+      case vert:
+        vertBuilders.add(coord);
+        break;
+
+      case ens:
+        ensBuilders.add(coord);
+        break;
+    }
+  }
+
   // add each variable's list of coordinate
   // keep in Set, so it hold just the unique ones
   public void addCoords(List<Coordinate> coords) {
@@ -116,38 +144,25 @@ public class CoordinateSharer<T> {
         unionCoords.add(timeIntv2Dall);
       }
 
-      /* convert = new HashMap<>();
-      resetSet = new HashMap<>();
-
-      for (Coordinate prevCoord : time2DBuilders) {
-        CoordinateTime2D reset = CoordinateTime2D.resetRuntimes((CoordinateTime2D) prevCoord, runtimeAll);
-        // see if it already exists
-        CoordinateTime2D already = resetSet.get(reset);
-        if (already == null) {
-          convert.put(prevCoord, reset);    // if not, add it
-          unionCoords.add(reset);
-        } else {
-          convert.put(prevCoord, already);  // if so, use it
-        }
-      } */
-
-    } else {
+    } else {  // not runtimeUnion
 
       for (Coordinate coord : runtimeBuilders) unionCoords.add(coord);
 
+      // try to regularize any time2D
       for (Coordinate coord : time2DBuilders) {
-        // try to regularize any time2D
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
         CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(coord2D.isTimeInterval(), coord2D.getTimeUnit(), coord2D.getCode(), true);
         unionizer.addAll(coord2D);
         unionizer.finish();
         CoordinateTime2D result = (CoordinateTime2D) unionizer.getCoordinate();  // this tests for orthogonal and regular
         if (result.isOrthogonal() || result.isRegular()) {
+          // LOOK its possible that result is a duplicate CoordinateTime2D. should check
           unionCoords.add(result); // use the new one
           swap.put(coord, result); // track old, new swap
         } else {                  // use the old one
           unionCoords.add(coord);
         }
+
 
       }
     }
@@ -260,7 +275,7 @@ public class CoordinateSharer<T> {
     return result;
   }
 
-  private Integer getIndexIntoShared(Coordinate prev) {   // LOOK dont understand this
+  private Integer getIndexIntoShared(Coordinate prev) {   // LOOK dont understand this, why cant you just use coordMap ??
     if (isRuntimeUnion) {
       switch (prev.getType()) {
         case runtime:

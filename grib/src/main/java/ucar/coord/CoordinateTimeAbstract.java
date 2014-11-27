@@ -55,15 +55,17 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
   protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
   protected final CalendarPeriod timeUnit;   // time duration, based on code
-  protected final String periodName;               // used to create the udunit
-  protected final CalendarDate refDate;            // null if dense (??)
+  protected final String periodName;         // used to create the udunit
+  protected final CalendarDate refDate;
+  //protected final int[] time2runtime;
 
   protected String name = "time";
 
-  CoordinateTimeAbstract(int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+  CoordinateTimeAbstract(int code, CalendarPeriod timeUnit, CalendarDate refDate) { // }, int[] time2runtime) {
     this.code = code;
     this.timeUnit = timeUnit;
     this.refDate = refDate;
+    //this.time2runtime = time2runtime;
 
     CalendarPeriod.Field cf = timeUnit.getField();
     if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
@@ -105,6 +107,10 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   public CalendarPeriod getTimeUnit() {
     return timeUnit;
   }
+
+  //public int[] getTime2runtime() {
+  //  return time2runtime;
+  //}
 
   ////////////////////////////////////////
   public abstract CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets);

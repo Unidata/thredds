@@ -140,10 +140,10 @@ abstract class GribCollectionBuilder {
 
   private boolean createMultipleRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
-    this.type =  GribCollectionImmutable.Type.MRC;  // not actually correct; but still need to implement Best, so, fix then
+    this.type =  GribCollectionImmutable.Type.MRC;
 
     List<MFile> files = new ArrayList<>();
-    List<? extends Group> groups = makeGroups(files, false, errlog); // populate files
+    List<? extends Group> groups = makeGroups(files, false, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
 
     // create the master runtimes
@@ -155,6 +155,8 @@ abstract class GribCollectionBuilder {
     List<CalendarDate> sortedList = new ArrayList<>();
     for (CalendarDate cd : allDates) sortedList.add(cd);
     Collections.sort(sortedList);
+    if (sortedList.size() == 1)
+      this.type =  GribCollectionImmutable.Type.SRC;
 
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);
@@ -170,7 +172,7 @@ abstract class GribCollectionBuilder {
     this.type =  GribCollectionImmutable.Type.SRC;
 
     List<MFile> files = new ArrayList<>();
-    List<? extends Group> groups = makeGroups(files, true, errlog); // populate files
+    List<? extends Group> groups = makeGroups(files, true, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
 
     // gather into collections with a single runtime

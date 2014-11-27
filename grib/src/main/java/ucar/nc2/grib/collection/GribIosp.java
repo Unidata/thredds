@@ -41,7 +41,6 @@ import thredds.inventory.CollectionUpdateType;
 import ucar.coord.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
@@ -49,6 +48,7 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -144,8 +144,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected GribCollectionImmutable.GroupGC gHcs;
   protected GribCollectionImmutable.Type gtype; // only used if gHcs was set
   protected boolean isPartitioned;
-  protected boolean owned; // if Iosp is owned by GribCollection; affects close()
-  protected  ucar.nc2.grib.GribTables gribTable;
+  protected boolean owned; // if Iosp is owned by GribCollection; affects close() LOOK get rid of this
+  protected ucar.nc2.grib.GribTables gribTable;
 
   public GribIosp(boolean isGrib1, org.slf4j.Logger logger) {
     this.isGrib1 = isGrib1;
@@ -255,7 +255,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     boolean isLatLon = isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());
 
     if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
-      horizDims = "lat lon";  // LOOK: orthogonal curvilinear
+      horizDims = "lat lon";
 
       // LOOK - assume same number of points for all grids
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
@@ -299,7 +299,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
-    boolean is2Dtime = (gctype == GribCollectionImmutable.Type.TwoD) || (gctype == GribCollectionImmutable.Type.MRC);
+    // boolean is2Dtime = (gctype == GribCollectionImmutable.Type.TwoD) || (gctype == GribCollectionImmutable.Type.MRC);
     CoordinateRuntime runtime = null;
     for (Coordinate coord : group.coords) {
       Coordinate.Type ctype = coord.getType();
@@ -309,12 +309,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           makeRuntimeCoordinate(ncfile, g, (CoordinateRuntime) coord);
           break;
         case timeIntv:
-          if (is2Dtime) makeTimeCoordinate2D(ncfile, g, coord, runtime);
-          else makeTimeCoordinate1D(ncfile, g, (CoordinateTimeIntv) coord, runtime);
+          //if (is2Dtime) makeTimeCoordinate2D(ncfile, g, coord, runtime);
+          makeTimeCoordinate1D(ncfile, g, (CoordinateTimeIntv) coord, runtime);
           break;
         case time:
-          if (is2Dtime) makeTimeCoordinate2D(ncfile, g, coord, runtime);
-          else makeTimeCoordinate1D(ncfile, g, (CoordinateTime) coord, runtime);
+          //if (is2Dtime) makeTimeCoordinate2D(ncfile, g, coord, runtime);
+          makeTimeCoordinate1D(ncfile, g, (CoordinateTime) coord, runtime);
           break;
         case vert:
           makeVerticalCoordinate(ncfile, g, (CoordinateVert) coord);
@@ -323,7 +323,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           makeEnsembleCoordinate(ncfile, g, (CoordinateEns) coord);
           break;
         case time2D:
-          makeTime2DVariable(ncfile, g, (CoordinateTime2D) coord, is2Dtime);
+          makeTime2DCoordinate(ncfile, g, (CoordinateTime2D) coord, gctype);
           break;
       }
     }
@@ -346,17 +346,19 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } */
 
     for (GribCollectionImmutable.VariableIndex vindex : group.variList) {
-
       Formatter dims = new Formatter();
       Formatter coords = new Formatter();
 
       for (Coordinate coord : vindex.getCoordinates()) {
-        if (!is2Dtime && coord.getType() == Coordinate.Type.runtime) continue; // skip reference time
+        String dimName = (coord.getType() == Coordinate.Type.runtime && gctype == GribCollectionImmutable.Type.Best) || // skip reftime as dimension of Best
+                         (coord.getType() == Coordinate.Type.runtime && coord.getSize() == 1) ? "" : coord.getName();   // or if nruns = 1 (make scalar)
         String coordName = (coord.getType() == Coordinate.Type.vert) ? coord.getName().toLowerCase() : coord.getName();
-        dims.format("%s ", coordName);
+
+        dims.format("%s ", dimName);
         coords.format("%s ", coordName);
       }
       dims.format("%s", horizDims);
+      coords.format("%s", horizDims);
 
       String vname = makeVariableName(vindex);
       Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dims.toString());
@@ -376,6 +378,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           v.addAttribute(new Attribute(CDM.ABBREV, gp.getAbbrev()));
       }
 
+      // horiz coord system
       if (isLatLon2D) {
         String s = searchCoord(Grib2Utils.getLatLon2DcoordType(desc), group.variList);
         if (s == null) { // its a lat/lon coordinate
@@ -391,6 +394,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
       v.addAttribute(new Attribute(CF.COORDINATES, coords.toString()));
 
+      // statistical interval type
       if (vindex.getIntvType() >= 0) {
         GribStatType statType = gribTable.getStatType(vindex.getIntvType());   // LOOK find the time coordinate
         if (statType != null) {
@@ -413,16 +417,18 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   private void makeRuntimeCoordinate(NetcdfFile ncfile, Group g, CoordinateRuntime rtc) {
     int n = rtc.getSize();
     String tcName = rtc.getName();
-    ncfile.addDimension(g, new Dimension(tcName, n));
+    String dims = (n > 1) ? rtc.getName() : null;  // null means scalar
+    if (n > 1)
+      ncfile.addDimension(g, new Dimension(tcName, n));
 
-    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, tcName));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     String vsName = tcName + "_ISO";
-    Variable vs = ncfile.addVariable(g, new Variable(ncfile, g, null, vsName, DataType.STRING, tcName));
+    Variable vs = ncfile.addVariable(g, new Variable(ncfile, g, null, vsName, DataType.STRING, dims));
     vs.addAttribute(new Attribute(CDM.UNITS, "ISO8601"));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
@@ -444,25 +450,29 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{n}, data));
   }
 
-  static private enum Time2DinfoType {off, intv, bounds}
-
+  static private enum  Time2DinfoType {off, intv, bounds}
   static private class Time2Dinfo {
     Time2DinfoType which;
     CoordinateTime2D time2D;
-    boolean is2Dtime;
+    GribCollectionImmutable.Type type;
+    int nruns;
 
-    private Time2Dinfo(Time2DinfoType which, CoordinateTime2D time2D, boolean is2Dtime) {
+    private Time2Dinfo(Time2DinfoType which, CoordinateTime2D time2D, GribCollectionImmutable.Type type, int nruns) {
       this.which = which;
       this.time2D = time2D;
-      this.is2Dtime = is2Dtime;
+      this.type = type;
+      this.nruns = nruns;
     }
   }
 
-  private void makeTime2DVariable(NetcdfFile ncfile, Group g, CoordinateTime2D time2D, boolean is2Dtime) {
+  private void makeTime2DCoordinate(NetcdfFile ncfile, Group g, CoordinateTime2D time2D, GribCollectionImmutable.Type type) {
     CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
+    // makeRuntimeCoordinate(ncfile, g, runtime);
+
+    int nruns = time2D.getNruns();
     int ntimes = time2D.getNtimes();
     String tcName = time2D.getName();
-    String dims = is2Dtime ? runtime.getName() + " " + tcName : tcName;
+    String dims = (nruns > 1) ? runtime.getName() + " " + tcName : tcName;
     ncfile.addDimension(g, new Dimension(tcName, ntimes));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
@@ -473,9 +483,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     // the data is not generated until asked for to same space
     if (!time2D.isTimeInterval())
-      v.setSPobject(new Time2Dinfo(Time2DinfoType.off, time2D, is2Dtime));
+      v.setSPobject(new Time2Dinfo(Time2DinfoType.off, time2D, type, nruns));
     else {
-      v.setSPobject(new Time2Dinfo(Time2DinfoType.intv, time2D, is2Dtime));
+      v.setSPobject(new Time2Dinfo(Time2DinfoType.intv, time2D, type, nruns));
 
       // bounds
        /*String intvName = getIntervalName(time2D.get());
@@ -487,7 +497,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
       bounds.addAttribute(new Attribute(CDM.UNITS, units));
       bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
-      bounds.setSPobject(new Time2Dinfo(Time2DinfoType.bounds, time2D, is2Dtime));
+      bounds.setSPobject(new Time2Dinfo(Time2DinfoType.bounds, time2D, type, nruns));
     }
   }
 
@@ -513,7 +523,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             timeIdx++;
           }
         }
-        int[] shape = info.is2Dtime ? new int[]{nruns, ntimes} : new int[]{ntimes};
+        int[] shape = (info.nruns > 1) ? new int[]{nruns, ntimes} : new int[]{ntimes};
         return Array.factory(DataType.DOUBLE, shape, data);
 
       case intv:
@@ -525,7 +535,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             timeIdx++;
           }
         }
-        shape = info.is2Dtime ? new int[]{nruns, ntimes} : new int[]{ntimes};
+        shape = (info.nruns > 1) ? new int[]{nruns, ntimes} : new int[]{ntimes};
         return Array.factory(DataType.DOUBLE, shape, data);
 
       case bounds:
@@ -541,13 +551,13 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
             timeIdx += 2;
           }
         }
-        int[] shapeb = info.is2Dtime ? new int[]{nruns, ntimes, 2} : new int[]{ntimes, 2};
+        int[] shapeb = (info.nruns > 1) ? new int[]{nruns, ntimes, 2} : new int[]{ntimes, 2};
         return Array.factory(DataType.DOUBLE, shapeb, data);
     }
     return null;
   }
 
-  private void makeTimeCoordinate2D(NetcdfFile ncfile, Group g, Coordinate tc, CoordinateRuntime runtime) {
+  /* private void makeTimeCoordinate2D(NetcdfFile ncfile, Group g, Coordinate tc, CoordinateRuntime runtime) {
     int nruns = runtime.getSize();
     int ntimes = tc.getSize();
     String tcName = tc.getName();
@@ -589,7 +599,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       // bounds
       /* String intvName = getIntervalName(tc.getCode());
       if (intvName != null)
-        v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));  */
+        v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));
       String bounds_name = tcName + "_bounds";
 
       Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
@@ -608,7 +618,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
       bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[]{nruns, ntimes, 2}, data));
     }
-  }
+  }  */
 
   private void makeTimeCoordinate1D(NetcdfFile ncfile, Group g, CoordinateTime coordTime, CoordinateRuntime runtime) {
     int ntimes = coordTime.getSize();
@@ -646,7 +656,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     double[] data = new double[ntimes];
     int count = 0;
 
-    CalendarPeriod period = coordTime.getPeriod();
+    // CalendarPeriod period = coordTime.getPeriod();
 
     // use upper bounds for coord value
     for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals())
@@ -656,9 +666,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     // bounds
     /* String intvName = getIntervalName(coordTime.getCode());
     if (intvName != null)
-      v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));*/
+      v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));  */
     String bounds_name = tcName + "_bounds";
-
     Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
     v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
     bounds.addAttribute(new Attribute(CDM.UNITS, units));
@@ -1021,8 +1030,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   private Array readDataFromPartition(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
     PartitionCollectionImmutable.VariableIndexPartitioned vindexP = (PartitionCollectionImmutable.VariableIndexPartitioned) v.getSPobject(); // the variable in the partition collection
-
-    //boolean hasRuntime = vindexP.isTwod;
 
     int sectionLen = section.getRank();
     Range yRange = section.getRange(sectionLen - 2);  // last 2

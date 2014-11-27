@@ -161,6 +161,13 @@ public class Misc {
     return f.toString();
   }
 
+  static public String showInts(List<Integer> intList) {
+    if (intList == null) return "null";
+    Formatter f = new Formatter();
+    for (int i : intList) f.format("%d,", i);
+    return f.toString();
+  }
+
   static public void showInts(int[] inta, Formatter f) {
     if (inta == null) {
       f.format("null");

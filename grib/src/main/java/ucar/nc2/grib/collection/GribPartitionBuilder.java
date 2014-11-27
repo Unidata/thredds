@@ -46,6 +46,7 @@ import ucar.ma2.Section;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.Misc;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -345,6 +346,7 @@ abstract class GribPartitionBuilder  {
       for (GribCollectionMutable.VariableIndex viResult : resultGroup.variList) {
         // redo the variables against the shared coordinates
         viResult.coordIndex = sharify.reindex2shared(viResult.coords); // ok
+        viResult.coords = null; // dont use anymore
 
         // figure out missing data for each variable in the twoD time array
         if (result.isPartitionOfPartitions) {
@@ -463,67 +465,74 @@ abstract class GribPartitionBuilder  {
   }
 
   private void makeDatasetBest(GribCollectionMutable.Dataset ds2D, Formatter f) throws IOException {
-    GribCollectionMutable.Dataset dsa = result.makeDataset(GribCollectionImmutable.Type.Best);
+    GribCollectionMutable.Dataset dsBest = result.makeDataset(GribCollectionImmutable.Type.Best);
 
     int npart = result.getPartitionSize();
 
-     // do each group
+     // for each 2D group
     for (GribCollectionMutable.GroupGC group2D : ds2D.groups) {
-      GribCollectionMutable.GroupGC groupB = dsa.addGroupCopy(group2D);  // make copy of group, add to dataset
+      GribCollectionMutable.GroupGC groupB = dsBest.addGroupCopy(group2D);  // make copy of group, add to Best dataset
       groupB.isTwoD = false;
 
-      // runtime offsets
       CoordinateRuntime rtc = null;
       for (Coordinate coord : group2D.coords)
-       if (coord.getType() == Coordinate.Type.runtime)
+       if (coord.getType() == Coordinate.Type.runtime) {
+         assert rtc == null; // test theres a single runtime coordinate LOOK why is this true ??
          rtc = (CoordinateRuntime) coord;
+       }
       assert rtc != null;
       List<Double> runOffset = rtc.getOffsetsInTimeUnits();
 
-      // create the best time coordinates, for GroupB  LOOK: better, for PoP to join Best of components
-      // order is preserved with Group2D
+      // create the best time coordinates, for dsBest
+      // LOOK: better, for PoP to join Best of components. Currently this is a calculation of Best from the PoP twoD
+      // LOOK we could compute reftime from just the Best as calculated here, ignoring variable inventory (twot) below. not sure where it matters
+      HashMap<Coordinate, CoordinateTimeAbstract> map2DtoBest = new HashMap<>(); // associate 2D coord with best
+      CoordinateUniquify sharer = new CoordinateUniquify();
       for (Coordinate coord : group2D.coords) {
         if (coord instanceof CoordinateTimeAbstract) {
-          Coordinate best = ((CoordinateTimeAbstract)coord).makeBestTimeCoordinate(runOffset);
-          groupB.coords.add(best);
-
+          CoordinateTimeAbstract best = ((CoordinateTimeAbstract)coord).makeBestTimeCoordinate(runOffset);
+          sharer.addCoordinate(best);
+          map2DtoBest.put(coord, best);
         } else {
-          groupB.coords.add(coord);
+          sharer.addCoordinate(coord);
         }
       }
 
-      // transfer variables
+       // build shared Coordinates, transfer variables to Best group
+      HashMap<GribCollectionMutable.VariableIndex, CoordinateRuntime> map2DtoRuntime = new HashMap<>(); // associate Variable with runtime
       for (GribCollectionMutable.VariableIndex vi2d : group2D.variList) {
-        // copy vi and add to groupB
+        // copy vi2d and add to groupB
         PartitionCollectionMutable.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(groupB, vi2d, npart);
         vip.finish();
+        vip.twot = null; // non-null only for 2D
 
-        // do not remove runtime coordinate, just set isTwoD
-        vip.twot = null;
-
-        int timeIdx = vi2d.getCoordinateIndex(Coordinate.Type.time2D);
-        if (timeIdx >= 0) {
-          CoordinateTime2D time2d = (CoordinateTime2D) group2D.coords.get(timeIdx);
-          CoordinateTimeAbstract timeBest = (CoordinateTimeAbstract) groupB.coords.get(timeIdx);
+        CoordinateTime2D time2d = (CoordinateTime2D) vi2d.getCoordinate(Coordinate.Type.time2D);
+        if (time2d != null) {
+          CoordinateTimeAbstract timeBest = map2DtoBest.get(time2d);
           vip.time2runtime = new SmartArrayInt(time2d.makeTime2RuntimeMap(timeBest, ((PartitionCollectionMutable.VariableIndexPartitioned) vi2d).twot));
-          continue;
+          CoordinateRuntime rt = time2d.makeCoordinateRuntimeForBest(vip.time2runtime);
+          sharer.addCoordinate(rt);
+          map2DtoRuntime.put(vi2d, rt);
         }
+      }
+      groupB.coords = sharer.finish();  // these are the unique coords for group Best
 
-        timeIdx = vi2d.getCoordinateIndex(Coordinate.Type.time);
-        if (timeIdx >= 0) {
-          CoordinateTime time2d = (CoordinateTime) group2D.coords.get(timeIdx);
-          CoordinateTime timeBest = (CoordinateTime) groupB.coords.get(timeIdx); // LOOK do we know these have same index ??
-          vip.time2runtime = new SmartArrayInt(time2d.makeTime2RuntimeMap(runOffset, timeBest, ((PartitionCollectionMutable.VariableIndexPartitioned) vi2d).twot));
-          continue;
+      // reindex to the shared coordinates
+      int countVaridx = 0;
+      for (GribCollectionMutable.VariableIndex vi2d : group2D.variList) {
+        PartitionCollectionMutable.VariableIndexPartitioned vip = (PartitionCollectionMutable.VariableIndexPartitioned) groupB.variList.get(countVaridx++);
+        List<Coordinate> newCoords = new ArrayList<>();
+        for (Integer groupIndex : vi2d.coordIndex) {
+          Coordinate coord2D =  group2D.coords.get(groupIndex);
+          if (coord2D instanceof CoordinateRuntime) continue; // skip runtime;
+          if (coord2D instanceof CoordinateTime2D) {
+            newCoords.add(map2DtoRuntime.get(vi2d)); // add the runtime coordinate for that Variable
+            newCoords.add(map2DtoBest.get(coord2D)); // add the best coordinate for that CoordinateTime2D
+          } else {
+            newCoords.add(coord2D);
+          }
         }
-
-        timeIdx = vi2d.getCoordinateIndex(Coordinate.Type.timeIntv);
-        if (timeIdx >= 0) {
-          CoordinateTimeIntv time2d = (CoordinateTimeIntv) group2D.coords.get(timeIdx);
-          CoordinateTimeIntv timeBest = (CoordinateTimeIntv) groupB.coords.get(timeIdx);
-          vip.time2runtime = new SmartArrayInt(time2d.makeTime2RuntimeMap(runOffset, timeBest, ((PartitionCollectionMutable.VariableIndexPartitioned) vi2d).twot));
-          continue;
-        }
+        vip.coordIndex = sharer.reindex(newCoords);
       }
 
     } // loop over groups

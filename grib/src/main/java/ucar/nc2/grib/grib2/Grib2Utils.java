@@ -193,6 +193,7 @@ public class Grib2Utils {
     return ((gridTemplate < 4) || ((gridTemplate >= 40) && (gridTemplate < 44)));
   }
 
+  // LAtLon Orthonogonal
   static public boolean isLatLon2D(int gridTemplate, int center) {
     return ((center == 7) && (gridTemplate == 204));
   }

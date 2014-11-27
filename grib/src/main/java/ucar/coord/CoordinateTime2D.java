@@ -46,6 +46,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.cache.SmartArrayInt;
 
 import java.util.*;
 
@@ -387,6 +388,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       int hour = ref.getHourOfDay();
       return regTimes.get(hour);
     }
+
     return (CoordinateTimeAbstract) times.get(runIdx);
   }
 
@@ -469,6 +471,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   ///////////////////////////////////////////////////////////////////////////////////////
 
+  // making the coordinates, but losing track of which runtime it belongs to
   public CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets) {
     if (isTimeInterval) {
       Set<TimeCoord.Tinv> values = new HashSet<>();
@@ -499,6 +502,16 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted);
     }
   }
+
+  public CoordinateRuntime makeCoordinateRuntimeForBest(SmartArrayInt time2runtime) {
+    List<CalendarDate> bestRuntimes = new ArrayList<>();
+    for (int i=0; i<time2runtime.getN(); i++) {
+      int idx = time2runtime.get(i) - 1;
+      bestRuntimes.add( runtime.getDate(idx));
+    }
+    return new CoordinateRuntime(bestRuntimes, timeUnit);
+  }
+
 
  ///////////////////////////////////////////////////////////////////////////////////////
 

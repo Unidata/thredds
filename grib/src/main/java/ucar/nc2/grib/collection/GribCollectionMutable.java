@@ -350,8 +350,8 @@ public class GribCollectionMutable implements AutoCloseable {
     // copy constructor for PartitionBuilder
     GroupGC(GroupGC from) {
       this.horizCoordSys = from.horizCoordSys;     // reference
-      this.variList = new ArrayList<>(from.variList.size());
-      this.coords = new ArrayList<>(from.coords.size());
+      this.variList = new ArrayList<>(from.variList.size());  // empty list
+      this.coords = new ArrayList<>(from.coords.size());      // empty list
       this.isTwoD = from.isTwoD;
     }
 
@@ -594,7 +594,7 @@ public class GribCollectionMutable implements AutoCloseable {
       this.isEnsemble = other.isEnsemble;
 
       this.time2runtime = other.time2runtime;
-      this.twot = other.twot;   // LOOK why did i delete this before ??
+      this.twot = other.twot;   // LOOK why do we need this ??
     }
 
     public List<Coordinate> getCoordinates() {

@@ -422,9 +422,9 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   // construct - going to write index
 
   /**
-   * Create a VariableIndexPartitioned
+   * Create a VariableIndexPartitioned, add it to the given group
    *
-   * @param group  new  VariableIndexPartitioned is in this group
+   * @param group  the new VariableIndexPartitioned is in this group
    * @param from   copy info from here
    * @param nparts size of partition list
    * @return a new VariableIndexPartitioned
@@ -435,8 +435,9 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {    // LOOK dont really understand this
       VariableIndexPartitioned vipFrom = (VariableIndexPartitioned) from;
+      assert vipFrom.partList == null; // // check if vipFrom has been finished
       for (int i=0; i<vipFrom.nparts; i++)
-        vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i), 0, 0, 0); // LOOK we dont know if vipFrom has been finished
+        vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i), 0, 0, 0);
     }
 
     return vip;

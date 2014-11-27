@@ -132,8 +132,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   public Dataset getDatasetCanonical() {
     for (Dataset ds : datasets) {
-      if (ds.type == GribCollectionImmutable.Type.GC) return ds;
-      if (ds.type == GribCollectionImmutable.Type.TwoD) return ds;
+      if (ds.type != GribCollectionImmutable.Type.Best) return ds;
     }
     throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
   }
