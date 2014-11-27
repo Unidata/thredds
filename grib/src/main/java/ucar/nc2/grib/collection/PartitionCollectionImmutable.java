@@ -307,7 +307,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     final SmartArrayInt varnoSA;
 
         // partition only
-    final SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
+    // final SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
                              // index into the corresponding 2D variable's runtime coordinate
 
     VariableIndexPartitioned(GribCollectionImmutable.GroupGC g, GribCollectionMutable.VariableIndex other) {
@@ -315,7 +315,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       PartitionCollectionMutable.VariableIndexPartitioned pother  = (PartitionCollectionMutable.VariableIndexPartitioned) other;
       this.nparts = pother.nparts;
-      this.time2runtime =  pother.time2runtime;
+      // this.time2runtime =  pother.time2runtime;
 
       this.partnoSA =  pother.partnoSA;
       this.groupnoSA =  pother.groupnoSA;
@@ -326,9 +326,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       return nparts;
     }
 
-    /* @Override
-    public String toStringComplete() {
-      Formatter sb = new Formatter();
+    public void show(Formatter sb) {
       sb.format("VariableIndexPartitioned%n");
       sb.format(" partno=");
       this.partnoSA.show(sb);
@@ -355,12 +353,11 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       //sb.format("total: %4d %3d %3d %n", totalN, totalDups, totalMiss);
       sb.format("%n");
 
-      sb.format(super.toStringComplete());
-      return sb.toString();
-    }  */
+      // sb.format(super.toStringComplete());
+      // return sb.toString();
+    }
 
-
-    public void show(Formatter f) {
+    /* public void show(Formatter f) {
 
       if (time2runtime != null) {
         Coordinate run = getCoordinate(Coordinate.Type.runtime);
@@ -390,7 +387,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         }
         f.format("%n");
       }
-    }
+    } */
 
     ///////////////////////////////////////////////////////////////////
 
@@ -407,20 +404,28 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       // find the runtime index
       int firstIndex = indexWanted[0];
-      int runIdx = group.isTwoD ? firstIndex : time2runtime.get(firstIndex) - 1; // time2runtime is for oneD
-      if (GribIosp.debugRead && !group.isTwoD) System.out.printf("  firstIndex = %d runIdx=%d %n", firstIndex, runIdx);
-      if (runIdx < 0) {
-        return null; // LOOK why is this possible?
+      int masterIdx;
+      if (group.isTwoD) {
+        int runIdx = firstIndex;
+        if (runIdx < 0) {
+          return null; // LOOK is this possible?
+        }
+
+        // find the partition by matching run coordinate with master runtime
+        CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
+        Object val = runtime.getValue(runIdx);
+        masterIdx = masterRuntime.getIndex(val);
+        if (GribIosp.debugRead) System.out.printf("  firstIndex = %d val=%s masterIdx=%d %n", firstIndex, val, masterIdx);
+
+      } else {
+        CoordinateTimeAbstract time = getCoordinateTime();
+        masterIdx = time.getMasterRuntimeIndex(firstIndex) - 1;
+        if (GribIosp.debugRead) System.out.printf("  firstIndex = %d masterIdx=%d %n", firstIndex, masterIdx);
       }
 
-       // find the partition by matching run coordinate with master runtime
-      CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
-      Object val = runtime.getValue(runIdx);
-      int masterIdx = masterRuntime.getIndex(val);
       int partno = run2part[masterIdx];
-      if (GribIosp.debugRead) System.out.printf("  runCoord = %s masterRuntime.getIndex(runCoord)=%d partition=%d %n", val, masterIdx, partno);
       if (partno < 0) {
-        return null; // missing
+        return null; // LOOK is this possible?
       }
 
       // find the 2D vi in that partition
@@ -520,7 +525,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
 
     /**
-     * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex
+     * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex )2D)
      * by matching coordinate values. The 1D (Best) case.
      *
      * @param wholeIndex index in VariableIndexPartitioned
@@ -532,21 +537,25 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       // figure out the runtime
       int timeIdx = wholeIndex[0];
-      int runtimeIdxWhole = time2runtime.get(timeIdx) - 1;  // 1-based; runtime Index into master runtime
-      int runtimeIdxPart = matchCoordinate(getCoordinate(0), runtimeIdxWhole, compVindex2D.getCoordinate(0));
+      CoordinateTimeAbstract time = getCoordinateTime();
+      int masterIdx = time.getMasterRuntimeIndex(timeIdx) - 1;
+      int runtimeIdxPart = matchCoordinate(masterRuntime, masterIdx, compVindex2D.getCoordinate(0));
       if (runtimeIdxPart < 0)
-        return null;
+        return null;         // LOOK is this possible ??
       result[0] = runtimeIdxPart;
 
       // figure out the time and any other dimensions
       int countDim = 0;
       while (countDim < wholeIndex.length) {
+        Coordinate wholeCoord1D = getCoordinate(countDim);
         int idx = wholeIndex[countDim];
+
         Coordinate compCoord = compVindex2D.getCoordinate(countDim + 1);
-        Coordinate wholeCoord1D = getCoordinate(countDim + 1);
         int resultIdx;
         if (compCoord.getType() == Coordinate.Type.time2D) {
           CoordinateTime2D compCoord2D = (CoordinateTime2D) compCoord; // of the component
+          if (!(wholeCoord1D instanceof CoordinateTimeAbstract))
+            System.out.println("HEY");
           CoordinateTimeAbstract wholeCoord1Dtime = (CoordinateTimeAbstract) wholeCoord1D;
           Object wholeVal = wholeCoord1D.getValue(idx);
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());

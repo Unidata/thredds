@@ -51,7 +51,6 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -483,8 +482,8 @@ public class GribCollectionMutable implements AutoCloseable {
     private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
 
     // partition only
-    TwoDTimeInventory twot;     // Partition/twoD only
-    SmartArrayInt time2runtime; // Partition/Best only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
+    //TwoDTimeInventory twot;     // Partition/twoD only
+    //SmartArrayInt time2runtime; // Partition/Best only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
     // index into the corresponding 2D variable's runtime coordinate
 
     // derived from pds
@@ -593,8 +592,8 @@ public class GribCollectionMutable implements AutoCloseable {
       this.genProcessType = other.genProcessType;
       this.isEnsemble = other.isEnsemble;
 
-      this.time2runtime = other.time2runtime;
-      this.twot = other.twot;   // LOOK why do we need this ??
+      //this.time2runtime = other.time2runtime;
+      //this.twot = other.twot;   // LOOK why do we need this ??
     }
 
     public List<Coordinate> getCoordinates() {
@@ -706,12 +705,12 @@ public class GribCollectionMutable implements AutoCloseable {
       sb.append(", group=").append(group.getId());
       //sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
       sb.append("}\n");
-      if (time2runtime == null) sb.append("time2runtime is null");
+      /* if (time2runtime == null) sb.append("time2runtime is null");
       else {
         sb.append("time2runtime=");
         for (int idx = 0; idx < time2runtime.getN(); idx++)
           sb.append(time2runtime.get(idx)).append(",");
-      }
+      } */
       return sb.toString();
     }
 

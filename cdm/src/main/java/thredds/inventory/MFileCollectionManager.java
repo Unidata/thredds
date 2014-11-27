@@ -48,14 +48,13 @@ import thredds.inventory.filter.*;
  * Manage Collections of MFiles.
  * Used in:
  * <ul>
- * <li> replaces older version in ncml.Aggregation
- * <li> ucar.nc2.ft.point.collection.TimedCollectionImpl (ucar.nc2.ft.point.collection.CompositeDatasetFactory)
+ * <li> thredds.inventory
  * <li> ucar.nc2.ft.fmrc.Fmrc
- * <li> ucar.nc2.grib.GribCollection
+ * <li> ucar.nc2.ncml.Aggregation
  * </ul>
  * <p/>
  * we need to be thread safe, for InvDatasetFeatureCollection
- *
+ * @deprecated
  * @author caron
  * @since Jul 8, 2009
  */

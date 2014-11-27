@@ -95,13 +95,13 @@ public class DirectoryPartitionViewer extends JPanel {
             setDirectory(d);
           } else if (d.getName().endsWith(".xml")) {
             setCollectionFromConfig(d.getPath());
-          } else if (d.getName().endsWith(".ncx2")) {
+          } else if (d.getName().endsWith(CollectionAbstract.NCX_SUFFIX)) {
             setCollectionFromIndex(d.getPath());
           }
           cb.addItem(filename);
         }
       });
-      topPanel.add(new JLabel("dir,ncx2,or config:"), BorderLayout.WEST);
+      topPanel.add(new JLabel("dir,ncx3,or config:"), BorderLayout.WEST);
       topPanel.add(cb, BorderLayout.CENTER);
 
       // a file chooser that can choose a directory

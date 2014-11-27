@@ -112,6 +112,13 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     return time2runtime;
   }
 
+  public int getMasterRuntimeIndex(int timeIdx) {
+    if (time2runtime == null) return -1;
+    if (timeIdx < 0 || timeIdx >= time2runtime.length) return -1;
+    return time2runtime[timeIdx];
+  }
+
+
   ////////////////////////////////////////
   // public abstract CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets);
 

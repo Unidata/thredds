@@ -472,6 +472,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return null;
     }
 
+    public CoordinateTimeAbstract getCoordinateTime() {
+      for (int idx : coordIndex)
+        if (group.coords.get(idx) instanceof CoordinateTimeAbstract)
+          return (CoordinateTimeAbstract) group.coords.get(idx);
+      return null;
+    }
+
     public Coordinate getCoordinate(int index) {
       int grpIndex = coordIndex.get(index);
       return group.coords.get(grpIndex);

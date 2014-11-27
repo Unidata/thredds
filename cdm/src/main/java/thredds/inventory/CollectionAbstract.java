@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * Abstact superclass for Collections of MFiles.
+ * Abstract superclass for Collections of MFiles.
  *
  * @author caron
  * @since 11/20/13
@@ -22,7 +22,7 @@ import java.util.*;
 public abstract class CollectionAbstract implements MCollection {
   static private org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
-  static public final String NCX_SUFFIX = ".ncx2";
+  static public final String NCX_SUFFIX = ".ncx3";  // LOOK this will have to be generalized, so different collections (GRIB, BUFR, FMRC can use different suffix)
 
   static public final String CATALOG = "catalog:";
   static public final String DIR = "directory:";

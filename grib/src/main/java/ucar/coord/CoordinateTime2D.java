@@ -491,11 +491,22 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     for (Object val : values) offsetSorted.add( (Integer) val);
     Collections.sort(offsetSorted);
 
-    // fast lookup
+    // fast lookup of offset val in the result CoordinateTime
     Map<Integer, Integer> map = new HashMap<>();
     int count = 0;
     for (Integer val : offsetSorted)
       map.put(val, count++);
+
+    // fast lookup of the run time in the master
+    int[] run2master = new int[nruns];
+    int masterIdx = 0;
+    for (int run2Didx=0; run2Didx<nruns; run2Didx++) {
+      while (!master.getDate(masterIdx).equals( runtime.getDate(run2Didx)))
+        masterIdx++;
+      run2master[run2Didx] = masterIdx;
+      masterIdx++;
+    }
+    assert masterIdx >= nruns;
 
     // now for each coordinate, use the latest runtime
     int[] time2runtime = new int[ offsetSorted.size()];
@@ -504,7 +515,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       for (Integer offset : timeCoord.getOffsetSorted()) {
         Integer bestValIdx = map.get(offset + getOffset(runIdx));
         if (bestValIdx == null) throw new IllegalStateException();
-        time2runtime[bestValIdx] = runIdx + 1; // use this partition; later ones override; one based so 0 = missing
+        time2runtime[bestValIdx] = run2master[runIdx] + 1; // uses this runtime; later ones override; one based so 0 = missing
       }
     }
 
@@ -523,11 +534,22 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
     Collections.sort(offsetSorted);
 
-    // fast lookup
+    // fast lookup of offset tinv in the result CoordinateTimeIntv
     Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index
     int count = 0;
     for (TimeCoord.Tinv val : offsetSorted)
       map.put(val, count++);
+
+        // fast lookup of the run time in the master
+    int[] run2master = new int[nruns];
+    int masterIdx = 0;
+    for (int run2Didx=0; run2Didx<nruns; run2Didx++) {
+      while (!master.getDate(masterIdx).equals( runtime.getDate(run2Didx)))
+        masterIdx++;
+      run2master[run2Didx] = masterIdx;
+      masterIdx++;
+    }
+    assert masterIdx >= nruns;
 
     int[] time2runtime = new int[ offsetSorted.size()];
     for (int runIdx=0; runIdx<nruns; runIdx++) {
@@ -535,7 +557,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       for (TimeCoord.Tinv bestVal : timeIntv.getTimeIntervals()) {
         Integer bestValIdx = map.get(bestVal.offset(getOffset(runIdx)));
         if (bestValIdx == null) throw new IllegalStateException();
-        time2runtime[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
+        time2runtime[bestValIdx] = run2master[runIdx] + 1; // uses this runtime; later ones override; one based so 0 = missing
       }
     }
 

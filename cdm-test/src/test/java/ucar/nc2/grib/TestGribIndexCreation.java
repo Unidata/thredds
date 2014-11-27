@@ -13,7 +13,7 @@ import ucar.unidata.test.util.TestDir;
 import java.io.IOException;
 
 /**
- * Test that the
+ * Test that the CDM Index Creation works
  *
  * @author caron
  * @since 11/14/2014

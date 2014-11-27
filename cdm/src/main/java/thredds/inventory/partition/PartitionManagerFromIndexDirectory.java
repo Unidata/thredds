@@ -49,7 +49,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Describe
+ * used only for debugging
  *
  * @author caron
  * @since 3/14/14
@@ -65,7 +65,7 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
     this.partIndexFiles = new ArrayList<>();
 
     File[] files = directory.listFiles( new FilenameFilter() {
-      public boolean accept(File dir, String name) { return name.endsWith(".ncx2"); }
+      public boolean accept(File dir, String name) { return name.endsWith(CollectionAbstract.NCX_SUFFIX); }
     });
     if (files != null) {
       Collections.addAll(partIndexFiles, files);

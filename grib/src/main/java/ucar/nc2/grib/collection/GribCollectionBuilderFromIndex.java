@@ -478,8 +478,8 @@ message Coord {
     }
 
 
-    // 2d only  LOOK this is the big memory hog - but not needed except when building or for debug. can we make optional ??
-    if (!dataOnly) {   // LOOK probably dont need this anymore, since we have moved to using GribCollectionImmutable
+    /* 2d only  this is the big memory hog - but not needed except when building or for debug. can we make optional ??
+    if (!dataOnly) {   // probably dont need this anymore, since we have moved to using GribCollectionImmutable
       List<Integer> invCountList = pv.getInvCountList();
       if (invCountList.size() > 0) {
         result.twot = new TwoDTimeInventory(invCountList, runtime.getSize(), ntimes);
@@ -493,7 +493,7 @@ message Coord {
       int count = 0;
       for (int idx : time2runList) time2runtime[count++] = idx;
       result.time2runtime = new SmartArrayInt(time2runtime);
-    }
+    } */
 
     return readVariableExtensions(group, pv, result);
   }

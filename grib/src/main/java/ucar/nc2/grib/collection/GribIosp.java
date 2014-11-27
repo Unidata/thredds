@@ -189,7 +189,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       this.gribCollection = GribCdmIndex.openGribCollectionFromRaf(raf, config, CollectionUpdateType.testIndexOnly, logger);
       if (gribCollection == null)
-        throw new IllegalStateException("Not a GRIB data file or ncx2 file " + raf.getLocation());
+        throw new IllegalStateException("Not a GRIB data file or index file " + raf.getLocation());
 
       isPartitioned = (this.gribCollection instanceof PartitionCollectionImmutable);
       gribTable = createCustomizer();
@@ -642,20 +642,27 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       data[count++] = val;
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes}, data));
 
-    makeTimeAuxReference(ncfile, g, tcName, coordTime.getTime2runtime());
+    makeTimeAuxReference(ncfile, g, tcName, units, coordTime.getTime2runtime());
   }
 
-  private void makeTimeAuxReference(NetcdfFile ncfile, Group g, String timeName, int[] time2runtime) {
+  private void makeTimeAuxReference(NetcdfFile ncfile, Group g, String timeName, String units, int[] time2runtime) {
     if (time2runtime == null) return;
     int ntimes = time2runtime.length;
     String tcName = "ref"+timeName;
-    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, timeName));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, timeName));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
+    v.addAttribute(new Attribute(CDM.UNITS, units));
 
-    // LOOK change this to a real date thing
-    v.setCachedData(Array.factory(DataType.INT, new int[]{ntimes}, time2runtime));
+        // coordinate values
+    double[] data = new double[ntimes];
+    int count = 0;
+    List<Double> masterOffsets = gribCollection.getMasterRuntime().getOffsetsInTimeUnits();
+    for (int masterIdx : time2runtime) {
+      data[count++] = masterOffsets.get(masterIdx-1);
+    }
+    v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes}, data));
   }
 
   private void makeTimeCoordinate1D(NetcdfFile ncfile, Group g, CoordinateTimeIntv coordTime) { // }, CoordinateRuntime runtime) {
@@ -698,7 +705,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
     bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes, 2}, data));
 
-    makeTimeAuxReference(ncfile, g, tcName, coordTime.getTime2runtime());
+    makeTimeAuxReference(ncfile, g, tcName, units, coordTime.getTime2runtime());
   }
 
   private void makeVerticalCoordinate(NetcdfFile ncfile, Group g, CoordinateVert vc) {

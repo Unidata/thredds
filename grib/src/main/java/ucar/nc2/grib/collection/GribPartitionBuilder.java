@@ -348,11 +348,11 @@ abstract class GribPartitionBuilder  {
         viResult.coordIndex = sharify.reindex2shared(viResult.coords); // ok
         viResult.coords = null; // dont use anymore
 
-        // figure out missing data for each variable in the twoD time array
+        /* figure out missing data for each variable in the twoD time array
         if (result.isPartitionOfPartitions) {
           viResult.twot = null;
         } else
-          makeMissing(gp, viResult); // PofGC only
+          makeMissing(gp, viResult); // PofGC only  */
       }
 
     } // loop over groups
@@ -360,7 +360,7 @@ abstract class GribPartitionBuilder  {
     return ds2D;
   }
 
-  // LOOK maybe a mistake to try to track missing values, as it messes up the runtime accuracy ??
+  /* LOOK maybe a mistake to try to track missing values, as it messes up the runtime accuracy ??
   // for one vi, count the inventory, put results into the twot array
   private void makeMissing(GroupPartitions gp, GribCollectionMutable.VariableIndex viResult) throws IOException {
     Coordinate cr = viResult.getCoordinate(Coordinate.Type.runtime);  // this is all of the runtimes for this vip, across partitions
@@ -461,8 +461,8 @@ abstract class GribPartitionBuilder  {
 
         runIdx++;
       }
-    }  */
-  }
+    }
+  } */
 
   private void makeDatasetBest(GribCollectionMutable.Dataset ds2D, Formatter f) throws IOException {
     GribCollectionMutable.Dataset dsBest = result.makeDataset(GribCollectionImmutable.Type.Best);
@@ -503,7 +503,7 @@ abstract class GribPartitionBuilder  {
         // copy vi2d and add to groupB
         PartitionCollectionMutable.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(groupB, vi2d, npart);
         vip.finish();
-        vip.twot = null; // non-null only for 2D
+        // vip.twot = null; // non-null only for 2D
 
         // set shared coordinates
         List<Coordinate> newCoords = new ArrayList<>();
@@ -763,7 +763,7 @@ abstract class GribPartitionBuilder  {
     b.setNrecords(vp.nrecords);
     b.setMissing(vp.nmissing);
 
-    if (vp.twot != null) { // only for 2D
+    /* if (vp.twot != null) { // only for 2D
       for (int invCount : vp.twot.getCount())
         b.addInvCount(invCount);
     }
@@ -771,7 +771,7 @@ abstract class GribPartitionBuilder  {
     if (vp.time2runtime != null) { // only for 1D
       for (int idx=0; idx < vp.time2runtime.getN(); idx++)
         b.addTime2Runtime(vp.time2runtime.get(idx));
-    }
+    } */
 
     // extensions
     if (vp.nparts > 0 && vp.partnoSA != null) {

@@ -169,7 +169,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
 
-    public void show(Formatter f) {
+    /* public void show(Formatter f) {
       if (twot != null)
         twot.showMissing(f);
 
@@ -201,7 +201,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
         }
         f.format("%n");
       }
-    }
+    } */
 
   }
 
