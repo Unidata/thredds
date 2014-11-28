@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
+import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
@@ -136,6 +137,8 @@ public class TestDcm {
     // String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger
     Logger logger = LoggerFactory.getLogger("testOlderThanInDirectoryCollection");
     DirectoryCollection dcm = new DirectoryCollection("topCollectionName", specp.getRootDir(), config.olderThan, logger);
+    dcm.setStreamFilter(new StreamFilter(java.util.regex.Pattern.compile(".*grib2")));
+
     List<String> fileList = dcm.getFilenames();
     for (String name : fileList)
     System.out.printf("%s%n", name);

@@ -90,11 +90,11 @@ public class TestCoordinateTime2DUnionizer {
     Formatter f = new Formatter();
     f.format("Original%n");
     for (CoordinateTime2D coord2D : coord2Ds) {
-      coord2D.showInfo(f, null);
+      coord2D.showInfo(f, new Indent(2));
     }
 
     f.format("%nResult%n");
-    result.showInfo(f, null);
+    result.showInfo(f, new Indent(2));
    }
 
   static public CoordinateTime makeTimeCoordinate(CalendarDate refDate, int size, int spacing) {

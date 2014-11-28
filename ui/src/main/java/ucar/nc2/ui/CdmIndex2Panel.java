@@ -962,7 +962,12 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getNmissing() {
-      return v.getNmissing();
+      int n = v.getSize();
+      return n - v.getNrecords();
+    }
+
+    public int getSize() {
+      return v.getSize();
     }
 
     public void makeGribConfig(Formatter f) {

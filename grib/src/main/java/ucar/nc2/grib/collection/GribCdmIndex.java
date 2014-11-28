@@ -383,7 +383,8 @@ public class GribCdmIndex implements IndexReader {
         }
       } catch (Throwable t) {
         logger.warn("Error making partition "+part.getRoot(), t);
-        continue; // keep on truckin; can happen if directory is empty
+        throw t;
+        // continue; // keep on truckin; can happen if directory is empty
       }
     }   // loop over partitions
 

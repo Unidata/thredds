@@ -109,7 +109,7 @@ public class TestGrib1CoordsMatch {
   @Test
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
-    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
+    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx3";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
@@ -133,7 +133,7 @@ public class TestGrib1CoordsMatch {
 
   @Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_1200.grib1.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 7116;
@@ -143,7 +143,7 @@ public class TestGrib1CoordsMatch {
 
   @Test
   public void testPofG() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 81340;
@@ -154,7 +154,7 @@ public class TestGrib1CoordsMatch {
 
   @Test
   public void testPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 51838;
@@ -162,9 +162,9 @@ public class TestGrib1CoordsMatch {
     assert count.nerrs == 0;
   }
 
-  // @Test
+  @Test
   public void testRdavmDs083p2() throws IOException {
-    TestGribCollections.Count count = read("B:/rdavm/ds083.2/sampleMonth/rda_ds083.2-sampleMonth.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/sampleMonth/rda_ds083.2-sampleMonth.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 34320;

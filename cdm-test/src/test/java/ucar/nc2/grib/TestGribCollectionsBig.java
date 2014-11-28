@@ -49,15 +49,16 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Look for missing data in Grib Collections.
- *
+ * Look for missing data in large Grib Collections.
+ * THese numbers wwill be different if we index with unionRuntimeCoords
  * Indicates that coordinates are not matching,
  *
  * @author John
  * @since 10/13/2014
  */
 public class TestGribCollectionsBig {
-  String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
+  // String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
+  String topdir =  "B:/rdavm";  // use for local windows to get around samba bug
 
   @BeforeClass
   static public void before() {
@@ -99,27 +100,20 @@ public class TestGribCollectionsBig {
     RandomAccessFile.setDebugLeaks(false);
   }
 
-  @Test
-  public void testGC() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
-
-    assert count.nread == 286;
-    assert count.nmiss == 0;
-  }
 
   @Test
-  public void testPofG() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
+  public void testSRC() throws IOException {
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_46-2008.10.ncx3");
 
     // jenkins: that took 18 secs total, 0.261603 msecs per record
-    assert count.nread == 70928;
+    assert count.nread == 35464;
     assert count.nmiss == 0;
   }
 
   @Test
-  public void testPofP() throws IOException {
+  public void testTP() throws IOException {
     try {
-      TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");
+      TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_46-2008.ncx3");
 
       // jenkins:  that took 496 secs total, 0.592712 msecs per record
       // that took 581 secs total, 0.694249 msecs per record (total == 0/837408) (cache size 500)
@@ -132,13 +126,15 @@ public class TestGribCollectionsBig {
 
   }
 
-  // @Test
-  public void testPofPofP() throws IOException {
+  @Test
+  public void testTPofTP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_46-grib1.ncx3");
 
-    // that took 1312 secs total, 0.784602 msecs per record (total == 0/1672528) (cache size 500)
-    assert count.nread == 1672528;
-    assert count.nmiss == 0;
+    // ROBERTO (local drive only, samba fails) that took that took 2177 secs total, 0.156383 msecs per record
+    // 2D only      486523/6476133
+    assert count.nmiss == 973046;
+    assert count.nread == 13925312;
   }
+
 }

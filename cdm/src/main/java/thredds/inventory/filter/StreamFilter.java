@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 /**
- * Description
+ * A java.nio.file.DirectoryStream.Filter using a regexp on the last entry of the Path
  *
  * @author John
  * @since 1/28/14

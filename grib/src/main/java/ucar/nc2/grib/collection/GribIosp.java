@@ -952,9 +952,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           if (debugIndexOnly || debugGbxIndexOnly) {
             debugIndexOnlyCount++;
             // if (debugIndexOnlyShow) dr.show(gribCollection);
-            GdsHorizCoordSys hcs = dr.hcs;
-            float[] data = new float[hcs.nx * hcs.ny];        // all zeroes
-            dataReceiver.addData(data, dr.resultIndex, hcs.nx);
+            dataReceiver.setDataToZero();
             continue;
           }
 
@@ -982,7 +980,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   static private interface DataReceiverIF {
     void addData(float[] data, int resultIndex, int nx) throws IOException;
-
+    void setDataToZero();
     Array getArray();
   }
 
@@ -992,31 +990,41 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     private int horizSize;
 
     DataReceiver(Section section, Range yRange, Range xRange) {
-      dataArray = Array.factory(DataType.FLOAT, section.getShape());
+      // prefill primitive array efficiently
+      int len = (int) section.computeSize();
+      float[] data = new float[len];
+      for (int i = 0; i < len; i++)
+        data[i] = Float.NaN;
+
+      dataArray = Array.factory(DataType.FLOAT, section.getShape(), data);
       this.yRange = yRange;
       this.xRange = xRange;
       this.horizSize = yRange.length() * xRange.length();
-
-      // prefill with NaNs, to deal with missing data
-      IndexIterator iter = dataArray.getIndexIterator();
-      while (iter.hasNext())
-        iter.setFloatNext(Float.NaN);
     }
 
+    @Override
     public void addData(float[] data, int resultIndex, int nx) throws IOException {
       int start = resultIndex * horizSize;
       int count = 0;
       for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
         for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
           int dataIdx = y * nx + x;
-          if (dataIdx >= data.length)
-            System.out.println("HEY"); // set breakpoint
           dataArray.setFloat(start + count, data[dataIdx]);
           count++;
         }
       }
     }
 
+    // optimization
+    @Override
+    public void setDataToZero() {
+      float[] data = (float []) dataArray.get1DJavaArray(dataArray.getElementType());
+      for (int i = 0; i < data.length; i++)
+        data[i] = 0;
+    }
+
+
+    @Override
     public Array getArray() {
       return dataArray;
     }
@@ -1034,6 +1042,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       this.xRange = xRange;
     }
 
+    @Override
     public void addData(float[] data, int resultIndex, int nx) throws IOException {
       // LOOK: write some ncstream header
       // outStream.write(header);
@@ -1047,6 +1056,11 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
     }
 
+        // optimization
+    @Override
+    public void setDataToZero() { }
+
+    @Override
     public Array getArray() {
       return null;
     }
@@ -1107,9 +1121,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           if (debugIndexOnly || debugGbxIndexOnly) {
             debugIndexOnlyCount++;
             if (debugIndexOnlyShow) dr.show();
-            GdsHorizCoordSys hcs = dr.hcs;
-            float[] data = new float[hcs.nx * hcs.ny];        // all zeroes
-            dataReceiver.addData(data, dr.resultIndex, hcs.nx);
+            dataReceiver.setDataToZero();
             continue;
           }
 

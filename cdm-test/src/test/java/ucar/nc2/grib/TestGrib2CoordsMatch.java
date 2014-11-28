@@ -131,7 +131,7 @@ public class TestGrib2CoordsMatch {
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
-    String filename = "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2";
+    String filename = "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
@@ -166,9 +166,9 @@ public class TestGrib2CoordsMatch {
   public void testDgexTP() throws IOException {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx3");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    //assert count.nread == 868;
-    //assert count.nmiss == 0;
-    //assert count.nerrs == 0;
+    assert count.nread == 3140;
+    assert count.nmiss == 0;
+    assert count.nerrs == 0;
   }
 
   @Test
@@ -185,7 +185,7 @@ public class TestGrib2CoordsMatch {
   public void testMRC() throws IOException {
     // CFSR dataset: 0-6 hour forecasts  x 124 runtimes (4x31)
     // there are  2 groups, likely miscoded, the smaller group has duplicate 0 hour, probably miscoded
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/cfrsAnalysis_46-cfsr.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/cfrsAnalysis_46-cfsr.ncx3");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 868;
     assert count.nmiss == 0;
@@ -194,7 +194,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_0000.grib2.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 23229;
@@ -202,9 +202,9 @@ public class TestGrib2CoordsMatch {
     assert count.nerrs == 0;
   }
 
-  //@Test
+  @Test
   public void testPofG() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 81340;
@@ -217,7 +217,7 @@ public class TestGrib2CoordsMatch {
   public void openFileProblem() throws IOException {
 
     long start = System.currentTimeMillis();
-    String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Land_cover_land1_sea0_surface");
       assert gdt != null;
@@ -245,7 +245,7 @@ public class TestGrib2CoordsMatch {
 
   //@Test
   public void testPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 51838;

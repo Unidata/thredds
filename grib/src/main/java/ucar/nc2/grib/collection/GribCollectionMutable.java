@@ -320,10 +320,6 @@ public class GribCollectionMutable implements AutoCloseable {
       return g;
     }
 
-    public boolean isTwoD() {
-      return type == GribCollectionImmutable.Type.TwoD;
-    }
-
     public GribCollectionImmutable.Type getType() {
       return type;
     }
@@ -464,10 +460,6 @@ public class GribCollectionMutable implements AutoCloseable {
     return new VariableIndex(g, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
   }
 
-  //public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, VariableIndex other) {
-  //  return new VariableIndex(g, other);
-  //}
-
   public class VariableIndex implements Comparable<VariableIndex> {
     public final GroupGC group;     // belongs to this group
     public final int tableVersion;   // grib1 only : can vary by variable
@@ -478,13 +470,6 @@ public class GribCollectionMutable implements AutoCloseable {
     public final int recordsLen;
 
     List<Integer> coordIndex;  // indexes into group.coords
-
-    private SparseArray<Record> sa;   // for GC only; lazily read; same array shape as variable, minus x and y
-
-    // partition only
-    //TwoDTimeInventory twot;     // Partition/twoD only
-    //SmartArrayInt time2runtime; // Partition/Best only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
-    // index into the corresponding 2D variable's runtime coordinate
 
     // derived from pds
     public final int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -591,9 +576,6 @@ public class GribCollectionMutable implements AutoCloseable {
       this.probType = other.probType;
       this.genProcessType = other.genProcessType;
       this.isEnsemble = other.isEnsemble;
-
-      //this.time2runtime = other.time2runtime;
-      //this.twot = other.twot;   // LOOK why do we need this ??
     }
 
     public List<Coordinate> getCoordinates() {
@@ -601,13 +583,6 @@ public class GribCollectionMutable implements AutoCloseable {
       for (int idx : coordIndex)
         result.add(group.coords.get(idx));
       return result;
-    }
-
-    public CoordinateTimeAbstract getCoordinateTime() {
-      Coordinate ctP = getCoordinate(Coordinate.Type.time);
-      if (ctP == null) ctP = getCoordinate(Coordinate.Type.timeIntv);
-      if (ctP == null) ctP = getCoordinate(Coordinate.Type.time2D);
-      return (CoordinateTimeAbstract) ctP;
     }
 
     public Coordinate getCoordinate(Coordinate.Type want) {
@@ -629,13 +604,6 @@ public class GribCollectionMutable implements AutoCloseable {
       return group.coords.get(grpIndex);
     }
 
-    public int getCoordinateIndex(Coordinate.Type want) {
-      for (int idx : coordIndex)
-        if (group.coords.get(idx).getType() == want)
-          return idx;
-      return -1;
-    }
-
     public String getTimeIntvName() {
       if (intvName != null) return intvName;
       CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) getCoordinate(Coordinate.Type.timeIntv);
@@ -648,10 +616,6 @@ public class GribCollectionMutable implements AutoCloseable {
       if (time2DCoord == null || !time2DCoord.isTimeInterval()) return null;
       intvName = time2DCoord.getTimeIntervalName();
       return intvName;
-    }
-
-    public synchronized SparseArray<Record> getSparseArray() {
-      return sa;
     }
 
     /////////////////////////////
@@ -732,57 +696,6 @@ public class GribCollectionMutable implements AutoCloseable {
       sb.format(", intvType=%d", intvType);
       sb.format(", group=%s}", group);
       return sb.toString();
-    }
-
-    public synchronized void readRecords() throws IOException {
-      if (this.sa != null) return;
-
-      if (recordsLen == 0) return;
-      byte[] b = new byte[recordsLen];
-
-      if (indexRaf != null) {
-        indexRaf.seek(recordsPos);
-        indexRaf.readFully(b);
-      } else {
-        String idxPath = getIndexFilepathInCache();
-        try (RandomAccessFile raf = RandomAccessFile.acquire(idxPath)) {
-          raf.seek(recordsPos);
-          raf.readFully(b);
-        }
-      }
-
-      /*
-      message SparseArray {
-        required fixed32 cdmHash = 1; // which variable
-        repeated uint32 size = 2;     // multidim sizes
-        repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
-        repeated Record records = 4;  // List<Record>
-      }
-     */
-      GribCollectionProto.SparseArray proto = GribCollectionProto.SparseArray.parseFrom(b);
-      int cdmHash = proto.getCdmHash();
-      if (cdmHash != this.cdmHash)
-        throw new IllegalStateException("Corrupted index");
-
-      int nsizes = proto.getSizeCount();
-      int[] size = new int[nsizes];
-      for (int i = 0; i < nsizes; i++)
-        size[i] = proto.getSize(i);
-
-      int ntrack = proto.getTrackCount();
-      int[] track = new int[ntrack];
-      for (int i = 0; i < ntrack; i++)
-        track[i] = proto.getTrack(i);
-
-      int n = proto.getRecordsCount();
-      List<Record> records = new ArrayList<>(n);
-      for (int i = 0; i < n; i++) {
-        GribCollectionProto.Record pr = proto.getRecords(i);
-        records.add(new Record(pr.getFileno(), pr.getPos(), pr.getBmsPos(), pr.getScanMode()));
-      }
-
-      int ndups = proto.hasNdups() ? proto.getNdups() : -1;
-      this.sa = new SparseArray<>(size, track, records, ndups);
     }
 
     @Override

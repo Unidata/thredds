@@ -392,19 +392,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.nmissing = gcVar.nmissing;
     }
 
-    public int calcTotalSize() {
-      int totalSize = 1;
-      for (int idx : this.coordIndex) {
-        Coordinate coord = this.group.coords.get(idx);
-        if (coord instanceof CoordinateTime2D)
-          totalSize *= ((CoordinateTime2D) coord).getNtimes();
-        else
-          totalSize *= coord.getSize();
-      }
-      return totalSize;
-      //this.density = ((float) this.nrecords) / this.totalSize;
-    }
-
     public synchronized void readRecords() throws IOException {
       if (this.sa != null) return;
 
@@ -564,8 +551,14 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return nrecords;
     }
 
-    public int getNmissing() {
-      return nmissing;
+    public int getSize() {
+      int size = 1;
+      for (int idx : coordIndex) {
+        Coordinate c = group.coords.get(idx);
+        int csize = (c instanceof CoordinateTime2D) ? ((CoordinateTime2D)c).getNtimes(): c.getSize();
+        size *= csize;
+      }
+      return size;
     }
 
     public String toStringFrom() {

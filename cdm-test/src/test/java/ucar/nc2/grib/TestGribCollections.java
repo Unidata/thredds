@@ -107,7 +107,7 @@ public class TestGribCollections {
 
   @Test
   public void testGC_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3");
 
     // total == 1560/23229
     assert count.nread == 23229;
@@ -116,47 +116,50 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3");
 
     // total == 6391/94352
     assert count.nread == 94352;
     assert count.nmiss == 0;
   }
 
-  //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2 has lots of missing records
+  //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx3 has lots of missing records
   @Test
   public void testGC_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
-
-    assert count.nread == 7116;
-    assert count.nmiss == 200;
-  }
-
-  @Test
-  public void testPofG_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
-
-    assert count.nread == 81340;
-    assert count.nmiss == 1801;
-  }
-
-  @Test
-  public void testPofP_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_0000.grib1.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 51838;
-    assert count.nmiss == 1126;
+    assert count.nmiss == 153;
+    assert count.nread == 7122;
     assert count.nerrs == 0;
   }
 
   @Test
-  // RandomAccessFile gets opened 1441 times (!) for PofGC
+  public void testPofG_Grib1() throws IOException {
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
+
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nmiss == 816;
+    assert count.nread == 37188;
+    assert count.nerrs == 0;
+  }
+
+  @Test
+  public void testPofP_Grib1() throws IOException {
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46-gfs_conus80.ncx3");
+
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nmiss == 1126;
+    assert count.nread == 51838;
+    assert count.nerrs == 0;
+  }
+
+  @Test
   public void problem() throws IOException {
 
     long start = System.currentTimeMillis();
-    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
-    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2";
+    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
@@ -182,8 +185,8 @@ public class TestGribCollections {
   public void openFileProblem() throws IOException {
 
     long start = System.currentTimeMillis();
-    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
-    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2";
+    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
@@ -201,17 +204,6 @@ public class TestGribCollections {
       float r = ((float) took) / n;
       System.out.printf("%n   that took %d secs total, %d records %f msecs per record%n", took / 1000, n, r);
     }
-  }
-
-  // @Test
-  public void testPofPofP() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read("B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
-    TestDir.checkLeaks();
-
-    // that took 1312 secs total, 0.784602 msecs per record (total == 0/1672528) (cache size 500)
-    assert count.nread == 1672528;
-    assert count.nmiss == 0;
   }
 
   ///////////////////////////////////////////////////////////////
