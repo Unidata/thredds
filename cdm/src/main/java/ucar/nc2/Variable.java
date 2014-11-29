@@ -118,6 +118,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
   /**
    * Get the shape: length of Variable in each dimension.
+   * A scalar (rank 0) will have an int[0] shape.
    *
    * @return int array whose length is the rank of this Variable
    *         and whose values equal the length of that Dimension.
@@ -126,6 +127,13 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     int[] result = new int[shape.length];  // optimization over clone()
     System.arraycopy(shape, 0, result, 0, shape.length);
     return result;
+  }
+
+  // if scalar, return int[1], else return getShape()
+  public int[] getShapeNotScalar() {
+    if (isScalar())
+      return new int[]{1};
+    return getShape();
   }
 
   /**

@@ -59,9 +59,9 @@ public class TestCompareFileWriter {
     readAllDir(TestDir.cdmUnitTestDir +"formats/gini/");
   }
 
-  // @Test
+  @Test
   public void problem() throws IOException {
-    doOne( new File(TestDir.cdmUnitTestDir, "formats/gempak/grid/dgex_le.gem"));
+    doOne( new File(TestDir.cdmUnitTestDir, "formats/grib1/radar_national.grib"));
   }
 
   void readAllDir(String dirName) throws IOException {

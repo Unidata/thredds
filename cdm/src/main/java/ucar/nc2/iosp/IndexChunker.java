@@ -91,7 +91,7 @@ public class IndexChunker {
   /**
    * Constructor
    * @param srcShape the shape of the source, eg Variable.getShape()
-   * @param wantSection the wanted section in srcShape, ie must be sibset of srcShape.
+   * @param wantSection the wanted section in srcShape, ie must be subset of srcShape.
    * @throws InvalidRangeException if wantSection is incorrect
    */
   public IndexChunker(int[] srcShape, Section wantSection) throws InvalidRangeException {

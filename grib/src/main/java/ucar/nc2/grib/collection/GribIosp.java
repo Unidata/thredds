@@ -418,9 +418,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   private void makeRuntimeCoordinate(NetcdfFile ncfile, Group g, CoordinateRuntime rtc) {
     int n = rtc.getSize();
+    boolean isScalar = (n == 1);
     String tcName = rtc.getName();
-    String dims = (n > 1) ? rtc.getName() : null;  // null means scalar
-    if (n > 1)
+    String dims = isScalar ? null : rtc.getName();  // null means scalar
+    if (!isScalar)
       ncfile.addDimension(g, new Dimension(tcName, n));
 
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
@@ -441,7 +442,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     for (CalendarDate val : rtc.getRuntimesSorted()) {
       dataS[count++] = val.toString();
     }
-    vs.setCachedData(Array.factory(DataType.STRING, new int[]{n}, dataS));
+    vs.setCachedData(Array.factory(DataType.STRING, isScalar ? new int[0] : new int[]{n}, dataS));
 
     // now convert to udunits
     double[] data = new double[n];
@@ -449,7 +450,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     for (double val : rtc.getOffsetsInTimeUnits()) {
       data[count++] = val;
     }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{n}, data));
+    v.setCachedData(Array.factory(DataType.DOUBLE, isScalar ? new int[0] : new int[]{n}, data));
   }
 
   static private enum  Time2DinfoType {off, intv, bounds}

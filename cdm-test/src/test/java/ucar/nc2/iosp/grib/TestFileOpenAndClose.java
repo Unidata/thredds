@@ -41,20 +41,20 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * Describe
+ * Keep opening files until we get an error
  *
  * @author caron
  * @since 11/4/2014
  */
 public class TestFileOpenAndClose {
 
-  @Test
+  //@Test
   public void testNFilesOpen() throws IOException {
     File topDir = new File(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2");
     openAll(topDir);
   }
 
-  @Test
+  //@Test
   public void testNFilesOpenAndClose() throws IOException {
     File topDir = new File(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2");
     openAndClose(topDir);
