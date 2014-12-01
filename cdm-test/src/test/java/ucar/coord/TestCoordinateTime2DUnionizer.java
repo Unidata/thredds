@@ -117,7 +117,7 @@ public class TestCoordinateTime2DUnionizer {
         runBuilder.add( time2D.run);
         CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(time2D.run);
         if (timeBuilder == null) {
-          timeBuilder = new CoordinateTime.Builder1(null, code, timeUnit, time2D.run);
+          timeBuilder = new CoordinateTime.Builder1(null, code, timeUnit, time2D.getRefDate());
           timeBuilders.put(time2D.run, timeBuilder);
         }
         timeBuilder.add(time2D.time);
@@ -126,9 +126,10 @@ public class TestCoordinateTime2DUnionizer {
 
     CoordinateRuntime runCoord = (CoordinateRuntime) runBuilder.finish();
 
-    List<Coordinate> times = new ArrayList<>();
-    for (CalendarDate runtimeDate : runCoord.getRuntimesSorted()) {
-      CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(runtimeDate);
+    List<Coordinate> times = new ArrayList<>(runCoord.getSize());
+    for (int idx=0; idx<runCoord.getSize(); idx++) {
+      long runtime = runCoord.getRuntime(idx);
+      CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(runtime);
       times.add(timeBuilder.finish());
     }
 

@@ -39,7 +39,6 @@ import com.google.protobuf.ByteString;
 import thredds.inventory.*;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
@@ -78,7 +77,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     public List<Coordinate> coords;
     public List<Grib2Record> records = new ArrayList<>();
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
-    public Set<CalendarDate> runtimes = new HashSet<>();
+    public Set<Long> runtimes = new HashSet<>();
 
     Group(Grib2SectionGridDefinition gdss, int gdsHash) {
       this.gdss = gdss;
@@ -97,7 +96,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     }
 
     @Override
-    public Set<CalendarDate> getCoordinateRuntimes() {
+    public Set<Long> getCoordinateRuntimes() {
       return runtimes;
     }
 

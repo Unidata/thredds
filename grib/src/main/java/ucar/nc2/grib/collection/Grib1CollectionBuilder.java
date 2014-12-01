@@ -135,7 +135,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
             gdsMap.put(gar, g);
           }
           g.records.add(gr);
-          g.runtimes.add(runtimeDate);
+          g.runtimes.add(runtimeDate.getMillis());
         }
         fileno++;
         statsAll.recordsTotal += index.getRecords().size();

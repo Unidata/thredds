@@ -1590,6 +1590,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public boolean isCaching() {
     if (!this.cache.cachingSet) {
       cache.isCaching = !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
+      if (debugCaching) System.out.printf("  cache %s %s %d < %d%n", getFullName(), cache.isCaching, getSize() * getElementSize(), getSizeToCache());
       this.cache.cachingSet = true;
     }
     return cache.isCaching;

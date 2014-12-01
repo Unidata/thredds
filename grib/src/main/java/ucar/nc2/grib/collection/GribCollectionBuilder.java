@@ -151,9 +151,9 @@ abstract class GribCollectionBuilder {
 
     // create the master runtimes, classify the result
     boolean allTimesAreOne = true;
-    Set<CalendarDate> allDates = new HashSet<>();
+    Set<Long> allDates = new HashSet<>();
     for (Group g : groups) {
-      for (CalendarDate cd : g.getCoordinateRuntimes())
+      for (Long cd : g.getCoordinateRuntimes())
         allDates.add(cd);
       for (Coordinate coord : g.getCoordinates()) {
         if (coord instanceof CoordinateTime2D) {
@@ -162,8 +162,8 @@ abstract class GribCollectionBuilder {
         }
       }
     }
-    List<CalendarDate> sortedList = new ArrayList<>();
-    for (CalendarDate cd : allDates) sortedList.add(cd);
+    List<Long> sortedList = new ArrayList<>();
+    for (Long cd : allDates) sortedList.add(cd);
     Collections.sort(sortedList);
     if (sortedList.size() == 1)
       this.type = GribCollectionImmutable.Type.SRC;
@@ -209,8 +209,8 @@ abstract class GribCollectionBuilder {
       partitions.add(indexFileForRuntime);
 
      // create the master runtimes, consisting of the single runtime
-      List<CalendarDate> runtimes = new ArrayList<>(1);
-      runtimes.add(g.getRuntime());
+      List<Long> runtimes = new ArrayList<>(1);
+      runtimes.add(g.getRuntime().getMillis());
       CoordinateRuntime masterRuntimes = new CoordinateRuntime(runtimes, null);
 
       // for each Group write an index file
@@ -237,7 +237,7 @@ abstract class GribCollectionBuilder {
   static public interface Group {
     CalendarDate getRuntime();             // LOOK HERE1 a single runtime
     List<Coordinate> getCoordinates();
-    Set<CalendarDate> getCoordinateRuntimes() ;
+    Set<Long> getCoordinateRuntimes();
   }
 
   static protected class GroupAndRuntime {

@@ -55,31 +55,21 @@ public final class PartitionCollectionProto {
      */
     int getPartno();
 
-    // optional float density = 7;
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    boolean hasDensity();
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    float getDensity();
-
     // optional uint32 ndups = 8;
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     boolean hasNdups();
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     int getNdups();
 
@@ -178,23 +168,18 @@ public final class PartitionCollectionProto {
               partno_ = input.readUInt32();
               break;
             }
-            case 61: {
-              bitField0_ |= 0x00000010;
-              density_ = input.readFloat();
-              break;
-            }
             case 64: {
-              bitField0_ |= 0x00000020;
+              bitField0_ |= 0x00000010;
               ndups_ = input.readUInt32();
               break;
             }
             case 72: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000020;
               nrecords_ = input.readUInt32();
               break;
             }
             case 80: {
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000040;
               missing_ = input.readUInt32();
               break;
             }
@@ -302,41 +287,25 @@ public final class PartitionCollectionProto {
       return partno_;
     }
 
-    // optional float density = 7;
-    public static final int DENSITY_FIELD_NUMBER = 7;
-    private float density_;
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    public boolean hasDensity() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    public float getDensity() {
-      return density_;
-    }
-
     // optional uint32 ndups = 8;
     public static final int NDUPS_FIELD_NUMBER = 8;
     private int ndups_;
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     public boolean hasNdups() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     public int getNdups() {
       return ndups_;
@@ -349,7 +318,7 @@ public final class PartitionCollectionProto {
      * <code>optional uint32 nrecords = 9;</code>
      */
     public boolean hasNrecords() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
      * <code>optional uint32 nrecords = 9;</code>
@@ -365,7 +334,7 @@ public final class PartitionCollectionProto {
      * <code>optional uint32 missing = 10;</code>
      */
     public boolean hasMissing() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
      * <code>optional uint32 missing = 10;</code>
@@ -379,7 +348,6 @@ public final class PartitionCollectionProto {
       varno_ = 0;
       flag_ = 0;
       partno_ = 0;
-      density_ = 0F;
       ndups_ = 0;
       nrecords_ = 0;
       missing_ = 0;
@@ -425,15 +393,12 @@ public final class PartitionCollectionProto {
         output.writeUInt32(4, partno_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeFloat(7, density_);
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt32(8, ndups_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt32(9, nrecords_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeUInt32(10, missing_);
       }
       getUnknownFields().writeTo(output);
@@ -463,17 +428,13 @@ public final class PartitionCollectionProto {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(7, density_);
+          .computeUInt32Size(8, ndups_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(8, ndups_);
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(9, nrecords_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(10, missing_);
       }
@@ -605,14 +566,12 @@ public final class PartitionCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000004);
         partno_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
-        density_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000010);
         ndups_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         nrecords_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         missing_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -660,17 +619,13 @@ public final class PartitionCollectionProto {
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.density_ = density_;
+        result.ndups_ = ndups_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.ndups_ = ndups_;
+        result.nrecords_ = nrecords_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
-        }
-        result.nrecords_ = nrecords_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000080;
         }
         result.missing_ = missing_;
         result.bitField0_ = to_bitField0_;
@@ -700,9 +655,6 @@ public final class PartitionCollectionProto {
         }
         if (other.hasPartno()) {
           setPartno(other.getPartno());
-        }
-        if (other.hasDensity()) {
-          setDensity(other.getDensity());
         }
         if (other.hasNdups()) {
           setNdups(other.getNdups());
@@ -888,83 +840,50 @@ public final class PartitionCollectionProto {
         return this;
       }
 
-      // optional float density = 7;
-      private float density_ ;
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public boolean hasDensity() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public float getDensity() {
-        return density_;
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public Builder setDensity(float value) {
-        bitField0_ |= 0x00000010;
-        density_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public Builder clearDensity() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        density_ = 0F;
-        onChanged();
-        return this;
-      }
-
       // optional uint32 ndups = 8;
       private int ndups_ ;
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public boolean hasNdups() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public int getNdups() {
         return ndups_;
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public Builder setNdups(int value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000010;
         ndups_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public Builder clearNdups() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         ndups_ = 0;
         onChanged();
         return this;
@@ -976,7 +895,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public boolean hasNrecords() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
        * <code>optional uint32 nrecords = 9;</code>
@@ -988,7 +907,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public Builder setNrecords(int value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000020;
         nrecords_ = value;
         onChanged();
         return this;
@@ -997,7 +916,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public Builder clearNrecords() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         nrecords_ = 0;
         onChanged();
         return this;
@@ -1009,7 +928,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public boolean hasMissing() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
        * <code>optional uint32 missing = 10;</code>
@@ -1021,7 +940,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public Builder setMissing(int value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000040;
         missing_ = value;
         onChanged();
         return this;
@@ -1030,7 +949,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public Builder clearMissing() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         missing_ = 0;
         onChanged();
         return this;
@@ -2338,20 +2257,19 @@ public final class PartitionCollectionProto {
     java.lang.String[] descriptorData = {
       "\n2ucar/nc2/grib/collection/partitionColl" +
       "ection.proto\032.ucar/nc2/grib/collection/g" +
-      "ribCollection2.proto\"\224\001\n\021PartitionVariab" +
+      "ribCollection2.proto\"\203\001\n\021PartitionVariab" +
       "le\022\017\n\007groupno\030\001 \002(\r\022\r\n\005varno\030\002 \002(\r\022\014\n\004fl" +
-      "ag\030\003 \002(\r\022\016\n\006partno\030\004 \002(\r\022\017\n\007density\030\007 \001(" +
-      "\002\022\r\n\005ndups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007mi" +
-      "ssing\030\n \001(\r\"{\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020" +
-      "\n\010filename\030\002 \002(\t\022\021\n\tdirectory\030\003 \002(\t\022\024\n\014l" +
-      "astModified\030\004 \001(\004\022\016\n\006length\030\005 \001(\003\022\025\n\rpar" +
-      "titionDate\030\006 \001(\003:0\n\tpartition\022\t.Variable",
-      "\030d \003(\0132\022.PartitionVariable:/\n\npartitions" +
-      "\022\017.GribCollection\030d \003(\0132\n.Partition:0\n\027i" +
-      "sPartitionOfPartitions\022\017.GribCollection\030" +
-      "e \002(\010:!\n\010run2part\022\017.GribCollection\030f \003(\r" +
-      "B4\n\030ucar.nc2.grib.collectionB\030PartitionC" +
-      "ollectionProto"
+      "ag\030\003 \002(\r\022\016\n\006partno\030\004 \002(\r\022\r\n\005ndups\030\010 \001(\r\022" +
+      "\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030\n \001(\r\"{\n\tPa" +
+      "rtition\022\014\n\004name\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\022" +
+      "\021\n\tdirectory\030\003 \002(\t\022\024\n\014lastModified\030\004 \001(\004" +
+      "\022\016\n\006length\030\005 \001(\003\022\025\n\rpartitionDate\030\006 \001(\003:" +
+      "0\n\tpartition\022\t.Variable\030d \003(\0132\022.Partitio",
+      "nVariable:/\n\npartitions\022\017.GribCollection" +
+      "\030d \003(\0132\n.Partition:0\n\027isPartitionOfParti" +
+      "tions\022\017.GribCollection\030e \002(\010:!\n\010run2part" +
+      "\022\017.GribCollection\030f \003(\rB4\n\030ucar.nc2.grib" +
+      ".collectionB\030PartitionCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2363,7 +2281,7 @@ public final class PartitionCollectionProto {
           internal_static_PartitionVariable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PartitionVariable_descriptor,
-              new java.lang.String[] { "Groupno", "Varno", "Flag", "Partno", "Density", "Ndups", "Nrecords", "Missing", });
+              new java.lang.String[] { "Groupno", "Varno", "Flag", "Partno", "Ndups", "Nrecords", "Missing", });
           internal_static_Partition_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_Partition_fieldAccessorTable = new

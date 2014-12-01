@@ -79,7 +79,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     public List<Grib1CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
 
-    public Set<CalendarDate> runtimes = new HashSet<>();
+    public Set<Long> runtimes = new HashSet<>();
     public List<Grib1Record> records = new ArrayList<>();
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
@@ -100,7 +100,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     }
 
     @Override
-    public Set<CalendarDate> getCoordinateRuntimes() {
+    public Set<Long> getCoordinateRuntimes() {
       return runtimes;
     }
   }

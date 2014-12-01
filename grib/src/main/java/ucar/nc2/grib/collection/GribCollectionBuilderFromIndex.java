@@ -365,13 +365,10 @@ message Coord {
 
     switch (type) {
       case runtime:
-        List<CalendarDate> dates = new ArrayList<>(pc.getMsecsCount());
-        for (Long msec : pc.getMsecsList())
-          dates.add(CalendarDate.of(msec));
         if (unit == null)
           throw new IllegalStateException("Null units");
         CalendarDateUnit cdUnit = CalendarDateUnit.of(null, unit);
-        return new CoordinateRuntime(dates, cdUnit.getTimeUnit());
+        return new CoordinateRuntime(pc.getMsecsList(), cdUnit.getTimeUnit());
 
       case time:
         List<Integer> offs = new ArrayList<>(pc.getValuesCount());
@@ -397,13 +394,10 @@ message Coord {
         return new CoordinateTimeIntv(code, timeUnit2, refDate, tinvs, readTime2Runtime(pc));
 
       case time2D:
-        dates = new ArrayList<>(pc.getMsecsCount());
-        for (Long msec : pc.getMsecsList())
-          dates.add(CalendarDate.of(msec));
         if (unit == null)
            throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit3 = CalendarPeriod.of(unit);
-        CoordinateRuntime runtime = new CoordinateRuntime(dates, timeUnit3);
+        CoordinateRuntime runtime = new CoordinateRuntime(pc.getMsecsList(), timeUnit3);
 
         List<Coordinate> times = new ArrayList<>(pc.getTimesCount());
         for (GribCollectionProto.Coord coordp : pc.getTimesList())

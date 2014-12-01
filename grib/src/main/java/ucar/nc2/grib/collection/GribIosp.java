@@ -47,7 +47,6 @@ import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -432,7 +431,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
-    String vsName = tcName + "_ISO";
+    /* String vsName = tcName + "_ISO";
     Variable vs = ncfile.addVariable(g, new Variable(ncfile, g, null, vsName, DataType.STRING, dims));
     vs.addAttribute(new Attribute(CDM.UNITS, "ISO8601"));
     v.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
@@ -444,27 +443,23 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     for (CalendarDate val : rtc.getRuntimesSorted()) {
       dataS[count++] = val.toString();
     }
-    vs.setCachedData(Array.factory(DataType.STRING, isScalar ? new int[0] : new int[]{n}, dataS));
+    vs.setCachedData(Array.factory(DataType.STRING, isScalar ? new int[0] : new int[]{n}, dataS)); */
 
-    // now convert to udunits
-    double[] data = new double[n];
-    count = 0;
-    for (double val : rtc.getOffsetsInTimeUnits()) {
-      data[count++] = val;
-    }
-    v.setCachedData(Array.factory(DataType.DOUBLE, isScalar ? new int[0] : new int[]{n}, data));
+    // lazy eval
+    v.setSPobject(new Time2Dinfo(Time2DinfoType.reftime, null, rtc));
+
   }
 
-  static private enum  Time2DinfoType {off, intv, bounds, ref}
+  static private enum  Time2DinfoType {off, intv, bounds, is1Dtime, reftime, timeAuxRef}
   static private class Time2Dinfo {
     Time2DinfoType which;
     CoordinateTime2D time2D;
-    GribCollectionImmutable.Type gctype;
+    Coordinate time1D;
 
-    private Time2Dinfo(Time2DinfoType which, CoordinateTime2D time2D, GribCollectionImmutable.Type gctype) {
+    private Time2Dinfo(Time2DinfoType which, CoordinateTime2D time2D, Coordinate time1D) {
       this.which = which;
       this.time2D = time2D;
-      this.gctype = gctype;
+      this.time1D = time1D;
     }
   }
 
@@ -494,16 +489,16 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     // the data is not generated until asked for to same space
     if (!time2D.isTimeInterval()) {
-      v.setSPobject(new Time2Dinfo(Time2DinfoType.off, time2D, gctype));
+      v.setSPobject(new Time2Dinfo(Time2DinfoType.off, time2D, null));
     } else {
-      v.setSPobject(new Time2Dinfo(Time2DinfoType.intv, time2D, gctype));
+      v.setSPobject(new Time2Dinfo(Time2DinfoType.intv, time2D, null));
       // bounds for intervals
       String bounds_name = tcName + "_bounds";
       Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
       v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));
       bounds.addAttribute(new Attribute(CDM.UNITS, units));
       bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
-      bounds.setSPobject(new Time2Dinfo(Time2DinfoType.bounds, time2D, gctype));
+      bounds.setSPobject(new Time2Dinfo(Time2DinfoType.bounds, time2D, null));
     }
 
     // for this case we have to generate a separate reftime, because have to use the same dimension
@@ -514,12 +509,47 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       vref.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
       vref.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
       vref.addAttribute(new Attribute(CDM.UNITS, units));
-      vref.setSPobject(new Time2Dinfo(Time2DinfoType.ref, time2D, gctype));
+      vref.setSPobject(new Time2Dinfo(Time2DinfoType.is1Dtime, time2D, null));
     }
   }
 
-  // only for the 2d times, otherwise the data is in the variables cache
-  private Array makeTime2Darray(Variable v2, Time2Dinfo info) {
+  private Array makeLazyCoordinateData(Variable v2, Time2Dinfo info) {
+    if (info.time2D != null)
+      return makeLazyTime2Darray(v2, info);
+    else
+      return makeLazyTime1Darray(v2, info);
+  }
+
+    // only for the 2d times
+  private Array makeLazyTime1Darray(Variable v2, Time2Dinfo info) {
+    int length =  info.time1D.getSize();
+    double[] data = new double[length];
+    for (int i = 0; i < length; i++) data[i] = Double.NaN;
+
+    // coordinate values
+    switch (info.which) {
+      case reftime:
+        CoordinateRuntime rtc = (CoordinateRuntime) info.time1D;
+        int count = 0;
+        for (double val : rtc.getOffsetsInTimeUnits())
+          data[count++] = val;
+        return Array.factory(DataType.DOUBLE, v2.getShape(), data);
+
+      case timeAuxRef:
+        CoordinateTimeAbstract time = (CoordinateTimeAbstract) info.time1D;
+        count = 0;
+        List<Double> masterOffsets = gribCollection.getMasterRuntime().getOffsetsInTimeUnits();
+        for (int masterIdx : time.getTime2runtime()) {
+          data[count++] = masterOffsets.get(masterIdx-1);
+        }
+        return Array.factory(DataType.DOUBLE, v2.getShape(), data);
+    }
+    return null;
+  }
+
+
+  // only for the 2d times
+  private Array makeLazyTime2Darray(Variable v2, Time2Dinfo info) {
     CoordinateTime2D time2D = info.time2D;
 
     int nruns = time2D.getNruns();
@@ -554,7 +584,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         }
         return Array.factory(DataType.DOUBLE,  v2.getShape(), data);
 
-      case ref:
+      case is1Dtime:
         CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
         int count = 0;
         for (double val : runtime.getOffsetsInTimeUnits()) { // convert to udunits
@@ -660,12 +690,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       data[count++] = val;
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes}, data));
 
-    makeTimeAuxReference(ncfile, g, tcName, units, coordTime.getTime2runtime());
+    makeTimeAuxReference(ncfile, g, tcName, units, coordTime);
   }
 
-  private void makeTimeAuxReference(NetcdfFile ncfile, Group g, String timeName, String units, int[] time2runtime) {
-    if (time2runtime == null) return;
-    int ntimes = time2runtime.length;
+  private void makeTimeAuxReference(NetcdfFile ncfile, Group g, String timeName, String units, CoordinateTimeAbstract time) {
+    if (time.getTime2runtime() == null) return;
+    int ntimes = time.getTime2runtime().length;
     String tcName = "ref"+timeName;
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, timeName));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
@@ -673,14 +703,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
     v.addAttribute(new Attribute(CDM.UNITS, units));
 
-        // coordinate values LOOK change to lazy
-    double[] data = new double[ntimes];
-    int count = 0;
-    List<Double> masterOffsets = gribCollection.getMasterRuntime().getOffsetsInTimeUnits();
-    for (int masterIdx : time2runtime) {
-      data[count++] = masterOffsets.get(masterIdx-1);
-    }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes}, data));
+    // lazy evaluation
+    v.setSPobject(new Time2Dinfo(Time2DinfoType.timeAuxRef, null, time));
   }
 
   private void makeTimeCoordinate1D(NetcdfFile ncfile, Group g, CoordinateTimeIntv coordTime) { // }, CoordinateRuntime runtime) {
@@ -723,7 +747,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
     bounds.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes, 2}, data));
 
-    makeTimeAuxReference(ncfile, g, tcName, units, coordTime.getTime2runtime());
+    makeTimeAuxReference(ncfile, g, tcName, units, coordTime);
   }
 
   private void makeVerticalCoordinate(NetcdfFile ncfile, Group g, CoordinateVert vc) {
@@ -849,7 +873,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     // see if its time2D - then generate data on the fly
     if (v2.getSPobject() instanceof Time2Dinfo) {
       Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
-      Array data = makeTime2Darray(v2, info);
+      Array data = makeLazyCoordinateData(v2, info);
       Section sectionFilled = Section.fill(section, v2.getShape());
       return data.sectionNoReduce(sectionFilled.getRanges());
     }

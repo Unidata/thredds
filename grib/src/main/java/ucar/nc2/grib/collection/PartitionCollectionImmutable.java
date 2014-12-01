@@ -599,7 +599,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
         CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1], GribIosp.debugRead);
         if (GribIosp.debugRead) System.out.printf("  translateIndex2D[runIdx=%d, timeIdx=%d] in componentVar coords = (%s,%s) %n",
-                wholeIndex[0], wholeIndex[1], (want == null) ? "null" : want.getRun(), want);
+                wholeIndex[0], wholeIndex[1], (want == null) ? "null" : want.getRefDate(), want);
         if (want == null) {
           // time2D.getOrgValue(wholeIndex[0], wholeIndex[1], GribIosp.debugRead); // debug
           return null;
@@ -616,8 +616,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         int idx = wholeIndex[countDim];
         int resultIdx = matchCoordinate(getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim));
         if (GribIosp.debugRead) System.out.printf("  translateIndex2D[idx=%d] resultIdx= %d %n", idx, resultIdx);
-        if (resultIdx < 0) {
-          // matchCoordinate(getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim)); // debug
+        if (resultIdx < 0) {   // partition variable doesnt have a coordinate value that is in the "whole" variable
           return null;
         }
         result[countDim] = resultIdx;

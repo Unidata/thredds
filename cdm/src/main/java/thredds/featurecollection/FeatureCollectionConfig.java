@@ -84,7 +84,7 @@ public class FeatureCollectionConfig {
   //////////////////////////////////////////////
 
   public FeatureCollectionType type;
-  public PartitionType ptype = PartitionType.none;
+  public PartitionType ptype = PartitionType.directory;
   public String name, path, spec, dateFormatMark, olderThan;
   public UpdateConfig tdmConfig = new UpdateConfig();
   public UpdateConfig updateConfig = new UpdateConfig();
@@ -109,6 +109,7 @@ public class FeatureCollectionConfig {
     this.olderThan = olderThan;
     //if (recheckAfter != null) this.updateConfig.recheckAfter = recheckAfter;
     if (null != timePartition) {
+      if (timePartition.equalsIgnoreCase("none")) ptype = PartitionType.none;
       if (timePartition.equalsIgnoreCase("directory")) ptype = PartitionType.directory;
       if (timePartition.equalsIgnoreCase("file")) ptype = PartitionType.file;
     }

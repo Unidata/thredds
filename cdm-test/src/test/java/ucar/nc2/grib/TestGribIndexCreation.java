@@ -26,7 +26,7 @@ import java.util.Formatter;
  * @since 11/14/2014
  */
 public class TestGribIndexCreation {
-  private static CollectionUpdateType updateMode = CollectionUpdateType.test;
+  private static CollectionUpdateType updateMode = CollectionUpdateType.always;
 
   @BeforeClass
   static public void before() {

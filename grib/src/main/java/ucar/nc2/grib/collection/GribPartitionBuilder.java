@@ -234,7 +234,7 @@ abstract class GribPartitionBuilder  {
         masterRuntimes.add(partRuntime);        // make master runtimes
 
         GribCollectionMutable.Dataset ds2dp = gc.getDatasetCanonical(); // the twoD or GC dataset
-        if (ds2dp.gctype == GribCollectionImmutable.Type.TwoD) allAre1D = false;
+        if (ds2dp.gctype != GribCollectionImmutable.Type.MRSTC) allAre1D = false;
 
         int groupIdx = 0;
         for (GribCollectionMutable.GroupGC g : ds2dp.groups) { // for each group in the partition
@@ -250,12 +250,11 @@ abstract class GribPartitionBuilder  {
       countPartition++;
     } // loop over partition
 
-    if (allAre1D)
+    List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
+    result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish();
+    if (allAre1D || result.masterRuntime.getSize() == 1)  // LOOK probably not right
       ds2D.gctype = GribCollectionImmutable.Type.TP;
 
-    List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
-    result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish(); // LOOK assumes that runtime = partition remains after sort ??
-                                                                           // could work if partition sorted by runtime ?? partition sorted by name !
     // create run2part: for each run, which partition to use
     result.run2part = new int[result.masterRuntime.getSize()];
     int partIdx = 0;
@@ -775,7 +774,7 @@ abstract class GribPartitionBuilder  {
     if (vp.nparts > 0 && vp.partnoSA != null) {
       List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
       for (int i = 0; i < vp.nparts; i++) // PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionForVariable2D())
-        pvarList.add(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i)));  // LOOK was it finished ??
+        pvarList.add(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i), vp.nrecords, vp.ndups, vp.nmissing));  // LOOK was it finished ??
       b.setExtension(PartitionCollectionProto.partition, pvarList);
     }
 
@@ -796,16 +795,15 @@ abstract class GribPartitionBuilder  {
     optional uint32 missing = 10;
   }
    */
-  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno) throws IOException {
+  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno, int nrecords, int ndups, int nmissing) throws IOException {
     PartitionCollectionProto.PartitionVariable.Builder pb = PartitionCollectionProto.PartitionVariable.newBuilder();
     pb.setPartno(partno);
     pb.setGroupno(groupno);
     pb.setVarno(varno);
+    pb.setNdups(ndups);
+    pb.setNrecords(nrecords);
+    pb.setMissing(nmissing);
     pb.setFlag(0); // ignored
-    /* pb.setNdups(pvar.ndups);
-    pb.setNrecords(pvar.nrecords);
-    pb.setMissing(pvar.missing);
-    pb.setDensity(pvar.density);  */
 
     return pb.build();
   }

@@ -99,8 +99,10 @@ class GribCollectionWriter {
     b.setType(coord.getType().ordinal());
     b.setCode(coord.getCode());
     if (coord.getUnit() != null) b.setUnit(coord.getUnit());
-    for (CalendarDate cd : coord.getRuntimesSorted()) {
-      b.addMsecs(cd.getMillis());
+
+    for (int idx=0; idx<coord.getSize(); idx++) {
+      long runtime = coord.getRuntime(idx);
+      b.addMsecs(runtime);
     }
     return b.build();
   }
@@ -177,9 +179,10 @@ class GribCollectionWriter {
     b.setType(coord.getType().ordinal());
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
-    CoordinateRuntime runtime = coord.getRuntimeCoordinate();
-    for (CalendarDate cd : runtime.getRuntimesSorted()) {
-      b.addMsecs(cd.getMillis());
+    CoordinateRuntime runtimeCoord = coord.getRuntimeCoordinate();
+    for (int idx=0; idx<runtimeCoord.getSize(); idx++) {
+      long runtime = runtimeCoord.getRuntime(idx);
+      b.addMsecs(runtime);
     }
 
     b.setIsOrthogonal(coord.isOrthogonal());

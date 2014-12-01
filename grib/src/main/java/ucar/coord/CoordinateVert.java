@@ -54,6 +54,8 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public Object getValue(int idx) {
+    if (idx >= levelSorted.size())
+      return null;
     return levelSorted.get(idx);
   }
 

@@ -393,9 +393,12 @@ public class GribData {
     }
   }
 
-  private static byte[] buffer = new byte[524288];  // LOOK optimize
-
+  // only used by test code
+  private static byte[] buffer;  // LOOK optimize
   static public float[] uncompressScaled(byte[] bdata) throws IOException {
+    if (buffer == null)
+      buffer = new byte[524288];
+
     int outLength = Math.max(20 * bdata.length, 8000);
     ByteArrayOutputStream out = new ByteArrayOutputStream(outLength);
     ByteArrayInputStream in = new ByteArrayInputStream(bdata);

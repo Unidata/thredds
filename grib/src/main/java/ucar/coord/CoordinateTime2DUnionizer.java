@@ -19,7 +19,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   boolean makeVals;
   CalendarPeriod timeUnit;
   int code;
-  SortedMap<CalendarDate, CoordinateTimeAbstract> timeMap = new TreeMap<>();
+  SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
 
   public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code,  boolean makeVals) {
     this.isTimeInterval = isTimeInterval;
@@ -33,7 +33,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
     for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {  // possible duplicate runtimes from different partitions
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
-      timeMap.put(coordT2D.getRefDate(runIdx), times);          // later partitions will override LOOK could check how many times there are and choose larger
+      timeMap.put(coordT2D.getRuntime(runIdx), times);          // later partitions will override LOOK could check how many times there are and choose larger
     }
   }
 
@@ -42,14 +42,16 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     throw new RuntimeException();
   }
 
-  // set the list of runtime coordinates; add any that are not lready present, and make an empty CoordinateTimeAbstract for it
+  // set the list of runtime coordinates; add any that are not already present, and make an empty CoordinateTimeAbstract for it
   public void setRuntimeCoords(CoordinateRuntime runtimes) {
-    for (CalendarDate cd : runtimes.getRuntimesSorted()) {
-      CoordinateTimeAbstract time = timeMap.get(cd);
+    for (int idx=0; idx<runtimes.getSize(); idx++) {
+      CalendarDate cd = runtimes.getRuntimeDate(idx);
+      long runtime = runtimes.getRuntime(idx);
+      CoordinateTimeAbstract time = timeMap.get(runtime);
       if (time == null) {
         time = isTimeInterval ? new CoordinateTimeIntv(this.code, this.timeUnit, cd, new ArrayList<TimeCoord.Tinv>(0), null) :
                 new CoordinateTime(this.code, this.timeUnit, cd, new ArrayList<Integer>(0), null);
-        timeMap.put(cd, time);
+        timeMap.put(runtime, time);
       }
     }
   }
@@ -58,14 +60,15 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   public Coordinate makeCoordinate(List<Object> values) {
 
     // the set of unique runtimes, sorted
-    List<CalendarDate> runtimes = new ArrayList<>();
+    List<Long> runtimes = new ArrayList<>();
     List<Coordinate> times = new ArrayList<>();  // the corresponding time coordinate for each runtime
     List<CoordinateTime2D.Time2D> allVals = new ArrayList<>();  // optionally all Time2D coordinates
-    for (CalendarDate cd : timeMap.keySet()) {
-      runtimes.add(cd);
-      CoordinateTimeAbstract time = timeMap.get(cd);
+    for (long runtime : timeMap.keySet()) {
+      runtimes.add(runtime);
+      CoordinateTimeAbstract time = timeMap.get(runtime);
       times.add(time);
       if (makeVals) {
+        CalendarDate cd = CalendarDate.of(runtime);
         for (Object timeVal : time.getValues())
           allVals.add( isTimeInterval ? new CoordinateTime2D.Time2D(cd, null, (TimeCoord.Tinv) timeVal) : new CoordinateTime2D.Time2D(cd, (Integer) timeVal, null));
       }

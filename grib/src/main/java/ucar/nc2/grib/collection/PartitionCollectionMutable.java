@@ -39,11 +39,8 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
-import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
-import ucar.coord.Coordinate;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.util.StringUtil2;
 
@@ -468,11 +465,10 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     if (run2part == null) f.format("run2part null%n");
     else {
       f.format(" master runtime -> partition %n");
-      count = 0;
-      for (CalendarDate cd : masterRuntime.getRuntimesSorted()) {
-        int partno =  run2part[count];
+      for (int idx=0; idx<masterRuntime.getSize(); idx++) {
+        int partno =  run2part[idx];
         Partition part = getPartition(partno);
-        f.format(" %d:  %s -> part %3d %s%n", count, cd, run2part[count],  part);
+        f.format(" %d:  %s -> part %3d %s%n", count, masterRuntime.getRuntimeDate(idx), partno,  part);
         count++;
       }
       f.format("%n");
