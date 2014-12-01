@@ -37,7 +37,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.util.gui;
+package opendap.tools.gui;
 
 import java.awt.*;
 

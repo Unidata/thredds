@@ -30,9 +30,16 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2;
+package ucar.nc2.ui;
 
 import ucar.ma2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
