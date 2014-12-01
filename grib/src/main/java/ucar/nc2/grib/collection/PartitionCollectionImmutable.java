@@ -41,7 +41,6 @@ import ucar.coord.*;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.cache.FileCacheable;
@@ -155,7 +154,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   }
 
   public VariableIndexPartitioned getVariable2DByHash(GribHorizCoordSystem hcs, int cdmHash) {
-    Dataset ds2d = getDataset2D();
+    Dataset ds2d = getDatasetCanonical();
     if (ds2d == null) return null;
     for (GroupGC groupHcs : ds2d.getGroups())
       if (groupHcs.horizCoordSys == hcs)
@@ -400,34 +399,43 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      */
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
-      if (GribIosp.debugRead) System.out.printf("%nPartitionCollection.getDataRecord index wanted = (%s) on %s isTwod=%s%n", Misc.showInts(indexWanted), indexFilename, group.isTwoD);
-      if (indexWanted == null)
-        System.out.println("HEY");
+      if (GribIosp.debugRead) System.out.printf("%nPartitionCollection.getDataRecord index wanted = (%s) on %s type=%s%n",
+              Misc.showInts(indexWanted), indexFilename, group.ds.gctype);
+
       // find the runtime index
       int firstIndex = indexWanted[0];
       int masterIdx;
-      if (group.isTwoD) {
-        int runIdx = firstIndex;
-        if (runIdx < 0) {
-          return null; // LOOK is this possible?
-        }
+      if (group.ds.gctype == Type.TwoD || group.ds.gctype == Type.TP) {
 
         // find the partition by matching run coordinate with master runtime
         CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
-        Object val = runtime.getValue(runIdx);
+        Object val = runtime.getValue(firstIndex);
         masterIdx = masterRuntime.getIndex(val);
         if (GribIosp.debugRead) System.out.printf("  firstIndex = %d val=%s masterIdx=%d %n", firstIndex, val, masterIdx);
 
-      } else {
+      } else if (group.ds.gctype == Type.Best) {
         CoordinateTimeAbstract time = getCoordinateTime();
         masterIdx = time.getMasterRuntimeIndex(firstIndex) - 1;
         if (GribIosp.debugRead) System.out.printf("  firstIndex = %d masterIdx=%d %n", firstIndex, masterIdx);
+
+      } else {
+        throw new IllegalStateException("Unknown gctype= "+group.ds.gctype);
       }
 
       int partno = run2part[masterIdx];
       if (partno < 0) {
         return null; // LOOK is this possible?
       }
+
+      // for 1D TP, second index is implictly 0
+      if (group.ds.gctype == Type.TP) {
+        int[] indexReallyWanted = new int[indexWanted.length+1];
+        indexReallyWanted[0] = indexWanted[0];
+        indexReallyWanted[1] = 0;
+        System.arraycopy(indexWanted, 0, indexReallyWanted, 2, indexWanted.length-1);
+        indexWanted = indexReallyWanted;
+      }
+
 
       // find the 2D vi in that partition
       GribCollectionImmutable.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
@@ -440,12 +448,11 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       }
 
       // translate to coordinates in vindex
-      int[] sourceIndex = group.isTwoD ? translateIndex2D(indexWanted, compVindex2D) : translateIndex1D(indexWanted, compVindex2D);
+      int[] sourceIndex = group.isTwoD() ? translateIndex2D(indexWanted, compVindex2D) : translateIndex1D(indexWanted, compVindex2D);
       if (sourceIndex == null) return null; // missing
       GribCollectionImmutable.Record record = compVindex2D.getRecordAt(sourceIndex);
       if (record == null) {
         return null;
-        // compVindex2D.getSparseArray().getContent(sourceIndex); // debug
       }
 
       if (GribIosp.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
@@ -460,7 +467,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      * @throws IOException
      */
     private DataRecord getDataRecordPofP(int[] indexWanted, VariableIndexPartitioned compVindex2Dp) throws IOException {
-      if (group.isTwoD) {
+      if (group.isTwoD()) {
         // corresponding index into compVindex2Dp
         int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
         if (GribIosp.debugRead) System.out.printf("  (2D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));

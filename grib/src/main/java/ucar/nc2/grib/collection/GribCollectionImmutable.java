@@ -64,7 +64,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   static private final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
   public static int countGC; // debug
 
-  public enum Type {GC, SRC, MRC, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
+  public enum Type {GC, SRC, MRC, MRSTC, TP, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
@@ -96,7 +96,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     List<Dataset> work = new ArrayList<>(gc.datasets.size());
     for (GribCollectionMutable.Dataset gcDataset : gc.datasets) {
-      work.add( new Dataset(gcDataset.type, gcDataset.groups));
+      work.add( new Dataset(gcDataset.gctype, gcDataset.groups));
     }
     this.datasets = Collections.unmodifiableList( work);
 
@@ -120,19 +120,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   public Dataset getDataset(String name) {
     for (Dataset ds : datasets)
-      if (ds.type.toString().equalsIgnoreCase(name)) return ds;
-    return null;
-  }
-
-  public Dataset getDataset2D() {
-    for (Dataset ds : datasets)
-      if (ds.isTwoD()) return ds;
+      if (ds.gctype.toString().equalsIgnoreCase(name)) return ds;
     return null;
   }
 
   public Dataset getDatasetCanonical() {
     for (Dataset ds : datasets) {
-      if (ds.type != GribCollectionImmutable.Type.Best) return ds;
+      if (ds.gctype != GribCollectionImmutable.Type.Best) return ds;
     }
     throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
   }
@@ -208,19 +202,18 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.backProcessId = gc.backProcessId;
     }
 
-
   }
 
   @Immutable
   public class Dataset {
-    final Type type;
+    final Type gctype;
     final List<GroupGC> groups;  // must be kept in order, because PartitionForVariable2D has index into it
 
-    public Dataset(Type type, List<GribCollectionMutable.GroupGC> groups) {
-      this.type = type;
+    public Dataset(Type gctype, List<GribCollectionMutable.GroupGC> groups) {
+      this.gctype = gctype;
       List<GroupGC> work = new ArrayList<>(groups.size());
       for (GribCollectionMutable.GroupGC gcGroup : groups) {
-        work.add( new GroupGC(gcGroup));
+        work.add( new GroupGC(this, gcGroup));
       }
       this.groups = Collections.unmodifiableList( work);
     }
@@ -234,11 +227,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public Type getType() {
-      return type;
-    }
-
-    public boolean isTwoD() {
-      return type == Type.TwoD;
+      return gctype;
     }
 
     public GroupGC getGroup(int index) {
@@ -257,19 +246,19 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   // this class should be immutable, because it escapes
   @Immutable
   public class GroupGC {
+    final Dataset ds;
     final GribHorizCoordSystem horizCoordSys;
     final List<VariableIndex> variList;
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
     final private Map<Integer, VariableIndex> varMap;
-    final boolean isTwoD;        // true if you should use time2runtime
 
-    public GroupGC(GribCollectionMutable.GroupGC gc) {
+    public GroupGC(Dataset ds, GribCollectionMutable.GroupGC gc) {
+      this.ds = ds;
       this.horizCoordSys = gc.horizCoordSys;
       this.coords = gc.coords;
       this.filenose = gc.filenose;
       this.varMap = new HashMap<>(gc.variList.size() * 2);
-      this.isTwoD = gc.isTwoD;
 
       List<GribCollectionMutable.VariableIndex> gcVars = gc.variList;
       List<VariableIndex> work = new ArrayList<>(gcVars.size());
@@ -279,6 +268,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         varMap.put(vi.getCdmHash(), vi);
       }
       this.variList = Collections.unmodifiableList( work);
+    }
+
+    public boolean isTwoD() {
+      return ds.gctype != Type.Best;
     }
 
     public String getId() {
@@ -353,13 +346,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public String toString() {
       final StringBuilder sb = new StringBuilder("GroupGC{");
       sb.append(GribCollectionImmutable.this.getName());
-      sb.append(" isTwoD=").append(isTwoD);
+      sb.append(" gctype=").append(ds.gctype);
       sb.append('}');
       return sb.toString();
     }
 
     public void show(Formatter f) {
-      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), isTwoD);
+      f.format("Group %s (%d) type=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), ds.gctype);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }

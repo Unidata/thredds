@@ -42,7 +42,10 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import thredds.inventory.partition.PartitionManagerFromIndexList;
+import ucar.coord.Coordinate;
 import ucar.coord.CoordinateRuntime;
+import ucar.coord.CoordinateTime2D;
+import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
@@ -146,17 +149,26 @@ abstract class GribCollectionBuilder {
     List<? extends Group> groups = makeGroups(files, false, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
 
-    // create the master runtimes
+    // create the master runtimes, classify the result
+    boolean allTimesAreOne = true;
     Set<CalendarDate> allDates = new HashSet<>();
     for (Group g : groups) {
       for (CalendarDate cd : g.getCoordinateRuntimes())
         allDates.add(cd);
+      for (Coordinate coord : g.getCoordinates()) {
+        if (coord instanceof CoordinateTime2D) {
+          CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+          if (coord2D.getNtimes() > 1) allTimesAreOne = false;
+        }
+      }
     }
     List<CalendarDate> sortedList = new ArrayList<>();
     for (CalendarDate cd : allDates) sortedList.add(cd);
     Collections.sort(sortedList);
     if (sortedList.size() == 1)
-      this.type =  GribCollectionImmutable.Type.SRC;
+      this.type = GribCollectionImmutable.Type.SRC;
+    else if (allTimesAreOne)
+      this.type =  GribCollectionImmutable.Type.MRSTC;
 
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);
@@ -224,6 +236,7 @@ abstract class GribCollectionBuilder {
 
   static public interface Group {
     CalendarDate getRuntime();             // LOOK HERE1 a single runtime
+    List<Coordinate> getCoordinates();
     Set<CalendarDate> getCoordinateRuntimes() ;
   }
 

@@ -207,14 +207,16 @@ public class CoordinateSharer<T> {
     List<Coordinate> coords = new ArrayList<>();
     for (Coordinate prevCoord : prev.getCoordinates()) {
       if (isRuntimeUnion) {
-        if (prevCoord.getType() == Coordinate.Type.runtime)
+        if (prevCoord.getType() == Coordinate.Type.runtime) {
           coords.add(runtimeAll);
-        else if (prevCoord.getType() == Coordinate.Type.time2D) {
+        } else if (prevCoord.getType() == Coordinate.Type.time2D) {
           CoordinateTime2D time2D = (CoordinateTime2D) prevCoord;
           if (time2D.isTimeInterval())
             coords.add(timeIntv2Dall);
           else
             coords.add(time2Dall);
+        } else {
+          coords.add(prevCoord);
         }
 
       } else { // normal case - runTime2D may have gotten modified

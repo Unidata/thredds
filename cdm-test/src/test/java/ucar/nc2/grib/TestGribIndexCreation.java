@@ -3,7 +3,6 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
@@ -27,6 +26,7 @@ import java.util.Formatter;
  * @since 11/14/2014
  */
 public class TestGribIndexCreation {
+  private static CollectionUpdateType updateMode = CollectionUpdateType.test;
 
   @BeforeClass
   static public void before() {
@@ -76,7 +76,7 @@ public class TestGribIndexCreation {
     config.gribConfig.addGdsHash("-328645426", "1821883766");
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
     // LOOK add check that records were combined
   }
@@ -93,7 +93,7 @@ public class TestGribIndexCreation {
     //config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
   }
 
@@ -105,7 +105,7 @@ public class TestGribIndexCreation {
     //config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
   }
 
@@ -117,7 +117,7 @@ public class TestGribIndexCreation {
     //config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
   }
 
@@ -129,7 +129,7 @@ public class TestGribIndexCreation {
     //config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
   }
 
@@ -139,13 +139,13 @@ public class TestGribIndexCreation {
   public void testRdvamds083p2_SampleMonth() throws IOException {
     //GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-union", "test/GCpass1", FeatureCollectionType.GRIB1,
-           TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/sampleMonth/.*gbx9",
+           TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/sampleMonth/.*grib1",
             null, null, "directory", null, null);
     config.gribConfig.useTableVersion = false;
     config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
@@ -153,14 +153,14 @@ public class TestGribIndexCreation {
   @Test
   public void testRdvamds083p2() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_46", "test/ds083.2", FeatureCollectionType.GRIB1,
-            "B:/rdavm/ds083.2/grib1/**/.*gbx9",
-//            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/**/.*gbx9",
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-union", "test/ds083.2", FeatureCollectionType.GRIB1,
+//            "B:/rdavm/ds083.2/grib1/**/.*gbx9",
+            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/**/.*gbx9",
             null, null, "directory", null, null);
     config.gribConfig.useTableVersion = false;
-    // config.gribConfig.unionRuntimeCoord = true;
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    config.gribConfig.unionRuntimeCoord = true;
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
@@ -172,7 +172,7 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/**/.*gbx9", "#ei.oper.an.pv/#yyyyMM", null, "directory", null, null);
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
@@ -187,7 +187,7 @@ public class TestGribIndexCreation {
     config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }

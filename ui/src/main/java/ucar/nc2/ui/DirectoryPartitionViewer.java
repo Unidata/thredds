@@ -1052,7 +1052,7 @@ public class DirectoryPartitionViewer extends JPanel {
             bean = new GroupsBean(g);
             groupsBeans.put(g.getId(), bean);
           }
-          bean.addGroup(g, ds.getType().toString(), partitionName);
+          bean.addGroup(g, ds.gctype.toString(), partitionName);
         }
       }
       groupsTable.setBeans(new ArrayList<>(groupsBeans.values()));

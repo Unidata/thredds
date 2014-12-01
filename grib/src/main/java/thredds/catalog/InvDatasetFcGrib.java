@@ -118,7 +118,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
-
     state = new StateGrib(null);
     finish();
   }
@@ -213,9 +212,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           // Collections.sort(groups);
           makeDatasetsFromGroups(twoD, groups, isSingleGroup);
         }
-      }
 
-      if (ds.getType() == GribCollectionImmutable.Type.Best) {
+      } else if (ds.getType() == GribCollectionImmutable.Type.Best) {
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
           Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
@@ -230,9 +228,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           // Collections.sort(groups);
           makeDatasetsFromGroups(best, groups, isSingleGroup);
         }
-      }
 
-      if (ds.getType() == GribCollectionImmutable.Type.GC) {
+      } else {
         tmi.setServiceName(Virtual_Services);
 
         CoordinateRuntime runCoord = fromGc.getMasterRuntime();
@@ -241,9 +238,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         String path = pathStart + "/" + GC_DATASET;
         result.setUrlPath(path);
 
+        if (ds.getType() == GribCollectionImmutable.Type.SRC) {
+          result.tm.addDocumentation("summary", "Single reference time Grib Collection");
+          result.tmi.addDocumentation("Reference Time", runtime.toString());
+        } else {
+          result.tm.addDocumentation("summary", "Multiple reference time Grib Collection");
+        }
+
         Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
-        result.tm.addDocumentation("summary", "Single reference time Grib Collection");
-        result.tmi.addDocumentation("Reference Time", runtime.toString());
         result.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
         result.tmi.setTimeCoverage(extractCalendarDateRange(groups));
 

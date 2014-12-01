@@ -42,12 +42,9 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import ucar.coord.*;
-import ucar.ma2.Section;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.util.Misc;
-import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -155,7 +152,7 @@ abstract class GribPartitionBuilder  {
     PartitionCollectionMutable.Partition canon = result.getPartition(idx);
     logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
-    try (GribCollectionMutable gc = canon.makeGribCollection(forceChildren)) {  // LOOK open/close
+    try (GribCollectionMutable gc = canon.makeGribCollection(forceChildren)) {  // LOOK open/close canonical partition
       // copy info from canon gribCollection to result partitionCollection
       result.copyInfo(gc);
       result.isPartitionOfPartitions = (gc instanceof PartitionCollectionMutable);
@@ -174,7 +171,8 @@ abstract class GribPartitionBuilder  {
     // this finishes the 2D stuff
     result.makeHorizCS();
 
-    makeDatasetBest(ds2D, errlog);
+    if (ds2D.gctype != GribCollectionImmutable.Type.TP)
+      makeDatasetBest(ds2D, errlog);
 
     // ready to write the index file
     writeIndex(result, errlog);
@@ -217,12 +215,14 @@ abstract class GribPartitionBuilder  {
     int npart = result.getPartitionSize();
 
     // make a list of unique groups across all partitions as well as component groups for each group
-    List<CoordinateRuntime> masterRuntimes = new ArrayList<>();  // exactly one per partition
+    List<CoordinateRuntime> masterRuntimes = new ArrayList<>();
     Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);  // gdsHash, GroupPartition
     CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2(null); // ok to use Builder2 for both grib1 and grib2 because not extracting
+
     int countPartition = 0;
+    boolean allAre1D = true;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
-      try (GribCollectionMutable gc = tpp.makeGribCollection(forceChildren)) {  // LOOK open/close could leave open ? they are NOT in cache
+      try (GribCollectionMutable gc = tpp.makeGribCollection(forceChildren)) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
         if (gc == null) {                                                       // note its not recursive, maybe leave open, or cache
           tpp.setBad(true);                                                     // actually we keep a pointer to the partition's group in the GroupPartitions
           logger.warn("Bad partition - skip "+tpp.getName());
@@ -230,10 +230,11 @@ abstract class GribPartitionBuilder  {
         }
 
         CoordinateRuntime partRuntime = gc.masterRuntime;
-        runtimeAllBuilder.addAll(partRuntime);  // also make a complete set of runtimes
-        masterRuntimes.add(partRuntime);
+        runtimeAllBuilder.addAll(partRuntime);  // make a complete set of runtime Coordinates
+        masterRuntimes.add(partRuntime);        // make master runtimes
 
         GribCollectionMutable.Dataset ds2dp = gc.getDatasetCanonical(); // the twoD or GC dataset
+        if (ds2dp.gctype == GribCollectionImmutable.Type.TwoD) allAre1D = false;
 
         int groupIdx = 0;
         for (GribCollectionMutable.GroupGC g : ds2dp.groups) { // for each group in the partition
@@ -249,6 +250,9 @@ abstract class GribPartitionBuilder  {
       countPartition++;
     } // loop over partition
 
+    if (allAre1D)
+      ds2D.gctype = GribCollectionImmutable.Type.TP;
+
     List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
     result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish(); // LOOK assumes that runtime = partition remains after sort ??
                                                                            // could work if partition sorted by runtime ?? partition sorted by name !
@@ -263,7 +267,7 @@ abstract class GribPartitionBuilder  {
       partIdx++;
     }
 
-     // do each group
+     // do each horiz group
     for (GroupPartitions gp : groupPartitions) {
       GribCollectionMutable.GroupGC resultGroup = gp.resultGroup;
       gp.makeVariableIndexPartitioned();
@@ -271,7 +275,7 @@ abstract class GribPartitionBuilder  {
       String gname = resultGroup.getId();
       String gdesc = resultGroup.getDescription();
 
-      // for each partition
+      // for each partition in this gorup
       for (int partno = 0; partno < npart; partno++) {
         GribCollectionMutable.GroupGC group = gp.componentGroups[partno];
         if (group == null) {  // missing group in this partition
@@ -346,13 +350,7 @@ abstract class GribPartitionBuilder  {
       for (GribCollectionMutable.VariableIndex viResult : resultGroup.variList) {
         // redo the variables against the shared coordinates
         viResult.coordIndex = sharify.reindex2shared(viResult.coords); // ok
-        viResult.coords = null; // dont use anymore
-
-        /* figure out missing data for each variable in the twoD time array
-        if (result.isPartitionOfPartitions) {
-          viResult.twot = null;
-        } else
-          makeMissing(gp, viResult); // PofGC only  */
+        viResult.coords = null; // dont use anymore, now use coordIndex into group coordinates
       }
 
     } // loop over groups
@@ -655,7 +653,7 @@ abstract class GribPartitionBuilder  {
   private GribCollectionProto.Dataset writeDatasetProto(PartitionCollectionMutable pc, PartitionCollectionMutable.Dataset ds) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
-    GribCollectionProto.Dataset.Type type = GribCollectionProto.Dataset.Type.valueOf(ds.type.toString());
+    GribCollectionProto.Dataset.Type type = GribCollectionProto.Dataset.Type.valueOf(ds.gctype.toString());
     b.setType(type);
 
     for (GribCollectionMutable.GroupGC group : ds.groups)

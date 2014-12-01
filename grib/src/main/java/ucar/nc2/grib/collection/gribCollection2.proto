@@ -36,9 +36,6 @@ message Variable {
    optional uint32 nrecords = 9;
    optional uint32 missing = 10;
 
-   // repeated uint32 invCount = 15;      // for Coordinate TwoTimer, only 2D vars
-   // repeated uint32 time2runtime = 16;  // time index to runtime index, only 1D vars NOT USED
-
    repeated Parameter params = 20;    // not used yet
 
    extensions 100 to 199;
@@ -68,7 +65,6 @@ message Parameter {
 message Gds {
   optional bytes gds = 1;                        // raw gds
   optional sint32 gdsHash = 2 [default = 0];
-  // optional string nameOverride = 3;              // only when user overrides default name  NOT USED
   optional uint32 predefinedGridDefinition = 4;  // only grib1; instead of gds raw bytes
 }
 
@@ -77,7 +73,7 @@ message Group {
   repeated Variable variables = 2;    // list of variables
   repeated Coord coords = 3;          // list of coordinates
   repeated int32 fileno = 4;          // the component files that are in this group, key into gc.mfiles
-  required bool isTwod = 5;           // has 2 time dimensions  -- not used
+  required bool isTwod = 5;           // has 2 time dimensions  -- NOT USED
 
   repeated Parameter params = 20;      // not used yet
   extensions 100 to 199;
@@ -85,12 +81,15 @@ message Group {
 
 message Dataset {
   enum Type {
-    GC = 0;          // leaf collection
-    TwoD = 1;        // TimePartition 2D
-    Best = 2;        // TimePartition Best
-    Analysis = 3;    // not implemented yet
-    SRC = 4;         // single runtime collection
-    MRC = 5;         // multiple runtime collection
+    GC = 0;         // leaf collection
+    SRC = 4;        // single runtime collection
+    MRC = 5;        // multiple runtime collection
+    MRSTC = 6;      // multiple runtime single time collection
+
+    TP = 7;         // time partition collection 1D
+    TwoD = 1;       // time partition 2D
+    Best = 2;       // time partition Best
+    Analysis = 3;   // not implemented yet
   }
 
   required Type type = 1;
@@ -122,7 +121,7 @@ message GribCollection {
   optional int32 genProcessId = 12;
   optional int32 backProcessId = 13;
 
-  repeated Parameter params = 20;      // not used yet
+  repeated Parameter params = 20;      // not used
   optional FcConfig config = 21;
 
   extensions 100 to 199;

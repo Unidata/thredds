@@ -7182,7 +7182,7 @@ public final class GribCollectionProto {
      * <code>optional uint32 predefinedGridDefinition = 4;</code>
      *
      * <pre>
-     * optional string nameOverride = 3;              // only when user overrides default name  NOT USED
+     * only grib1; instead of gds raw bytes
      * </pre>
      */
     boolean hasPredefinedGridDefinition();
@@ -7190,7 +7190,7 @@ public final class GribCollectionProto {
      * <code>optional uint32 predefinedGridDefinition = 4;</code>
      *
      * <pre>
-     * optional string nameOverride = 3;              // only when user overrides default name  NOT USED
+     * only grib1; instead of gds raw bytes
      * </pre>
      */
     int getPredefinedGridDefinition();
@@ -7348,7 +7348,7 @@ public final class GribCollectionProto {
      * <code>optional uint32 predefinedGridDefinition = 4;</code>
      *
      * <pre>
-     * optional string nameOverride = 3;              // only when user overrides default name  NOT USED
+     * only grib1; instead of gds raw bytes
      * </pre>
      */
     public boolean hasPredefinedGridDefinition() {
@@ -7358,7 +7358,7 @@ public final class GribCollectionProto {
      * <code>optional uint32 predefinedGridDefinition = 4;</code>
      *
      * <pre>
-     * optional string nameOverride = 3;              // only when user overrides default name  NOT USED
+     * only grib1; instead of gds raw bytes
      * </pre>
      */
     public int getPredefinedGridDefinition() {
@@ -7717,7 +7717,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 predefinedGridDefinition = 4;</code>
        *
        * <pre>
-       * optional string nameOverride = 3;              // only when user overrides default name  NOT USED
+       * only grib1; instead of gds raw bytes
        * </pre>
        */
       public boolean hasPredefinedGridDefinition() {
@@ -7727,7 +7727,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 predefinedGridDefinition = 4;</code>
        *
        * <pre>
-       * optional string nameOverride = 3;              // only when user overrides default name  NOT USED
+       * only grib1; instead of gds raw bytes
        * </pre>
        */
       public int getPredefinedGridDefinition() {
@@ -7737,7 +7737,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 predefinedGridDefinition = 4;</code>
        *
        * <pre>
-       * optional string nameOverride = 3;              // only when user overrides default name  NOT USED
+       * only grib1; instead of gds raw bytes
        * </pre>
        */
       public Builder setPredefinedGridDefinition(int value) {
@@ -7750,7 +7750,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 predefinedGridDefinition = 4;</code>
        *
        * <pre>
-       * optional string nameOverride = 3;              // only when user overrides default name  NOT USED
+       * only grib1; instead of gds raw bytes
        * </pre>
        */
       public Builder clearPredefinedGridDefinition() {
@@ -7914,7 +7914,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions  -- not used
+     * has 2 time dimensions  -- NOT USED
      * </pre>
      */
     boolean hasIsTwod();
@@ -7922,7 +7922,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions  -- not used
+     * has 2 time dimensions  -- NOT USED
      * </pre>
      */
     boolean getIsTwod();
@@ -8308,7 +8308,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions  -- not used
+     * has 2 time dimensions  -- NOT USED
      * </pre>
      */
     public boolean hasIsTwod() {
@@ -8318,7 +8318,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions  -- not used
+     * has 2 time dimensions  -- NOT USED
      * </pre>
      */
     public boolean getIsTwod() {
@@ -9644,7 +9644,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions  -- not used
+       * has 2 time dimensions  -- NOT USED
        * </pre>
        */
       public boolean hasIsTwod() {
@@ -9654,7 +9654,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions  -- not used
+       * has 2 time dimensions  -- NOT USED
        * </pre>
        */
       public boolean getIsTwod() {
@@ -9664,7 +9664,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions  -- not used
+       * has 2 time dimensions  -- NOT USED
        * </pre>
        */
       public Builder setIsTwod(boolean value) {
@@ -9677,7 +9677,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions  -- not used
+       * has 2 time dimensions  -- NOT USED
        * </pre>
        */
       public Builder clearIsTwod() {
@@ -10174,37 +10174,13 @@ public final class GribCollectionProto {
        */
       GC(0, 0),
       /**
-       * <code>TwoD = 1;</code>
-       *
-       * <pre>
-       * TimePartition 2D
-       * </pre>
-       */
-      TwoD(1, 1),
-      /**
-       * <code>Best = 2;</code>
-       *
-       * <pre>
-       * TimePartition Best
-       * </pre>
-       */
-      Best(2, 2),
-      /**
-       * <code>Analysis = 3;</code>
-       *
-       * <pre>
-       * not implemented yet
-       * </pre>
-       */
-      Analysis(3, 3),
-      /**
        * <code>SRC = 4;</code>
        *
        * <pre>
        * single runtime collection
        * </pre>
        */
-      SRC(4, 4),
+      SRC(1, 4),
       /**
        * <code>MRC = 5;</code>
        *
@@ -10212,7 +10188,47 @@ public final class GribCollectionProto {
        * multiple runtime collection
        * </pre>
        */
-      MRC(5, 5),
+      MRC(2, 5),
+      /**
+       * <code>MRSTC = 6;</code>
+       *
+       * <pre>
+       * multiple runtime single time collection
+       * </pre>
+       */
+      MRSTC(3, 6),
+      /**
+       * <code>TP = 7;</code>
+       *
+       * <pre>
+       * time partition collection 1D
+       * </pre>
+       */
+      TP(4, 7),
+      /**
+       * <code>TwoD = 1;</code>
+       *
+       * <pre>
+       * time partition 2D
+       * </pre>
+       */
+      TwoD(5, 1),
+      /**
+       * <code>Best = 2;</code>
+       *
+       * <pre>
+       * time partition Best
+       * </pre>
+       */
+      Best(6, 2),
+      /**
+       * <code>Analysis = 3;</code>
+       *
+       * <pre>
+       * not implemented yet
+       * </pre>
+       */
+      Analysis(7, 3),
       ;
 
       /**
@@ -10223,30 +10239,6 @@ public final class GribCollectionProto {
        * </pre>
        */
       public static final int GC_VALUE = 0;
-      /**
-       * <code>TwoD = 1;</code>
-       *
-       * <pre>
-       * TimePartition 2D
-       * </pre>
-       */
-      public static final int TwoD_VALUE = 1;
-      /**
-       * <code>Best = 2;</code>
-       *
-       * <pre>
-       * TimePartition Best
-       * </pre>
-       */
-      public static final int Best_VALUE = 2;
-      /**
-       * <code>Analysis = 3;</code>
-       *
-       * <pre>
-       * not implemented yet
-       * </pre>
-       */
-      public static final int Analysis_VALUE = 3;
       /**
        * <code>SRC = 4;</code>
        *
@@ -10263,6 +10255,46 @@ public final class GribCollectionProto {
        * </pre>
        */
       public static final int MRC_VALUE = 5;
+      /**
+       * <code>MRSTC = 6;</code>
+       *
+       * <pre>
+       * multiple runtime single time collection
+       * </pre>
+       */
+      public static final int MRSTC_VALUE = 6;
+      /**
+       * <code>TP = 7;</code>
+       *
+       * <pre>
+       * time partition collection 1D
+       * </pre>
+       */
+      public static final int TP_VALUE = 7;
+      /**
+       * <code>TwoD = 1;</code>
+       *
+       * <pre>
+       * time partition 2D
+       * </pre>
+       */
+      public static final int TwoD_VALUE = 1;
+      /**
+       * <code>Best = 2;</code>
+       *
+       * <pre>
+       * time partition Best
+       * </pre>
+       */
+      public static final int Best_VALUE = 2;
+      /**
+       * <code>Analysis = 3;</code>
+       *
+       * <pre>
+       * not implemented yet
+       * </pre>
+       */
+      public static final int Analysis_VALUE = 3;
 
 
       public final int getNumber() { return value; }
@@ -10270,11 +10302,13 @@ public final class GribCollectionProto {
       public static Type valueOf(int value) {
         switch (value) {
           case 0: return GC;
+          case 4: return SRC;
+          case 5: return MRC;
+          case 6: return MRSTC;
+          case 7: return TP;
           case 1: return TwoD;
           case 2: return Best;
           case 3: return Analysis;
-          case 4: return SRC;
-          case 5: return MRC;
           default: return null;
         }
       }
@@ -19947,35 +19981,36 @@ public final class GribCollectionProto {
       "up\022\020\n\010gdsIndex\030\001 \002(\r\022\034\n\tvariables\030\002 \003(\0132",
       "\t.Variable\022\026\n\006coords\030\003 \003(\0132\006.Coord\022\016\n\006fi" +
       "leno\030\004 \003(\005\022\016\n\006isTwod\030\005 \002(\010\022\032\n\006params\030\024 \003" +
-      "(\0132\n.Parameter*\005\010d\020\310\001\"\202\001\n\007Dataset\022\033\n\004typ" +
+      "(\0132\n.Parameter*\005\010d\020\310\001\"\225\001\n\007Dataset\022\033\n\004typ" +
       "e\030\001 \002(\0162\r.Dataset.Type\022\026\n\006groups\030\002 \003(\0132\006" +
-      ".Group\"B\n\004Type\022\006\n\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n\004Best" +
-      "\020\002\022\014\n\010Analysis\020\003\022\007\n\003SRC\020\004\022\007\n\003MRC\020\005\"Q\n\005MF" +
-      "ile\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 " +
-      "\002(\004\022\r\n\005index\030\003 \002(\r\022\021\n\006length\030\004 \001(\004:\0010\"\330\002" +
-      "\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topDir" +
-      "\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007datase",
-      "t\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\r" +
-      "masterRuntime\030\006 \002(\0132\006.Coord\022\016\n\006center\030\007 " +
-      "\002(\005\022\021\n\tsubcenter\030\010 \002(\005\022\016\n\006master\030\t \002(\005\022\r" +
-      "\n\005local\030\n \002(\005\022\026\n\016genProcessType\030\013 \001(\005\022\024\n" +
-      "\014genProcessId\030\014 \001(\005\022\025\n\rbackProcessId\030\r \001" +
-      "(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter\022\031\n\006config" +
-      "\030\025 \001(\0132\t.FcConfig*\005\010d\020\310\001\"(\n\tStringMap\022\014\n" +
-      "\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(\t\"\"\n\006IntMap\022\014\n\004" +
-      "from\030\001 \002(\021\022\n\n\002to\030\002 \002(\021\"F\n\nIntvFilter\022\022\n\n" +
-      "intvLength\030\001 \002(\021\022\022\n\nvariableId\030\002 \002(\r\022\020\n\010",
-      "intvProb\030\003 \001(\021\"\355\002\n\010FcConfig\022\014\n\004name\030\001 \002(" +
-      "\t\022\026\n\016collectionSpec\030\002 \002(\t\022\025\n\rpartitionTy" +
-      "pe\030\003 \002(\t\022\026\n\016dateFormatMark\030\004 \001(\t\022\033\n\ngdsC" +
-      "onvert\030\013 \003(\0132\007.IntMap\022\034\n\rpdsUseGenType\030\014" +
-      " \001(\010:\005false\022 \n\022pdsUseTableVersion\030\r \001(\010:" +
-      "\004true\022\032\n\014pdsIntvMerge\030\016 \001(\010:\004true\022\032\n\014pds" +
-      "UseCenter\030\017 \001(\010:\004true\022\036\n\017intvExcludeZero" +
-      "\030\020 \001(\010:\005false\022\037\n\nintvFilter\030\021 \003(\0132\013.Intv" +
-      "Filter\022 \n\017timeUnitConvert\030\022 \003(\0132\007.IntMap" +
-      "\022\024\n\014userTimeUnit\030\023 \001(\tB/\n\030ucar.nc2.grib.",
-      "collectionB\023GribCollectionProto"
+      ".Group\"U\n\004Type\022\006\n\002GC\020\000\022\007\n\003SRC\020\004\022\007\n\003MRC\020\005" +
+      "\022\t\n\005MRSTC\020\006\022\006\n\002TP\020\007\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022" +
+      "\014\n\010Analysis\020\003\"Q\n\005MFile\022\020\n\010filename\030\001 \002(\t" +
+      "\022\024\n\014lastModified\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\022\021\n" +
+      "\006length\030\004 \001(\004:\0010\"\330\002\n\016GribCollection\022\014\n\004n" +
+      "ame\030\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(",
+      "\0132\006.MFile\022\031\n\007dataset\030\004 \003(\0132\010.Dataset\022\021\n\003" +
+      "gds\030\005 \003(\0132\004.Gds\022\035\n\rmasterRuntime\030\006 \002(\0132\006" +
+      ".Coord\022\016\n\006center\030\007 \002(\005\022\021\n\tsubcenter\030\010 \002(" +
+      "\005\022\016\n\006master\030\t \002(\005\022\r\n\005local\030\n \002(\005\022\026\n\016genP" +
+      "rocessType\030\013 \001(\005\022\024\n\014genProcessId\030\014 \001(\005\022\025" +
+      "\n\rbackProcessId\030\r \001(\005\022\032\n\006params\030\024 \003(\0132\n." +
+      "Parameter\022\031\n\006config\030\025 \001(\0132\t.FcConfig*\005\010d" +
+      "\020\310\001\"(\n\tStringMap\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030" +
+      "\002 \002(\t\"\"\n\006IntMap\022\014\n\004from\030\001 \002(\021\022\n\n\002to\030\002 \002(" +
+      "\021\"F\n\nIntvFilter\022\022\n\nintvLength\030\001 \002(\021\022\022\n\nv",
+      "ariableId\030\002 \002(\r\022\020\n\010intvProb\030\003 \001(\021\"\355\002\n\010Fc" +
+      "Config\022\014\n\004name\030\001 \002(\t\022\026\n\016collectionSpec\030\002" +
+      " \002(\t\022\025\n\rpartitionType\030\003 \002(\t\022\026\n\016dateForma" +
+      "tMark\030\004 \001(\t\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap" +
+      "\022\034\n\rpdsUseGenType\030\014 \001(\010:\005false\022 \n\022pdsUse" +
+      "TableVersion\030\r \001(\010:\004true\022\032\n\014pdsIntvMerge" +
+      "\030\016 \001(\010:\004true\022\032\n\014pdsUseCenter\030\017 \001(\010:\004true" +
+      "\022\036\n\017intvExcludeZero\030\020 \001(\010:\005false\022\037\n\nintv" +
+      "Filter\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitCon" +
+      "vert\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(",
+      "\tB/\n\030ucar.nc2.grib.collectionB\023GribColle" +
+      "ctionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

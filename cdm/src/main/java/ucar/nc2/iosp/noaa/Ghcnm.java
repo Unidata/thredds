@@ -1113,52 +1113,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////////
-  // debug
-
-  static private NetcdfFile open(String filename) throws IOException {
-    Ghcnm iosp = new Ghcnm();
-    RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, filename);
-    iosp.open(raf, ncfile, null);
-    return ncfile;
-  }
-
-  static private void stnDuplicates(String filename, Set<Integer> stns, boolean wantDups) throws IOException {
-    System.out.printf("%s%n", filename);
-    int count = 0;
-    int countDups = 0;
-    NetcdfFile ncfile = open(filename);
-    Sequence seq = (Sequence) ncfile.findVariable(STNS);
-    StructureDataIterator iter = seq.getStructureIterator(-1);
-    try {
-      while (iter.hasNext()) {
-        count++;
-        StructureData sdata = iter.next();
-        StructureMembers.Member m = sdata.findMember(STNID);
-        int stnid = sdata.getScalarInt(m);
-        if (stns.contains(stnid)) {
-          countDups++;
-          if (!wantDups) System.out.printf("  dup %d%n", stnid);
-        } else {
-          stns.add(stnid);
-          if (wantDups) System.out.printf("  dup %d%n", stnid);
-        }
-      }
-    } finally {
-      iter.finish();
-    }
-    System.out.printf(" counts=%d dups=%d%n", count, countDups);
-  }
-
-
-  static public void main2(String args[]) throws IOException {
-    Set<Integer> stns = new HashSet<Integer>(10 * 1000);
-    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv", stns, false);
-    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qca.inv", stns, true);
-    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.inv", stns, true);
-  }
-
   ////////////////////////////////////
 
   static private int parseLine(String line) throws IOException {
@@ -1228,6 +1182,54 @@ public class Ghcnm extends AbstractIOServiceProvider {
     readData("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");
     readDataRegexp("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");
   }
+
+      /////////////////////////////////////////////////////////////////////////////////
+  // debug
+
+  static private NetcdfFile open(String filename) throws IOException {
+    Ghcnm iosp = new Ghcnm();
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, filename);
+    iosp.open(raf, ncfile, null);
+    return ncfile;
+  }
+
+  static private void stnDuplicates(String filename, Set<Integer> stns, boolean wantDups) throws IOException {
+    System.out.printf("%s%n", filename);
+    int count = 0;
+    int countDups = 0;
+    NetcdfFile ncfile = open(filename);
+    Sequence seq = (Sequence) ncfile.findVariable(STNS);
+    StructureDataIterator iter = seq.getStructureIterator(-1);
+    try {
+      while (iter.hasNext()) {
+        count++;
+        StructureData sdata = iter.next();
+        StructureMembers.Member m = sdata.findMember(STNID);
+        int stnid = sdata.getScalarInt(m);
+        if (stns.contains(stnid)) {
+          countDups++;
+          if (!wantDups) System.out.printf("  dup %d%n", stnid);
+        } else {
+          stns.add(stnid);
+          if (wantDups) System.out.printf("  dup %d%n", stnid);
+        }
+      }
+    } finally {
+      iter.finish();
+    }
+    System.out.printf(" counts=%d dups=%d%n", count, countDups);
+  }
+
+
+  static public void main2(String args[]) throws IOException {
+    Set<Integer> stns = new HashSet<Integer>(10 * 1000);
+    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv", stns, false);
+    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qca.inv", stns, true);
+    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.inv", stns, true);
+  }
+
+
 
 }
 

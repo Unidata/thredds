@@ -95,6 +95,11 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     }
 
     @Override
+    public List<Coordinate> getCoordinates() {
+      return coords;
+    }
+
+    @Override
     public Set<CalendarDate> getCoordinateRuntimes() {
       return runtimes;
     }

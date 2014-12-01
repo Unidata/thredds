@@ -193,7 +193,7 @@ public class GribCollectionMutable implements AutoCloseable {
 
   public GribCollectionMutable.Dataset getDatasetCanonical() {
     for (GribCollectionMutable.Dataset ds : datasets) {
-      if (ds.type != GribCollectionImmutable.Type.Best) return ds;
+      if (ds.gctype != GribCollectionImmutable.Type.Best) return ds;
     }
     throw new IllegalStateException("GC.getDatasetCanonical failed on=" + name);
   }
@@ -301,16 +301,16 @@ public class GribCollectionMutable implements AutoCloseable {
   }
 
   public class Dataset {
-    final GribCollectionImmutable.Type type;
+    public GribCollectionImmutable.Type gctype;
     List<GroupGC> groups;  // must be kept in order, because PartitionForVariable2D has index into it
 
     public Dataset(GribCollectionImmutable.Type type) {
-      this.type = type;
+      this.gctype = type;
       groups = new ArrayList<>();
     }
 
     Dataset(Dataset from) {
-      this.type = from.type;
+      this.gctype = from.gctype;
       groups = new ArrayList<>(from.groups.size());
     }
 
@@ -318,10 +318,6 @@ public class GribCollectionMutable implements AutoCloseable {
       GroupGC g = new GroupGC(from);
       groups.add(g);
       return g;
-    }
-
-    public GribCollectionImmutable.Type getType() {
-      return type;
     }
 
     public List<GroupGC> getGroups() {
@@ -748,7 +744,7 @@ public class GribCollectionMutable implements AutoCloseable {
     //f.format("%n");
 
     for (Dataset ds : datasets) {
-      f.format("Dataset %s%n", ds.type);
+      f.format("Dataset %s%n", ds.gctype);
       for (GroupGC g : ds.groups) {
         f.format(" Group %s%n", g.horizCoordSys.getId());
         for (VariableIndex v : g.variList) {
