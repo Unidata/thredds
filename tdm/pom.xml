@@ -120,7 +120,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>tdm-4.5</finalName>
+              <finalName>tdm-4.6</finalName>
 
               <artifactSet>
                 <excludes>

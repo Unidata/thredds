@@ -256,7 +256,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     secs = ThreddsConfig.getSeconds("RandomAccessFile.scour", 11 * 60);
     if (max > 0) {
       RandomAccessFile.setGlobalFileCache( new FileCache(min, max, secs));
-      startupLog.info("CdmInit: TimePartition.initPartitionCache= ["+min+","+max+"] scour = "+secs);
+      startupLog.info("CdmInit: RandomAccessFile.initPartitionCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // NetcdfFileCache : default is allow 500 - 750 open files, cleanup every 12 minutes
@@ -265,7 +265,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 12 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
-      startupLog.info("CdmInit  private boolean isNetcdf4Available = false;: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
+      startupLog.info("NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // GribCollection partitions: default is allow 500 - 750 open files, cleanup every 13 minutes
@@ -274,7 +274,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     secs = ThreddsConfig.getSeconds("TimePartition.scour", 13 * 60);
     if (max > 0) {
       GribCdmIndex.initDefaultCollectionCache(min, max, secs);
-      startupLog.info("CdmInit: TimePartition.initPartitionCache= ["+min+","+max+"] scour = "+secs);
+      startupLog.info("CdmInit: GribCdmIndex.initDefaultCollectionCache= ["+min+","+max+"] scour = "+secs);
     }
 
     startupLog.info("CdmInit complete");

@@ -460,35 +460,6 @@ message Coord {
     result.nrecords = pv.getNrecords();
     result.nmissing = pv.getMissing();
 
-    Coordinate runtime = result.getCoordinate(Coordinate.Type.runtime);
-    Coordinate time = result.getCoordinate(Coordinate.Type.time);
-    if (time == null) time = result.getCoordinate(Coordinate.Type.timeIntv);
-    int ntimes;
-    if (time == null) {
-      time = result.getCoordinate(Coordinate.Type.time2D);
-      ntimes = ((CoordinateTime2D) time).getNtimes();
-    } else {
-      ntimes = time.getSize();
-    }
-
-
-    /* 2d only  this is the big memory hog - but not needed except when building or for debug. can we make optional ??
-    if (!dataOnly) {   // probably dont need this anymore, since we have moved to using GribCollectionImmutable
-      List<Integer> invCountList = pv.getInvCountList();
-      if (invCountList.size() > 0) {
-        result.twot = new TwoDTimeInventory(invCountList, runtime.getSize(), ntimes);
-      }
-    }
-
-    // 1d only
-    List<Integer> time2runList = pv.getTime2RuntimeList();
-    if (time2runList.size() > 0) {
-      int[] time2runtime = new int[time2runList.size()];
-      int count = 0;
-      for (int idx : time2runList) time2runtime[count++] = idx;
-      result.time2runtime = new SmartArrayInt(time2runtime);
-    } */
-
     return readVariableExtensions(group, pv, result);
   }
 }

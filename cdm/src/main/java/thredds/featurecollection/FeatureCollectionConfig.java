@@ -222,9 +222,7 @@ public class FeatureCollectionConfig {
     return new DateExtractorNone();
   }
 
-
-
-  // <update startup="nocheck" rescan="cron expr" trigger="allow" append="true"/>
+  // <update startup="nocheck" rescan="cron expr" trigger="allow" recheckAfter="15 min"/>
   static public class UpdateConfig {
     public String recheckAfter;       // used by non-GRIB FC
     public String rescan;

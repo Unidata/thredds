@@ -640,19 +640,6 @@ public class Grib2CollectionPanel extends JPanel {
       }
     }
 
-
-    f.format("%n%n");
-    for (Map.Entry<Integer, Set<Integer>> ent : fileMap.entrySet()) {
-      Gds2Bean gds = gdsMap.get(ent.getKey());
-      Set<Integer> files = ent.getValue();
-      Iterator<Integer> iter = files.iterator();
-      f.format("%nGDS %d == %s%n", ent.getKey(), gds);
-      while (iter.hasNext()) {
-        int fileno = iter.next();
-        f.format(" %3d = %s%n", fileno, fileList.get(fileno).getPath());
-      }
-    }
-
   }
 
   public void checkProblems(Formatter f) {

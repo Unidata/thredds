@@ -110,6 +110,19 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  public void testWwwCoastalAlaska() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("www_46", "test/www", FeatureCollectionType.GRIB2,
+ //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
+            "B:/idd/WWW/Coastal_Alaska/.*grib2",
+            null, null, "file", null, null);
+    config.gribConfig.addGdsHash("-804803647", "-804803709");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
   public void testGFSconus80() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("gfsConus80_46", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null, "file", null, null);

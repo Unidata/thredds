@@ -232,18 +232,28 @@ public class CoordinateSharer<T> {
   }
 
   // find indexes into unionCoords of a variable's coordinates
-  public List<Integer> reindex2shared(List<Coordinate> shared) {
+  public List<Integer> reindex2shared(List<Coordinate> prev) {
     List<Integer> result = new ArrayList<>();
 
-    for (Coordinate coord : shared) {
+    for (Coordinate coord : prev) {
+      Coordinate swapCoord = swap.get(coord);
+      if (swapCoord != null)  // time2D got swapped
+        coord = swapCoord;
+
       Integer idx = getIndexIntoShared(coord); // index into unionCoords
-      if (idx == null)
-          logger.error("CoordinateSharer cant find coordinate {}", coord);
-      else
+      if (idx == null) {
+        Formatter f = new Formatter();
+        showInfo(f);
+        f.format("%nprev:%n");
+        for (Coordinate c :  prev)
+          f.format(" %d == (%s) %s%n", c.hashCode(), c, c.getName());
+        System.out.printf("%s%n", f.toString());
+        logger.error("CoordinateSharer cant find coordinate "+ coord.getName(), new Throwable());
+      } else
         result.add(idx);
     }
 
-    // debug
+    /* debug
     for (Coordinate coord : shared) {
       switch (coord.getType()) {
         case time2D:
@@ -272,7 +282,7 @@ public class CoordinateSharer<T> {
 
           break;
       }
-    }  // end debug
+    }  // end debug  */
 
     return result;
   }
@@ -291,5 +301,24 @@ public class CoordinateSharer<T> {
       }
     }
     return coordMap.get(prev);
+  }
+
+  public void showInfo(Formatter sb) {
+    sb.format("unionCoords:%n");
+    for (Coordinate coord :  this.unionCoords)
+      sb.format(" %d == (%s) %s%n", coord.hashCode(), coord, coord.getName());
+
+    sb.format("%ncoordMap:%n");
+    for (Coordinate coord :  this.coordMap.keySet())
+      sb.format(" %d == (%s) %s%n", coord.hashCode(), coord, coord.getName());
+
+    sb.format("%ntime2DBuilders:%n");
+    for (Coordinate coord :  this.time2DBuilders)
+      sb.format(" %d == (%s) %s%n", coord.hashCode(), coord, coord.getName());
+
+    sb.format("%nswap:%n");
+    for (Map.Entry<Coordinate, Coordinate> entry :  this.swap.entrySet())
+      sb.format(" %d (%s) %s -> %d (%s) %s%n", entry.getKey().hashCode(), entry.getKey(), entry.getKey().getName(),
+              entry.getValue().hashCode(), entry.getValue(), entry.getValue().getName());
   }
 }

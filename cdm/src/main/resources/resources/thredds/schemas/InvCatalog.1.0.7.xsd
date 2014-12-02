@@ -499,8 +499,8 @@
               </xsd:complexType>
             </xsd:element>
           </xsd:choice>
-          <xsd:attribute name="orderBy" type="xsd:string" use="required"/>
-          <xsd:attribute name="increasing" type="xsd:boolean" use="required"/>
+          <xsd:attribute name="orderBy" type="xsd:string" use="optional"/>
+          <xsd:attribute name="increasing" type="xsd:boolean" use="optional"/>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>

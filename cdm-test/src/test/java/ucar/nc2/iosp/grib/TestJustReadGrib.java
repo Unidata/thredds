@@ -88,6 +88,7 @@ public class TestJustReadGrib  {
       if (path.endsWith(".gbx9")) return false;
       if (path.endsWith(".ncx")) return false;
       if (path.endsWith(".ncx2")) return false;
+      if (path.endsWith(".ncx3")) return false;
       try {
         System.out.printf("opening %s%n", file.getCanonicalPath());
       } catch (IOException e) {
