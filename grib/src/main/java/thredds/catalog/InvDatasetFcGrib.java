@@ -37,6 +37,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import ucar.coord.CoordinateRuntime;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
@@ -77,7 +78,6 @@ import java.util.*;
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final String COLLECTION = "collection";
 
-  static private final String GC_DATASET = GribCollectionImmutable.Type.GC.toString();
   static private final String BEST_DATASET = GribCollectionImmutable.Type.Best.toString();
   static private final String TWOD_DATASET = GribCollectionImmutable.Type.TwoD.toString();
 
@@ -190,7 +190,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     tmi.addVariableMapLink(makeMetadataLink(tpath, VARIABLES));
     tmi.setServiceName(Virtual_Services);
 
-    String pathStart = parentName == null ? getPath() :  getPath() + "/"+parentName;
+    String pathStart = parentName == null ? getPath() :  getPath()+"/"+parentName;
 
     for (GribCollectionImmutable.Dataset ds : fromGc.getDatasets()) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
@@ -235,8 +235,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         CoordinateRuntime runCoord = fromGc.getMasterRuntime();
         assert runCoord.getSize() == 1;
         CalendarDate runtime = runCoord.getFirstDate();
-        String path = pathStart + "/" + GC_DATASET;
-        result.setUrlPath(path);
+        result.setUrlPath(pathStart);
 
         if (ds.getType() == GribCollectionImmutable.Type.SRC) {
           result.tm.addDocumentation("summary", "Single reference time Grib Collection");
@@ -246,7 +245,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
 
         Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
-        result.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+        result.tmi.addVariableMapLink(makeMetadataLink(pathStart, VARIABLES));
         result.tmi.setTimeCoverage(extractCalendarDateRange(groups));
 
         makeDatasetsFromGroups(result, groups, isSingleGroup);
@@ -410,7 +409,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
 
     } catch (Exception e) {
-      logger.error("Error making catalog for " + path, e);
+      logger.error("Error making catalog for " + configPath, e);
     }
 
     return null;
@@ -562,7 +561,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public File getFile(String remaining) {
-    if (null == topDirectory) return null;
+    return null;
+  }
+
+  // LOOK
+  /*  if (null == topDirectory) return null;
 
     StateGrib localState = (StateGrib) checkState();
 
@@ -592,50 +595,135 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       logger.error("Failed to get file="+ remaining, e);
       return null;
     }
-  }
+  }  */
 
 
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
     StateGrib localState = (StateGrib) checkState();
 
-    DatasetParse dp = parse(matchPath, localState);
-    if (dp == null) return null;
-
-    if (dp.filename != null) {  // case 7
-      File want = new File(topDirectory, dp.filename);
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, config.gribConfig.getIospMessage());
-      return new ucar.nc2.dt.grid.GridDataset(ncd);
-    }
-
-    if (dp.partition != null) {   // specific time partition
-      try (GribCollectionImmutable gc =  dp.partition.getGribCollection()) {
-        return gc.getGridDataset(dp.ds, dp.group, dp.filename, config, null, logger);
+    return (ucar.nc2.dt.grid.GridDataset) findDataset(matchPath, localState.gribCollection, new Visitor() {
+      @Override
+      public Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException {
+        return gc.getGridDataset(ds, group, null, config, null, logger);
       }
-    }
-
-    return localState.gribCollection.getGridDataset(dp.ds, dp.group, dp.filename, config, null, logger);
+    });
   }
 
   @Override
   public NetcdfDataset getNetcdfDataset(String matchPath) throws IOException {
     StateGrib localState = (StateGrib) checkState();
 
-    DatasetParse dp = parse(matchPath, localState);
-    if (dp == null) return null;
+    return (NetcdfDataset) findDataset(matchPath, localState.gribCollection, new Visitor() {
+      @Override
+      public Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException {
+        return gc.getNetcdfDataset(ds, group, null, config, null, logger);
+      }
+    });
+  }
 
-    if (dp.filename != null) {  // case 7
-      File want = new File(topDirectory, dp.filename);
-      return NetcdfDataset.acquireDataset(null, want.getPath(), null, -1, null, config.gribConfig.getIospMessage());
+    /* possible forms of dataset path:
+    [partition/][partition/]dataset[/group]
+    dataset = BEST | TWOD | filename
+    if group is missing, use first one
+
+    regular, single group:
+      1. dataset (BEST, TWOD, filename)
+
+     regular, multiple group:
+      2. dataset/groupName
+
+     partition, single group:
+      3. partitionName/dataset
+      3. partitionName/../partitionName/dataset
+
+     partition, multiple group:
+      4. partitionName/dataset/groupName
+      4. partitionName/../partitionName/dataset/groupName
+  */
+
+  private Object findDataset(String matchPath, GribCollectionImmutable topCollection, Visitor visit) throws IOException {
+    if ((matchPath == null) || (matchPath.length() == 0)) return null;
+    String[] paths = matchPath.split("/");
+    if (paths.length < 1) return null;
+    List<String> pathList = Arrays.asList(paths);
+
+    DatasetAndGroup dg = findDatasetAndGroup(pathList, topCollection);
+    if (dg != null)
+      return visit.obtain(topCollection, dg.ds, dg.group);  //  case 1 and 2
+
+    if (paths.length < 2) return null;
+    if (!(topCollection instanceof PartitionCollectionImmutable)) return null;
+
+    PartitionCollectionImmutable pc = (PartitionCollectionImmutable) topCollection;
+    return recurseIntoPartition(visit, pc, pathList);    // case 3 and 4
+  }
+
+  private class DatasetAndGroup {
+    GribCollectionImmutable.Dataset ds;
+    GribCollectionImmutable.GroupGC group;
+
+    private DatasetAndGroup(GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) {
+      this.ds = ds;
+      this.group = group;
     }
+  }
 
-    if (dp.partition != null)  { // specific time partition
-      try (GribCollectionImmutable gc =  dp.partition.getGribCollection()) {
-        return gc.getNetcdfDataset(dp.ds, dp.group, dp.filename, config, null, logger);
+  private DatasetAndGroup findDatasetAndGroup(List<String> paths, GribCollectionImmutable gc)  {
+    if (paths.size() < 1) return null;
+
+    GribCollectionImmutable.Dataset ds = gc.getDatasetByTypeName(paths.get(0));
+    if (ds != null) {
+      boolean isSingleGroup = ds.getGroupsSize() == 1;
+      if (paths.size() == 1) {                               // case 1
+        if (!isSingleGroup) return null;
+        GribCollectionImmutable.GroupGC g = ds.getGroup(0);
+        return new DatasetAndGroup(ds, g);
+      }
+
+      if (paths.size() == 2) {                              // case 2
+        String groupName = paths.get(1);
+        GribCollectionImmutable.GroupGC g = ds.findGroupById(groupName);
+        if (g != null)
+          return new DatasetAndGroup(ds, g);
+        else
+          return null;
       }
     }
+    return null;
+  }
 
-    return localState.gribCollection.getNetcdfDataset(dp.ds, dp.group, dp.filename, config, null, logger);
+  private Object recurseIntoPartition(Visitor visit, PartitionCollectionImmutable outerPartition, List<String> pathList) throws IOException {
+    int n = pathList.size();
+    if (pathList.size() < 1) return null;
+    PartitionCollectionImmutable.Partition pcp = outerPartition.getPartitionByName(pathList.get(0));
+    if (pcp == null) {
+      DatasetAndGroup dg = findDatasetAndGroup(pathList, outerPartition);
+      if (dg != null)
+        return visit.obtain(outerPartition, dg.ds, dg.group);
+      else
+        return null;
+    }
+
+    try (GribCollectionImmutable gc =  pcp.getGribCollection()) {
+      if (gc instanceof PartitionCollectionImmutable) {
+        PartitionCollectionImmutable pcNested = (PartitionCollectionImmutable) gc;
+        return recurseIntoPartition(visit, pcNested, pathList.subList(1, n));
+      }
+
+      DatasetAndGroup dg = findDatasetAndGroup(pathList.subList(1, n), gc);
+      if (dg != null)
+        return visit.obtain(gc, dg.ds, dg.group);
+      else {
+        GribCollectionImmutable.Dataset ds = gc.getDataset(0);
+        GribCollectionImmutable.GroupGC group = ds.getGroup(0);
+        return visit.obtain(gc, ds, group);
+      }
+    }
+  }
+
+  private interface Visitor {
+    Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException;
   }
 
   /* possible forms of dataset path:
@@ -653,13 +741,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
      partition, multiple group:
       4. partitionName/dataset/groupName
       4. partitionName/../partitionName/dataset/groupName
-  */
+
   private DatasetParse parse(String matchPath, StateGrib localState) throws IOException {
     if ((matchPath == null) || (matchPath.length() == 0)) return null;
     String[] paths = matchPath.split("/");
     if (paths.length < 1) return null;
 
-    GribCollectionImmutable.Dataset ds = localState.gribCollection.getDataset(paths[0]);
+    GribCollectionImmutable.Dataset ds = localState.gribCollection.getDatasetByTypeName(paths[0]);
     if (ds != null) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
       if (paths.length == 1) {                               // case 1
@@ -694,12 +782,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (gc instanceof PartitionCollectionImmutable) {
         PartitionCollectionImmutable pcNested = (PartitionCollectionImmutable) gc;
         PartitionCollectionImmutable.Partition pcpNested = pcNested.getPartitionByName(paths[idx+1]);
-        if (pcpNested != null)  // recurse
-          return drill(pcNested, paths, idx+1);
+        if (pcpNested != null) { // recurse
+          DatasetParse dp = drill(pcNested, paths, idx+1);
+          if (dp != null) return dp;
+          else {
+            return DatasetParse(pcpNested, gc, ds, g)
+          }
+        }
       }
 
       String datasetName = paths[idx+1];
-      GribCollectionImmutable.Dataset ds = gc.getDataset(datasetName);
+      GribCollectionImmutable.Dataset ds = gc.getDatasetByTypeName(datasetName);
       if (ds == null) return null;                         // case 3        // case 4
       GribCollectionImmutable.GroupGC g = (paths.length <= idx+2) ? ds.getGroup(0) : ds.findGroupById(paths[idx+2]);
       if (g == null) return null;
@@ -708,7 +801,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   private static class DatasetParse {
-    final PartitionCollectionImmutable.Partition partition; // missing for collection level
+    final PartitionCollectionImmutable.Partition partition; // need to usee this to open the gribCollection
     final GribCollectionImmutable gc;
     final GribCollectionImmutable.Dataset ds;
     final GribCollectionImmutable.GroupGC group;
@@ -728,8 +821,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.ds = null;
       this.group = null;
       this.filename = filename;
-    }  */
+    }
 
-  }
+  }  */
 
 }

@@ -79,7 +79,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   @Override
   public void open( RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask ) throws IOException {
     this.raf = raf;
-    this.location = raf.getLocation();
+    this.location = (raf != null) ? raf.getLocation() : null;
     this.ncfile = ncfile;
   }
 

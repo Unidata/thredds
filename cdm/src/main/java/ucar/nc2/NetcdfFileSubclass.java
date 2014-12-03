@@ -60,6 +60,7 @@ public class NetcdfFileSubclass extends NetcdfFile {
 
   public NetcdfFileSubclass(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
     super(spi, raf, location, cancelTask);
+    if (raf == null) this.location = location;
   }
 
   public NetcdfFileSubclass(String iospClassName, Object iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)

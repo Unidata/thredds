@@ -57,8 +57,8 @@ import java.util.Formatter;
  * @since 10/13/2014
  */
 public class TestGribCollectionsBig {
-  // String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
-  String topdir =  "B:/rdavm";  // use for local windows to get around samba bug
+  String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
+  // String topdir =  "B:/rdavm";  // use for local windows to get around samba bug
 
   @BeforeClass
   static public void before() {

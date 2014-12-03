@@ -109,7 +109,7 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
   }
 
-  @Test
+  // @Test
   public void testWwwCoastalAlaska() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("www_46", "test/www", FeatureCollectionType.GRIB2,
  //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",

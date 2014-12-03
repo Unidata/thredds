@@ -63,7 +63,7 @@ public class Grib2Collection extends GribCollectionImmutable {
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
                            FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-    if (filename == null) {  // LOOK thread-safety : sharing this, raf
+    if (filename == null) {
       Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
       NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
       return new NetcdfDataset(ncfile);
@@ -86,7 +86,7 @@ public class Grib2Collection extends GribCollectionImmutable {
   public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
                FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-    if (filename == null) { // LOOK thread-safety : sharing this, raf
+    if (filename == null) {
       Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
       NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation()+"#"+group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);

@@ -95,7 +95,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   static private AtomicInteger debug_nseeks = new AtomicInteger();
   static private AtomicLong debug_nbytes = new AtomicLong();
 
-  static protected boolean showOpen = false;
+  static protected boolean showOpen = true;
   static protected boolean showRead = false;
 
   /**

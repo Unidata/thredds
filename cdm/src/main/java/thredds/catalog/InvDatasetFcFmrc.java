@@ -142,7 +142,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       }
 
     } catch (Exception e) {
-      logger.error("Error making catalog for " + path, e);
+      logger.error("Error making catalog for " + configPath, e);
     }
 
     return null;
@@ -250,7 +250,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       String name = getName() + "_" + RUN_NAME + runDate;
       name = StringUtil2.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
-      nested.setUrlPath(path + "/" + RUNS + "/" + name);
+      nested.setUrlPath(configPath + "/" + RUNS + "/" + name);
       nested.setID(id + "/" + RUNS + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data from Run " + name);
@@ -276,7 +276,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       String name = getName() + "_" + OFFSET_NAME + offset + "hr";
       name = StringUtil2.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
-      nested.setUrlPath(path + "/" + OFFSET + "/" + name);
+      nested.setUrlPath(configPath + "/" + OFFSET + "/" + name);
       nested.setID(id + "/" + OFFSET + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data from the " + offset + " hour forecasts, across different model runs.");
@@ -301,7 +301,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       String name = getName() + "_" + FORECAST_NAME + forecastDate;
       name = StringUtil2.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
-      nested.setUrlPath(path + "/" + FORECAST + "/" + name);
+      nested.setUrlPath(configPath + "/" + FORECAST + "/" + name);
       nested.setID(id + "/" + FORECAST + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data with the same forecast date, " + name + ", across different model runs.");
@@ -356,7 +356,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
        InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
        String name = getName() + "_" + FMRC;
        name = StringUtil2.replace(name, ' ', "_");
-       ds.setUrlPath(this.path + "/" + name);
+       ds.setUrlPath(this.configPath + "/" + name);
        ds.setID(id + "/" + name);
        ThreddsMetadata tm = ds.getLocalMetadata();
        tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
@@ -370,7 +370,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       InvDatasetImpl ds = new InvDatasetImpl(this, "Best Time Series");
       String name = getName() + "_" + BEST;
       name = StringUtil2.replace(name, ' ', "_");
-      ds.setUrlPath(this.path + "/" + name);
+      ds.setUrlPath(this.configPath + "/" + name);
       ds.setID(id + "/" + name);
       ThreddsMetadata tm = ds.getLocalMetadata();
       tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
@@ -384,7 +384,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         InvDatasetImpl ds = new InvDatasetImpl(this, bd.name);
         String name = getName() + "_" + bd.name;
         name = StringUtil2.replace(name, ' ', "_");
-        ds.setUrlPath(this.path + "/" + name);
+        ds.setUrlPath(this.configPath + "/" + name);
         ds.setID(id + "/" + name);
         ThreddsMetadata tm = ds.getLocalMetadata();
         tm.addDocumentation("summary", "Best time series, excluding offset hours less than "+bd.greaterThan);

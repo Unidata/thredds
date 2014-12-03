@@ -194,7 +194,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       }
 
     } catch (Exception e) {
-      logger.error("Error making catalog for " + path, e);
+      logger.error("Error making catalog for " + configPath, e);
     }
 
     return null;
@@ -220,7 +220,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       InvDatasetImpl ds = new InvDatasetImpl(this, "Feature Collection");
       String name = getName() + "_" + FC;
       name = StringUtil2.replace(name, ' ', "_");
-      ds.setUrlPath(this.path + "/" + name);
+      ds.setUrlPath(this.configPath + "/" + name);
       ds.setID(id + "/" + name);
       ThreddsMetadata tm = ds.getLocalMetadata();
       ds.getLocalMetadataInheritable().setServiceName(collectionService.getName());

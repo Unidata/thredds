@@ -172,7 +172,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected org.slf4j.Logger logger;
 
   // from the config catalog
-  protected final String path;
+  protected final String configPath;
   protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
   protected String topDirectory;
@@ -187,7 +187,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, buildCatalogServiceHref(path));
-    this.path = path;
+    this.configPath = path;
     this.fcType = fcType;
     this.config = config;
 
@@ -266,7 +266,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   protected String getCatalogHref(String what) {
-    return buildCatalogServiceHref(path + "/" + what);
+    return buildCatalogServiceHref(configPath + "/" + what);
   }
 
   // call this first time a request comes in
@@ -334,7 +334,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public String getPath() {
-    return path;
+    return configPath;
   }
 
   public String getLatestFileName() {
@@ -541,9 +541,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     String fname = mpath.substring(topDirectory.length() + 1);
 
     String path = FILES + "/" + fname;
-    top.setUrlPath(this.path + "/" + path);
-    top.setID(this.path + "/" + path);
-    top.tmi.addVariableMapLink(makeMetadataLink(this.path + "/" + path, VARIABLES));
+    top.setUrlPath(this.configPath + "/" + path);
+    top.setID(this.configPath + "/" + path);
+    top.tmi.addVariableMapLink(makeMetadataLink(this.configPath + "/" + path, VARIABLES));
     top.tm.setDataSize(mfile.getLength());
 
     result.finish();
