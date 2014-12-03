@@ -195,15 +195,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return load() != null;
   }
 
-  static {
-    System.setProperty("jna.debug_load", "true");
-    System.setProperty("jna.debug_load.jna", "true");
-  }
-
-  public static void main(String[] args) {
-    System.out.println("C library is present: " + isClibraryPresent());
-  }
-
   /**
    * Convert a zero-length string to null
    *
