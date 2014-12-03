@@ -590,10 +590,8 @@ abstract class GribPartitionBuilder  {
       int count = 0;
       for (PartitionCollectionMutable.Partition part : pc.partitions) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
-        Path partPath = new File(part.getDirectory(), part.getFilename()).toPath();
-        Path pathRelative = topDir.relativize(partPath);
-        String pathRS = StringUtil2.replace(pathRelative.toString(), '\\', "/");
-        b.setFilename(pathRS); // reletive to topDir
+        String pathRS = makeReletiveFilename(pc, part); // reletive to pc.directory
+        b.setFilename(pathRS);
         b.setLastModified(part.getLastModified());
         b.setLength(part.fileSize);
         b.setIndex(count++);
@@ -628,7 +626,7 @@ abstract class GribPartitionBuilder  {
 
       List<PartitionCollectionProto.Partition> partProtoList = new ArrayList<>();
       for (PartitionCollectionMutable.Partition part : pc.partitions)
-        partProtoList.add(writePartitionProto(part));
+        partProtoList.add(writePartitionProto(pc, part));
       indexBuilder.setExtension(PartitionCollectionProto.partitions, partProtoList);
       indexBuilder.setExtension(PartitionCollectionProto.isPartitionOfPartitions, pc.isPartitionOfPartitions);
 
@@ -641,6 +639,13 @@ abstract class GribPartitionBuilder  {
     }
 
     return true;
+  }
+
+  private String makeReletiveFilename(PartitionCollectionMutable pc, PartitionCollectionMutable.Partition part) {
+    Path topDir = pc.directory.toPath();
+    Path partPath = new File(part.getDirectory(), part.getFilename()).toPath();
+    Path pathRelative = topDir.relativize(partPath);
+    return StringUtil2.replace(pathRelative.toString(), '\\', "/");
   }
 
   /*
@@ -819,12 +824,12 @@ message Partition {
 }
   }
    */
-  private PartitionCollectionProto.Partition writePartitionProto(PartitionCollectionMutable.Partition p) throws IOException {
+  private PartitionCollectionProto.Partition writePartitionProto(PartitionCollectionMutable pc, PartitionCollectionMutable.Partition p) throws IOException {
     PartitionCollectionProto.Partition.Builder b = PartitionCollectionProto.Partition.newBuilder();
-
-    b.setFilename(p.filename);
+    String pathRS = makeReletiveFilename(pc, p); // reletive to pc.directory
+    b.setFilename(pathRS);
     b.setName(p.name);
-    b.setDirectory(p.directory);
+    // b.setDirectory(p.directory);
     b.setLastModified(p.lastModified);
     b.setLength(p.fileSize);
     if (p.partitionDate != null)

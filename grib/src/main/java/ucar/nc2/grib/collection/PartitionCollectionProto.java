@@ -1001,7 +1001,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     boolean hasFilename();
@@ -1009,7 +1009,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     java.lang.String getFilename();
@@ -1017,15 +1017,15 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     com.google.protobuf.ByteString
         getFilenameBytes();
 
-    // required string directory = 3;
+    // optional string directory = 3;
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1033,7 +1033,7 @@ public final class PartitionCollectionProto {
      */
     boolean hasDirectory();
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1041,7 +1041,7 @@ public final class PartitionCollectionProto {
      */
     java.lang.String getDirectory();
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1271,7 +1271,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     public boolean hasFilename() {
@@ -1281,7 +1281,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     public java.lang.String getFilename() {
@@ -1302,7 +1302,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -1319,11 +1319,11 @@ public final class PartitionCollectionProto {
       }
     }
 
-    // required string directory = 3;
+    // optional string directory = 3;
     public static final int DIRECTORY_FIELD_NUMBER = 3;
     private java.lang.Object directory_;
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1333,7 +1333,7 @@ public final class PartitionCollectionProto {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1354,7 +1354,7 @@ public final class PartitionCollectionProto {
       }
     }
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1448,10 +1448,6 @@ public final class PartitionCollectionProto {
         return false;
       }
       if (!hasFilename()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasDirectory()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -1746,10 +1742,6 @@ public final class PartitionCollectionProto {
           
           return false;
         }
-        if (!hasDirectory()) {
-          
-          return false;
-        }
         return true;
       }
 
@@ -1876,7 +1868,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public boolean hasFilename() {
@@ -1886,7 +1878,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public java.lang.String getFilename() {
@@ -1904,7 +1896,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -1924,7 +1916,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public Builder setFilename(
@@ -1941,7 +1933,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public Builder clearFilename() {
@@ -1954,7 +1946,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public Builder setFilenameBytes(
@@ -1968,10 +1960,10 @@ public final class PartitionCollectionProto {
         return this;
       }
 
-      // required string directory = 3;
+      // optional string directory = 3;
       private java.lang.Object directory_ = "";
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -1981,7 +1973,7 @@ public final class PartitionCollectionProto {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -1999,7 +1991,7 @@ public final class PartitionCollectionProto {
         }
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -2019,7 +2011,7 @@ public final class PartitionCollectionProto {
         }
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -2036,7 +2028,7 @@ public final class PartitionCollectionProto {
         return this;
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -2049,7 +2041,7 @@ public final class PartitionCollectionProto {
         return this;
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -2262,7 +2254,7 @@ public final class PartitionCollectionProto {
       "ag\030\003 \002(\r\022\016\n\006partno\030\004 \002(\r\022\r\n\005ndups\030\010 \001(\r\022" +
       "\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030\n \001(\r\"{\n\tPa" +
       "rtition\022\014\n\004name\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\022" +
-      "\021\n\tdirectory\030\003 \002(\t\022\024\n\014lastModified\030\004 \001(\004" +
+      "\021\n\tdirectory\030\003 \001(\t\022\024\n\014lastModified\030\004 \001(\004" +
       "\022\016\n\006length\030\005 \001(\003\022\025\n\rpartitionDate\030\006 \001(\003:" +
       "0\n\tpartition\022\t.Variable\030d \003(\0132\022.Partitio",
       "nVariable:/\n\npartitions\022\017.GribCollection" +

@@ -194,7 +194,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     // wrapper around a GribCollection
   @Immutable
   public class Partition implements Comparable<Partition> {
-      private final String name, partDirectory;
+      private final String name; // partDirectory;
       private final String filename;
       private final long lastModified, fileSize;
       private final CalendarDate partitionDate;
@@ -205,7 +205,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         this.filename = pcPart.filename; // grib collection ncx
         this.lastModified = pcPart.lastModified;
         this.fileSize = pcPart.fileSize;
-        this.partDirectory = pcPart.directory;
+        //this.partDirectory = pcPart.directory;
         this.partitionDate = pcPart.partitionDate;
       }
 
@@ -217,9 +217,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         return filename;
       }
 
-      public String getDirectory() {
+      /* public String getDirectory() {
         return partDirectory;
-      }
+      } */
 
       public long getLastModified() {
         return lastModified;
@@ -237,16 +237,16 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         return logger;          // in TimePartition
       }
 
-      private String getIndexFilenameInCache() throws FileNotFoundException {
-        File file = new File(partDirectory, filename);
+      public String getIndexFilenameInCache() throws FileNotFoundException {
+        File file = new File(directory, filename);
         File existingFile = GribIndex.getExistingFileOrCache(file.getPath());
 
-        if (existingFile == null) {
+        /* if (existingFile == null) {
           existingFile = new File(directory, filename); // try the Collection directory
           if (!existingFile.exists()) {
             throw new FileNotFoundException("No index filename for partition= " + this.toString());
           }
-        }
+        } */
 
         /* if (existingFile == null) {
           if (GribIosp.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
@@ -288,7 +288,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       @Override
       public String toString() {
         return "Partition{ " + name + '\'' +
-                ", directory='" + directory + '\'' +
+        //        ", directory='" + directory + '\'' +
                 ", filename='" + filename + '\'' +
                 ", partitionDate='" + partitionDate + '\'' +
                 ", lastModified='" + CalendarDate.of(lastModified) + '\'' +

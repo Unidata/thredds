@@ -203,7 +203,7 @@ public class FeatureCollectionConfig {
     // if update element was not specified, default is test
     if (!updateConfig.userDefined) {
       // if tdm is not working, default tds is to update on startup
-      updateConfig.updateType = CollectionUpdateType.test;
+      updateConfig.updateType = CollectionUpdateType.nocheck;
     }
 
     // startupType allows override on tdm command line

@@ -129,6 +129,7 @@ public class TestGribIndexCreation {
     //config.gribConfig.useTableVersion = false;
     //config.gribConfig.unionRuntimeCoord = true;
 
+    System.out.printf("===testGFSconus80 %n");
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);

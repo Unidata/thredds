@@ -250,32 +250,35 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     // Object caching
     int min, max, secs;
 
-    // RandomAccessFile: default is allow 500 - 750 open files, cleanup every 11 minutes
-    min = ThreddsConfig.getInt("RandomAccessFile.minFiles", 500);
-    max = ThreddsConfig.getInt("RandomAccessFile.maxFiles", 750);
+    // RandomAccessFile: default is allow 400 - 500 open files, cleanup every 11 minutes
+    min = ThreddsConfig.getInt("RandomAccessFile.minFiles", 400);
+    max = ThreddsConfig.getInt("RandomAccessFile.maxFiles", 500);
     secs = ThreddsConfig.getSeconds("RandomAccessFile.scour", 11 * 60);
     if (max > 0) {
       RandomAccessFile.setGlobalFileCache( new FileCache(min, max, secs));
       startupLog.info("CdmInit: RandomAccessFile.initPartitionCache= ["+min+","+max+"] scour = "+secs);
     }
 
-    // NetcdfFileCache : default is allow 500 - 750 open files, cleanup every 12 minutes
-    min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 500);
-    max = ThreddsConfig.getInt("NetcdfFileCache.maxFiles", 750);
+    // NetcdfFileCache : default is allow 100 - 150 open files, cleanup every 12 minutes
+    min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 100);
+    max = ThreddsConfig.getInt("NetcdfFileCache.maxFiles", 150);
     secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 12 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
       startupLog.info("NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
-    // GribCollection partitions: default is allow 500 - 750 open files, cleanup every 13 minutes
-    min = ThreddsConfig.getInt("TimePartition.minFiles", 500);
-    max = ThreddsConfig.getInt("TimePartition.maxFiles", 750);
+    // GribCollection partitions: default is allow 100 - 150 objects, cleanup every 13 minutes
+    min = ThreddsConfig.getInt("TimePartition.minFiles", 100);
+    max = ThreddsConfig.getInt("TimePartition.maxFiles", 150);
     secs = ThreddsConfig.getSeconds("TimePartition.scour", 13 * 60);
     if (max > 0) {
       GribCdmIndex.initDefaultCollectionCache(min, max, secs);
       startupLog.info("CdmInit: GribCdmIndex.initDefaultCollectionCache= ["+min+","+max+"] scour = "+secs);
     }
+
+    //RandomAccessFile.enableDefaultGlobalFileCache();
+    //RandomAccessFile.setDebugLeaks(true);
 
     startupLog.info("CdmInit complete");
   }

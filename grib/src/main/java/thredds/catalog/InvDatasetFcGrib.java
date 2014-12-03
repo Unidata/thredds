@@ -37,7 +37,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import ucar.coord.CoordinateRuntime;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
@@ -602,7 +601,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
     StateGrib localState = (StateGrib) checkState();
 
-    return (ucar.nc2.dt.grid.GridDataset) findDataset(matchPath, localState.gribCollection, new Visitor() {
+    return (ucar.nc2.dt.grid.GridDataset) findDataset(matchPath, localState.gribCollection, new DatasetCreator() {
       @Override
       public Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException {
         return gc.getGridDataset(ds, group, null, config, null, logger);
@@ -614,7 +613,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   public NetcdfDataset getNetcdfDataset(String matchPath) throws IOException {
     StateGrib localState = (StateGrib) checkState();
 
-    return (NetcdfDataset) findDataset(matchPath, localState.gribCollection, new Visitor() {
+    return (NetcdfDataset) findDataset(matchPath, localState.gribCollection, new DatasetCreator() {
       @Override
       public Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException {
         return gc.getNetcdfDataset(ds, group, null, config, null, logger);
@@ -622,7 +621,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     });
   }
 
-    /* possible forms of dataset path:
+  /*
+    possible forms of dataset path:
     [partition/][partition/]dataset[/group]
     dataset = BEST | TWOD | filename
     if group is missing, use first one
@@ -631,7 +631,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       1. dataset (BEST, TWOD, filename)
 
      regular, multiple group:
-      2. dataset/groupName
+      2. dataset/group
 
      partition, single group:
       3. partitionName/dataset
@@ -639,10 +639,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
      partition, multiple group:
       4. partitionName/dataset/groupName
-      4. partitionName/../partitionName/dataset/groupName
+      4. partitionName/../partitionName/dataset/group
   */
 
-  private Object findDataset(String matchPath, GribCollectionImmutable topCollection, Visitor visit) throws IOException {
+  private Object findDataset(String matchPath, GribCollectionImmutable topCollection, DatasetCreator visit) throws IOException {
     if ((matchPath == null) || (matchPath.length() == 0)) return null;
     String[] paths = matchPath.split("/");
     if (paths.length < 1) return null;
@@ -656,7 +656,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (!(topCollection instanceof PartitionCollectionImmutable)) return null;
 
     PartitionCollectionImmutable pc = (PartitionCollectionImmutable) topCollection;
-    return recurseIntoPartition(visit, pc, pathList);    // case 3 and 4
+    return findDatasetPartition(visit, pc, pathList);    // case 3 and 4
   }
 
   private class DatasetAndGroup {
@@ -693,7 +693,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return null;
   }
 
-  private Object recurseIntoPartition(Visitor visit, PartitionCollectionImmutable outerPartition, List<String> pathList) throws IOException {
+  private Object findDatasetPartition(DatasetCreator visit, PartitionCollectionImmutable outerPartition, List<String> pathList) throws IOException {
     int n = pathList.size();
     if (pathList.size() < 1) return null;
     PartitionCollectionImmutable.Partition pcp = outerPartition.getPartitionByName(pathList.get(0));
@@ -708,7 +708,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     try (GribCollectionImmutable gc =  pcp.getGribCollection()) {
       if (gc instanceof PartitionCollectionImmutable) {
         PartitionCollectionImmutable pcNested = (PartitionCollectionImmutable) gc;
-        return recurseIntoPartition(visit, pcNested, pathList.subList(1, n));
+        return findDatasetPartition(visit, pcNested, pathList.subList(1, n));
       }
 
       DatasetAndGroup dg = findDatasetAndGroup(pathList.subList(1, n), gc);
@@ -722,7 +722,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
-  private interface Visitor {
+  private interface DatasetCreator {  // Visitor pattern
     Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException;
   }
 

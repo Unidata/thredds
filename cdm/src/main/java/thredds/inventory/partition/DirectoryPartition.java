@@ -47,7 +47,8 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
 
   @Override
   public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException {
-    if (forceCollection == null) forceCollection = CollectionUpdateType.test;
+    if (forceCollection == null)
+      forceCollection = CollectionUpdateType.test;
 
     DirectoryBuilder builder = new DirectoryBuilder(topCollection, topDir, null);
     builder.constructChildren(indexReader, forceCollection);

@@ -95,7 +95,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   static private AtomicInteger debug_nseeks = new AtomicInteger();
   static private AtomicLong debug_nbytes = new AtomicLong();
 
-  static protected boolean showOpen = true;
+  static protected boolean showOpen = false;
   static protected boolean showRead = false;
 
   /**
@@ -368,7 +368,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       count_openFiles.getAndIncrement();
       if (showOpen) System.out.println("  open " + location);
       if (openFiles.size() > 1000)
-        System.out.println("HEY");
+        System.out.println("RandomAccessFile debugLeaks");
     }
   }
 

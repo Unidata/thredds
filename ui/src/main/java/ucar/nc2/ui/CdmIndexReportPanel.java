@@ -255,15 +255,16 @@ public class CdmIndexReportPanel extends ReportPanel {
         boolean isPoP =  pc.isPartitionOfPartitions();
         if (showScan) f.format(" isPofP=%s%n", isPoP);
         for (PartitionCollectionImmutable.Partition partition : pc.getPartitions()) {
-          File partParent = new File(partition.getDirectory());
-          File reparent =  new File(parent, partParent.getName());
-          File nestedIndex =  isPoP ? new File(reparent, partition.getFilename()) : new File(parent, partition.getFilename()); // JMJ
+          //File partParent = new File(partition.getDirectory());
+          //File reparent =  new File(parent, partParent.getName());
+          // File nestedIndex =  isPoP ? new File(reparent, partition.getFilename()) : new File(parent, partition.getFilename()); // JMJ
+          File nestedIndex =  new File(partition.getIndexFilenameInCache());
           if (showScan) f.format("%sPartition index= %s exists=%s%n", indent, nestedIndex, nestedIndex.exists());
           if (nestedIndex.exists()) {
             totalMisplaced += doOneIndex(nestedIndex, f, varCount, filenames, indent.incr(), showScan);
             indent.decr();
           } else {
-            f.format("%sdir=%s filename=%s nestedIndex %s NOT EXIST%n", indent, partition.getDirectory(), partition.getFilename(), nestedIndex.getPath());
+            f.format("%sdir=%s filename=%s nestedIndex %s NOT EXIST%n", indent, gc.getDirectory(), partition.getFilename(), nestedIndex.getPath());
           }
         }
 

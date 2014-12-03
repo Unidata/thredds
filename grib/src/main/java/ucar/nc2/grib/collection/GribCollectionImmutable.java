@@ -206,6 +206,20 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.backProcessId = gc.backProcessId;
     }
 
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("Info{");
+      sb.append("version=").append(version);
+      sb.append(", center=").append(center);
+      sb.append(", subcenter=").append(subcenter);
+      sb.append(", master=").append(master);
+      sb.append(", local=").append(local);
+      sb.append(", genProcessType=").append(genProcessType);
+      sb.append(", genProcessId=").append(genProcessId);
+      sb.append(", backProcessId=").append(backProcessId);
+      sb.append('}');
+      return sb.toString();
+    }
   }
 
   @Immutable
@@ -666,6 +680,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public void showIndex(Formatter f) {
     f.format("Class (%s)%n", getClass().getName());
     f.format("%s%n%n", toString());
+    f.format("%s%n%n", info.toString());
 
     f.format("masterRuntime: size=%d%n", masterRuntime.getSize());
     if (masterRuntime.getSize() < 200)
@@ -690,6 +705,18 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
   }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("GribCollectionImmutable{");
+    sb.append("\nname='").append(name).append('\'');
+    sb.append("\n directory=").append(directory);
+    sb.append("\n config=").append(config);
+    sb.append("\n isGrib1=").append(isGrib1);
+    sb.append("\n}");
+    return sb.toString();
+  }
+
 
   ////////////////////////////////////////
 
