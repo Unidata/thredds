@@ -173,7 +173,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected abstract float[] readData(RandomAccessFile rafData, DataRecord dr) throws IOException;
 
   @Override
-  public void open(RandomAccessFile raf2, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
 
     if (gHcs != null) { // just use the one group that was set in the constructor
