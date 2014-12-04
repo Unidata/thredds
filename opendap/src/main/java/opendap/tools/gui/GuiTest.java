@@ -69,7 +69,7 @@ public class GuiTest {
         warning_box wbox1 = new warning_box("My Title2",
                 "Wow! A Warning Message Box!");
 
-        error_box ebox = new error_box("Wow! A Error Message Box!");
+        new error_box("Wow! A Error Message Box!");
         new error_box("My Title3","Wow! A Error Message Box!");
 
         System.exit(0);
