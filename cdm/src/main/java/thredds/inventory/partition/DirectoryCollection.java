@@ -151,8 +151,13 @@ public class DirectoryCollection extends CollectionAbstract {
 
     MyFileIterator(Path dir) throws IOException {
       if (debug) System.out.printf(" DirectoryCollection.MFileIterator %s ", topDir);
-      dirStream = Files.newDirectoryStream(dir, new MyGribFilter());
-      dirStreamIterator = dirStream.iterator();
+      try {
+        dirStream = Files.newDirectoryStream(dir, new MyGribFilter());
+        dirStreamIterator = dirStream.iterator();
+      } catch (IOException ioe) {
+        logger.error("Files.newDirectoryStream failed to open directory "+dir.getFileName(), ioe);
+        throw ioe;
+      }
     }
 
     public boolean hasNext() {

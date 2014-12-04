@@ -154,7 +154,7 @@ public class TestGrib1CoordsMatch {
 
   @Test
   public void testPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46-gfs_conus80.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 51838;
@@ -164,7 +164,7 @@ public class TestGrib1CoordsMatch {
 
   @Test
   public void testRdavmDs083p2() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/sampleMonth/rda_ds083.2-sampleMonth.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/sampleMonth/ds083.2-union-sampleMonth.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 34320;

@@ -131,7 +131,7 @@ public class TestGrib2CoordsMatch {
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
-    String filename = "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3";
+    String filename = "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
@@ -243,9 +243,9 @@ public class TestGrib2CoordsMatch {
     }
   }
 
-  //@Test
+  @Test
   public void testPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46-gfs_conus80.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 51838;
