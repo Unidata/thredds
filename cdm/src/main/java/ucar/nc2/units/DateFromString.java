@@ -81,7 +81,7 @@ public class DateFromString {
    *   dateString =        wrfout_d01_2006-07-06_080000.nc
    *   dateFormatString = wrfout_d01_#yyyy-MM-dd_HHmm
    * </pre>
-   * This simple counts over "wrfout_d01_" number of chars in dateString, then applies the remaining dateFormatString.
+   * This simply counts over "wrfout_d01_" number of chars in dateString, then applies the remaining dateFormatString.
    *
    * @param dateString the String to be parsed
    * @param dateFormatString the date format String
