@@ -39,7 +39,6 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribData;
-import ucar.nc2.grib.collection.Grib1CollectionBuilder;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -313,6 +312,7 @@ public class Grib1DataTable extends JPanel {
   private MCollection dcm;
   private List<MFile> fileList;
   private Grib1Customizer cust;
+  private FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
 
   public void setCollection(String spec) throws IOException {
     this.spec = spec;
@@ -702,7 +702,7 @@ public class Grib1DataTable extends JPanel {
 
     public String getName() {
       if (param == null) return null;
-      return Grib1Iosp.makeVariableName(cust, pds);
+      return Grib1Iosp.makeVariableName(cust, config.gribConfig, pds);
     }
 
     public String getUnit() {

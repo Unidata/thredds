@@ -74,9 +74,16 @@ public class Grib1Iosp extends GribIosp {
    * Herein lies the semantics of a variable object identity.
    * Read it and weep.
    *
-   * @param gdsHash can override the gdsHash
-   * @return this records hash code, to group like records into a variable
+   * @param cust     customizer
+   * @param gr       grib record
+   * @param gdsHash   can override the gdsHash
+   * @param useTableVersion  use pdss.getTableVersion(), default is false
+   * @param intvMerge        put all intervals together, default true
+   * @param useCenter        use center id when param no > 127, default is false
+   *
+   * @return this record's hash code, to group like records into a variable
    */
+
   public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
     int result = 17;
 
@@ -91,7 +98,7 @@ public class Grib1Iosp extends GribIosp {
     if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
 
     result += result * 37 + pdss.getParameterNumber();
-    if (useTableVersion)  // LOOK must make a different variable name
+    if (useTableVersion)
       result += result * 37 + pdss.getTableVersion();
 
     Grib1ParamTime ptime = pdss.getParamTime(cust);
@@ -100,8 +107,7 @@ public class Grib1Iosp extends GribIosp {
       if (ptime.getStatType() != null) result += result * 37 + ptime.getStatType().ordinal(); // create new variable for each stat type
     }
 
-    // LOOK maybe we should always add ??
-    // if this uses any local tables, then we have to add the center id, and subcenter if present
+    // if useCenter, and this uses any local tables, then we have to add the center id, and subcenter if present
     if (useCenter && pdss.getParameterNumber() > 127) {
       result += result * 37 + pdss.getCenter();
       if (pdss.getSubCenter() > 0)
@@ -221,12 +227,12 @@ public class Grib1Iosp extends GribIosp {
     return f.toString();
   }
 
-  public static String makeVariableName(Grib1Customizer cust, Grib1SectionProductDefinition pds) {
-    return makeVariableNameFromTables(cust, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
+  public static String makeVariableName(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig, Grib1SectionProductDefinition pds) {
+    return makeVariableNameFromTables(cust, gribConfig, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
              pds.getLevelType(), cust.isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
   }
 
-  private static String makeVariableNameFromTables(Grib1Customizer cust, int center, int subcenter, int version, int paramNo,
+  private static String makeVariableNameFromTables(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig, int center, int subcenter, int version, int paramNo,
                                  int levelType, boolean isLayer, int intvType, String intvName) {
     Formatter f = new Formatter();
 
@@ -240,7 +246,13 @@ public class Grib1Iosp extends GribIosp {
         f.format("%s", GribUtils.makeNameFromDescription(param.getDescription()));
     }
 
-    // LOOK we need to capture the config params like useTableVersion, to create unique names.
+    if (gribConfig.useTableVersion) {
+      f.format("_TableVersion%d", version);
+    }
+
+    if (gribConfig.useCenter) {
+      f.format("_Center%d", center);
+    }
 
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_%s", cust.getLevelNameShort(levelType)); // code table 3
@@ -262,7 +274,7 @@ public class Grib1Iosp extends GribIosp {
   }
 
   private String makeVariableNameFromTables(int center, int subcenter, int version, int paramNo, int levelType, boolean isLayer, int intvType, String intvName) {
-    return makeVariableNameFromTables(cust, center, subcenter, version, paramNo, levelType, isLayer, intvType, intvName);
+    return makeVariableNameFromTables(cust, config.gribConfig, center, subcenter, version, paramNo, levelType, isLayer, intvType, intvName);
   }
 
   @Override
@@ -350,10 +362,6 @@ public class Grib1Iosp extends GribIosp {
     super(true, logger);
     this.gribCollection = gc;
     this.owned = true;
-  }
-
-  protected String getIntervalName(int code) {
-    return cust.getTimeTypeName(code);
   }
 
   @Override

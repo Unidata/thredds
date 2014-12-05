@@ -646,15 +646,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if ((matchPath == null) || (matchPath.length() == 0)) return null;
     String[] paths = matchPath.split("/");
     if (paths.length < 1) return null;
-    List<String> pathList = Arrays.asList(paths);
+    List<String> pathList = Arrays.asList(paths);  // DO ew need to strip off a GC in case of bookmarked URLs?
 
     DatasetAndGroup dg = findDatasetAndGroup(pathList, topCollection);
     if (dg != null)
       return visit.obtain(topCollection, dg.ds, dg.group);  //  case 1 and 2
 
-    if (paths.length < 2) return null;
     if (!(topCollection instanceof PartitionCollectionImmutable)) return null;
-
     PartitionCollectionImmutable pc = (PartitionCollectionImmutable) topCollection;
     return findDatasetPartition(visit, pc, pathList);    // case 3 and 4
   }

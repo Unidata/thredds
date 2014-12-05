@@ -109,7 +109,7 @@ public class Grib1Collection extends GribCollectionImmutable {
   public String makeVariableName(VariableIndex vindex) {
     Grib1Customizer cust1 = ((Grib1Customizer) cust);
     Grib1SectionProductDefinition pdss = new Grib1SectionProductDefinition(vindex.getRawPds());
-    return Grib1Iosp.makeVariableName(cust1, pdss);
+    return Grib1Iosp.makeVariableName(cust1, config.gribConfig, pdss);
   }
 
 

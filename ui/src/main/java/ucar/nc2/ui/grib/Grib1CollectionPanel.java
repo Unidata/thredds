@@ -81,6 +81,7 @@ public class Grib1CollectionPanel extends JPanel {
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private Grib1Customizer cust = null;
+  private FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
   //private Grib1Rectilyser rect = null;
 
   public Grib1CollectionPanel(JPanel buttPanel, PreferencesExt prefs) {
@@ -708,7 +709,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     public String getName() {
       if (param == null) return null;
-      return Grib1Iosp.makeVariableName(cust, pds);
+      return Grib1Iosp.makeVariableName(cust, config.gribConfig, pds);
     }
 
     /* public String getOldName() {

@@ -103,9 +103,11 @@ public class TestGribCollectionsBig {
 
   @Test
   public void testSRC() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2-union-2008.10.ncx3");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx3");
 
-    // jenkins: that took 18 secs total, 0.261603 msecs per record
+    // roberto:    that took 6 secs total, 0.196227 msecs per record
+    // jenkins:    that took 2 secs total, 0.083042 msecs per record
+
     assert count.nread == 35464;
     assert count.nmiss == 0;
   }
@@ -113,10 +115,11 @@ public class TestGribCollectionsBig {
   @Test
   public void testTP() throws IOException {
     try {
-      TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2-union-2008.ncx3");
+      TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx3");
 
-      // jenkins:  that took 496 secs total, 0.592712 msecs per record
-      // that took 581 secs total, 0.694249 msecs per record (total == 0/837408) (cache size 500)
+      // roberto:
+      // jenkins:  that took 32 secs total, 0.077869 msecs per record
+
       assert count.nread == 837408;
       assert count.nmiss == 0;
 
@@ -129,12 +132,12 @@ public class TestGribCollectionsBig {
   @Test
   public void testTPofTP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2-union-grib1.ncx3");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3");
 
     // ROBERTO (local drive only, samba fails) that took that took 2177 secs total, 0.156383 msecs per record
     // 2D only      486523/6476133
-    assert count.nmiss == 973046;
     assert count.nread == 13925312;
+    assert count.nmiss == 973046;
   }
 
 }

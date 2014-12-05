@@ -79,7 +79,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Auto
 
   @Override
   public String makeVariableName(VariableIndex vindex) {
-    return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex, false);
+    return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex, config.gribConfig.useGenType);
   }
 
 }

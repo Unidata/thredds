@@ -57,15 +57,18 @@ import java.util.Formatter;
  */
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
-  static private final boolean debugTime = false, debugRead = false, debugName = false;
 
   /**
    * A hash code to group records into a CDM variable
    * Herein lies the semantics of a variable object identity.
    * Read it and weep.
    *
-   * @param gr the Grib record
-   * @param gdsHash can override the gdsHash
+   * @param cust       customizer
+   * @param gr         the Grib record
+   * @param gdsHash    can override the gdsHash
+   * @param intvMerge  should intervals be merged? default true
+   * @param useGenType should genProcessType be used in hash? default false
+   * @param logger     optionally log errors
    * @return this record's hash code, identical hash means belongs to the same variable
    */
   public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType, org.slf4j.Logger logger) {
@@ -325,12 +328,12 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected String makeVariableName(GribCollectionImmutable.VariableIndex vindex) {
-    return makeVariableNameFromTable(cust, gribCollection, vindex, false);  // LOOK where to get useGenType ?
+    return makeVariableNameFromTable(cust, gribCollection, vindex, gribCollection.config.gribConfig.useGenType);
   }
 
   @Override
   protected String makeVariableLongName(GribCollectionImmutable.VariableIndex vindex) {
-    return makeVariableLongName(cust, vindex, false);                       // LOOK where to get useGenType ?
+    return makeVariableLongName(cust, vindex, gribCollection.config.gribConfig.useGenType);
   }
 
   @Override
@@ -391,10 +394,6 @@ public class Grib2Iosp extends GribIosp {
     super(false, logger);
     this.gribCollection = gc;
     this.owned = true;
-  }
-
-  protected String getIntervalName(int id) {
-    return cust.getStatisticName(id);
   }
 
   @Override

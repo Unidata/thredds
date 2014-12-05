@@ -45,7 +45,7 @@ public class Grib2ReportPanel extends ReportPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public static enum Report {
-    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsSummary, pdsSummary, idProblems, timeCoord,
+    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsSummary, pdsSummary, pdsProblems, idProblems, timeCoord,
     rename, renameCheck, copyCompress
   }
 
@@ -81,6 +81,9 @@ public class Grib2ReportPanel extends ReportPanel {
         break;
       case pdsSummary:
         doPdsSummary(f, dcm, useIndex);
+        break;
+      case pdsProblems:
+        doPdsProblems(f, dcm, useIndex);
         break;
       case idProblems:
         doIdProblems(f, dcm, useIndex);
@@ -468,42 +471,18 @@ public class Grib2ReportPanel extends ReportPanel {
   int total = 0;
   int prob = 0;
 
-  private void doPdsSummary(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    if (useIndex) {
+  private void doPdsProblems(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
       f.format("Check Grib-2 PDS probability and statistical variables%n");
       total = 0;
       prob = 0;
       for (MFile mfile : dcm.getFilesSorted()) {
         f.format("%n %s%n", mfile.getPath());
-        doPdsSummaryIndexed(f, mfile);
+        doPdsProblems(f, mfile);
       }
       f.format("problems = %d/%d%n", prob, total);
-
-    } else {
-      CounterOfInt templateSet = new CounterOfInt("template");
-      CounterOfInt timeUnitSet = new CounterOfInt("timeUnit");
-      CounterOfInt levelTypeSet = new CounterOfInt("levelType");
-      CounterOfInt processType = new CounterOfInt("genProcessType");
-      CounterOfInt processId = new CounterOfInt("genProcessId");
-      CounterOfInt levelScale = new CounterOfInt("levelScale");
-      CounterOfInt ncoords = new CounterOfInt("nExtraCoords");
-
-      for (MFile mfile : dcm.getFilesSorted()) {
-        f.format(" %s%n", mfile.getPath());
-        doPdsSummary(f, mfile, templateSet, timeUnitSet, processType, processId, levelScale, levelTypeSet, ncoords);
-      }
-
-      templateSet.show(f);
-      timeUnitSet.show(f);
-      levelTypeSet.show(f);
-      processType.show(f);
-      processId.show(f);
-      levelScale.show(f);
-      ncoords.show(f);
-    }
   }
 
-  private void doPdsSummaryIndexed(Formatter fm, MFile ff) throws IOException {
+  private void doPdsProblems(Formatter fm, MFile ff) throws IOException {
     String path = ff.getPath();
 
     Grib2Index index = createIndex(ff, fm);
@@ -556,8 +535,30 @@ public class Grib2ReportPanel extends ReportPanel {
     }
   }
 
-  private void doPdsSummary(Formatter f, MFile mf, CounterOfInt templateSet, CounterOfInt timeUnitSet, CounterOfInt processType,
-                            CounterOfInt processId, CounterOfInt levelScale, CounterOfInt levelTypeSet, CounterOfInt ncoords) throws IOException {
+  ///////////////////////////////////////////////////
+
+  private void doPdsSummary(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
+    Counters countersAll = new Counters();
+    countersAll.add(new CounterOfInt("template"));
+    countersAll.add(new CounterOfInt("timeUnit"));
+    countersAll.add(new CounterOfInt("timeOffset"));
+    countersAll.add(new CounterOfInt("timeIntervalSize"));
+    countersAll.add(new CounterOfInt("levelType"));
+    countersAll.add(new CounterOfInt("genProcessType"));
+    countersAll.add(new CounterOfInt("genProcessId"));
+    countersAll.add(new CounterOfInt("levelScale"));
+    countersAll.add(new CounterOfInt("nExtraCoords"));
+
+      for (MFile mfile : dcm.getFilesSorted()) {
+        f.format(" %s%n", mfile.getPath());
+        doPdsSummary(f, mfile, countersAll);
+      }
+
+    f.format("PdsSummary - all files%n");
+    countersAll.show(f);
+  }
+
+  private void doPdsSummary(Formatter f, MFile mf, Counters counters) throws IOException {
     boolean showLevel = true;
     boolean showCoords = true;
     int firstPtype = -1;
@@ -566,37 +567,47 @@ public class Grib2ReportPanel extends ReportPanel {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
+    Grib2Customizer cust = null;
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
-      Grib2Pds pds = gr.getPDS();
-      templateSet.count(pds.getTemplateNumber());
-      timeUnitSet.count(pds.getTimeUnit());
+      if (cust == null)
+        cust = Grib2Customizer.factory(gr);
 
-      levelTypeSet.count(pds.getLevelType1());
+      Grib2Pds pds = gr.getPDS();
+      counters.count("template", pds.getTemplateNumber());
+      counters.count("timeUnit", pds.getTimeUnit());
+      counters.count("timeOffset", pds.getForecastTime());
+
+      if (pds.isTimeInterval()) {
+        int[] intv = cust.getForecastTimeIntervalOffset(gr);
+        counters.count("timeIntervalSize", intv[1]-intv[0]);
+      }
+
+      counters.count("levelType", pds.getLevelType1());
       if (showLevel && (pds.getLevelType1() == 105)) {
         showLevel = false;
         f.format(" level = 105 : %s%n", mf.getPath());
       }
 
       int n = pds.getExtraCoordinatesCount();
-      ncoords.count(n);
+      counters.count("nExtraCoords", n);
       if (showCoords && (n > 0)) {
         showCoords = false;
         f.format(" ncoords > 0 : %s%n", mf.getPath());
       }
 
       int ptype = pds.getGenProcessType();
-      processType.count(ptype);
+      counters.count("genProcessType", ptype);
       if (firstPtype < 0) firstPtype = ptype;
       else if (firstPtype != ptype && !shutup) {
         f.format(" getGenProcessType differs in %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), ptype);
         shutup = true;
       }
-      processId.count(pds.getGenProcessId());
+      counters.count("genProcessId", pds.getGenProcessId());
 
       if (pds.getLevelScale1() > 127) {
         if (Grib2Utils.isLevelUsed(pds.getLevelType1())) {
           f.format(" LevelScale > 127: %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale1());
-          levelScale.count(pds.getLevelScale1());
+          counters.count("levelScale", pds.getLevelScale1());
         }
       }
     }

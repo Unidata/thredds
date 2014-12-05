@@ -433,7 +433,7 @@ public class GCpass1 {
 
     int gdsHash = gdss.getGDS().hashCode();
     int cdmHash = Grib1Iosp.cdmVariableHash(cust1, gr, gdsHash, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
-    String name =  Grib1Iosp.makeVariableName(cust1, pds);
+    String name =  Grib1Iosp.makeVariableName(cust1, gribConfig, pds);
     counters.count("variable", new Variable(cdmHash, name));
     counters.count("gds", gdsHash);
 

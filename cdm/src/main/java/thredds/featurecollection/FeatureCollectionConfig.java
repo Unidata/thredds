@@ -399,10 +399,12 @@ public class FeatureCollectionConfig {
     }
   }
 
-  static private Set<GribDatasetType> defaultGribDatasetTypes =
+  // GribConfig
+
+  static private final Set<GribDatasetType> defaultGribDatasetTypes =
           Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Latest));
 
-  static public boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
+  static public final boolean useGenTypeDef = false, useTableVersionDef = false, intvMergeDef = true, useCenterDef = false;
 
   static public class GribConfig {                                                // LOOK make Immutable
 

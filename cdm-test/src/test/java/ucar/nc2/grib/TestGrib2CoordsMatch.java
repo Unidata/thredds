@@ -207,8 +207,8 @@ public class TestGrib2CoordsMatch {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 81340;
-    assert count.nmiss == 1801;
+    assert count.nread == 94352;
+    assert count.nmiss == 10296;
     assert count.nerrs == 0;
   }
 
@@ -241,16 +241,6 @@ public class TestGrib2CoordsMatch {
       //assert count.nmiss == 1801;
       //assert count.nerrs == 0;
     }
-  }
-
-  @Test
-  public void testPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46-gfs_conus80.ncx3");
-
-    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 51838;
-    assert count.nmiss == 1126;
-    assert count.nerrs == 0;
   }
 
   ///////////////////////////////////////////////////////////////

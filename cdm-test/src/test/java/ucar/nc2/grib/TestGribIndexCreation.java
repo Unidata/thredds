@@ -164,7 +164,7 @@ public class TestGribIndexCreation {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Test
+  //@Test
   public void testRdvamds083p2() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-union", "test/ds083.2", FeatureCollectionType.GRIB1,
