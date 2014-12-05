@@ -31,9 +31,8 @@
     utility program. By default, just the header (ncdump -h) is output. This application works on any CDM file, not just
     netCDF files.</p>
 
-<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.NCdumpW filepath [-cdl |
-    -ncml] [-c | -vall] [-v
-    varName1;varName2;..] [-v varName(0:1,:,12)]</pre>
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.NCdumpW
+    filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</pre>
 
 <p>where:</p>
 
@@ -59,15 +58,15 @@
 <p>Copies a CDM dataset to a netCDF-3 (default) or netCDF-4 file. Datasets using features from the extended model
     require netCDF-4.</p>
 
-<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.dataset.NetcdfDataset -in &lt;fileIn&gt;
-    -out &lt;fileOut&gt;
-    [-isLargeFile] [-netcdf4]</pre>
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.dataset.NetcdfDataset
+    -in &lt;fileIn&gt; -out &lt;fileOut&gt; [-isLargeFile] [-netcdf4]
+</pre>
 
 <p>where:</p>
 
 <ul>
-    <li><code>filein</code>: the existing file to copy</li>
-    <li><code>fileout</code>: the new file to create</li>
+    <li><code>fileIn</code>: the existing file to copy</li>
+    <li><code>fileOut</code>: the new file to create</li>
     <li><code>-isLargeFile</code>: for netcdf-3 only, create a large format file.</li>
     <li><code>-netcdf4</code>:
         write to netcdf-4 format. You must have the <a href="netcdf4Clibrary.html">netcdf-4 C library loaded</a>.
@@ -81,7 +80,8 @@
 
 <p>Compares two CDM files for semantic equivilence.</p>
 
-<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData] </pre>
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.util.CompareNetcdf2
+    file1 file2 [-showEach] [-compareData]</pre>
 
 <p>where</p>
 
@@ -116,7 +116,8 @@
 
 <p>Copies a BUFR file's messages into separate output files, depending on message type.</p>
 
-<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.iosp.bufr.writer.BufrSplitter --fileSpec &lt;fileIn&gt; --dirOut &lt;dirOut&gt;</pre>
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.iosp.bufr.writer.BufrSplitter
+    --fileSpec &lt;fileIn&gt; --dirOut &lt;dirOut&gt;</pre>
 
 <p>where</p>
 
