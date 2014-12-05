@@ -66,6 +66,7 @@ import java.util.Formatter;
  * @since 11/5/2014
  */
 public class TestGrib1CoordsMatch {
+  private static FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
 
   @BeforeClass
   static public void before() {
@@ -462,7 +463,7 @@ public class TestGrib1CoordsMatch {
 
     public String getName() {
       if (param == null) return null;
-      return Grib1Iosp.makeVariableName(cust, pds);
+      return Grib1Iosp.makeVariableName(cust, config.gribConfig, pds);
     }
 
     public String getUnit() {
