@@ -78,7 +78,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * @param timeUnit      time duration, based on code
    * @param vals          complete set of Time2D values, may be null (used only during creation)
    * @param runtime       list of runtimes
-   * @param times         list of times, one for each runtime, offsets reletive to its runtime
+   * @param times         list of times, one for each runtime, offsets reletive to its runtime, may not be null
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate(), null);
@@ -107,6 +107,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    *
    * @param code          pdsFirst.getTimeUnit()
    * @param timeUnit      time duration, based on code
+   * @param vals          complete set of Time2D values, may be null (used only during creation)
    * @param runtime       list of runtimes
    * @param otime         list of offsets, all the same for each runtime
    * @param times         list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available during creation, not stored in index)
@@ -135,9 +136,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    *
    * @param code          pdsFirst.getTimeUnit()
    * @param timeUnit      time duration, based on code
+   * @param vals          complete set of Time2D values, may be null (used only during creation)
    * @param runtime       list of runtimes
    * @param regList       list of offsets, one each for each possible runtime hour of day.
-   * @param times         list of times, one for each runtime, offsets reletive to its runtime (Only available during creation, not stored in index)
+   * @param times         list of times, one for each runtime, offsets reletive to its runtime, may be null (Only available during creation, not stored in index)
    */
   public CoordinateTime2D(int code, CalendarPeriod timeUnit, List<Time2D> vals, CoordinateRuntime runtime, List<Coordinate> regList, List<Coordinate> times) {
     super(code, timeUnit, runtime.getFirstDate(), null);
@@ -145,7 +147,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.runtime = runtime;
     this.nruns = runtime.getSize();
 
-    this.times = Collections.unmodifiableList(times);    // need these for makeBest
+    this.times = (times == null) ? null : Collections.unmodifiableList(times);    // need these for makeBest
     this.otime = null;
     this.isOrthogonal = false;
     this.isRegular = true;

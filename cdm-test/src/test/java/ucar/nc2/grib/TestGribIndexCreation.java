@@ -68,6 +68,37 @@ public class TestGribIndexCreation {
     RandomAccessFile.setDebugLeaks(false);
   }
 
+  /////////////////////////////////////////////////////////
+
+  @Test
+  public void testNamAlaska45() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("alaska45conduit", "test/www", FeatureCollectionType.GRIB2,
+ //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
+            "B:/lead/.*gbx9",
+            null, null, "file", null, null);
+    // config.gribConfig.addGdsHash("-804803647", "-804803709");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+
+  // @Test
+  public void testWwwCoastalAlaska() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("www_46", "test/www", FeatureCollectionType.GRIB2,
+ //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
+            "B:/idd/WWW/Coastal_Alaska/.*grib2",
+            null, null, "file", null, null);
+    config.gribConfig.addGdsHash("-804803647", "-804803709");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  /////////////////////////////////////////////////////////////
+
 
   @Test
   public void testGdsHashChange() throws IOException {
@@ -90,7 +121,6 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/cfsr/.*grb2", null, null, "directory", null, null);
     // <gdsHash from="1450192070" to="1450218978"/>
     config.gribConfig.addGdsHash("1450192070", "1450218978");
-    //config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
@@ -101,21 +131,6 @@ public class TestGribIndexCreation {
   public void testDgex() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("dgex_46", "test/dgex", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/dgex/**/.*grib2", null, null, "file", null, null);
-    //config.gribConfig.useTableVersion = false;
-    //config.gribConfig.unionRuntimeCoord = true;
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
-  }
-
-  // @Test
-  public void testWwwCoastalAlaska() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("www_46", "test/www", FeatureCollectionType.GRIB2,
- //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
-            "B:/idd/WWW/Coastal_Alaska/.*grib2",
-            null, null, "file", null, null);
-    config.gribConfig.addGdsHash("-804803647", "-804803709");
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
@@ -126,8 +141,6 @@ public class TestGribIndexCreation {
   public void testGFSconus80() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("gfsConus80_46", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null, "file", null, null);
-    //config.gribConfig.useTableVersion = false;
-    //config.gribConfig.unionRuntimeCoord = true;
 
     System.out.printf("===testGFSconus80 %n");
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
@@ -139,8 +152,6 @@ public class TestGribIndexCreation {
   public void testGFSglobalOnedeg() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("gfsOnedeg_46", "test/gfsOnedeg", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/.*grib2", null, null, "file", null, null);
-    //config.gribConfig.useTableVersion = false;
-    //config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
@@ -155,7 +166,6 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-union", "test/GCpass1", FeatureCollectionType.GRIB1,
            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/sampleMonth/.*grib1",
             null, null, "directory", null, null);
-    config.gribConfig.useTableVersion = false;
     config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
@@ -171,7 +181,6 @@ public class TestGribIndexCreation {
 //            "B:/rdavm/ds083.2/grib1/**/.*gbx9",
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/**/.*gbx9",
             null, null, "directory", null, null);
-    config.gribConfig.useTableVersion = false;
     config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
@@ -197,7 +206,6 @@ public class TestGribIndexCreation {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1-union", "test/GCpass1", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null, null, "directory", null, null);
-    config.gribConfig.useTableVersion = false;
     config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");

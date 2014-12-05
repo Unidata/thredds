@@ -48,6 +48,7 @@ import ucar.nc2.grib.*;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Formatter;
 
 /**
@@ -87,31 +88,31 @@ public class Grib1Iosp extends GribIosp {
   public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
     int result = 17;
 
+    Grib1SectionProductDefinition pdss = gr.getPDSsection();
+    result += result * 31 + pdss.getParameterNumber();
+
     Grib1SectionGridDefinition gdss = gr.getGDSsection();
     if (gdsHash == 0)
-      result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
-    else
-      result += result * 37 + gdsHash;
+      gdsHash = gdss.getGDS().hashCode(); // the horizontal grid
+    result += result * 31 + gdsHash;
 
-    Grib1SectionProductDefinition pdss = gr.getPDSsection();
-    result += result * 37 + pdss.getLevelType();
-    if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
+    result += result * 31 + pdss.getLevelType();
+    if (cust.isLayer(pdss.getLevelType())) result += result * 31 + 1;
 
-    result += result * 37 + pdss.getParameterNumber();
     if (useTableVersion)
-      result += result * 37 + pdss.getTableVersion();
+      result += result * 31 + pdss.getTableVersion();
 
     Grib1ParamTime ptime = pdss.getParamTime(cust);
     if (ptime.isInterval()) {
-      if (!intvMerge) result += result * 37 + ptime.getIntervalSize();  // create new variable for each interval size
-      if (ptime.getStatType() != null) result += result * 37 + ptime.getStatType().ordinal(); // create new variable for each stat type
+      if (!intvMerge) result += result * 31 + ptime.getIntervalSize();  // create new variable for each interval size
+      if (ptime.getStatType() != null) result += result * 31 + ptime.getStatType().ordinal(); // create new variable for each stat type
     }
 
     // if useCenter, and this uses any local tables, then we have to add the center id, and subcenter if present
     if (useCenter && pdss.getParameterNumber() > 127) {
-      result += result * 37 + pdss.getCenter();
+      result += result * 31 + pdss.getCenter();
       if (pdss.getSubCenter() > 0)
-        result += result * 37 + pdss.getSubCenter();
+        result += result * 31 + pdss.getSubCenter();
     }
     return result;
   }
@@ -459,5 +460,20 @@ public class Grib1Iosp extends GribIosp {
   public Object getGribCustomizer() {
     return cust;
   }
+
+  public static void main(String[] args) {
+      int pno = 121;
+      int result = 823375026;
+      result += result * 37 + 1;  // 1223479917
+      result += result * 37 + pno;  // 1223479917
+
+      int result2 = 823375026;  // 1223479917
+      result2 += result2 * 37 + 4;
+      result2 += result2 * 37 + pno;
+
+    System.out.printf("%d,%d%n", result, result2);
+
+    Arrays.hashCode(new Object[] {1, 2, 3});
+    }
 
 }

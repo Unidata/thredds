@@ -77,17 +77,17 @@ public class Grib2Iosp extends GribIosp {
 
     int result = 17;
 
+    result += result * 31 + gr.getDiscipline();
+    result += result * 31 + pds2.getLevelType1();
+    if (Grib2Utils.isLayer(pds2)) result += result * 31 + 1;
+
     if (gdsHash == 0)
-      result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
+      result += result * 31 + gdss.getGDS().hashCode(); // the horizontal grid
     else
-      result += result * 37 + gdsHash;
+      result += result * 31 + gdsHash;
 
-    result += result * 37 + gr.getDiscipline();
-    result += result * 37 + pds2.getLevelType1();
-    if (Grib2Utils.isLayer(pds2)) result += result * 37 + 1;
-
-    result += result * 37 + pds2.getParameterCategory();
-    result += result * 37 + pds2.getTemplateNumber();
+    result += result * 31 + pds2.getParameterCategory();
+    result += result * 31 + pds2.getTemplateNumber();
 
     if (pds2.isTimeInterval()) {
       if (!intvMerge) {
@@ -97,25 +97,25 @@ public class Grib2Iosp extends GribIosp {
         } catch (Throwable t) {
           if (logger != null) logger.error("Failed on file = "+gr.getFile(), t);
         }
-        result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - default not
+        result += result * (int) (31 + (1000 * size)); // create new variable for each interval size - default not
       }
-      result += result * 37 + pds2.getStatisticalProcessType(); // create new variable for each stat type
+      result += result * 31 + pds2.getStatisticalProcessType(); // create new variable for each stat type
     }
 
     if (pds2.isSpatialInterval()) {
-       result += result * 37 + pds2.getStatisticalProcessType(); // template 15
+       result += result * 31 + pds2.getStatisticalProcessType(); // template 15
      }
 
-     result += result * 37 + pds2.getParameterNumber();
+     result += result * 31 + pds2.getParameterNumber();
 
     int ensDerivedType = -1;
     if (pds2.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
       Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
       ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
-      result += result * 37 + ensDerivedType;
+      result += result * 31 + ensDerivedType;
 
     } else if (pds2.isEnsemble()) {
-      result += result * 37 + 1;
+      result += result * 31 + 1;
     }
 
     // each probability interval generates a separate variable; could be a dimension instead
@@ -123,7 +123,7 @@ public class Grib2Iosp extends GribIosp {
     if (pds2.isProbability()) {
       Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds2;
       probType = pdsProb.getProbabilityType();
-      result += result * 37 + pdsProb.getProbabilityHashcode();
+      result += result * 31 + pdsProb.getProbabilityHashcode();
     }
 
     // if this uses any local tables, then we have to add the center id, and subcenter if present
@@ -131,20 +131,20 @@ public class Grib2Iosp extends GribIosp {
             || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191)
             || (ensDerivedType > 191) || (probType > 191)) {
       Grib2SectionIdentification id = gr.getId();
-      result += result * 37 + id.getCenter_id();
+      result += result * 31 + id.getCenter_id();
       if (id.getSubcenter_id() > 0)
-        result += result * 37 + id.getSubcenter_id();
+        result += result * 31 + id.getSubcenter_id();
     }
 
     // always use the GenProcessType when "error" (6 or 7) 2/8/2012
     int genType = pds2.getGenProcessType();
     if (genType == 6 || genType == 7 || (useGenType && genType > 0)) {
-      result += result * 37 + genType;
+      result += result * 31 + genType;
     }
 
     /* int addHash = cust.addVariableHash(gr);
     if (addHash != 0)
-      result += result * 37 + addHash; */
+      result += result * 31 + addHash; */
 
     return result;
   }

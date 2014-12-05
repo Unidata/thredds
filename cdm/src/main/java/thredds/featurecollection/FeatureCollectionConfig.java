@@ -493,7 +493,7 @@ public class FeatureCollectionConfig {
         }
       }
 
-      List<Element> paramElems = configElem.getChildren("parameter", ns);
+      List<Element> paramElems = configElem.getChildren("option", ns);
       for (Element param : paramElems) {
         String name = param.getAttributeValue("name");
         String value = param.getAttributeValue("value");
@@ -501,6 +501,9 @@ public class FeatureCollectionConfig {
           if (name.equalsIgnoreCase("timeUnit")) {
             setUserTimeUnit(value);  // eg "10 min" or "minute"
           }
+          if (name.equalsIgnoreCase("runtimeCoordinate") && value.equalsIgnoreCase("union")) {
+             unionRuntimeCoord = true;
+           }
         }
       }
 

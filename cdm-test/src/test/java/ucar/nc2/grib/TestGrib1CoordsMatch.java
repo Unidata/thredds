@@ -137,8 +137,8 @@ public class TestGrib1CoordsMatch {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_1200.grib1.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 7116;
-    assert count.nmiss == 200;
+    assert count.nread == 7122;
+    assert count.nmiss == 153;
     assert count.nerrs == 0;
   }
 
@@ -147,8 +147,8 @@ public class TestGrib1CoordsMatch {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 81340;
-    assert count.nmiss == 1801;
+    assert count.nread == 37188;   // 1801/81340 ??
+    assert count.nmiss == 816;
     assert count.nerrs == 0;
   }
 

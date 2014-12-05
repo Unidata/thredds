@@ -392,6 +392,9 @@ public class Grib1CollectionPanel extends JPanel {
     if (!h1.equals(h2))
       f.format("WMO headers differ %s != %s %n", h1, h2);
 
+    f.format("1 cdmHash = %d%n", Grib1Iosp.cdmVariableHash(cust, bean1.gr));
+    f.format("2 cdmHash = %d%n", Grib1Iosp.cdmVariableHash(cust, bean2.gr));
+
     compare(bean1.gr.getPDSsection(), bean2.gr.getPDSsection(), f);
     compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
@@ -625,6 +628,8 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("Total length of GRIB message = %d%n", gr.getIs().getMessageLength());
     Grib1SectionProductDefinition pds = gr.getPDSsection();
     f.format("PDS len=%d%n", pds.getLength());
+    int cdmHash = Grib1Iosp.cdmVariableHash(cust, gr);
+    f.format("Variable cdmHash=%d%n", cdmHash);
     pds.showPds(cust, f);
     Grib1SectionGridDefinition gds = gr.getGDSsection();
     f.format("%nGDS len=%d%n", gds.getLength());
