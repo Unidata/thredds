@@ -33,29 +33,21 @@
 
 package thredds.server.ncss.util;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Preconditions;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
 import thredds.server.config.TdsContext;
 import thredds.server.ncss.exception.OutOfBoundariesException;
 import thredds.server.ncss.exception.TimeOutOfWindowException;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -65,219 +57,248 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 @Component
 public final class NcssRequestUtils implements ApplicationContextAware {
 
-  private static ApplicationContext applicationContext;
+    private static ApplicationContext applicationContext;
 
-  private NcssRequestUtils() {
+    private NcssRequestUtils() {
 
-  }
-
-  public static GridAsPointDataset buildGridAsPointDataset(GridDataset gds, List<String> vars) {
-
-    List<GridDatatype> grids = new ArrayList<>();
-    for (String gridName : vars) {
-      GridDatatype grid = gds.findGridDatatype(gridName);
-
-      if (grid == null)
-        continue;
-      grids.add(grid);
-    }
-    return new GridAsPointDataset(grids);
-  }
-
-  public static List<String> getAllVarsAsList(GridDataset gds) {
-    List<String> vars = new ArrayList<>();
-
-    List<VariableSimpleIF> allVars = gds.getDataVariables();
-    for (VariableSimpleIF var : allVars) {
-      vars.add(var.getShortName());
     }
 
-    return vars;
-  }
+    public static GridAsPointDataset buildGridAsPointDataset(GridDataset gds, List<String> vars) {
 
+        List<GridDatatype> grids = new ArrayList<>();
+        for (String gridName : vars) {
+            GridDatatype grid = gds.findGridDatatype(gridName);
 
-  public static List<CalendarDate> wantedDates(GridAsPointDataset gap, CalendarDateRange dates, long timeWindow) throws TimeOutOfWindowException, OutOfBoundariesException {
-
-    CalendarDate start = dates.getStart();
-    CalendarDate end = dates.getEnd();
-
-
-    List<CalendarDate> gdsDates = gap.getDates();
-
-    if (start.isAfter(gdsDates.get(gdsDates.size() - 1)) || end.isBefore(gdsDates.get(0)))
-      throw new OutOfBoundariesException("Requested time range does not intersect the Data Time Range = " + gdsDates.get(0) + " to " + gdsDates.get(gdsDates.size() - 1));
-
-    List<CalendarDate> wantDates = new ArrayList<>();
-
-    if (dates.isPoint()) {
-      int best_index = 0;
-      long best_diff = Long.MAX_VALUE;
-      for (int i = 0; i < gdsDates.size(); i++) {
-        CalendarDate date = gdsDates.get(i);
-        long diff = Math.abs(date.getDifferenceInMsecs(start));
-        if (diff < best_diff) {
-          best_index = i;
-          best_diff = diff;
+            if (grid == null) {
+                continue;
+            }
+            grids.add(grid);
         }
-      }
-      if (timeWindow > 0 && best_diff > timeWindow) //Best time is out of our acceptable timeWindow
-        throw new TimeOutOfWindowException("There is not time within the provided time window");
-
-
-      wantDates.add(gdsDates.get(best_index));
-    } else {
-      for (CalendarDate date : gdsDates) {
-        boolean tooEarly = date.isBefore(start);
-        boolean tooLate =  date.isAfter(end);
-        if (tooEarly || tooLate)
-          continue;
-        wantDates.add(date);
-      }
-    }
-    return wantDates;
-  }
-
-
-  public static List<VariableSimpleIF> wantedVars2VariableSimple(List<String> wantedVars, GridDataset gds, NetcdfDataset ncfile) {
-
-    // need VariableSimpleIF for each variable
-    List<VariableSimpleIF> varList = new ArrayList<>(wantedVars.size());
-
-    //And wantedVars must be in the dataset
-    for (String var : wantedVars) {
-      VariableEnhanced ve = gds.findGridDatatype(var).getVariable();
-
-      //List<Dimension> lDims =ve.getDimensions();
-      //StringBuilder dims = new StringBuilder("");
-      //for(Dimension d: lDims){
-      //	dims.append(" ").append(d.getName());
-      //}
-      String dims = ""; // always scalar ????
-
-      VariableSimpleIF want = new VariableDS(ncfile, null, null, ve.getShortName(), ve.getDataType(), dims, ve.getUnitsString(), ve.getDescription());
-
-      varList.add(want);
+        return new GridAsPointDataset(grids);
     }
 
-    return varList;
-  }
+    public static List<String> getAllVarsAsList(GridDataset gds) {
+        List<String> vars = new ArrayList<>();
 
+        List<VariableSimpleIF> allVars = gds.getDataVariables();
+        for (VariableSimpleIF var : allVars) {
+            vars.add(var.getShortName());
+        }
 
-  public static GridDatatype getTimeGrid(Map<String, List<String>> groupedVars, GridDataset gridDataset) {
-
-    List<String> keys = new ArrayList<>(groupedVars.keySet());
-    GridDatatype timeGrid = null;
-    List<String> allVars = new ArrayList<>();
-    for (String key : keys) {
-      allVars.addAll(groupedVars.get(key));
+        return vars;
     }
 
-    Iterator<String> it = allVars.iterator();
 
-    while (timeGrid == null && it.hasNext()) {
-      String var = it.next();
-      if (gridDataset.findGridDatatype(var).getCoordinateSystem().hasTimeAxis()) {
-        timeGrid = gridDataset.findGridDatatype(var);
-      }
-    }
-    ///
-    return timeGrid;
-  }
+    public static List<CalendarDate> wantedDates(GridAsPointDataset gap, CalendarDateRange dates,
+            long timeWindow) throws TimeOutOfWindowException, OutOfBoundariesException {
 
-  public static Double getTimeCoordValue(GridDatatype grid, CalendarDate date, CalendarDate origin) {
+        CalendarDate start = dates.getStart();
+        CalendarDate end = dates.getEnd();
 
-    CoordinateAxis1DTime tAxis = grid.getCoordinateSystem().getTimeAxis1D();
 
-    if (tAxis == null)
-      return -1.0;
+        List<CalendarDate> gdsDates = gap.getDates();
 
-    Integer wIndex = tAxis.findTimeIndexFromCalendarDate(date);
-    Double coordVal;
+        if (start.isAfter(gdsDates.get(gdsDates.size() - 1)) || end.isBefore(gdsDates.get(0))) {
+            throw new OutOfBoundariesException("Requested time range does not intersect the Data Time Range = " +
+                    gdsDates.get(0) + " to " + gdsDates.get(gdsDates.size() - 1));
+        }
 
-    //Check axis dataType --> Time axis for some collections (joinExistingOne) is String
-    //In that case we use the seconds since the origin of the time axis as unit
-    if (tAxis.getDataType() == DataType.STRING) {
-      CalendarDate wanted = tAxis.getCalendarDate(wIndex);
-      coordVal = (double) wanted.getDifferenceInMsecs(origin) / 1000;
+        List<CalendarDate> wantDates = new ArrayList<>();
 
-    } else {
-      coordVal = tAxis.getCoordValue(wIndex);
-    }
+        if (dates.isPoint()) {
+            int best_index = 0;
+            long best_diff = Long.MAX_VALUE;
+            for (int i = 0; i < gdsDates.size(); i++) {
+                CalendarDate date = gdsDates.get(i);
+                long diff = Math.abs(date.getDifferenceInMsecs(start));
+                if (diff < best_diff) {
+                    best_index = i;
+                    best_diff = diff;
+                }
+            }
+            if (timeWindow > 0 && best_diff > timeWindow) //Best time is out of our acceptable timeWindow
+            {
+                throw new TimeOutOfWindowException("There is not time within the provided time window");
+            }
 
-    return coordVal;
-  }
 
-  public static Double getTargetLevelForVertCoord(CoordinateAxis1D zAxis, Double vertLevel) {
-
-    Double targetLevel = vertLevel;
-    int coordLevel;
-    // If zAxis has one level zAxis.findCoordElement(vertLevel) returns -1 and only works with vertLevel = 0
-    // Workaround while not fixed in CoordinateAxis1D
-    if (zAxis.getSize() == 1) {
-      targetLevel = 0.0;
-    } else {
-      //coordLevel = zAxis.findCoordElement(vertLevel);
-      coordLevel = zAxis.findCoordElementBounded(vertLevel);
-
-      if (coordLevel > 0) {
-        targetLevel = zAxis.getCoordValue(coordLevel);
-      }
+            wantDates.add(gdsDates.get(best_index));
+        } else {
+            for (CalendarDate date : gdsDates) {
+                boolean tooEarly = date.isBefore(start);
+                boolean tooLate = date.isAfter(end);
+                if (tooEarly || tooLate) {
+                    continue;
+                }
+                wantDates.add(date);
+            }
+        }
+        return wantDates;
     }
 
-    return targetLevel;
-  }
 
-  /**
-   * Returns the actual vertical level if the grid has vertical transformation or -9999.9 otherwise
-   */
-  public static double getActualVertLevel(GridDatatype grid, CalendarDate date, LatLonPoint point, double targetLevel) throws IOException, InvalidRangeException {
+    public static List<VariableSimpleIF> wantedVars2VariableSimple(List<String> wantedVars, GridDataset gds,
+            NetcdfDataset ncfile) {
 
-    double actualLevel = -9999.9;
+        // need VariableSimpleIF for each variable
+        List<VariableSimpleIF> varList = new ArrayList<>(wantedVars.size());
 
-    //Check vertical transformations for the grid
-    GridCoordSystem cs = grid.getCoordinateSystem();
-    VerticalTransform vt = cs.getVerticalTransform();
+        //And wantedVars must be in the dataset
+        for (String var : wantedVars) {
+            VariableEnhanced ve = gds.findGridDatatype(var).getVariable();
 
-    if (vt != null) {
-      int[] result = new int[2];
-      cs.findXYindexFromLatLon(point.getLatitude(), point.getLongitude(), result);
-      CoordinateAxis1DTime timeAxis = cs.getTimeAxis1D();
-      int vertCoord = cs.getVerticalAxis().findCoordElement(targetLevel);
+            //List<Dimension> lDims =ve.getDimensions();
+            //StringBuilder dims = new StringBuilder("");
+            //for(Dimension d: lDims){
+            //	dims.append(" ").append(d.getName());
+            //}
+            String dims = ""; // always scalar ????
 
-      int timeIndex = 0;
-      if (timeAxis != null) {
-        timeIndex = timeAxis.findTimeIndexFromCalendarDate(date);
-      }//If null timAxis might be 2D -> not supported (handle this)
+            VariableSimpleIF want = new VariableDS(ncfile, null, null, ve.getShortName(), ve.getDataType(), dims,
+                    ve.getUnitsString(), ve.getDescription());
 
-      ArrayDouble.D1 actualLevels = vt.getCoordinateArray1D(timeIndex, result[0], result[1]);
-      actualLevel = actualLevels.get(vertCoord);
+            varList.add(want);
+        }
+
+        return varList;
     }
 
-    return actualLevel;
-  }
 
-  public static String nameFromPathInfo(String pathInfo) {
-    String[] pathInfoStr = pathInfo.split("/");
-    return pathInfoStr[pathInfoStr.length - 1];
-  }
+    public static GridDatatype getTimeGrid(Map<String, List<String>> groupedVars, GridDataset gridDataset) {
 
+        List<String> keys = new ArrayList<>(groupedVars.keySet());
+        GridDatatype timeGrid = null;
+        List<String> allVars = new ArrayList<>();
+        for (String key : keys) {
+            allVars.addAll(groupedVars.get(key));
+        }
 
-  /**
-   * Makes the TdsContext available
-   *
-   * @return TdsContext
-   */
-  public static TdsContext getTdsContext() {
-    return applicationContext.getBean(TdsContext.class);
-  }
+        Iterator<String> it = allVars.iterator();
 
-  @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    NcssRequestUtils.applicationContext = applicationContext;
-  }
+        while (timeGrid == null && it.hasNext()) {
+            String var = it.next();
+            if (gridDataset.findGridDatatype(var).getCoordinateSystem().hasTimeAxis()) {
+                timeGrid = gridDataset.findGridDatatype(var);
+            }
+        }
+        ///
+        return timeGrid;
+    }
 
+    public static Double getTimeCoordValue(GridDatatype grid, CalendarDate date, CalendarDate origin) {
 
+        CoordinateAxis1DTime tAxis = grid.getCoordinateSystem().getTimeAxis1D();
+
+        if (tAxis == null) {
+            return -1.0;
+        }
+
+        Integer wIndex = tAxis.findTimeIndexFromCalendarDate(date);
+        Double coordVal;
+
+        //Check axis dataType --> Time axis for some collections (joinExistingOne) is String
+        //In that case we use the seconds since the origin of the time axis as unit
+        if (tAxis.getDataType() == DataType.STRING) {
+            CalendarDate wanted = tAxis.getCalendarDate(wIndex);
+            coordVal = (double) wanted.getDifferenceInMsecs(origin) / 1000;
+
+        } else {
+            coordVal = tAxis.getCoordValue(wIndex);
+        }
+
+        return coordVal;
+    }
+
+    public static Double getTargetLevelForVertCoord(CoordinateAxis1D zAxis, Double vertLevel) {
+
+        Double targetLevel = vertLevel;
+        int coordLevel;
+        // If zAxis has one level zAxis.findCoordElement(vertLevel) returns -1 and only works with vertLevel = 0
+        // Workaround while not fixed in CoordinateAxis1D
+        if (zAxis.getSize() == 1) {
+            targetLevel = 0.0;
+        } else {
+            //coordLevel = zAxis.findCoordElement(vertLevel);
+            coordLevel = zAxis.findCoordElementBounded(vertLevel);
+
+            if (coordLevel > 0) {
+                targetLevel = zAxis.getCoordValue(coordLevel);
+            }
+        }
+
+        return targetLevel;
+    }
+
+    /**
+     * Returns the actual vertical level if the grid has vertical transformation or -9999.9 otherwise
+     */
+    public static double getActualVertLevel(GridDatatype grid, CalendarDate date, LatLonPoint point,
+            double targetLevel) throws IOException, InvalidRangeException {
+
+        double actualLevel = -9999.9;
+
+        //Check vertical transformations for the grid
+        GridCoordSystem cs = grid.getCoordinateSystem();
+        VerticalTransform vt = cs.getVerticalTransform();
+
+        if (vt != null) {
+            int[] result = new int[2];
+            cs.findXYindexFromLatLon(point.getLatitude(), point.getLongitude(), result);
+            CoordinateAxis1DTime timeAxis = cs.getTimeAxis1D();
+            int vertCoord = cs.getVerticalAxis().findCoordElement(targetLevel);
+
+            int timeIndex = 0;
+            if (timeAxis != null) {
+                timeIndex = timeAxis.findTimeIndexFromCalendarDate(date);
+            }//If null timAxis might be 2D -> not supported (handle this)
+
+            ArrayDouble.D1 actualLevels = vt.getCoordinateArray1D(timeIndex, result[0], result[1]);
+            actualLevel = actualLevels.get(vertCoord);
+        }
+
+        return actualLevel;
+    }
+
+    /**
+     * Makes the TdsContext available
+     *
+     * @return TdsContext
+     */
+    public static TdsContext getTdsContext() {
+        return applicationContext.getBean(TdsContext.class);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        NcssRequestUtils.applicationContext = applicationContext;
+    }
+
+    public static String getFileNameForResponse(String pathInfo, NetcdfFileWriter.Version version) {
+        Preconditions.checkNotNull(version, "version == null");
+        return getFileNameForResponse(pathInfo, version.getSuffix());
+    }
+
+    public static String getFileNameForResponse(String pathInfo, String extension) {
+        Preconditions.checkArgument(pathInfo != null && !pathInfo.isEmpty(), "pathInfo == %s", pathInfo);
+        Preconditions.checkNotNull(extension, "extension == null");
+
+        String parentDirName = FilenameUtils.getBaseName(FilenameUtils.getPathNoEndSeparator(pathInfo));
+        String baseName = FilenameUtils.getBaseName(pathInfo);
+        String dotExtension = extension.startsWith(".") ? extension : "." + extension;
+
+        if (!parentDirName.isEmpty()) {
+            return parentDirName + "_" + baseName + dotExtension;
+        } else {
+            return baseName + dotExtension;
+        }
+    }
 }

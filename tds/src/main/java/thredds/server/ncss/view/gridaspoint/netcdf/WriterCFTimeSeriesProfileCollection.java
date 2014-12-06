@@ -154,7 +154,9 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 				writer.addVariableAttribute(zVar, new Attribute(CF.STANDARD_NAME, zAxis.getShortName() ));
 				writer.addVariableAttribute(zVar, new Attribute(CDM.LONG_NAME, zAxis.getFullName() ));
 				writer.addVariableAttribute(zVar, new Attribute(CDM.UNITS , zAxis.getUnitsString() ));
-				writer.addVariableAttribute(zVar, new Attribute(CF.POSITIVE , zAxis.getPositive() ));
+                if (zAxis.getPositive() != null) {
+                    writer.addVariableAttribute(zVar, new Attribute(CF.POSITIVE, zAxis.getPositive()));
+                }
 				writer.addVariableAttribute(zVar, new Attribute(CF.AXIS , "Z"  ));
 				coordinates = coordinates +" "+d.getShortName();
 			}
