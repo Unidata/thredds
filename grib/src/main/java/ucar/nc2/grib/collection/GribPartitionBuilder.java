@@ -234,7 +234,17 @@ abstract class GribPartitionBuilder  {
         masterRuntimes.add(partRuntime);        // make master runtimes
 
         GribCollectionMutable.Dataset ds2dp = gc.getDatasetCanonical(); // the twoD or GC dataset
-        if (ds2dp.gctype != GribCollectionImmutable.Type.MRSTC) allAre1D = false;
+
+        // see if its only got one time coord
+        if (ds2dp.gctype == GribCollectionImmutable.Type.SRC) {
+          GribCollectionMutable.GroupGC group = ds2dp.getGroup(0);  // can only be one group
+          for (Coordinate coord : group.getCoordinates()) {
+            if (coord instanceof CoordinateTimeAbstract && coord.getSize() > 1) // all time coords must have only one time
+              allAre1D = false;
+          }
+        } else if (ds2dp.gctype != GribCollectionImmutable.Type.MRSTC && ds2dp.gctype != GribCollectionImmutable.Type.TP) {
+          allAre1D = false;
+        }
 
         int groupIdx = 0;
         for (GribCollectionMutable.GroupGC g : ds2dp.groups) { // for each group in the partition
@@ -252,7 +262,7 @@ abstract class GribPartitionBuilder  {
 
     List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
     result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish();
-    if (allAre1D || result.masterRuntime.getSize() == 1)  // LOOK probably not right
+    if (allAre1D)
       ds2D.gctype = GribCollectionImmutable.Type.TP;
 
     // create run2part: for each run, which partition to use
@@ -357,7 +367,7 @@ abstract class GribPartitionBuilder  {
     return ds2D;
   }
 
-  /* LOOK maybe a mistake to try to track missing values, as it messes up the runtime accuracy ??
+  /* maybe a mistake to try to track missing values, as it messes up the runtime accuracy ??
   // for one vi, count the inventory, put results into the twot array
   private void makeMissing(GroupPartitions gp, GribCollectionMutable.VariableIndex viResult) throws IOException {
     Coordinate cr = viResult.getCoordinate(Coordinate.Type.runtime);  // this is all of the runtimes for this vip, across partitions
@@ -394,14 +404,14 @@ abstract class GribPartitionBuilder  {
       CoordinateTime2D ctGC2d =  isTwoD ? (CoordinateTime2D) ctGC : null;
 
       // we need the sparse array for this component vi
-      vi.readRecords();                                         // LOOK open/close cached RAF. could pre-read, since we know we need.
+      vi.readRecords();                                         // open/close cached RAF. could pre-read, since we know we need.
       SparseArray<GribCollectionMutable.Record> sa = vi.getSparseArray();
       Section s = new Section(sa.getShape());
       Section.Iterator iter = s.getIterator(sa.getShape());
 
       // run through all the inventory in this component vi
       int[] indexInPartition = new int[sa.getRank()]; // this will hold the indices reletive to variable in one partition
-      int[] indexInResult = new int[sa.getRank()];    // this will hold the indices reletive to result variable (all partitions) LOOK rank ?
+      int[] indexInResult = new int[sa.getRank()];    // this will hold the indices reletive to result variable (all partitions) HEY rank ok ?
       while (iter.hasNext()) {
         int linearIndex = iter.next(indexInPartition);
         if (sa.getContent(linearIndex) == null) continue; // missing data
@@ -419,7 +429,7 @@ abstract class GribPartitionBuilder  {
           viResult.twot.add(indexInResult[0], indexInResult[1]);
 
         } else {
-          Object runval = ctGC.getValue(runIdxP);  // value from vi  LOOK not tested, may not ever be used
+          Object runval = ctGC.getValue(runIdxP);  // value from vi  HEY not tested, may not ever be used
           int runIdxR = cr.getIndex(runval);       // index in vip
 
           Object timeval = ctGC.getValue(timeIdxP); // value from vi

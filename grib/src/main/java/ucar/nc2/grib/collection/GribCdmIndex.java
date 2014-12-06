@@ -369,24 +369,25 @@ public class GribCdmIndex implements IndexReader {
         Files.delete(idxFile);
     }
 
-    // index does not yet exist, or we want to test if it changed
-    // must scan it
-    for (MCollection part : dpart.makePartitions(forceCollection)) {
-      part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-      try {
-        if (part.isLeaf()) {  // LOOK here we use isLeaf() to decide if its a leaf or partition (maybe ok)
-          Path partPath = Paths.get(part.getRoot());
-          updateLeafCollection(isGrib1, config, forceCollection, logger, partPath);
+    // check the children firsst
+    if (forceCollection != CollectionUpdateType.testIndexOnly) {   // skip children on indexOnly
+      for (MCollection part : dpart.makePartitions(forceCollection)) {
+        part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+        try {
+          if (part.isLeaf()) {  // LOOK here we use isLeaf() to decide if its a leaf or partition (maybe ok)
+            Path partPath = Paths.get(part.getRoot());
+            updateLeafCollection(isGrib1, config, forceCollection, logger, partPath);
 
-        } else {
-          updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, forceCollection, logger);
+          } else {
+            updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, forceCollection, logger);
+          }
+        } catch (Throwable t) {
+          logger.warn("Error making partition " + part.getRoot(), t);
+          throw t;
+          // continue; // keep on truckin; can happen if directory is empty
         }
-      } catch (Throwable t) {
-        logger.warn("Error making partition "+part.getRoot(), t);
-        throw t;
-        // continue; // keep on truckin; can happen if directory is empty
-      }
-    }   // loop over partitions
+      }   // loop over partitions
+    }
 
     // do this partition; we just did children so never update them
     boolean changed;

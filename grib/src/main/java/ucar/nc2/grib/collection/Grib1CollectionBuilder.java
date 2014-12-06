@@ -107,6 +107,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
           continue;
         }
+        if (index == null)
+          System.out.println("HEY");
         int n = index.getNRecords();
         totalRecords += n;
 

@@ -125,7 +125,7 @@ public class DateFromString {
     int pos1 = dateFormatString.indexOf( demark);
     int pos2 = dateFormatString.indexOf( demark, pos1+1);
     if ((pos1 < 0) || (pos2 < 0)) {
-      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = "+ dateFormatString);
+      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = "+ dateFormatString, new Throwable());
       return null;
     }
     String match = dateFormatString.substring(pos1+1, pos2);

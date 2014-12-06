@@ -323,6 +323,11 @@ public class GribCollectionMutable implements AutoCloseable {
     public List<GroupGC> getGroups() {
       return groups;
     }
+
+    public GroupGC getGroup(int idx) {
+      return groups.get(idx);
+    }
+
   }
 
   public class GroupGC implements Comparable<GroupGC> {

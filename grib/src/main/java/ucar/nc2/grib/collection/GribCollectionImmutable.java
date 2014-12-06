@@ -64,7 +64,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   static private final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
   public static int countGC; // debug
 
-  public enum Type {GC, SRC, MRC, MRSTC, TP, TwoD, Best, Analysis} // must match with GribCollectionProto.Dataset.Type
+  public enum Type {    // must match with GribCollectionProto.Dataset.Type
+    GC,
+    SRC,               // GC: Single Runtime Collection                [ntimes]
+    MRC,               // GC: Multiple Runtime Collection              [nruns, ntimes]
+    MRSTC,             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
+    TP,                // PC: Multiple Runtime Single Time Partition   [nruns, 1]
+    TwoD,              // PC: TwoD time partition                      [nruns, ntimes]
+    Best,              // PC: Best time partition                      [ntimes]
+    Analysis}          // PC: Analysis only time partition (ot done)   [ntimes]
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
@@ -478,6 +486,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public Coordinate getCoordinate(int index) {
+      if (index >= coordIndex.size())
+        System.out.println("HEY");
       int grpIndex = coordIndex.get(index);
       return group.coords.get(grpIndex);
     }
