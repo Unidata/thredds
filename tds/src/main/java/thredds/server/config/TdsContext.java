@@ -154,6 +154,9 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   @Autowired
   private WmsConfig wmsConfig;
 
+  @Autowired
+  private CorsConfig corsConfig;
+
   private ServletContext servletContext;
 
   private TdsContext() {
@@ -229,8 +232,14 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     this.wmsConfig = wmsConfig;
   }
 
+  public CorsConfig getCorsConfig() { return corsConfig; }
+
+  public void setCorsConfig(CorsConfig corsConfig) {
+      this.corsConfig = corsConfig;
+  }
+
   /*
-   * Release tdsContext resouces 
+   * Release tdsContext resources
    * (non-Javadoc)
    * @see org.springframework.beans.factory.DisposableBean#destroy()
    */
@@ -460,6 +469,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     tdsConfigMapper.setTdsServerInfo(this.serverInfo);
     tdsConfigMapper.setHtmlConfig(this.htmlConfig);
     tdsConfigMapper.setWmsConfig(this.wmsConfig);
+    tdsConfigMapper.setCorsConfig(this.corsConfig);
     tdsConfigMapper.init(this);
   }
 

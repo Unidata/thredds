@@ -55,6 +55,26 @@
   </htmlSetup>
 
   <!--
+   The <CORS> element controls Cross-Origin Resource Sharing (CORS).
+   CORS is a way to allow a website (such as THREDDS) to open up access
+   to resources to web pages and applications running on a different domain.
+   One example would be allowing a web-application to use fonts from
+   a separate host. For TDS, this can allow a javascript app running on a
+   different site to access data on a THREDDS server.
+   For more information see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   The elements below represent defaults. Only the <enabled> tag is required
+   to enable CORS. The default allowed origin is '*', which allows sharing
+   to any domain.
+  <CORS>
+    <enabled>false</enabled>
+    <maxAge>1728000</maxAge>
+    <allowedMethods>GET</allowedMethods>
+    <allowedHeaders>Authorization</allowedHeaders>
+    <allowedOrigin>*</allowedOrigin>
+  </CORS>
+  -->
+
+  <!--
    The <CatalogServices> element:
    - Services on local TDS served catalogs are always on.
    - Services on remote catalogs are set with the allowRemote element
