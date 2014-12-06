@@ -109,8 +109,7 @@ public class TestGribCollections {
   public void testGC_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3");
 
-    // total == 1560/23229
-    assert count.nread == 23229;
+    assert count.nread == 22909; // 23229
     assert count.nmiss == 0;
   }
 
@@ -118,8 +117,7 @@ public class TestGribCollections {
   public void testPofG_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3");
 
-    // total == 6391/94352
-    assert count.nread == 94352;
+    assert count.nread == 93052;  // 93052 ??
     assert count.nmiss == 0;
   }
 

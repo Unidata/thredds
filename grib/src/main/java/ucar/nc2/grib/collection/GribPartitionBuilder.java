@@ -237,10 +237,16 @@ abstract class GribPartitionBuilder  {
 
         // see if its only got one time coord
         if (ds2dp.gctype == GribCollectionImmutable.Type.SRC) {
-          GribCollectionMutable.GroupGC group = ds2dp.getGroup(0);  // can only be one group
-          for (Coordinate coord : group.getCoordinates()) {
-            if (coord instanceof CoordinateTimeAbstract && coord.getSize() > 1) // all time coords must have only one time
-              allAre1D = false;
+          for (GribCollectionMutable.GroupGC group : ds2dp.getGroups()) {
+            for (Coordinate coord : group.getCoordinates()) { // all time coords must have only one time
+              if (coord instanceof CoordinateTime2D) {
+                CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+                if (coord2D.getNtimes() > 1)
+                  allAre1D = false;
+
+            } else if (coord instanceof CoordinateTimeAbstract && coord.getSize() > 1)
+                allAre1D = false;
+            }
           }
         } else if (ds2dp.gctype != GribCollectionImmutable.Type.MRSTC && ds2dp.gctype != GribCollectionImmutable.Type.TP) {
           allAre1D = false;
