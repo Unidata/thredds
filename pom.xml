@@ -1029,7 +1029,7 @@
     <taglibs.version>1.1.2</taglibs.version>
     <saxon.version>8.7</saxon.version>
     <jna.groupId>net.java.dev.jna</jna.groupId>
-    <jna.version>4.0.0</jna.version>
+    <jna.version>4.1.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>
     <org.itadaki.bzip2.version>0.9.1</org.itadaki.bzip2.version>
     <jcommander.version>1.35</jcommander.version>
