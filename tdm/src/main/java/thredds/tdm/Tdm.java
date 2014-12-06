@@ -217,7 +217,7 @@ public class Tdm {
      if (showOnly) {
        List<String> result = new ArrayList<>();
        for (FeatureCollectionConfig config : fcList) {
-         result.add(config.name);
+         result.add(config.collectionName);
        }
        Collections.sort(result);
 
@@ -235,7 +235,7 @@ public class Tdm {
 
      for (FeatureCollectionConfig config : fcList) {
        if (config.type != FeatureCollectionType.GRIB1 && config.type != FeatureCollectionType.GRIB2) continue;
-       System.out.printf("FeatureCollection %s scheduled %n", config.name);
+       System.out.printf("FeatureCollection %s scheduled %n", config.collectionName);
        /* CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
        if (config != null && config.gribConfig != null && config.gribConfig.gdsHash != null)
          dcm.putAuxInfo("gdsHash", config.gribConfig.gdsHash); // sneak in extra config info  */
@@ -243,7 +243,7 @@ public class Tdm {
        if (forceOnStartup) // on startup, force rewrite of indexes
          config.tdmConfig.startupType = CollectionUpdateType.always;
 
-       Logger logger = loggerFactory.getLogger("fc." + config.name); // seperate log file for each feature collection (!!)
+       Logger logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection (!!)
        logger.info("FeatureCollection config=" + config);
        CollectionUpdater.INSTANCE.scheduleTasks(config, new Listener(config, logger), logger); // now wired for events
      }
@@ -287,7 +287,7 @@ public class Tdm {
 
     @Override
     public String getCollectionName() {
-      return config.name;
+      return config.collectionName;
     }
 
     @Override
@@ -311,7 +311,7 @@ public class Tdm {
     org.slf4j.Logger logger;
 
     private IndexTask(FeatureCollectionConfig config, Listener liz, CollectionUpdateType updateType, org.slf4j.Logger logger) {
-      this.name = config.name;
+      this.name = config.collectionName;
       this.config = config;
       this.liz = liz;
       this.updateType = updateType;
@@ -321,11 +321,11 @@ public class Tdm {
     @Override
     public void run() {
       try {
-        if (debug) System.out.printf("---------------------%nIndexTask updateGribCollection %s%n", config.name);
+        if (debug) System.out.printf("---------------------%nIndexTask updateGribCollection %s%n", config.collectionName);
         boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
 
-        logger.debug("{} {} changed {}", CalendarDate.present(), config.name, changed);
-        if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.name);
+        logger.debug("{} {} changed {}", CalendarDate.present(), config.collectionName, changed);
+        if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.collectionName);
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
           String path = makeTriggerUrl(name);

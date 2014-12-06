@@ -44,8 +44,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   private final FeatureDatasetPoint fd;  // LOOK this stays open
   private final Set<FeatureCollectionConfig.PointDatasetType> wantDatasets;
 
-  InvDatasetFcPoint(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
-    super(parent, name, path, fcType, config);
+  InvDatasetFcPoint(InvDatasetImpl parent, FeatureCollectionConfig config) {
+    super(parent, config);
     makeCollection();
 
     Formatter errlog = new Formatter();

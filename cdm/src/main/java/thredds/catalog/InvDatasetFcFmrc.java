@@ -52,8 +52,8 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   private final Fmrc fmrc;
   private final Set<FeatureCollectionConfig.FmrcDatasetType> wantDatasets;
 
-  InvDatasetFcFmrc(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
-    super(parent, name, path, fcType, config);
+  InvDatasetFcFmrc(InvDatasetImpl parent, FeatureCollectionConfig config) {
+    super(parent, config);
     makeCollection();
     tmi.setDataType( FeatureType.GRID); // override FMRC
 

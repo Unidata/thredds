@@ -199,7 +199,7 @@ class GribCollectionWriter {
 
   protected GribCollectionProto.FcConfig writeConfig(FeatureCollectionConfig config) throws IOException {
     GribCollectionProto.FcConfig.Builder b = GribCollectionProto.FcConfig.newBuilder();
-    b.setName(config.name);
+    b.setName(config.collectionName);
     b.setCollectionSpec(config.spec);
     b.setPartitionType(config.ptype.toString());
     if (config.dateFormatMark != null)
@@ -252,6 +252,7 @@ class GribCollectionWriter {
 
     FeatureCollectionConfig config = new FeatureCollectionConfig();
     config.name = pconfig.getName();
+    config.collectionName = pconfig.getName();
     config.type = isGrib1 ? FeatureCollectionType.GRIB1 : FeatureCollectionType.GRIB1;
     config.spec = pconfig.getCollectionSpec();
     config.ptype = FeatureCollectionConfig.PartitionType.valueOf(pconfig.getPartitionType());

@@ -30,7 +30,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     this.topDir = topDir;
     this.indexReader = indexReader;
 
-    this.topCollection = config.name;
+    this.topCollection = config.collectionName;
     this.collectionName = DirectoryCollection.makeCollectionName(topCollection, topDir);
   }
 

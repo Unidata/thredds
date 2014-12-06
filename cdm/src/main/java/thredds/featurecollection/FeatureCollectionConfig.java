@@ -85,7 +85,7 @@ public class FeatureCollectionConfig {
 
   public FeatureCollectionType type;
   public PartitionType ptype = PartitionType.directory;
-  public String name, path, spec, dateFormatMark, olderThan;
+  public String name, path, spec, collectionName, dateFormatMark, olderThan;
   public UpdateConfig tdmConfig = new UpdateConfig();
   public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
@@ -93,27 +93,24 @@ public class FeatureCollectionConfig {
   public PointConfig pointConfig = new PointConfig();
   public GribConfig gribConfig = new GribConfig();
   public Element innerNcml = null;
-  public boolean useIndexOnly = false;
 
   public FeatureCollectionConfig() {
   }
 
-  public FeatureCollectionConfig(String name, String path, FeatureCollectionType fcType, String spec,
-                                 String dateFormatMark, String olderThan,
-                                 String timePartition, String useIndexOnlyS, Element innerNcml) {
+  public FeatureCollectionConfig(String name, String path, FeatureCollectionType fcType, String spec, String collectionName,
+                                 String dateFormatMark, String olderThan, String timePartition, Element innerNcml) {
     this.name = name;
     this.path = path;
     this.type = fcType;
     this.spec = spec;
+    this.collectionName = collectionName == null ? name : collectionName;
     this.dateFormatMark = dateFormatMark;
     this.olderThan = olderThan;
-    //if (recheckAfter != null) this.updateConfig.recheckAfter = recheckAfter;
     if (null != timePartition) {
       if (timePartition.equalsIgnoreCase("none")) ptype = PartitionType.none;
       if (timePartition.equalsIgnoreCase("directory")) ptype = PartitionType.directory;
       if (timePartition.equalsIgnoreCase("file")) ptype = PartitionType.file;
     }
-    this.useIndexOnly = useIndexOnlyS != null && useIndexOnlyS.equalsIgnoreCase("true");
     this.innerNcml = innerNcml;
   }
 
@@ -125,7 +122,7 @@ public class FeatureCollectionConfig {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    f.format("FeatureCollectionConfig name ='%s' type='%s'%n", name, type);
+    f.format("FeatureCollectionConfig name ='%s' collectionName='%s' type='%s'%n", name, collectionName, type);
     f.format("  spec='%s'%n", spec);
     if (dateFormatMark != null)
       f.format("  dateFormatMark ='%s'%n", dateFormatMark);
@@ -161,7 +158,7 @@ public class FeatureCollectionConfig {
   }
 
   public void show(Formatter f) {
-    f.format("FeatureCollectionConfig name ='%s' type='%s'%n", name, type);
+    f.format("FeatureCollectionConfig name ='%s' collectionName='%s' type='%s'%n", name, collectionName, type);
     f.format("  spec='%s'%n", spec);
     if (dateFormatMark != null)
       f.format("  dateFormatMark ='%s'%n", dateFormatMark);

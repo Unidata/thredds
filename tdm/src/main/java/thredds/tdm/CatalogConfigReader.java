@@ -76,7 +76,7 @@ public class CatalogConfigReader {
         String name = "";
         try {
           FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(fcElem);
-          name = config.name;
+          name = config.collectionName;
 
           // check spec
           config.spec = aliasHandler.replaceAlias(config.spec);
@@ -84,13 +84,13 @@ public class CatalogConfigReader {
           CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
           Path rootPath = Paths.get(specp.getRootDir());
           if (!Files.exists(rootPath)) {
-            System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.name, catFile.getPath());
-            log.error("Root path {} does not exist fc='{}' from catalog={}", rootPath.getFileName(), config.name, catFile.getPath());
+            System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.collectionName, catFile.getPath());
+            log.error("Root path {} does not exist fc='{}' from catalog={}", rootPath.getFileName(), config.collectionName, catFile.getPath());
             continue;
           }
 
           fcList.add(config);
-          if (debug) System.out.printf("Added  fc='%s' from catalog=%s%n", config.name, catFile.getPath());
+          if (debug) System.out.printf("Added  fc='%s' from catalog=%s%n", config.collectionName, catFile.getPath());
 
         } catch (Throwable e) {
           e.printStackTrace();

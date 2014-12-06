@@ -104,8 +104,7 @@ public class TestDcm {
    //                                  String timePartition, String useIndexOnlyS, Element innerNcml) {
 
     FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", "path", FeatureCollectionType.FMRC,
-            TestDir.cdmUnitTestDir + "agg/updating/.*nc$",
-            null, "10 sec", null, null, null);
+            TestDir.cdmUnitTestDir + "agg/updating/.*nc$", null, null, "10 sec", null, null);
 
     assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
 
@@ -124,8 +123,7 @@ public class TestDcm {
    //                                  String timePartition, String useIndexOnlyS, Element innerNcml) {
 
     FeatureCollectionConfig config = new FeatureCollectionConfig("testOlderThanInDirectoryCollection", "path", FeatureCollectionType.GRIB1,
-            TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2",
-            null, "30 sec", null, null, null);
+            TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2", null, null, "30 sec", null, null);
 
     Formatter errlog = new Formatter(System.out);
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);

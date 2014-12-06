@@ -81,7 +81,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static protected String context = "/thredds";                     // LOOK
   static private String cdmrFeatureServiceUrlPath = "/cdmrFeature"; // LOOK
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
-  static private org.slf4j.Logger classLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
+  static private org.slf4j.Logger initLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class.getName() + ".catalogInit");
 
   static public void setContext(String c) {
     context = c;
@@ -107,32 +107,28 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return new InvService("cdmrFeature", "cdmrFeature", context + cdmrFeatureServiceUrlPath, null, null);
   }
 
-  static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
+  static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, FeatureCollectionConfig config) {
     InvDatasetFeatureCollection result;
-    if (fcType == FeatureCollectionType.FMRC)
-      result = new InvDatasetFcFmrc(parent, name, path, fcType, config);
+    if (config.type == FeatureCollectionType.FMRC)
+      result = new InvDatasetFcFmrc(parent, config);
 
-    else if (fcType == FeatureCollectionType.GRIB1 || fcType == FeatureCollectionType.GRIB2) {
+    else if (config.type == FeatureCollectionType.GRIB1 || config.type == FeatureCollectionType.GRIB2) {
       // use reflection to decouple from grib.jar
       try {
         Class c = InvDatasetFeatureCollection.class.getClassLoader().loadClass("thredds.catalog.InvDatasetFcGrib");
-        // public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
-        Constructor ctor = c.getConstructor(InvDatasetImpl.class, String.class, String.class, FeatureCollectionType.class, FeatureCollectionConfig.class);
-        result = (InvDatasetFeatureCollection) ctor.newInstance(parent, name, path, fcType, config);
+        Constructor ctor = c.getConstructor(InvDatasetImpl.class, FeatureCollectionConfig.class);
+        result = (InvDatasetFeatureCollection) ctor.newInstance(parent, config);
 
       } catch (Throwable e) {
-        classLogger.error("Failed to open " + name + " path=" + path, e);
+        initLogger.error("Failed to open " + config.collectionName + " path=" + config.path, e);
         return null;
       }
 
     } else {
-      result = new InvDatasetFcPoint(parent, name, path, fcType, config);
+      result = new InvDatasetFcPoint(parent, config);
     }
 
-    if (result != null) {
-      result.finishConstruction(); // stuff that shouldnt be done in a constructor
-    }
-
+    result.finishConstruction(); // stuff that shouldnt be done in a constructor
     return result;
   }
 
@@ -176,8 +172,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
   protected String topDirectory;
-  protected MCollection datasetCollection; // defines the collection of datasets in this feature collection, actually final
-  protected String collectionName;
+  protected MCollection datasetCollection; // defines the collection of datasets in this feature collection, actually final NOT USED BY GRIB
 
   @GuardedBy("lock")
   protected State state;
@@ -185,18 +180,14 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected boolean first = true;
   protected final Object lock = new Object();
 
-  protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
-    super(parent, name, buildCatalogServiceHref(path));
-    this.configPath = path;
-    this.fcType = fcType;
+  protected InvDatasetFeatureCollection(InvDatasetImpl parent, FeatureCollectionConfig config) {
+    super(parent, config.name, buildCatalogServiceHref(config.path));
+    this.configPath = config.path;
+    this.fcType = config.type;
     this.config = config;
 
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
-
-    this.collectionName = CollectionAbstract.cleanName(config.name != null ? config.name : name);
-    config.name = collectionName;
-    this.logger = loggerFactory.getLogger("fc." + collectionName); // seperate log file for each feature collection (!!)
-
+    this.logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection
     this.logger.info("FeatureCollection added = {}", getConfig());
   }
 
@@ -204,7 +195,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     Formatter errlog = new Formatter();
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
-      datasetCollection = new CollectionManagerCatalog(config.name, config.spec, null, errlog);
+      datasetCollection = new CollectionManagerCatalog(config.collectionName, config.spec, null, errlog);
     } else {
       datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
     }
@@ -221,7 +212,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   public String getCollectionName() {
-    return collectionName;
+    return config.collectionName;
   }
 
   @Override

@@ -106,7 +106,7 @@ public enum CollectionUpdater {
 
     try {
       scheduler.scheduleJob(startupTrigger);
-      if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.name, runTime);
+      if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.collectionName, runTime);
     } catch (Throwable e) {
       if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
       return;
@@ -124,7 +124,7 @@ public enum CollectionUpdater {
 
       try {
     		scheduler.scheduleJob(rescanTrigger);
-        if (logger != null)logger.info("Schedule recurring scan for '{}' cronExpr={}", config.name, updateConfig.rescan);
+        if (logger != null)logger.info("Schedule recurring scan for '{}' cronExpr={}", config.collectionName, updateConfig.rescan);
       } catch (Throwable e) {
         if (logger != null)logger.error("cronExecutor failed to schedule cron Job", e);
         // e.printStackTrace();
@@ -149,7 +149,7 @@ public enum CollectionUpdater {
                 .withSchedule(CronScheduleBuilder.cronSchedule(pconfig.change))
                 .build();
         scheduler.scheduleJob(protoJob, protoTrigger);
-        if (logger != null)logger.info("Schedule proto update for '{}' cronExpr={}", config.name, pconfig.change);
+        if (logger != null)logger.info("Schedule proto update for '{}' cronExpr={}", config.collectionName, pconfig.change);
 
       } catch (Throwable e) {
         if (logger != null)logger.error("cronExecutor failed to schedule RereadProtoJob", e);

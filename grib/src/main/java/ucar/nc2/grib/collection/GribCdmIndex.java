@@ -110,7 +110,7 @@ public class GribCdmIndex implements IndexReader {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    String name = StringUtil2.replace(config.name, '\\', "/");
+    String name = StringUtil2.replace(config.collectionName, '\\', "/");
     String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
 
     return makeIndexFile(cname, new File(specp.getRootDir()));
@@ -306,8 +306,8 @@ public class GribCdmIndex implements IndexReader {
     if (config.ptype == FeatureCollectionConfig.PartitionType.none) {
 
       // LOOK how well tested is this?
-      CollectionAbstract dcm = specp.wantSubdirs() ? new CollectionGeneral(config.name, rootPath, config.olderThan, logger) :
-              new DirectoryCollection(config.name, rootPath, config.olderThan, logger);
+      CollectionAbstract dcm = specp.wantSubdirs() ? new CollectionGeneral(config.collectionName, rootPath, config.olderThan, logger) :
+              new DirectoryCollection(config.collectionName, rootPath, config.olderThan, logger);
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
       if (specp.getFilter() != null)
@@ -338,7 +338,7 @@ public class GribCdmIndex implements IndexReader {
     }
 
     long took = System.currentTimeMillis() - start;
-    logger.info("updateGribCollection {} changed {} took {} msecs", config.name, changed, took);
+    logger.info("updateGribCollection {} changed {} took {} msecs", config.collectionName, changed, took);
     return changed;
   }
 
@@ -443,7 +443,7 @@ public class GribCdmIndex implements IndexReader {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, config.olderThan, logger);
+    DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, config.olderThan, logger);
     dcm.setLeaf(true);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)
@@ -487,7 +487,7 @@ public class GribCdmIndex implements IndexReader {
     final Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    FilePartition partition = new FilePartition(config.name, dirPath, config.olderThan, logger);
+    FilePartition partition = new FilePartition(config.collectionName, dirPath, config.olderThan, logger);
     partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)
       partition.setStreamFilter(new StreamFilter(specp.getFilter()));
@@ -902,7 +902,7 @@ public class GribCdmIndex implements IndexReader {
      */
 
     FeatureCollectionConfig config = new FeatureCollectionConfig("RFC", "grib/NPVU/RFC", FeatureCollectionType.GRIB1,
-            "B:/motherlode/rfc/**/.*grib1$", "yyyyMMdd#.grib1#", null, "directory", null, null);
+            "B:/motherlode/rfc/**/.*grib1$", null, "yyyyMMdd#.grib1#", null, "directory", null);
 
     // config.gribConfig.pdsHash.put("useTableVersion", false);
 

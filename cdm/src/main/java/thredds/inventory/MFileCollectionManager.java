@@ -120,7 +120,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   // this is the full featured constructor, using FeatureCollectionConfig for config.
   public MFileCollectionManager(FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
-    super(config.name != null ? config.name : config.spec, logger);
+    super(config.collectionName != null ? config.collectionName : config.spec, logger);
     this.config = config;
 
     CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);

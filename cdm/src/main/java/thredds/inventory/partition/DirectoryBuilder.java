@@ -29,7 +29,7 @@ import java.util.List;
 public class DirectoryBuilder {
 
   static public MCollection factory(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
-    DirectoryBuilder builder = new DirectoryBuilder(config.name, topDir.toString());
+    DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir.toString());
 
     DirectoryPartition dpart = new DirectoryPartition(config, topDir, indexReader, logger);
     if (!builder.isLeaf(indexReader))  { // its a partition
@@ -42,7 +42,7 @@ public class DirectoryBuilder {
     if (hasIndex) {
       return dpart.makeChildCollection(builder);
     } else {
-      DirectoryCollection result = new DirectoryCollection(config.name, topDir, config.olderThan, logger); // no index file
+      DirectoryCollection result = new DirectoryCollection(config.collectionName, topDir, config.olderThan, logger); // no index file
       result.setLeaf(true);
       return result;
     }

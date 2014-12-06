@@ -126,7 +126,7 @@ public class GCpass1 {
   Accum accumAll = new Accum(2);
 
   public GCpass1(String spec, FeatureCollectionType fcType, String timePartition, Boolean useTableVersion, Formatter fm) {
-    this.config = new FeatureCollectionConfig("GCpass1", "test/GCpass1", fcType, spec, null, null, timePartition, null, null);
+    this.config = new FeatureCollectionConfig("GCpass1", "test/GCpass1", fcType, spec, null, null, null, timePartition, null);
     this.gribConfig =  this.config.gribConfig;
     if (useTableVersion != null) this.gribConfig.useTableVersion = useTableVersion;
     this.fm = fm;
@@ -368,7 +368,7 @@ public class GCpass1 {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, config.olderThan, logger);
+    DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, config.olderThan, logger);
     // dcm.setUseGribFilter(false);
     dcm.setLeaf(true);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
