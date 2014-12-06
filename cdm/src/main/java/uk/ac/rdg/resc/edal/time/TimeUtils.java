@@ -69,6 +69,30 @@ public final class TimeUtils
         {
             return 1000 * 60 * 60 * 24;
         }
+        else if (unit.equals("months") || unit.equals("month"))
+        {
+            return (long) (1000 * 60 * 60 * 2 * 365.242198781);
+        }
+        else if (unit.equals("year") || unit.equals("years"))
+        {
+            return (long) (1000 * 60 * 60 * 24 * 365.242198781);
+        }
+        else if (unit.equals("common_year") || unit.equals("common_years"))
+        {
+            return 1000 * 60 * 60 * 24 * 365;
+        }
+        else if (unit.equals("leap_year") || unit.equals("leap_years"))
+        {
+            return 1000 * 60 * 60 * 24 * 365;
+        }
+        else if (unit.equals("Julian_year") || unit.equals("Julian_years"))
+        {
+            return (long) (1000 * 60 * 60 * 24 * 365.25);
+        }
+        else if (unit.equals("Gregorian_year") || unit.equals("Gregorian_years"))
+        {
+            return (long) (1000 * 60 * 60 * 24 * 365.2425);
+        }
         else
         {
             throw new IllegalArgumentException("Unrecognized unit for time axis: " + unit);
@@ -124,6 +148,12 @@ public final class TimeUtils
             {
                 StringTokenizer dateTokenizer = new StringTokenizer(tokenizer.nextToken(), "-");
                 if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
+                if(baseDateTimeString.startsWith("-")) {
+                    /*
+                     * A '-' was used to denote a negative year.
+                     */
+                    year *= -1;
+                }
                 if (dateTokenizer.hasMoreTokens()) month = Integer.parseInt(dateTokenizer.nextToken());
                 if (dateTokenizer.hasMoreTokens()) day = Integer.parseInt(dateTokenizer.nextToken());
             }
