@@ -375,13 +375,6 @@ public class Grib1Iosp extends GribIosp {
   }
 
   @Override
-  protected void addGlobalAttributes(NetcdfFile ncfile) {
-    String val = cust.getGeneratingProcessName(gribCollection.getGenProcessId());
-    if (val != null)
-      ncfile.addAttribute(null, new Attribute(GribUtils.GEN_PROCESS, val));
-  }
-
-  @Override
   protected String getVerticalCoordDesc(int vc_code) {
     return cust.getLevelDescription(vc_code);
   }

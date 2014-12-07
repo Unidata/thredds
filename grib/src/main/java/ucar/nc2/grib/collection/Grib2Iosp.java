@@ -47,6 +47,7 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * Grib-2 Collection IOSP, ver2.
@@ -401,19 +402,6 @@ public class Grib2Iosp extends GribIosp {
     cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal(),
             gribCollection.getGenProcessId());
     return cust;
-  }
-
-  @Override
-  protected void addGlobalAttributes(NetcdfFile ncfile) {
-    String val = cust.getTableValue("4.3", gribCollection.getGenProcessType());
-    if (val != null)
-      ncfile.addAttribute(null, new Attribute("Type_of_generating_process", val));
-    val = cust.getGeneratingProcessName(gribCollection.getGenProcessId());
-    if (val != null)
-      ncfile.addAttribute(null, new Attribute("Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre", val));
-    val = cust.getGeneratingProcessName(gribCollection.getBackProcessId());
-    if (val != null)
-      ncfile.addAttribute(null, new Attribute("Background_generating_process_identifier_defined_by_originating_centre", val));
   }
 
   @Override

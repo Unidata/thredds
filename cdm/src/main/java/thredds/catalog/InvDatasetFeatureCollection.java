@@ -218,7 +218,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   @Override
   // DatasetCollectionManager was changed asynchronously
   public void sendEvent(CollectionUpdateType type) {
-    update(type);
+    try {
+      update(type);
+    } catch (IOException e) {
+      logger.error("Error processing event", e);
+    }
 
 /*     if (event == CollectionUpdateListener.TriggerType.updateNocheck)
 
@@ -238,7 +242,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // localState is synched, may be directly changed
   abstract protected void updateCollection(State localState, CollectionUpdateType force);
 
-  abstract protected void makeDatasetTop(State localState);
+  abstract protected void makeDatasetTop(State localState) throws IOException;
 
   // this allows us to put warnings into the catalogInit.log
   @Override
@@ -276,7 +280,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    *
    * @return a copy of the State
    */
-  protected State checkState() {
+  protected State checkState() throws IOException {
     State localState;
 
     synchronized (lock) {
@@ -298,7 +302,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    *
    * @param force test : update index if anything changed or nocheck - use index if it exists
    */
-  protected void update(CollectionUpdateType force) {  // this may be called from a background thread
+  protected void update(CollectionUpdateType force) throws IOException {  // this may be called from a background thread
     State localState;
 
     synchronized (lock) {
@@ -404,7 +408,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @param catURI  the base URI for the catalog to be made, used to resolve relative URLs.
    * @return containing catalog
    */
-  abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI);
+  abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI) throws IOException;
 
   /**
    * Make the containing catalog of this feature collection

@@ -161,7 +161,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return collectionName;
   }
 
-  private InvDatasetImpl makeDatasetFromCollection( boolean isTop, String parentCollectionName, GribCollectionImmutable fromGc) {
+  private InvDatasetImpl makeDatasetFromCollection( boolean isTop, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
     // StateGrib localState = (StateGrib) state;
 
     String dsName = isTop ? getName() : makeCollectionShortName(fromGc.getName());
@@ -176,6 +176,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     ThreddsMetadata tmi = result.getLocalMetadataInheritable();
     tmi.addVariableMapLink(makeMetadataLink(tpath, VARIABLES));
     tmi.setServiceName(Virtual_Services);
+    tmi.setDataFormatType(fromGc.isGrib1 ? DataFormatType.GRIB1 : DataFormatType.GRIB2);
+    tmi.addProperties(fromGc.getGlobalAttributes());
 
     String pathStart = parentCollectionName == null ? getPath() :  getPath()+"/"+parentCollectionName;
 
@@ -184,7 +186,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       if (ds.getType() == GribCollectionImmutable.Type.TwoD) {
         Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
-        tmi.setGeospatialCoverage(extractGeospatial(groups)); // set extent from twoD dataset for all
+        //tmi.setGeospatialCoverage(extractGeospatial(groups)); // set extent from twoD dataset for all
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
           InvDatasetImpl twoD = new InvDatasetImpl(this, getDatasetNameTwoD(result.getName()));
@@ -192,8 +194,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           twoD.setUrlPath(path);
           //twoD.setID(path);
           twoD.tm.addDocumentation("summary", "Two time dimensions: reference and forecast; full access to all GRIB records");
-          twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-          twoD.tmi.setTimeCoverage(extractCalendarDateRange(groups));
+          //twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+          //twoD.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           result.addDataset(twoD);
 
           // Collections.sort(groups);
@@ -208,8 +210,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           String path = pathStart + "/" + BEST_DATASET;
           best.setUrlPath(path);
           best.tm.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
-          best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-          best.tmi.setTimeCoverage(extractCalendarDateRange(groups));
+          //best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
+          //best.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           result.addDataset(best);
 
           // Collections.sort(groups);
@@ -232,8 +234,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
 
         Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
-        result.tmi.addVariableMapLink(makeMetadataLink(pathStart, VARIABLES));
-        result.tmi.setTimeCoverage(extractCalendarDateRange(groups));
+        //result.tmi.addVariableMapLink(makeMetadataLink(pathStart, VARIABLES));
+        //result.tmi.setTimeCoverage(extractCalendarDateRange(groups));
 
         makeDatasetsFromGroups(result, groups, isSingleGroup);
       }
@@ -253,7 +255,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       PartitionCollectionImmutable pc =  (PartitionCollectionImmutable) fromGc;
       for (PartitionCollectionImmutable.Partition partition : pc.getPartitionsSorted()) {
-        InvDatasetImpl partDs = makeDatasetFromPartition(this, parentCollectionName, partition, true);
+        InvDatasetImpl partDs = makeDatasetFromPartition(this, parentCollectionName, partition, pc.isPartitionOfPartitions());
         result.addDataset(partDs);
       }
     }
@@ -280,6 +282,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       ds.tmi.setGeospatialCoverage(extractGeospatial(group));
       ds.tmi.setTimeCoverage(group.makeCalendarDateRange());
+      ds.tmi.addVariableMapLink(makeMetadataLink(dpath, VARIABLES));
 
      /* if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
         InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
@@ -310,23 +313,23 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   }
 
-  private InvDatasetImpl makeDatasetFromPartition(InvDatasetImpl parent, String parentCollectionName, PartitionCollectionImmutable.Partition partition, boolean isSingleGroup) {
+  private InvDatasetImpl makeDatasetFromPartition(InvDatasetImpl parent, String parentCollectionName, PartitionCollectionImmutable.Partition partition, boolean isPofP) throws IOException {
     InvDatasetImpl result;
     String dsName = makeCollectionShortName(partition.getName());
 
-    /* if (isSingleGroup) {
-      result = new InvDatasetImpl(parent, dname);
+    // if (isPofP) { // make a catRef
+      String startPath = parentCollectionName == null ? getPath() : getPath() + "/" + parentCollectionName;
+      String dpath = startPath + "/" + partition.getName();
+      result = new InvCatalogRef(parent, dsName, buildCatalogServiceHref(dpath)); // LOOK could be plain if not PoP ??
+      result.setID(dpath);
+      result.setUrlPath(dpath);
+      result.setServiceName(Virtual_Services);
 
-    } else {
-      result = new InvCatalogRef(parent, dname, getCatalogHref(dname));
-    } */
-
-    String startPath = parentCollectionName == null ? getPath() : getPath() + "/"+ parentCollectionName;
-    String dpath = startPath + "/"+ partition.getName();
-    result = new InvCatalogRef(parent, dsName, buildCatalogServiceHref(dpath));
-    result.setID(dpath);
-    result.setUrlPath(dpath);
-    result.setServiceName(Virtual_Services);
+    /* } else {   // make a InvDatasetImpl
+      try (GribCollectionImmutable gc = partition.getGribCollection()) {
+        result = makeDatasetFromCollection(false, parentCollectionName, gc);
+      }
+    }   */
 
     //result.tmi.setGeospatialCoverage(extractGeospatial(group));
     //result.tmi.setTimeCoverage(group.getCalendarDateRange());
@@ -391,7 +394,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       4. partitionName/../partitionName/dataset/groupName
   */
   @Override
-  public InvCatalogImpl makeCatalog(String match, String reqPath, URI catURI) {
+  public InvCatalogImpl makeCatalog(String match, String reqPath, URI catURI) throws IOException {
     StateGrib localState = (StateGrib) checkState();
     if (localState == null) return null; // not ready yet I think
 
@@ -406,7 +409,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (localState.gribCollection instanceof PartitionCollectionImmutable) {
         String[] paths = match.split("/");
         PartitionCollectionImmutable pc = (PartitionCollectionImmutable) localState.gribCollection;
-        return makePartitionCatalog(pc, paths, 0, catURI);
+        return makeCatalogFromPartition(pc, paths, 0, catURI);
       }
 
     } catch (Exception e) {
@@ -416,7 +419,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return null;
   }
 
-  private InvCatalogImpl makePartitionCatalog(PartitionCollectionImmutable pc, String[] paths, int idx, URI catURI) throws IOException {
+  private InvCatalogImpl makeCatalogFromPartition(PartitionCollectionImmutable pc, String[] paths, int idx, URI catURI) throws IOException {
     if (paths.length < idx+1) return null;
     PartitionCollectionImmutable.Partition pcp = pc.getPartitionByName(paths[idx]);
     if (pcp == null) return null;
@@ -426,7 +429,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         PartitionCollectionImmutable pcNested = (PartitionCollectionImmutable) gc;
         PartitionCollectionImmutable.Partition pcpNested = pcNested.getPartitionByName(paths[idx+1]);
         if (pcpNested != null)  // recurse
-          return makePartitionCatalog(pcNested, paths, idx+1, catURI);
+          return makeCatalogFromPartition(pcNested, paths, idx + 1, catURI);
       }
 
       // build the parent name
@@ -436,11 +439,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         if (i++ > 0) parentName.append("/");
         parentName.append(s);
       }
-      return makeCatalogFromCollection(catURI, parentName.toString(), gc);
+      return makeCatalogFromCollection(gc, parentName.toString(), catURI);
     }
   }
 
-  private InvCatalogImpl makeCatalogFromCollection(URI catURI, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException { // }, URISyntaxException {
+  private InvCatalogImpl makeCatalogFromCollection(GribCollectionImmutable fromGc, String parentCollectionName, URI catURI) throws IOException { // }, URISyntaxException {
     InvCatalogImpl result = new InvCatalogImpl(makeCollectionShortName(fromGc.getName()), getParentCatalog().getVersion(), catURI);  // LOOK is catURL right ??
     // result.addService(orgService);
     result.addService(virtualService);
@@ -457,7 +460,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
 
   @Override
-  protected void makeDatasetTop(State state) {
+  protected void makeDatasetTop(State state) throws IOException {
     StateGrib localState = (StateGrib) state;
     localState.top = makeDatasetFromCollection(true, null, localState.gribCollection);
   }
@@ -489,13 +492,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
     }
 
-    try {
-      return makeCatalogFromCollection(catURI, localState.latestPath, localState.latest); // LOOK does gc need to be open ??  I think not.
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return null;
+    return makeCatalogFromCollection(localState.latest, localState.latestPath, catURI);
   }
 
   ///////////////////////////////////////////////////////////////////////////

@@ -39,11 +39,17 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.Closeable;
@@ -78,7 +84,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   protected final String name; // collection name; index filename must be directory/name.ncx2
   protected final File directory;
   protected final FeatureCollectionConfig config;
-  protected final boolean isGrib1;
+  public final boolean isGrib1;
   protected final Info info;
 
   protected final List<Dataset> datasets;
@@ -186,6 +192,40 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public int getBackProcessId() {
     return info.backProcessId;
   }
+
+  /*
+    String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
+    ncfile.addAttribute(null, new Attribute(GribUtils.CENTER, val == null ? Integer.toString(gribCollection.getCenter()) : val));
+    val = gribTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+    ncfile.addAttribute(null, new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
+    ncfile.addAttribute(null, new Attribute(GribUtils.TABLE_VERSION, gribCollection.getMaster() + "," + gribCollection.getLocal())); // LOOK
+
+    addGlobalAttributes(ncfile);
+
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
+    ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
+    ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
+   */
+
+  public List<Attribute> getGlobalAttributes() {
+    List<Attribute> result = new ArrayList<>();
+    String val = CommonCodeTable.getCenterName(getCenter(), 2);
+    result.add(new Attribute(GribUtils.CENTER, val == null ? Integer.toString(getCenter()) : val));
+    val = cust.getSubCenterName(getCenter(), getSubcenter());
+    result.add(new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(getSubcenter()) : val));
+    result.add(new Attribute(GribUtils.TABLE_VERSION, getMaster() + "," + getLocal())); // LOOK
+
+    addGlobalAttributes(result);  // add subclass atts
+
+    result.add(new Attribute(CDM.CONVENTIONS, "CF-1.6"));
+    result.add(new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
+    result.add(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
+
+    return result;
+  }
+
+  protected abstract void addGlobalAttributes(List<Attribute> result);
 
   public static class Info {
     final int version; // the ncx version

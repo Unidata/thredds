@@ -2,7 +2,6 @@ package thredds.catalog;
 
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Attribute;
 import ucar.nc2.ft.FeatureDataset;
@@ -177,7 +176,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }   */
 
   @Override
-  public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI)  {
+  public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI) throws IOException {
     logger.debug("FcPoint make catalog for " + match + " " + catURI);
     State localState = checkState();
 

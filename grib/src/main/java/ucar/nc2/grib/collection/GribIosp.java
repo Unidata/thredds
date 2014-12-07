@@ -49,7 +49,6 @@ import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
-import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
@@ -164,8 +163,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   protected abstract GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex);
 
-  protected abstract void addGlobalAttributes(NetcdfFile ncfile);
-
   protected abstract void addVariableAttributes(Variable v, GribCollectionImmutable.VariableIndex vindex);
 
   protected abstract void show(RandomAccessFile rafData, long pos) throws IOException;
@@ -210,18 +207,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
     }
 
-    String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
-    ncfile.addAttribute(null, new Attribute(GribUtils.CENTER, val == null ? Integer.toString(gribCollection.getCenter()) : val));
-    val = gribTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
-    ncfile.addAttribute(null, new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
-    ncfile.addAttribute(null, new Attribute(GribUtils.TABLE_VERSION, gribCollection.getMaster() + "," + gribCollection.getLocal())); // LOOK
-
-    addGlobalAttributes(ncfile);
-
-    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
-    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
-    ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
-    ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
+    for (Attribute att : gribCollection.getGlobalAttributes())
+      ncfile.addAttribute(null, att);
   }
 
   private void addGroup(NetcdfFile ncfile, Group parent, GribCollectionImmutable.GroupGC group, GribCollectionImmutable.Type gctype, boolean useGroups) {

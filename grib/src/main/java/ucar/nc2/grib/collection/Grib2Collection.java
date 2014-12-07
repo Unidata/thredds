@@ -35,16 +35,20 @@
 
 package ucar.nc2.grib.collection;
 
+import thredds.catalog.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * Grib2 specific part of GribCollection
@@ -110,6 +114,21 @@ public class Grib2Collection extends GribCollectionImmutable {
   @Override
   public String makeVariableName(VariableIndex vindex) {
     return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex, false);
+  }
+
+
+  @Override
+  protected void addGlobalAttributes(List<Attribute> result) {
+    String val = cust.getGeneratingProcessTypeName(getGenProcessType());
+    if (val != null)
+      result.add(new Attribute("Type_of_generating_process", val));
+    val = cust.getGeneratingProcessName(getGenProcessId());
+    if (val != null)
+      result.add(new Attribute("Analysis_or_forecast_generating_process_identifier_defined_by_originating_centre", val));
+    val = cust.getGeneratingProcessName(getBackProcessId());
+    if (val != null)
+      result.add(new Attribute("Background_generating_process_identifier_defined_by_originating_centre", val));
+    result.add(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB2.toString()));
   }
 
 }

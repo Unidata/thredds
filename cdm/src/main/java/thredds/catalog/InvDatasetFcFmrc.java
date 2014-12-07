@@ -115,9 +115,9 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
 
   @Override
-  public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI)  {
+  public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI) throws IOException {
     logger.debug("FMRC make catalog for " + match + " " + catURI);
-    State localState =  checkState();
+    State localState = checkState();
 
     try {
       if ((match == null) || (match.length() == 0)) {
