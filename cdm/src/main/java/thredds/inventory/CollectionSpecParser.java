@@ -68,14 +68,13 @@ public class CollectionSpecParser {
   private final boolean subdirs; // recurse into subdirectories under the root dir
   private final java.util.regex.Pattern filter; // regexp filter
   private final String dateFormatMark;
-  //private final boolean useName; // true = use name, false = use path for dateFormatMark
 
   /**
    * Single spec : "/topdir/** /#dateFormatMark#regExp"
    * This only allows the dateFormatMark to be in the file name, not anywhere else in the filename path,
    *  and you cant use any part of the dateFormat to filter on.
    * @param collectionSpec the collection Spec
-   * @param errlog put error messages here
+   * @param errlog put error messages here, may be null
    */
   public CollectionSpecParser(String collectionSpec, Formatter errlog) {
     this.spec = collectionSpec.trim();
@@ -97,7 +96,7 @@ public class CollectionSpecParser {
     }
 
     File locFile = new File(rootDir);
-    if (!locFile.exists()) {
+    if (!locFile.exists() && errlog != null) {
       errlog.format(" Directory %s does not exist %n", rootDir);
     }
 
@@ -136,61 +135,7 @@ public class CollectionSpecParser {
       dateFormatMark = null;
       this.filter = null;
     }
-    //useName = true;
   }
-
-  /*
-   * Seperate the spec, with no dateMatcher, and a seperate string with a dateMatcher
-   * This only allows the dateFormatMark to be in the file name, not anywhere else in the filename path
-   * @param collectionSpec the collection Spec, no dateMatcher
-   * @param dateMatcher regexp the dateMatcher regular expression
-   * @param errlog put error messages here
-   *
-  public CollectionSpecParser(String collectionSpec, String dateMatcher, Formatter errlog) {
-    this.spec = collectionSpec.trim();
-
-    int posGlob = collectionSpec.indexOf("/** /");
-    if (posGlob > 0) {
-      rootDir = collectionSpec.substring(0, posGlob);
-      int posFilter = posGlob + 3;
-      subdirs = true;
-      String regexp = collectionSpec.substring(posFilter+1);
-      this.filter = java.util.regex.Pattern.compile(regexp);
-
-    } else {
-      int posFilter = collectionSpec.lastIndexOf('/');
-      rootDir = collectionSpec.substring(0, posFilter);
-      subdirs = false;
-      String regexp = collectionSpec.substring(posFilter+1);
-      this.filter = java.util.regex.Pattern.compile(regexp);
-    }
-
-    File locFile = new File(rootDir);
-    if (!locFile.exists()) {
-      errlog.format(" Directory %s does not exist %n", rootDir);
-    }
-
-    this.dateFormatMark = dateMatcher;
-
-    /* int hashPos = -1;
-    if ((hashPos = dateMatcher.indexOf('#', hashPos+1)) >= 0) {
-      // check for two hash marks
-      hashPos = dateMatcher.indexOf('#', hashPos+1);
-      int secondHash = hashPos;
-
-      if (secondHash > 0) { // two hashes
-        dateFormatMark = dateMatcher.substring(0, secondHash+1); // everything up to the second hash
-      } else { // one hash
-        dateFormatMark = dateMatcher; // everything
-      }
-
-    } else  { // no hashes
-      errlog.format(" No DateMatcher specified in '%s'%n", dateMatcher);
-      dateFormatMark = null;
-    }
-
-    useName = false;
-  } */
 
   public String getSpec() {
     return spec;
@@ -203,10 +148,6 @@ public class CollectionSpecParser {
   public boolean wantSubdirs() {
     return subdirs;
   }
-
-  //public boolean useName() {
-  //  return true;
-  //}
 
   public Pattern getFilter() {
     return filter;

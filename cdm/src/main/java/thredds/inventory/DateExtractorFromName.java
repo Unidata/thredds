@@ -35,6 +35,8 @@ package thredds.inventory;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateFromString;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 import thredds.inventory.DateExtractor;
@@ -77,7 +79,13 @@ public class DateExtractorFromName implements DateExtractor {
 
   @Override
   public CalendarDate getCalendarDateFromPath(String path) {
-    Date d =  DateFromString.getDateUsingDemarkatedMatch(path, dateFormatMark, '#');
+    Date d;
+    if (useName) {
+      Path p = Paths.get(path);
+      d = DateFromString.getDateUsingDemarkatedCount(p.getFileName().toString(), dateFormatMark, '#');
+    } else
+      d = DateFromString.getDateUsingDemarkatedMatch(path, dateFormatMark, '#');
+
     return (d == null) ? null : CalendarDate.of(d);
   }
 
@@ -89,25 +97,4 @@ public class DateExtractorFromName implements DateExtractor {
             '}';
   }
 
-  public CalendarDate getDate(String  name) {
-    Date d = null;
-    if (useName)
-      d = DateFromString.getDateUsingDemarkatedCount(name, dateFormatMark, '#');
-    else
-      d = DateFromString.getDateUsingDemarkatedMatch(name, dateFormatMark, '#');
-    return (d == null) ? null : CalendarDate.of(d);
-  }
-
-
-  static public void doit(String name, String dateFormatMark, boolean useName) {
-    DateExtractorFromName de = new DateExtractorFromName(dateFormatMark, useName);
-    CalendarDate d = de.getDate(name);
-    System.out.printf("%s == %s%n", name , d);
-  }
-
-  static public void main(String args[]) {
-    doit("/san4/work/jcaron/cfsrr/198507", "#cfsrr/#yyyyMM",false);
-    doit("/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1", "#Alaska_191km/#yyyyMMdd'/Run_'HHmm",false);
-    doit("pgb.ft06.198407", "pgb.ft06.#yyyyMM", true);   // yyyyMM fails on pgb.ft06.198407 ParseException:Unparseable date: "pgb.ft06.198407"
-  }
 }
