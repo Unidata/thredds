@@ -144,7 +144,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
 
     // UI
     // optional top panel
-    JPanel topPanel = null;
+    JPanel topPanel;
     topPanel = new JPanel(new BorderLayout());
     JPanel butts = new JPanel();
 
@@ -231,20 +231,19 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     //  col+=2;
     //}
     if (isPointOnly) {
-      pp.addField(minField, 0, row++, null);
+      pp.addField(minField, 0, row, null);
     } else {
       pp.addField(minField, 0, row++, null);
       pp.addField(maxField, 0, row++, null);
       pp.addField(durationField, 0, row++, null);
-      pp.addField(resolutionField, 0, row++, null);
+      pp.addField(resolutionField, 0, row, null);
     }
     pp.finish(acceptButton, BorderLayout.EAST);
 
     setLayout(new BorderLayout()); // allow width expansion
 
     // overall layout
-    if (topPanel != null)
-      sliderPanel.add(topPanel);
+    sliderPanel.add(topPanel);
     sliderPanel.add(pp);
 
     if (useLimits) {
@@ -357,7 +356,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
   public boolean validate( Field fld, Object editValue, StringBuffer errMessages) {
     if (!useLimits) return true;
 
-    DateType checkVal = null;
+    DateType checkVal;
 
     if (fld == durationField) {
       TimeDuration duration = (TimeDuration) editValue;
@@ -488,14 +487,14 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
 
     RangeDateSelector rs1 = new RangeDateSelector("Date Range", "1990-01-01T01:00:00", "1990-01-02T02:00:00",
        null, "15 minute", true, true, "i think im fallin", false);
-    RangeDateSelector rs2 = new RangeDateSelector("Date", "1990-01-01", "1991-01-01", null, "1 day", false, true,
-       "i think im fallin\n in love with youuuu ", false);
-    RangeDateSelector rs3 = new RangeDateSelector("Date", "1990-01-01", "1991-01-01", null, "10 days", true, true,
-       null, false);
-    RangeDateSelector rs4 = new RangeDateSelector("Date", "1990-01-01", "1991-01-01", null, "10 days", false, false,
-       null, true);
-    RangeDateSelector rs5 = new RangeDateSelector("Date", null, "present", "10 days", "1 day", true, false,
-       null, false);
+//    RangeDateSelector rs2 = new RangeDateSelector("Date", "1990-01-01", "1991-01-01", null, "1 day", false, true,
+//       "i think im fallin\n in love with youuuu ", false);
+//    RangeDateSelector rs3 = new RangeDateSelector("Date", "1990-01-01", "1991-01-01", null, "10 days", true, true,
+//       null, false);
+//    RangeDateSelector rs4 = new RangeDateSelector("Date", "1990-01-01", "1991-01-01", null, "10 days", false, false,
+//       null, true);
+//    RangeDateSelector rs5 = new RangeDateSelector("Date", null, "present", "10 days", "1 day", true, false,
+//       null, false);
 
 
     // simulate what we do in PointObsViewer
