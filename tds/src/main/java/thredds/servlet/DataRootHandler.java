@@ -628,11 +628,11 @@ public final class DataRootHandler implements InitializingBean {
     return result;
   }
 
-  public InvDatasetFeatureCollection getFeatureCollection(String want) {
+  public InvDatasetFeatureCollection findFcByCollectionName(String collectionName) {
     Iterator iter = pathMatcher.iterator();
     while (iter.hasNext()) {
       DataRoot droot = (DataRoot) iter.next();
-      if ((droot.featCollection != null) && droot.featCollection.getName().equals(want))
+      if ((droot.featCollection != null) && droot.featCollection.getCollectionName().equals(collectionName))
         return droot.featCollection;
     }
     return null;

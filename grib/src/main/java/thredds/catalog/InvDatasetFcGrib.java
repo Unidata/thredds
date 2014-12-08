@@ -183,19 +183,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     for (GribCollectionImmutable.Dataset ds : fromGc.getDatasets()) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
+      Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
 
       if (ds.getType() == GribCollectionImmutable.Type.TwoD) {
-        Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
-        //tmi.setGeospatialCoverage(extractGeospatial(groups)); // set extent from twoD dataset for all
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
           InvDatasetImpl twoD = new InvDatasetImpl(this, getDatasetNameTwoD(result.getName()));
           String path = pathStart + "/" + TWOD_DATASET;
           twoD.setUrlPath(path);
-          //twoD.setID(path);
           twoD.tm.addDocumentation("summary", "Two time dimensions: reference and forecast; full access to all GRIB records");
-          //twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-          //twoD.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           result.addDataset(twoD);
 
           // Collections.sort(groups);
@@ -205,37 +201,32 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       } else if (ds.getType() == GribCollectionImmutable.Type.Best) {
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-          Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
           InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest(result.getName()));
           String path = pathStart + "/" + BEST_DATASET;
           best.setUrlPath(path);
           best.tm.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
-          //best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-          //best.tmi.setTimeCoverage(extractCalendarDateRange(groups));
           result.addDataset(best);
 
-          // Collections.sort(groups);
           makeDatasetsFromGroups(best, groups, isSingleGroup);
         }
 
       } else {
         tmi.setServiceName(Virtual_Services);
-
-        CoordinateRuntime runCoord = fromGc.getMasterRuntime();
-        assert runCoord.getSize() == 1;
-        CalendarDate runtime = runCoord.getFirstDate();
         result.setUrlPath(pathStart);
 
         if (ds.getType() == GribCollectionImmutable.Type.SRC) {
+          CoordinateRuntime runCoord = fromGc.getMasterRuntime();
+          assert runCoord.getSize() == 1;
+          CalendarDate runtime = runCoord.getFirstDate();
           result.tm.addDocumentation("summary", "Single reference time Grib Collection");
           result.tmi.addDocumentation("Reference Time", runtime.toString());
-        } else {
+
+        } else if (ds.getType() == GribCollectionImmutable.Type.TP) {
+          result.tm.addDocumentation("summary", "Multiple reference, single time Grib Partition");
+
+        } else if (ds.getType() == GribCollectionImmutable.Type.MRSTC) {
           result.tm.addDocumentation("summary", "Multiple reference time Grib Collection");
         }
-
-        Iterable<GribCollectionImmutable.GroupGC> groups = ds.getGroups();
-        //result.tmi.addVariableMapLink(makeMetadataLink(pathStart, VARIABLES));
-        //result.tmi.setTimeCoverage(extractCalendarDateRange(groups));
 
         makeDatasetsFromGroups(result, groups, isSingleGroup);
       }
@@ -265,8 +256,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   private void makeDatasetsFromGroups(InvDatasetImpl parent, Iterable<GribCollectionImmutable.GroupGC> groups,  boolean isSingleGroup) {
-    // Collections.sort(groups);
-    // boolean isSingleGroup = (groups.size() == 1);
 
     for (GribCollectionImmutable.GroupGC group : groups) {
       InvDatasetImpl ds = isSingleGroup ? parent : new InvDatasetImpl(this, group.getDescription());
@@ -723,104 +712,5 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private interface DatasetCreator {  // Visitor pattern
     Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException;
   }
-
-  /* possible forms of dataset path:
-
-    regular, single group:
-      1. dataset (BEST, TWOD, GC)
-
-     regular, multiple group:
-      2. dataset/groupName
-
-     partition, single group:
-      3. partitionName/dataset
-      3. partitionName/../partitionName/dataset
-
-     partition, multiple group:
-      4. partitionName/dataset/groupName
-      4. partitionName/../partitionName/dataset/groupName
-
-  private DatasetParse parse(String matchPath, StateGrib localState) throws IOException {
-    if ((matchPath == null) || (matchPath.length() == 0)) return null;
-    String[] paths = matchPath.split("/");
-    if (paths.length < 1) return null;
-
-    GribCollectionImmutable.Dataset ds = localState.gribCollection.getDatasetByTypeName(paths[0]);
-    if (ds != null) {
-      boolean isSingleGroup = ds.getGroupsSize() == 1;
-      if (paths.length == 1) {                               // case 1
-        if (!isSingleGroup) return null;
-        GribCollectionImmutable.GroupGC g = ds.getGroup(0);
-        return new DatasetParse(null, localState.gribCollection, ds, g);
-      }
-
-      if (paths.length == 2) {                              // case 2
-        String groupName = paths[1];
-        GribCollectionImmutable.GroupGC g = ds.findGroupById(groupName);
-        if (g != null)
-          return new DatasetParse(null, localState.gribCollection, ds, g);
-        else
-          return null;
-      }
-    }
-
-    if (paths.length < 2) return null;
-    if (!(localState.gribCollection instanceof PartitionCollectionImmutable)) return null;
-
-    PartitionCollectionImmutable pc = (PartitionCollectionImmutable) localState.gribCollection;
-    return drill(pc, paths, 0);                              // case 3 and 4
-  }
-
-  private DatasetParse drill(PartitionCollectionImmutable pc, String[] paths, int idx) throws IOException {
-    if (paths.length <= idx+1) return null;
-    PartitionCollectionImmutable.Partition pcp = pc.getPartitionByName(paths[idx]);
-    if (pcp == null) return null;
-
-    try (GribCollectionImmutable gc =  pcp.getGribCollection()) {
-      if (gc instanceof PartitionCollectionImmutable) {
-        PartitionCollectionImmutable pcNested = (PartitionCollectionImmutable) gc;
-        PartitionCollectionImmutable.Partition pcpNested = pcNested.getPartitionByName(paths[idx+1]);
-        if (pcpNested != null) { // recurse
-          DatasetParse dp = drill(pcNested, paths, idx+1);
-          if (dp != null) return dp;
-          else {
-            return DatasetParse(pcpNested, gc, ds, g)
-          }
-        }
-      }
-
-      String datasetName = paths[idx+1];
-      GribCollectionImmutable.Dataset ds = gc.getDatasetByTypeName(datasetName);
-      if (ds == null) return null;                         // case 3        // case 4
-      GribCollectionImmutable.GroupGC g = (paths.length <= idx+2) ? ds.getGroup(0) : ds.findGroupById(paths[idx+2]);
-      if (g == null) return null;
-      return new DatasetParse(pcp, gc, ds, g);
-    }
-  }
-
-  private static class DatasetParse {
-    final PartitionCollectionImmutable.Partition partition; // need to usee this to open the gribCollection
-    final GribCollectionImmutable gc;
-    final GribCollectionImmutable.Dataset ds;
-    final GribCollectionImmutable.GroupGC group;
-    final String filename; // only for isFile
-
-    private DatasetParse(PartitionCollectionImmutable.Partition tpp, GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) {
-      this.partition = tpp;
-      this.gc = gc;
-      this.ds = ds;
-      this.group = group;
-      this.filename = null;
-    }
-
-   /*  private DatasetParse(String filename) {
-      this.partition = null;
-      this.gc = null;
-      this.ds = null;
-      this.group = null;
-      this.filename = filename;
-    }
-
-  }  */
 
 }
