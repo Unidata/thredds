@@ -70,6 +70,19 @@ public class TestGribIndexCreation {
 
   /////////////////////////////////////////////////////////
 
+  @Test
+  public void testRadarNWS() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("radarNWS", "test/radarNWS", FeatureCollectionType.GRIB1,
+ //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
+            "B:/lead/radar/**/.*gbx9",  null,
+            null, null, "directory", null);
+    config.gribConfig.setOption("timeUnit", "1 minute");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
   // @Test
   public void testNamAlaska45() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("alaska45conduit", "test/www", FeatureCollectionType.GRIB2,

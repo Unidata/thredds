@@ -491,16 +491,13 @@ public class FeatureCollectionConfig {
       }
 
       List<Element> paramElems = configElem.getChildren("option", ns);
+      if (paramElems.size() == 0)
+        paramElems = configElem.getChildren("parameter", ns);  // backwards compatible
       for (Element param : paramElems) {
         String name = param.getAttributeValue("name");
         String value = param.getAttributeValue("value");
         if (name != null && value != null) {
-          if (name.equalsIgnoreCase("timeUnit")) {
-            setUserTimeUnit(value);  // eg "10 min" or "minute"
-          }
-          if (name.equalsIgnoreCase("runtimeCoordinate") && value.equalsIgnoreCase("union")) {
-             unionRuntimeCoord = true;
-           }
+          setOption(name, value);
         }
       }
 
@@ -509,6 +506,20 @@ public class FeatureCollectionConfig {
       useTableVersion = readValue(pdsHashElement, "useTableVersion", ns, useTableVersionDef);  // LOOK maybe default should be false ??
       intvMerge = readValue(pdsHashElement, "intvMerge", ns, intvMergeDef);
       useCenter = readValue(pdsHashElement, "useCenter", ns, useCenterDef);
+    }
+
+    public boolean setOption(String name, String value) {
+      if (name == null || value == null) return false;
+
+      if (name.equalsIgnoreCase("timeUnit")) {
+        setUserTimeUnit(value);  // eg "10 min" or "minute"
+        return true;
+      }
+      if (name.equalsIgnoreCase("runtimeCoordinate") && value.equalsIgnoreCase("union")) {
+         unionRuntimeCoord = true;
+        return true;
+       }
+      return false;
     }
 
     public void setUserTimeUnit(String value) {

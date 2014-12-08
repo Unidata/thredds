@@ -73,9 +73,6 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
   public void close() { }
 
   @Override
-  public boolean isLeaf() { return false; }
-
-  @Override
   public Iterable<MFile> getFilesSorted() throws IOException {
     return null;
   }

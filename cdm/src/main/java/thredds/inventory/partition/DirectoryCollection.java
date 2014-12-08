@@ -99,24 +99,11 @@ public class DirectoryCollection extends CollectionAbstract {
     this.topDir = topDir;
     this.collectionName = makeCollectionName(collectionName, topDir);
     this.olderThanMillis = parseOlderThanString(olderThan);
-    if (debug) System.out.printf("Open DirectoryCollection %s%n", topCollectionName);
+    if (debug) System.out.printf("Open DirectoryCollection %s%n", collectionName);
   }
 
   public Path getIndexPath() {
     return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);
-  }
-
-  public boolean isLeafDirectory() throws IOException {
-    int countDir=0, countFile=0, count =0;
-    DirectoryStream<Path> dirStream = Files.newDirectoryStream(topDir);
-    Iterator<Path> iterator = dirStream.iterator();
-    while (iterator.hasNext()&& count++ < 100) {
-      Path p = iterator.next();
-      BasicFileAttributes attr =  Files.readAttributes(p, BasicFileAttributes.class);
-      if (attr.isDirectory()) countDir++;
-      else countFile++;
-    }
-    return countFile > countDir;
   }
 
   @Override
@@ -140,17 +127,23 @@ public class DirectoryCollection extends CollectionAbstract {
   }
 
   @Override
-  public void close() { }
+  public void close() {
+    if (debug) System.out.printf("Close DirectoryCollection %s%n", collectionName);
+  }
 
   // returns everything in the current directory, subject to sfilter
   private class MyFileIterator implements CloseableIterator<MFile> {
+    int debugNum;
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
     MFile nextMFile;
     int count = 0;
 
     MyFileIterator(Path dir) throws IOException {
-      if (debug) System.out.printf(" DirectoryCollection.MFileIterator %s ", topDir);
+      if (debug) {
+        debugNum = debugCount++;
+        System.out.printf(" MyFileIterator %s (%d)", dir, debugNum);
+      }
       try {
         dirStream = Files.newDirectoryStream(dir, new MyGribFilter());
         dirStreamIterator = dirStream.iterator();
@@ -184,8 +177,10 @@ public class DirectoryCollection extends CollectionAbstract {
        } catch (IOException e) {
          throw new RuntimeException(e);
        }
-       if (filter == null || filter.accept(nextMFile))
+       if (filter == null || filter.accept(nextMFile)) {
+         if (debug && (count % 10 == 0)) System.out.printf("%d ", count);
          return true;
+       }
       }
     }
 
@@ -201,16 +196,17 @@ public class DirectoryCollection extends CollectionAbstract {
     // better alternative is for caller to send in callback (Visitor pattern)
     // then we could use the try-with-resource
     public void close() throws IOException {
-      if (debug) System.out.printf("%n");
+      if (debug) System.out.printf(" closed %d (%d)%n", count, debugNum);
       dirStream.close();
     }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private static final boolean debug = false;
+  private static int debugCount = 0;
   // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure it closes. like++
   public void iterateOverMFileCollection(Visitor visit) throws IOException {
-    if (debug) System.out.printf("DirectoryCollection.iterateOverMFileCollection %s ", topDir);
+    if (debug) System.out.printf(" iterateOverMFileCollection %s ", topDir);
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(topDir, new MyGribFilter())) {
       for (Path p : ds) {
@@ -220,7 +216,7 @@ public class DirectoryCollection extends CollectionAbstract {
         if (debug) System.out.printf("%d ", count++);
       }
     }
-    if (debug) System.out.printf("%d%n ", count);
+    if (debug) System.out.printf("%d%n", count);
   }
 
   public interface Visitor {

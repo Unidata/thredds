@@ -34,8 +34,6 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     this.collectionName = DirectoryCollection.makeCollectionName(topCollection, topDir);
   }
 
-  // public String getTopCollectionName() { return topCollection; }
-
   public Path getIndexPath() {
     return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);
   }

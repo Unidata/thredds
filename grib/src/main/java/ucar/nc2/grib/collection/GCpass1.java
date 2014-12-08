@@ -239,11 +239,11 @@ public class GCpass1 {
     for (MCollection part : dpart.makePartitions(CollectionUpdateType.always)) {
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       try {
-        if (part.isLeaf()) {
+        if (part instanceof DirectoryPartition) {
+          accum.add(scanDirectoryPartitionRecurse(isGrib1, (DirectoryPartition) part, config, countersPart, logger, indent, fm));
+        } else {
           Path partPath = Paths.get(part.getRoot());
           accum.add(scanLeafDirectoryCollection(isGrib1, config, countersPart, logger, partPath, indent, fm));
-        } else {
-          accum.add(scanDirectoryPartitionRecurse(isGrib1, (DirectoryPartition) part, config, countersPart, logger, indent, fm));
         }
       } catch (Throwable t) {
         logger.warn("Error making partition " + part.getRoot(), t);
@@ -370,7 +370,6 @@ public class GCpass1 {
 
     DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, config.olderThan, logger);
     // dcm.setUseGribFilter(false);
-    dcm.setLeaf(true);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)
       dcm.setStreamFilter(new StreamFilter(specp.getFilter()));

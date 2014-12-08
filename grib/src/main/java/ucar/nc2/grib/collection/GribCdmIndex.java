@@ -350,7 +350,7 @@ public class GribCdmIndex implements IndexReader {
     if (debug) System.out.printf("GribCdmIndex.updateDirectoryCollectionRecurse %s %s%n", dpart.getRoot(), forceCollection);
     long start = System.currentTimeMillis();
 
-    if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
+    if (forceCollection == CollectionUpdateType.never) return false;
 
     Path idxFile = dpart.getIndexPath();
     if (Files.exists(idxFile)) {
@@ -369,17 +369,16 @@ public class GribCdmIndex implements IndexReader {
         Files.delete(idxFile);
     }
 
-    // check the children firsst
+    // check the children first
     if (forceCollection != CollectionUpdateType.testIndexOnly) {   // skip children on indexOnly
       for (MCollection part : dpart.makePartitions(forceCollection)) {
         part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
         try {
-          if (part.isLeaf()) {  // LOOK here we use isLeaf() to decide if its a leaf or partition (maybe ok)
-            Path partPath = Paths.get(part.getRoot());
-            updateLeafCollection(isGrib1, config, forceCollection, logger, partPath);
-
-          } else {
+          if (part instanceof DirectoryPartition) {
             updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, forceCollection, logger);
+          } else {
+            Path partPath = Paths.get(part.getRoot());
+            updateLeafCollection(isGrib1, config, forceCollection, logger, partPath); // LOOK why not using part ??
           }
         } catch (Throwable t) {
           logger.warn("Error making partition " + part.getRoot(), t);
@@ -443,31 +442,32 @@ public class GribCdmIndex implements IndexReader {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, config.olderThan, logger);
-    dcm.setLeaf(true);
-    dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-    if (specp.getFilter() != null)
-      dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
+    try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, config.olderThan, logger)) {
+      // dcm.setLeaf(true);
+      dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+      if (specp.getFilter() != null)
+        dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
 
-    Path idxFile = dcm.getIndexPath();
-    if (Files.exists(idxFile)) {
-      if (forceCollection == CollectionUpdateType.nocheck) { // use if index exists
-        if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition %s use existing index%n", dirPath);
-        return false;
+      Path idxFile = dcm.getIndexPath();
+      if (Files.exists(idxFile)) {
+        if (forceCollection == CollectionUpdateType.nocheck) { // use if index exists
+          if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition %s use existing index%n", dirPath);
+          return false;
+        }
       }
-    }
 
-    boolean changed;
-    if (isGrib1) {
-      Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-      changed = builder.updateNeeded(forceCollection) && builder.createIndex(FeatureCollectionConfig.PartitionType.directory, errlog);
-    } else {
-      Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-      changed = builder.updateNeeded(forceCollection) && builder.createIndex(FeatureCollectionConfig.PartitionType.directory, errlog);
-    }
+      boolean changed;
+      if (isGrib1) {
+        Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+        changed = builder.updateNeeded(forceCollection) && builder.createIndex(FeatureCollectionConfig.PartitionType.directory, errlog);
+      } else {
+        Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+        changed = builder.updateNeeded(forceCollection) && builder.createIndex(FeatureCollectionConfig.PartitionType.directory, errlog);
+      }
 
-    if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition was updated=%s on %s%n", changed, dirPath);
-    return changed;
+      if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition was updated=%s on %s%n", changed, dirPath);
+      return changed;
+    }
   }
 
   /**
@@ -487,59 +487,63 @@ public class GribCdmIndex implements IndexReader {
     final Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    FilePartition partition = new FilePartition(config.collectionName, dirPath, config.olderThan, logger);
-    partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-    if (specp.getFilter() != null)
-      partition.setStreamFilter(new StreamFilter(specp.getFilter()));
+    try (FilePartition partition = new FilePartition(config.collectionName, dirPath, config.olderThan, logger)) {
+      partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+      if (specp.getFilter() != null)
+        partition.setStreamFilter(new StreamFilter(specp.getFilter()));
 
-    final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
+      final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
 
-    // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if theres an advantage
-    if (updateType == CollectionUpdateType.always || updateType == CollectionUpdateType.test) {
-      partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
-        public void consume(MFile mfile) {
-          MCollection dcm = new CollectionSingleFile(mfile, logger);
-          dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+      // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if theres an advantage
+      if (updateType == CollectionUpdateType.always || updateType == CollectionUpdateType.test) {
+        partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
+          public void consume(MFile mfile) {
+            MCollection dcm = new CollectionSingleFile(mfile, logger);
+            dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
-          if (isGrib1) {
-            Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-            try {
-              boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
-              if (changed) anyChange.set(true);
-            } catch (IOException e) { e.printStackTrace(); }
+            if (isGrib1) {
+              Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+              try {
+                boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
+                if (changed) anyChange.set(true);
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
 
-          } else {
-            Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-            try {
-              boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
-              if (changed) anyChange.set(true);
-            } catch (IOException e) { e.printStackTrace(); }
+            } else {
+              Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+              try {
+                boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
+                if (changed) anyChange.set(true);
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
 
+            }
           }
+        });
+      }
+
+      // LOOK what if theres only one file or partition ??
+
+      // redo partition index if needed, will detect if children have changed
+      boolean recreated = false;
+      if (isGrib1) {
+        Grib1PartitionBuilder builder = new Grib1PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
+        if (anyChange.get() || builder.updateNeeded(updateType))
+          recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+
+      } else {
+        Grib2PartitionBuilder builder = new Grib2PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
+        if (anyChange.get() || builder.updateNeeded(updateType))
+          recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+      }
+
+      long took = System.currentTimeMillis() - start;
+      String collectionName = partition.getCollectionName();
+      if (recreated) logger.info("RewriteFilePartition {} took {} msecs", collectionName, took);
+      return recreated;
         }
-      });
-    }
-
-    // LOOK what if theres only one file or partition ??
-
-    // redo partition index if needed, will detect if children have changed
-    boolean recreated = false;
-    if (isGrib1) {
-      Grib1PartitionBuilder builder = new Grib1PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
-      if (anyChange.get() || builder.updateNeeded(updateType))
-        recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
-
-    } else {
-      Grib2PartitionBuilder builder = new Grib2PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
-      if (anyChange.get() || builder.updateNeeded(updateType))
-        recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
-    }
-
-    long took = System.currentTimeMillis() - start;
-    String collectionName = partition.getCollectionName();
-    if (recreated) logger.info("RewriteFilePartition {} took {} msecs", collectionName, took);
-
-    return recreated;
   }
 
 

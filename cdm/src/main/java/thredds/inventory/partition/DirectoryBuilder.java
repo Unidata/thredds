@@ -16,24 +16,25 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * A Builder of DirectoryPartitions and DirectoryCollections.
- * Each DirectoryBuilder is associated with one directory, and one ncx2 index.
- * This may contain collections of files (MFiles in a DirectoryCollection), or subdirctories (MCollections in a DirectoryPartition).
+ * Each DirectoryBuilder is associated with one directory, and one ncx index.
+ * This may contain collections of files (MFiles in a DirectoryCollection), or subdirectories (MCollections in a DirectoryPartition).
  *
  * @author caron
  * @since 11/10/13
  */
 public class DirectoryBuilder {
 
+  // returns a DirectoryPartition or DirectoryCollection
   static public MCollection factory(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
     DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir.toString());
 
     DirectoryPartition dpart = new DirectoryPartition(config, topDir, indexReader, logger);
     if (!builder.isLeaf(indexReader))  { // its a partition
-      dpart.setLeaf(false);
       return dpart;
     }
 
@@ -43,7 +44,6 @@ public class DirectoryBuilder {
       return dpart.makeChildCollection(builder);
     } else {
       DirectoryCollection result = new DirectoryCollection(config.collectionName, topDir, config.olderThan, logger); // no index file
-      result.setLeaf(true);
       return result;
     }
   }
@@ -116,18 +116,20 @@ public class DirectoryBuilder {
    * @return true if partition, false if file collection
    * @throws IOException on IO error
    */
-  public boolean isLeaf(IndexReader indexReader) throws IOException {
+  private boolean isLeaf(IndexReader indexReader) throws IOException {
     if (partitionStatus == PartitionStatus.unknown) {
-      /* if (index != null) {
-        boolean isPartition = indexReader.isPartition(index);
-        partitionStatus = isPartition ? PartitionStatus.isPartition : PartitionStatus.isLeaf;
 
-      } else { // no index file  */
-        // temporary - just to scan 100 files in the directory
-        DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null, null);
-        // dc.setUseGribFilter(false); // LOOK not needed anymore
-        partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
-      // }
+        int countDir=0, countFile=0, count =0;
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)) {
+          Iterator<Path> iterator = dirStream.iterator();
+          while (iterator.hasNext() && count++ < 100) {
+            Path p = iterator.next();
+            BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
+            if (attr.isDirectory()) countDir++;
+            else countFile++;
+          }
+        }
+      partitionStatus = (countFile > countDir) ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
     }
 
     return partitionStatus == PartitionStatus.isLeaf;
@@ -219,7 +221,7 @@ public class DirectoryBuilder {
    * Scan for subdirectories, make each into a DirectoryBuilder and add as a child
    */
   private void scanForChildren() {
-    if (debug) System.out.printf(" DirectoryBuilder.scanForChildren %s ", dir);
+    if (debug) System.out.printf("DirectoryBuilder.scanForChildren on %s ", dir);
 
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir)) {
@@ -227,9 +229,8 @@ public class DirectoryBuilder {
         BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
         if (attr.isDirectory()) {
           children.add(new DirectoryBuilder(topCollectionName, p, attr));
+          if (debug && (++count % 10 == 0)) System.out.printf("%d ", count);
         }
-        if (debug && (count % 100 == 0)) System.out.printf("%d ", count);
-        count++;
       }
     } catch (IOException e) {
       e.printStackTrace();

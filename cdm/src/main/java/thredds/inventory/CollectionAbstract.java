@@ -66,21 +66,21 @@ public abstract class CollectionAbstract implements MCollection {
   protected long lastModified;
   protected MFileFilter filter;
   protected DirectoryStream.Filter<Path> sfilter;
-  private boolean isLeaf = true;
+  // private boolean isLeaf = true;
 
   protected CollectionAbstract(String collectionName, org.slf4j.Logger logger) {
     this.collectionName = cleanName(collectionName);
     this.logger = logger != null ? logger : defaultLog;
   }
 
-  @Override
+  /* @Override
   public boolean isLeaf() {
     return isLeaf;
   }
 
   public void setLeaf(boolean isLeaf) {
     this.isLeaf = isLeaf;
-  }
+  } */
 
   @Override
   public String getCollectionName() {
