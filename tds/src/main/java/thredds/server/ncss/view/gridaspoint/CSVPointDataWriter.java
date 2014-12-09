@@ -33,19 +33,10 @@
 
 package thredds.server.ncss.view.gridaspoint;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-
 import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
@@ -59,6 +50,13 @@ import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+import java.util.Map.Entry;
 
 class CSVPointDataWriter implements PointDataWriter  {
 	static private Logger log = LoggerFactory.getLogger(CSVPointDataWriter.class);
@@ -464,18 +462,19 @@ class CSVPointDataWriter implements PointDataWriter  {
 
 	@Override
 	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo, boolean isStream){
-
 		if(!headersSet){
 			httpHeaders = new HttpHeaders();
+
 			if(!isStream){
 				httpHeaders.set("Content-Location", pathInfo );
-				httpHeaders.set("Content-Disposition", "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(pathInfo) + ".csv\"");
+                String fileName = NcssRequestUtils.getFileNameForResponse(pathInfo, ".csv");
+				httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 			}			
 			
-      httpHeaders.set(ContentType.HEADER, ContentType.csv.getContentHeader());
+            httpHeaders.set(ContentType.HEADER, ContentType.csv.getContentHeader());
 			//httpHeaders.setContentType( MediaType.TEXT_PLAIN );
 		}
-		headersSet = true;
-	}	
 
+		headersSet = true;
+	}
 }

@@ -30,7 +30,6 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
 package thredds.server.ncss.view.gridaspoint;
 
 import org.slf4j.Logger;
@@ -38,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.controller.GridDatasetResponder;
 import thredds.server.ncss.format.SupportedFormat;
+import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.server.ncss.view.gridaspoint.netcdf.CFPointWriterWrapper;
 import thredds.server.ncss.view.gridaspoint.netcdf.CFPointWriterWrapperFactory;
 import thredds.util.ContentType;
@@ -59,144 +59,130 @@ import java.io.OutputStream;
 import java.util.*;
 
 public class NetCDFPointDataWriter implements PointDataWriter {
-  static private Logger log = LoggerFactory.getLogger(NetCDFPointDataWriter.class);
+    static private Logger log = LoggerFactory.getLogger(NetCDFPointDataWriter.class);
 
-  public static NetCDFPointDataWriter factory(NetcdfFileWriter.Version version, OutputStream outputStream, DiskCache2 diskCache) {
-    return new NetCDFPointDataWriter(version, outputStream, diskCache);
-  }
-
-  public static String getFileNameForResponse(NetcdfFileWriter.Version version, String pathInfo) {
-    String[] tmp = pathInfo.split("/");
-    StringBuilder sb = new StringBuilder();
-    sb.append(tmp[tmp.length - 2]).append("_").append(tmp[tmp.length - 1]);
-    String filename = sb.toString().split("\\.")[0] + version.getSuffix();
-
-    return filename;
-  }
-
-  ///////////////////////////////////////////////////////////////////
-
-  private OutputStream outputStream;
-  private DiskCache2 diskCache;
-  private File netcdfResult;
-  //private boolean isProfile = false;
-  private NetcdfFileWriter.Version version;
-  private CF.FeatureType featureType;
-  private CFPointWriterWrapper pointWriterWrapper;
-  private HttpHeaders httpHeaders = new HttpHeaders();
-  //private List<VariableSimpleIF> wantedVars;
-
-  private NetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream, DiskCache2 diskCache) {
-
-    this.outputStream = outputStream;
-    this.version = version;
-    this.diskCache = diskCache;
-    netcdfResult = diskCache.createUniqueFile("ncss", ".nc");
-  }
-
-  //public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
-  public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {
-
-    boolean headerDone = false;
-    if (groupedVars.size() > 1 && !wDates.isEmpty()) { //Variables with different vertical levels
-      //featureType = CF.FeatureType.profile;
-      featureType = CF.FeatureType.timeSeriesProfile;
-
-    } else {
-      List<String> keys = new ArrayList<>(groupedVars.keySet());
-      List<String> varsForRequest = groupedVars.get(keys.get(0));
-      CoordinateAxis1D zAxis = gridDataset.findGridDatatype(varsForRequest.get(0)).getCoordinateSystem().getVerticalAxis();
-
-      if (wDates.isEmpty()) {// Point feature with no time axis!!!
-        featureType = CF.FeatureType.point;
-
-      } else if (zAxis == null) {//Station
-        featureType = CF.FeatureType.timeSeries;
-      } else {//Time series profile with one variable
-        featureType = CF.FeatureType.timeSeriesProfile;
-      }
+    public static NetCDFPointDataWriter factory(
+            NetcdfFileWriter.Version version, OutputStream outputStream, DiskCache2 diskCache) {
+        return new NetCDFPointDataWriter(version, outputStream, diskCache);
     }
 
-    try {
-      List<Attribute> atts = new ArrayList<>();
-      atts.add(new Attribute(CDM.TITLE, "Extract Points data from Grid file " + gridDataset.getLocationURI()));
-      pointWriterWrapper = CFPointWriterWrapperFactory.getWriterForFeatureType(version, featureType, netcdfResult.getAbsolutePath(), atts);
-      headerDone = pointWriterWrapper.header(groupedVars, gridDataset, wDates, timeDimAtts, point, vertCoord);
-    } catch (IOException ioe) {
-      log.error("Error writing header", ioe);
+    ///////////////////////////////////////////////////////////////////
+
+    private OutputStream outputStream;
+    private DiskCache2 diskCache;
+    private File netcdfResult;
+    //private boolean isProfile = false;
+    private NetcdfFileWriter.Version version;
+    private CF.FeatureType featureType;
+    private CFPointWriterWrapper pointWriterWrapper;
+    private HttpHeaders httpHeaders = new HttpHeaders();
+    //private List<VariableSimpleIF> wantedVars;
+
+    private NetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream, DiskCache2 diskCache) {
+        this.outputStream = outputStream;
+        this.version = version;
+        this.diskCache = diskCache;
+        netcdfResult = diskCache.createUniqueFile("ncss", ".nc");
     }
 
-    return headerDone;
-  }
+    //public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates,
+    // DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
+    public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates,
+            List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {
 
+        boolean headerDone = false;
+        if (groupedVars.size() > 1 && !wDates.isEmpty()) { //Variables with different vertical levels
+            //featureType = CF.FeatureType.profile;
+            featureType = CF.FeatureType.timeSeriesProfile;
 
-  public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord) throws InvalidRangeException {
+        } else {
+            List<String> keys = new ArrayList<>(groupedVars.keySet());
+            List<String> varsForRequest = groupedVars.get(keys.get(0));
+            CoordinateAxis1D zAxis = gridDataset.findGridDatatype(varsForRequest.get(0)).getCoordinateSystem()
+                    .getVerticalAxis();
 
-    if (wDates.isEmpty()) {
-      return write(groupedVars, gds, CalendarDate.of(new Date()), point, vertCoord);
+            if (wDates.isEmpty()) {// Point feature with no time axis!!!
+                featureType = CF.FeatureType.point;
+
+            } else if (zAxis == null) {//Station
+                featureType = CF.FeatureType.timeSeries;
+            } else {//Time series profile with one variable
+                featureType = CF.FeatureType.timeSeriesProfile;
+            }
+        }
+
+        try {
+            List<Attribute> atts = new ArrayList<>();
+            atts.add(new Attribute(CDM.TITLE, "Extract Points data from Grid file " + gridDataset.getLocationURI()));
+            pointWriterWrapper = CFPointWriterWrapperFactory.getWriterForFeatureType(
+                    version, featureType, netcdfResult.getAbsolutePath(), atts);
+            headerDone = pointWriterWrapper.header(groupedVars, gridDataset, wDates, timeDimAtts, point, vertCoord);
+        } catch (IOException ioe) {
+            log.error("Error writing header", ioe);
+        }
+
+        return headerDone;
     }
 
-    //loop over wDates
-    CalendarDate date;
-    Iterator<CalendarDate> it = wDates.iterator();
-    boolean pointRead = true;
 
-    while (pointRead && it.hasNext()) {
-      date = it.next();
-      pointRead = write(groupedVars, gds, date, point, vertCoord);
+    public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates,
+            LatLonPoint point, Double vertCoord) throws InvalidRangeException {
+        if (wDates.isEmpty()) {
+            return write(groupedVars, gds, CalendarDate.of(new Date()), point, vertCoord);
+        }
 
+        //loop over wDates
+        CalendarDate date;
+        Iterator<CalendarDate> it = wDates.iterator();
+        boolean pointRead = true;
+
+        while (pointRead && it.hasNext()) {
+            date = it.next();
+            pointRead = write(groupedVars, gds, date, point, vertCoord);
+
+        }
+
+        return pointRead;
     }
 
-    return pointRead;
-
-  }
-
-
-  private boolean write(Map<String, List<String>> groupedVars, GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) throws InvalidRangeException {
-
-    boolean allWrite = pointWriterWrapper.write(groupedVars, gridDataset, date, point, targetLevel);
-
-    return allWrite;
-  }
-
-  @Override
-  public boolean trailer() {
-
-    boolean allDone = false;
-
-    pointWriterWrapper.trailer();
-
-    try {
-      IO.copyFileB(netcdfResult, outputStream, 60000);
-      allDone = true;
-    } catch (IOException ioe) {
-      log.error("Error copying result to the output stream", ioe);
+    private boolean write(Map<String, List<String>> groupedVars, GridDataset gridDataset, CalendarDate date,
+            LatLonPoint point, Double targetLevel) throws InvalidRangeException {
+        return pointWriterWrapper.write(groupedVars, gridDataset, date, point, targetLevel);
     }
 
-    return allDone;
-  }
+    @Override
+    public boolean trailer() {
+        boolean allDone = false;
+        pointWriterWrapper.trailer();
 
-  @Override
-  public HttpHeaders getResponseHeaders() {
+        try {
+            IO.copyFileB(netcdfResult, outputStream, 60000);
+            allDone = true;
+        } catch (IOException ioe) {
+            log.error("Error copying result to the output stream", ioe);
+        }
 
-    return httpHeaders;
-  }
+        return allDone;
+    }
 
+    @Override
+    public HttpHeaders getResponseHeaders() {
+        return httpHeaders;
+    }
 
-  @Override
-  public void setHTTPHeaders(GridDataset gridDataset, String pathInfo, boolean isStream) {
+    @Override
+    public void setHTTPHeaders(GridDataset gridDataset, String pathInfo, boolean isStream) {
+        //Set the response headers...
+        String fileName = NcssRequestUtils.getFileNameForResponse(pathInfo, version);
+        String url = GridDatasetResponder.buildCacheUrl(netcdfResult.getName());
+        String contentType = SupportedFormat.NETCDF3.getResponseContentType();
 
-    //Set the response headers...
-    String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, pathInfo);
-    String url = GridDatasetResponder.buildCacheUrl(netcdfResult.getName());
-    String contentType = SupportedFormat.NETCDF3.getResponseContentType();
-    if (version == NetcdfFileWriter.Version.netcdf4)
-      contentType = SupportedFormat.NETCDF4.getResponseContentType();
+        if (version == NetcdfFileWriter.Version.netcdf4) {
+            contentType = SupportedFormat.NETCDF4.getResponseContentType();
+        }
 
-    httpHeaders.set(ContentType.HEADER, contentType);
-    httpHeaders.set("Content-Location", url);
-    httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-  }
-
+        httpHeaders.set(ContentType.HEADER, contentType);
+        httpHeaders.set("Content-Location", url);
+        httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+    }
 }
-

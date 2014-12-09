@@ -128,6 +128,11 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+
     <!-- 
     <dependency>
       <groupId>net.sf.ehcache</groupId>
@@ -280,28 +285,7 @@
       <version>1.7</version>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
-
-
-  <!-- ================================================================== -->
-  <!--     Repositories. This is where Maven looks for dependencies. The  -->
-  <!--     Maven repository is implicit and doesn't need to be specified. -->
-  <!-- ================================================================== -->
-  <!-- repositories>
-    <repository>
-      <id>geotoolkit</id>
-      <name>Geotk repository</name>
-      <url>http://maven.geotoolkit.org</url>
-    </repository>      
-  </repositories-->
-
 
   <!-- ===========================================================
            Build configuration

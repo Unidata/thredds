@@ -200,11 +200,6 @@
       <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/</url>
     </repository>
  
-    <repository>
-      <id>geotoolkit</id>
-      <name>Geotk repository</name>
-      <url>http://maven.geotoolkit.org</url>
-    </repository>
     <!-- json-taglib  ( for ncWMS ) -->
     <repository>
       <id>mvmsearch</id>
@@ -636,7 +631,7 @@
       <dependency>
         <groupId>uk.ac.rdg.resc</groupId>
         <artifactId>ncwms</artifactId>
-        <version>${uk.ac.rdg.resc.version}</version>
+        <version>${uk.ac.rdg.resc.ncwms.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.slf4j</groupId>
@@ -651,11 +646,6 @@
             <artifactId>jfreechart</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.geotoolkit</groupId>
-        <artifactId>geotk-referencing</artifactId>
-        <version>${org.geotoolkit.version}</version>
       </dependency>
 
       <!-- server -->
@@ -985,9 +975,8 @@
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
     <edu.wisc.version>2011-08-22</edu.wisc.version>
-	  <uk.ac.rdg.resc.version>1.0.tds.4.4.0</uk.ac.rdg.resc.version>
-	  
-    <org.geotoolkit.version>3.21</org.geotoolkit.version>
+	  <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.4-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
+
     <eds.threddsIso.version>2.3.1</eds.threddsIso.version>
 
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
@@ -1006,11 +995,11 @@
     <commons-io.version>2.4</commons-io.version>
     <derby.version>10.9.1.0</derby.version>
     <javax.activation.version>1.1.1</javax.activation.version>
-    <javax.servlet.version>3.0.1</javax.servlet.version>
+    <javax.servlet.version>3.1.0</javax.servlet.version>
     <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
     <jaxen.version>1.1.4</jaxen.version>
-    <org.jfree.jcommon.version>1.0.17</org.jfree.jcommon.version>
-    <org.jfree.jfreechart.version>1.0.14</org.jfree.jfreechart.version>
+    <org.jfree.jcommon.version>1.0.23</org.jfree.jcommon.version>
+    <org.jfree.jfreechart.version>1.0.19</org.jfree.jfreechart.version>
     <joda-time.version>2.2</joda-time.version>
     <junit.version>4.11</junit.version>
     <log4j.version>2.0-rc1</log4j.version>
@@ -1022,14 +1011,14 @@
     <org.jdom2.version>2.0.4</org.jdom2.version>
     <org.jdom-legacy.version>1.1.3</org.jdom-legacy.version>
     <org.quartz-scheduler.version>2.2.0</org.quartz-scheduler.version>
-    <org.slf4j.version>1.7.5</org.slf4j.version>
-    <org.springframework.version>3.2.3.RELEASE</org.springframework.version>
-    <org.springframework.security.version>3.1.3.RELEASE</org.springframework.security.version>
+    <org.slf4j.version>1.7.7</org.slf4j.version>
+    <org.springframework.version>3.2.12.RELEASE</org.springframework.version>
+    <org.springframework.security.version>3.2.5.RELEASE</org.springframework.security.version>
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
     <saxon.version>8.7</saxon.version>
     <jna.groupId>net.java.dev.jna</jna.groupId>
-    <jna.version>4.0.0</jna.version>
+    <jna.version>4.1.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>
     <org.itadaki.bzip2.version>0.9.1</org.itadaki.bzip2.version>
     <jcommander.version>1.35</jcommander.version>

@@ -41,8 +41,8 @@ public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
 
         if (!isStream) {
             httpHeaders.set("Content-Location", datasetPath);
-            httpHeaders.set("Content-Disposition",
-                    "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(datasetPath) + ".xml\"");
+            String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".xml");
+            httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         }
 
         httpHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());

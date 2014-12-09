@@ -122,19 +122,16 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     /* <Netcdf4Clibrary>
        <libraryPath>C:/cdev/lib/</libraryPath>
        <libraryName>netcdf4</libraryName>
-     </Netcdf4Clibrary> */
+     </Netcdf4Clibrary>
+    */
     String libraryPath = ThreddsConfig.get("Netcdf4Clibrary.libraryPath", null);
     String libraryName = ThreddsConfig.get("Netcdf4Clibrary.libraryName", null);
     if (libraryPath != null || libraryName != null){
       Nc4Iosp.setLibraryAndPath(libraryPath, libraryName);
-    } else {
-      Nc4Iosp.setWarnOff(); // if they dont have a Netcdf4Clibrary element, suppress warnings
     }
 
     //Netcdf4 library could be set as a environment variable or as a jvm parameter
-      if (!Nc4Iosp.isClibraryPresent()) {
-          startupLog.warn("netcdf4 c library not present jna_path='" + libraryPath + "' libname=" + libraryName + "");
-      } else {
+      if (Nc4Iosp.isClibraryPresent()) {
           FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
 //      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4EXT, true);
 
