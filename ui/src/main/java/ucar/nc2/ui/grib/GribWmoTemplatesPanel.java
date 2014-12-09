@@ -71,7 +71,7 @@ public class GribWmoTemplatesPanel extends JPanel {
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
 
-    setTable(WmoTemplateTable.Version.GRIB2_13_0_1);
+    setTable(WmoTemplateTable.standard);
   }
 
   public void save() {

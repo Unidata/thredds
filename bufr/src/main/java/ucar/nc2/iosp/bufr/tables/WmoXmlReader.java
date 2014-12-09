@@ -182,6 +182,22 @@ public class WmoXmlReader {
 <CREX_DataWidth_Char>2</CREX_DataWidth_Char>
 <Status>Operational</Status>
 </BUFRCREX_17_0_0_TableB_en>
+
+<BUFRCREX_22_0_1_TableB_en>
+<No>1018</No>
+<ClassNo>21</ClassNo>
+<ClassName_en>BUFR/CREX Radar data</ClassName_en>
+<FXY>021073</FXY>
+<ElementName_en>Satellite altimeter instrument mode</ElementName_en>
+<BUFR_Unit>Flag table</BUFR_Unit>
+<BUFR_Scale>0</BUFR_Scale>
+<BUFR_ReferenceValue>0</BUFR_ReferenceValue>
+<BUFR_DataWidth_Bits>9</BUFR_DataWidth_Bits>
+<CREX_Unit>Flag table</CREX_Unit>
+<CREX_Scale>0</CREX_Scale>
+<CREX_DataWidth_Char>3</CREX_DataWidth_Char>
+<Status>Operational</Status>
+</BUFRCREX_22_0_1_TableB_en>
    */
 
   static void readWmoXmlTableB(InputStream ios, TableB b) throws IOException {
@@ -323,6 +339,18 @@ public class WmoXmlReader {
   <ElementName_en>X descriptor to be added or defined</ElementName_en>
   <Status>Operational</Status>
   </BUFR_19_1_1_TableD_en>
+
+  <BUFR_22_0_1_TableD_en>
+  <No>5874</No>
+  <Category>15</Category>
+  <CategoryOfSequences_en>Oceanographic report sequences</CategoryOfSequences_en>
+  <FXY1>315004</FXY1>
+  <Title_en>(XBT temperature profile data sequence)</Title_en>
+  <FXY2>025061</FXY2>
+  <ElementName_en>Software identification and version number</ElementName_en>
+  <Status>Operational</Status>
+  </BUFR_22_0_1_TableD_en>
+
    */
   static void readWmoXmlTableD(InputStream ios, TableD tableD) throws IOException {
     org.jdom2.Document doc;
