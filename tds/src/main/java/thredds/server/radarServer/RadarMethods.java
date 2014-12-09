@@ -32,22 +32,23 @@
  */
 package thredds.server.radarServer;
 
-import thredds.catalog.query.Station;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.DateRange;
-import thredds.servlet.ServletUtil;
-
-import java.util.*;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.io.File;
-
 import org.jdom2.Document;
 import org.jdom2.Element;
+import thredds.catalog.query.Station;
+import thredds.servlet.ServletUtil;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * By:   Robb Kambic
@@ -1087,7 +1088,7 @@ public class RadarMethods {
 
   }
 
-  protected class CompareKeyDescend implements Comparator<String> {
+  protected static class CompareKeyDescend implements Comparator<String> {
     /*
     public int compare(Object o1, Object o2) {
       String s1 = (String) o1;

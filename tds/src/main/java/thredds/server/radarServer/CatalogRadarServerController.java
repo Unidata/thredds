@@ -38,36 +38,26 @@
 
 package thredds.server.radarServer;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.springframework.web.servlet.mvc.AbstractController;
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.InvDatasetScan;
-import thredds.catalog.ThreddsMetadata;
+import thredds.catalog.*;
 import thredds.server.config.TdsContext;
 import thredds.servlet.HtmlWriter;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
 
 /**
  * Returns catalogs/datasets for the RadarServer data
@@ -343,7 +333,7 @@ public class CatalogRadarServerController extends AbstractController {
   /*
    * Used to store the information about a Radar variable from catalog
    */
-  public class RsVar {
+  public static class RsVar {
 
     private String name;
 

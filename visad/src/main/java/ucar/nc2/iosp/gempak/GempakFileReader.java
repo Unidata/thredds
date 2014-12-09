@@ -795,7 +795,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to hold the DM File header info
    */
-  protected class DMFileHeaderInfo {
+  protected static class DMFileHeaderInfo {
 
     /**
      * file header name
@@ -838,7 +838,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to mimic the DMKEYS common block.
    */
-  protected class DMPart {
+  protected static class DMPart {
 
     /**
      * part name
@@ -917,7 +917,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to hold DM Parameter info
    */
-  protected class DMParam {
+  protected static class DMParam {
 
     /**
      * part name
@@ -967,7 +967,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to hold DM Integer packing info
    */
-  protected class PackingInfo {
+  protected static class PackingInfo {
 
     /**
      * offsets
@@ -1048,7 +1048,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to hold information about a key.
    */
-  protected class Key {
+  protected static class Key {
 
     /**
      * the key name

@@ -278,7 +278,7 @@ public class StationRadarServerController extends AbstractController {
       <elevation>562.0</elevation>
     </station>
     */
-  public class StationEntry {
+  public static class StationEntry {
 
     private String id;
     private String state;

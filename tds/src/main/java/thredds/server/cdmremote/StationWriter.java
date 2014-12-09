@@ -33,27 +33,13 @@
 
 package thredds.server.cdmremote;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import thredds.server.cdmremote.params.CdmrfQueryBean;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.remote.PointStream;
@@ -71,6 +57,15 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
 
 /**
  * CdmrFeature subsetting for station data.
@@ -446,7 +441,7 @@ public class StationWriter {
 
   }
 
-  private class StationDataTracker {
+  private static class StationDataTracker {
     PointFeature sobs;
     long timeDiff = Long.MAX_VALUE;
 

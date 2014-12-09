@@ -444,7 +444,7 @@ public class GridIndexToNC {
 
   }
 
-  private class VertCollection implements Comparable<VertCollection> {
+  private static class VertCollection implements Comparable<VertCollection> {
     GridVertCoord vc;
     List<GridVariable> list = new ArrayList<>(3);
 
