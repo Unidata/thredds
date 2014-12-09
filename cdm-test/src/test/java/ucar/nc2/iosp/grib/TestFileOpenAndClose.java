@@ -48,13 +48,13 @@ import java.io.RandomAccessFile;
  */
 public class TestFileOpenAndClose {
 
-  @Test
+  //@Test
   public void testNFilesOpen() throws IOException {
     File topDir = new File(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2");
     openAll(topDir);
   }
 
-  @Test
+  //@Test
   public void testNFilesOpenAndClose() throws IOException {
     File topDir = new File(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2");
     openAndClose(topDir);

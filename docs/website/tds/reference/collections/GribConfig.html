@@ -11,8 +11,10 @@
 <hr/>
 <p>There are a number of ways that the user can intervene in the processing of GRIB Collections, all of them controlled by <strong>&lt;gribConfig&gt;</strong> elements in the TDS configuration catalogs or in NcML. Its important to understand when these elements are applied and when index files need to be regenerated. </p>
 <p>As of version 4.5, there are two stages of processing. </p>
-<p>The first stage creates GribCollections, which are collections of GRIB records stored in one or more files. Grib Collections try to make all of the records in the collection available to the user by creating a dataset with two time dimensions, a reference time and a forecast time. At this stage, errors in encoding the GDS (horizontal coordinate system) can be fixed. Since distinct GDS will generate separate Groups in the CDM object model, fixing errors here will prevent spurious extra groups from being created. Also, one can control how the GRIB records are collected into Variables.</p>
-<h2>Configuration of the GribCollection</h2>
+<p>The first stage creates GribCollections, which are collections of GRIB records stored in one or more files. Grib Collections try to make all of the records in the collection available to the user by creating a dataset with two time dimensions, a reference time and a forecast time. At this stage, errors in encoding the GDS (Grid Definition Section, which defines the horizontal coordinate system) can be fixed with <strong>gdsHash</strong>. Since distinct GDS will generate separate Groups in the CDM object model, fixing errors here will prevent spurious extra groups from being created. One can also control how  GRIB records are collected into Variables with <strong>pdsHash</strong>.</p>
+<p>If you make changes to any <strong>gribConfig</strong> parameters that affect stage one processing, you need to delete the cdm index files (<strong>*.ncx2</strong>) to force them to be recreated. You do not need to delete the <strong>gbx9</strong> index files.</p>
+<p>The second stage happens when the GribCollection is turned into a NetcdfFile by the GRIB IOSP. At this point, the correct GRIB tables must be identified, and decisions on how to name Groups and Variables are made. Changes to these settings may happen at any time, without having to recreate the collection indices. They will take affect the next time the TDS starts.</p>
+<h2>Stage One: GribCollection Creation</h2>
 <h3><strong><a name="gdsHash" id="gdsHash"></a>gdsHash</strong>: Fix errors in GDS encoding</h3>
 <blockquote>
   <pre>
@@ -24,7 +26,7 @@
    &lt;/xsd:element&gt;
 </pre>
   <blockquote>
-    <p>The CDM creates a different group for each different GDS used in the GRIB collection. It identifies the GDS by creating a hashcode for it, and then
+    <p>The CDM creates a different group for each different GDS (Grid Definition Section) used in the GRIB collection. It identifies the GDS by creating a hashcode for it, and then
       creates a separate group for each unique hashcode. Unfortunately, in some cases, GRIB records have GDSs that differ in minor ways, such as the fifth
       decimal place in the starting x and/or y coordinate. Its clear that these are minor defects in the writing of the GRIB records. If desired, the user can
       fix these problems through NcML or in the TDS gribConfig element.</p>
@@ -44,11 +46,10 @@
  &lt;gribConfig&gt;
    &lt;gdsHash from=&quot;1450218978&quot; to=&quot;0&quot;/&gt;
  &lt;/gribConfig&gt;</pre>
-    <p>will ignore any records with GDS hashcode 1450218978.</p>
-    <p>&nbsp;</p>
+    <p>will ignore any records with GDS hashcode 1450218978.  </p>
   </blockquote>
 </blockquote>
-<h3>pdsHash: Control how PDS are made into variables</h3>
+<h3><a name="pdsHash" id="pdsHash"></a>pdsHash: Control how PDS are made into variables</h3>
 <pre>  &lt;xsd:element name=&quot;pdsHash&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
    &lt;xsd:complexType&gt;
     &lt;xsd:sequence&gt;
@@ -59,37 +60,28 @@
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;</pre>
 <blockquote>
-  <p>Information in the GRIB PDS is used to group GRIB records into CDM Variables containing multidimensional arrays. This is done by creating a &quot;CDM hashcode&quot; of each record, and then combining all records with the same hashcode into a unique variable.</p>
-  <p><strong>useGenType</strong>: GRIB-2 only. Control whether generating type (octet 12) is used in the CDM hashcode. Default is false.</p>
+  <p>Information from the GRIB record, in particular the PDS (Product Definition Section) is used to group GRIB records into CDM Variables containing multidimensional arrays. This is done by creating a &quot;CDM hashcode&quot; of each record, and then combining all records with the same hashcode into one variable. The CDM makes certain choices on how to do this, that may need to be overriden for a partitcular dataset. Currently most of these setting ar per dataset, and cannot be applied at a finer granularity, with the exception of <strong>intvFilter</strong>, which applies to specific Variables.</p>
+  <p><strong>useGenType</strong>: GRIB-2 only. Control whether generating type (octet 12) is used in the CDM hashcode. If true, records with different generating types will create different variables. Default is false. Set this to true if, in the same dataset, you have records with the same discipline-category-parameter but with different generating types that should be made into diffeerent variables. By default, different generating types will be ignored.</p>
   <pre> &lt;pdsHash&gt;
    &lt;useGenType&gt;true&lt;/useGenType&gt;
  &lt;/pdsHash&gt;
 </pre>
-  <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version is used in the CDM hashcode. Default is true.</p>
+  <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version (octet 4) is used in the CDM hashcode. If true, records with different table versions will create different variables. Default is false.   Set this to true if, in the same dataset, you have records with the same parameter but with different table versions that should be made into diffeerent variables. By default, different table versions will be ignored.</p>
   <pre> &lt;pdsHash&gt;
    &lt;<strong>useTableVersion</strong>&gt;false&lt;/<strong>useTableVersion</strong>&gt;
  &lt;/pdsHash&gt;</pre>
-  <p><strong>intvMerge</strong>:  GRIB-1 and GRIB-2. Control whether time intervals are merged. If false, seperate variables are created for each time interval length.  Default is true.</p>
+  <p><strong>intvMerge</strong>:  GRIB-1 and GRIB-2. Control whether time intervals are merged. If false, seperate variables are created for each time interval length.  Default is true, which will generate &quot;mixed interval variables&quot; if a variable has records of different interval lengths.</p>
   <pre> &lt;pdsHash&gt;
    &lt;<strong>intvMerge</strong>&gt;false&lt;/intvMerge&gt;
  &lt;/pdsHash&gt;</pre>
-  <p><strong>useCenter</strong>: GRIB-1 only. Control whether center/subcenter  is used in the CDM hashcode when the parameter number &gt; 127.  Default is true.</p>
+  <p><strong>useCenter</strong>: GRIB-1 only. Control whether center (octet 5) and subcenter (octet 26, if &gt; 0) is used in the CDM hashcode when the parameter number &gt; 127.  Default is false. Set this to true if, in the same dataset, you have records with the same parameter from different centers that should be made into different variables. By default, different centers will be ignored.</p>
   <pre> &lt;pdsHash&gt;
    &lt;<strong>useCenter</strong>&gt;false&lt;/<strong>useCenter</strong>&gt;
- &lt;/pdsHash&gt;</pre>
+ &lt;/pdsHash&gt;
+</pre>
 </blockquote>
-<h3>timeUnitConvert: correct time unit encoding</h3>
-<pre>&lt;timeUnitConvert from=&quot;1&quot; to=&quot;11&quot; /&gt;</pre>
-<p>probably should remove, not clear its needed. CFSR or NDFD ??</p>
-<h3>filter : not used</h3>
-<pre> &lt;filter&gt;
-    &lt;include name=&quot;&quot; value=&quot;&quot;/&gt;
- &lt;/filter&gt;</pre>
-<pre>&lt;parameter name=&quot;CoordSys&quot; value=&quot;dense&quot; /&gt;</pre>
-<h2>Configuration of the PartitionCollection</h2>
-<blockquote>
-  <h3>intvFilter: Time Interval filters</h3>
-  <pre>  &lt;xsd:element name=&quot;intvFilter&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+<h3><a name="intvFilter" id="intvFilter"></a>intvFilter: Time Interval filters</h3>
+<pre>  &lt;xsd:element name=&quot;intvFilter&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
    &lt;xsd:complexType&gt;
     &lt;xsd:sequence&gt;
       &lt;xsd:element name=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
@@ -103,18 +95,20 @@
      &lt;xsd:attribute name=&quot;intvLength&quot; type=&quot;xsd:int&quot; use=&quot;optional&quot;/&gt;
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;</pre>
+<blockquote>
+<blockquote>
   <p>GRIB makes extensive use of time intervals as coordinates. In <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries">CF</a>, time interval coordinates use an auxiliary
       coordinate to describe the intervals, for example a coordinate named<em> time1(30) </em>will have an auxiliary coordinate <em>time1_bounds(30,2)</em> containing the lower and upper bounds of the time interval for each coordinate. Currently, the CDM places all intervals in the same variable (rather than
-      create seperate variables for each interval size). When all intervals have the same size, the interval size is added to the variable name. Otherwise the
+      create seperate variables for each interval size), unless <strong>intvMerge</strong> is set to false. When all intervals have the same size, the interval size is added to the variable name. Otherwise the
       phrase &quot;mixed_intervals&quot; is added to the variable name.</p>
   <p>Generally, the CDM places the coordinate value at the end of the interval, for example the time interval (0,6) will have a coordinate value 6. The CDM
-        looks for unique intervals in constructing the variable. This implies that the coordinate values are not always unique, but the coordinate bounds pair are
-      always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em>.</p>
+    looks for unique intervals in constructing the variable. This implies that the coordinate values are not always unique, but the coordinate bounds pair are
+    always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em>.</p>
   <p>NCEP GRIB2 model output, at least, has some issues that we are slowing learning how best to deal with. Currently there are two situations which the user
-      can fix in NcML (or the TDS):</p>
+    can fix:</p>
   <ol>
-    <li>One can choose to ignore (0,0) intervals.</li>
-    <li>One can choose that certain parameters use only selected intervals. This is helpful when the parameter has redundant mixed levels, which can be
+    <li><strong>excludeZero</strong>: One can choose to ignore (0,0) intervals. One sees these in NCEP model output, apparently they are initialization records, probably miscoded (they should be time points, not intervals).</li>
+    <li><strong>intvLength</strong>: One can choose that certain parameters use only selected intervals. This is helpful when the parameter has redundant mixed levels, which can be
       derived from the set of intervals of a fixed size . For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12) intervals are all present, and so
       other intervals (0,6), (0, 9), (0,12) can be ignored. </li>
   </ol>
@@ -122,55 +116,28 @@
   <blockquote>
     <pre>  &lt;gribConfig&gt;<br/><strong>1)</strong> &lt;intvFilter excludeZero=&quot;true&quot;/&gt;<br/><strong>2)</strong> &lt;intvFilter intvLength=&quot;3&quot;&gt;<br/>     &lt;variable id=&quot;0-1-8&quot;/&gt;<br/>     &lt;variable id=&quot;0-1-10&quot;/&gt;<br/>   &lt;/intvFilter&gt;<br/> &lt;/gribConfig&gt;</pre>
   </blockquote>
-  <p>This example says to ignore any 0 length time intervals. One sees these in NCEP model output, apparently they are initialization records. </p>
-  <p>This example also says that for variables 0-1-8 and 0-1-10, only include records with time interval length = 3. This will simplify those variables so that they only contain only 3 hour intervals, instead of a mixture of intervals.</p>
-  <p>Also see <a href="../../../netcdf-java/reference/formats/GribFiles.html#intvFilter">CDM docs</a>. </p>
 </blockquote>
-<hr />
-<h2>Other Configuration </h2>
+<ol>
+  <li>Ignore any 0 length time intervals. </li>
+  <li>For variables 0-1-8 and 0-1-10, only include records with time interval length = 3. This will simplify those variables so that they only contain only 3 hour intervals, instead of a mixture of intervals.</li>
+</ol>
 <blockquote>
-  <h4>7) datasetTypes: Define which
-    datasets are available in the TDS catalog</h4>
-  <ol>
-    <li><strong>TwoD: </strong>the full dataset with two time coordinates: runtime and forecast time</li>
-    <li><strong>Best</strong>: the &quot;best timeseries&quot; of the collection dataset, one time coordinate (forecasst time)</li>
-    <li><strong>Latest</strong>: add latest resolver dataset to  catalog </li>
-  </ol>
-    <pre>
-&lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;</pre>
-  <h4>8) latestNamer: Rename the latest file dataset</h4>
-  <blockquote>
-    <p>Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is &quot;Latest File&quot;). The
-      datasetTypes options <em><strong>LatestFile</strong></em> and <em><strong>Files</strong></em>, must be enabled. Note that this does not affect dataset <strong>urlPath</strong>, which is always <em>latest.xml</em>.</p>
-  </blockquote>
-  <pre>
-&lt;gribConfig&gt;
-  &lt;latestNamer name=&quot;My Latest Name&quot;/&gt;
-&lt;/gribConfig&gt;</pre>
-  <h4>9) bestNamer: Rename the Best dataset</h4>
-  <blockquote>
-    <p>Change the name of the Best dataset in the collection (the default name is &quot;Best Timeseries&quot;). The datasetTypes <strong><em>Best</em></strong> option must be selected. Note that this does not affect dataset <strong>urlPath</strong>.</p>
-  </blockquote>
-  <pre>
-&lt;gribConfig&gt;
-  &lt;bestNamer name=&quot;My Best Name&quot; /&gt;
-&lt;/gribConfig&gt;</pre>
-  <h4>10) filesSort: Sort the dataset listings under the Files dataset</h4>
-  <blockquote>
-    <p>Sort the files lexographically, either increasing or decreasing (default GRIB Feature Collection behavior is the same as <em>increasing =
-      True</em>). The <em><strong>Files</strong></em> datasetTypes option must be enabled.</p>
-  </blockquote>
-  <pre>
-&lt;gribConfig&gt;
-  &lt;filesSort&gt;
-    &lt;lexigraphicByName increasing=&quot;false&quot; /&gt;
-  &lt;/filesSort&gt;
-&lt;/gribConfig&gt;</pre>
+  <p>Also see <a href="../../../netcdf-java/reference/formats/GribFiles.html#intvFilter">CDM docs</a>.</p>
 </blockquote>
-<p>If you make changes to <strong>gribConfig</strong> parameters (except <strong>datasetTypes</strong>, <strong>LatestNamer</strong>, <strong>BestNamer</strong>,
-  and <strong>filesSort</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
-<h2>&nbsp;</h2>
-<h4>2) gdsName: Set group names</h4>
+<h3><a name="parameter" id="parameter"></a>option: set miscellaneous values</h3>
+<blockquote>
+  <p>Miscellaneous values that control how the GribCollection is made can be set with   <strong>option</strong> elements. All option elements are key / value pairs.</p>
+  <h4>timeUnit </h4>
+  <p>The  unit of the time coordinates is taken from the first GRIB record in the collection. Occasionally you may want to override this. The value must be a valid string for <strong>ucar.nc2.time.CalendarPeriod.of(  timeUnit)</strong></p>
+<pre>&lt;option name=&quot;timeUnit&quot; value=&quot;1 minute&quot; /&gt;</pre>
+  <h4>unionRuntimeCoord </h4>
+  <p>When multiple reference times are in the same dataset, but they differ for different variables, by default unique runtime coordinates are created. These can proliferate in a large collection, differing only by a few missing records. By setting the <strong>runtimeCoordinate</strong> option to &quot;<em>union</em>&quot;, you can force all variables to use the same runtime coordinates, at the cost of some extra missing values. This happens only at the leaf collections (eg file or directory).</p>
+<pre>&lt;option name=&quot;runtimeCoordinate&quot; value=&quot;union&quot; /&gt;</pre>
+</blockquote>
+
+<hr />
+<h2>Stage Two: NetcdfFile Creation</h2>
+<h4><a name="gdsName" id="gdsName"></a>gdsName: Rename groups</h4>
 <blockquote>
   <p>When a dataset has multiple groups, the groups are automatically named by the projection used and the horizontal dimension size, eg<strong> LatLon-360x720</strong>.</p>
   <p>A user can set group names manually in the TDS configuration catalog. To do so, find the group hash as in the gdsHash example above. Then use the gdsName
@@ -181,39 +148,72 @@
   &lt;gdsName hash='-1571856555' groupName='KORN Lower Mississippi RFC'/&gt;
    ...
 &lt;/gribConfig&gt;</pre>
-  <p>The groupName is used in URLs, so dont use any special characters, like &quot;:&quot;.</p>
-  <p>If you are showing the collection in the
-    IOSP/GRIB1(2)/GribCollection tab, the &quot;show GDS use&quot; button will print out the &lt;gdsName&gt; elements, which you can copy into the TDS
-    configuration catalog and override the names. </p>
-  <p>ToolsUI will generate the XML of the GDS in a collection. Open the collection in IOSP/GRIB1(2)/GribCollection tab, and click on the &quot;generate gds xml&quot; button on the top right. This will create a template you can then modify:</p>
-  <pre>&lt;gribConfig&gt;
-  &lt;gdsName hash='1201131096' groupName='Lambert conformal-129X185'/&gt;
+  <p>The groupName is used in URLs, so dont use any special characters, like &quot;:&quot;.  </p>
+  <p>ToolsUI will generate the XML of the GDS in a collection. Open the collection in IOSP/GRIB1(2)/GribCollection tab, and click on the &quot;Show GDS use&quot; button on the top right. This will create a template you can then modify:</p>
+  <pre>&lt;gdsName hash='1450192070' groupName='Gaussian latitude/longitude-576X1152'/&gt;</pre>
+</blockquote>
+<h3>TDS only
+</h3>
+<blockquote>
+  <h4><a name="datasetTypes" id="datasetTypes"></a>datasetTypes: Define which
+    datasets are available in the TDS catalog</h4>
+  <ol>
+    <li><strong>TwoD: </strong>the full dataset with two time coordinates: runtime and forecast time</li>
+    <li><strong>Best</strong>: the &quot;best timeseries&quot; of the collection dataset, one time coordinate (forecasst time)</li>
+    <li><strong>Latest</strong>: add latest resolver dataset to  catalog </li>
+  </ol>
+  <pre>
+&lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;</pre>
+  <h4><a name="latestNamer" id="latestNamer"></a>latestNamer: Rename the latest file dataset</h4>
+  <blockquote>
+    <p>Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is &quot;Latest File&quot;). The
+    datasetTypes options <em><strong>LatestFile</strong></em> and <em><strong>Files</strong></em>, must be enabled. Note that this does not affect dataset <strong>urlPath</strong>, which is always <em>latest.xml</em>.</p>
+  </blockquote>
+  <pre>
+&lt;gribConfig&gt;
+  &lt;latestNamer name=&quot;My Latest Name&quot;/&gt;
+&lt;/gribConfig&gt;</pre>
+  <h4><a name="bestNamer" id="bestNamer"></a>bestNamer: Rename the Best dataset  </h4>
+  <blockquote>
+    <p>Change the name of the Best dataset in the collection (the default name is &quot;Best Timeseries&quot;). The datasetTypes <strong><em>Best</em></strong> option must be selected. Note that this does not affect dataset <strong>urlPath</strong>.</p>
+  </blockquote>
+  <pre>
+&lt;gribConfig&gt;
+  &lt;bestNamer name=&quot;My Best Name&quot; /&gt;
+&lt;/gribConfig&gt;</pre>
+  <h4><a name="filesSort" id="filesSort"></a>filesSort: Sort the dataset listings under the Files dataset</h4>
+  <blockquote>
+    <p>Sort the files lexigraphically, either increasing or decreasing (default GRIB Feature Collection behavior is the same as <em>increasing =
+    True</em>). The <em><strong>Files</strong></em> datasetTypes option must be enabled.</p>
+  </blockquote>
+  <pre>
+&lt;gribConfig&gt;
+  &lt;filesSort increasing=&quot;false&quot; /&gt;
 &lt;/gribConfig&gt;</pre>
 </blockquote>
 <hr />
-<h2><a name="gribConfig" id="gribConfig"></a> gribConfig element schema</h2>
-<p>The gribConfig schema definition:</p>
+<h2><a name="schema" id="schema"></a> gribConfig XML Schema</h2>
+<p>The gribConfig schema definition, version 1.07</p>
+<p>see: <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd">http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd</a></p>
 <blockquote>
   <pre>&lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;
  &lt;xsd:sequence&gt;
 
-  &lt;xsd:element name=&quot;gdsHash&quot; minOccurs=&quot;0&quot;&gt;
+1)&lt;xsd:element name=&quot;gdsHash&quot; minOccurs=&quot;0&quot;&gt;
    &lt;xsd:complexType&gt;
      &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
      &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;
   
-  &lt;xsd:element name=&quot;gdsName&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+2)&lt;xsd:element name=&quot;gdsName&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
    &lt;xsd:complexType&gt;
      &lt;xsd:attribute name=&quot;hash&quot; type=&quot;xsd:int&quot;/&gt;
      &lt;xsd:attribute name=&quot;groupName&quot; type=&quot;xsd:string&quot;/&gt;
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;
-
-  &lt;xsd:element name=&quot;groupNamer&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
      
-  &lt;xsd:element name=&quot;pdsHash&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+3)&lt;xsd:element name=&quot;pdsHash&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
    &lt;xsd:complexType&gt;
     &lt;xsd:sequence&gt;
       &lt;xsd:element name=&quot;useGenType&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
@@ -223,7 +223,7 @@
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;
   
-  &lt;xsd:element name=&quot;intvFilter&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+4)&lt;xsd:element name=&quot;intvFilter&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
    &lt;xsd:complexType&gt;
     &lt;xsd:sequence&gt;
       &lt;xsd:element name=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
@@ -238,238 +238,84 @@
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;
 
-   &lt;xsd:element name=&quot;timeUnitConvert&quot; minOccurs=&quot;0&quot;&gt;
-   &lt;xsd:complexType&gt;
-   &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
-   &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
-   &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
-    &lt;xsd:element name=&quot;latestNamer&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;&gt;
-   &lt;xsd:complexType&gt;
-   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-   &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
-    &lt;xsd:element name=&quot;bestNamer&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;&gt;
-   &lt;xsd:complexType&gt;
-   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-   &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
-    &lt;xsd:element name=&quot;filesSort&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;&gt;
-   &lt;xsd:complexType&gt;
-   &lt;xsd:choice&gt;
-   &lt;xsd:element name=&quot;lexigraphicByName&quot;&gt;
-   &lt;xsd:complexType&gt;
-   &lt;xsd:attribute name=&quot;increasing&quot; type=&quot;xsd:boolean&quot;/&gt;
-   &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
-   &lt;/xsd:choice&gt;
-   &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
-   &lt;/xsd:sequence&gt;
-    &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;gribDatasetTypes&quot;/&gt;
-     &lt;/xsd:complexType&gt;</pre>
-</blockquote>
-<hr />
-<blockquote>
-  <p>&nbsp;</p>
-  <h2><a name="gribConfig" id="gribConfig2"></a> gribConfig element</h2>
-  <p>The gribConfig schema definition:</p>
-  <blockquote>
-    <pre>&lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;
-  &lt;xsd:sequence&gt;
-1) &lt;xsd:element name=&quot;gdsHash&quot; minOccurs=&quot;0&quot;&gt;
-     &lt;xsd:complexType&gt;
-       &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
-       &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
-     &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
+5)&lt;xsd:element name=&quot;timeUnitConvert&quot; minOccurs=&quot;0&quot;&gt;
+    &lt;xsd:complexType&gt;
+      &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
+      &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
 
-2) &lt;xsd:element name=&quot;gdsName&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
-     &lt;xsd:complexType&gt;
-       &lt;xsd:attribute name=&quot;hash&quot; type=&quot;xsd:int&quot;/&gt;
-       &lt;xsd:attribute name=&quot;groupName&quot; type=&quot;xsd:string&quot;/&gt;
-     &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
+6)&lt;xsd:element name=&quot;parameter&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br />     &lt;xsd:complexType&gt;<br />       &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />       &lt;xsd:attribute name=&quot;value&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />     &lt;/xsd:complexType&gt;<br />  &lt;/xsd:element&gt;
+    
+7)&lt;xsd:element name=&quot;latestNamer&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;&gt;
+   &lt;xsd:complexType&gt;
+     &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+   &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
 
-4) &lt;xsd:element name=&quot;useGenType&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
- 
-5) &lt;xsd:element name=&quot;intvFilter&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
-     &lt;xsd:complexType&gt;
-       &lt;xsd:sequence&gt;
-         &lt;xsd:element name=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
-           &lt;xsd:complexType&gt;
-             &lt;xsd:attribute name=&quot;id&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-             &lt;xsd:attribute name=&quot;prob&quot; type=&quot;xsd:string&quot; use=&quot;optional&quot;/&gt;
-           &lt;/xsd:complexType&gt;
-         &lt;/xsd:element&gt;
-       &lt;/xsd:sequence&gt;
-       &lt;xsd:attribute name=&quot;excludeZero&quot; type=&quot;xsd:boolean&quot; use=&quot;optional&quot;/&gt;
-       &lt;xsd:attribute name=&quot;intvLength&quot; type=&quot;xsd:int&quot; use=&quot;optional&quot;/&gt;
-     &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
-   
-6) &lt;xsd:element name=&quot;timeUnitConvert&quot; minOccurs=&quot;0&quot;&gt;
-     &lt;xsd:complexType&gt;
-       &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
-       &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;
-     &lt;/xsd:complexType&gt;
-   &lt;/xsd:element&gt;
+8)&lt;xsd:element name=&quot;bestNamer&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;&gt;
+   &lt;xsd:complexType&gt;
+     &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+   &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+  
+9)&lt;xsd:element name=&quot;filesSort&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;&gt;
+   &lt;xsd:complexType&gt;
+     &lt;xsd:choice&gt;
+       &lt;xsd:element name=&quot;lexigraphicByName&quot;&gt;
+         &lt;xsd:complexType&gt;
+           &lt;xsd:attribute name=&quot;increasing&quot; type=&quot;xsd:boolean&quot;/&gt;
+         &lt;/xsd:complexType&gt;
+       &lt;/xsd:element&gt;
+     &lt;/xsd:choice&gt;
+     &lt;xsd:attribute name=&quot;orderBy&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />     &lt;xsd:attribute name=&quot;increasing&quot; type=&quot;xsd:boolean&quot; use=&quot;required&quot;/&gt;
+    &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+  
  &lt;/xsd:sequence&gt;
 
-7)&lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;gribDatasetTypes&quot;/&gt;
-
-8)&lt;xsd:element name=&quot;latestNamer&quot;&gt;
-    &lt;xsd:complexType&gt;
-      &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-    &lt;/xsd:complexType&gt;
-  &lt;/xsd:element&gt;
-
-9)&lt;xsd:element name=&quot;bestNamer&quot;&gt;
-    &lt;xsd:complexType&gt;
-     &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-    &lt;/xsd:complexType&gt;
-  &lt;/xsd:element&gt;
-
-10)&lt;xsd:element name=&quot;filesSort&quot;&gt;
-    &lt;xsd:complexType&gt;
-      &lt;xsd:choice&gt;
-        &lt;xsd:element name=&quot;lexigraphicByName&quot;&gt;
-          &lt;xsd:complexType&gt;
-            &lt;xsd:attribute name=&quot;increasing&quot; type=&quot;xsd:boolean&quot;/&gt;
-          &lt;/xsd:complexType&gt;
-        &lt;/xsd:element&gt;
-      &lt;/xsd:choice&gt;
-    &lt;/xsd:complexType&gt;
-  &lt;/xsd:element&gt;
-
+10) &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;gribDatasetTypes&quot;/&gt;
 &lt;/xsd:complexType&gt;
-
-&lt;xsd:simpleType name=&quot;gribDatasetTypes&quot;&gt;
+</pre>
+  <pre>&lt;xsd:simpleType name=&quot;gribDatasetTypes&quot;&gt;
  &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
-   &lt;xsd:simpleType&gt;
+  &lt;xsd:simpleType&gt;
     &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
-7)   &lt;xsd:enumeration value=&quot;Best&quot;/&gt;
-     &lt;xsd:enumeration value=&quot;Files&quot;/&gt;
-     &lt;xsd:enumeration value=&quot;LatestFile&quot;/&gt;
-    &lt;/xsd:restriction&gt;
-   &lt;/xsd:simpleType&gt;
-  &lt;/xsd:union&gt;
-&lt;/xsd:simpleType&gt;
-    </pre>
-    <h4>1) gdsHash<a name="gdsHash" id="gdsHash2"></a>: Fix errors in GDS encoding</h4>
-    <blockquote>
-      <p>The CDM creates a different group for each different GDS used in the GRIB collection. It identifies the GDS by creating a hashcode for it, and then
-        creates a separate group for each unique hashcode. Unfortunately, in some cases, GRIB records have GDSs that differ in minor ways, such as the fifth
-        decimal place in the starting x and/or y coordinate. Its clear that these are minor defects in the writing of the GRIB records. If desired, the user can
-        fix these problems through NcML or in the TDS gribConfig element</p>
-      <p>First, one must find the GDS hashcodes by using ToolsUI. In the IOSP/GRIB1(2)/GribCollection tab, enter the GRIB file name, which then shows the records
-        in the file. Select the GDS (at the bottom) right click for the context menu and choose: compare GDS. This will show the differences in the GDS and the
-        corresponding hashcodes. If you confirm that they are, in fact, the same GDS, then you can fix this problem, for example:</p>
-      <pre>&lt;gribConfig&gt;
-   &lt;gdsHash from=&quot;1450218978&quot; to=&quot;1450192070&quot;/&gt;
-&lt;/gribConfig&gt;</pre>
-      <p>This changes those variables using GDS hashcode =&quot;1450218978&quot; to use &quot;1450192070&quot;, which then eliminates the spurious group in the
-        resulting ncx file. Note that for this to work, you must first delete the ncx file so it will get recreated when the file is read. After that, you can
-        open the ncx file directly or the NcML file. Also see <a href="../../../netcdf-java/reference/formats/GribFiles.html#gdsHash">CDM
-          docs</a>. </p>
-    </blockquote>
-    <h4>2) gdsName: Set group names</h4>
-    <blockquote>
-      <p>When a dataset has multiple groups, the groups are automatically named by the projection used and the horizontal dimension size, eg<strong> LatLon-360x720</strong>.</p>
-      <p>A user can set group names manually in the TDS configuration catalog. To do so, find the group hash as in the gdsHash example above. Then use the gdsName
-        element like this:</p>
-      <pre>&lt;gribConfig&gt;
-  &lt;gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/&gt;
-  &lt;gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/&gt;
-  &lt;gdsName hash='-1571856555' groupName='KORN:Lower Mississippi RFC'/&gt;
-   ...
-&lt;/gribConfig&gt;</pre>
-      If you are showing the collection in the
-      IOSP/GRIB1(2)/GribCollection tab, the &quot;show GDS use&quot; button will print out the &lt;gdsName&gt; elements, which you can copy into the TDS
-      configuration catalog and override the names. </blockquote>
-    <h4>4) pdsHash: Control how pds are made into variables (as of 4.3.17)</h4>
-    <blockquote>
-      <p><strong>4.1 useGenType</strong>: GRIB-2 only. Control whether generating type (octet 12) is used. Default is false.</p>
-      <pre> &lt;pdsHash&gt;
-   &lt;useGenType&gt;true&lt;/useGenType&gt;
- &lt;/pdsHash&gt;  </pre>
-      <p><strong>4.2 useTableVersion</strong>: GRIB-1 only. Control whether table version is used. Default is true.</p>
-      <pre> &lt;pdsHash&gt;
-   &lt;<strong>useTableVersion</strong>&gt;false&lt;/<strong>useTableVersion</strong>&gt;
- &lt;/pdsHash&gt;</pre>
-      <p><strong>4.3 mergeIntv</strong>: Control whether time intervals are merged. Default is true.</p>
-      <pre> &lt;pdsHash&gt;
-   &lt;<strong>mergeIntv</strong>&gt;false&lt;/mergeIntv&gt;
- &lt;/pdsHash&gt;</pre>
-    </blockquote>
-    <h4>5) intvFilter: Interval Time Coordinate filters</h4>
-    <blockquote>
-      <p>GRIB makes extensive use of time intervals as coordinates. In <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries">CF</a>, time interval coordinates use an auxiliary
-        coordinate to describe the intervals, for example a coordinate named<em> time1(30) </em>will have an auxiliary coordinate <em>time1_bounds(30,2)</em> containing the lower and upper bounds of the time interval for each coordinate. Currently, the CDM places all intervals in the same variable (rather than
-        create seperate variables for each interval size). When all intervals have the same size, the interval size is added to the variable name. Otherwise the
-        phrase &quot;mixed_intervals&quot; is added to the variable name.</p>
-      <p>Generally, the CDM places the coordinate value at the end of the interval, for example the time interval (0,6) will have a coordinate value 6. The CDM
-        looks for unique intervals in constructing the variable. This implies that the coordinate values are not always unique, but the coordinate bounds pair are
-        always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em>.</p>
-      <p>NCEP GRIB2 model output, at least, has some issues that we are slowing learning how best to deal with. Currently there are two situations which the user
-        can fix in NcML (or the TDS):</p>
-      <ol>
-        <li>One can choose to ignore (0,0) intervals.</li>
-        <li>One can choose that certain parameters use only selected intervals. This is helpful when the parameter has redundant mixed levels, which can be
-          derived from the set of intervals of a fixed size . For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12) intervals are all present, and so
-          other intervals (0,6), (0, 9), (0,12) can be ignored. </li>
-      </ol>
-      <p>One uses the same process as in the &quot;GDS Hashcode&quot; section above to configure this. Here are examples using NcML:</p>
-      <pre>  &lt;gribConfig&gt;<br/><strong>1)</strong> &lt;intvFilter excludeZero=&quot;true&quot;/&gt;<br/><strong>2)</strong> &lt;intvFilter intvLength=&quot;3&quot;&gt;<br/>     &lt;variable id=&quot;0-1-8&quot;/&gt;<br/>     &lt;variable id=&quot;0-1-10&quot;/&gt;<br/>   &lt;/intvFilter&gt;<br/> &lt;/gribConfig&gt;
-      </pre>
-      <p>Also see <a href="../../../netcdf-java/reference/formats/GribFiles.html#intvFilter">CDM docs</a>. </p>
-    </blockquote>
-    <h4>6) timeUnitConvert: Not available yet</h4>
-    <h4>7) datasetTypes: Define which
-      datasets are available in the TDS catalog</h4>
+      &lt;xsd:enumeration value=&quot;TwoD&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;Best&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;<strong>Analysis</strong>&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;Files&quot;/&gt;
+      &lt;xsd:enumeration value=&quot;Latest&quot;/&gt;
+   &lt;/xsd:restriction&gt;
+  &lt;/xsd:simpleType&gt;
+ &lt;/xsd:union&gt;
+&lt;/xsd:simpleType&gt;</pre>
+  <ol>
+    <li><a href="#gdsHash">gdsHash</a>: Fix errors in GDS encoding</li>
+    <li><a href="#gdsName">gdsName</a>: Set group names    </li>
+    <li><a href="#pdsHash">pdsHash</a>: Control how GRIB records are grouped into variables</li>
+    <li><a href="#intvFilter">intvFilter</a>: control how time intervals are handled    </li>
+    <li>timeUnitConvert: Not used</li>
+    <li><a href="#parameter">parameter</a>: set miscellaneous values</li>
+    <li><a href="#gdsName">latestName</a>: Rename the latest file dataset</li>
+    <li><a href="#bestNamer">bestNamer</a>: Rename the best file dataset</li>
+    <li><a href="#fileSort">filesSort</a>: sort order of files in the TDS catalog</li>
+    <li><a href="#datasetTypes">datasetTypes</a>: which datasets appear in the TDS catalog:</li>
     <ol>
-      <li><strong>Best</strong>: the &quot;best timeseries: of the collection dataset</li>
+      <li><strong>TwoD:</strong> the full dataset with two time dimensions, reference time and forecast time.</li>
+      <li><strong>Best</strong>: the &quot;best timeseries&quot; of the collection dataset</li>
+      <li><strong>Analysis</strong>: the dataset with only offset = 0 records in it.</li>
       <li><strong>Files</strong>:
         each physical file
         is exposed as a seperate dataset. </li>
-      <li><strong>LatestFile</strong>: add latest resolver dataset to Files catalog (<strong>Files</strong> must also be selected)</li>
+      <li><strong>Latest</strong>: add latest resolver dataset to Files catalog (<strong>Files</strong> must also be selected)</li>
     </ol>
-    <h4>8) latestNamer: Rename the latest file dataset</h4>
-    <blockquote>
-      <p>Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is &quot;Latest File&quot;). The
-        datasetTypes options <em><strong>LatestFile</strong></em> and <em><strong>Files</strong></em>, must be enabled. Note that this does not affect dataset <strong>urlPath</strong>, which is always <em>latest.xml</em>.</p>
-    </blockquote>
-    <pre>
-&lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;
-  &lt;latestNamer name=&quot;My Latest Name&quot;/&gt;
-&lt;/gribConfig&gt;
-    </pre>
-    <h4>9) bestNamer: Rename the Best dataset</h4>
-    <blockquote>
-      <p>Change the name of the Best dataset in the collection (the default name is &quot;Best Timeseries&quot;). The datasetTypes <strong><em>Best</em></strong> option must be selected. Note that this does not affect dataset <strong>urlPath</strong>.</p>
-    </blockquote>
-    <pre>
-&lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;
-  &lt;bestNamer name=&quot;My Best Name&quot; /&gt;
-&lt;/gribConfig&gt;
-    </pre>
-    <h4>10) filesSort: Sort the dataset listings under the Files dataset</h4>
-    <blockquote>
-      <p>Sort the files lexographically, either increasing or decreasing (default GRIB Feature Collection behavior is the same as <em>increasing =
-        True</em>). The <em><strong>Files</strong></em> datasetTypes option must be enabled.</p>
-    </blockquote>
-    <pre>
-&lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;
-  &lt;filesSort&gt;
-    &lt;lexigraphicByName increasing=&quot;false&quot; /&gt;
-  &lt;/filesSort&gt;
-&lt;/gribConfig&gt;
-    </pre>
-  </blockquote>
-  <p>If you make changes to <strong>gribConfig</strong> parameters (except <strong>datasetTypes</strong>, <strong>LatestNamer</strong>, <strong>BestNamer</strong>,
-    and <strong>filesSort</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
-  <p>&nbsp;</p>
-  <h4></h4>
+  </ol>
 </blockquote>
+<hr />
+<address>
+<img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Nov 2014
+</address>
+<p>&nbsp;</p>
 </body>
 </html>
