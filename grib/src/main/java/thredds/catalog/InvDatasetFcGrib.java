@@ -78,6 +78,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   static private final String BEST_DATASET = GribCollectionImmutable.Type.Best.toString();
   static private final String TWOD_DATASET = GribCollectionImmutable.Type.TwoD.toString();
+  static private final String TP_DATASET = GribCollectionImmutable.Type.TP.toString();
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -210,6 +211,16 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           makeDatasetsFromGroups(best, groups, isSingleGroup);
         }
 
+      } else if (ds.getType() == GribCollectionImmutable.Type.TP) {
+
+        InvDatasetImpl tp = new InvDatasetImpl(this, getDatasetNameTP(result.getName()));
+        String path = pathStart + "/" + TP_DATASET;
+        tp.setUrlPath(path);
+        tp.tm.addDocumentation("summary", "Multiple reference, single time Grib Partition");
+        result.addDataset(tp);
+
+        makeDatasetsFromGroups(tp, groups, isSingleGroup);
+
       } else {
         tmi.setServiceName(Virtual_Services);
         result.setUrlPath(pathStart);
@@ -220,9 +231,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           CalendarDate runtime = runCoord.getFirstDate();
           result.tm.addDocumentation("summary", "Single reference time Grib Collection");
           result.tmi.addDocumentation("Reference Time", runtime.toString());
-
-        } else if (ds.getType() == GribCollectionImmutable.Type.TP) {
-          result.tm.addDocumentation("summary", "Multiple reference, single time Grib Partition");
 
         } else if (ds.getType() == GribCollectionImmutable.Type.MRSTC) {
           result.tm.addDocumentation("summary", "Multiple reference time Grib Collection");
@@ -541,6 +549,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     } else {
       return "Best "+dsName +" Time Series";
     }
+  }
+
+  protected String getDatasetNameTP(String dsName) {
+    return "Full Collection Dataset";
   }
 
   protected String getDatasetNameTwoD(String dsName) {

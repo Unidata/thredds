@@ -1111,7 +1111,16 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     DataReaderPartitioned dataReader = new DataReaderPartitioned();
     int resultPos = 0;
     while (iterWanted.hasNext()) {
-      iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted aaray
+      iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted array
+
+      // for 1D TP, second index is implictly 0
+      if (vindexP.getType() == GribCollectionImmutable.Type.TP) {
+        int[] indexReallyWanted = new int[indexWanted.length+1];
+        indexReallyWanted[0] = indexWanted[0];
+        indexReallyWanted[1] = 0;
+        System.arraycopy(indexWanted, 0, indexReallyWanted, 2, indexWanted.length-1);
+        indexWanted = indexReallyWanted;
+      }
 
       PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(indexWanted);
       if (record == null) {

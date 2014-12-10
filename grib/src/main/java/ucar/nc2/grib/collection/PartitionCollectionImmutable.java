@@ -325,6 +325,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       return nparts;
     }
 
+    public GribCollectionImmutable.Type getType() { return group.ds.gctype; }
+
     public void show(Formatter sb) {
       sb.format("VariableIndexPartitioned%n");
       sb.format(" partno=");
@@ -426,16 +428,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (partno < 0) {
         return null; // LOOK is this possible?
       }
-
-      // for 1D TP, second index is implictly 0
-      if (group.ds.gctype == Type.TP) {
-        int[] indexReallyWanted = new int[indexWanted.length+1];
-        indexReallyWanted[0] = indexWanted[0];
-        indexReallyWanted[1] = 0;
-        System.arraycopy(indexWanted, 0, indexReallyWanted, 2, indexWanted.length-1);
-        indexWanted = indexReallyWanted;
-      }
-
 
       // find the 2D vi in that partition
       GribCollectionImmutable.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition

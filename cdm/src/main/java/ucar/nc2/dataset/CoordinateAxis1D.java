@@ -89,7 +89,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    */
   public CoordinateAxis1D(NetcdfDataset ncd, VariableDS vds) {
     super(ncd, vds);
-    // vds.setCaching(true);
+    vds.setCaching(true);
   }
 
   /**
@@ -101,7 +101,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     super(ncd, org);
     this.orgName = org.orgName;
     this.cache = new Variable.Cache(); // decouple cache
-    // org.setCaching(true);
+    org.setCaching(true);
 
     // copy rest of state
     this.increment = org.getIncrement();
