@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.ui.table.HidableTableColumnModel;
 import ucar.nc2.ui.table.TableAligner;
 import ucar.nc2.ui.table.TableAppearanceAction;
+import ucar.nc2.ui.table.UndoableRowSorter;
 import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -177,7 +178,7 @@ public class BeanTable extends JPanel {
   private void init(String header, String tooltip) {
     TableColumnModel tcm = new HidableTableColumnModel(model);
     jtable = new JTable(model, tcm);
-    jtable.setAutoCreateRowSorter(true);
+    jtable.setRowSorter(new UndoableRowSorter<>(model));
 
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
     jtable.setDefaultRenderer(java.util.Date.class, new DateRenderer());

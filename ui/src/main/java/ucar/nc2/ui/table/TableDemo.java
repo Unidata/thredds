@@ -38,7 +38,7 @@ public abstract class TableDemo {
                 TableModel model = createTableModel(numRows, numCols);
                 TableColumnModel tcm = new HidableTableColumnModel(model);
                 JTable table = new JTable(model, tcm);
-                table.setAutoCreateRowSorter(true);
+                table.setRowSorter(new UndoableRowSorter<>(model));
 
                 // Set the preferred column widths so that they're big enough to display all data without truncation.
                 ColumnWidthsResizer resizer = new ColumnWidthsResizer(table);

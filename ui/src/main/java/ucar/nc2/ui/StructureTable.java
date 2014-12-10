@@ -43,10 +43,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.time.CalendarTimeZone;
-import ucar.nc2.ui.table.ColumnWidthsResizer;
-import ucar.nc2.ui.table.HidableTableColumnModel;
-import ucar.nc2.ui.table.TableAligner;
-import ucar.nc2.ui.table.TableAppearanceAction;
+import ucar.nc2.ui.table.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.HashMapLRU;
@@ -196,7 +193,7 @@ public class StructureTable extends JPanel {
   private void initTable(StructureTableModel m) {
     TableColumnModel tcm = new HidableTableColumnModel(m);
     jtable = new JTable(m, tcm);
-    jtable.setAutoCreateRowSorter(true);
+    jtable.setRowSorter(new UndoableRowSorter<>(m));
 
     // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
     ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
