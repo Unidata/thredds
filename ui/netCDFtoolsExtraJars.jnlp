@@ -78,7 +78,7 @@
         <jar href="commons-logging-1.1.1.jar"/>
         <jar href="commons-codec-1.6.jar"/>
         <jar href="52n-xml-xlink-v110-1.1.5.jar"/>
-        <jar href="saxon-8.7.jar"/>
+        <!--jar href="saxon-8.7.jar"/-->
         <jar href="stax-api-1.0.1.jar"/>
     </resources>
 </jnlp>
