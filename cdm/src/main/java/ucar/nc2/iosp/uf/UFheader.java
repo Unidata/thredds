@@ -225,7 +225,7 @@ public class UFheader {
   }
 
   public short getStationElevation() {
-    return firstRay.getHeight();
+    return firstRay.uf_header2.height;
   }
 
 
