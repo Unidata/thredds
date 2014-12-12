@@ -223,10 +223,6 @@ public class Ray {
         return uf_header2.longitudeD + (uf_header2.longitudeM + uf_header2.longitudeS/(64*60.f))/60.f;
     }
     
-    public short getHeight() {
-        return uf_header2.height;
-    }
-
     public float getHorizontalBeamWidth(String abbrev) {
         UF_field_header2 header = field_header_map.get(abbrev);
         return header.HorizontalBeamWidth/64.f;
