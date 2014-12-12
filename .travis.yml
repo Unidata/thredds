@@ -15,7 +15,6 @@ before_install:
   - cd netcdf-${NCVERSION}
   - ./configure --prefix=/usr/local
   - make
-  - make check || true
   - sudo make install
   - cd ..
 
