@@ -1,5 +1,6 @@
 package ucar.nc2.util;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class TestTableParser {
   }
 
   @Test
+  @Ignore("ghcnm.v3.0.0-beta1.20101207.qae.dat isn't in /share/testdata")
   public void testReadgGghcnmTable() throws IOException {
     List<TableParser.Record> recs = TableParser.readTable(testRepeat, "11L,15i,19,(24i,25,26,27)*10", 5);
     for (TableParser.Record record : recs) {
