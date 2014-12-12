@@ -224,8 +224,8 @@ public class UFheader {
     return firstRay.getLongtitude();
   }
 
-  public float getStationElevation() {
-    return firstRay.getElevation();
+  public short getStationElevation() {
+    return firstRay.getHeight();
   }
 
 
