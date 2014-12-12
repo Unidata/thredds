@@ -593,8 +593,9 @@ public class XMLStore {
 
     // success - rename files
     Path xmlBackup = Paths.get(prefsFile.getAbsolutePath() + ".bak");
-    Files.move(prefsFile.toPath(), xmlBackup,
-            StandardCopyOption.REPLACE_EXISTING);
+    Path prefsPath = prefsFile.toPath();
+    if (Files.exists(prefsPath))
+        Files.move(prefsPath, xmlBackup, StandardCopyOption.REPLACE_EXISTING);
     Files.move(prefTemp.toPath(), prefsFile.toPath(),
             StandardCopyOption.REPLACE_EXISTING);
   }
