@@ -17,6 +17,8 @@ public abstract class TableDemo {
     private final static int numCols = 5;
 
     public static void main(String[] args) {
+        System.out.println("Testing Travis!");
+
         try {
             // Switch to Nimbus Look and Feel, if it's available.
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
