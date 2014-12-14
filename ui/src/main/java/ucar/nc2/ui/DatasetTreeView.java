@@ -128,7 +128,7 @@ public class DatasetTreeView extends JPanel {
     if (v == null) return;
 
     // construct chain of variables
-    List<VariableIF> vchain = new ArrayList<VariableIF>();
+    List<VariableIF> vchain = new ArrayList<>();
     vchain.add( v);
 
     VariableIF vp = v;
@@ -138,26 +138,26 @@ public class DatasetTreeView extends JPanel {
     }
 
     // construct chain of groups
-    List<Group> gchain = new ArrayList<Group>();
+    List<Group> gchain = new ArrayList<>();
     Group gp = vp.getParentGroup();
-    if (gp == null)
-      System.out.println("set an alarm");
+
     gchain.add( gp);
     while (gp.getParentGroup() != null) {
       gp = gp.getParentGroup();
       gchain.add( 0, gp); // reverse
     }
 
-    List<Object> pathList = new ArrayList<Object>();
+    List<Object> pathList = new ArrayList<>();
 
     // start at root, work down through the nested groups, if any
     GroupNode gnode = (GroupNode) model.getRoot();
     pathList.add( gnode);
-    Group parentGroup = (Group) gchain.get(0); // always the root group
+    Group parentGroup = gchain.get(0); // always the root group
 
     for (int i=1; i<gchain.size(); i++) {
-      parentGroup = (Group) gchain.get(i);
+      parentGroup = gchain.get(i);
       gnode = gnode.findNestedGroup( parentGroup);
+      assert gnode != null;
       pathList.add( gnode);
     }
 
@@ -168,7 +168,7 @@ public class DatasetTreeView extends JPanel {
 
     // now work down through the structure members, if any
     for (int i=1; i<vchain.size(); i++) {
-      vp = (VariableIF) vchain.get(i);
+      vp = vchain.get(i);
       vnode = vnode.findNestedVariable( vp);
       if (vnode == null) return; // not found
       pathList.add(vnode);
@@ -214,7 +214,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     void makeChildren() {
-      children = new ArrayList<Object>();
+      children = new ArrayList<>();
 
       List dims = group.getDimensions();
       for (int i=0; i<dims.size(); i++)
@@ -300,7 +300,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     void makeChildren() {
-      children = new ArrayList<Object>();
+      children = new ArrayList<>();
 
       if (var instanceof Structure) {
         Structure s = (Structure) var;

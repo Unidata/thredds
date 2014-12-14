@@ -85,8 +85,6 @@ public class asciiURL extends DURL implements toASCII {
                         String rootName,
                         boolean newLine) {
 
-        rootName = toASCIIAddRootName(pw, addName, rootName);
-
         if (addName)
             pw.print(", ");
 

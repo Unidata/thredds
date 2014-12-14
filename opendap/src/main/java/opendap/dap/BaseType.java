@@ -233,7 +233,7 @@ public abstract class BaseType extends DAPNode
      */
     public final void printDecl(OutputStream os, String space,
                                 boolean print_semi, boolean constrained) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printDecl(pw, space, print_semi, constrained);
         pw.flush();
     }
@@ -265,7 +265,7 @@ public abstract class BaseType extends DAPNode
      * @see DDS#print(PrintWriter)
      */
     public final void printDecl(OutputStream os, String space) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printDecl(pw, space);
         pw.flush();
     }
@@ -279,7 +279,7 @@ public abstract class BaseType extends DAPNode
      * @see DDS#print(PrintWriter)
      */
     public  void printDecl(OutputStream os) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printDecl(pw);
         pw.flush();
     }
@@ -324,7 +324,7 @@ public abstract class BaseType extends DAPNode
      */
     public  void printVal(OutputStream os, String space,
                                boolean print_decl_p) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printVal(pw, space, print_decl_p);
         pw.flush();
     }
@@ -338,7 +338,7 @@ public abstract class BaseType extends DAPNode
      * @see DataDDS#printVal(PrintWriter)
      */
     public void printVal(OutputStream os, String space) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printVal(pw, space);
         pw.flush();
     }
@@ -517,7 +517,7 @@ public abstract class BaseType extends DAPNode
      * @opendap.ddx.experimental
      */
     public void printXML(OutputStream os, String pad) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printXML(pw, pad, false);
         pw.flush();
     }

@@ -7,6 +7,7 @@ import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -15,6 +16,7 @@ import ucar.unidata.util.Format;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 /**
@@ -26,7 +28,7 @@ public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
     public PointSubsetWriterCSV(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
             throws NcssException, IOException {
         super(fdPoint, ncssParams);
-        this.writer = new PrintWriter(out);
+      this.writer = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));
     }
 
     @Override
@@ -35,8 +37,8 @@ public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
 
         if (!isStream) {
             httpHeaders.set("Content-Location", datasetPath);
-            httpHeaders.set("Content-Disposition",
-                    "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(datasetPath) + ".csv\"");
+            String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".csv");
+            httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
         } else {
             // The problem is that the browser won't display text/csv inline.

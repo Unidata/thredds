@@ -8,14 +8,14 @@
 
 <body>
 <h1>Point Feature Collections</h1>
-<hr/>
-<h2>Point Feature Datasets Requirements:</h2>
+<p>A <em><strong>Point Feature Collection</strong></em> is a collection of  files which the CDM can recognize as containing <a href="../../../netcdf-java/reference/FeatureDatasets/PointFeatures.html">Point Features</a>. </p>
+<h3>Constraints on Point Feature Collections</h3>
 <ul>
-  <li>Files must be able to be parsed by CDM into a feature type dataset of type POINT or STATION.</li>
-  <li>Data must be partitioned by time, with the starting time encoded into the filename.</li>
+  <li>The component files of the collection must all be recognized as  <em><strong>Point</strong></em> or <em><strong>Station</strong></em> Feature type by the CDM software.</li>
+  <li>The component files must be partitioned by time. The starting time must be part of the filename, in a way that can be extracted with a <a href="FeatureCollections.html#dateExtractor">DateExtractor</a>.</li>
+  <li>The component files are assumed to be homogenous, that is, they contain the same collection of variables and attributes, and they must be on the same horizontal and vertical grid. The component files can differ only in their time coordinates and the actual data values.</li>
 </ul>
-<h2>&nbsp;</h2>
-
+<hr/>
 <h2>Example Point Feature Collections</h2>
 
 <p><strong>station data:</strong></p>
@@ -39,13 +39,13 @@
 <h3>pointConfig element</h3>
 
 <p>Defines options on feature collections with <strong> featureType</strong>=&quot;POINT&quot; or &quot;STATION&quot;</p>
-<pre>1)&lt;pointConfig datasetTypes=&quot;CdmrFeature Files&quot; /&gt;</pre>
+<pre>1)&lt;pointConfig datasetTypes=&quot;cdmrFeature Files&quot; /&gt;</pre>
 <blockquote>
   <p>where:</p>
   <ol>
     <li><strong>datasetTypes</strong>: list the dataset types that are exposed in the TDS catalog. The possible values are:
       <ul>
-        <li><em>CdmrFeature</em>: creates a <strong>CdmrFeature</strong> dataset and service. All of the files in the collection are treated as part of the same
+        <li><em>cdmrFeature</em>: creates a <strong>CdmrFeature</strong> dataset and service. All of the files in the collection are treated as part of the same
           dataset.
         </li>
         <li><em>Files</em>: each component file of the collection is available seperately, as in a datasetScan. A &quot;latest&quot; file will be added if there
@@ -54,19 +54,18 @@
       </ul>
     </li>
   </ol>
-  <p><strong>Notes</strong>:</p>
-
-  <p>If there is a serviceType=&quot;HTTPServer&quot; for the Feature Collection, it is removed from the virtual datasets (all except the <em>Files</em>
-    datasets).</p>
-
-  <p>If an pointConfig element is not present, the default is datasetTypes= &quot;<em>CdmrFeature Run</em>s&quot;. Specifying your own pointConfig completely
-    overrides the datasetTypes default.<br>
-  </p>
 </blockquote>
+<p><strong>Notes</strong>:</p>
+<ul>
+  <li>If there is a serviceType=&quot;HTTPServer&quot; for the Feature Collection, it is removed from the virtual datasets (all except the <em>Files</em>
+    datasets).</li>
+  <li>If an pointConfig element is not present, the default is datasetTypes= &quot;<em>cdmrFeature Files</em>&quot;. Specifying your own pointConfig completely
+    overrides the datasetTypes default.<br>
+  </li>
+</ul>
 <hr width="100%"/>
 <address>
-  <img src="../../thread.png" alt="" width="76" height="67"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>
-  and was last updated July 2013
+  <img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Oct 2014
 </address>
 </body>
 </html>

@@ -55,14 +55,12 @@
   <li><a href="#rh5SymLinksAndContent">Why does the TDS fail to deploy in the Tomcat provided with RedHat 5 or 6?</a></li>
   <li>What does this error mean:
     <ul>
-      <li><a href="#listenerStart">SEVERE: Error listenerStart</a>
-      </li>
+      <li><a href="#listenerStart">SEVERE: Error listenerStart</a></li>
+        <li><a href="#log4jAppender">log4j:ERROR Attempted to append to closed appender named [foobar]</a></li>
+        <li><a href="#javaUtilPrefs">Couldn't flush system prefs: java.util.prefs.BackingStoreException:
+            /etc/.java/.systemPrefs/org create failed</a></li>
     </ul>
   </li>
-  <ul>
-    <li><a href="#log4jAppender">log4j:ERROR Attempted to append to closed appender named [foobar]</a></li>
-    <li><a href="#log4jAppender">Couldn't flush system prefs: java.util.prefs.BackingStoreException: /etc/.java/.systemPrefs/org create failed</a></li>
-  </ul>
 </ul>
 <h2>Tomcat</h2>
 <ul>
@@ -74,6 +72,7 @@
   <li><a href="#controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></li>
   <li><a href="#removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></li>
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
+  <li><a href="#SizeLimitExceededException">Manager fails to upload new thredds.war with SizeLimitExceededException</a></li>
 </ul>
 
 <hr width="100%">
@@ -131,20 +130,22 @@
 <p>A: In order to configure your maven project correctly, you need to edit your pom.xml file to reflect the location of Unidata's repository. To do this, you
   need to add the following pom snippet to your pom.xml file:</p>
 
-&lt;distributionManagement&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;repository&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;id&gt;unidata-releases&lt;/id&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name>UNIDATA Releases&lt;/name&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/&lt;/url&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;/repository&gt;<br>
-&lt;/distributionManagement&gt;<br>
+<pre>
+&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;unidata-releases&lt;/id&gt;
+        &lt;name>UNIDATA Releases&lt;/name&gt;
+        &lt;url&gt;https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+</pre>
 
 <p>
   Alternatively, you can configure your settings.xml file to reflect the repository location. Information on doing either is located here:
 
 <p>
 
-  &nbsp;&nbsp;<a href="http://maven.apache.org/pom.html#Repositories">Maven Repository information</a>
+    <a href="http://maven.apache.org/pom.html#Repositories">Maven Repository information</a>
 
 <p>
 
@@ -152,7 +153,7 @@
 
 <p>
 
-  &nbsp;&nbsp;<a href="http://maven.apache.org/settings.html">Maven Settings information</a>
+    <a href="http://maven.apache.org/settings.html">Maven Settings information</a>
 
 <p>
 
@@ -163,7 +164,7 @@
 <p><strong>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? </strong><br>
 </p>
 
-<p>A: Heres the general idea in the <a href="tutorial/BasicConfig.html">tutorial</a> and the
+<p>A: Heres the general idea in the <a href="tutorial/BasicConfigCatalogs.html">tutorial</a> and the
   <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM
   library, you can call </p>
 <pre>InvAccess.getUrlPath()</pre>
@@ -354,7 +355,7 @@ mkdir javaUtilPrefs/.usermPrefs
   catalog is unchanged? When do referenced catalogs get scanned?</strong></p>
 <blockquote>
   <p> The TDS reads in all the config catalogs at startup. It caches all of them, and uses the "expires" attribute on the catalog to decide if/when it needs to
-    re-read a catalog.&nbsp; It must read all catalogs, including catalogRefs, because it has to know what the possible dataset URLs are, and there is no
+    re-read a catalog.  It must read all catalogs, including catalogRefs, because it has to know what the possible dataset URLs are, and there is no
     contract that a client has to read a catalog before accessing the dataset. </p>
 </blockquote>
 
@@ -628,14 +629,25 @@ deny="18\.83\.0\.150,128\.100\.34\.99,128\.117\.140\..*"
    ...
   &lt;/Host&gt;</pre>
 </blockquote>
-
 <hr width="50%" align="left">
-
 <h4>Q: <a name="howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></h4>
 <blockquote>
   <p>Unless you are using Tomcat with the Apache server, comment out this line in <strong>server.xml:</strong></p>
-    <pre>  &lt;Connector port="8009" enableLookups="false" redirectPort="8443" protocol="AJP/1.3" /&gt;<br>
+  <pre>  &lt;Connector port="8009" enableLookups="false" redirectPort="8443" protocol="AJP/1.3" /&gt;<br>
     </pre>
+</blockquote>
+<p></p>
+<hr width="50%" align="left">
+<h4>Q: <a name="SizeLimitExceededException">Manager fails to upload new thredds.war with SizeLimitExceededException</a></h4>
+<blockquote>
+  <p>This happens when you are using the Tomcat manager app to upload a new war file that is too large. Message looks like:</p>
+<pre>FAIL - Deploy Upload Failed, Exception: org.apache.tomcat.util.http.fileupload.FileUploadBase$SizeLimitExceededException: the request was rejected 
+because its size (57150447) exceeds the configured maximum (52428800)</pre>
+  <p>Solution:</p>
+  <ul>
+    <li>Go to the web.xml of the manager application (for instance it could be under /tomcat7/webapps/manager/WEB-INF/web.xml.</li>
+    <li>Increase the max-file-size and max-request-size:</li>
+  </ul>
 </blockquote>
 
 <hr>
@@ -649,7 +661,7 @@ deny="18\.83\.0\.150,128\.100\.34\.99,128\.117\.140\..*"
 <hr>
 <address>
   <img src="thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated May 2013.
+  This document is maintained by Unidata and was last updated Oct 2014.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body>

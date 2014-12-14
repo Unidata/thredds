@@ -1,6 +1,6 @@
 netcdf test_atomic_array.nc {
   types:
-    byte enum cloud_class_t { 'Clear' = 0, 'Cumulonimbus' = 1, 'Stratus' = 2, 'Stratocumulus' = 3, 'Cumulus' = 4, 'Altostratus' = 5, 'Nimbostratus' = 6, 'Altocumulus' = 7, 'Missing' = 127, 'Cirrostratus' = 8, 'Cirrocumulus' = 9, 'Cirrus' = 10};
+    byte enum cloud_class_t { 'Clear' = 0, 'Cumulonimbus' = 1, 'Stratus' = 2, 'Stratocumulus' = 3, 'Cumulus' = 4, 'Altostratus' = 5, 'Nimbostratus' = 6, 'Altocumulus' = 7, 'Cirrostratus' = 8, 'Cirrocumulus' = 9, 'Cirrus' = 10, 'Missing' = 127};
 
   dimensions:
     d1 = 1;
@@ -11,6 +11,7 @@ netcdf test_atomic_array.nc {
   variables:
     byte vu8(d2=2, d3=3);
       :_Unsigned = "true";
+      :_FillValue = "255";
       :_DAP4_Checksum_CRC32 = "0x806122d3";
 
     short v16(d4=4);
@@ -18,6 +19,7 @@ netcdf test_atomic_array.nc {
 
     int vu32(d2=2, d3=3);
       :_Unsigned = "true";
+      :_FillValue = "4294967295";
       :_DAP4_Checksum_CRC32 = "0xf0f15203";
 
     double vd(d2=2);

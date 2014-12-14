@@ -67,13 +67,14 @@ public class TestMisc extends UnitTestCommon
     {
         setTitle("DAP Misc tests");
         // Check if we are running against remote or localhost, or what.
-        testserver = TestDir.remoteTestServer;
+        testserver = TestDir.dap2TestServer;
         definetestcases();
     }
 
     void
     definetestcases()
     {
+        String threddsRoot = getThreddsroot();
         testcases = new ArrayList<Testcase>();
         if(false) { // use this arm for debugging individual cases
             testcases.add(new Testcase("TestDODSArrayPrimitiveExample",

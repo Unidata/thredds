@@ -221,13 +221,15 @@ public class Tdm {
        }
        Collections.sort(result);
 
-       System.out.printf("Feature Collection names:%n");
+       System.out.printf("%nFeature Collection names:%n");
        for (String name : result)
          System.out.printf(" %s%n", name);
 
        System.out.printf("%nTriggers:%n");
        for (String name : result)
          System.out.printf(" %s%n", makeTriggerUrl(name));
+
+       executor.shutdown();
        return;
      }
 
@@ -520,7 +522,7 @@ public class Tdm {
       }
     }
 
-    if (driver.pass == null && driver.sendTriggers) {
+    if (!driver.showOnly && driver.pass == null && driver.sendTriggers) {
       Scanner scanner = new Scanner( System.in, CDM.UTF8 );
       String passw;
       while (true) {
@@ -541,9 +543,8 @@ public class Tdm {
     if (driver.init()) {
       driver.start();
     } else {
-      System.out.printf("EXIT DUE TO ERRORS%n");
+      System.out.printf("%nEXIT DUE TO ERRORS");
     }
-
   }
 
 }

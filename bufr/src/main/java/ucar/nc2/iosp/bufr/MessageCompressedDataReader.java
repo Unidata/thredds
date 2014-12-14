@@ -448,7 +448,7 @@ public class MessageCompressedDataReader {
             StructureMembers.Member m1 = sms.getMember(1);
             iter2 = (IndexIterator) m1.getDataObject();
             iter2.setFloatNext(dpiDD.convert( value));
-          } else {
+          } else if (iter != null) {
             iter.setLongNext(value);
           }
         }

@@ -41,6 +41,7 @@
 package opendap.dap;
 
 import opendap.dap.parsers.ParseException;
+import ucar.nc2.constants.CDM;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -195,7 +196,7 @@ public class DataDDS extends DDS {
      * @param os the <code>OutputStream</code> to use.
      */
     public final void printVal(OutputStream os) {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os,Util.UTF8)));
         printVal(pw);
         pw.flush();
     }
@@ -214,7 +215,7 @@ public class DataDDS extends DDS {
             throws IOException {
         // First, print headers
         if (headers) {
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(os));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(os,Util.UTF8));
             pw.println("HTTP/1.0 200 OK");
             pw.println("XDAP: " + ServerVersion.DAP2_PROTOCOL_VERSION);
             pw.println("XDODS-Server: DODS/" + ServerVersion.DAP2_PROTOCOL_VERSION);
@@ -237,11 +238,11 @@ public class DataDDS extends DDS {
         }
 
         // Redefine PrintWriter here, so the DDS is also compressed if necessary
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(bufferedOS));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(bufferedOS,Util.UTF8));
         print(pw);
         // pw.println("Data:");  // JCARON CHANGED
         pw.flush();
-        bufferedOS.write("\nData:\n".getBytes()); // JCARON CHANGED
+        bufferedOS.write("\nData:\n".getBytes(CDM.utf8Charset)); // JCARON CHANGED
         bufferedOS.flush();
 
         // Use a DataOutputStream for serialize

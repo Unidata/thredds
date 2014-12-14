@@ -5,6 +5,7 @@ import org.bounce.text.ScrollableEditorPanel;
 import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.nc2.ncml.NcMLReader;
@@ -43,7 +44,7 @@ public class NcmlEditor extends JPanel {
   private NetcdfDataset ds = null;
   private String ncmlLocation = null;
   private JEditorPane editor;
-  private Map<String, String> protoMap = new HashMap<String, String>(10);
+  private Map<String, String> protoMap = new HashMap<>(10);
   private ComboBox protoChooser;
 
   private TextHistoryPane infoTA;
@@ -235,7 +236,6 @@ public class NcmlEditor extends JPanel {
 
     closeOpenFiles();
 
-    ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
     try {
       String result;
       ds = openDataset(location, addCoords, null);
@@ -252,9 +252,10 @@ public class NcmlEditor extends JPanel {
       err = true;
 
     } catch (Exception e) {
+      StringWriter sw = new StringWriter(10000);
       e.printStackTrace();
-      e.printStackTrace(new PrintStream(bos));
-      editor.setText(bos.toString());
+      e.printStackTrace(new PrintWriter(sw));
+      editor.setText(sw.toString());
       err = true;
     }
 
@@ -263,13 +264,10 @@ public class NcmlEditor extends JPanel {
 
   private NetcdfDataset openDataset(String location, boolean addCoords, CancelTask task) {
     try {
-      NetcdfDataset ncd = NetcdfDataset.openDataset(location, addCoords, task);
+      return NetcdfDataset.openDataset(location, addCoords, task);
 
       //if (setUseRecordStructure)
      //   ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-
-      return ncd;
-
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + ioe.getMessage());
       if (!(ioe instanceof java.io.FileNotFoundException)) ioe.printStackTrace();
@@ -286,7 +284,8 @@ public class NcmlEditor extends JPanel {
     String text = editor.getText();
 
     try {
-      ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes());
+      ByteArrayInputStream bis = new ByteArrayInputStream(
+              text.getBytes(CDM.utf8Charset));
       NcMLReader.writeNcMLToFile(bis, data.outputFilename,  data.version,
                     Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle)
       );
@@ -304,9 +303,9 @@ public class NcmlEditor extends JPanel {
     try {
       StringReader reader = new StringReader(text);
       NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      ncd.writeNcML(bos, null);
-      editor.setText(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      ncd.writeNcML(sw, null);
+      editor.setText(sw.toString());
       editor.setCaretPosition(0);
       JOptionPane.showMessageDialog(this, "File successfully transformed");
 
@@ -339,7 +338,7 @@ public class NcmlEditor extends JPanel {
     File out = new File(filename);
     if (out.exists()) {
       int val = JOptionPane.showConfirmDialog(null,
-              filename + " already exists. Do you want to overrwrite?", "WARNING",
+              filename + " already exists. Do you want to overwrite?", "WARNING",
               JOptionPane.YES_NO_OPTION);
       if (val != JOptionPane.YES_OPTION) return false;
     }

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.3</table>
+  <title>Mass</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-3.shtml</source>
+  <parameter code="0">
+    <shortName>PRES</shortName>
+    <description>Pressure</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>PRMSL</shortName>
+    <description>Pressure Reduced to MSL</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>PTEND</shortName>
+    <description>Pressure Tendency</description>
+    <units>Pa s-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>ICAHT</shortName>
+    <description>ICAO Standard Atmosphere Reference Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>GP</shortName>
+    <description>Geopotential</description>
+    <units>m2 s-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>HGT</shortName>
+    <description>Geopotential Height</description>
+    <units>gpm</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>DIST</shortName>
+    <description>Geometric Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>HSTDV</shortName>
+    <description>Standard Deviation of Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>PRESA</shortName>
+    <description>Pressure Anomaly</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>GPA</shortName>
+    <description>Geopotential Height Anomaly</description>
+    <units>gpm</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>DEN</shortName>
+    <description>Density</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>ALTS</shortName>
+    <description>Altimeter Setting</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>THICK</shortName>
+    <description>Thickness</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>PRESALT</shortName>
+    <description>Pressure Altitude</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>DENALT</shortName>
+    <description>Density Altitude</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>5WAVH</shortName>
+    <description>5-Wave Geopotential Height</description>
+    <units>gpm</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>U-GWD</shortName>
+    <description>Zonal Flux of Gravity Wave Stress</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>V-GWD</shortName>
+    <description>Meridional Flux of Gravity Wave Stress</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>HPBL</shortName>
+    <description>Planetary Boundary Layer Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>5WAVA</shortName>
+    <description>5-Wave Geopotential Height Anomaly</description>
+    <units>gpm</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>SDSGSO</shortName>
+    <description>Standard Deviation of Sub-Grid Scale Orography</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>AOSGSO</shortName>
+    <description>Angle of Sub-Grid Scale Orography</description>
+    <units>rad</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>SSGSO</shortName>
+    <description>Slope of Sub-Grid Scale Orography</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>GWD</shortName>
+    <description>Gravity Wave Dissipation</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>ASGSO</shortName>
+    <description>Anisotropy of Sub-Grid Scale Orography</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>NLPRES</shortName>
+    <description>Natural Logarithm of Pressure in Pa</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>EXPRES</shortName>
+    <description>Exner Pressure</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>MSLET</shortName>
+    <description>MSLP (Eta model reduction)</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>5WAVH</shortName>
+    <description>5-Wave Geopotential Height</description>
+    <units>gpm</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>U-GWD</shortName>
+    <description>Zonal Flux of Gravity Wave Stress</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>V-GWD</shortName>
+    <description>Meridional Flux of Gravity Wave Stress</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>HPBL</shortName>
+    <description>Planetary Boundary Layer Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>5WAVA</shortName>
+    <description>5-Wave Geopotential Height Anomaly</description>
+    <units>gpm</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>MSLMA</shortName>
+    <description>MSLP (MAPS System Reduction)</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>TSLSA</shortName>
+    <description>3-hr pressure tendency (Std. Atmos. Reduction)</description>
+    <units>Pa s-1</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>PLPL</shortName>
+    <description>Pressure of level from which parcel was lifted</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>LPSX</shortName>
+    <description>X-gradient of Log Pressure</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>LPSY</shortName>
+    <description>Y-gradient of Log Pressure</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>HGTX</shortName>
+    <description>X-gradient of Height</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>HGTY</shortName>
+    <description>Y-gradient of Height</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>LAYTH</shortName>
+    <description>Layer Thickness</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>NLGSP</shortName>
+    <description>Natural Log of Surface Pressure</description>
+    <units>ln (kPa)</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>CNVUMF</shortName>
+    <description>Convective updraft mass flux</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>CNVDMF</shortName>
+    <description>Convective downdraft mass flux</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="209">
+    <shortName>CNVDEMF</shortName>
+    <description>Convective detrainment mass flux</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>LMH</shortName>
+    <description>Mass Point Model Surface</description>
+    <units />
+  </parameter>
+  <parameter code="211">
+    <shortName>HGTN</shortName>
+    <description>Geopotential Height (nearest grid point)</description>
+    <units>gpm</units>
+  </parameter>
+  <parameter code="212">
+    <shortName>PRESN</shortName>
+    <description>Pressure (nearest grid point)</description>
+    <units>Pa</units>
+  </parameter>
+</parameterMap>

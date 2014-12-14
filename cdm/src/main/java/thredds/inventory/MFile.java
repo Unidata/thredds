@@ -33,9 +33,7 @@
 package thredds.inventory;
 
 /**
- * Inventory "Managed File". An abstraction for java.io.File.
- * Replaces Crawlable Dataset.
- * LOOK: could we use Path instead ??
+ * An abstraction for java.io.File / java.nio.file.Path
  *
  * @author caron
  * @since Jun 30, 2009
@@ -62,6 +60,10 @@ public interface MFile extends Comparable<MFile> {
    */
   public String getPath();
 
+  /**
+   * The file name is the <em>farthest</em> element from the root in the directory hierarchy.
+   * @return the file name
+   */
   public String getName();
 
   public int compareTo(MFile o);

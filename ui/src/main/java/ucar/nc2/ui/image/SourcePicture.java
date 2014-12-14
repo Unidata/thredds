@@ -123,11 +123,6 @@ public class SourcePicture implements Cloneable {
 	 */	
 	private String pictureStatusMessage;
 
-	/** 
-	 *  the time it took to load the image
-	 */
-	public long loadTime = 0;
-	
 	/**
 	 *  A vector that holds all the listeners that want to be notified about 
 	 *  changes to this SourcePicture.
@@ -210,9 +205,7 @@ public class SourcePicture implements Cloneable {
 						
 		setStatus( LOADING, "Loading: " + imageUrl.toString() );
 		abortFlag = false;
-		long start = System.currentTimeMillis();
-		loadTime = 0;
-				
+
 		try {
 			
 			// Java 1.4 way with a Listener
@@ -224,16 +217,15 @@ public class SourcePicture implements Cloneable {
 			reader.addIIOReadProgressListener( imageProgressListener );
 			reader.setInput( iis );
 			sourcePictureBufferedImage = null;
-			try {
+			// try {
 				sourcePictureBufferedImage = reader.read( 0 ); // just get the first image
-			} catch ( OutOfMemoryError e ) {
+			/* } catch ( OutOfMemoryError e ) {
 				Tools.log("SourcePicture caught an OutOfMemoryError while loading an image." );
 
 				iis.close();
 				reader.removeIIOReadProgressListener( imageProgressListener );
 				reader.dispose();
-				i=null;
-			
+
 				setStatus(ERROR, "Out of Memory Error while reading " + imageUrl.toString());
 				sourcePictureBufferedImage = null; 
 				// PictureCache.clear();
@@ -248,16 +240,12 @@ public class SourcePicture implements Cloneable {
 
 				Tools.log("JPO has now run a garbage collection and finalization.");
 				return;
-			}
-			
-			
+			} */
+
 			iis.close();
 			reader.removeIIOReadProgressListener( imageProgressListener );
 			//Tools.log("!!dispose being called!!");
 			reader.dispose();
-			i=null;
-
-			
 
 			if ( ! abortFlag ) {
 			
@@ -290,18 +278,15 @@ public class SourcePicture implements Cloneable {
 				}
 
 				setStatus( READY, "Loaded: " + imageUrl.toString() );
-				long end   = System.currentTimeMillis();
-				loadTime = end - start;
 				PictureCache.add( imageUrl, (SourcePicture) this.clone() );
 			} else {
-				loadTime = 0;
 				setStatus( ERROR, "Aborted: " + imageUrl.toString() );
 				sourcePictureBufferedImage = null; 
 			}
 		} catch ( IOException e ) {
 			setStatus(ERROR, "Error while reading " + imageUrl.toString());
 			sourcePictureBufferedImage = null; 
-		};  
+		}
 
 	}
 
@@ -339,7 +324,7 @@ public class SourcePicture implements Cloneable {
 			return false;
 		}
 			
-		if ( ! exemptionURL.equals( imageUrl ) ) {
+		if ( ! exemptionURL.toString().equals( imageUrl.toString() ) ) {
 			Tools.log ("SourcePicture.stopLoadingExcept: called with Url " + exemptionURL.toString() + " --> stopping loading of " + imageUrl.toString() );
 			stopLoading();
 			return true;

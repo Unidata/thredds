@@ -39,6 +39,7 @@ import com.google.protobuf.ByteString;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
+import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import ucar.coord.*;
 import ucar.ma2.Section;
@@ -46,9 +47,11 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -75,26 +78,51 @@ public abstract class GribPartitionBuilder  {
     this.logger = logger;
   }
 
+  // LOOK need an option to only look at last partition or something
   public boolean updateNeeded(CollectionUpdateType ff) throws IOException {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File idx = GribCollection.getFileInCache(partitionManager.getIndexFilename());
-    if (!idx.exists()) return true;
+    File collectionIndexFile = GribCollection.getFileInCache(partitionManager.getIndexFilename());
+    if (!collectionIndexFile.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
 
-    return needsUpdate(idx.lastModified());
+    return needsUpdate(ff, collectionIndexFile);
   }
 
-  private boolean needsUpdate(long collectionLastModified) throws IOException {
+  private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
+    long collectionLastModified = collectionIndexFile.lastModified();
+    Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
-      File idxFile = GribCollection.getFileInCache(dcm.getIndexFilename());
-      if (!idxFile.exists())
+      String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
+      File partitionIndexFile = GribCollection.getFileInCache(partitionIndexFilename);
+      if (!partitionIndexFile.exists())                                 // make sure each partition has an index
         return true;
-      if (collectionLastModified < idxFile.lastModified())
+      if (collectionLastModified < partitionIndexFile.lastModified())  // and the partition index is earlier than the collection index
         return true;
+      newFileSet.add(partitionIndexFilename);
     }
+
+    if (ff == CollectionUpdateType.testIndexOnly) return false;
+
+    // now see if any files were deleted
+    GribCdmIndex reader = new GribCdmIndex(logger);
+    List<MFile> oldFiles = new ArrayList<>();
+    reader.readMFiles(collectionIndexFile.toPath(), oldFiles);
+    Set<String> oldFileSet = new HashSet<>();
+    for (MFile oldFile : oldFiles) {
+      if (!newFileSet.contains(oldFile.getPath()))
+        return true;  // got deleted - must recreate the index
+      oldFileSet.add(oldFile.getPath());
+    }
+
+    // now see if any files were added
+    for (String newFilename : newFileSet) {
+      if (!oldFileSet.contains(newFilename))
+        return true;  // got added - must recreate the index
+    }
+
     return false;
   }
 
@@ -184,7 +212,7 @@ public abstract class GribPartitionBuilder  {
           varMap.put(vi.cdmHash, vi); // this will use the last one found
       }
       for (GribCollection.VariableIndex vi : varMap.values()) {
-        // convert each VariableIndex to VariableIndexPartitioned in result. note not using canon
+        // convert each VariableIndex to VariableIndexPartitioned in result. note not using canon vi, but last one found
         result.makeVariableIndexPartitioned(resultGroup, vi, npart); // this adds to resultGroup
       }
     }
@@ -268,9 +296,9 @@ public abstract class GribPartitionBuilder  {
         // for each variable in this Partition, add reference to it in the vip
         for (int varIdx = 0; varIdx < group.variList.size(); varIdx++) {
           GribCollection.VariableIndex vi = group.variList.get(varIdx);
-          int flag = 0;
+          //int flag = 0;
           PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) resultGroup.findVariableByHash(vi.cdmHash);
-          vip.addPartition(partno, groupIdx, varIdx, flag, vi);
+          vip.addPartition(partno, groupIdx, varIdx); // , flag, vi);
         } // loop over variable
       } // loop over partition
 
@@ -282,6 +310,9 @@ public abstract class GribPartitionBuilder  {
 
       // for each variable, create union of coordinates across the partitions
       for (GribCollection.VariableIndex viResult : resultGroup.variList) {
+        PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) viResult;
+        vip.finish(); // create the SA, remove list LOOK, could do it differently
+
         // loop over partitions, make union coordinate; also time filter the intervals
         CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult.getVarid(), intvMap);
         for (int partno = 0; partno < npart; partno++) {
@@ -475,6 +506,8 @@ public abstract class GribPartitionBuilder  {
       for (GribCollection.VariableIndex vi2d : group2D.variList) {
         // copy vi and add to groupB
         PartitionCollection.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(groupB, vi2d, npart);
+        vip.finish();
+
         // do not remove runtime coordinate, just set isTwoD
         vip.twot = null;
 
@@ -569,13 +602,18 @@ public abstract class GribPartitionBuilder  {
 
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(pc.getName());
-      indexBuilder.setTopDir(pc.getDirectory().getPath()); // LOOK
+      Path topDir = pc.getDirectory().toPath();
+      String pathS = StringUtil2.replace(topDir.toString(), '\\', "/");
+      indexBuilder.setTopDir(pathS);
 
       // mfiles are the partition indexes
       int count = 0;
       for (PartitionCollection.Partition part : pc.partitions) {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
-        b.setFilename(part.getFilename());
+        Path partPath = new File(part.getDirectory(), part.getFilename()).toPath();
+        Path pathRelative = topDir.relativize(partPath);
+        String pathRS = StringUtil2.replace(pathRelative.toString(), '\\', "/");
+        b.setFilename(pathRS); // reletive to topDir
         b.setLastModified(part.getLastModified());
         b.setIndex(count++);
         indexBuilder.addMfiles(b.build());
@@ -752,11 +790,13 @@ public abstract class GribPartitionBuilder  {
         b.addTime2Runtime(idx);
     }
 
-        // extensions
-    List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
-    for (PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionsForVariable())
-      pvarList.add(writePartitionVariableProto(pvar));
-    b.setExtension(PartitionCollectionProto.partition, pvarList);
+    // extensions
+    if (vp.nparts > 0 && vp.partnoSA != null) {
+      List<PartitionCollectionProto.PartitionVariable> pvarList = new ArrayList<>();
+      for (int i = 0; i < vp.nparts; i++) // PartitionCollection.PartitionForVariable2D pvar : vp.getPartitionForVariable2D())
+        pvarList.add(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i)));  // LOOK was it finished ??
+      b.setExtension(PartitionCollectionProto.partition, pvarList);
+    }
 
     return b.build();
   }
@@ -775,16 +815,16 @@ public abstract class GribPartitionBuilder  {
     optional uint32 missing = 10;
   }
    */
-  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(PartitionCollection.PartitionForVariable2D pvar) throws IOException {
+  private PartitionCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno) throws IOException {
     PartitionCollectionProto.PartitionVariable.Builder pb = PartitionCollectionProto.PartitionVariable.newBuilder();
-    pb.setPartno(pvar.partno);
-    pb.setGroupno(pvar.groupno);
-    pb.setVarno(pvar.varno);
-    pb.setFlag(pvar.flag);
-    pb.setNdups(pvar.ndups);
+    pb.setPartno(partno);
+    pb.setGroupno(groupno);
+    pb.setVarno(varno);
+    pb.setFlag(0); // ignored
+    /* pb.setNdups(pvar.ndups);
     pb.setNrecords(pvar.nrecords);
     pb.setMissing(pvar.missing);
-    pb.setDensity(pvar.density);
+    pb.setDensity(pvar.density);  */
 
     return pb.build();
   }

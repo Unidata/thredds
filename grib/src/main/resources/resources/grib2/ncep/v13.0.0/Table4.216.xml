@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.216</table>
+  <title>Elevation of Snow Covered Terrain</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-216.shtml</source>
+  <parameter code="254">
+    <description>Clouds</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

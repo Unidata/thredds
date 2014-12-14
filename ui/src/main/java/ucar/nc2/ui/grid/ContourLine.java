@@ -75,9 +75,8 @@ public class ContourLine implements GisPart {
     wy = new double[npts];
 
     // get each coord pair and push into the local x y arrays
-    Point2D.Double onexypair = new Point2D.Double();
     for (int i = 0; i < points.size(); i++) {
-      onexypair = (Point2D.Double) (points.get(i));
+      Point2D.Double onexypair = (Point2D.Double) (points.get(i));
       wx[i] = onexypair.getX();
       wy[i] = onexypair.getY();
       //System.out.println("  i="+i+"  ("
@@ -91,20 +90,7 @@ public class ContourLine implements GisPart {
   // constructor with indicator if contour Line is new or modified;
   // used for systems with editable contour lines.
   public ContourLine(ArrayList points, double level, boolean ifNew) {
-    this.npts = points.size();
-    // define coordinate array size for this line
-    wx = new double[npts];
-    wy = new double[npts];
-
-    // get one coord pait and push into the local x y arrays
-    Point2D.Double onexypair = new Point2D.Double();
-    for (int i = 0; i < points.size(); i++) {
-      onexypair = (Point2D.Double) (points.get(i));
-      wx[i] = onexypair.getX();
-      wy[i] = onexypair.getY();
-    }
-
-    contourLevel = level;
+    this(points, level);
     newLineFlag = ifNew;
   }
 

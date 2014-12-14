@@ -32,6 +32,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
@@ -95,9 +96,9 @@ public class BufrCdmIndexPanel extends JPanel {
 
         } catch (Exception ex) {
           ex.printStackTrace();
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          ex.printStackTrace(new PrintStream(bos));
-          detailTA.setText(bos.toString());
+          StringWriter sw = new StringWriter(10000);
+          ex.printStackTrace(new PrintWriter(sw));
+          detailTA.setText(sw.toString());
         }
         detailTA.gotoTop();
         detailWindow.show();
@@ -117,20 +118,16 @@ public class BufrCdmIndexPanel extends JPanel {
     });
     buttPanel.add(filesButton); */
 
-    ////////////////////////////
-
-    PopupMenu varPopup;
-
     ////////////////
     stationTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBean"), false, "stations", "BufrCdmIndexProto.Station", null);
     fldTable = new BeanTable(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields", "BufrCdmIndexProto.Field", new FieldBean());
 
     JTable table = fldTable.getJTable();
-    JComboBox comboBox = new JComboBox(BufrCdmIndexProto.FldType.values());
+    JComboBox<BufrCdmIndexProto.FldType> comboBox = new JComboBox<>(BufrCdmIndexProto.FldType.values());
     table.setDefaultEditor(BufrCdmIndexProto.FldType.class, new DefaultCellEditor(comboBox));
 
     TableColumn sportColumn = table.getColumnModel().getColumn(2);
-    JComboBox cb = new JComboBox();
+    JComboBox<String> cb = new JComboBox<>();
     cb.addItem("Snowboarding");
     cb.addItem("Rowing");
     cb.addItem("Chasing toddlers");
@@ -179,14 +176,14 @@ public class BufrCdmIndexPanel extends JPanel {
 
     index = BufrCdmIndex.readIndex(indexFilename);
 
-    List<StationBean> stations = new ArrayList<StationBean>();
+    List<StationBean> stations = new ArrayList<>();
     if (index.stations != null) {
       for (BufrCdmIndexProto.Station s : index.stations)
         stations.add(new StationBean(s));
     }
     stationTable.setBeans(stations);
 
-    List<FieldBean> flds = new ArrayList<FieldBean>();
+    List<FieldBean> flds = new ArrayList<>();
     if (index.root != null) {
       rootBean = new FieldBean(null, index.root);
       addFields(index.root, rootBean, flds);
@@ -196,7 +193,7 @@ public class BufrCdmIndexPanel extends JPanel {
 
   private void addFields(BufrCdmIndexProto.Field parent, FieldBean parentBean, List<FieldBean> flds) {
     if (parent.getFldsList() == null) return;
-    parentBean.children = new ArrayList<FieldBean>();
+    parentBean.children = new ArrayList<>();
     for (BufrCdmIndexProto.Field child : parent.getFldsList()) {
       FieldBean childBean = new FieldBean(parentBean, child);
       flds.add(childBean);
@@ -229,9 +226,6 @@ public class BufrCdmIndexPanel extends JPanel {
 
   public class StationBean {
     BufrCdmIndexProto.Station s;
-
-    public StationBean() {
-    }
 
     public StationBean(BufrCdmIndexProto.Station s) {
       this.s = s;

@@ -31,6 +31,7 @@
  */
 package ucar.nc2.ui;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ui.dialog.BufrBCompare;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -73,10 +74,10 @@ public class BufrTableBViewer extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTable ddsTable, variantTable;
-  private JSplitPane split, split2;
+  private JSplitPane split;
 
-  private TextHistoryPane compareTA, infoTA2;
-  private IndependentWindow infoWindow, infoWindow2;
+  private TextHistoryPane compareTA;
+  private IndependentWindow infoWindow;
 
   private TableB currTable, refTable;
 
@@ -96,7 +97,7 @@ public class BufrTableBViewer extends JPanel {
     variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
     variantTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        DdsBean csb = (DdsBean) variantTable.getSelectedBean();
+        variantTable.getSelectedBean();
       }
     });
 
@@ -188,12 +189,12 @@ public class BufrTableBViewer extends JPanel {
 
           String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
           if (filename == null) return;
-          File file = new File(filename);
-          FileOutputStream fos = new FileOutputStream(file);
-
-          Formatter out = new Formatter(fos);
-          writeDiff(BufrTables.getWmoTableB(14), currTable, out);
-          fos.close();
+          try (FileOutputStream out = new FileOutputStream(filename)) {
+            OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+            BufferedWriter bw = new BufferedWriter(fout);
+            Formatter f = new Formatter(bw);
+            writeDiff(BufrTables.getWmoTableB(14), currTable, f);
+          }
           JOptionPane.showMessageDialog(BufrTableBViewer.this, filename + " successfully written");
 
         } catch (Exception ex) {
@@ -214,12 +215,12 @@ public class BufrTableBViewer extends JPanel {
 
           String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
           if (filename == null) return;
-          File file = new File(filename);
-          FileOutputStream fos = new FileOutputStream(file);
-
-          Formatter out = new Formatter(fos);
-          writeLocal(currTable, out);
-          fos.close();
+          try (FileOutputStream out = new FileOutputStream(filename)) {
+            OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+            BufferedWriter bw = new BufferedWriter(fout);
+            Formatter f = new Formatter(bw);
+            writeLocal(currTable, f);
+          }
           JOptionPane.showMessageDialog(BufrTableBViewer.this, filename + " successfully written");
 
         } catch (Exception ex) {
@@ -271,9 +272,9 @@ public class BufrTableBViewer extends JPanel {
     int pos = location.lastIndexOf("/");
     String src = (pos > 0) ? location.substring(pos + 1) : location;
 
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tb.getDescriptors());
+    List<TableB.Descriptor> listDesc = new ArrayList<>(tb.getDescriptors());
     Collections.sort(listDesc);
-    List<DdsBean> dds = new ArrayList<DdsBean>(listDesc.size());
+    List<DdsBean> dds = new ArrayList<>(listDesc.size());
     for (TableB.Descriptor d : listDesc) {
       dds.add(new DdsBean(src, d));
     }
@@ -301,13 +302,13 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private void writeDiff(TableB wmo, TableB t, Formatter out) {
     out.format("#%n# BUFR diff written from %s against %s %n#%n", t.getName(), wmo.getName());
     out.format("Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits%n");
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(t.getDescriptors());
+    List<TableB.Descriptor> listDesc = new ArrayList<>(t.getDescriptors());
     Collections.sort(listDesc);
     for (TableB.Descriptor d1 : listDesc) {
       TableB.Descriptor d2 = wmo.getDescriptor(d1.getId());
       if ((d2 == null) || (d1.getScale() != d2.getScale()) || (d1.getRefVal() != d2.getRefVal()) || (d1.getDataWidth() != d2.getDataWidth())) {
         short fxy = d1.getId();
-        int f = (fxy & 0xC000) >> 14;
+//        int f = (fxy & 0xC000) >> 14;
         int x  = (fxy & 0x3F00) >> 8;
         int y  = fxy & 0xFF;
         out.format("%d,%2d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y, d1.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getDataWidth());
@@ -319,12 +320,12 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private void writeLocal(TableB t, Formatter out) {
     out.format("#%n# BUFR local only from %s %n#%n", t.getName());
     out.format("Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits%n");
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(t.getDescriptors());
+    List<TableB.Descriptor> listDesc = new ArrayList<>(t.getDescriptors());
     Collections.sort(listDesc);
     for (TableB.Descriptor d1 : listDesc) {
       if (d1.isLocal()) {
         short fxy = d1.getId();
-        int f = (fxy & 0xC000) >> 14;
+//        int f = (fxy & 0xC000) >> 14;
         int x  = (fxy & 0x3F00) >> 8;
         int y  = fxy & 0xFF;
         out.format("%d,%d%03d,\"%s\",%s,%d,%d,%d%n",x,x,y,d1.getName(), d1.getUnits(), d1.getScale(), d1.getRefVal(), d1.getDataWidth());
@@ -388,16 +389,16 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       infoWindow.setVisible(true);
 
     } catch (Throwable ioe) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      ioe.printStackTrace(new PrintStream(bos));
-      compareTA.setText(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      compareTA.setText(sw.toString());
       compareTA.gotoTop();
       infoWindow.setVisible(true);
     }
   }
 
   private void compare(TableB t2, boolean skipNames, boolean skipUnits, Formatter out) {
-    Map<Short, DdsBean> mapBeans = new HashMap<Short, DdsBean>(3000);
+    Map<Short, DdsBean> mapBeans = new HashMap<>(3000);
 
     out.format("Compare Current Table (%s) to %s %n", currTable.getName(), t2.getName());
     for (Object beano : ddsTable.getBeans()) {
@@ -426,7 +427,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     }
 
     // see whats missing
-    List<TableB.Descriptor> listDesc2 = new ArrayList<TableB.Descriptor>(t2.getDescriptors());
+    List<TableB.Descriptor> listDesc2 = new ArrayList<>(t2.getDescriptors());
     out.format("%n Missing in first table %n");
     Collections.sort(listDesc2);
     for (TableB.Descriptor d2 : listDesc2) {
@@ -444,7 +445,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private void showUsed() throws IOException {
     String rootDir = Misc.getTestdataDirPath();
     String dataDir = "cdmUnitTest/formats/bufr/";
-    usedDds = new HashMap<Short, List<Message>>(3000);
+    usedDds = new HashMap<>(3000);
 
     scanFileForDds(rootDir + dataDir + "uniqueIDD.bufr");
     scanFileForDds(rootDir + dataDir + "uniqueExamples.bufr");
@@ -453,7 +454,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   }
 
   private void showUsed(String filename) throws IOException {
-    usedDds = new HashMap<Short, List<Message>>(3000);
+    usedDds = new HashMap<>(3000);
     scanFileForDds(filename);
   }
 
@@ -473,7 +474,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     for (DataDescriptor key : dds.getSubKeys()) {
       List<Message> list = usedDds.get(key.getFxy());
       if (list == null) {
-        list = new ArrayList<Message>();
+        list = new ArrayList<>();
         usedDds.put(key.getFxy(), list);
       }
       if (!list.contains(src))
@@ -532,15 +533,15 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   }
 
   private void loadVariant(String key, TableB tableB) {
-    if (allVariants == null) allVariants = new HashMap<Short, List<DdsBean>>();
-    if (varKeys == null) varKeys = new HashSet<String>();
+    if (allVariants == null) allVariants = new HashMap<>();
+    if (varKeys == null) varKeys = new HashSet<>();
     if (varKeys.contains(key)) return; // dont add again
 
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tableB.getDescriptors());
+    List<TableB.Descriptor> listDesc = new ArrayList<>(tableB.getDescriptors());
     for (TableB.Descriptor d : listDesc) {
       List<DdsBean> list = allVariants.get(d.getId());
       if (list == null) {
-        list = new ArrayList<DdsBean>(10);
+        list = new ArrayList<>(10);
         allVariants.put(d.getId(), list);
       }
       list.add(new DdsBean(key, d));
@@ -551,7 +552,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     if (!standardVariantsLoaded) loadStandardVariants();
 
     List<DdsBean> all = allVariants.get(bean.getId());
-    List<DdsBean> ddsBean = new ArrayList<DdsBean>(10);
+    List<DdsBean> ddsBean = new ArrayList<>(10);
     ddsBean.add(bean);
     if (all != null) ddsBean.addAll(all);
     variantTable.setBeans(ddsBean);
@@ -560,8 +561,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private void showAll() {
     if (!standardVariantsLoaded) loadStandardVariants();
 
-    Map<Short, DdsBean> allDesc = new HashMap<Short, DdsBean>(3000);
-    Set<String> keys = new HashSet<String>();
+    Map<Short, DdsBean> allDesc = new HashMap<>(3000);
+    Set<String> keys = new HashSet<>();
 
     for (BufrTables.TableConfig tc : BufrTables.getTables()) {
       String filename = tc.getTableBname();
@@ -576,14 +577,14 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       }
     }
 
-    List<DdsBean> beans = new ArrayList<DdsBean>(allDesc.values());
+    List<DdsBean> beans = new ArrayList<>(allDesc.values());
     Collections.sort(beans);
     ddsTable.setBeans(beans);
     currTable = null;
   }
 
   private void addVariant(String key, TableB tableB, Map<Short, DdsBean> allDesc) {
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tableB.getDescriptors());
+    List<TableB.Descriptor> listDesc = new ArrayList<>(tableB.getDescriptors());
     for (TableB.Descriptor d : listDesc) {
       if (!allDesc.containsKey(d.getId()))
         allDesc.put(d.getId(), new DdsBean(key, d));
@@ -593,7 +594,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private void diffVariants() {
     if (!standardVariantsLoaded) loadStandardVariants();
 
-    Set<String> keys = new HashSet<String>();
+    Set<String> keys = new HashSet<>();
 
     for (Object beano : ddsTable.getBeans()) {
       DdsBean bean = (DdsBean) beano;
@@ -664,10 +665,6 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     String udunits;
     boolean checkDiff;
     String isDiff;
-
-    // no-arg constructor
-    public DdsBean() {
-    }
 
     // create from a dataset
     public DdsBean(String source, TableB.Descriptor dds) {

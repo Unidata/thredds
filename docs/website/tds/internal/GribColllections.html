@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>GRIB Collection Internals</title>
+  <link href="../tds.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<h1>GRIB Collection Internals</h1>
+<p>&nbsp;</p>
+<p>11/15/2014</p>
+<h2>Type of Partitions</h2>
+<h3>partition = none</h3>
+<ul>
+  <li>read in all files at once. limited by memory (400 bytes / record ??)</li>
+  <li>create a seperate GC for each runtime. call it a single runtime collection SRC. All variables are in the SRC.</li>
+  <li>if multiple runtimes, create a collection index. call it a time partition of SRC, or TPofSRC. So, we can look at the runtime and choose which SRC is needed.</li>
+</ul>
+<h3>partition = directory </h3>
+<ul>
+  <li>for each directory, create one index</li>
+  <li>may be a SRC or a MRC</li>
+  <li>if there are multiple directories, assume that its time partitioned
+    <ul>
+      <li>yes: then we have a TPofSRC or TPofMRC (shouldnt matter which). above that we get TPofTP</li>
+    </ul>
+  </li>
+  <li>this is the default, if no partition is specified in config</li>
+</ul>
+<h3>partition = file</h3>
+<ul>
+  <li>for each file, create one index</li>
+  <li>may be a SRC or a MRC</li>
+  <li>if there are multiple files, should we assume that its time partitioned ??
+    <ul>
+      <li>yes: then we have a TPofSRC or TPofMRC (shouldnt matter which). above that we get TPofTP</li>
+      <li>no: union of GC? just keep seperate time partition for each variable??</li>
+    </ul>
+  </li>
+</ul>
+<h2>Types of Grib Collections</h2>
+<ul>
+  <li>SRC,  single runtime collection (formerly GC)</li>
+  <li>MRC, multiple runtime collection. </li>
+  <li>TPofSRC, time partition of single runtime collection (formerly PofGC)</li>
+  <li>TPofMRC,  time partition of multiple runtime collection </li>
+  <li>TPofTP, time partition of time partition</li>
+</ul>
+<h2>Dark corners</h2>
+<ul>
+  <li>is the runtime accurate, eg do we know for sure for each record, or could a vertical have different runtime if theres missing</li>
+</ul>
+<h2>Homogeneity</h2>
+<ul>
+  <li>single Customizer(center, subcenter, master, local, genProcessId) for each GC</li>
+  <li>center, subcenter, master, local, genProcessType, genProcessId, backProcessId copied from one partition (canonical). Just info I think</li>
+  <li>horizCoordSystem (GDS)</li>
+</ul>
+<h2>Issues</h2>
+<ul>
+  <li>is the runtime accurate, eg do we know for sure for each record, or could a vertical have different runtime if theres missing. see GribPartitionBuilder.makeMissing()</li>
+  <li>partitions sorted by name. should be by date.</li>
+</ul>
+<p>=======================================================================</p>
+<p>10/21/2014</p>
+<p>InvDatasetFeatureCollection</p>
+<p>&nbsp;</p>
+<p>InvDatasetFcGrib</p>
+<p>&nbsp;</p>
+<p>{collection} -&gt; {runTime} -&gt; {Group}	: a GC is a single runtime with 1 or more groups (GDS).</p>
+<p>PofGC = {GC}</p>
+<p>PofP = {PofGC}</p>
+<h4>case 1. {collection} has single runtime. </h4>
+<ul>
+  <li>	config: name = collone, partition = none, topdir=c:/tmp/mixed</li>
+  <li>index name = &lt;config&gt;-topdir</li>
+</ul>
+<blockquote>
+  <pre>
+Ismoro-mixed.ncx2
+
+lsmoro_N160.grib
+lsmoro_N160.grib.gbx9
+lsmoro_N320.grib
+lsmoro_N320.grib.gbx9
+lsmoro_N640.grib
+lsmoro_N640.grib.gbx9  </pre>
+</blockquote>
+<h4>case 2. {collection} has multiple runtime. </h4>
+<ul>
+  <li>config name = coll2, partition=none, topdir=c:/tmp/gfsmrt</li>
+  <li>PofGC GC names = &lt;config&gt;-&lt;topdir&gt;-&lt;yyyyMMdd-hhmmss&gt;.ncx2</li>
+  <li>PofGC index name =  &lt;config&gt;-&lt;topdir&gt;</li>
+</ul>
+<blockquote>
+<pre>GFS_CONUS_95km_20141010_0000.grib2
+GFS_CONUS_95km_20141010_0000.grib2.gbx9
+GFS_CONUS_95km_20141010_0600.grib2
+GFS_CONUS_95km_20141010_0600.grib2.gbx9
+
+coll2-gfsmrt-20141010-000000.ncx2
+coll2-gfsmrt-20141010-060000.ncx2
+coll2-gfsmrt.ncx2</pre>
+</blockquote>
+<h4>case 3. {collection} has multiple runtimes, file partition
+</h4>
+<ul>
+  <li>config name = coll2, partition=none, topdir=c:/tmp/gfsmrt</li>
+  <li>PofGC GC names = &lt;file&gt;.ncx2</li>
+  <li>PofGC index name =  &lt;config&gt;-&lt;topdir&gt;</li>
+</ul>
+
+<blockquote>
+<pre>GFS_CONUS_95km_20141010_1200.grib2
+GFS_CONUS_95km_20141010_1200.grib2.gbx9
+GFS_CONUS_95km_20141010_1200.grib2.ncx2
+GFS_CONUS_95km_20141010_1800.grib2
+GFS_CONUS_95km_20141010_1800.grib2.gbx9
+GFS_CONUS_95km_20141010_1800.grib2.ncx2
+
+coll3-gfsfp.ncx2</pre>
+</blockquote>
+
+<p>&nbsp;</p>
+</body>
+</html>

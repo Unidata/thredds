@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.209</table>
+  <title>Planetary BoundaryLayer Regime</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-209.shtml</source>
+  <parameter code="1">
+    <description>Stable</description>
+  </parameter>
+  <parameter code="2">
+    <description>Mechanically-Driven Turbulence</description>
+  </parameter>
+  <parameter code="3">
+    <description>Force Convection</description>
+  </parameter>
+  <parameter code="4">
+    <description>Free Convection</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

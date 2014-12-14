@@ -71,9 +71,7 @@ public class GetAsciiHandler {
      * OPeNDAP enabled application such as MS-Excel. Accepts constraint
      * expressions in exactly the same way as the regular OPeNDAP dataserver.
      *
-     * @param request
-     * @param response
-     * @param dataSet
+     * @param rs
      * @throws opendap.dap.DAP2Exception
      * @throws ParseException
      */
@@ -115,9 +113,8 @@ public class GetAsciiHandler {
             if (_Debug) System.out.println(" ASC DDS: ");
             if (_Debug) dds.print(System.out);
 
-            PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
-            PrintWriter pwDebug = new PrintWriter(System.out);
-
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
+            PrintWriter pwDebug = new PrintWriter(new OutputStreamWriter(System.out,Util.UTF8));
 
             if(dds!=null){
                 dds.print(pw);

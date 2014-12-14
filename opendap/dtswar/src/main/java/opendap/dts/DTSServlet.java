@@ -208,6 +208,8 @@ import ucar.nc2.util.EscapeStrings;
 
 public class DTSServlet extends AbstractServlet
 {
+    static final boolean debug = false;
+
     static public org.slf4j.Logger log
         = org.slf4j.LoggerFactory.getLogger(DTSServlet.class);
 
@@ -229,12 +231,6 @@ public class DTSServlet extends AbstractServlet
      */
 
     private String ServerVersion = "DODS/3.2";
-
-
-    /**
-     * Support compressions or not
-     */
-    protected boolean allowDeflate = true;
 
     /**
      * Debugging
@@ -669,7 +665,7 @@ public class DTSServlet extends AbstractServlet
                 CEEvaluator ce = new CEEvaluator(myDDS);
                 ce.parseConstraint(rs);
                 // Send the constrained DDS back to the client
-                PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out));
+                PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out,Util.UTF8));
                 myDDS.printConstrained(pw);
                 pw.flush();
             }
@@ -745,7 +741,7 @@ public class DTSServlet extends AbstractServlet
                 ce.parseConstraint(rs);
 
                 // Send the constrained DDS back to the client
-                PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out));
+                PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out,Util.UTF8));
                 myDDS.printConstrainedXML(pw);
                 pw.flush();
             }
@@ -843,8 +839,12 @@ public class DTSServlet extends AbstractServlet
 
             // Finish up sending the compressed stuff, but don't
             // close the stream (who knows what the Servlet may expect!)
-            if(rs.getAcceptsCompressed())
-                ((DeflaterOutputStream) bOut).finish();
+            if(rs.getAcceptsCompressed()) {
+                if(bOut != null)
+                    bOut.flush();
+                if(dOut != null)
+                    ((DeflaterOutputStream) dOut).finish();
+            }
 
             //? if(null != dOut) dOut.finish();
             //? bOut.flush();
@@ -924,13 +924,13 @@ public class DTSServlet extends AbstractServlet
             // myDDS.printConstrained(System.out);
 
             // Send the constrained DDS back to the client
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut,Util.UTF8));
             myDDS.printConstrained(pw);
 
             // Send the Data delimiter back to the client
             //pw.println("Data:"); // JCARON CHANGED
             pw.flush();
-            bOut.write("\nData:\r\n".getBytes()); // JCARON CHANGED
+            bOut.write("\nData:\r\n".getBytes("UTF-8")); // JCARON CHANGED
             bOut.flush();
 
             int seqLength = 5;
@@ -1024,7 +1024,7 @@ public class DTSServlet extends AbstractServlet
         // Commented because of a bug in the OPeNDAP C++ stuff...
         //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream()));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
 
         pw.println("Server Version: " + getServerVersion());
         pw.flush();
@@ -1053,7 +1053,7 @@ public class DTSServlet extends AbstractServlet
         // Commented because of a bug in the OPeNDAP C++ stuff...
         //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream()));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
         printHelpPage(pw);
         pw.flush();
 
@@ -1083,7 +1083,7 @@ public class DTSServlet extends AbstractServlet
         // Commented because of a bug in the OPeNDAP C++ stuff...
         //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream()));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream(),Util.UTF8));
 
         printBadURLPage(pw);
         printHelpPage(pw);
@@ -1120,7 +1120,6 @@ public class DTSServlet extends AbstractServlet
             rs.getResponse().setHeader("Content-Description", "dods-ascii");
             rs.getResponse().setStatus(HttpServletResponse.SC_OK);
 
-            boolean debug = false;
             if(debug)
                 log.debug("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
 
@@ -1143,7 +1142,7 @@ public class DTSServlet extends AbstractServlet
 
             testEngine te = new testEngine(seqLength);
 
-            PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
             dds.printConstrained(pw);
             pw.println("---------------------------------------------");
 
@@ -1192,7 +1191,7 @@ public class DTSServlet extends AbstractServlet
             ds = getDataset(rs);
             if(ds == null) return;
 
-            PrintStream pw = new PrintStream(rs.getResponse().getOutputStream());
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
             rs.getResponse().setHeader("XDODS-Server", getServerVersion());
             rs.getResponse().setContentType("text/html");
             rs.getResponse().setHeader("Content-Description", "dods-description");
@@ -1275,7 +1274,7 @@ public class DTSServlet extends AbstractServlet
         rs.getResponse().setContentType("text/xml");
         rs.getResponse().setHeader("Content-Description", "dods-catalog");
 
-        PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
         printCatalog(rs, pw);
         pw.flush();
         rs.getResponse().setStatus(HttpServletResponse.SC_OK);
@@ -1301,9 +1300,9 @@ public class DTSServlet extends AbstractServlet
         rs.getResponse().setContentType("text/html");
         rs.getResponse().setHeader("Content-Description", "dods_debug");
 
-        PrintStream pw = null;
+        PrintWriter pw = null;
         try {
-            pw = new PrintStream(rs.getResponse().getOutputStream());
+            pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
         } catch (IOException e) {
             return;
         }
@@ -1378,7 +1377,7 @@ public class DTSServlet extends AbstractServlet
         rs.getResponse().setContentType("text/html");
         rs.getResponse().setHeader("Content-Description", "dods-status");
 
-        PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
         pw.println("<html>");
         pw.println("<title>System Properties</title>");
         pw.println("<hr>");
@@ -1429,7 +1428,7 @@ public class DTSServlet extends AbstractServlet
         rs.getResponse().setContentType("text/html");
         rs.getResponse().setHeader("Content-Description", "dods-status");
 
-        PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
         pw.println("<title>Server Status</title>");
         pw.println("<body><ul>");
         printStatus(pw);
@@ -1446,20 +1445,24 @@ public class DTSServlet extends AbstractServlet
         if(track) {
             int n = prArr.size();
             int pending = 0;
-            String preqs = "";
+            StringBuilder preqs = new StringBuilder();
             for(int i = 0;i < n;i++) {
                 ReqState rs = (ReqState) prArr.get(i);
                 RequestDebug reqD = (RequestDebug) rs.getUserObject();
                 if(!reqD.done) {
-                    preqs += "<pre>-----------------------\n";
-                    preqs += "Request[" + reqD.reqno + "](" + reqD.threadDesc + ") is pending.\n";
-                    preqs += rs.toString();
-                    preqs += "</pre>";
+                    preqs.append("<pre>-----------------------\n");
+                    preqs.append("Request[");
+                    preqs.append(reqD.reqno);
+                    preqs.append("](");
+                    preqs.append(reqD.threadDesc);
+                    preqs.append(") is pending.\n");
+                    preqs.append(rs.toString());
+                    preqs.append("</pre>");
                     pending++;
                 }
             }
             os.println("<h2>" + pending + " Pending Request(s)</h2>");
-            os.println(preqs);
+            os.println(preqs.toString());
         }
     }
 
@@ -1719,7 +1722,7 @@ public class DTSServlet extends AbstractServlet
           doGetSystemProps(rs);
         } else if(isDebug) {
           doDebug(rs);  */
-                } else if(requestSuffix == null || requestSuffix.equals("")) {
+                } else if(requestSuffix.equals("")) {
                     badURL(request, response);
                 } else {
                     badURL(request, response);

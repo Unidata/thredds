@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.2</table>
+  <title>Charged Particle Mass and Number</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-2.shtml</source>
+  <parameter code="0">
+    <shortName>PLSMDEN</shortName>
+    <description>Particle Number Density</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>ELCDEN</shortName>
+    <description>Electron Density</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>PROTDEN</shortName>
+    <description>Proton Density</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>IONDEN</shortName>
+    <description>Ion Density</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>VTEC</shortName>
+    <description>Vertical Electron Content</description>
+    <units>m-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>ABSFRQ</shortName>
+    <description>HF Absorption Frequency</description>
+    <units>Hz</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>ABSRB</shortName>
+    <description>HF Absorption</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>SPRDF</shortName>
+    <description>Spread F</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>HPRIMF</shortName>
+    <description>h'F</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>CRTFRQ</shortName>
+    <description>Critical Frequency</description>
+    <units>Hz</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>SCINT</shortName>
+    <description>Scintillation</description>
+    <units>Numeric</units>
+  </parameter>
+</parameterMap>

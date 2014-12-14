@@ -212,12 +212,16 @@ public class AsciiWriter {
             return index;
 
         } else {
-
+            StringBuilder buf = new StringBuilder();
             for (int i = 0; i < shape[offset]; i++) {
-                String s = label + "[" + i + "]";
+                buf.setLength(0);
+                buf.append(label);
+                buf.append("[");
+                buf.append(i);
+                buf.append("]");
                 if ((dims - 1) == 1)
-                    s += ", ";
-                index = asciiArray(data, os, addName, s, index, dims - 1, shape, offset + 1);
+                    buf.append(", ");
+                index = asciiArray(data, os, addName, buf.toString(), index, dims - 1, shape, offset + 1);
             }
             return index;
         }

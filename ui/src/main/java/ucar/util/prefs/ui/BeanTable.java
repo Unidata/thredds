@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.ui.table.HidableTableColumnModel;
 import ucar.nc2.ui.table.TableAligner;
 import ucar.nc2.ui.table.TableAppearanceAction;
+import ucar.nc2.ui.table.UndoableRowSorter;
 import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -177,7 +178,7 @@ public class BeanTable extends JPanel {
   private void init(String header, String tooltip) {
     TableColumnModel tcm = new HidableTableColumnModel(model);
     jtable = new JTable(model, tcm);
-    jtable.setAutoCreateRowSorter(true);
+    jtable.setRowSorter(new UndoableRowSorter<>(model));
 
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple
     jtable.setDefaultRenderer(java.util.Date.class, new DateRenderer());
@@ -208,6 +209,9 @@ public class BeanTable extends JPanel {
     scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+    // This keeps the corner button visible even when the table is empty (or all columns are hidden).
+    scrollPane.setColumnHeaderView(new JViewport());
+    scrollPane.getColumnHeader().setPreferredSize(jtable.getTableHeader().getPreferredSize());
 
     // UI
     setLayout(new BorderLayout());
@@ -619,7 +623,7 @@ public class BeanTable extends JPanel {
     protected TableBeanModel(Class beanClass) {
 
       // get bean info
-      BeanInfo info = null;
+      BeanInfo info;
       try {
         if (!beanClass.isInterface())
           info = Introspector.getBeanInfo(beanClass, Object.class);
@@ -627,6 +631,7 @@ public class BeanTable extends JPanel {
           info = Introspector.getBeanInfo(beanClass);  // allows interfaces to be beans
       } catch (IntrospectionException e) {
         e.printStackTrace();
+        return;
       }
 
       if (debugBean)
@@ -637,7 +642,7 @@ public class BeanTable extends JPanel {
       MethodDescriptor[] mds = info.getMethodDescriptors();
       for (MethodDescriptor md : mds) {
         Method m = md.getMethod();
-        if (m.getName().equals("editableProperties")) {
+        if (m != null && m.getName().equals("editableProperties")) {
           try {
             editableProperties = (String) m.invoke(null, (Object[]) null);  // try static
             if (debugBean) System.out.println(" static editableProperties: " + editableProperties);
@@ -662,6 +667,8 @@ public class BeanTable extends JPanel {
       String hiddenProperties = "";
       for (MethodDescriptor md : mds) {
         Method m = md.getMethod();
+        assert m != null;
+
         if (m.getName().equals("hiddenProperties")) {
           try {
             hiddenProperties = (String) m.invoke(null, (Object[]) null);

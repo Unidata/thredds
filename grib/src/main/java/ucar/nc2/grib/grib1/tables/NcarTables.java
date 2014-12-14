@@ -47,9 +47,6 @@ import java.util.Map;
 public class NcarTables extends Grib1Customizer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
-  private static Map<Integer, String> genProcessMap;  // shared by all instances
-  private static HashMap<Integer, GribLevelType> levelTypesMap;  // shared by all instances
-
   NcarTables(Grib1ParamTables tables) {
     super(60, tables);
   }

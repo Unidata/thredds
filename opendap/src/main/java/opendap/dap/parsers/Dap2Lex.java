@@ -531,7 +531,7 @@ public void lexerror(String msg)
         nextline.append((char) c);
     }
     if(c != 0) nextline.append("...");
-    System.out.printf("Lex error: %s; line: %d: %s^%s\n", msg, lineno, yytext, nextline);
+    System.out.printf("Lex error: %s; line: %d: %s^%s%n", msg, lineno, yytext, nextline);
 }
 
 

@@ -175,19 +175,6 @@ public class EscapeStrings
         return union.toString();
     }
 
-    /*
-     * s1 - s2
-     */
-    static private String stringDiff(String s1, String s2)
-    {
-        String diff = "";
-        for(char c: s1.toCharArray()) {
-            if(s2.indexOf(c) < 0) diff += c;
-        }
-        return diff;
-    }
-
-
     /**
      * Replace all characters in the String <code>in</code> not present in the String <code>allowable</code> with
      * their hexidecimal values (encoded as UTF8) and preceeded by the String <code>esc</code>
@@ -210,7 +197,6 @@ public class EscapeStrings
     {
         try {
             StringBuffer out = new StringBuffer();
-            int i;
             if (in == null) return null;
             byte[] utf8 = in.getBytes(CDM.utf8Charset);
             byte[] allow8 = allowable.getBytes(CDM.utf8Charset);
@@ -242,9 +228,6 @@ public class EscapeStrings
 
     private static String escapeString(String in, String allowable)
    {return xescapeString(in,allowable,_URIEscape,false);}
-
-   private static String escapeString(String in, String allowable, char esc)
-   {return xescapeString(in,allowable,esc,false);}
 
     /**
      * Given a string that contains WWW escape sequences, translate those escape
@@ -293,10 +276,6 @@ public class EscapeStrings
     private static String unescapeString(String in)
     {return xunescapeString(in, _URIEscape,false);}
 
-    private static String unescapeString(String in, char escape)
-    {return xunescapeString(in, escape,false);}
-
-
     static final byte hexa = (byte)'a';
     static final byte hexf = (byte)'f';
     static final byte hexA = (byte)'A';
@@ -343,11 +322,11 @@ public class EscapeStrings
 
      public static String escapeURL(String url)
      {
-        String protocol = null;
-        String authority = null;
-        String path = null;
-        String query = null;
-        String fragment = null;
+        String protocol;
+        String authority;
+        String path;
+        String query;
+        String fragment;
         if(false) {
             // We split the url ourselves to minimize character dependencies
             Matcher m = p.matcher(url);
@@ -359,7 +338,7 @@ public class EscapeStrings
             query = m.group(4);
             fragment = m.group(5);
         } else {// faster, but may not work quite right
-            URL u = null;
+            URL u;
             try {u = new URL(url);} catch (MalformedURLException e) {
                 return null;
             }
@@ -370,22 +349,28 @@ public class EscapeStrings
             fragment = u.getRef();
         }
         // Reassemble
-        url = protocol + "://" + authority;
+        StringBuilder ret = new StringBuilder(protocol);
+        ret.append("://");
+        ret.append(authority);
         if(path != null && path.length() > 0) {
             // Encode pieces between '/'
             String pieces[] = path.split("[/]",-1);
             for(int i=0;i<pieces.length;i++)  {
                 String p = pieces[i];
                 if(p == null) p = "";
-                if(i > 0) url += "/";
-                url += urlEncode(p);
+                if(i > 0) ret.append("/");
+                ret.append(urlEncode(p));
             }
         }
-        if(query != null && query.length() > 0)
-            url += ("?"+escapeURLQuery(query));
-        if(fragment != null && fragment.length() > 0)
-            url += ("#"+urlEncode(fragment));
-        return url;
+        if(query != null && query.length() > 0) {
+            ret.append("?");
+            ret.append(escapeURLQuery(query));
+        }
+        if(fragment != null && fragment.length() > 0) {
+            ret.append("#");
+            ret.append(urlEncode(fragment));
+        }
+        return ret.toString();
      }
 
      static int nextpiece(String s, int index, String sep)
@@ -460,7 +445,7 @@ public class EscapeStrings
      */
      public static String unescapeURL(String url)
      {
-        String newurl = null;
+        String newurl;
         newurl = urlDecode(url);
         return newurl;
      }
@@ -574,7 +559,7 @@ public class EscapeStrings
    * @return list of tokens
    */
   public static List<String> tokenizeEscapedName(String escapedName) {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     int pos = 0;
     int start = 0;
     while (true) {

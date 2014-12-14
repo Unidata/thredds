@@ -446,9 +446,9 @@ public class Grib2CollectionBuilder extends GribCollectionBuilder {
       result += result * 37 + genType;
     }
 
-    int addHash = cust.addVariableHash(gr);
+    /* int addHash = cust.addVariableHash(gr);
     if (addHash != 0)
-      result += result * 37 + addHash;
+      result += result * 37 + addHash; */
 
     return result;
   }

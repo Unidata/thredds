@@ -1,0 +1,50 @@
+
+<!-- saved from url=(0089)https://raw.githubusercontent.com/Unidata/gempak/master/gempak/tables/grid/g2varsfsl1.tbl -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">! GRIB2  - FSL Table
+!
+! D = Product Definition Template # (Octet 8-9 in Section 4) see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-0.shtml
+! e.g. D=0: Analysis or forecast at a horizontal level or in a horizontal layer at a point in time
+! HRRR 2D Hourly
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+255 255 255 000 RH wrt PW in column              %                    RHCOL            0  -9999.00
+000 016 196 000 Composite Reflectivity           dbZ                  CREF             0  -9999.00
+000 016 195 000 Reflectivity 1km AGL             dbZ                  BREF             0  -9999.00
+000 003 193 000 Echo Top height of 18dBZ sfc     m                    ET               0  -9999.00
+000 003 194 000 Vertically Integrated Liquid     kgm^-2               VIL              0  -9999.00
+000 003 195 000 Radar VIL                        kgm^-2               RVIL             0  -9999.00
+000 003 206 008 Max. Updraft Velocity 1000-400   ms^-1                WMAX             0  -9999.00
+002 000 196 008 Max. Downdraft Vel. 1000-400     ms^-1                WMIN             0  -9999.00
+000 002 009 008 Mean W 0.8-0.5 sgma layer        ms^-1                WBAR             0  -9999.00
+000 001 198 008 Max. hourly refl. 1km agl        dbZ                  MXBREF           0  -9999.00
+003 192 002 008 Max updraft helicity 2-5km AGL   m^2s^-2              HX25             0  -9999.00
+003 192 003 008 Max updraft helicity 1-6km AGL   m^2s^-2              HX16             0  -9999.00
+010 003 192 008 Max Vertically Integr. Graupel   kgm^-2               VIG              0  -9999.00
+002 000 206 008 Max Ltng Threat 1                fl*km^-2/5min        LTG1             0  -9999.00
+000 001 206 008 Max Ltng Threat 2                fl*km^-2/5min        LTG2             0  -9999.00
+000 017 192 008 Max Ltng Threat 3                fl*km^-2/5min        LTG3             0  -9999.00
+000 002 197 000 Friction velocity                ms^-2                FRICV            0  -9999.00
+000 007 197 000 Updraft Helicity 2-5km AGL       m^2s^-2              HL25             0  -9999.00
+003 192 001 000 Updraft Helicity 1-6km AGL       m^2s^-2              HL16             0  -9999.00
+000 000 195 000 Time since last conv. init LTG3  min                  LRGHR            0  -9999.00
+000 000 196 000 Time since last conv. act LTG3   min                  CNVHR            0  -9999.00
+000 001 213 000 Time since last c.int other meth min                  CNVMR            0  -9999.00
+000 000 201 000 Time since last c.act other meth min                  SHAHR            0  -9999.00
+000 001 214 000 Time since last c.int other meth min                  SHAMR            0  -9999.00
+000 000 202 000 Time since last c.act other meth min                  VDFHR            0  -9999.00
+002 000 192 000 Soil Moisture content            fract                SOILW            0  -9999.00
+002 000 193 000 Ground heat flux                 Wm^-2                GFLUX            0  -9999.00
+000 000 192 008 Max horiz. wind 10m AGLpast hour ms^-1                MAXUW            0  -9999.00
+000 003 200 000 P most unstable parcel 300mb agl Pa                   PLPL             0  -9999.00
+000 003 196 000 Planetary BL height              m                    HPBL             0  -9999.00
+000 007 192 000 Sfc based LI using 500 mb ref    K                    LFTX             0  -9999.00
+000 007 193 000 Most unstable LI                 K                    4LFTX            0  -9999.00
+000 002 194 000 U component storm motion         ms^-1                USTRM            0  -9999.00
+000 002 195 000 V component storm motion         ms^-1                VSTRM            0  -9999.00
+000 004 192 000 Incoming sw radiation @ sfc      Wm^-2                DSWRF            0  -9999.00
+000 005 193 000 Outgoing lw radiation @ top      Wm^-2                ULWRF            0  -9999.00
+000 001 192 000 Ptype categorical rain           bool                 CRAIN            0  -9999.00
+000 001 193 000 Ptype categorical FZRA           bool                 CFRZR            0  -9999.00
+000 001 194 000 Ptype categorical ice pellets    bool                 CICEP            0  -9999.00
+000 001 195 000 Ptype categorical snow           bool                 CSNOW            0  -9999.00
+</pre></body></html>

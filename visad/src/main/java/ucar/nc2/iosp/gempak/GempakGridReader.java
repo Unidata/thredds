@@ -954,9 +954,9 @@ public class GempakGridReader extends GempakFileReader {
                 ? 1
                 : -1;      /* toggle */
       }
-    } else {
-      fgrid = ingrid;
-    }
+    } //else {          logically dead code
+      //fgrid = ingrid;
+    //}
     return fgrid;
 
   }

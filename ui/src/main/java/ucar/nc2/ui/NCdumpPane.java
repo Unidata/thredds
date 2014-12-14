@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.dt.image.image.ImageArrayAdapter;
 import ucar.nc2.ui.widget.*;
@@ -44,6 +45,7 @@ import ucar.nc2.ui.image.ImageViewPanel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.nio.channels.WritableByteChannel;
 
 import javax.swing.*;
 
@@ -82,7 +84,15 @@ public class NCdumpPane extends TextHistoryPane {
     imageButton.setToolTipText("view selected data as Image");
     imageButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        showImage( (String) cb.getSelectedItem());
+        showImage((String) cb.getSelectedItem());
+      }
+    });
+
+    JButton binButton = new JButton("Write");
+    binButton.setToolTipText("write binary data to file");
+    binButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        writeBinaryData((String) cb.getSelectedItem());
       }
     });
 
@@ -103,6 +113,7 @@ public class NCdumpPane extends TextHistoryPane {
     JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     buttPanel.add( getButton);
     buttPanel.add( imageButton);
+    buttPanel.add( binButton);
     buttPanel.add( stopButton);
 
     JPanel topPanel = new JPanel( new BorderLayout());
@@ -139,6 +150,29 @@ public class NCdumpPane extends TextHistoryPane {
     task = new GetContentsTask(command);
     if (task.v  != null)
       stopButton.startProgressMonitorTask( task);
+  }
+
+  private void writeBinaryData(String variableSection) {
+
+    ParsedSectionSpec cer;
+    try {
+      cer = ParsedSectionSpec.parseVariableSection(ds, variableSection);
+      if (cer.child != null) return;
+
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      return;
+    }
+
+    String name = "C:/temp/file.bin";
+    try (FileOutputStream stream = new FileOutputStream(name)) {
+      WritableByteChannel channel = stream.getChannel();
+      cer.v.readToByteChannel(cer.section, channel);
+      System.out.printf("Write ok to %s%n", name);
+
+    } catch (InvalidRangeException | IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private IndependentWindow imageWindow = null;
@@ -204,8 +238,8 @@ public class NCdumpPane extends TextHistoryPane {
     }
 
     public void run() {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(100000);
-      PrintStream ps = new PrintStream(bos);
+      StringWriter sw = new StringWriter(100000);
+      PrintWriter ps = new PrintWriter(sw);
       try {
         data = ds.readSection(command);
 
@@ -216,8 +250,8 @@ public class NCdumpPane extends TextHistoryPane {
 
       } catch (Exception e) {
         e.printStackTrace();
-        e.printStackTrace( new PrintStream(bos));
-        contents = bos.toString();
+        e.printStackTrace(new PrintWriter(sw));
+        contents = sw.toString();
 
         setError(e.getMessage());
         done = true;
@@ -226,7 +260,7 @@ public class NCdumpPane extends TextHistoryPane {
 
       if (cancel)
         ps.println("\n***Cancelled by User");
-      contents = bos.toString();
+      contents = sw.toString();
 
       success = !cancel;
       done = true;
@@ -246,9 +280,9 @@ public class NCdumpPane extends TextHistoryPane {
 
       } catch (Exception e) {
         e.printStackTrace();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(100000);
-        e.printStackTrace( new PrintStream(bos));
-        contents = bos.toString();
+        StringWriter sw = new StringWriter(100000);
+        e.printStackTrace(new PrintWriter(sw));
+        contents = sw.toString();
 
         setError(e.getMessage());
         done = true;

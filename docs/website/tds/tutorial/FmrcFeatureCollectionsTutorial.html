@@ -28,11 +28,9 @@
   <p>A Forecast Model Run Collection is a collection of forecast model output. A special kind of aggregation, called an <strong>FMRC Aggregation</strong>, creates a
     dataset that has two time coordinates, called the <strong>run time </strong>and the <strong>forecast time</strong>. This dataset can then be sliced up in various ways to create
     1D time views of the model output. See this <a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">poster</a> for a detailed
-    example.</p>
-
-  <p>As of TDS 4.2, you should use the <code>featureCollection</code> element in your configuration catalog. (The previous way of doing this was with a <code>datasetFmrc</code>
+    example. As of TDS 4.2, you should use the <code>featureCollection</code> element in your configuration catalog. (The previous way of doing this was with a <code>datasetFmrc</code>
     element, which is now deprecated.)</p>
-
+  <p>The component files of the collection must all be recognized as the <em><strong>Grid</strong></em> Feature type by the CDM software.</p>
   <div id="expanded" class="exercise">
     <h3>Exercise: Creating datasets out of the FMRC</h3>
 
@@ -63,7 +61,7 @@
        &lt;documentation type=&quot;summary&quot;&gt;Example BOM&lt;/documentation&gt;
      &lt;/metadata&gt;
  
-4)   &lt;collection spec=&quot;/machine/tds/workshop/bom/**/ocean_fc_#yyyMMdd#.*\.nc$&quot; /&gt;
+4)   &lt;collection spec=&quot;/machine/tds/workshop/bom/**/ocean_fc_#yyyyMMdd#.*\.nc$&quot; /&gt;
    &lt;/featureCollection&gt;
   &lt;/dataset&gt;
 &lt;/catalog&gt;</pre>
@@ -80,7 +78,7 @@
       </li>
     </ol>
     <p>The contained datasets include the resulting 2D time dimension dataset, as well as 1D time views described
-      <a href="../reference/collections/FmrcCollection.html#datasetTypes">here</a>, as seen in the resulting HTML page for that dataset: </p>
+      <a href="../reference/collections/FmrcCollection.html#fmrcConfig">here</a>, as seen in the resulting HTML page for that dataset: </p>
 
     <p><img src="images/FmrcExample1.png" width="760" height="416"/></p>
 
@@ -146,7 +144,7 @@
                   name=&quot;GFS_Global_2p5deg&quot;
 <strong>1)</strong>                recheckAfter=&quot;15 min&quot;
 <strong>2)</strong>                olderThan=&quot;5 min&quot;/&gt;
-<strong>3)</strong>    &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+<strong>3)</strong>    &lt;update startup=&quot;test&quot; rescan=&quot;0 5 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;
 <strong>4)</strong>    &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
 <strong>5)</strong>    &lt;fmrcConfig datasetTypes=&quot;TwoD Best Runs ConstantForecasts ConstantOffsets Files&quot; /&gt;
 

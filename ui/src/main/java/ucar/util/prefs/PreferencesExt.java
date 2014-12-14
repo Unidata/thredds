@@ -64,8 +64,6 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
       systemRoot = prefs;
     }
 
-    private boolean isBackingStoreAvailable = true;
-
     private PreferencesExt parent;
     private HashMap keyValues, children;
     private PreferencesExt storedDefaults = null;

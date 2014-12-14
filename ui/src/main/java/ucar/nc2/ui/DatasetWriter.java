@@ -76,7 +76,7 @@ public class DatasetWriter extends JPanel {
   private PreferencesExt prefs;
   private NetcdfFile ds;
 
-  private List<NestedTable> nestedTableList = new ArrayList<NestedTable>();
+  private List<NestedTable> nestedTableList = new ArrayList<>();
   private BeanTable attTable;
   private BeanTable dimTable;
 
@@ -177,15 +177,15 @@ public class DatasetWriter extends JPanel {
     if (nestedTableList.size() == 0) return;
     NestedTable t = nestedTableList.get(0);
     List beans = t.table.getBeans();
-    for (int i=0; i<beans.size(); i++) {
-      VariableBean bean = (VariableBean) beans.get(i);
-      boolean isChunked = chunker.isChunked(bean.vs);
-      bean.setChunked(isChunked);
-      if (isChunked)
-        bean.setChunkArray(chunker.computeChunking(bean.vs));
-      else
-        bean.setChunkArray(null);
-    }
+      for (Object bean1 : beans) {
+          VariableBean bean = (VariableBean) bean1;
+          boolean isChunked = chunker.isChunked(bean.vs);
+          bean.setChunked(isChunked);
+          if (isChunked)
+              bean.setChunkArray(chunker.computeChunking(bean.vs));
+          else
+              bean.setChunkArray(null);
+      }
     t.table.refresh();
   }
 
@@ -334,9 +334,9 @@ public class DatasetWriter extends JPanel {
       infoWindow.show();
 
     } catch (Throwable ioe) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      ioe.printStackTrace(new PrintStream(bos));
-      infoTA.setText(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      infoTA.setText(sw.toString());
       infoTA.gotoTop();
       infoWindow.show();
 
@@ -467,7 +467,7 @@ public class DatasetWriter extends JPanel {
   }
 
   private List<VariableBean> makeVariableBeans(NetcdfFile ds) {
-    List<VariableBean> vlist = new ArrayList<VariableBean>();
+    List<VariableBean> vlist = new ArrayList<>();
     for (Variable v : ds.getVariables()) {
       vlist.add(new VariableBean(v));
     }
@@ -475,7 +475,7 @@ public class DatasetWriter extends JPanel {
   }
 
   private List<DimensionBean> makeDimensionBeans(NetcdfFile ds) {
-    List<DimensionBean> dlist = new ArrayList<DimensionBean>();
+    List<DimensionBean> dlist = new ArrayList<>();
     for (Dimension d : ds.getDimensions()) {
       dlist.add(new DimensionBean(d));
     }
@@ -483,7 +483,7 @@ public class DatasetWriter extends JPanel {
   }
 
   private List<VariableBean> getStructureVariables(Structure s) {
-    List<VariableBean> vlist = new ArrayList<VariableBean>();
+    List<VariableBean> vlist = new ArrayList<>();
     for (Variable v : s.getVariables()) {
       vlist.add( new VariableBean( v));
     }
@@ -640,7 +640,7 @@ public class DatasetWriter extends JPanel {
     boolean shuffle;
 
     BeanChunker(List<VariableBean> beans, int deflate, boolean shuffle) {
-      this.map = new HashMap<String, VariableBean>(2*beans.size());
+      this.map = new HashMap<>(2*beans.size());
       for (VariableBean bean : beans)
         map.put(bean.vs.getFullName(), bean);
       this.deflate = deflate;
@@ -650,7 +650,7 @@ public class DatasetWriter extends JPanel {
     @Override
     public boolean isChunked(Variable v) {
       VariableBean bean = map.get(v.getFullName());
-      return (bean == null) ? false : bean.isChunked();
+      return (bean != null) && bean.isChunked();
     }
 
     @Override

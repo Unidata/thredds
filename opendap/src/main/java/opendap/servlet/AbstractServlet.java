@@ -52,6 +52,7 @@ import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.EscapeStrings;
 
 /**
@@ -131,6 +132,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
     //////////////////////////////////////////////////
     // Statics
+    static final boolean debug = false;
 
     // Define an overall logger for everyone to use
     // Start with a default logger, but allow an application to change it later
@@ -188,12 +190,12 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
      * Keep a copy of the servlet config
      */
     private ServletConfig servletConfig = null;
-    
+
     /**
      * Keep a copy of the servlet context
      */
     private ServletContext servletContext = null;
-    
+
     /**
      * path to the root of the servlet in tomcat webapps directory
      */
@@ -268,7 +270,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       while (toker.hasMoreTokens())
         Debug.set(toker.nextToken(), true);
     }
-      
+
     servletConfig = this.getServletConfig();
     servletContext = servletConfig.getServletContext();
     rootpath = servletContext.getRealPath("/");
@@ -412,9 +414,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param rs The <code>ReqState</code> for the client.
    */
   public void anyExceptionHandler(Throwable e, ReqState rs) {
-    if(rs == null) {
-        int x=1;
-    }
     HttpServletResponse response = rs.getResponse();
     try {
       log.error("DODServlet ERROR (anyExceptionHandler): " + e);
@@ -588,7 +587,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
         ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out,Util.UTF8));
         myDDS.printConstrained(pw);
         pw.flush();
       }
@@ -667,7 +666,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
         ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out,Util.UTF8));
         myDDS.printConstrainedXML(pw);
         pw.flush();
       }
@@ -835,13 +834,13 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       // myDDS.printConstrained(LogStream.out);
 
       // Send the constrained DDS back to the client
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut));
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut,Util.UTF8));
       myDDS.printConstrained(pw);
 
       // Send the Data delimiter back to the client
       //pw.println("Data:"); // JCARON CHANGED
       pw.flush();
-      bOut.write("\nData:\n".getBytes()); // JCARON CHANGED
+      bOut.write("\nData:\n".getBytes(CDM.utf8Charset)); // JCARON CHANGED
       bOut.flush();
 
       // Send the binary data back to the client
@@ -931,7 +930,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     // Commented because of a bug in the OPeNDAP C++ stuff...
     //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream()));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
 
     pw.println("Server Version: " + getServerVersion());
     pw.flush();
@@ -962,7 +961,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     // Commented because of a bug in the OPeNDAP C++ stuff...
     //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream()));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
     printHelpPage(pw);
     pw.flush();
 
@@ -994,7 +993,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     // Commented because of a bug in the OPeNDAP C++ stuff...
     //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream()));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
 
     printBadURLPage(pw);
     printHelpPage(pw);
@@ -1032,7 +1031,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       rs.getResponse().setContentType("text/plain");
       rs.getResponse().setHeader("Content-Description", "dods-ascii");
 
-      boolean debug = false;
       if (debug)
        log.debug("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
 
@@ -1045,7 +1043,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       // i think this makes the dds constrained
       ce.parseConstraint(rs);
 
-      PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
       dds.printConstrained(pw);
       pw.println("---------------------------------------------");
 
@@ -1099,7 +1097,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       ds = getDataset(rs);
       if (null == ds) return;
 
-      PrintStream pw = new PrintStream(rs.getResponse().getOutputStream());
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
       rs.getResponse().setHeader("XDODS-Server", getServerVersion());
       rs.getResponse().setContentType("text/html");
       rs.getResponse().setHeader("Content-Description", "dods-description");
@@ -1188,7 +1186,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     rs.getResponse().setContentType("text/xml");
     rs.getResponse().setHeader("Content-Description", "dods-catalog");
 
-    PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
     printCatalog(rs, pw);
     pw.flush();
     rs.getResponse().setStatus(HttpServletResponse.SC_OK);
@@ -1216,7 +1214,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     rs.getResponse().setContentType("text/html");
     rs.getResponse().setHeader("Content-Description", "dods_debug");
 
-    PrintStream pw = new PrintStream(rs.getResponse().getOutputStream());
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
     pw.println("<title>Debugging</title>");
     pw.println("<body><pre>");
 
@@ -1269,7 +1267,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
   }
 
-  protected boolean doDebugCmd(String cmd, StringTokenizer tz, PrintStream pw) {
+  protected boolean doDebugCmd(String cmd, StringTokenizer tz, PrintWriter pw) {
     return false;
   }
 
@@ -1288,7 +1286,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     rs.getResponse().setContentType("text/html");
     rs.getResponse().setHeader("Content-Description", "dods-status");
 
-    PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
     pw.println("<html>");
     pw.println("<title>System Properties</title>");
     pw.println("<hr>");
@@ -1341,7 +1339,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     rs.getResponse().setContentType("text/html");
     rs.getResponse().setHeader("Content-Description", "dods-status");
 
-    PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
     pw.println("<title>Server Status</title>");
     pw.println("<body><ul>");
     printStatus(pw);
@@ -1358,20 +1356,24 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     if (track) {
       int n = prArr.size();
       int pending = 0;
-      String preqs = "";
+      StringBuilder preqs = new StringBuilder();
       for (int i = 0; i < n; i++) {
         ReqState rs = (ReqState) prArr.get(i);
         RequestDebug reqD = (RequestDebug) rs.getUserObject();
         if(!reqD.done) {
-          preqs += "<pre>-----------------------\n";
-          preqs += "Request[" + reqD.reqno + "](" + reqD.threadDesc + ") is pending.\n";
-          preqs += rs.toString();
-          preqs += "</pre>";
+          preqs.append("<pre>-----------------------\n");
+          preqs.append("Request[");
+          preqs.append(reqD.reqno);
+          preqs.append("](");
+          preqs.append(reqD.threadDesc);
+          preqs.append(") is pending.\n");
+          preqs.append(rs.toString());
+          preqs.append("</pre>");
           pending++;
         }
       }
       os.println("<h2>" + pending + " Pending Request(s)</h2>");
-      os.println(preqs);
+      os.println(preqs.toString());
     }
   }
 
@@ -1388,7 +1390,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param rs The <code>ReqState</code> object to probe.
    */
 
-  public void probeRequest(PrintStream ps, ReqState rs) {
+  public void probeRequest(PrintWriter ps, ReqState rs) {
 
     Enumeration e;
     int i;
@@ -1559,13 +1561,14 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     ReqState rs = null;
     RequestDebug reqD = null;
     try {
-      if (Debug.isSet("probeRequest")) {
-        probeRequest(System.out, rs);
-      }
 
       rs = getRequestState(request, response);
       if (rs != null) {
-        String ds = rs.getDataSet();
+          if (Debug.isSet("probeRequest")) {
+              probeRequest(new PrintWriter(new OutputStreamWriter(System.out,Util.UTF8),true), rs);
+          }
+
+          String ds = rs.getDataSet();
         String suff = rs.getRequestSuffix();
         isDebug = ((ds != null) && ds.equals("debug") && (suff != null) && suff.equals(""));
       }

@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.2</table>
+  <title>Momentum</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-2.shtml</source>
+  <parameter code="0">
+    <shortName>WDIR</shortName>
+    <description>Wind Direction (from which blowing)</description>
+    <units>true</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>WIND</shortName>
+    <description>Wind Speed</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>UGRD</shortName>
+    <description>U-Component of Wind</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>VGRD</shortName>
+    <description>V-Component of Wind</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>STRM</shortName>
+    <description>Stream Function</description>
+    <units>m2 s-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>VPOT</shortName>
+    <description>Velocity Potential</description>
+    <units>m2 s-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>MNTSF</shortName>
+    <description>Montgomery Stream Function</description>
+    <units>m2 s-2</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>SGCVV</shortName>
+    <description>Sigma Coordinate Vertical Velocity</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>VVEL</shortName>
+    <description>Vertical Velocity (Pressure)</description>
+    <units>Pa s-1</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>DZDT</shortName>
+    <description>Vertical Velocity (Geometric)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>ABSV</shortName>
+    <description>Absolute Vorticity</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>ABSD</shortName>
+    <description>Absolute Divergence</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>RELV</shortName>
+    <description>Relative Vorticity</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>RELD</shortName>
+    <description>Relative Divergence</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>PVORT</shortName>
+    <description>Potential Vorticity</description>
+    <units>K m2 kg-1 s-1</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>VUCSH</shortName>
+    <description>Vertical U-Component Shear</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>VVCSH</shortName>
+    <description>Vertical V-Component Shear</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>UFLX</shortName>
+    <description>Momentum Flux, U-Component</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>VFLX</shortName>
+    <description>Momentum Flux, V-Component</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>WMIXE</shortName>
+    <description>Wind Mixing Energy</description>
+    <units>J</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>BLYDP</shortName>
+    <description>Boundary Layer Dissipation</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>MAXGUST</shortName>
+    <description>Maximum Wind Speed *</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>GUST</shortName>
+    <description>Wind Speed (Gust)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>UGUST</shortName>
+    <description>U-Component of Wind (Gust)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>VGUST</shortName>
+    <description>V-Component of Wind (Gust)</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>VWSH</shortName>
+    <description>Vertical Speed Shear</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>MFLX</shortName>
+    <description>Horizontal Momentum Flux</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>USTM</shortName>
+    <description>U-Component Storm Motion</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>VSTM</shortName>
+    <description>V-Component Storm Motion</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>CD</shortName>
+    <description>Drag Coefficient</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>FRICV</shortName>
+    <description>Frictional Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>TDCMOM</shortName>
+    <description>Turbulent Diffusion Coefficient for Momentum</description>
+    <units>m2 s-1</units>
+  </parameter>
+  <parameter code="32">
+    <shortName>ETACVV</shortName>
+    <description>Eta Coordinate Vertical Velocity</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>WINDF</shortName>
+    <description>Wind Fetch</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>NWIND</shortName>
+    <description>Normal Wind Component **</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>TWIND</shortName>
+    <description>Tangential Wind Component **</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="36">
+    <shortName>AFRWE</shortName>
+    <description>Amplitude Function for Rossby Wave Envelope for Meridional Wind ***</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>NTSS</shortName>
+    <description>Northward Turbulent Surface Stress ****</description>
+    <units>N m-2 s</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>ETSS</shortName>
+    <description>Eastward Turbulent Surface Stress ****</description>
+    <units>N m-2 s</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>VWSH</shortName>
+    <description>Vertical Speed Shear</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>MFLX</shortName>
+    <description>Horizontal Momentum Flux</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>USTM</shortName>
+    <description>U-Component Storm Motion</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>VSTM</shortName>
+    <description>V-Component Storm Motion</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>CD</shortName>
+    <description>Drag Coefficient</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>FRICV</shortName>
+    <description>Frictional Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>LAUV</shortName>
+    <description>Latitude of U Wind Component of Velocity</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>LOUV</shortName>
+    <description>Longitude of U Wind Component of Velocity</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>LAVV</shortName>
+    <description>Latitude of V Wind Component of Velocity</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>LOVV</shortName>
+    <description>Longitude of V Wind Component of Velocity</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>LAPP</shortName>
+    <description>Latitude of Presure Point</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>LOPP</shortName>
+    <description>Longitude of Presure Point</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>VEDH</shortName>
+    <description>Vertical Eddy Diffusivity Heat exchange</description>
+    <units>m2 s-1</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>COVMZ</shortName>
+    <description>Covariance between Meridional and Zonal Components of the wind.</description>
+    <units>m2 s-2</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>COVTZ</shortName>
+    <description>Covariance between Temperature and Zonal Components of the wind.</description>
+    <units>K*m s-1</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>COVTM</shortName>
+    <description>Covariance between Temperature and Meridional Components of the wind.</description>
+    <units>K*m s-1</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>VDFUA</shortName>
+    <description>Vertical Diffusion Zonal Acceleration</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="209">
+    <shortName>VDFVA</shortName>
+    <description>Vertical Diffusion Meridional Acceleration</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>GWDU</shortName>
+    <description>Gravity wave drag zonal acceleration</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="211">
+    <shortName>GWDV</shortName>
+    <description>Gravity wave drag meridional acceleration</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="212">
+    <shortName>CNVU</shortName>
+    <description>Convective zonal momentum mixing acceleration</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="213">
+    <shortName>CNVV</shortName>
+    <description>Convective meridional momentum mixing acceleration</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="214">
+    <shortName>WTEND</shortName>
+    <description>Tendency of vertical velocity</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="215">
+    <shortName>OMGALF</shortName>
+    <description>Omega (Dp/Dt) divide by density</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="216">
+    <shortName>CNGWDU</shortName>
+    <description>Convective Gravity wave drag zonal acceleration</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="217">
+    <shortName>CNGWDV</shortName>
+    <description>Convective Gravity wave drag meridional acceleration</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="218">
+    <shortName>LMV</shortName>
+    <description>Velocity Point Model Surface</description>
+    <units />
+  </parameter>
+  <parameter code="219">
+    <shortName>PVMWW</shortName>
+    <description>Potential Vorticity (Mass-Weighted)</description>
+    <units>1/s/m</units>
+  </parameter>
+  <parameter code="220">
+    <shortName>MAXUVV</shortName>
+    <description>Hourly Maximum of Upward Vertical Velocity in the lowest 400hPa</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="221">
+    <shortName>MAXDVV</shortName>
+    <description>Hourly Maximum of Downward Vertical Velocity in the lowest 400hPa</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="222">
+    <shortName>MAXUW</shortName>
+    <description>U Component of Hourly Maximum 10m Wind Speed</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="223">
+    <shortName>MAXVW</shortName>
+    <description>V Component of Hourly Maximum 10m Wind Speed</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="224">
+    <shortName>VRATE</shortName>
+    <description>Ventilation Rate</description>
+    <units>m2 s-1</units>
+  </parameter>
+</parameterMap>

@@ -38,12 +38,11 @@
 
 package thredds.server.radarServer;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.*;
-import java.io.IOException;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Maintains the Radar collection of stations and days for a Radar Dataset.  The
@@ -55,14 +54,6 @@ public class RadarDatasetCollection {
 
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
   public static boolean debug = false;
-
-  //static Calendar cal;
-  static SimpleDateFormat dateFormat;
-  static {
-    //cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
-    dateFormat = new SimpleDateFormat( "yyyyMMdd", Locale.US );
-    dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-  }
 
 
   /**
@@ -122,11 +113,8 @@ public class RadarDatasetCollection {
     this.daysToRead = daysToRead;
   }
 
-  /**
-   * constructors
-   */
-  public RadarDatasetCollection() {
-  }
+  private final SimpleDateFormat dateFormat;
+
 
   /**
    * Creates a complete Dataset Collection using the current day and past stored days
@@ -222,6 +210,9 @@ public class RadarDatasetCollection {
         }
       }
     }
+
+    dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
+    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
   }
 
   /*
@@ -423,37 +414,7 @@ public class RadarDatasetCollection {
     return hhmm;
   }
 
-  public static void main(String[] args) throws IOException {
-
-    String tdir = null;
-    String product = null;
-    if (  args.length == 2) {
-      tdir = args[0];
-      product = (args[1].equals("null")) ? null : args[1];
-    } else {
-      System.out.println("Not the correct parameters: tdir, product");
-      return;
-    }
-    // create/populate dataset
-    RadarDatasetCollection rdc = new RadarDatasetCollection( tdir, product );
-    System.out.println( "Dates for station KFTG" );
-    Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
-    Date now =  cal.getTime();
-    String currentDay = dateFormat.format( now );
-    RadarStationCollection rsc =  rdc.queryStation( tdir,  "KFTG",  product, currentDay);
-    //RadarStationCollection rsc =  new RadarStationCollection( tdir,  "KFTG", true,  product);
-    //rdc.getStationTimes( rsc );
-    //rdc.populate(tdir, type, day, product);
-    //String sfile = rdc.write();
-    //if (sfile == null) {
-    //  System.out.println("RadarDayCollection write Unsuccessful");
-    //} else {
-    //  System.out.println("RadarDayCollection write successful");
-    //}
-  }
-
-  protected class CompareKeyDescend implements Comparator<String> {
-
+  protected static class CompareKeyDescend implements Comparator<String> {
     public int compare(String s1, String s2) {
       return s2.compareTo(s1);
     }

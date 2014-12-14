@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.15</table>
+  <title>Radar</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-15.shtml</source>
+  <parameter code="0">
+    <shortName>BSWID</shortName>
+    <description>Base Spectrum Width</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>BREF</shortName>
+    <description>Base Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>BRVEL</shortName>
+    <description>Base Radial Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>VIL</shortName>
+    <description>Vertically-Integrated Liquid Water</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>LMAXBR</shortName>
+    <description>Layer Maximum Base Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>PREC</shortName>
+    <description>Precipitation</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>RDSP1</shortName>
+    <description>Radar Spectra (1)</description>
+    <units />
+  </parameter>
+  <parameter code="7">
+    <shortName>RDSP2</shortName>
+    <description>Radar Spectra (2)</description>
+    <units />
+  </parameter>
+  <parameter code="8">
+    <shortName>RDSP3</shortName>
+    <description>Radar Spectra (3)</description>
+    <units />
+  </parameter>
+  <parameter code="9">
+    <shortName>RFCD</shortName>
+    <description>Reflectivity of Cloud Droplets</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>RFCI</shortName>
+    <description>Reflectivity of Cloud Ice</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>RFSNOW</shortName>
+    <description>Reflectivity of Snow</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>RFRAIN</shortName>
+    <description>Reflectivity of Rain</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>RFGRPL</shortName>
+    <description>Reflectivity of Graupel</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>RFHAIL</shortName>
+    <description>Reflectivity of Hail</description>
+    <units>dB</units>
+  </parameter>
+</parameterMap>

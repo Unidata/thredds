@@ -33,6 +33,7 @@
 package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
 
@@ -96,12 +97,10 @@ public class NcStreamReader {
 
   static class DataResult {
     String varNameFullEsc;
-    Section section;
     Array data;
 
-    DataResult(String varName, Section section, Array data) {
+    DataResult(String varName, Array data) {
       this.varNameFullEsc = varName;
-      this.section = section;
       this.data = data;
     }
   }
@@ -137,7 +136,7 @@ public class NcStreamReader {
         NcStream.readFully(is, sb);
         ii.setObjectNext( new String(sb, CDM.utf8Charset));
       }
-      return new DataResult(dproto.getVarName(), section, data);
+      return new DataResult(dproto.getVarName(), data);
 
     } else if (dataType == DataType.OPAQUE) {
       Array data = Array.factory(dataType, section.getShape());
@@ -148,7 +147,7 @@ public class NcStreamReader {
         NcStream.readFully(is, sb);
         ii.setObjectNext( ByteBuffer.wrap(sb));
       }
-      return new DataResult(dproto.getVarName(), section, data);
+      return new DataResult(dproto.getVarName(), data);
 
     } 
 
@@ -165,16 +164,16 @@ public class NcStreamReader {
       if (dproto.getVersion() == 0) {
         ArrayStructureBB.setOffsets(members); // not setting heap objects for version 0
         ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
-        return new DataResult(dproto.getVarName(), section, data);
+        return new DataResult(dproto.getVarName(), data);
 
       } else { // version > 0 uses a NcStreamProto.StructureData message
         ArrayStructureBB data = NcStream.decodeArrayStructure(members, section.getShape(), datab);
-        return new DataResult(dproto.getVarName(), section, data);
+        return new DataResult(dproto.getVarName(), data);
       }
 
     } else {
       Array data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(datab));
-      return new DataResult(dproto.getVarName(), section, data);
+      return new DataResult(dproto.getVarName(), data);
     }
   }
 
@@ -259,7 +258,9 @@ public class NcStreamReader {
         try {
           is.close();
           is = null;
-        } catch (IOException ioe) { }
+        } catch (IOException ioe) {
+          System.out.printf("NcStreamReader: Error closing input stream.");
+        }
       }
     }
   }
@@ -286,7 +287,7 @@ public class NcStreamReader {
 
   public NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) throws InvalidProtocolBufferException {
     if (ncfile == null)
-      ncfile = new NetcdfFileStream(); // not used i think
+      ncfile = new NetcdfFileSubclass(); // not used i think
     ncfile.setLocation(proto.getLocation());
     if (proto.hasId()) ncfile.setId(proto.getId());
     if (proto.hasTitle()) ncfile.setTitle(proto.getTitle());
@@ -297,8 +298,4 @@ public class NcStreamReader {
     return ncfile;
   }
 
-  // need to have access to protected methods  ??
-  private static class NetcdfFileStream extends NetcdfFile {
-
-  }
 }

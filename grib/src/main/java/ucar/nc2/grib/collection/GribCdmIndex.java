@@ -42,6 +42,7 @@ import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
@@ -75,7 +76,7 @@ public class GribCdmIndex implements IndexReader {
     String magic;
 
     raf.seek(0);
-    byte[] b = new byte[Grib2CollectionWriter.MAGIC_START.getBytes().length];   // they are all the same
+    byte[] b = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length];   // they are all the same
     raf.readFully(b);
     magic = new String(b);
 
@@ -238,7 +239,8 @@ public class GribCdmIndex implements IndexReader {
 
     if (config.ptype == FeatureCollectionConfig.PartitionType.none) {
 
-      CollectionAbstract dcm = specp.wantSubdirs() ? new CollectionGeneral(config.name, rootPath, logger) : new DirectoryCollection(config.name, rootPath, logger);
+      CollectionAbstract dcm = specp.wantSubdirs() ? new CollectionGeneral(config.name, rootPath, config.olderThan, logger) :
+              new DirectoryCollection(config.name, rootPath, config.olderThan, logger);
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
       if (specp.getFilter() != null)
@@ -281,18 +283,21 @@ public class GribCdmIndex implements IndexReader {
 
     if (forceCollection == CollectionUpdateType.never) return false;  // dont do nothin
 
-    // if (forceCollection != CollectionUpdateType.always) {
-      Path idxFile = dpart.getIndexPath();
-      if (Files.exists(idxFile)) {
-        if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
-
-        // otherwise read it to verify its a PC
-        try (RandomAccessFile raf = new RandomAccessFile(idxFile.toString(), "r")) {
-          GribCollectionType type = getType(raf);
-          assert type == (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2);
-        }
+    Path idxFile = dpart.getIndexPath();
+    if (Files.exists(idxFile)) {
+      if (forceCollection == CollectionUpdateType.nocheck) return false;  // use if index exists
+      boolean bad = false;
+      // otherwise read it to verify its a PC
+      try (RandomAccessFile raf = new RandomAccessFile(idxFile.toString(), "r")) {
+        GribCollectionType type = getType(raf);
+        assert type == (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2);
+      } catch (IOException ioe) {
+        // delete the file and try again
+        bad = true;
       }
-    // }
+      if (bad)
+        Files.delete(idxFile);
+    }
 
     // index does not yet exist, or we want to test if it changed
     // must scan it
@@ -364,7 +369,7 @@ public class GribCdmIndex implements IndexReader {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, logger);
+    DirectoryCollection dcm = new DirectoryCollection(config.name, dirPath, config.olderThan, logger);
     dcm.setLeaf(true);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)
@@ -408,7 +413,7 @@ public class GribCdmIndex implements IndexReader {
     final Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    FilePartition partition = new FilePartition(config.name, dirPath, logger);
+    FilePartition partition = new FilePartition(config.name, dirPath, config.olderThan, logger);
     partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)
       partition.setStreamFilter(new StreamFilter(specp.getFilter()));
@@ -467,7 +472,7 @@ public class GribCdmIndex implements IndexReader {
   static public GribCollection openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
 
     // update if needed
-    updateGribCollection(config, updateType, logger);
+    boolean didit = updateGribCollection(config, updateType, logger);
 
     File idxFile = GribCollection.makeTopIndexFileFromConfig(config);
     return openCdmIndex(idxFile.getPath(), config, true, logger);
@@ -705,11 +710,11 @@ public class GribCdmIndex implements IndexReader {
       GribCollectionType type = getType(raf);
       if (type == GribCollectionType.Partition1 || type == GribCollectionType.Partition2) {
         if (openIndex(raf, logger)) {
-          String dirName = gribCollectionIndex.getTopDir();
+          String topDir = gribCollectionIndex.getTopDir();
           int n = gribCollectionIndex.getMfilesCount(); // partition index files stored in MFiles
           for (int i = 0; i < n; i++) {
             GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-            callback.addChild(dirName, mfilep.getFilename(), mfilep.getLastModified());
+            callback.addChild(topDir, mfilep.getFilename(), mfilep.getLastModified());
           }
           return true;
         }
@@ -731,8 +736,8 @@ public class GribCdmIndex implements IndexReader {
   public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException {
     if (debug) System.out.printf("GribCdmIndex.readMFiles %s%n", indexFile);
     try (RandomAccessFile raf = new RandomAccessFile(indexFile.toString(), "r")) {
-      GribCollectionType type = getType(raf);
-      if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
+        // GribCollectionType type = getType(raf);
+        // if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
         if (openIndex(raf, logger)) {
           File protoDir = new File(gribCollectionIndex.getTopDir());
           int n = gribCollectionIndex.getMfilesCount();
@@ -742,9 +747,9 @@ public class GribCdmIndex implements IndexReader {
           }
         }
         return true;
-      }
+      //}
     }
-    return false;
+    //return false;
   }
 
   private boolean openIndex(RandomAccessFile indexRaf, Logger logger) {
@@ -753,7 +758,7 @@ public class GribCdmIndex implements IndexReader {
       indexRaf.seek(0);
 
       //// header message
-      magic = new byte[Grib2CollectionWriter.MAGIC_START.getBytes().length];   // they are all the same
+      magic = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length];   // they are all the same
       indexRaf.readFully(magic);
 
       version = indexRaf.readInt();
@@ -782,11 +787,48 @@ public class GribCdmIndex implements IndexReader {
     }
   }
 
+
+  public static void main2(String[] args) throws IOException {
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    PartitionManager partition = new PartitionManagerFromIndexDirectory("NCDC-gfs4_all", new FeatureCollectionConfig(), new File("B:/ncdc/gfs4_all/"),  logger);
+    Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NCDC-gfs4_all", new File(partition.getRoot()), partition, logger);
+    builder.createPartitionedIndex(CollectionUpdateType.nocheck, CollectionUpdateType.never, new Formatter());
+  }
+
   public static void main(String[] args) throws IOException {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    PartitionManager partition = new PartitionManagerFromIndexDirectory("NAM-Polar_90km", new FeatureCollectionConfig(), new File("B:/lead/NAM-Polar_90km/"),  logger);
-    Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NAM_Polar_90km", new File(partition.getRoot()), partition, logger);
-    builder.createPartitionedIndex(CollectionUpdateType.nocheck, CollectionUpdateType.never, new Formatter());
+
+    /*
+       <featureCollection name="DGEX-CONUS_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/CONUS_12km">
+                  <collection spec="F:/data/grib/idd/dgex/  /.*grib2$"
+                    dateFormatMark="#DGEX_CONUS_12km_#yyyyMMdd_HHmm"
+                    timePartition="directory"
+                    olderThan="5 min"/>
+     */
+
+    // String name, String path, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String timePartition, String useIndexOnlyS, Element innerNcml
+    //FeatureCollectionConfig config = new FeatureCollectionConfig("DGEX-test", "grib/NCEP/DGEX/CONUS_12km", FeatureCollectionType.GRIB2,
+    //        "Q:/cdmUnitTest/gribCollections/dgex/**/.*grib2$", "#DGEX_CONUS_12km_#yyyyMMdd_HHmm", null, "directory", null, null);
+
+  //  FeatureCollectionConfig config = new FeatureCollectionConfig("GFS_CONUS_80km", "grib/NCEP/GFS/CONUS_80km", FeatureCollectionType.GRIB1,
+  //          "Q:/cdmUnitTest/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, "file", null, null);
+
+    //FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "ds083.2/Aggregation", FeatureCollectionType.GRIB1,
+   //         "Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/grib1/**/.*grib1", "#fnl_#yyyyMMdd_HH_mm", null, "directory", null, null);
+    /*
+    <pdsHash>
+       <useTableVersion>false</useTableVersion>
+     </pdsHash>
+     */
+
+    FeatureCollectionConfig config = new FeatureCollectionConfig("RFC", "grib/NPVU/RFC", FeatureCollectionType.GRIB1,
+            "B:/motherlode/rfc/**/.*grib1$", "yyyyMMdd#.grib1#", null, "directory", null, null);
+
+    // config.gribConfig.pdsHash.put("useTableVersion", false);
+
+    // boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
+    System.out.printf("changed = %s%n", changed);
   }
 
 }

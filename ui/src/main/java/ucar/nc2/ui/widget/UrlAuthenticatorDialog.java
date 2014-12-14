@@ -32,16 +32,18 @@
  */
 package ucar.nc2.ui.widget;
 
-import java.awt.event.*;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import ucar.util.prefs.ui.Field;
+import ucar.util.prefs.ui.PrefPanel;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
-import javax.swing.JButton;
-
-
-import org.apache.http.auth.*;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.auth.RFC2617Scheme;
-import ucar.util.prefs.ui.*;
 
 /**
  * This can be used both for java.net authentication:
@@ -75,7 +77,9 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     passwF = pp.addPasswordField("password", "Password", "");
     pp.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        pwa = new UsernamePasswordCredentials(userF.getText(), new String(passwF.getPassword()));
+        char[] pw = passwF.getPassword();
+        if (pw == null) return;
+        pwa = new UsernamePasswordCredentials(userF.getText(), new String(pw));
         dialog.setVisible( false);
       }
     });
@@ -104,8 +108,9 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
       //todo: provider.setCredentials(scope,cred);
   }
 
-    // java.net calls this:                           g
+    // java.net calls this:
   protected PasswordAuthentication getPasswordAuthentication() {
+    if (pwa == null) throw new IllegalStateException();
 
     if (debug) {
       System.out.println("site= " + getRequestingSite());
@@ -119,12 +124,12 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     realmF.setText(getRequestingPrompt());
     dialog.setVisible( true);
 
-     if (debug && pwa != null) {
+     if (debug) {
       System.out.println("user= ("+pwa.getUserName()+")");
-      System.out.println("password= ("+new String(pwa.getPassword())+")");
+      System.out.println("password= ("+ pwa.getPassword() +")");
     }
 
-    return new PasswordAuthentication(pwa.getUserName(),pwa.getPassword().toCharArray());
+    return new PasswordAuthentication(pwa.getUserName(), pwa.getPassword().toCharArray());
   }
 
 

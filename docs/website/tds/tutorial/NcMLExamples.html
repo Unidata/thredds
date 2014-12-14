@@ -8,43 +8,16 @@
 <body>
 
 <h1>NcML Examples</h1>
-Our goal in this section is to enhance two sample datasets using NcML. The first dataset is gridded output from the <a href=www.wrf-model.org>Weather Research
-  and Forecasting</a> (WRF) model, a very popular atmospheric model among educators and researchers. Our goal will be to make this file
-<a href=http://cf-pcmdi.llnl.gov>CF</a> compliant. The second dataset is an unknown gridded (we think) netCDF file. In the first example, we will be 'fixing' a
-file that resides on disk; the file in the second example will live on our local TDS.
+Our goal in this section is to enhance two sample datasets using NcML.
+The first dataset is an unknown gridded (we think) netCDF file.
+The second dataset is gridded output from the <a href="http://www.wrf-model.org/index.php">Weather Research and Forecasting</a> (WRF) model, a very popular atmospheric model among educators and researchers. Our goal will be to make this file
+<a href="http://cfconventions.org/">CF</a> compliant. 
 
 <div id="section">
   <h2><a name="PointCF">NcML Examples</a></h2>
 
   <div id="expanded" class="exercise">
-    <h3>Example 1: Local WRF output</h3>
-    <ol>
-      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2000-01-25_00--00--00</code> Note that the model
-        output are on an <a href=http://mitgcm.org/sealion/online_documents/node45.html>Arakawa C grid</a>, so we have 'regular' and 'stag' dimensions.</p>
-      </li>
-      <li><p>Open the following link in your browser: <a href=http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf>WRF goes CF</a></p>
-      </li>
-      <li><p>In ToolsUI "NcML" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2000-01-25_00--00--00</code>, and save a copy of the
-        resulting NcML.</p>
-      </li>
-      <li><p>We will not be changing any of the dimensions or global attributes, so remove them from the NcML. Also, many of the variable attribues will not be
-        changed, so they can be removed as well (e.g. FieldType, MemoryOrder, description,...).</p>
-      </li>
-      <li><p>Some variables (notably 2D) have an atribute called 'coordinates', while others do not. See
-        <a href=http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf_two>WRF Goes CF - Part Two</a> on which variables need them and go ahead and
-        add a few.</p>
-      </li>
-      <li><p>Pay attention to units (for example, see the variable XTIME).</p>
-      </li>
-      <li>To see a partial WRF NcML file, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrf-cf.ncml</code>, which was provided by
-        <a href=http://rsignell.tiddlyspot.com/#%5B%5BMaking%20WRF%20files%20CF-Compliant%5D%5D>Rich Signell</a>. Note the addition of the Conventions
-        attribute.
-      </li>
-    </ol>
-  </div>
-
-  <div id="expanded" class="exercise">
-    <h3>Example 2: Remote Grid File (unknown)</h3>
+    <h3>Example 1: Remote Grid File (unknown)</h3>
 
     <p>In this example, we will use NcML to modify a 'remote' dataset to fix it enough to work with viewers that can read "Grids" FeatureTypes (e.g. IDV).</p>
     <ol>
@@ -114,6 +87,33 @@ file that resides on disk; the file in the second example will live on our local
       <li><p>Finally, remove any of the unmodified information, like the dimensions and global attributes.</p>
       </li>
       <li><p>Now, open the NcML file FeatureTypes &rarr; Grids tab and visualize the variable wave_height.</p>
+      </li>
+    </ol>
+  </div>
+
+  <div id="expanded" class="exercise">
+    <h3>Example 2: Local WRF output</h3>
+    <ol>
+      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2005-08-27_00_00_00</code> Note that the model
+        output are on an <a href="http://mitgcm.org/sealion/online_documents/node45.html">Arakawa C grid</a>, so we have 'regular' and 'stag' dimensions.</p>
+      </li>
+      <li><p>Open the following link in your browser: <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf">WRF goes CF</a></p>
+      </li>
+      <li><p>In ToolsUI "NcML" tab, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrfout_d01_2005-08-27_00_00_00</code>, and save a copy of the
+        resulting NcML.</p>
+      </li>
+      <li><p>We will not be changing any of the dimensions or global attributes, so remove them from the NcML. Also, many of the variable attribues will not be
+        changed, so they can be removed as well (e.g. FieldType, MemoryOrder, description,...).</p>
+      </li>
+      <li><p>Some variables (notably 2D) have an attribute called 'coordinates', while others do not. See
+        <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf_two">WRF Goes CF - Part Two</a> on which variables need them and go ahead and
+        add a few.</p>
+      </li>
+      <li><p>Pay attention to units (for example, see the variable XTIME).</p>
+      </li>
+      <li>To see a partial WRF NcML file, open <code>/machine/tds/data/ncmlExamples/simpleNcmlOne/wrf-cf.ncml</code>, which was provided by
+        <a href="http://rsignell.tiddlyspot.com/#%5B%5BMaking%20WRF%20files%20CF-Compliant%5D%5D">Rich Signell</a>. Note the addition of the Conventions
+        attribute.
       </li>
     </ol>
   </div>

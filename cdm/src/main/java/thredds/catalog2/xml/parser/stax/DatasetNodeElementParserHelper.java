@@ -353,7 +353,7 @@ class DatasetNodeElementParserHelper
     }
   }
 
-  private class SplitMetadata
+  static private class SplitMetadata
   {
     final List<MetadataElementParser> threddsMetadata;
     final List<MetadataElementParser> nonThreddsMetadata;

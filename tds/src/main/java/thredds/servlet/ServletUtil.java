@@ -43,10 +43,10 @@ import javax.servlet.http.*;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 import thredds.util.RequestForwardUtils;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.nc2.util.EscapeStrings;
@@ -491,9 +491,9 @@ public class ServletUtil {
     returnFile(servlet, req, res, new File(filename), contentType);
   }
 
-  static private FileCache fileCacheRaf;
-  static public void setFileCache( FileCache fileCache) { fileCacheRaf = fileCache; }
-  static public FileCache getFileCache( ) { return fileCacheRaf; }
+  static private FileCacheIF fileCacheRaf;
+  static public void setFileCache( FileCacheIF fileCache) { fileCacheRaf = fileCache; }
+  static public FileCacheIF getFileCache( ) { return fileCacheRaf; }
 
   private static final ucar.nc2.util.cache.FileFactory fileFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
@@ -624,7 +624,7 @@ public class ServletUtil {
 
         RandomAccessFile craf = null;
         try {
-          craf = (RandomAccessFile) fileCacheRaf.acquire(fileFactory, filename, null);
+          craf = (RandomAccessFile) fileCacheRaf.acquire(fileFactory, filename);
           IO.copyRafB(craf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
           return;
         } finally {
@@ -800,10 +800,9 @@ public class ServletUtil {
       String message = t.getMessage();
       if (message == null) message = "NULL message " + t.getClass().getName();
       if (Debug.isSet("trustedMode")) { // security issue: only show stack if trusted
-        ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(bs);
-        t.printStackTrace(ps);
-        message = new String(bs.toByteArray(), CDM.utf8Charset);
+        StringWriter sw = new StringWriter(10000);
+        t.printStackTrace(new PrintWriter(sw));
+        message = sw.toString();
       }
       log.error("handleException", t);
       t.printStackTrace(); // debugging - log.error not showing stack trace !!   
@@ -1110,9 +1109,7 @@ public class ServletUtil {
     out.println("<BODY><H1>Session Snoop</H1>");
 
     // Display the hit count for this page
-    out.println("You've visited this page " + count +
-        ((!(count.intValue() != 1)) ? " time." : " times."));
-
+    out.println("You've visited this page " + count + ((count == 1) ? " time." : " times."));
     out.println("<P>");
 
     out.println("<H3>Here is your saved session data:</H3>");

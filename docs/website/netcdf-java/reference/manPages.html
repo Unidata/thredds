@@ -1,91 +1,177 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>CDM man pages</title>
-  <link href="../cdm.css" rel="stylesheet" type="text/css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>CDM man pages</title>
+    <link href="../cdm.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
-<h1>CDM man pages</h1>
 
-<p>Useful applications that can be called from the CDM library, eg:</p>
-<pre> <em>java -Xmx1g -classpath netcdfAll-4.3.jar ucar.nc2.NCdumpW Q:/cdmUnitTest/ncml/nc/test_7.nc</em></pre>
+<h1>CDM utility programs</h1>
+
+<p>Below are useful command-line utilites that can be called from the CDM library:</p>
+
+<ul>
+    <li><a href="#ncdump">ncdump</a>: prints the textual representation of a dataset to standard output</li>
+    <li><a href="#nccopy">nccopy</a>: copies a CDM dataset to a netCDF-3 (default) or netCDF-4 file</li>
+    <li><a href="#nccompare">nccompare</a>: compares two CDM files for semantic equivilence</li>
+    <li><a href="#FeatureScan">FeatureScan</a>: scans a directory to find CDM datasets and determines their FeatureTypes</li>
+    <li><a href="#BufrSplitter">BufrSplitter</a>: copies a BUFR file's messages into separate output files, depending on type</li>
+    <li><a href="#CFPointWriter">CFPointWriter</a>: copies a CDM point feature dataset to CF/NetCDF format</li>
+</ul>
+
 <hr/>
-<h2>ncdump<a name="ncdump" id="ncdump"></a></h2>
 
-<p>Dump the contents of the Similar functionality to the <em><a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/ncdump.html">ncdump</a></em>
-  utility program. By default, just the header (ncdump -h) is output. This application works on any CDM file, not just netCDF files.</p>
-<pre><em><strong> </strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v
-  varName1;varName2;..] [-v varName(0:1,:,12)]</em></pre>
+
+<h2><a name="ncdump" id="ncdump">ncdump</a></h2>
+
+<p>Prints the textual representation of a dataset to standard output. Similar functionality to the <em><a
+        href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/ncdump.html">ncdump</a></em>
+    utility program. By default, just the header (ncdump -h) is output. This application works on any CDM file, not just
+    netCDF files.</p>
+
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.NCdumpW
+    filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</pre>
+
 <p>where:</p>
-<ul>
-  <li><em>filepath</em> : pathname of any CDM file.</li>
-  <li><em> -cdl </em> : show CDL (strict mode)</li>
-  <li><em>-ncml</em> : show NcML (default)</li>
-  <li><em>-c </em> : show data for coordinate variables only</li>
-  <li><em> -vall</em> : show data for all variables</li>
-  <li><em>-v varName1;varName2;..</em> : show data for these variables, use variable's full names (including groups if present)</li>
-  <li><em>-v varName(0:1,:,12)</em> : show data for a section of this variable only, using F90 section specificiation</li>
-</ul>
-<hr/>
-<h2>nccopy<a name="nccopy" id="nccopy"></a></h2>
 
-<p>Copy a CDM dataset to a netCDF-3 (default) or netCDF-4 format. Datasets using features from the extended model require netCDF-4.</p>
-<pre><em><strong> </strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.dataset.NetcdfDataset -in &lt;fileIn&gt; -out &lt;fileOut&gt;
-  [-isLargeFile] [-netcdf4]</strong></em></pre>
+<ul>
+    <li><code>filepath</code>: pathname of any CDM file.</li>
+    <li><code>-cdl </code>: show CDL (strict mode)</li>
+    <li><code>-ncml</code>: show NcML (default)</li>
+    <li><code>-c</code>: show data for coordinate variables only</li>
+    <li><code>-vall</code>: show data for all variables</li>
+    <li><code>-v varName1;varName2;..</code>:
+        show data for these variables, use variable's full names (including groups if present)
+    </li>
+    <li><code>-v varName(0:1,:,12)</code>:
+        show data for a section of this variable only, using F90 section specificiation
+    </li>
+</ul>
+
+<hr/>
+
+
+<h2><a name="nccopy" id="nccopy">nccopy</a></h2>
+
+<p>Copies a CDM dataset to a netCDF-3 (default) or netCDF-4 file. Datasets using features from the extended model
+    require netCDF-4.</p>
+
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.dataset.NetcdfDataset
+    -in &lt;fileIn&gt; -out &lt;fileOut&gt; [-isLargeFile] [-netcdf4]
+</pre>
+
 <p>where:</p>
-<ul>
-  <li><em>filein</em> : the existing file to copy</li>
-  <li><em>fileout</em>: the new file to create</li>
-  <li>-<em>isLargeFile</em>: for netcdf-3 only, create a large format file.</li>
-  <li>-<em>netcdf4</em>: write to netcdf-4 format. You must have the <a href="netcdf4Clibrary.html">netcdf-4 C library loaded</a>.</li>
-</ul>
-<hr/>
-<h2>nccompare<a name="nccompare" id="nccompare"></a></h2>
 
-<p>Compare 2 CDM files for semantic equivilence..</p>
-<pre> <em>java -Xmx1g -classpath netcdfAll-4.3.jar </em>ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData] </pre>
-<p>where</p>
 <ul>
-  <li>-<em>showEach</em> : show details of comparing each object</li>
-  <li>-<em>compareData</em> : compare data also</li>
-  <li><em>file1</em> : first file to compare</li>
-  <li><em>file2</em>: second file to compare</li>
+    <li><code>fileIn</code>: the existing file to copy</li>
+    <li><code>fileOut</code>: the new file to create</li>
+    <li><code>-isLargeFile</code>: for netcdf-3 only, create a large format file.</li>
+    <li><code>-netcdf4</code>:
+        write to netcdf-4 format. You must have the <a href="netcdf4Clibrary.html">netcdf-4 C library loaded</a>.
+    </li>
 </ul>
-<hr/>
-<h2><strong>FeatureScan</strong></h2>
 
-<p>Scans all the files in a directory to see if they are CDM files and can be identified as a particular feature type</p>
-<pre><strong> </strong> <em>java -Xmx1g -classpath netcdfAll-4.3.jar </em>ucar.nc2.ft.scan.FeatureScan directory [-subdirs]</pre>
-<p>where</p>
-<ul>
-  <li>directory : scan this directory</li>
-  <li>-subdirs : recurse into subdirectories</li>
-</ul>
 <hr/>
-<h2><strong>BufrSplitter</strong></h2>
 
-<p>Scans all the files in a directory to see if they are CDM files and can be identified as a particular feature type</p>
-<pre><strong> </strong> <em>java -Xmx1g -classpath netcdfAll-4.4.jar </em>ucar.nc2.ft.scan.FeatureScan directory [-subdirs]</pre>
+
+<h2><a name="nccompare" id="nccompare">nccompare</a></h2>
+
+<p>Compares two CDM files for semantic equivilence.</p>
+
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.util.CompareNetcdf2
+    file1 file2 [-showEach] [-compareData]</pre>
+
 <p>where</p>
+
 <ul>
-  <li>directory : scan this directory</li>
-  <li>-subdirs : recurse into subdirectories</li>
+    <li><code>-showEach</code>: show details of comparing each object</li>
+    <li><code>-compareData</code>: compare data also</li>
+    <li><code>file1</code>: first file to compare</li>
+    <li><code>file2</code>: second file to compare</li>
 </ul>
-<p>&nbsp;</p>
-<hr width="100%"/>
+
+<hr/>
+
+
+<h2><a name="FeatureScan" id="FeatureScan">FeatureScan</a></h2>
+
+<p>Scans all the files in a directory to see if they are CDM files and can be identified as a particular feature
+    type.</p>
+
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.ft.scan.FeatureScan directory [-subdirs]</pre>
+
+<p>where</p>
+
+<ul>
+    <li><code>directory</code>: scan this directory</li>
+    <li><code>-subdirs</code>: recurse into subdirectories</li>
+</ul>
+
+<hr/>
+
+
+<h2><a name="BufrSplitter" id="BufrSplitter">BufrSplitter</a></h2>
+
+<p>Copies a BUFR file's messages into separate output files, depending on message type.</p>
+
+<pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.iosp.bufr.writer.BufrSplitter
+    --fileSpec &lt;fileIn&gt; --dirOut &lt;dirOut&gt;</pre>
+
+<p>where</p>
+
+<ul>
+    <li><code>--fileSpec</code>: file to split</li>
+    <li><code>--dirOut</code>: output directory of split operation</li>
+</ul>
+
+<hr/>
+
+
+<h2><a name="CFPointWriter" id="CFPointWriter">CFPointWriter</a></h2>
+
+<p>Copies a CDM <a href="FeatureDatasets/PointFeatures.html">point feature dataset</a> to
+    <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries">CF/NetCDF format</a>.
+    The CF conventions target NetCDF-3, but you can also write NetCDF-4 files in
+    <a href="https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Classic-Model-Format.html">classic mode</a>.
+    For that, you must first install the <a href="netcdf4Clibrary.html">C library</a>.
+</p>
+
+<pre>
+java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.ft.point.writer.CFPointWriter [options]
+  Options:
+  * -i, --input
+       Input file.
+  * -o, --output
+       Output file.
+    -f, --format
+       Output file format. Allowed values = [netcdf3, netcdf4, netcdf4_classic,
+       netcdf3c, netcdf3c64, ncstream]
+       Default: netcdf3
+    -st, --strategy
+       Chunking strategy. Only used in NetCDF 4. Allowed values = [standard,
+       grib, none]
+       Default: standard
+    -d, --deflateLevel
+       Compression level. Only used in NetCDF 4. Allowed values = 0 (no
+       compression, fast) to 9 (max compression, slow)
+       Default: 5
+    -sh, --shuffle
+       Enable the shuffle filter, which may improve compression. Only used in
+       NetCDF 4. This option is ignored unless a non-zero deflate level is specified.
+       Default: true
+    -h, --help
+       Display this help and exit
+       Default: false
+</pre>
+
+<hr/>
+
+
 <address>
-  <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated August 2013
+    <img src="../nc.gif" alt="" width="64" height="64"/> This document was last updated Nov 2014.
 </address>
-<p></p>
 
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
-<h2>&nbsp; </h2>
 </body>
 </html>

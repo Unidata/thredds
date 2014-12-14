@@ -405,3 +405,12 @@ download
 8/2014  caron
   - downloaded and added WMO tables 13.0.1
 
+10/6/2014 caron
+  - refactor grib2 tables
+  - use standardTableMap.txt
+
+12/09/2014 caron - download from http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
+    The latest versions 14(.0.0) (GRIB edition 2) and 23(.0.0) (BUFR and CREX) are effective as from 5 November 2014.
+    - downloaded and added WMO tables 14.0.0
+    - modify ucar.nc2.grib.grib2.table.WmoCodeTable, ucar.nc2.grib.grib2.table.WmoTemplateTable
+

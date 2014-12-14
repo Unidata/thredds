@@ -45,7 +45,6 @@ import thredds.inventory.partition.PartitionManagerFromIndexList;
 import ucar.coord.CoordinateRuntime;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
@@ -87,13 +86,50 @@ public abstract class GribCollectionBuilder {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File idx = GribCollection.getFileInCache(dcm.getIndexFilename());
-    if (!idx.exists()) return true;
+    File collectionIndexFile = GribCollection.getFileInCache(dcm.getIndexFilename());
+    if (!collectionIndexFile.exists()) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
 
-    return collectionWasChanged(idx.lastModified());
+    return needsUpdate(ff, collectionIndexFile);
   }
+
+  private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
+    long collectionLastModified = collectionIndexFile.lastModified();
+    Set<String> newFileSet = new HashSet<>();
+
+    CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
+    try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
+      while (iter.hasNext()) {
+        MFile memberOfCollection = iter.next();
+        if (cc.hasChangedSince(memberOfCollection, collectionLastModified)) return true;   // checks both data and gbx9 file
+        newFileSet.add(memberOfCollection.getPath());
+      }
+    }
+
+    if (ff == CollectionUpdateType.testIndexOnly) return false;
+
+    // now see if any files were deleted, by reading the index and comparing to the files there
+    GribCdmIndex reader = new GribCdmIndex(logger);
+    List<MFile> oldFiles = new ArrayList<>();
+    reader.readMFiles(collectionIndexFile.toPath(), oldFiles);
+    Set<String> oldFileSet = new HashSet<>();
+    for (MFile oldFile : oldFiles) {
+      if (!newFileSet.contains(oldFile.getPath()))
+        return true;              // got deleted - must recreate the index
+      oldFileSet.add(oldFile.getPath());
+    }
+
+    // now see if any files were added
+    for (String newFilename : newFileSet) {
+      if (!oldFileSet.contains(newFilename))
+        return true;              // got added - must recreate the index
+    }
+
+    return false;
+  }
+
+
 
   private boolean collectionWasChanged(long idxLastModified) throws IOException {
     CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();

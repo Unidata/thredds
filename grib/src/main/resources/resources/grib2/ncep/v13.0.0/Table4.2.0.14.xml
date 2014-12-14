@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.14</table>
+  <title>Trace gases</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-14.shtml</source>
+  <parameter code="0">
+    <shortName>TOZNE</shortName>
+    <description>Total Ozone</description>
+    <units>DU</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>O3MR</shortName>
+    <description>Ozone Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>TCIOZ</shortName>
+    <description>Total Column Integrated Ozone</description>
+    <units>DU</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>O3MR</shortName>
+    <description>Ozone Mixing Ratio</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>OZCON</shortName>
+    <description>Ozone Concentration</description>
+    <units>ppb</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>OZCAT</shortName>
+    <description>Categorical Ozone Concentration</description>
+    <units>Non-Dim</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>VDFOZ</shortName>
+    <description>Ozone Vertical Diffusion</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>POZ</shortName>
+    <description>Ozone Production</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>TOZ</shortName>
+    <description>Ozone Tendency</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>POZT</shortName>
+    <description>Ozone Production from Temperature Term</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>POZO</shortName>
+    <description>Ozone Production from Column Ozone Term</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>OZMAX1</shortName>
+    <description>Ozone Daily Max from 1-hour Average</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>OZMAX8</shortName>
+    <description>Ozone Daily Max from 8-hour Average</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>PDMAX1</shortName>
+    <description>PM 2.5 Daily Max from 1-hour Average</description>
+    <units>g m-3</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>PDMAX24</shortName>
+    <description>PM 2.5 Daily Max from 24-hour Average</description>
+    <units>g m-3</units>
+  </parameter>
+</parameterMap>

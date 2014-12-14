@@ -54,6 +54,7 @@ import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.EscapeStrings;
@@ -526,7 +527,7 @@ public class OpendapServlet extends AbstractServlet {
 
       // Send the Data delimiter back to the client
       pw.flush();
-      bOut.write("\nData:\n".getBytes());
+      bOut.write("\nData:\n".getBytes(CDM.utf8Charset));
       bOut.flush();
 
       // Send the binary data back to the client
@@ -590,7 +591,7 @@ public class OpendapServlet extends AbstractServlet {
       ds = getDataset(rs);
       if (null == ds) return;
 
-      PrintStream pw = new PrintStream(response.getOutputStream());
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream(),Util.UTF8));
       response.setHeader("XDODS-Server", getServerVersion());
       response.setContentType("text/html");
       response.setHeader("Content-Description", "dods-description");
@@ -780,13 +781,15 @@ public class OpendapServlet extends AbstractServlet {
     long size = computeSize(dds, isAscii);
     //System.err.printf("total (constrained) size=%s\n", size);
     log.debug("total (constrained) size={}", size);
-    double dsize = size / (1000 * 1000);
+    double dsize = size / (1000.0 * 1000.0);
     double maxSize = isAscii ? ascLimit : binLimit; // Mbytes
     if (dsize > maxSize) {
       log.info("Reject request size = {} Mbytes", dsize);
       throw new UnsupportedOperationException("Request too big=" + dsize + " Mbytes, max=" + maxSize);
     }
   }
+
+  private static final boolean debugSize = true;
 
   // Recursively compute size of the dds to be returned
   // Note that the dds may be empty (e-support ZTH-269982)
@@ -807,6 +810,9 @@ public class OpendapServlet extends AbstractServlet {
         projectedcount++;
       } else {
         othersize += fieldsize;
+      }
+      if (debugSize) {
+        System.out.printf("computeSize %s fieldsize=%d projectsize=%d othersize=%d %n", field.getLongName(), fieldsize, projectsize, othersize);
       }
     }
     // Cases to consider:

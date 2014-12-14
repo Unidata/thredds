@@ -32,15 +32,17 @@
  */
 package ucar.nc2.ui.gis.worldmap;
 
-import java.io.*;
-import java.util.*;
-
 import ucar.nc2.ui.gis.AbstractGisFeature;
-import ucar.nc2.ui.gis.GisPart;
 import ucar.nc2.ui.gis.GisFeatureRenderer;
-import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
+import ucar.nc2.ui.gis.GisPart;
 import ucar.nc2.ui.util.Resource;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.projection.LatLonProjection;
+
+import java.io.EOFException;
+import java.util.ArrayList;
 
 /** A simple "default" world map Renderer.
  * @author John Caron
@@ -82,12 +84,13 @@ public class WorldMap extends GisFeatureRenderer {
     while (true) {
       try {
         int npts = dis.readInt();
-        int minx = dis.readInt();
-        int maxx = dis.readInt();
-        int miny = dis.readInt();
-        int maxy = dis.readInt();
 
-        MapRun run = new MapRun( npts, minx, maxx, miny, maxy);
+        dis.readInt();  // minx -- not used.
+        dis.readInt();  // maxx -- not used.
+        dis.readInt();  // miny -- not used.
+        dis.readInt();  // maxy -- not used.
+
+        MapRun run = new MapRun(npts);
         for (int i=0; i<npts; i++) {
           run.wx[i] = ((double) dis.readInt()) / SECS_PER_DEG;
           run.wy[i] = ((double) dis.readInt()) / SECS_PER_DEG;
@@ -124,15 +127,10 @@ public class WorldMap extends GisFeatureRenderer {
     int npts;
     double [] wx;  // lat/lon coords
     double [] wy;
-    private int minx, miny, maxx, maxy; // ??
 
     // constructor
-    MapRun ( int npts, int minx, int maxx, int miny, int maxy) {
+    MapRun ( int npts) {
         this.npts = npts;
-        this.minx = minx;
-        this.maxx = maxx;
-        this.miny = miny;
-        this.maxy = maxy;
 
         wx = new double[npts];
         wy = new double[npts];
@@ -162,7 +160,7 @@ public class WorldMap extends GisFeatureRenderer {
     dataProject = new LatLonProjection ("Cylindrical Equidistant");
   }
 
-  private LatLonRect defaultLLBB = null; //new LatLonBoundingBox( new LatLonPoint(-180., -90.), 360., 180.);
+  private LatLonRect defaultLLBB = new LatLonRect( new LatLonPointImpl(-180., -90.), 360., 180.);
   public LatLonRect getPreferredArea() { return defaultLLBB; }
   protected java.util.List getFeatures() { return gisList; }
   protected ProjectionImpl getDataProjection() { return dataProject; }

@@ -323,11 +323,7 @@ public class RotatedLatLon extends ProjectionImpl {
 
   private static void test() {
     Test tst0 = new Test(0, -25, 0);
-    double[] pos = tst0.proj(0, -25, true);
-    double[] pos2 = tst0.proj(pos[0], pos[1], false);
-
-    double[] pos3 = tst0.proj(-46.5, -36.5, false);
-    double[] pos4 = tst0.proj(46.9, 38.9, false);
+    tst0.proj(0, -25, true);
 
     Test t = new Test(0, 90, 0);
     t.test(0, 0);
@@ -341,7 +337,6 @@ public class RotatedLatLon extends ProjectionImpl {
     t.test(0, 0);
     t.test(90, 0);
     t.test(0, 30);
-    t = null;
     RotatedLatLon rll = new RotatedLatLon(-50, 10, 20);
     long t0 = System.currentTimeMillis();
     long dt = 0;

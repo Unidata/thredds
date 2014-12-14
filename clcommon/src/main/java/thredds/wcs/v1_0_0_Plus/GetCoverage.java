@@ -34,6 +34,7 @@ package thredds.wcs.v1_0_0_Plus;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -49,8 +50,6 @@ import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 
 /**
- * _more_
- *
  * @author edavis
  * @since 4.0
  */
@@ -167,7 +166,7 @@ public class GetCoverage extends WcsRequest
            ! this.isSingleVerticalRequest &&
            ! this.isSingleRangeFieldRequest )
       {
-        StringBuffer msgB = new StringBuffer( "GeoTIFF supported only for requests at a single time [");
+        StringBuilder msgB = new StringBuilder( "GeoTIFF supported only for requests at a single time [");
         if ( time != null )
           msgB.append( time);
         msgB.append( "] and a single vertical level [");
@@ -218,12 +217,12 @@ public class GetCoverage extends WcsRequest
     if ( bboxSplit == null || gcs == null )
       return null;
     if ( bboxSplit.length < 4 )
-      throw new IllegalArgumentException( "BBOX contains fewer than four items \"" + bboxSplit.toString() + "\".");
+      throw new IllegalArgumentException( "BBOX contains fewer than four items \"" + Arrays.toString(bboxSplit) + "\".");
 
-    double minx = 0;
-    double miny = 0;
-    double maxx = 0;
-    double maxy = 0;
+    double minx;
+    double miny;
+    double maxx;
+    double maxy;
     try
     {
       minx = Double.parseDouble( bboxSplit[0] );
@@ -233,7 +232,7 @@ public class GetCoverage extends WcsRequest
     }
     catch ( NumberFormatException e )
     {
-      String message = "BBOX item(s) have incorrect number format [not double] <" + bboxSplit.toString() + ">.";
+      String message = "BBOX item(s) have incorrect number format [not double] <" + Arrays.toString(bboxSplit) + ">.";
       log.error( "genRequestLatLonBoundingBox(): " + message + " - " + e.getMessage());
       throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
     }
@@ -267,7 +266,7 @@ public class GetCoverage extends WcsRequest
     }
     if ( bboxSplit.length != 6 )
     {
-      String message = "BBOX must have 4 or 6 items [" + bboxSplit.toString() + "].";
+      String message = "BBOX must have 4 or 6 items [" + Arrays.toString(bboxSplit) + "].";
       log.error( "genRequestVertSubset(): " + message );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
     }
@@ -279,8 +278,8 @@ public class GetCoverage extends WcsRequest
       return null;
     }
 
-    double minz = 0;
-    double maxz = 0;
+    double minz;
+    double maxz;
     try
     {
       minz = Double.parseDouble( bboxSplit[4] );
@@ -288,20 +287,20 @@ public class GetCoverage extends WcsRequest
     }
     catch ( NumberFormatException e )
     {
-      String message = "BBOX item(s) have incorrect number format (not double) [" + bboxSplit.toString() + "].";
+      String message = "BBOX item(s) have incorrect number format (not double) [" + Arrays.toString(bboxSplit) + "].";
       log.error( "genRequestVertSubset(): " + message + " - " + e.getMessage() );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
     }
 
     AxisSubset axisSubset = new AxisSubset( vertAxis, minz, maxz, 1 );
-    Range range = null;
+    Range range;
     try
     {
       range = axisSubset.getRange();
     }
     catch ( InvalidRangeException e )
     {
-      String message = "BBOX results in invalid array index range [" + bboxSplit.toString() + "].";
+      String message = "BBOX results in invalid array index range [" + Arrays.toString(bboxSplit) + "].";
       log.error( "genRequestVertSubset(): " + message + " - " + e.getMessage() );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
     }
@@ -325,7 +324,7 @@ public class GetCoverage extends WcsRequest
 
     try
     {
-      if ( time.indexOf( ",") != -1 )
+      if (time.contains(","))
       {
         log.error( "parseTime(): Unsupported time parameter (list) <" + time + ">.");
         throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
@@ -333,7 +332,7 @@ public class GetCoverage extends WcsRequest
         //String[] timeList = time.split( "," );
         //dateRange = new DateRange( date, date, null, null );
       }
-      else if ( time.indexOf( "/") != -1 )
+      else if (time.contains("/"))
       {
         String[] timeRange = time.split( "/" );
         if ( timeRange.length != 2)
@@ -365,7 +364,7 @@ public class GetCoverage extends WcsRequest
   private List<String> parseRangeSubset( String rangeSubset)
           throws WcsException
   {
-    List<String> response = new ArrayList<String>();
+    List<String> response = new ArrayList<>();
 
     // Default is to return all fields.
     if ( rangeSubset == null || rangeSubset.equals( "" ) )
@@ -378,7 +377,7 @@ public class GetCoverage extends WcsRequest
 
     // Split the rangeSubset request into fieldSubset requests.
     String[] fieldSubsetArray;
-    if ( rangeSubset.indexOf( ";") == -1 )
+    if (!rangeSubset.contains(";"))
     {
       fieldSubsetArray = new String[1];
       fieldSubsetArray[0] = rangeSubset;

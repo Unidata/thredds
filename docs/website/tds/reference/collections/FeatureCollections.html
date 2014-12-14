@@ -21,7 +21,7 @@
   TDS 4.5 changed this usage to featureType =<em> </em>GRIB1 or GRIB2. <em><strong>Currently, one should only serve GRIB files with featureCollection=GRIB1 or GRIB2. One should not use FMRC, or NcML Aggregations on GRIB files.</strong></em></p>
 <p>A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in
   managing collections that change. For high-performance servers, it is necessary to let a background process manage indexing, and the THREDDS Data Manager
-  (<a href="TDM.html">TDM</a>) is now available for that purpose as of TDS 4.5.</p>
+  (<a href="TDM.html">TDM</a>) is now available for that purpose, as of TDS 4.5.</p>
 
 <h3>Contents:</h3>
 <ul>
@@ -42,7 +42,7 @@
 <p>The <strong>featureCollection</strong> element is a subtype of <strong>dataset</strong> element. It defines a<em> logical dataset</em> for the TDS. All of the elements
 that can be used inside of a <strong>dataset</strong> element can be used inside of a <strong>featureCollection</strong> element.</p>
 
-<p>Example 1: Simple case using defaults:</p>
+<h4>Example 1: Simple case using defaults:</h4>
 <pre>1) &lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;GRIB2&quot; path=&quot;grib/NCEP/NAM/Polar_90km&quot;&gt;
 2)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_.*\.grib2$&quot;/&gt;
    &lt;/featureCollection&gt;
@@ -51,7 +51,7 @@ that can be used inside of a <strong>dataset</strong> element can be used inside
   <li>A GRIB2 Feature Collection dataset is defined, with the &quot;human readable&quot; name of  <em>NCEP-NAM-Polar_90km</em>. Its URL path(s) will look like <em>http://server/thredds/&lt;service&gt;/grib/NCEP/NAM/Polar_90km/...</em> The Dataset ID is automatically set to the path, so that its dataset page will be <em>http://server/thredds/catalog/grib/NCEP/NAM/Polar_90km/catalog.xml?dataset=grib/NCEP/NAM/Polar_90km</em>/...</li>
   <li>Defines the files in the collection as any files in the directory <em>/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/</em> which match the  regular expression <em>&quot;NAM_Polar_90km_.*\.grib2$</em>&quot; . In this case, it means any filename starting with <em>&quot;NAM_Polar_90km_&quot;</em> and ending with &quot;<em>.grib2</em>&quot;. </li>
 </ol>
-<p>Example 2: More fully specify the options explicitly:</p>
+<h4>Example 2: More fully specify the options explicitly:</h4>
 <pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB2&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
   &lt;metadata inherited=&quot;true&quot;&gt;<br />1)  &lt;serviceName&gt;GribServices&lt;/serviceName&gt;
 2)  &lt;documentation type=&quot;summary&quot;&gt;NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid&lt;/documentation&gt;<br />  &lt;/metadata&gt;
@@ -61,8 +61,8 @@ that can be used inside of a <strong>dataset</strong> element can be used inside
 4)            dateFormatMark=&quot;#NAM_Alaska_11km_#yyyyMMdd_HHmm&quot;
 5)            timePartition=&quot;file&quot;
 6)            olderThan=&quot;5 min&quot;/&gt;  
-7)&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;
-8)&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+7)&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt;
+8)&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; /&gt;
 9)&lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;
 &lt;/featureCollection&gt;
 </pre>
@@ -73,28 +73,9 @@ that can be used inside of a <strong>dataset</strong> element can be used inside
   <li>A date will be extracted from the  filename, and the files will then be sorted by date. Important if the lexigraphic ordering is different that the date order.</li>
   <li>Partitioning will happen at the file level.</li>
   <li>Only include files whose lastModified date is more than 5 minutes old. This is to exclude files that are actively being created.</li>
-  <li>Instruct the  TDS to read, but never write indexes. </li>
+  <li>Instruct the  TDS to use the collection index if it already exists, without testing if its up-to-date, and also to allow external triggers. These are the defaults.</li>
   <li>Instruct the TDM to examine all the files to detect if they have changed since the index was written. Rescan every 15 minutes.</li>
   <li>(GRIB specific) Show the <em>TwoD</em> and <em>Best</em> datasets, as well as a link to the <em>latest</em> partition.</li>
-</ol>
-<p> Example 3: With NcML elements: LOOK change this to Point. NOT USED BY GRIB</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/Alaska_11km_#yyyyMMdd_HHmm#.grib2$&quot; olderThan=&quot;5 min&quot;/&gt;
-  &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
-1)&lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
-    &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
-      &lt;variable name=&quot;humidity&quot; /&gt;
-        &lt;attribute name=&quot;coordinates&quot; value=&quot;time1 height x y&quot;/&gt;
-      &lt;/variable&gt;
-    &lt;/netcdf&gt;
-  &lt;/protoDataset&gt;  
-  &lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;
-2)&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
-    &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;
-  &lt;/netcdf&gt;
-&lt;/featureCollection&gt;</pre>
-<ol>
-  <li></li>
 </ol>
 <hr/>
 <h2><a id="elements"></a>Description of elements in TDS Configuration catalogs</h2>
@@ -102,8 +83,8 @@ that can be used inside of a <strong>dataset</strong> element can be used inside
 <h3>featureCollection element</h3>
 
 <p>A <strong>featureCollection</strong> is a kind of <strong>dataset</strong> element, and so can contain the same elements and attributes of that element.
-  Following is the XML Schema definition, which shows only the elements and attributes that are particular to a featureCollection:</p>
-<pre>  &lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:complexContent&gt;<br/>        &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>          &lt;xsd:sequence&gt;<br/>            &lt;xsd:element type=&quot;collectionType&quot; name=&quot;collection&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;update&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;tdm&quot; minOccurs=&quot;0&quot;/&gt;<br />            &lt;xsd:element type=&quot;manageType&quot; name=&quot;manage&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;protoDatasetType&quot; name=&quot;protoDataset&quot; minOccurs=&quot;0&quot;/&gt;
+  Following is the XML Schema definition for the <em>featureCollection</em> element:</p>
+<pre>  &lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:complexContent&gt;<br/>        &lt;xsd:extension base=&quot;DatasetType&quot;&gt;<br/>          &lt;xsd:sequence&gt;<br/>            &lt;xsd:element type=&quot;collectionType&quot; name=&quot;collection&quot;/&gt;<br/>            &lt;xsd:element type=&quot;updateType&quot; name=&quot;update&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;tdmType&quot; name=&quot;tdm&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;protoDatasetType&quot; name=&quot;protoDataset&quot; minOccurs=&quot;0&quot;/&gt;
             &lt;xsd:element type=&quot;fmrcConfigType&quot; name=&quot;fmrcConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;pointConfigType&quot; name=&quot;pointConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element type=&quot;gribConfigType&quot; name=&quot;gribConfig&quot; minOccurs=&quot;0&quot;/&gt;<br/>            &lt;xsd:element ref=&quot;ncml:netcdf&quot; minOccurs=&quot;0&quot;/&gt;<br/>          &lt;/xsd:sequence&gt;<br/>          &lt;xsd:attribute name=&quot;featureType&quot; type=&quot;featureTypeChoice&quot; use=&quot;required&quot;/&gt;<br/>          &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>        &lt;/xsd:extension&gt;<br/>      &lt;/xsd:complexContent&gt;<br/>    &lt;/xsd:complexType&gt;<br/>  &lt;/xsd:element&gt;</pre>
 Here is an example
 <strong>featureCollection</strong> as you might put it into a TDS catalog: 
@@ -111,13 +92,12 @@ Here is an example
 <strong>2) </strong>&lt;metadata inherited=&quot;true&quot;&gt;
     &lt;serviceName&gt;fullServices&lt;/serviceName&gt;<br/>    &lt;documentation type=&quot;summary&quot;&gt;Metars: hourly surface weather observations&lt;/documentation&gt;
     &lt;documentation xlink:href=&quot;http://metar.noaa.gov/&quot; xlink:title=&quot;NWS/NOAA information&quot;/&gt;
-
     &lt;keyword&gt;metar&lt;/keyword&gt;
     &lt;keyword&gt;surface observations&lt;/keyword&gt;
    &lt;/metadata&gt;
  
 3) &lt;collection spec=&quot;/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$&quot; /&gt;
-4) &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+4) &lt;update startup=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot;/&gt;
 5) &lt;protoDataset choice=&quot;Penultimate&quot; /&gt;
 6) &lt;pointConfig datasetTypes=&quot;cdmrFeature Files&quot;/&gt;
 7) &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/>     &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;<br/>   &lt;/netcdf&gt;
@@ -131,7 +111,7 @@ Here is an example
   </li>
   <li>As is usual with dataset elements, a block of metadata can be declared that will be inherited by all the datasets.</li>
   <li>The collection of files is defined. Each dataset is assigned a nominal time by extracting a date from the filename.</li>
-  <li>Specify that the collection is updated in a backround thread, every 15 minutes.</li>
+  <li>Specify that the collection is updated, when the TDS starts and in a background thread, every 15 minutes.</li>
   <li>The prototype dataset is the next-to-last in the collection when sorted by time.</li>
   <li>Configuration specific to the Point feature type: expose a <em>cdmrRemote</em> service on the entire collection, and also serve all the component files
     using the default service, in this example the compound service <em>fullServices</em>.
@@ -148,17 +128,17 @@ Here is an example
             <strong>name</strong>=&quot;WEST-CONUS_4km&quot; <strong></strong><strong></strong><strong>olderThan</strong>=&quot;15 min&quot; /&gt;
 </pre>
 
-The XML Schema:
+The XML Schema for the <em>collection</em> element:
 <pre>
   &lt;xsd:complexType name=&quot;collectionType&quot;&gt;<br/>1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;<br/>3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;<br/>4)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;<br/>5)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;<br/>  &lt;/xsd:complexType&gt;<br/></pre>
 <p>where</p>
 <ol>
-  <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this example, the collection contains all
+  <li><strong>spec</strong> (required): <a href="CollectionSpecification.html">collection specification</a> string. In this example, the collection contains all
     files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the regular expression <em>&quot;WEST-CONUS_4km_3.9_.*gini$&quot;</em>
     (where <em>&quot;.*&quot;</em> means &quot;match any number of characters&quot; and <em>&quot;gini$&quot;</em> means &quot;ends with the characters <strong>gini&quot;</strong>.
     If you wanted to match <strong>&quot;.gini&quot;</strong>, you would need to escape the &quot;.&quot;, ie <em>&quot;\.gini$&quot;</em>).
   </li>
-  <li><strong>name</strong>: the collection name, which <em><strong>must be unique for all collections served by your TDS</strong></em>. This is used for
+  <li><strong>name</strong> (required): the collection name, which <em><strong>must be unique for all collections served by your TDS</strong></em>. This is used for
     external triggers, for the CDM collection index files, and for logging and debugging messages. If missing, the <em>name</em> attribute on the <em>&lt;featureCollection&gt;</em>
     element is used. However, we recommend that you create a unique, immutable name for the dataset collection, and put it in this <strong>name</strong>
     attribute of the <strong>collection</strong> element.
@@ -172,12 +152,12 @@ The XML Schema:
     characters of the filename to create a date. A DateExtractor can also be defined in the <a href="CollectionSpecification.html">collection specification</a>
     string, but in that case the date must be contained just in the file name, as opposed to the complete file path which includes all of the parent directory
     names. <em>Use this OR a date extractor in the specification string, but not both.</em></li>
-  <li><strong>timePartition</strong> (optional): This defines the time intervals from which the collection is partitioned. This is used for very large datasets.
-    Use this with caution, as it has far reaching effects on how your data is presented.
-  The values may be the string <em>directory</em> or a time period like <em>day</em>, <em>month</em>, <em>year</em>.
-  <ol>
-    <li><strong>Time period:</strong> all files are scanned in, then divided into partitions based on the time period.</li>
-    <li><strong>Directory: </strong>the files must be divided into subdirectories of the root. All the files that pass the filter are scanned in and made into a time partition. This is much faster when there are many files (&gt; 1M).</li>
+  <li><strong>timePartition</strong> (optional): [ <em>directory</em> | <em>file</em> | <em>none</em>] : This defines the time intervals from which the collection is partitioned. This is used for very large datasets, and it has far reaching effects on how your data is processed and presented.
+  The values may be:
+    <ol>
+    <li><strong>none:</strong> all files are scanned in, then divided into partitions based on the time period (if needed) and a collection level index is built.</li>
+    <li><strong>directory:</strong> each directory is a partition<strong>. default</strong></li>
+    <li><strong>file: </strong>each file is a partition.</li>
   </ol>
   </li>
 </ol>
@@ -186,7 +166,7 @@ The XML Schema:
 <p>Feature Collections need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a
   date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
 
-<p>1. If the date is in the filename only, you can use the <a href="CollectionSpecification.html">collection specification</a> string, eg a spec:</p>
+<p>1. If the date is in the filename only, you can use the <a href="CollectionSpecification.html">collection specification</a> string, aka a <strong><em>spec</em></strong>:</p>
 <blockquote>
   <pre> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.nc$ 
 </pre>
@@ -219,40 +199,28 @@ The XML Schema:
 dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
   <p>Note that whatever you match on must be unique in the pathname.</p>
 </blockquote>
-<h3>protoDataset element</h3>
+<h3>protoDataset element (Not used by GRIB).</h3>
 
-<p>Provides control over the choice of the <strong><em>prototype dataset</em></strong> for the collection. The protype dataset is used to populate the metadata
-  for the feature collection. (Not used by GRIB).</p>
+<p>Provides control over the choice of the <strong><em>prototype dataset</em></strong> for the collection. The prototype dataset is used to populate the metadata
+  for the feature collection. Example:</p>
 <pre>&lt;protoDataset <strong>choice</strong>=&quot;Penultimate&quot; <strong>change</strong>=&quot;<em>0 2 3 * * ? *</em>&quot;&gt;
-  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/>    &lt;attribute name=&quot;featureType&quot; value=&quot;timeSeries&quot;/&gt;<br/>
+  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/>    &lt;attribute name=&quot;featureType&quot; value=&quot;timeSeries&quot;/&gt;
   &lt;/netcdf&gt;
 &lt;/protoDataset&gt;
 </pre>
+
+The XML Schema definition for the <em>protoDataset</em> element:
 <pre> &lt;xsd:complexType name=&quot;protoDatasetType&quot;&gt;
    &lt;xsd:sequence&gt;
 1)   &lt;xsd:element ref=&quot;ncml:netcdf&quot; minOccurs=&quot;0&quot;/&gt;
    &lt;/xsd:sequence&gt;
 2) &lt;xsd:attribute name=&quot;choice&quot; type=&quot;protoChoices&quot;/&gt;
 3) &lt;xsd:attribute name=&quot;change&quot; type=&quot;xsd:string&quot;/&gt;
-
  &lt;/xsd:complexType&gt;</pre>
-<pre> &lt;xsd:simpleType name=&quot;protoChoices&quot;&gt;
-  &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
-   &lt;xsd:simpleType&gt;
-    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
-      &lt;xsd:enumeration value=&quot;First&quot;/&gt;
-      &lt;xsd:enumeration value=&quot;Random&quot;/&gt;
-      &lt;xsd:enumeration value=&quot;Penultimate&quot;/&gt;
-      &lt;xsd:enumeration value=&quot;Latest&quot;/&gt;
-    &lt;/xsd:restriction&gt;
-   &lt;/xsd:simpleType&gt;
-  &lt;/xsd:union&gt;
- &lt;/xsd:simpleType&gt;
-</pre>
 <p>where:</p>
 <ol>
   <li><strong>ncml:netcdf</strong> = (optional) ncml elements that modify the prototype dataset</li>
-  <li><strong>choice</strong>= &quot;First | Random | Penultimate | Latest&quot; : select prototype from a time ordered list, using the first, a randomly
+  <li><strong>choice</strong>= [First | Random | Penultimate | Latest] : select prototype from a time ordered list, using the first, a randomly
     selected one, the next to last, or the last dataset in the list. The default is &quot;Penultimate&quot;.
   </li>
   <li><strong>change</strong>= &quot;cron expr&quot; (optional). On rolling datsets, you need to change the prototype periodically, otherwise it will get
@@ -277,57 +245,75 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 <p>For collections that change, the <strong>update</strong> element provides options to update the collection, either synchronously (while a user request waits)
   or asynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered <em>static</em>, and the
   indexes are never updated by the TDS. (To force updated indices, delete the collection index, usually<strong> &lt;collection root directory&gt; / &lt;dataset
-    name&gt;.ncx</strong>.)</p>
+    name&gt;.ncx</strong>.). Examples:</p>
 <pre>
-&lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+&lt;update startup=&quot;test&quot; rescan=&quot;0 0/30 * * * ? *&quot; trigger=&quot;false&quot;/&gt;
 
-&lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
-The XML Schema definition for the update element:
+&lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;
+
+&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot; /&gt;
+</pre>
+<ol>
+  <li>The first example says to test if the dataset has been updated when the TDS starts up, then test in a background process every 30 minutes. (Cannot use for GRIB collections, see <em>tdm</em> element below). Do not allow external triggers.</li>
+  <li>The second example says to test if the dataset has been updated only when a request comes in for it, and the dataset hasn't been checked for 15 minutes.</li>
+  <li>The third example tells the TDS to never update the collection indices, but to allow an external program (such as the TDM) to send a trigger telling the TDS that it should reread the collection into memory. This is useful for large collections of data where even testing if a dataset has changed can be costly.</li>
+</ol>
+<p>The XML Schema definition for the <em>update</em> element:
+</p>
 <pre>
-   &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br/> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:token&quot;/&gt;<br/> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
+&lt;xsd:complexType name=&quot;updateType&quot;&gt;<br/> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:token&quot;/&gt;<br/> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
  3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br/> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br/>&lt;/xsd:complexType&gt;<br/></pre>
 
 <p> where: </p>
 <ol>
-  <li><strong>startup</strong>: The collection is rescanned on server startup. If &quot;<em>nocheck</em>&quot;, the collection index is used if it exists. If
-    &quot;<em>true</em>&quot; or &quot;<em>test</em>&quot;, the collection is scanned and a new index is built.
+  <li><strong>startup</strong>: [<em>never</em> | <em>nocheck</em> | <em>testIndexOnly</em> | <em>test</em> | <em>always</em>] The collection is always read in on server startup. This attribute controls whether the collection index is tested and rebuilt.
+    <ul>
+      <li>If &quot;<em>never</em>&quot;, the collection index is always used and must exist. Use this for very large collections that you dont want to inadvertently scan.</li>
+      <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. <strong>This is the default.</strong></li>
+      <li>If
+      &quot;<em>testIndexOnly</em>&quot;, the collection index is  used if it exists and it is newer than all of its immediate children. (<strong>experimental</strong>)</li>
+      <li>If
+      &quot;<em>test</em>&quot; or &quot;<em>true</em>&quot;, the collection is scanned and the new collection of children is compared to the old collection. If there are any changes the index is rebuilt.</li>
+      <li>If &quot;<em>always</em>&quot;, the collection is always rescanned and the indices are rebuilt. </li>
+    </ul>
   </li>
+
   <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will
     wait until the scan is finished and a new collection is built (if needed), and so is called <em>synchronous updating</em>. <em><strong>This option will be
-      ignored if you are using the rescan attribute or if you have a tdm element.</strong></em></li>
+  ignored if you are using the rescan attribute or if you have a tdm element.</strong></em></li>
   <li><strong>rescan</strong>: uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the
     collection should be rescanned in a background task. This is called <em>asynchronous updating</em>.
   </li>
-  <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows
+  <li><strong>trigger</strong>: if set to &quot;allow&quot; (default), then external triggering will be allowed. This allows
     collections to be updated by an external program (or person using a browser) sending an explicit &quot;trigger&quot; URL to the server.
-    This URL is protected by HTTPS, so you must <a href="../RemoteManagement.html">enable remote access</a> for this to work.
-    <ol>
-      <li>You must give the role &quot;tdsTrigger&quot; to any user who you want to have the right to send a trigger.</li>
-      <li>You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page <strong>https://server:port/thredds/admin/debug?Collections/showCollection</strong>
-      </li>
-      <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;</strong>, where <em>name</em>
-        is the collection name. This does a rescan, and updates if anything has changed.
-      </li>
-      <li>The TDM uses the trigger <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;&amp;nocheck</strong> . This
-        does not rescan the directory, it simply recreates the dataset using the current index.
-      </li>
-    </ol>
-  </li>
+  This URL is protected by HTTPS, so you must <a href="#trigger">enable triggers</a><a href="../RemoteManagement.html"></a> for this to work. Set this to &quot;false&quot; to disable triggering.</li>
 </ol>
-<h3>manage element (ONLY FOR TDM)</h3>
-
-<p>This instructs the TDM to manage your collection by deleting files that are older than a certain time.</p>
-<pre>&lt;manage deleteAfter<strong></strong>=&quot;30 days&quot;<strong> </strong><strong>check</strong>=&quot;cron expr&quot; /&gt;
+<p>For GRIB collections, dynamic updating of the collection by the TDS is no longer supported (use the TDM for this). Therefore <em>recheckAfter</em> and <em>rescan</em> are ignored on an <em>update</em> element for a GRIB collection.</p>
+<h3>tdm element (GRIB only)</h3>
+<p>You must use the <strong>tdm</strong> element for GRIB collections that change. The <a href="TDM.html">TDM</a> is a seperate process that uses the same configuration catalogs as the TDS, and updates  GRIB collections in the background. Example:</p>
+<pre>&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 4,19,34,49 * * * ? *&quot;  /&gt;
 </pre>
-<blockquote>
-  <p> where: </p>
-  <ol>
-    <li><strong>deleteAfter</strong>: delete files older than this amount</li>
-    <li><strong>check</strong>: &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to
-      specify when the collection should be checked for old files.
-    </li>
-  </ol>
-</blockquote>
+<ul>
+  <li>This example tells the TDM (not the TDS) to test if the dataset has changed 4 times every hour, specifically, at 4,19,34, and 49 minutes past the hour. If the collection has changed, new indices will be recreated, and a trigger will be sent to the TDS. </li>
+</ul>
+<p>The XML Schema definition for the <em>tdm</em> element: </p>
+<pre>
+&lt;xsd:complexType name=&quot;updateType&quot;&gt;<br/> 1)  &lt;xsd:attribute name=&quot;rewrite&quot; type=&quot;xsd:token&quot;/&gt;<br/> 2)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br/>&lt;/xsd:complexType&gt;<br/></pre>
+<p> where: </p>
+<ol>
+  <li><strong>rewrite</strong>: [<em>test</em> | <em>always</em>] If &quot;<em>always</em>&quot;, the collection index is always rebuilt. If    &quot;<em>test</em>&quot;, the collection is scanned and a new index is built if the collection has changed.</li>
+  <li><strong>rescan</strong>: uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the
+  collection should be rescanned. </li>
+</ol>
+<h3>Enabling Triggers<a name="trigger" id="trigger"></a></h3>
+<ol>
+  <li>You must give the role &quot;tdsTrigger&quot; to any user who you want to have the right to send a trigger.</li>
+  <li>You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page <strong>https://server:port/thredds/admin/debug?Collections/showCollection</strong></li>
+  <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;</strong>, where <em>name</em> is the collection name. This does a rescan, and updates if anything has changed. </li>
+  <li>The TDM uses the trigger <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;&amp;nocheck</strong> . This
+    does not rescan the directory, it simply recreates the dataset using the current index. </li>
+  <li>Also see <a href="../RemoteManagement.html">enabling Remote Management</a></li>
+</ol>
 <hr/>
 <h2><a name="changing" id="changing"></a>Static vs. changing datasets</h2>
 
@@ -342,52 +328,52 @@ The XML Schema definition for the update element:
   <li><strong>trigger</strong> attribute: allows a trigger to be sent to the TDS to tell it to update the collection. This is called <em>user controlled
     updating</em>.
   </li>
-  <li><strong>tdm</strong> element: you may use an external program such as the tdm to do all index updating. This is called <em>external program
+  <li><strong>tdm</strong> element: for GRIB collections, you may use  the <a href="TDM.html">TDM</a> to do all index updating. This is called <em>external program
   updating</em>. </li>
 </ol>
-<h3>Static Datasets - Small or Rarely Used</h3>
+<h3>Static Collection - Small or Rarely Used</h3>
 
 <p>If you have a collection that doesn't change, do not include an <strong>update</strong> element. The first time that the dataset is accessed, it will be read
   in and then never changed.</p>
 
-<h3><strong>Static Datasets - Fast response</strong></h3>
+<h3><strong>Static Collection - Fast response</strong></h3>
 
-<p>If you have a collection that doesnt change, but you want to have it ready for requests, then use:</p>
+<p>If you have a collection that doesn't change, but you want to have it ready for requests, then use:</p>
 <blockquote>
-  <pre>&lt;update startup =&quot;true&quot; /&gt;</pre>
+  <pre>&lt;update startup =&quot;always&quot; /&gt;</pre>
 </blockquote>
 <p>The dataset will be scanned at startup time and then never changed.</p>
 
-<h3><strong>Very Large Static Datasets </strong></h3>
+<h3><strong> Large Static Collection </strong></h3>
 
-<p>You have a very large collection, which takes a long time to scan. You must carefully control when/if it will be scanned. </p>
+<p>You have a  large collection, which takes a long time to scan. You must carefully control when/if it will be scanned. </p>
 <blockquote>
   <pre>&lt;update startup =&quot;nocheck&quot; /&gt;</pre>
 </blockquote>
-<p>The dataset will be read in at startup time by using the existing indexes (if they exists), and never changed. If indexes dont exist, they will be created on startup.</p>
+<p>The dataset will be read in at startup time by using the existing indexes (if they exist). If indexes dont exist, they will be created on startup.</p>
 
 <p>If it occasionally changes, then you want to manually tell it when to rescan:</p>
 <blockquote>
   <pre>&lt;update startup =&quot;nocheck&quot; trigger=&quot;allow&quot; /&gt;</pre>
 </blockquote>
-<p>The dataset will be read in at startup time by using the existing indexes, and you manually tell it when to rebuild the index.</p>
+<p>The dataset will be read in at startup time by using the existing indexes, and you manually tell it when to rebuild the index. You must <a href="#trigger">enable triggers</a>.</p>
 
 <h3>Changing Collection - Small or Rarely Used</h3>
 
 <p>For collections that change but are rarely used, use the <strong>recheckAfter</strong><strong> </strong>attribute on the <strong>update</strong>
-  element<strong>.</strong> This minimizes unneeded processing for lightly used collections. This is also a good strategy for small collections which don't take
+  element<strong>.</strong> This minimizes unneeded processing for lightly used collections. This is also a reasonable strategy for small collections which don't take
   very long to build.</p>
 <blockquote>
   <pre>&lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
 </blockquote>
-<p>Do not include both a <strong>recheckAfter</strong> and a <strong>rescan</strong> attribute. The <strong>recheckAfter</strong> will be ignored.</p>
+<p>Do not include both a <strong>recheckAfter</strong> and a <strong>rescan</strong> attribute. If you do, the <strong>recheckAfter</strong> will be ignored.</p>
 
 <h3><strong>Changing Collection - Fast response</strong></h3>
 
 <p>When you want to ensure that requests are answered as quickly as possible, read it at startup and also update the collection in the background using <strong>rescan</strong>:
 </p>
 <blockquote>
-  <pre>&lt;update startup=&quot;true&quot; rescan=&quot;0 20 * * * ? *&quot; /&gt;</pre>
+  <pre>&lt;update startup=&quot;test&quot; rescan=&quot;0 20 * * * ? *&quot; /&gt;</pre>
 </blockquote>
 <p>This <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expressio</a>n says to rescan the collection files every hour at 20 past
   the hour, and rebuild the dataset if needed.</p>
@@ -398,17 +384,29 @@ The XML Schema definition for the update element:
 <blockquote>
   <pre><strong>&lt;update trigger=&quot;allow&quot; /&gt;</strong></pre>
 </blockquote>
-<p>You must enable remote triggers, and when the dataset changes, send a message to a special URL in the TDS (<a href="#trigger">details</a>)</p>
-<h3><strong>Very Large Changing Datasets </strong></h3>
+<p>You must <a href="#trigger">enable remote triggers</a>, and when the dataset changes, send a message to a special URL in the TDS.</p>
+<h3><strong>Changing GRIB Collection </strong></h3>
+<p>You have a GRIB collection that changes. The TDS can only scan/write indices at startup time. You must use the TDM to detect any changes.</p>
+<blockquote>
+  <pre>&lt;update startup=&quot;test&quot; trigger=&quot;allow&quot;/&gt;<br />&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;  </pre>
+</blockquote>
+<p>The dataset will be read in at startup time by the TDS using the existing indexes, and will be scanned by the <a href="TDM.html">TDM</a> every 15 minutes, which will send a trigger as needed.</p>
+<h3><strong>Very Large  GRIB Collection </strong>that doesnt change</h3>
 <p>You have a very large collection, which takes a long time to scan. You must carefully control when/if it will be scanned. </p>
 <blockquote>
-  <pre>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt;<br />&lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;  </pre>
+  <pre>&lt;update startup=&quot;never&quot;/&gt;<br />&lt;tdm rewrite=&quot;test&quot;/&gt;  </pre>
 </blockquote>
-<p>The dataset will be read in at startup time by using the existing indexes, and will be scanned by the external program <strong>tdm</strong>. Never use <strong>recheckAfter</strong>.</p>
+<p>The TDS never scans the collection, it always uses existing indices, which must already exist. Run the TDM first, then after the indices are made, you can stop the TDM and start the TDS.</p>
+<h3><strong>Very Large  GRIB Collection that changes</strong></h3>
+<p>You have a very large collection which changes, and takes a long time to scan. You must carefully control when/if it will be scanned. </p>
+<blockquote>
+  <pre>&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;<br />&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0 3 * * ? *&quot; /&gt;</pre>
+</blockquote>
+<p>The dataset will be read in at startup time by using the existing indexes which must exist. The  <a href="TDM.html">TDM</a> will test if its changed once a day at 3 am, and  send a trigger to the TDS if needed.</p>
 <hr/>
 <h2>NcML Modifications<a name="ncml" id="ncml"></a></h2>
 
-<p>NcML is no longer used to define the collection, but it may still be used to modify the feature collection dataset. </p>
+<p>NcML is no longer used to define the collection, but it may still be used to modify the feature collection dataset, for FMRC or Point (not GRIB).</p>
 <pre>&lt;<strong>featureCollection featureType=&quot;FMRC&quot; </strong>name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
 1) &lt;<strong>collection</strong> spec=&quot;c:/rps/cf/rtofs/.*ofs_atl.*\.grib2$&quot; <strong>recheckAfter</strong>=&quot;10 min&quot; <strong>olderThan</strong>=&quot;5 min&quot;/&gt;
 
@@ -448,7 +446,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%"/>
 <address>
-  <img src="../../thread.png" width="76" height="67"/> This document was last updated March 2014
+  <img src="../../thread.png" width="76" height="67"/> This document was last updated October 2014
 </address>
 </body>
 </html>

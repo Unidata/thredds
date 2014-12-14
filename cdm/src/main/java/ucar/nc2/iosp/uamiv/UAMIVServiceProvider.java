@@ -457,7 +457,10 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
 
     } else {
       if (log.isDebugEnabled()) log.debug("UAMIVServiceProvider: adding projection file");
-      try (BufferedWriter bw = new BufferedWriter(new java.io.FileWriter(paramFile))) {
+      try (FileOutputStream out = new FileOutputStream(paramFile)) {
+        OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+        BufferedWriter bw = new BufferedWriter(fout);
+
         bw.write("# Projection parameters are based on IOAPI.  For details, see www.baronams.com/products/ioapi/GRIDS.html");
         bw.newLine();
         bw.write("GDTYP=");

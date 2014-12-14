@@ -238,20 +238,16 @@ public class PointObsViewer extends JPanel {
   }
 
   private void showData(PointObsDatatype pobs) {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+    StringWriter sw = new StringWriter(10000);
     try {
-      try {
-        StructureData sd = pobs.getData();
-        NCdumpW.printStructureData(new PrintWriter(bos), sd);
-      } catch (IOException e) {
-        e.printStackTrace(new PrintStream(bos, false, CDM.utf8Charset.name()));
-      }
-
-      dumpTA.setText(bos.toString(CDM.utf8Charset.name()));
-      dumpWindow.setVisible(true);
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
+      StructureData sd = pobs.getData();
+      NCdumpW.printStructureData(new PrintWriter(sw), sd);
+    } catch (IOException e) {
+      e.printStackTrace(new PrintWriter(sw));
     }
+
+    dumpTA.setText(sw.toString());
+    dumpWindow.setVisible(true);
   }
 
   static public String hiddenProperties() {

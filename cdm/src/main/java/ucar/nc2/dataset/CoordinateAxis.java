@@ -36,6 +36,11 @@ package ucar.nc2.dataset;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.conv.CF1Convention;
+import ucar.nc2.dataset.conv.COARDSConvention;
+import ucar.nc2.time.Calendar;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -393,5 +398,27 @@ public class CoordinateAxis extends VariableDS {
   }
 
   private int hashCode = 0;
+
+  /////////////////////////////////////
+
+  // needed by time coordinates
+  protected ucar.nc2.time.Calendar getCalendarFromAttribute() {
+    Attribute cal = findAttribute(CF.CALENDAR);
+    String s = (cal == null) ? null : cal.getStringValue();
+    if (s == null) {     // default for CF and COARDS
+      Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
+      if (convention != null) {
+        String hasName = convention.getStringValue();
+        int version = CF1Convention.getVersion(hasName);
+        if (version >= 0) {
+          return Calendar.gregorian;
+          //if (version < 7 ) return Calendar.gregorian;
+          //if (version >= 7 ) return Calendar.proleptic_gregorian; //
+        }
+        if (COARDSConvention.isMine(hasName)) return Calendar.gregorian;
+      }
+    }
+    return ucar.nc2.time.Calendar.get(s);
+  }
 
 }

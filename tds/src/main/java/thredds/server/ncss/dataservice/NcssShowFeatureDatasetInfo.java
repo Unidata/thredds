@@ -33,10 +33,13 @@
 
 package thredds.server.ncss.dataservice;
 
+import org.jdom2.JDOMException;
 import ucar.nc2.ft.FeatureDataset;
 
-public interface NcssShowFeatureDatasetInfo {
-	
-	public String showForm( FeatureDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint );
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
 
+public interface NcssShowFeatureDatasetInfo {
+	public String showForm( FeatureDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint )
+            throws IOException, TransformerException, JDOMException;
 }

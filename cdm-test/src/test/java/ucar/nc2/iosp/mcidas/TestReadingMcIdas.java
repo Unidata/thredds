@@ -33,16 +33,22 @@
 
 package ucar.nc2.iosp.mcidas;
 
+import edu.wisc.ssec.mcidas.AreaFile;
+import edu.wisc.ssec.mcidas.AreaFileException;
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * Describe
+ * Read everything in formats/mcidas
  *
  * @author caron
  * @since 8/30/13
@@ -51,33 +57,61 @@ public class TestReadingMcIdas {
 
   @Test
   public void testCompare() throws IOException {
-    doAll(TestDir.cdmUnitTestDir + "formats/mcidas");
+    long start = System.currentTimeMillis();
+    countOk += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/mcidas", null, new MyAct());
+    long took = (System.currentTimeMillis() - start);
+    System.out.printf("countOk=%d, countFail=%d took %d msecs %n", countOk, countFail, took);
+    assert countFail == 0;
   }
 
-  void doAll(String dirName) throws IOException {
-    File dir = new File(dirName);
-    System.out.printf("%nIn directory %s%n", dir.getPath());
-    for (File child : dir.listFiles()) {
-      if (child.isDirectory()) continue;
-      NetcdfFile ncfile = null;
-      try {
-        // if( child.startsWith( "air"))  continue;
-        System.out.printf("  Open File %s ", child.getPath());
-        long start = System.currentTimeMillis();
-        ncfile = NetcdfDataset.openFile(child.getPath(), null);
+  int countOk = 0;
+  int countFail = 0;
+
+  private class MyAct implements TestDir.Act {
+
+    @Override
+    public int doAct(String filename) throws IOException {
+      try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
+        System.out.printf("  Open McIdas File %s ", filename);
         String ft = ncfile.findAttValueIgnoreCase(null, "featureType", "none");
         String iosp = ncfile.getIosp().getFileTypeId();
-        System.out.printf(" iosp=%s ft=%s took =%d ms%n", iosp, ft, (System.currentTimeMillis() - start));
+        System.out.printf(" iosp=%s ft=%s%n", iosp, ft);
+        assert iosp.equals("McIDASArea") || iosp.equals("McIDASGrid") : iosp;
+        assert ft.equals(FeatureType.GRID.toString()) : ft;
+        return 1;
       } catch (Throwable t) {
         System.out.printf(" FAILED =%s%n", t.getMessage());
         t.printStackTrace();
-        if (ncfile != null) ncfile.close();
+        countFail++;
+        return 0;
       }
     }
-
-    for (File child : dir.listFiles()) {
-      if (child.isDirectory()) doAll(child.getPath());
-    }
-
   }
+
+
+  // @Test
+  public void testAreaProjection() throws IOException, AreaFileException {
+    String file = TestDir.cdmUnitTestDir + "formats/mcidas/AREA1222";
+    System.out.printf("testAreaProjection %s%n", file);
+    AreaFile af = new AreaFile(file);
+    McIDASAreaProjection proj = new McIDASAreaProjection(af);
+    LatLonPoint llp = new LatLonPointImpl(45, -105);
+    System.out.println("lat/lon = " + llp);
+    ProjectionPoint pp = proj.latLonToProj(llp);
+    System.out.println("proj point = " + pp);
+    llp = proj.projToLatLon(pp);
+    System.out.println("reverse llp = " + llp);
+
+    double[][] latlons = new double[][]{{45}, {-105}};
+    double[][] linele = proj.latLonToProj(latlons);
+    assert linele != null;
+    double[][] outll = proj.projToLatLon(linele);
+    assert outll != null;
+
+    System.out.println("proj point = " + linele[0][0] + "," + linele[1][0]);
+    System.out.println("proj point = " + outll[0][0] + "," + outll[1][0]);
+  }
+
+
+
 }

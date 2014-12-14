@@ -235,7 +235,7 @@ abstract public class DapUtil // Should only contain static methods
             path = path.substring(0, path.length() - 1);
         // As a last step, lowercase the drive letter, if any
         if(hasDriveLetter(path))
-            path = path.substring(0,1).toLowerCase() + path.substring(1);
+            path = path.substring(0, 1).toLowerCase() + path.substring(1);
         return path;
     }
 
@@ -255,7 +255,7 @@ abstract public class DapUtil // Should only contain static methods
     absolutize(String path)
     {
         if(path != null && !path.startsWith("/") && !hasDriveLetter(path))
-            path = "/"+path;
+            path = "/" + path;
         return path;
     }
 
@@ -359,17 +359,28 @@ abstract public class DapUtil // Should only contain static methods
     }
 
     /**
-     * Convert "" paths to null
+     * Convert null paths to ""
      *
      * @param path
      * @return path or ""
+     */
+    static public String
+    denullify(String path)
+    {
+        return (path == null  ? "" : path);
+    }
+
+    /**
+     * Convert "" paths to null
+     *
+     * @param path
+     * @return path or null
      */
     static public String
     nullify(String path)
     {
         return (path != null && path.length() == 0 ? null : path);
     }
-
 
     static public long dimProduct(List<DapDimension> dimset) // dimension crossproduct
     {
@@ -564,13 +575,13 @@ abstract public class DapUtil // Should only contain static methods
     static String
     multiSliceString(List<List<Slice>> slices)
     {
-        if(slices == null || slices.size() ==0)
+        if(slices == null || slices.size() == 0)
             return "[]";
         StringBuilder buf = new StringBuilder();
-        for(int i = 0; i<slices.size();i++) {
+        for(int i = 0; i < slices.size(); i++) {
             List<Slice> set = slices.get(i);
             buf.append("[");
-            for(int j=0;j<set.size();j++) {
+            for(int j = 0; j < set.size(); j++) {
                 if(i > 0)
                     buf.append(",");
                 buf.append(set.get(j));
@@ -586,11 +597,22 @@ abstract public class DapUtil // Should only contain static methods
     {
         if(slices == null)
             return false;
-        for(Slice s: slices) {
+        for(Slice s : slices) {
             if(!s.isContiguous())
                 return false;
         }
         return true;
     }
+
+
+    /**
+     * Re-throw run-time exceptions
+     */
+    static public void checkruntime(Exception e)
+    {
+	if(e instanceof RuntimeException)
+	    throw (RuntimeException)e;
+    }
+
 } // class DapUtil
 

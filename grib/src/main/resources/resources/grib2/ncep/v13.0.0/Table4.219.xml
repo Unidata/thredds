@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.219</table>
+  <title>Cloud Top Height Quality Indicator</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-219.shtml</source>
+  <parameter code="0">
+    <description>Nominal Cloud Top Height Quality</description>
+  </parameter>
+  <parameter code="1">
+    <description>Fog In Segment</description>
+  </parameter>
+  <parameter code="2">
+    <description>Poor Quality Height Estimation</description>
+  </parameter>
+  <parameter code="3">
+    <description>Fog In Segment and Poor Quality Height Estimation</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

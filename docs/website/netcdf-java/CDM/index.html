@@ -150,6 +150,7 @@
   <li>Since HDF5 does not support shared dimensions, however, reading HDF5 files into the higher levels of the CDM (Coordinate Systems, Grids, etc) may not work
     like you want. For this reason we recommend using the <a href="http://www.unidata.ucar.edu/software/netcdf/">netCDF-4 C library</a> for writing HDF5 files.
   Heres <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">why</a>.</li>
+  <li>Hard links that cause cycles in the group structure are ignored. These break the CDM and netCDF-4 data model, in which groups comprise a tree. All info in the HDF-5 file is still available to CDM users, but certain paths that one could call from the HDF-5 library are not available.</li>
 </ul>
 <p>Please send file examples if you find a problem with the CDM reading HDF5 files, other than the ones listed above.</p>
 <hr WIDTH="100%">
@@ -284,7 +285,7 @@ Structure {
 </ul>
 <hr WIDTH="100%">
 <address>
-  <img src="../nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated June 2014
+  <img src="../nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Oct 2014
 </address>
 <p>&nbsp;</p>
 </body>

@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Common_C03_20141105_en.xsd" generated="2014-11-05T17:26:49">
+<Common_C03_20141105_en>
+<No>1</No>
+<CodeFigureForIXIIXIX>001</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>1</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-4</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>2</No>
+<CodeFigureForIXIIXIX>002</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>2</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-4</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>3</No>
+<CodeFigureForIXIIXIX>011</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>11</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-5</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.828</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>4</No>
+<CodeFigureForIXIIXIX>021</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>21</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican Fast Deep</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.346</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>5</No>
+<CodeFigureForIXIIXIX>031</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>31</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-6</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>6</No>
+<CodeFigureForIXIIXIX>032</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>32</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-6</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>7</No>
+<CodeFigureForIXIIXIX>041</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>41</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-7</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>8</No>
+<CodeFigureForIXIIXIX>042</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>42</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-7</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>9</No>
+<CodeFigureForIXIIXIX>051</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>51</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican Deep Blue</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>10</No>
+<CodeFigureForIXIIXIX>052</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>52</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican Deep Blue</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>11</No>
+<CodeFigureForIXIIXIX>061</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>61</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-10</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.301</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>12</No>
+<CodeFigureForIXIIXIX>071</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>71</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican T-11</InstrumentMakeAndType_en>
+<EquationCoefficients_a>1.779</EquationCoefficients_a>
+<EquationCoefficients_b>-0.255</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>13</No>
+<CodeFigureForIXIIXIX>081</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>81</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican AXBT (300 m probes)</InstrumentMakeAndType_en>
+<EquationCoefficients_a>1.52</EquationCoefficients_a>
+<EquationCoefficients_b>0.0</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>14</No>
+<CodeFigureForIXIIXIX>201</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>201</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK T-4</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>15</No>
+<CodeFigureForIXIIXIX>202</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>202</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK T-4</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>16</No>
+<CodeFigureForIXIIXIX>211</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>211</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK T-6</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>17</No>
+<CodeFigureForIXIIXIX>212</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>212</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK T-6</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>18</No>
+<CodeFigureForIXIIXIX>221</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>221</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK T-7</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>19</No>
+<CodeFigureForIXIIXIX>222</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>222</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK T-7</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>20</No>
+<CodeFigureForIXIIXIX>231</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>231</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK T-5</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.828</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>21</No>
+<CodeFigureForIXIIXIX>241</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>241</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK T-10</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.301</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>22</No>
+<CodeFigureForIXIIXIX>251</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>251</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK Deep Blue</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>23</No>
+<CodeFigureForIXIIXIX>252</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>252</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK Deep Blue</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>24</No>
+<CodeFigureForIXIIXIX>261</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>261</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK AXBT</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>25</No>
+<CodeFigureForIXIIXIX>401</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>401</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-1</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.301</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>26</No>
+<CodeFigureForIXIIXIX>411</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>411</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-3</InstrumentMakeAndType_en>
+<EquationCoefficients_a>5.861</EquationCoefficients_a>
+<EquationCoefficients_b>-0.0904</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>27</No>
+<CodeFigureForIXIIXIX>421</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>421</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-4</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>28</No>
+<CodeFigureForIXIIXIX>431</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>431</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-5</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.828</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>29</No>
+<CodeFigureForIXIIXIX>441</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>441</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-5DB</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.828</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>30</No>
+<CodeFigureForIXIIXIX>451</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>451</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-6</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>31</No>
+<CodeFigureForIXIIXIX>461</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>461</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-7</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>32</No>
+<CodeFigureForIXIIXIX>462</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>462</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-7</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.705</EquationCoefficients_a>
+<EquationCoefficients_b>-2.28</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>33</No>
+<CodeFigureForIXIIXIX>471</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>471</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-7DB</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>34</No>
+<CodeFigureForIXIIXIX>481</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>481</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-10</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.301</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>35</No>
+<CodeFigureForIXIIXIX>491</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>491</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-20</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>36</No>
+<CodeFigureForIXIIXIX>501</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>501</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton XBT-20DB</InstrumentMakeAndType_en>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>37</No>
+<CodeFigureForIXIIXIX>510</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>510</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sparton 536 AXBT</InstrumentMakeAndType_en>
+<EquationCoefficients_a>1.524</EquationCoefficients_a>
+<EquationCoefficients_b>0</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>38</No>
+<CodeFigureForIXIIXIX>700</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>700</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican XCTD Standard</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>39</No>
+<CodeFigureForIXIIXIX>710</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>710</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican XCTD Deep</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>40</No>
+<CodeFigureForIXIIXIX>720</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>720</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican AXCTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>41</No>
+<CodeFigureForIXIIXIX>730</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>730</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican SXCTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>42</No>
+<CodeFigureForIXIIXIX>741</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>741</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK XCTD/XCTD-1</InstrumentMakeAndType_en>
+<EquationCoefficients_a>3.42543</EquationCoefficients_a>
+<EquationCoefficients_b>-0.47</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>43</No>
+<CodeFigureForIXIIXIX>742</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>742</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK XCTD-2</InstrumentMakeAndType_en>
+<EquationCoefficients_a>3.43898</EquationCoefficients_a>
+<EquationCoefficients_b>-0.31</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>44</No>
+<CodeFigureForIXIIXIX>743</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>743</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK XCTD-2F</InstrumentMakeAndType_en>
+<EquationCoefficients_a>3.43898</EquationCoefficients_a>
+<EquationCoefficients_b>-0.31</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>45</No>
+<CodeFigureForIXIIXIX>744</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>744</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK XCTD-3</InstrumentMakeAndType_en>
+<EquationCoefficients_a>5.07598</EquationCoefficients_a>
+<EquationCoefficients_b>-0.72</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>46</No>
+<CodeFigureForIXIIXIX>745</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>745</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK XCTD-4</InstrumentMakeAndType_en>
+<EquationCoefficients_a>3.68081</EquationCoefficients_a>
+<EquationCoefficients_b>-0.47</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>47</No>
+<CodeFigureForIXIIXIX>751</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>751</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>TSK AXCTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>48</No>
+<CodeFigureForIXIIXIX>780</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>780</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sea-Bird SBE21 SEACAT Thermosalinograph</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>49</No>
+<CodeFigureForIXIIXIX>781</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>781</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sea-Bird SBE45 MicroTSG Thermosalinograph</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>50</No>
+<CodeFigureForIXIIXIX>800</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>800</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Mechanical BT</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>51</No>
+<CodeFigureForIXIIXIX>810</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>810</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Hydrocast</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>52</No>
+<CodeFigureForIXIIXIX>820</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>820</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Thermistor chain</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>53</No>
+<CodeFigureForIXIIXIX>825</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>825</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Temperature (sonic) and pressure probes</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>54</No>
+<CodeFigureForIXIIXIX>830</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>830</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>CTD</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>55</No>
+<CodeFigureForIXIIXIX>831</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>831</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>CTD-P-ALACE float</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>56</No>
+<CodeFigureForIXIIXIX>837</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>837</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>ARVOR_C, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>57</No>
+<CodeFigureForIXIIXIX>838</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>838</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>ARVOR_D, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>58</No>
+<CodeFigureForIXIIXIX>839</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>839</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>PROVOR–II, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>59</No>
+<CodeFigureForIXIIXIX>840</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>840</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>PROVOR, no conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>60</No>
+<CodeFigureForIXIIXIX>841</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>841</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>PROVOR, Sea-Bird conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>61</No>
+<CodeFigureForIXIIXIX>842</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>842</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>PROVOR, FSI conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>62</No>
+<CodeFigureForIXIIXIX>843</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>843</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Polar Ocean Profiling System (POPS), PROVOR, SBE CTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>63</No>
+<CodeFigureForIXIIXIX>844</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>844</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling float, ARVOR, Sea-Bird conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>64</No>
+<CodeFigureForIXIIXIX>845</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>845</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Webb Research, no conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>65</No>
+<CodeFigureForIXIIXIX>846</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>846</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Webb Research, Sea-Bird conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>66</No>
+<CodeFigureForIXIIXIX>847</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>847</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Webb Research, FSI conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>67</No>
+<CodeFigureForIXIIXIX>848</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>848</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>APEX–EM, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>68</No>
+<CodeFigureForIXIIXIX>849</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>849</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>APEX_D, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>69</No>
+<CodeFigureForIXIIXIX>850</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>850</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>SOLO, no conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>70</No>
+<CodeFigureForIXIIXIX>851</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>851</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>SOLO, Sea-Bird conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>71</No>
+<CodeFigureForIXIIXIX>852</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>852</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>SOLO, FSI conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>72</No>
+<CodeFigureForIXIIXIX>853</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>853</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling float, SOLO2 (SCRIPPS), Sea-Bird conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>73</No>
+<CodeFigureForIXIIXIX>854</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>854</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>S2A, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>74</No>
+<CodeFigureForIXIIXIX>855</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>855</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling float, NINJA, no conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>75</No>
+<CodeFigureForIXIIXIX>856</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>856</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling float, NINJA, SBE conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>76</No>
+<CodeFigureForIXIIXIX>857</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>857</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling float, NINJA, FSI conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>77</No>
+<CodeFigureForIXIIXIX>858</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>858</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling float, NINJA, TSK conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>78</No>
+<CodeFigureForIXIIXIX>859</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>859</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling float, NEMO, no conductivity</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>79</No>
+<CodeFigureForIXIIXIX>860</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>860</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling float, NEMO, SBE conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>80</No>
+<CodeFigureForIXIIXIX>861</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>861</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Profiling Float, NEMO, FSI conductivity sensor</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>81</No>
+<CodeFigureForIXIIXIX>862</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>862</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>SOLO_D, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>82</No>
+<CodeFigureForIXIIXIX>863</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>863</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>NAVIS–A, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>83</No>
+<CodeFigureForIXIIXIX>864</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>864</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>NINJA_D, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>84</No>
+<CodeFigureForIXIIXIX>865</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>865</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>NOVA, SBE conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>85</No>
+<CodeFigureForIXIIXIX>866</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>866</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>ALAMO, No Conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>86</No>
+<CodeFigureForIXIIXIX>867</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>867</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>ALAMO, RBR Conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>87</No>
+<CodeFigureForIXIIXIX>868</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>868</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>ALAMO, SBE Conductivity sensor</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>88</No>
+<CodeFigureForIXIIXIX>869-899</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>869-899</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Reserved</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>89</No>
+<CodeFigureForIXIIXIX>900</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>900</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Sippican LMP-5 XBT</InstrumentMakeAndType_en>
+<EquationCoefficients_a>9.727</EquationCoefficients_a>
+<EquationCoefficients_b>-0.0000473</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>90</No>
+<CodeFigureForIXIIXIX>901</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>901</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Ice-tethered Profiler (ITP), SBE CTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>91</No>
+<CodeFigureForIXIIXIX>902</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>902</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Brooke ocean moving vessel profiler (MVP)</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>92</No>
+<CodeFigureForIXIIXIX>903</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>903</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Seabird CTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>93</No>
+<CodeFigureForIXIIXIX>904</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>904</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>AML oceanographic CTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>94</No>
+<CodeFigureForIXIIXIX>905</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>905</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Falmouth scientific CTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>95</No>
+<CodeFigureForIXIIXIX>906</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>906</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Ocean sensors CTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>96</No>
+<CodeFigureForIXIIXIX>907</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>907</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Valeport CTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>97</No>
+<CodeFigureForIXIIXIX>908</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>908</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Ocean science MVP</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>98</No>
+<CodeFigureForIXIIXIX>909</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>909</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Idronaut CTD</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>99</No>
+<CodeFigureForIXIIXIX>910</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>910</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Seabird SBE38</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>100</No>
+<CodeFigureForIXIIXIX>911-994</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>911-994</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Reserved</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>101</No>
+<CodeFigureForIXIIXIX>995</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>995</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Instrument attached to marine mammals</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>102</No>
+<CodeFigureForIXIIXIX>996</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>996</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Instrument attached to animals other than marine mammals</InstrumentMakeAndType_en>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>103</No>
+<CodeFigureForIXIIXIX>997-999</CodeFigureForIXIIXIX>
+<CodeFigureForBUFR>997-999</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Reserved</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>104</No>
+<CodeFigureForBUFR>1000-1022</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Reserved</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+<Common_C03_20141105_en>
+<No>105</No>
+<CodeFigureForBUFR>1023</CodeFigureForBUFR>
+<InstrumentMakeAndType_en>Missing value</InstrumentMakeAndType_en>
+<Status>Operational</Status>
+</Common_C03_20141105_en>
+</dataroot>

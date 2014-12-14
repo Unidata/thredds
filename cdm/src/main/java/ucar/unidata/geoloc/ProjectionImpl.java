@@ -121,7 +121,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   /**
    * list of attributes
    */
-  protected final List<Parameter> atts = new ArrayList<Parameter>();
+  protected final List<Parameter> atts = new ArrayList<>();
 
   /**
    * default map area

@@ -33,6 +33,19 @@
     </developer>
   </developers>
 
+  <dependencies>
+    <!-- calendar / datetime -->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+    <!-- concurrency annotations -->
+    <dependency>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
+    </dependency>
+  </dependencies>
+
   <!-- build>
     <defaultGoal>install</defaultGoal>
     <plugins>

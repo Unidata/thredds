@@ -277,21 +277,25 @@ public class CFGridWriter2 {
 
     ProjectionPoint lowerLeft = projRect.getLowerLeftPoint();
     ProjectionPoint upperRigth = projRect.getUpperRightPoint();
-    double minx = lowerLeft.getX();
-    double miny = lowerLeft.getY();
-    double maxx = upperRigth.getX();
-    double maxy = upperRigth.getY();
+    double minX = lowerLeft.getX();
+    double minY = lowerLeft.getY();
+    double maxX = upperRigth.getX();
+    double maxY = upperRigth.getY();
 
-    //y_range
-    int minyCoord = yAxis.findCoordElement(miny);
-    int maxyCoord = yAxis.findCoordElement(maxy);
+    int minY_idx = yAxis.findCoordElement(minY);
+    int maxY_idx = yAxis.findCoordElement(maxY);
 
-    //x_range
-    int minxCoord = xAxis.findCoordElement(minx);
-    int maxxCoord = xAxis.findCoordElement(maxx);
+    // When yAxis is increasing, "minY_idx < maxY_idx == true".
+    // When yAxis is decreasing, "minY_idx > maxY_idx == true".
+    // To handle both cases, we need to use the min() and max() functions.
+    Range yRange = new Range(Math.min(minY_idx, maxY_idx), Math.max(minY_idx, maxY_idx), horizStride);
 
-    yxRanges.add(0, new Range(minyCoord, maxyCoord, horizStride));
-    yxRanges.add(1, new Range(minxCoord, maxxCoord, horizStride));
+    int minX_idx = xAxis.findCoordElement(minX);
+    int maxX_idx = xAxis.findCoordElement(maxX);
+    Range xRange = new Range(Math.min(minX_idx, maxX_idx), Math.max(minX_idx, maxX_idx), horizStride);
+
+    yxRanges.add(0, yRange);
+    yxRanges.add(1, xRange);
   }
 
   private void addGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, LatLonRect llbb) {

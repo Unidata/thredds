@@ -35,12 +35,11 @@ package ucar.unidata.io;
 
 import net.jcip.annotations.NotThreadSafe;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 
 import java.io.*;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -81,10 +80,15 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   // debug leaks - keep track of open files
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
-  static protected Set<String> allFiles = new HashSet<String>();
+  static protected Set<String> allFiles = null;
   static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
+  static private AtomicLong count_openFiles = new AtomicLong();
+  static private AtomicInteger maxOpenFiles = new AtomicInteger();
   static private AtomicInteger debug_nseeks = new AtomicInteger();
   static private AtomicLong debug_nbytes = new AtomicLong();
+
+  static protected boolean showOpen = false;
+  static protected boolean showRead = false;
 
   /**
    * Debugging, do not use.
@@ -97,10 +101,15 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
 
   /**
    * Debugging, do not use.
-   *
+   * Set counters to zero, set
    * @param b set true to track java.io.RandomAccessFile
    */
   static public void setDebugLeaks(boolean b) {
+    if (b) {
+      count_openFiles.set(0);
+      maxOpenFiles.set(0);
+      allFiles = new HashSet<>(1000);
+    }
     debugLeaks = b;
   }
 
@@ -113,14 +122,22 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
     return openFiles;
   }
 
+  static public long getOpenFileCount() {
+    return count_openFiles.get();
+  }
+
+  static public int getMaxOpenFileCount() {
+    return maxOpenFiles.get();
+  }
+
   /**
    * Debugging, do not use.
    *
    * @return list of all files used.
    */
   static public List<String> getAllFiles() {
-    List<String> result = new ArrayList<>();
     if (null == allFiles) return null;
+    List<String> result = new ArrayList<>();
     result.addAll(allFiles);
     Collections.sort(result);
     return result;
@@ -157,9 +174,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
     return (debug_nbytes == null) ? 0 : debug_nbytes.longValue();
   }
 
-  static protected boolean showOpen = false;
-  static protected boolean showRead = false;
-
   /**
    * The default buffer size, in bytes.
    */
@@ -171,7 +185,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    * File location
    */
   protected String location;
-  protected FileCache fileCache = null;
+  protected FileCacheIF fileCache = null;
 
   /**
    * The underlying java.io.RandomAccessFile.
@@ -276,13 +290,33 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
       allFiles.add(location);
     }
 
-    this.file = new java.io.RandomAccessFile(location, mode);
+    try {
+      this.file = new java.io.RandomAccessFile(location, mode);
+    } catch (IOException ioe) {
+      if (ioe.getMessage().equals("Too many open files")) {
+        System.out.printf("RandomAccessFile %s%n", ioe);
+        try {
+          Thread.currentThread().sleep(100);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        this.file = new java.io.RandomAccessFile(location, mode); // Windows having troublke keeping up ??
+      } else {
+        throw ioe;
+      }
+    }
+
     this.readonly = mode.equals("r");
     init(bufferSize);
 
     if (debugLeaks) {
       openFiles.add(location);
+      int max = Math.max(openFiles.size(), maxOpenFiles.get());
+      maxOpenFiles.set(max);
+      count_openFiles.getAndIncrement();
       if (showOpen) System.out.println("  open " + location);
+      if (openFiles.size() > 1000)
+        System.out.println("HEY");
     }
   }
 
@@ -330,7 +364,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    *
    * @throws IOException if an I/O error occurrs.
    */
-  public void close() throws IOException {
+  public synchronized void close() throws IOException {
     if (fileCache != null) {
       fileCache.release(this);
       return;
@@ -380,7 +414,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
   }
 
   @Override
-  public void setFileCache(FileCache fileCache) {
+  public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 
@@ -513,7 +547,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, A
    *
    * @param minLength minimum length of the file.
    */
-  public void setMinLength(long minLength) {
+  public synchronized void setMinLength(long minLength) {
     this.minLength = minLength;
   }
 

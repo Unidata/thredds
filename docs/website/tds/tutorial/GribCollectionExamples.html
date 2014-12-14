@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>GRIB Collection Examples</title>
+  <link rel="stylesheet" href="tutorial2.css" type="text/css"/>
+  <script type="text/javascript" src="workshopNav.js"></script>
+</head>
+
+<body>
+<h1>Grib Collections</h1>
+<p>A GRIB Collection is a collection of files that have GRIB records in them. Each file will have a grib index (<em>gbx9</em>) file generated for it. Once generated, gbx9 files never have to be redone.</p>
+<p>Each logical collection has a CDM index (<em>ncx2</em>) file. All the records for a single runtime comprise a logical collection, called a RC. </p>
+<h3>case 1. {collection} has single runtime </h3>
+<pre>&lt;dataset name=&quot;GRIB Collection Example for tutorial (single runtime)&quot; serviceName=&quot;gribServices&quot; &gt;
+ &lt;featureCollection name=&quot;Ismoro Single Runtime&quot; featureType=&quot;GRIB1&quot; harvest=&quot;true&quot; path=&quot;Grib/srt&quot;&gt;
+  &lt;collection name=&quot;collsrt&quot; spec=&quot;/machine/tds/data/grib/ecmwf/.*grib$&quot; /&gt;
+  &lt;update startup=&quot;test&quot; /&gt;
+ &lt;/featureCollection&gt;
+&lt;/dataset&gt;</pre>
+Single RC dataset, single CDM index  file. One time dimension. May have multiple groups (horizontal domains).
+<h3>case 2. {collection} has multiple runtimes 
+</h3>
+<pre>
+&lt;dataset name=&quot;GRIB Collection Example for tutorial (multiple runtimes)&quot; serviceName=&quot;gribServices&quot;&gt;
+ &lt;featureCollection name=&quot;GFS multiple runtime&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;Grib/mrt&quot;&gt;
+  &lt;collection name=&quot;collmrt&quot; spec=&quot;/machine/tds/data/grib/gfsmrt/.*grib2$&quot; /&gt;
+  &lt;update startup=&quot;test&quot; /&gt;
+ &lt;/featureCollection&gt;
+&lt;/dataset&gt;</pre>
+One RC dataset for each runtime, plus PofGC "collection dataset" with both runtime and time dimensions.
+<h3>case 3. {collection} has multiple runtimes, one per file: use <em>file</em> partition</h3>
+<pre>
+&lt;dataset name=&quot;GRIB Collection Example for tutorial (file partition)&quot; serviceName=&quot;gribServices&quot;&gt;
+ &lt;featureCollection name=&quot;GFS file partition&quot; featureType=&quot;GRIB2&quot; harvest=&quot;true&quot; path=&quot;Grib/fp&quot;&gt;
+  &lt;collection name=&quot;collfp&quot; spec=&quot;/machine/tds/data/grib/gfsfp/.*grib2$&quot; timePartition=&quot;file&quot;/&gt;
+  &lt;update startup=&quot;test&quot; /&gt;
+ &lt;/featureCollection&gt;
+&lt;/dataset&gt;</pre>
+One RC dataset for each runtime, plus PofGC "collection dataset" with both runtime and time dimensions.  More efficient indexing.
+
+<h3>case 4. {collection} has multiple runtimes, time partitioned by directory: use <em>directory</em> partition</h3>
+<pre>&lt;dataset name=&quot;GRIB Collection Example for tutorial (directory partition)&quot; serviceName=&quot;gribServices&quot;&gt;<br />  &lt;featureCollection name=&quot;GFS file partition&quot; featureType=&quot;GRIB1&quot; harvest=&quot;true&quot; path=&quot;Grib/dp&quot;&gt;<br />    &lt;collection name=&quot;colldp&quot; spec=&quot;/machine/tds/data/grib/rfc/**/.*grib1$&quot; timePartition=&quot;directory&quot;/&gt;<br />    &lt;update startup=&quot;test&quot; /&gt;<br />  &lt;/featureCollection&gt;<br />&lt;/dataset&gt;</pre>
+<p>One RC dataset for each runtime, plus PofGC or PofP &quot;collection dataset&quot; for each directory in the tree. Scales to large collections.</p>
+<h3>case 5. {collection}  has multiple runtimes, one per file, time partitioned by directory: use <em>file</em> partition</h3>
+<p>One RC dataset for each runtime, plus PofGC or PofP &quot;collection dataset&quot; for each directory in the tree. Scales to large collections. More efficient indexing.</p>
+<h2>Summary
+</h2>
+<p>{collection} -&gt; {runTime} -&gt; {Group}	: a RC is a single runtime with 1 or more groups (GDS), has a single index (ncx2) file.</p>
+<p>PofGC = {RC}</p>
+<p>PofP = {PofGC}</p>
+</body>
+</html>

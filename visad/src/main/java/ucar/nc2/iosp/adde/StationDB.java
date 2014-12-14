@@ -48,7 +48,7 @@ import edu.wisc.ssec.mcidas.McIDASUtil;
 public class StationDB {
   static private boolean debugOpen = false, debugCall = false, debugParse = false;
 
-  private ArrayList stations = new ArrayList();
+  private List<Station> stations = new ArrayList<>();
 
   /**
    * Reads station table ascii output from mcidas STNLIST command
@@ -110,7 +110,7 @@ public class StationDB {
    * Reads station info by making a call to ADDE server: very slow!!!
    */
   StationDB(String location, CancelTask cancel) throws IOException {
-    HashMap hashStations = new HashMap(5000);
+    Map<String, Station> hashStations = new HashMap<>(5000);
 
     try {
       if (debugOpen) System.out.println("Call ADDE Server " + location);
@@ -146,11 +146,10 @@ public class StationDB {
         if ((cancel != null) && cancel.isCancel()) return;
       }
       if (debugCall) System.out.println(" hashStations count= " + hashStations.size() + " last = " + last);
-      List stationList = new ArrayList(hashStations.keySet());
+      List<String> stationList = new ArrayList<>(hashStations.keySet());
       Collections.sort(stationList);
-      stations = new ArrayList();
-      for (int i = 0; i < stationList.size(); i++) {
-        String id = (String) stationList.get(i);
+      stations = new ArrayList<>();
+      for (String id : stationList) {
         stations.add(hashStations.get(id));
         if ((cancel != null) && cancel.isCancel()) return;
       }
@@ -161,13 +160,13 @@ public class StationDB {
     }
   }
 
-  public ArrayList getStations() {
+  public List<Station> getStations() {
     return stations;
   }
 
-  public class Station extends ucar.unidata.geoloc.StationImpl {
+  static public class Station extends ucar.unidata.geoloc.StationImpl {
     String idn, id, name, type, state, country, desc;
-    double lat, lon, elev;
+    //double lat, lon, elev;
 
     Station(String idn, String id, String name, String type, String state, String country, String latS,
             String lonS, String elevS) {
@@ -189,7 +188,7 @@ public class StationDB {
         desc = this.name + ", " + this.country;
 
       try {
-        elev = Double.parseDouble(elevS);
+        alt = Double.parseDouble(elevS);
       } catch (NumberFormatException e) {
         e.printStackTrace();
       }
@@ -219,11 +218,11 @@ public class StationDB {
       this.desc = desc;
       this.lat = lat;
       this.lon = lon;
-      this.elev = elev;
+      this.alt = elev;
     }
 
     public String toString() {
-      return idn + " " + id + " " + name + " " + type + " " + state + " " + country + " " + lat + " " + lon + " " + elev;
+      return idn + " " + id + " " + name + " " + type + " " + state + " " + country + " " + lat + " " + lon + " " + alt;
     }
 
     public String getName() {
@@ -247,7 +246,7 @@ public class StationDB {
     }
 
     public double getAltitude() {
-      return elev;
+      return alt;
     }
 
     public int compareTo(Station so) {
@@ -265,8 +264,8 @@ public class StationDB {
     long took = System.currentTimeMillis() - start;
     List list = stnDB.getStations();
     double sum = 0.0;
-    for (int i = 0; i < list.size(); i++) {
-      Station s = (Station) list.get(i);
+    for (Object aList : list) {
+      Station s = (Station) aList;
       sum += s.getLatitude();
     }
     System.out.println(" read " + testName + " count=" + list.size() + " took=" + took + " msec " + " sum= " + sum);

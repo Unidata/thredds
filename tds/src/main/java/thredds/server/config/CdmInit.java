@@ -122,19 +122,16 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     /* <Netcdf4Clibrary>
        <libraryPath>C:/cdev/lib/</libraryPath>
        <libraryName>netcdf4</libraryName>
-     </Netcdf4Clibrary> */
+     </Netcdf4Clibrary>
+    */
     String libraryPath = ThreddsConfig.get("Netcdf4Clibrary.libraryPath", null);
     String libraryName = ThreddsConfig.get("Netcdf4Clibrary.libraryName", null);
     if (libraryPath != null || libraryName != null){
       Nc4Iosp.setLibraryAndPath(libraryPath, libraryName);
-    } else {
-      Nc4Iosp.setWarnOff(); // if they dont have a Netcdf4Clibrary element, suppress warnings
     }
 
     //Netcdf4 library could be set as a environment variable or as a jvm parameter
-      if (!Nc4Iosp.isClibraryPresent()) {
-          startupLog.warn("netcdf4 c library not present jna_path='" + libraryPath + "' libname=" + libraryName + "");
-      } else {
+      if (Nc4Iosp.isClibraryPresent()) {
           FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
 //      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4EXT, true);
 
@@ -291,7 +288,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   //should be called when tomcat exits
   public void destroy() throws Exception {
     if (timer != null) timer.cancel();
-    FileCache.shutdown();
+    FileCache.shutdown();              // this handles all instances of FileCache
     if (aggCache != null) aggCache.exit();
     if (gribCache != null) gribCache.exit();
     if (cdmrCache != null) cdmrCache.exit();
@@ -302,7 +299,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     MDC.clear();
   }
 
-  private class CacheScourTask extends TimerTask {
+  static private class CacheScourTask extends TimerTask {
     long maxBytes;
 
     CacheScourTask(long maxBytes) {

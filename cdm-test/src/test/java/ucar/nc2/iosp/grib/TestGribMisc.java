@@ -103,13 +103,14 @@ public class TestGribMisc {
     // a corner case with a single-bit field; this case was broken in the
     // original jj2000 code
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
+    System.out.printf("testJPEG2K %s%n", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1");
       int[] origin = {0, 38, 281};
       int[] shape = {1, 1, 2};
       Array vals = v.read(origin, shape);
-      assert Misc.closeEnough(vals.getFloat(0), 0.0);
-      assert Misc.closeEnough(vals.getFloat(1), 1.0);
+      assert Misc.closeEnough(vals.getFloat(0), 0.0) : vals.getFloat(0);
+      assert Misc.closeEnough(vals.getFloat(1), 1.0) : vals.getFloat(1);
     }
   }
 
@@ -117,6 +118,7 @@ public class TestGribMisc {
   public void testNBits0() throws IOException {
     // Tests of GRIB2 nbits=0; should be reference value (0.0), not missing value
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/SingleRecordNbits0.grib2";
+    System.out.printf("testNBits0 %s%n", filename);
 
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-1-194_L1");

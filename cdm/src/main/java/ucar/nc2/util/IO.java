@@ -1,61 +1,63 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.util;
 
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.EscapeStrings;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.nio.channels.FileChannel;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Input/Output utilities.
  *
  * @author John Caron
+ * @see "http://stackoverflow.com/questions/12552863/correct-idiom-for-managing-multiple-chained-resources-in-try-with-resources-bloc"
  */
 public class IO {
 
-  static public int default_file_buffersize = 9200;
-  static public int default_socket_buffersize = 64000;
-  static private boolean showStackTrace = false;
-  static private boolean debug = false, showResponse = false;
-  static private boolean showHeaders = false;
+  static public final int default_file_buffersize = 9200;
+  static public final int default_socket_buffersize = 64000;
+  static private final boolean showStackTrace = false;
+  static private final boolean debug = false, showCopy = false;
+  static private final boolean showHeaders = false;
 
   static private Class cl;
 
@@ -103,6 +105,7 @@ public class IO {
       out.write(buffer, 0, bytesRead);
       totalBytesRead += bytesRead;
     }
+    out.flush();
     return totalBytesRead;
   }
 
@@ -196,7 +199,6 @@ public class IO {
   static public long copyB(InputStream in, OutputStream out, int bufferSize) throws IOException {
     long totalBytesRead = 0;
     int done = 0, next = 1;
-    boolean show = false;
 
     byte[] buffer = new byte[bufferSize];
     while (true) {
@@ -205,7 +207,7 @@ public class IO {
       out.write(buffer, 0, n);
       totalBytesRead += n;
 
-      if (show) {
+      if (showCopy) {
         done += n;
         if (done > 1000 * 1000 * next) {
           System.out.println(next + " Mb");
@@ -213,6 +215,7 @@ public class IO {
         }
       }
     }
+    out.flush();
     return totalBytesRead;
   }
 
@@ -234,6 +237,7 @@ public class IO {
       count += bytesRead;
       if (count > n) return;
     }
+    out.flush();
   }
 
   /**
@@ -300,15 +304,12 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public void copyFile(String fileInName, String fileOutName) throws IOException {
-    InputStream in = null;
-    OutputStream out = null;
-    try {
-      in = new BufferedInputStream(new FileInputStream(fileInName));
-      out = new BufferedOutputStream(new FileOutputStream(fileOutName));
+    try (FileInputStream fin = new FileInputStream(fileInName);
+         FileOutputStream fout = new FileOutputStream(fileOutName)) {
+
+      InputStream in = new BufferedInputStream(fin);
+      OutputStream out = new BufferedOutputStream(fout);
       IO.copy(in, out);
-    } finally {
-      if (null != in) in.close();
-      if (null != out) out.close();
     }
   }
 
@@ -320,15 +321,11 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public void copyFile(File fileIn, File fileOut) throws IOException {
-    InputStream in = null;
-    OutputStream out = null;
-    try {
-      in = new BufferedInputStream(new FileInputStream(fileIn));
-      out = new BufferedOutputStream(new FileOutputStream(fileOut));
+    try (FileInputStream fin = new FileInputStream(fileIn);
+         FileOutputStream fout = new FileOutputStream(fileOut)) {
+      InputStream in = new BufferedInputStream(fin);
+      OutputStream out = new BufferedOutputStream(fout);
       IO.copy(in, out);
-    } finally {
-      if (null != in) in.close();
-      if (null != out) out.close();
     }
   }
 
@@ -352,12 +349,9 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public void copyFileB(File fileIn, OutputStream out, int bufferSize) throws IOException {
-    InputStream in = null;
-    try {
-      in = new BufferedInputStream(new FileInputStream(fileIn));
+    try (FileInputStream fin = new FileInputStream(fileIn)) {
+      InputStream in = new BufferedInputStream(fin);
       IO.copyB(in, out, bufferSize);
-    } finally {
-      if (null != in) in.close();
     }
   }
 
@@ -383,6 +377,7 @@ public class IO {
       out.write(buffer, 0, bytesRead);
       want -= bytesRead;
     }
+    out.flush();
     return length - want;
   }
 
@@ -396,10 +391,15 @@ public class IO {
   static public void copyDirTree(String fromDirName, String toDirName) throws IOException {
     File fromDir = new File(fromDirName);
     File toDir = new File(toDirName);
+
     if (!fromDir.exists())
       return;
-    if (!toDir.exists())
-      assert toDir.mkdirs();
+
+    if (!toDir.exists()) {
+      if (!toDir.mkdirs()) {
+        throw new IOException("Could not create directory: " + toDir);
+      }
+    }
 
     File[] files = fromDir.listFiles();
     if (files != null)
@@ -420,13 +420,9 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public byte[] readFileToByteArray(String filename) throws IOException {
-    InputStream in = null;
-    try {
-      in = new BufferedInputStream(new FileInputStream(filename));
+    try (FileInputStream fin = new FileInputStream(filename)) {
+      InputStream in = new BufferedInputStream(fin);
       return readContentsToByteArray(in);
-
-    } finally {
-      if (in != null) in.close();
     }
   }
 
@@ -438,16 +434,12 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public String readFile(String filename) throws IOException {
-    InputStreamReader reader = new InputStreamReader(new FileInputStream(filename), CDM.utf8Charset);
-
-    try {
+    try (FileInputStream fin = new FileInputStream(filename)) {
+      InputStreamReader reader = new InputStreamReader(fin, CDM.utf8Charset);
       StringWriter swriter = new StringWriter(50000);
       UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(swriter);
       writer.write(reader);
       return swriter.toString();
-
-    } finally {
-      if (reader != null) reader.close();
     }
   }
 
@@ -459,16 +451,11 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public void writeToFile(String contents, File file) throws IOException {
-    OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file), CDM.utf8Charset);
-    UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
-
-    try {
+    try (FileOutputStream fout = new FileOutputStream(file)) {
+      OutputStreamWriter fw = new OutputStreamWriter(fout, CDM.utf8Charset);
+      UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
       writer.write(contents);
       writer.flush();
-
-    } finally {
-      if (null != writer)
-        writer.close();
     }
   }
 
@@ -480,15 +467,9 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public void writeToFile(byte[] contents, File file) throws IOException {
-    FileOutputStream fw = new FileOutputStream( file);
-
-    try {
+    try (FileOutputStream fw = new FileOutputStream( file)) {
       fw.write(contents);
       fw.flush();
-
-    } finally {
-      if (null != fw)
-        fw.close();
     }
   }
 
@@ -512,26 +493,18 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public long writeToFile(InputStream in, String fileOutName) throws IOException {
-    OutputStream out = null;
-    try {
-      out = new BufferedOutputStream(new FileOutputStream(fileOutName));
+    try (FileOutputStream fout = new FileOutputStream( fileOutName)) {
+      OutputStream out = new BufferedOutputStream(fout);
       return IO.copy(in, out);
-
     } finally {
       if (null != in) in.close();
-      if (null != out) out.close();
     }
   }
 
   static public long appendToFile(InputStream in, String fileOutName) throws IOException {
-    OutputStream out = null;
-    try {
-      out = new BufferedOutputStream(new FileOutputStream(fileOutName, true));
+    try (FileOutputStream fout = new FileOutputStream( fileOutName)) {
+      OutputStream out = new BufferedOutputStream(fout);
       return IO.copy(in, out);
-
-    } finally {
-      if (null != in) in.close();
-      if (null != out) out.close();
     }
   }
 
@@ -550,7 +523,6 @@ public class IO {
   static public long copyUrlB(String urlString, OutputStream out, int bufferSize) throws IOException {
     long count;
     URL url;
-    java.io.InputStream is = null;
 
     try {
       url = new URL(urlString);
@@ -596,35 +568,35 @@ public class IO {
       }
 
       // read it
-      is = connection.getInputStream();
+      try (InputStream is = connection.getInputStream()) {
+        BufferedInputStream bis;
 
-      // check if its gzipped
-      if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
-        //is = new GZIPInputStream( new BufferedInputStream(is, 1024));
-        //is = new GZIPInputStream(is);
-        is = new BufferedInputStream(new GZIPInputStream(is), 1000);
+        // check if its gzipped
+        if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
+          bis = new BufferedInputStream(new GZIPInputStream(is), 8000);
+        } else {
+          bis = new BufferedInputStream(is, 8000);
+        }
+
+        if (out == null)
+          count = IO.copy2null(bis, bufferSize);
+        else
+          count = IO.copyB(bis, out, bufferSize);
       }
-      if (out == null)
-        count = IO.copy2null(is, bufferSize);
-      else
-        count = IO.copyB(is, out, bufferSize);
 
-    } catch (java.net.ConnectException e) {
-      if (showStackTrace) e.printStackTrace();
-      throw new IOException("** ConnectException on URL: <" + urlString + ">\n" +
+     } catch (java.net.ConnectException e) {
+       if (showStackTrace) e.printStackTrace();
+       throw new IOException("** ConnectException on URL: <" + urlString + ">\n" +
           e.getMessage() + "\nServer probably not running");
 
-    } catch (java.net.UnknownHostException e) {
-      if (showStackTrace) e.printStackTrace();
-      throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
+     } catch (java.net.UnknownHostException e) {
+       if (showStackTrace) e.printStackTrace();
+       throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
 
-    } catch (Exception e) {
-      if (showStackTrace) e.printStackTrace();
-      throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
-
-    } finally {
-      if (is != null) is.close();
-    }
+     } catch (Exception e) {
+       if (showStackTrace) e.printStackTrace();
+       throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
+     }
 
     return count;
   }
@@ -647,9 +619,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public InputStream getInputStreamFromUrl(String urlString) throws IOException {
-    long count;
     URL url;
-    java.io.InputStream is = null;
 
     try {
       url = new URL(urlString);
@@ -694,14 +664,17 @@ public class IO {
         }
       }
 
-      // read it
-      is = connection.getInputStream();
+      java.io.InputStream is = null;
+      try {
+        // read it
+        is = connection.getInputStream();
 
-      // check if its gzipped
-      if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
-        //is = new GZIPInputStream( new BufferedInputStream(is, 1024));
-        //is = new GZIPInputStream(is);
-        is = new BufferedInputStream(new GZIPInputStream(is), 1000);
+        // check if its gzipped
+        if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
+          is = new BufferedInputStream(new GZIPInputStream(is), 1000);
+        }
+      } catch (Throwable t) {
+        if (is != null) is.close();
       }
       return is;
 
@@ -731,29 +704,19 @@ public class IO {
    * @return status or error message.
    */
   static public String readURLtoFile(String urlString, File file) {
-    OutputStream out;
-    try {
-      out = new BufferedOutputStream(new FileOutputStream(file));
-    } catch (IOException e) {
-      if (showStackTrace) e.printStackTrace();
-      return "** IOException opening file: <" + file + ">\n" + e.getMessage() + "\n";
-    }
-
-    try {
+    try (FileOutputStream fout = new FileOutputStream( file)) {
+      OutputStream out = new BufferedOutputStream(fout);
       copyUrlB(urlString, out, 20000);
       return "ok";
+
+    } catch (FileNotFoundException e) {
+      if (showStackTrace) e.printStackTrace();
+      return "** IOException opening file: <" + file.getPath() + ">\n" + e.getMessage() + "\n";
 
     } catch (IOException e) {
       if (showStackTrace) e.printStackTrace();
       return "** IOException reading URL: <" + urlString + ">\n" + e.getMessage() + "\n";
 
-    } finally {
-
-      try {
-        out.close();
-      } catch (IOException e) {
-        return "** IOException closing file : <" + file + ">\n" + e.getMessage() + "\n";
-      }
     }
 
   }
@@ -796,19 +759,10 @@ public class IO {
    * @throws IOException if failure
    */
   static public String readURLtoFileWithExceptions(String urlString, File file, int buffer_size) throws IOException {
-    OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-
-    try {
+    try (FileOutputStream fout = new FileOutputStream( file)) {
+      OutputStream out = new BufferedOutputStream(fout);
       copyUrlB(urlString, out, buffer_size);
       return "ok";
-
-    } finally {
-
-      try {
-        out.close();
-      } catch (IOException e) {
-        return "** IOException closing file : <" + file + ">\n" + e.getMessage() + "\n";
-      }
     }
 
   }
@@ -862,11 +816,11 @@ public class IO {
       c.setDoOutput(true);
       c.setRequestMethod("PUT");
 
-      // read it
-      OutputStream out = new BufferedOutputStream(c.getOutputStream());
-      IO.copy(new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset)), out);
-      out.flush();
-      out.close();
+      // write it
+      try (OutputStream out = c.getOutputStream()) {
+        BufferedOutputStream bout = new BufferedOutputStream(out);
+        IO.copy(new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset)), bout);
+      }
 
       int code = c.getResponseCode();
       String mess = c.getResponseMessage();
@@ -895,124 +849,5 @@ public class IO {
       this.message = message;
     }
   }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /* test
-
-  static public void testRead() {
-    String baseUrl = "http://moca.virtual.museum/legac/legac01.htm";
-    String baseDir = "";
-    File dir = new File(baseDir);
-    dir.mkdirs();
-
-    for (int i = 1; i < 159; i++) {
-      String n = StringUtil2.padZero(i, 3);
-      String filename = n + ".jpg";
-      System.out.println("Open " + baseDir + filename);
-      File file = new File(baseDir + filename);
-
-      readURLtoFile(baseUrl + filename, file);
-    }
-  }
-
-  // read URL to File
-  static public void main4(String[] args) {
-    String url = "http://whoopee:8080/thredds/dodsC/test/2005052412_NAM.wmo.dods?Best_4-layer_lifted_index";
-    String filenameOut = "C:/temp/tempFile4.compress";
-    File f = new File(filenameOut);
-
-    long start = System.currentTimeMillis();
-    String result = readURLtoFile(url, f);
-    double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(result);
-    System.out.println(" that took = " + took + "sec");
-    System.out.println(" file size = " + f.length());
-  }
-
-  /* how many files can be opened ??
-  static public void mainn(String[] args) {
-    long start = System.currentTimeMillis();
-    ArrayList fileList = new ArrayList();
-    ArrayList rafList = new ArrayList();
-    int count = 0;
-    while (true) {
-      try {
-        File temp = File.createTempFile("test", "tmp");
-        fileList.add(temp);
-        RandomAccessFile raf = new RandomAccessFile(temp, "r");
-        rafList.add(raf);
-
-      } catch (IOException e) {
-        e.printStackTrace();
-        break;
-      }
-      count++;
-      if (count % 50 == 0) System.out.println(" " + count);
-    }
-    long took = System.currentTimeMillis() - start;
-    System.out.println(" Created and opened " + count + " files in " + took + " msecs");
-
-    start = System.currentTimeMillis();
-    Iterator iter = rafList.iterator();
-    while (iter.hasNext()) {
-      RandomAccessFile raf = (RandomAccessFile) iter.next();
-      try {
-        raf.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-    took = System.currentTimeMillis() - start;
-    System.out.println(" Closed " + count + " files in " + took + " msecs");
-
-    iter = fileList.iterator();
-    while (iter.hasNext()) {
-      File file = (File) iter.next();
-      file.delete();
-    }
-    took = System.currentTimeMillis() - start;
-    System.out.println(" Deleted " + count + " files in " + took + " msecs");
-
-    count = 0;
-    took = System.currentTimeMillis() - start;
-    File dir = new File("/var/tmp/");
-    File[] list = dir.listFiles();
-    for (int i = 0; i < list.length; i++) {
-      File file = list[i];
-      if (file.getName().endsWith("tmp")) {
-        file.delete();
-        count++;
-      }
-    }
-    took = System.currentTimeMillis() - start;
-    System.out.println(" Deleted " + count + " files in " + took + " msecs");
-
-  }
-
-  // read URL to File
-  static Formatter fout;
-  static public void main(String[] args) throws IOException {
-    try (FileOutputStream f = new FileOutputStream("C:/TEMP/read.txt")) {
-      fout = new Formatter(f);
-      //String url = "http://newmotherlode.ucar.edu:8081/thredds/fileServer/nexrad/level2/KDVN/20080921/Level2_KDVN_20080921_1024.ar2v";
-      String url = "http://newmotherlode.ucar.edu:8081/thredds/fileServer/fmrc/NCEP/GFS/Global_onedeg/files/GFS_Global_onedeg_20080922_0600.grib2";
-      long start = System.currentTimeMillis();
-      IO.copyUrlB(url, null, 1000 * 1000); // read data and throw away
-      double took = .001 * (System.currentTimeMillis() - start);
-
-      //String url = "http://motherlode.ucar.edu:9080/thredds/ncss/metars?variables=all&north=82.5199&west=88.4499&east=90.4000&south=-90.0000&latitude=&longitude=&spatial=stns&stn=LOWW&time_start=2007-12-02T23%3A45%3A04Z&time_end=present&temporal=point&time=2007-12-02T23%3A45%3A04Z&accept=raw";
-      //String url2 = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_80km/files/NAM_CONUS_80km_20071217_0000.grib1.dods?Total_precipitation";
-    /* long start = System.currentTimeMillis();
-    File fileResult = new File("R:/testdata2/bufr/vosclim_2008032301");
-    String result = readURLtoFile(url, fileResult);
-    double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(result);
-    System.out.println(" result size = " + result.length());
-    System.out.println(" file size = " + fileResult.length());
-    *
-      fout.flush();
-      System.out.println(" that took = " + took + " sec");
-    }
-  } */
 
 }

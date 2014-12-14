@@ -63,20 +63,33 @@ import java.util.jar.JarFile;
  */
 public class NcepLocalTables extends LocalTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
+  static private final String oldResourcePath = "resources/grib2/ncep/";       // not sure what version this is, assume 13 overrides all
+  static private final String defaultResourcePath = "resources/grib2/ncep/v13.0.0/";
+  private static NcepLocalTables single;
 
-  protected final int genProcessId;
-  NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
-    super(center, subCenter, masterVersion, localVersion);
-    this.genProcessId = genProcessId;
+  public static Grib2Customizer getCust(Grib2Table table) {
+    if (single == null) single = new NcepLocalTables(table);
+    return single;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  protected final NcepLocalParams params;
+
+  NcepLocalTables(Grib2Table grib2Table) {
+    super(grib2Table);
+    if (grib2Table.getPath() == null)
+      grib2Table.setPath(defaultResourcePath);
+    this.params =  new NcepLocalParams(grib2Table.getPath());
     initCodes();
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return NcepLocalParams.getTablePath(discipline, category);
+    return params.getTablePath(discipline, category);
   }
 
+  // stuff Robb took from Jeff McW; I dont understand it  9/11/2014
   //public  File[] getResourceListing(Class clazz, String path) {
   // URL dirURL = clazz.getClassLoader().getResource(path);
   //  try {
@@ -92,7 +105,8 @@ public class NcepLocalTables extends LocalTables {
   //  return null;
   //}
 
-  private String[] getResourceListing(Class clazz, String path) throws URISyntaxException, IOException {
+  private String[] getResourceListing(String path) throws URISyntaxException, IOException {
+    Class clazz = this.getClass();
     URL dirURL = clazz.getClassLoader().getResource(path);
     if (dirURL != null && dirURL.getProtocol().equals("file")) {
       return new File(dirURL.toURI()).list();
@@ -135,17 +149,16 @@ public class NcepLocalTables extends LocalTables {
   @Override
   public List<GribTables.Parameter> getParameters() {
     List<GribTables.Parameter> allParams = new ArrayList<>(3000);
-    String path = "resources/grib2/ncep/";
     try {
-      String[] fileNames = getResourceListing(ucar.nc2.grib.GribNumbers.class, path);
+      String[] fileNames = getResourceListing(grib2Table.getPath());
       for (String fileName : fileNames) {
         File f = new File(fileName);
         if (f.isDirectory()) continue;
         if (!f.getName().contains("Table4.2.")) continue;
         if (!f.getName().endsWith(".xml")) continue;
         try {
-          NcepLocalParams params = NcepLocalParams.factory(path + f.getPath());
-          allParams.addAll(params.getParameters());
+          NcepLocalParams.Table table = params.factory(grib2Table.getPath() + f.getPath());
+          allParams.addAll(table.getParameters());
         } catch (Exception e) {
           System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
         }
@@ -276,7 +289,7 @@ public class NcepLocalTables extends LocalTables {
     // if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
     //   return getParameter(0, 1, 242);
 
-    Grib2Parameter plocal = NcepLocalParams.getParameter(discipline, category, number);
+    Grib2Parameter plocal = params.getParameter(discipline, category, number);
 
     if ((category <= 191) && (number <= 191)) {
       GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
@@ -291,6 +304,11 @@ public class NcepLocalTables extends LocalTables {
 
     return plocal;
   }
+
+  @Override
+  public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
+     return params.getParameter(discipline, category, number);
+   }
 
   @Override
   public String getTableValue(String tableName, int code) {
@@ -482,7 +500,7 @@ public class NcepLocalTables extends LocalTables {
 
   // public so can be called from Grib2
   private Map<Integer, String> initTable410() {
-    String path = "resources/grib2/ncep/Table4.10.xml";
+    String path = grib2Table.getPath() + "Table4.10.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant find = " + path);
@@ -527,7 +545,7 @@ public class NcepLocalTables extends LocalTables {
 
   @Override
   public String getCategory(int discipline, int category) {
-    String catName = NcepLocalParams.getCategory(discipline, category);
+    String catName = params.getCategory(discipline, category);
     if (catName != null) return catName;
     return super.getCategory(discipline, category);
   }
@@ -639,41 +657,6 @@ Updated again on 3/26/2008
       this.key = key;
       this.local = local;
       this.org = org;
-    }
-  }
-
-  public static void main(String arg[]) {
-    Map<Integer, CompTable> map = new HashMap<>(500);
-
-    //NcepLocalTables tables = new NcepLocalTables(0, 0, 0, 0, 0);
-    NcepLocalParamsOld ncepOld = new NcepLocalParamsOld();
-
-    for (int key : ncepOld.local.keySet()) {
-      Grib2Customizer.Parameter p = ncepOld.local.get(key);
-      map.put(key, new CompTable(key, p, null));
-    }
-
-    NcepLocalParamsVeryOld.init();
-    Map<String, Grib2Parameter> org = NcepLocalParamsVeryOld.getParamMap();
-    for (String skey : org.keySet()) {
-      Grib2Parameter p = org.get(skey);
-      int key = makeHash(p.discipline, p.category, p.number);
-      CompTable ct = map.get(key);
-      if (ct == null) {
-        map.put(key, new CompTable(key, null, p));
-      } else {
-        ct.org = p;
-      }
-    }
-
-    System.out.printf("NcepLocalTables%nNcepLocalParamsOld%n%n");
-    ArrayList<Integer> keys = new ArrayList<>();
-    for (int key : map.keySet()) keys.add(key);
-    Collections.sort(keys);
-    for (int key : keys) {
-      CompTable ct = map.get(key);
-      System.out.printf("%s%n", ct.local);
-      System.out.printf("%s%n%n", ct.org);
     }
   }
 

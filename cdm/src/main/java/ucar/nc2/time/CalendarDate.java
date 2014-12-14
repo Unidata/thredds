@@ -221,6 +221,10 @@ public class CalendarDate implements Comparable<CalendarDate> {
     return CalendarDateFormatter.toDateTimeStringISO(this);
   }
 
+  /**
+   * udunits formatting
+   * @return udunits formatted date
+   */
   public String getTimeUnits(){
 	  return CalendarDateFormatter.toTimeUnits(this);
   }
@@ -326,7 +330,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
   /**
    * Get the equivilent java.util.Date
    * @return the equivalent Date
-   * @deprecated does not handle non-standard Calendars
    */
   public java.util.Date toDate() {
     return dateTime.toDate();

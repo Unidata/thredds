@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
@@ -203,27 +204,29 @@ public class ScannerPqact extends Scanner {
   }
 
   static private void readPqactTable(String filename) throws IOException {
-    pqactList = new ArrayList<Pqact>();
+    pqactList = new ArrayList<>();
 
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
-    int count = 0;
-    while (true) {
-      String line = dataIS.readLine();
-      if (line == null) break;
-      line = line.trim();
-      if (line.length() == 0) break;
-      if (line.charAt(0) == '#') continue;
+    try (FileInputStream fin = new FileInputStream(filename)) {
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(fin, CDM.utf8Charset));
+      int count = 0;
+      while (true) {
+        String line = dataIS.readLine();
+        if (line == null) break;
+        line = line.trim();
+        if (line.length() == 0) break;
+        if (line.charAt(0) == '#') continue;
 
-      int pos = line.indexOf(';');
-      if (pos < 0)
-        pqactList.add(new Pqact(".*" + line + ".*"));
-      else {
-        String pats = line.substring(0, pos).trim();
-        String fileout = line.substring(pos + 1).trim();
-        pqactList.add(new Pqact(".*" + pats + ".*", fileout));
+        int pos = line.indexOf(';');
+        if (pos < 0)
+          pqactList.add(new Pqact(".*" + line + ".*"));
+        else {
+          String pats = line.substring(0, pos).trim();
+          String fileout = line.substring(pos + 1).trim();
+          pqactList.add(new Pqact(".*" + pats + ".*", fileout));
+        }
+
+        count++;
       }
-
-      count++;
     }
   }
 

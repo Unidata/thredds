@@ -1,6 +1,7 @@
 package thredds.server.cdmr;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,14 @@ import ucar.unidata.util.StringUtil2;
 @RunWith(Parameterized.class)
 public class TestNcstreamCompareWithFiles {
   static String contentRoot = TestDir.cdmUnitTestDir + "formats";
+  static String urlPath = "cdmremote/scanCdmUnitTests/formats";
+
+  static int total, success;
+
+  @AfterClass
+  static public void show() {
+    System.out.printf("success = %d/%d %n", success, total);
+  }
 
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
@@ -48,12 +57,12 @@ public class TestNcstreamCompareWithFiles {
       });
       addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
         public boolean accept(File pathname) {
-          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2");
+          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2") && !pathname.getPath().endsWith(".ncx3");
         }
       });
       addFromScan(result, contentRoot + "/grib2/", new FileFilter() {
         public boolean accept(File pathname) {
-          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2");
+          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2")  && !pathname.getPath().endsWith(".ncx3");
         }
       });
       addFromScan(result, contentRoot + "/gini/", new SuffixFileFilter(".gini"));
@@ -83,40 +92,31 @@ public class TestNcstreamCompareWithFiles {
 
   String filename;
 
-  int fail = 0;
-  int success = 0;
-
   @Test
   public void doOne() throws IOException {
     String name = StringUtil2.substitute(filename.substring(contentRoot.length()), "\\", "/");
-    String remote = TestWithLocalServer.server + "cdmremote/scanCdmUnitTests/formats" + name;
-    compareDatasets(filename, remote);
+    String remote = TestWithLocalServer.server + urlPath + name;
+    total++;
+    success += compareDatasets(filename, remote);
   }
 
-  private void compareDatasets(String local, String remote) throws IOException {
-    NetcdfFile ncfile = null, ncremote = null;
-    try {
-      ncfile = NetcdfDataset.openFile(local, null);
-      ncremote = new CdmRemote(remote);
+  static int compareDatasets(String local, String remote) throws IOException {
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(local, null);
+         NetcdfFile  ncremote = new CdmRemote(remote)) {
 
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
       boolean ok = mind.compare(ncfile, ncremote, new NcstreamObjFilter(), false, false, false);
       if (!ok) {
-        fail++;
         System.out.printf("--Compare %s to %s%n", local, remote);
         System.out.printf("  %s%n", f);
-      } else {
-        success++;
       }
       Assert.assertTrue(local + " != " + remote, ok);
-    } finally {
-      if (ncfile != null) ncfile.close();
-      if (ncremote != null) ncremote.close();
     }
+    return 1;
   }
 
-  private class NcstreamObjFilter implements CompareNetcdf2.ObjFilter {
+  private static class NcstreamObjFilter implements CompareNetcdf2.ObjFilter {
 
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {

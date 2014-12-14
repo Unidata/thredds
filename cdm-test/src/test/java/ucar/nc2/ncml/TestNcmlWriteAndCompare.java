@@ -185,14 +185,6 @@ public class TestNcmlWriteAndCompare {
     }
   }
 
-  private class MyNetcdfFile extends NetcdfFile {
-    private MyNetcdfFile(Nc4Iosp iosp, String location) {
-      super();
-      spi = iosp;
-      this.location = location;
-    }
-  }
-
   public static class Netcdf4ObjectFilter implements CompareNetcdf2.ObjFilter {
     @Override
     public boolean attCheckOk(Variable v, Attribute att) {

@@ -25,7 +25,9 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.List;
 
@@ -292,6 +294,17 @@ public class CdmIndex2Panel extends JPanel {
   }
 
   public void showInfo(Formatter f) {
+    if (indexFile == null) return;
+    f.format("indexFile=%s%n", indexFile);
+    BasicFileAttributes attr = null;
+    try {
+      attr = Files.readAttributes(indexFile, BasicFileAttributes.class);
+      f.format("  size=%d lastModifiedTime=%s lastAccessTime=%s creationTime=%s%n", attr.size(), attr.lastModifiedTime(), attr.lastAccessTime(), attr.creationTime());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    f.format("%n");
+
     if (gc == null) return;
     gc.showIndex(f);
     f.format("%n");
@@ -531,6 +544,7 @@ public class CdmIndex2Panel extends JPanel {
   }
 
   ///////////////////////////////////////////////
+  Path indexFile;
   GribCollection gc;
   Collection<MFile> gcFiles;
   FeatureCollectionConfig config = new FeatureCollectionConfig();
@@ -538,6 +552,7 @@ public class CdmIndex2Panel extends JPanel {
   public void setIndexFile(Path indexFile, FeatureCollectionConfig config) throws IOException {
     if (gc != null) gc.close();
 
+    this.indexFile = indexFile;
     this.config = config;
     gc = GribCdmIndex.openCdmIndex(indexFile.toString(), config, false, logger);
     if (gc == null)

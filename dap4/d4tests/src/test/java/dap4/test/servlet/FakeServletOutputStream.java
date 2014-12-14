@@ -2,6 +2,7 @@ package dap4.test.servlet;
 
 import dap4.core.util.DapDump;
 
+import javax.servlet.WriteListener;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -19,6 +20,16 @@ public class FakeServletOutputStream extends javax.servlet.ServletOutputStream
     public FakeServletOutputStream()
     {
         stream = new ByteArrayOutputStream();
+    }
+
+    @Override
+    public boolean isReady() {
+        return true;
+    }
+
+    @Override
+    public void setWriteListener(WriteListener writeListener) {
+        throw new UnsupportedOperationException();
     }
 
     //////////////////////////////////////////////////

@@ -237,10 +237,9 @@ public class GeoTiff implements AutoCloseable {
 
     // tags gotta be in order
     Collections.sort(tags);
-    int start = 0;
-    if (imageNumber == 1)
-      start = writeHeader(channel);
-    else {
+    if (imageNumber == 1) {
+      writeHeader(channel);
+    } else {
       //now this is not the first image we need to fill the Offset of nextIFD
       channel.position(lastIFD);
       ByteBuffer buffer = ByteBuffer.allocate(4);
@@ -388,7 +387,7 @@ public class GeoTiff implements AutoCloseable {
   private int writeSValue(ByteBuffer buffer, IFDEntry ifd) {
     buffer.put(ifd.valueS.getBytes(CDM.utf8Charset));
     int size = ifd.valueS.length();
-    if ((size % 2) == 1) size++;
+    if ((size & 1) != 0) size++;  // check if odd
     return size;
   }
 
@@ -624,8 +623,6 @@ public class GeoTiff implements AutoCloseable {
 
   private void parseGeoInfo() {
     IFDEntry keyDir = findTag(Tag.GeoKeyDirectoryTag);
-    IFDEntry dparms = findTag(Tag.GeoDoubleParamsTag);
-    IFDEntry aparams = findTag(Tag.GeoAsciiParamsTag);
 
     if (null == keyDir) return;
 
@@ -651,14 +648,12 @@ public class GeoTiff implements AutoCloseable {
           System.out.println("********ERROR parseGeoInfo: cant find Tag code = " + location);
         } else if (data.tag == Tag.GeoDoubleParamsTag) { // double params
           double[] dvalue = new double[vcount];
-          for (int k = 0; k < vcount; k++)
-            dvalue[k] = data.valueD[offset + k];
+          System.arraycopy(data.valueD, offset, dvalue, 0, vcount);
           key = new GeoKey(tag, dvalue);
 
         } else if (data.tag == Tag.GeoKeyDirectoryTag) { // int params
           int[] value = new int[vcount];
-          for (int k = 0; k < vcount; k++)
-            value[k] = data.value[offset + k];
+          System.arraycopy(data.value, offset, value, 0, vcount);
           key = new GeoKey(tag, value);
 
         } else if (data.tag == Tag.GeoAsciiParamsTag) { // ascii params

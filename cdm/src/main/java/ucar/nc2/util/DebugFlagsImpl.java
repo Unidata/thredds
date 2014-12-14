@@ -44,7 +44,7 @@ import java.util.StringTokenizer;
  */
 public class DebugFlagsImpl implements DebugFlags {
 
-  private Map<String,Boolean> map = new HashMap<String,Boolean>();
+  private Map<String,Boolean> map = new HashMap<>();
 
   /**
    * All flags are off

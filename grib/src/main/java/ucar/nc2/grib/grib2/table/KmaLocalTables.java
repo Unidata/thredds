@@ -47,25 +47,26 @@ import java.util.*;
  * @since 6/22/11
  */
 public class KmaLocalTables extends LocalTables {
-  private static final String tableName = "resources/grib2/local/kma-ver5.txt";
+  private static final String tablePath = "resources/grib2/local/kma-ver5.txt";
   private static boolean debug = false;
+  private static KmaLocalTables single;
 
-  KmaLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
-    initLocalTable();
+  public static KmaLocalTables getCust(Grib2Table table) {
+    if (single == null) single = new KmaLocalTables(table);
+    return single;
   }
 
-  @Override
-  public String getTablePath(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return tableName;
+  private KmaLocalTables(Grib2Table grib2Table) {
+    super(grib2Table);
+    grib2Table.setPath(tablePath);
+    initLocalTable();
   }
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   protected void initLocalTable() {
     ClassLoader cl = KmaLocalTables.class.getClassLoader();
-    try (InputStream is = cl.getResourceAsStream(tableName)) {
-    if (is == null) throw new IllegalStateException("Cant find "+tableName);
+    try (InputStream is = cl.getResourceAsStream(tablePath)) {
+    if (is == null) throw new IllegalStateException("Cant find "+tablePath);
 
       List<TableParser.Record> recs = TableParser.readTable(is, "41,112,124i,136i,148i,160", 1000);
       for (TableParser.Record record : recs) {
@@ -101,7 +102,7 @@ U_COMPNT_OF_WIND_AFTER_TIMESTEP                   56           0          65    
 */
 
   public static void main(String arg[]) {
-    KmaLocalTables t = new KmaLocalTables(40,0,0,0);
+    KmaLocalTables t = new KmaLocalTables( new Grib2Table("KMA",40,-1,-1,-1,-1, null, Grib2Table.Type.kma));
   }
 
 }

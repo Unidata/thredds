@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.1.0</table>
+  <title>Hydrology Basic</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-1-0.shtml</source>
+  <parameter code="0">
+    <shortName>FFLDG</shortName>
+    <description>Flash Flood Guidance (Encoded as an accumulation over a floating subinterval of time between the reference time and valid time)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>FFLDRO</shortName>
+    <description>Flash Flood Runoff (Encoded as an accumulation over a floating subinterval of time)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>RSSC</shortName>
+    <description>Remotely Sensed Snow Cover</description>
+    <units>See Table 4.215</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>ESCT</shortName>
+    <description>Elevation of Snow Covered Terrain</description>
+    <units>See Table 4.216</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>SWEPON</shortName>
+    <description>Snow Water Equivalent Percent of Normal</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>BGRUN</shortName>
+    <description>Baseflow-Groundwater Runoff</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>SSRUN</shortName>
+    <description>Storm Surface Runoff</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>DISRS</shortName>
+    <description>Discharge from Rivers or Streams</description>
+    <units>m3 s-1</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>BGRUN</shortName>
+    <description>Baseflow-Groundwater Runoff</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>SSRUN</shortName>
+    <description>Storm Surface Runoff</description>
+    <units>kg m-2</units>
+  </parameter>
+</parameterMap>

@@ -1,0 +1,259 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>OPeNDAP DAP2 and DAP4 Protocol Services</title>
+  <link rel="stylesheet" href="tutorial2.css" type="text/css"/>
+  <script type="text/javascript" src="workshopNav.js"></script>
+</head>
+
+<body>
+<h1>DAP2 and DAP4 Protocol Services</h1>
+
+<div id="section">
+<h2><a name="Resources">Resources For This Session:</a></h2>
+<ul>
+<li> Web Browser
+<li> ToolsUI
+<li>Test Servers used to test DAP2 and DAP4 Protocols:
+<ol>
+<li> Thredds Test Server providing DAP2 and DAP4 Services
+<a href="http://remotetest.unidata.ucar.edu/thredds">http://remotetest.unidata.ucar.edu/thredds</a>
+<li> DAP2 Test Server
+<a href="http://remotetest.unidata.ucar.edu/dts">http://remotetest.unidata.ucar.edu/dts</a>
+<li> DAP4 Test Server
+<a href="http://remotetest.unidata.ucar.edu/d4ts">http://remotetest.unidata.ucar.edu/d4ts</a>
+</ol>
+</div>
+
+<div id="section">
+<h2><a name="context">What this tutorial covers</a></h2>
+<ul>
+<li><a href="#ClientServer">Client Server Architecture</a></li>
+<li><a href="#TDSClientServer">TDS as Client-Server</a></li>
+<li><a href="#Opendap">What are OPenDAP and DAP</a></li>
+<li><a href="#URLS">Specifying a DAP Data Source</a></li>
+<li><a href="#Exercise1">Exercise: Examine A Dataset in Three Ways</a></li>
+<li><a href="#Response">Components of a DAP Response</a></li>
+<li><a href="#Exercise2">Exercise: Examine The Components of DAP2 and DAP4 Responses</a></li>
+<li><a href="#DAP2Constraints">DAP2 Constraints</a></li>
+<li><a href="#DAP4Constraints">DAP4 Constraints</a></li>
+</ul>
+</div>
+
+<div id="section">
+<h2><a name="ClientServer">Client Server Architecture</a></h2>
+<p>
+<ul>
+<li>We all routinely use the Client Server Architecture when we use
+a web browser.
+<br>
+<img src="images/WebBrowser.svg" width=480>
+<p>
+<li>Key Elements:
+<ul>
+<li> Client Program (Web Browser)
+<li> Server Program (Web Page Server)
+<li> Protocol (HTTP)
+<li> Message Requests and Replies (HTML)
+</ul>
+</div>
+
+<div id="section">
+<h2><a name="TDSClientServer">TDS as Client-Server</a></h2>
+<p>
+The Thredds Data Server is a Server in a client-server architecture.
+It differs from a web browser in supporting a number of protocols
+and associated message formats.
+<p>
+<img src="images/TDS.svg" width="637">
+<p>
+<li>Operational Flow:
+<ol>
+<p><li>The client sends a request for a file using the DAP protocol URL format.
+<p><li>The TDS DAP handler opens the corresponding file.
+   <ul>
+   <li> The type of the file is determined and the corresponding IOSP is accessed.
+   <li> The IOSP translates the native file format to CDM.
+   </ul>
+<li>The DAP handler converts from CDM to the DAP format, both metadata and data.
+<p><li>The converted CDM is sent to the client using the DAP protocol.
+<p><li>The client processes the returned data, where "processes" is client dependent.
+   <ul>
+   <li>For ToolsUI: The DAP format is translated back to CDM for display
+   </ul>
+</ol>
+</ol>
+</div>
+
+<div id="section">
+<h2><a name="Opendap">What are OPenDAP and DAP</a></h2>
+<p>
+<ul>
+<li>DAP version 2 (aka DAP2) is a widely supported protocol and standard data format for accessing remote data
+<p>
+<li>The DAP2 protocol was expressly designed to serve as intermediate format for accessing a wide variety of data sources
+<p>
+<li>The new DAP version 4 protocol (DAP4) provides a richer
+data model and a more powerful <em><strong>constraint language</strong></em>
+than DAP2.
+<p>
+<li>The DAP2 and DAP4 specifications can be obtained from the OPenDAP website.
+    <ul>
+    <li> DAP Version 2: <a href="http://opendap.org/pdf/ESE-RFC-004v1.2.pdf">http://opendap.org/pdf/ESE-RFC-004v1.2.pdf</a>
+    <li> DAP Version 4: <a href="http://docs.opendap.org/index.php/OPULS_Development#DAP4_Specification">http://docs.opendap.org/index.php/OPULS_Development#DAP4_Specification</a>
+    </ul>
+<p>
+</ul>
+</div>
+
+<div id="section">
+<h2><a name="URLS">Specifying a DAP Data Source</a></h2>
+<p>
+<ul>
+<li> A DAP data source is specified as a URL to be sent to the TDS server. e.g.:
+<pre>dods://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc</pre>
+<li>The URL needs to provide clues to the client and the server about what protocol to use. 
+<li>The URL is effectively divided into 5 parts.
+<ol>
+<li><strong>dods:</strong> &ndash; This tells the client which protocol to use.
+Only recognized by netcdf-Java clients.
+<li><strong>//remotetest.unidata.ucar.edu</strong> &ndash; The TDS server.
+<li><strong>/thredds</strong> &ndash; The TDS servlet name.
+<li><strong>/dodsC</strong> &ndash; This tells the TDS server which protocol to use.
+<li><strong>/testdata/testData.nc</strong> &ndash; The dataset to return.
+</ol>
+<li> For DAP4, dods: => dap4:, and dodsC => dap4
+<li> For non netCDF-Java clients (i.e. web browser, use http: instead of dods: or dap4:)
+<p>
+</ul>
+</div>
+
+<div id="expanded" class="exercise">
+<h2><a name="Exercise1">Examine A Dataset in Three Ways</a></h2>
+<ol>
+<li>Drop this URL into ToolsUI
+<pre><a href="http://remotetest.unidata.ucar.edu/thredds/fileServer/testdata/testData.nc">http://remotetest.unidata.ucar.edu/thredds/fileServer/testdata/testData.nc</a></pre>
+This uses the "fileServer" protocol to return the underlying dataset.
+<p>
+<li>Now drop this URL into ToolsUI
+<pre>dods://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc</pre>
+This uses DAP2 to access the dataset. Underneath, ToolsUI is accessing all three parts: .dds, .das, and .dods.
+<p>
+<li>Notice that ToolsUI displays the same info either way. This is because the conversion from CDM to DAP2 to CDM does not lose any information. This is not true of other datasets. Compare:
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/fileServer/testdods/in_grp.nc">http://remotetest.unidata.ucar.edu/thredds/fileServer/testdods/in_grp.nc</a>
+dods://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/in_grp.nc
+</pre>
+This fails because of the presence of groups, which DAP2 cannot handle properly.
+</ol>
+</div>
+
+<div id="section">
+<h2><a name="Response">Components of a DAP Response</a></h2>
+<p>
+<ul>
+<li> For DAP2, there are three core kinds of responses, providing different information. Each kind can be obtained through a web browser using a different extension(s). e.g.
+<pre><a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.dds">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.dds</a></pre>
+<ol>
+<li><strong>.dds</strong> &ndash; Return just the meta-data for the requested dataset; this will be the result of translating the CDM to DAP2.
+<li><strong>.das</strong> &ndash; Return just the attributes of the requested dataset;
+additional attributes may be added that are not in the original dataset.
+<li><strong>.dods</strong> &ndash; Return the metadata followed by the actual contents of the dataset encoded in DAP2 format.
+</ol>
+<p>
+<li> DAP4 has different extensions.
+<ol>
+<li><strong>.dmr</strong> &ndash; Equivalent to .dds + .das.
+<li><strong>.dap</strong> &ndash; Equivalent to .dods
+<li><strong>.dsr</strong> &ndash; (New) Returns the "dataset services" that describes
+how to access the dataset. 
+</ol>
+<p>
+<li>DAP2 Actually has some additional extensions that are designed for access
+specifically through a web browser.
+<ol>
+<li><strong>.asc</strong> &ndash; Return the .dods information in ascii format.
+<li><strong>.html</strong> &ndash; Provide a form for accessing subsets of a dataset.
+</ol>
+<p>
+<li>DAP4 Does the equivalent by adding additional extensions; e.g.
+<ol>
+<li><strong>.dmr.txt</strong> &ndash; Return the metadata information in textual format.
+<li><strong>.dmr.xml</strong> &ndash; Return the metadata information in xml format.
+</ol>
+</ul>
+</div>
+
+<div id="expanded" class="exercise">
+<h2><a name="Exercise2">Examine The Components of DAP2 and DAP4 Responses</a></h2>
+<ol>
+<li>DAP2 &ndash; Drop each of these URLs into a Web Browser.
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.dds">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.dds</a>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.das">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.das</a>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.asc">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.asc</a>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.html">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.html</a>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.dods">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdata/testData.nc.dods</a>
+</pre>
+<p>
+<li>DAP4 &ndash; Drop each of these URLs into a Web Browser.
+<p>
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dap4/testdata/testData.nc.dsr.xml">http://remotetest.unidata.ucar.edu/thredds/dap4/testdata/testData.nc.dsr.xml</a>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dap4/testdata/testData.nc.dmr.xml">http://remotetest.unidata.ucar.edu/thredds/dap4/testdata/testData.nc.dmr.xml</a>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dap4/testdata/testData.nc.dap">http://remotetest.unidata.ucar.edu/thredds/dap4/testdata/testData.nc.dap</a>
+</pre>
+Note the use of .xml extension.
+</ol>
+</div>
+
+<div id="section">
+<h2><a name="DAP2Constraints">DAP2 Constraints</a></h2>
+<p>
+<ul>
+<li> DAP2 provides a <em><strong>constraint</strong></em>
+notation for requesting parts of a dataset. The constraint is contained in the
+query part of a URL
+<p>
+<li> Request a single variable in of a dataset. (Note change of dataset)
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc.asc?var">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc.asc?var</a>
+dods://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc?var
+</pre>
+<p>
+<li> Request a single value from each of two variables.
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc.asc?time[1],var[1][0]">http://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc.asc?time[1],var[1][0]</a>
+dods://remotetest.unidata.ucar.edu/thredds/dodsC/testdods/testgrid2.nc?time[1],var[1][0]
+</pre>
+<p>
+<li>The forms of a <em><strong>slice</strong></em> constraint are:
+<ul>
+<li> [start-index:stride:last-index] (most general)
+<li> [start-index:last-index] (stride == 1)
+<li> [start-index] (last-index == start-index)
+</ul>
+<p>
+<li> DAP2 also has a mechanism for accessing parts of <em>Sequences</em>,
+but this is not covered here.
+</div>
+
+<div id="section">
+<h2><a name="DAP4Constraints">DAP4 Constraints</a></h2>
+<p>
+<ul>
+<li> DAP4 has a constraint notation that is a superset of the DAP2 notation.
+The insertion into a URL looks somewhat different.
+<p>
+<li> Request a single value from a variable.
+<pre>
+<a href="http://remotetest.unidata.ucar.edu/thredds/dap4/testdods/testgrid2.nc.dmr.xml?dap4.ce=time[1]">http://remotetest.unidata.ucar.edu/thredds/dap4/testdods/testgrid2.nc.dmr.xml?dap4.ce=&quot;time[1]&quot;</a>
+dap4://remotetest.unidata.ucar.edu/thredds/dap4/testdods/testgrid2.nc?dap4.ce=time[1]
+</pre>
+<p>
+<li>The details can be found in the DAP4 specification.
+</ul>
+</div>
+
+</body>
+</html>

@@ -40,7 +40,10 @@
 
 package opendap.servlet;
 
+import opendap.dap.Util;
+
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * A minimal implementation of a logging facility.
@@ -48,7 +51,9 @@ import java.io.*;
 
 public class Logx {
 
-    static private PrintStream logger = null;
+    static final Charset UTF8 = Charset.forName("UTF-8");
+
+    static private PrintWriter logger = null;
     static private ByteArrayOutputStream buff = null;
 
     static public void println(String s) {
@@ -72,7 +77,7 @@ public class Logx {
 
     static public void reset() {
         buff = new ByteArrayOutputStream();
-        logger = new PrintStream(buff);
+        logger = new PrintWriter(new OutputStreamWriter(buff, Util.UTF8));
     }
 
     static public boolean isOn() {
@@ -87,9 +92,11 @@ public class Logx {
     static public String getContents() {
         if (buff == null)
             return "null";
-        else {
+        else try {
             logger.flush();
-            return buff.toString();
+            return buff.toString("UTF-8");
+        } catch (UnsupportedEncodingException nee) {
+            throw new IllegalStateException(nee);
         }
     }
 

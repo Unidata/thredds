@@ -33,6 +33,7 @@
 
 package ucar.nc2.iosp.hdf4;
 
+import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
@@ -41,7 +42,6 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.io.File;
 
-import junit.framework.*;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.test.util.TestDir;
@@ -52,129 +52,72 @@ import ucar.unidata.test.util.TestDir;
  * @author caron
  * @since Oct 15, 2008
  */
-public class TestH4eos extends TestCase {
+public class TestH4eos {
 
-  class MyFileFilter implements java.io.FileFilter {
-    public boolean accept(File pathname) {
-      return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos");
-    }
-  }
-
-  String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
-  public void testReadAll() throws IOException {
-    int count = 0;
-    count = TestDir.actOnAll(testDir, new MyFileFilter(), new MyAct());
-    System.out.println("***READ " + count + " files");
-    //count = TestAll.actOnAll("D:/formats/hdf4/", new MyFileFilter(), new MyAct());
-    //System.out.println("***READ " + count + " files");
-  }
-
-  private class MyAct implements TestDir.Act {
-
-    public int doAct(String filename) throws IOException {
-      NetcdfFile ncfile = null;
-
-      try {
-        ncfile = NetcdfFile.open(filename);
-        Group root = ncfile.getRootGroup();
-        Group g = root.findGroup("HDFEOS INFORMATION");
-        if (g == null) g = ncfile.getRootGroup();
-
-        Variable dset = g.findVariable("StructMetadata0");
-        if (dset != null) {
-          System.out.println("EOS file=" + filename);
-          return 1;
-        }
-
-        System.out.println("NOT EOS file=" + filename);
-        return 0;
-      } finally {
-        if (ncfile != null) ncfile.close();
-      }
-    }
-
-  }
-
-  public void testUnsigned() throws IOException, InvalidRangeException {
-    String filename = testDir + "MOD021KM.A2004328.1735.004.2004329164007.hdf";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    String vname = "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB";
-    Variable v = ncfile.findVariable(vname);
-    assert v != null : filename+" "+vname;
-
-    Array data = v.read();
-    System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
-
-    double sum2 = 0;
-    double sum3 = 0;
-    int[] varShape = v.getShape();
-    int[] origin = new int[3];
-    int[] size = new int[]{1, varShape[1], varShape[2]};
-    for (int i = 0; i < varShape[0]; i++) {
-      origin[0] = i;
-      Array data2D = v.read(origin, size);
-
-      double sum = MAMath.sumDouble(data2D);
-      System.out.printf("  %d sum3D =        %f%n", i, sum);
-      sum2 += sum;
-
-//      assert data2D.getRank() == 2;
-      sum = MAMath.sumDouble(data2D.reduce(0));
-      System.out.printf("  %d sum2D =        %f%n", i, sum);
-      sum3 += sum;
-
-      ucar.unidata.test.util.CompareNetcdf.compareData(data2D, data2D.reduce(0));
-    }
-    System.out.printf(" sum2D =        %f%n", sum2);
-    System.out.printf(" sum2D.reduce = %f%n", sum3);
-    assert sum2 == sum3;
-  }
-
-  public void testUnsigned2() throws IOException, InvalidRangeException {
-    int nz = 1;
-    int ny = 2030;
-    int nx = 1354;
-    int size = nz*ny*nx;
-
-    short[] vals = new short[size];
-    for (int i=0; i<size; i++ )
-      vals[i] = (short) i;
-
-    Array data = Array.factory(DataType.SHORT, new int[] {nz,ny,nx}, vals);
-    data.setUnsigned(true);
-    System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
-    System.out.printf(" sum2 =          %f%n", MAMath.sumDouble(data.reduce(0)));
-  }
+  static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/eos/";
 
   // test the coordSysBuilder - check if grid exists
+  @Test
   public void testModis() throws IOException, InvalidRangeException {
     // GEO (lat//lon)
-    testGridExists(testDir + "eos/modis/MOD17A3.C5.1.GEO.2000.hdf", "MOD_Grid_MOD17A3/Data_Fields/Npp_0\\.05deg");
+    testGridExists(testDir + "modis/MOD17A3.C5.1.GEO.2000.hdf", "MOD_Grid_MOD17A3/Data_Fields/Npp_0\\.05deg");
 
     // SINUSOIDAL
-    testGridExists(testDir + "eos/modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance");
+    testGridExists(testDir + "modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf", "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance");
 
   }
 
   private void testGridExists(String filename, String vname) throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = null;
-    try {
-      ncfile = NetcdfFile.open(filename);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       Variable v = ncfile.findVariable(vname);
       assert v != null : filename+" "+vname;
-    } finally {
-      if (ncfile != null) ncfile.close();
     }
 
-    GridDataset gds = null;
-    try {
-      gds = GridDataset.open(filename);
+    try (GridDataset gds = GridDataset.open(filename)) {
       GeoGrid v = gds.findGridByName(vname);
       assert v != null : filename+" "+vname;
-    } finally {
-      if (gds != null) gds.close();
     }
 
+  }
+
+
+  @Test
+  public void testSpecificVariableSection() throws InvalidRangeException, IOException {
+    try (NetcdfFile ncfile = NetcdfFile.open(TestH4readAndCount.testDir + "96108_08.hdf")) {
+
+      Variable v = ncfile.findVariable("CalibratedData");
+      assert (null != v);
+      assert v.getRank() == 3;
+      int[] shape = v.getShape();
+      assert shape[0] == 810;
+      assert shape[1] == 50;
+      assert shape[2] == 716;
+
+      Array data = v.read("0:809:10,0:49:5,0:715:2");
+      assert data.getRank() == 3;
+      int[] dshape = data.getShape();
+      assert dshape[0] == 810 / 10;
+      assert dshape[1] == 50 / 5;
+      assert dshape[2] == 716 / 2;
+
+      // read entire array
+      Array A;
+      try {
+        A = v.read();
+      } catch (IOException e) {
+        System.err.println("ERROR reading file");
+        assert (false);
+        return;
+      }
+
+      // compare
+      Array Asection = A.section(new Section("0:809:10,0:49:5,0:715:2").getRanges());
+      assert (Asection.getRank() == 3);
+      for (int i = 0; i < 3; i++)
+        assert Asection.getShape()[i] == dshape[i];
+
+      ucar.unidata.test.util.CompareNetcdf.compareData(data, Asection);
+    }
   }
 
 

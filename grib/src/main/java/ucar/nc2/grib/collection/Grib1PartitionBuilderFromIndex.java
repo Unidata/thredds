@@ -38,7 +38,6 @@ package ucar.nc2.grib.collection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -113,18 +112,8 @@ public class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIn
   @Override
   protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupGC group, GribCollectionProto.Variable proto, GribCollection.VariableIndex vi) {
     List<PartitionCollectionProto.PartitionVariable> pvList = proto.getExtension(PartitionCollectionProto.partition);
-
     PartitionCollection.VariableIndexPartitioned vip = pc.makeVariableIndexPartitioned(group, vi, pvList.size());
-    /* vip.density = vi.density;   // ??
-    vip.missing = vi.missing;
-    vip.ndups = vi.ndups;
-    vip.nrecords = vi.nrecords;  */
-
-    for (PartitionCollectionProto.PartitionVariable pv : pvList) {
-      vip.addPartition(pv.getPartno(), pv.getGroupno(), pv.getVarno(), pv.getFlag(), pv.getNdups(),
-              pv.getNrecords(), pv.getMissing(), pv.getDensity());
-    }
-
+    vip.setPartitions(pvList);
     return vip;
   }
 
@@ -137,7 +126,6 @@ message Partition {
 }
    */
   private PartitionCollection.Partition makePartition(PartitionCollectionProto.Partition proto) {
-
     return pc.addPartition(proto.getName(), proto.getFilename(), proto.getLastModified(), proto.getDirectory());
   }
 }

@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.iosp.hdf4.H4iosp;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -46,9 +47,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Formatter;
 
@@ -155,18 +154,16 @@ public class Hdf4Table extends JPanel {
     closeOpenFiles();
 
     this.location = raf.getLocation();
-    long start = System.nanoTime();
-    java.util.List<TagBean> beanList = new ArrayList<TagBean>();
+    java.util.List<TagBean> beanList = new ArrayList<>();
 
     iosp = new H4iosp();
-    NetcdfFile ncfile = new MyNetcdfFile(iosp);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(20000);
-      PrintStream s = new PrintStream(bos);
-      t.printStackTrace(s);
-      dumpTA.setText( bos.toString());      
+      StringWriter sw = new StringWriter(20000);
+      t.printStackTrace(new PrintWriter(sw));
+      dumpTA.setText(sw.toString());
     }
 
     header = (H4header) iosp.sendIospMessage("header");
@@ -179,13 +176,6 @@ public class Hdf4Table extends JPanel {
 
   public void getEosInfo(Formatter f) throws IOException {
     header.getEosInfo(f);
-  }
-
-  // need  acccess to protected constructor: iosp.open(raf, ncfile, null);
-  private static class MyNetcdfFile extends NetcdfFile {
-    public MyNetcdfFile(H4iosp iosp) {
-       this.spi = iosp; // iosp must be set during open
-    }
   }
 
   public class TagBean {

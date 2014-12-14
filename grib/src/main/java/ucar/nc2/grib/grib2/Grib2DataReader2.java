@@ -137,6 +137,7 @@ public class Grib2DataReader2 {
 
     if (dataTemplate != 40) return null;
 
+    // LOOK jpeg2k only
     return getData40raw(raf, (Grib2Drs.Type40) gdrs);
   }
 
@@ -168,7 +169,7 @@ public class Grib2DataReader2 {
   thanks to local redundancy. This is achieved just before packing, by splitting the whole set of scaled data values into
   groups, on which local references (such as local minima) are removed. It is done with some overhead, because extra
   descriptors are needed to manage the groups’ characteristics. An optional pre-processing of the scaled values (spatial
-  differencing) may also be applied before splitting into groups, and combined methods, along with use of alternate row
+  differencing) may also be applied before splittig into groups, and combined methods, along with use of alternate row
   scanning mode, are very efficient on interpolated data.
 
   (3) For spectral data, complex packing is provided for better accuracy of packing. This is because many spectral coefficients

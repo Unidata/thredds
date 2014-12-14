@@ -92,7 +92,7 @@ public class InvDatasetScan extends InvCatalogRef {
 
   private CrawlableDatasetSorter sorter;
 
-  private Map proxyDatasetHandlers;
+  private Map<String, ProxyDatasetHandler> proxyDatasetHandlers;
 
   private boolean addDatasetSize = true;
 
@@ -176,7 +176,7 @@ public class InvDatasetScan extends InvCatalogRef {
     this.sorter = new LexigraphicByNameSorter( sortOrderIncreasing );
 
     // Add latest resolver dataset to Map of ProxyDatasetHandlers
-    this.proxyDatasetHandlers = new HashMap();
+    this.proxyDatasetHandlers = new HashMap<>();
     if ( addLatest != null )
     {
       if ( addLatest.equalsIgnoreCase( "true" ) )
@@ -264,7 +264,7 @@ public class InvDatasetScan extends InvCatalogRef {
     this.sorter = new LexigraphicByNameSorter( sortOrderIncreasing );
 
     // Add latest resolver dataset to Map of ProxyDatasetHandlers
-    this.proxyDatasetHandlers = new HashMap();
+    this.proxyDatasetHandlers = new HashMap<>();
     if ( addLatest != null )
     {
       if ( addLatest.equalsIgnoreCase( "true" ) )
@@ -297,8 +297,8 @@ public class InvDatasetScan extends InvCatalogRef {
                          String configClassName, Object configObj, CrawlableDatasetFilter filter,
                          CrawlableDatasetLabeler identifier, CrawlableDatasetLabeler namer,
                          boolean addDatasetSize,
-                         CrawlableDatasetSorter sorter, Map proxyDatasetHandlers,
-                         List childEnhancerList, CatalogRefExpander catalogRefExpander )
+                         CrawlableDatasetSorter sorter, Map<String, ProxyDatasetHandler> proxyDatasetHandlers,
+                         List<DatasetEnhancer> childEnhancerList, CatalogRefExpander catalogRefExpander )
   {
     super( parent, name, makeHref(path) );
     this.rootPath = path;
@@ -339,7 +339,7 @@ public class InvDatasetScan extends InvCatalogRef {
     this.catalogRefExpander = catalogRefExpander;
 
     if ( proxyDatasetHandlers == null )
-      this.proxyDatasetHandlers = new HashMap();
+      this.proxyDatasetHandlers = new HashMap<>();
     else
       this.proxyDatasetHandlers = proxyDatasetHandlers;
   }
@@ -397,10 +397,10 @@ public class InvDatasetScan extends InvCatalogRef {
   public CrawlableDatasetLabeler getNamer() { return namer; }
   public CrawlableDatasetSorter getSorter() { return sorter; }
 
-  public Map getProxyDatasetHandlers() { return proxyDatasetHandlers; }
+  public Map<String, ProxyDatasetHandler> getProxyDatasetHandlers() { return proxyDatasetHandlers; }
 
   public boolean getAddDatasetSize() { return addDatasetSize; }
-  public List getChildEnhancerList() { return childEnhancerList; }
+  public List<DatasetEnhancer> getChildEnhancerList() { return childEnhancerList; }
 
   public CatalogRefExpander getCatalogRefExpander() { return catalogRefExpander; }
 
@@ -656,7 +656,7 @@ public class InvDatasetScan extends InvCatalogRef {
     dsDirPath = dsDirPath.substring( 0, pos );
 
     // Find matching ProxyDatasetHandler.
-    ProxyDatasetHandler pdh = (ProxyDatasetHandler) this.getProxyDatasetHandlers().get( dsName );
+    ProxyDatasetHandler pdh = this.getProxyDatasetHandlers().get( dsName );
     if ( pdh == null )
     {
       log.error( "makeProxyDsResolverCatalog(): No matching proxy dataset handler found <" + dsName + ">." );

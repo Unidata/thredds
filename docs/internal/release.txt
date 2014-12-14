@@ -1,6 +1,11 @@
 Making a release for CDM/TDS with jenkins
 last edited 08/26/2014
 
+0. tds.properties
+  - In /thredds/tds/src/main/template/thredds/server/tds.properties,
+    the "tds.content.root.path" and "tds.dir.cdmUnitTest" properties must be set to the production release values.
+    Make sure the Spock and local override values are commented out.
+
 1. Jenkins
   - Go to Jenkin project's configuration page
       - Under "Source Code Management" - "Additional Behaviors" - Add - "Check out to specific local branch"
@@ -19,7 +24,7 @@ last edited 08/26/2014
     - Check release artifacts are in artifacts.unidata.ucar.edu, eg http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
 
 3. Jenkins- "Additional Behaviors"
-   -  Go back to the CMD/TDS project's configuration page, "Source Code Management"
+    - Go back to the CMD/TDS project's configuration page, "Source Code Management"
     - Update "Branches to build" to new branch, eg "target-{next}"
     - Delete "Checkout to local branch" (added in the first step of "1. Jenkins")
     - Check "Branches to build" now refers to the new one
@@ -119,7 +124,7 @@ Configuration files
 
 
 ==========================
-REVIEW  IN PROCESS
+REVIEW IN PROCESS
 
 Building with gradle (4.4+)
 

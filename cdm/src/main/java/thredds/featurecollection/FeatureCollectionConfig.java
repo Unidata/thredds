@@ -36,6 +36,7 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
@@ -87,8 +88,8 @@ public class FeatureCollectionConfig {
   public FeatureCollectionType type;
   public PartitionType ptype = PartitionType.none;
   public String name, path, spec, dateFormatMark, olderThan;
-  public UpdateConfig tdmConfig;
-  public UpdateConfig updateConfig;
+  public UpdateConfig tdmConfig = new UpdateConfig();
+  public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
   public FmrcConfig fmrcConfig = new FmrcConfig();
   public PointConfig pointConfig = new PointConfig();
@@ -125,7 +126,7 @@ public class FeatureCollectionConfig {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    f.format("name ='%s' type='%s'%n", name, type);
+    f.format("FeatureCollectionConfig name ='%s' type='%s'%n", name, type);
     f.format("  spec='%s'%n", spec);
     if (dateFormatMark != null)
       f.format("  dateFormatMark ='%s'%n", dateFormatMark);
@@ -185,7 +186,7 @@ public class FeatureCollectionConfig {
 
   // <update startup="nocheck" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
-    public String recheckAfter;       // LOOK remove ??
+    public String recheckAfter;       // used by non-GRIB FC
     public String rescan;
     public boolean triggerOk = true;
     public boolean userDefined = false;
@@ -210,8 +211,11 @@ public class FeatureCollectionConfig {
         rewriteS = rewriteS.toLowerCase();
         if (rewriteS.equalsIgnoreCase("true"))
           this.updateType = CollectionUpdateType.test;
-        else
+        else try {
           this.updateType = CollectionUpdateType.valueOf(rewriteS);
+        } catch (Throwable t) {
+          log.error("Bad updateType= {} in {}", rewriteS);
+        }
 
         // user has placed an update/tdm element in the catalog
         userDefined = true;
@@ -300,7 +304,7 @@ public class FeatureCollectionConfig {
     }
 
     public void addBestDataset(String name, double greaterEqual) {
-      if (bestDatasets == null) bestDatasets = new ArrayList<BestDataset>(2);
+      if (bestDatasets == null) bestDatasets = new ArrayList<>(2);
       bestDatasets.add(new BestDataset(name, greaterEqual));
     }
 
@@ -502,7 +506,7 @@ public class FeatureCollectionConfig {
 
     public void addGdsHash(String fromS, String toS) {
       if (fromS == null || toS == null) return;
-      if (gdsHash == null) gdsHash = new HashMap<Integer, Integer>(10);
+      if (gdsHash == null) gdsHash = new HashMap<>(10);
 
       try {
         int from = Integer.parseInt(fromS);
@@ -528,7 +532,7 @@ public class FeatureCollectionConfig {
 
     public void addGdsName(String hashS, String name) {
       if (hashS == null || name == null) return;
-      if (gdsNamer == null) gdsNamer = new HashMap<Integer, String>(5);
+      if (gdsNamer == null) gdsNamer = new HashMap<>(5);
 
       try {
         int hash = Integer.parseInt(hashS);
@@ -671,7 +675,7 @@ public class FeatureCollectionConfig {
 
         int prob = (probS == null) ? Integer.MIN_VALUE : Integer.parseInt(probS);
 
-        if (filter == null) filter = new ArrayList<GribIntvFilterParam>(10);
+        if (filter == null) filter = new ArrayList<>(10);
         filter.add(new GribIntvFilterParam(id, intvLength, prob));
 
       } catch (NumberFormatException e) {

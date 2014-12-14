@@ -43,7 +43,7 @@ import java.util.*;
  * @author john caron */
 
 public class SelectService extends Selector {
-  private ArrayList choices = new ArrayList();
+  private ArrayList<ServiceChoice> choices = new ArrayList<>();
 
    /**
     * Construct from fields in XML catalog.
@@ -56,7 +56,7 @@ public class SelectService extends Selector {
 
 
   public void addServiceChoice( String service, String title, String dataFormat, String returns, String value) {
-    choices.add( new ServiceChoice(service, title, dataFormat, returns, value));
+    choices.add(new ServiceChoice(service, title, dataFormat, returns, value));
   }
   public ArrayList getChoices() { return choices; }
   public int getSize() { return choices.size(); }
@@ -86,7 +86,7 @@ public class SelectService extends Selector {
   }
   private volatile int hashCode = 0;
 
-  public class ServiceChoice implements Choice {
+  public static class ServiceChoice implements Choice {
     private String service, title, dataFormat, returns, value;
     ServiceChoice( String service, String title, String dataFormat, String returns, String value) {
       this.service = service;

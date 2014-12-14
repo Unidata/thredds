@@ -238,9 +238,9 @@ public class JTreeTableSorted extends JPanel {
 
       // make invisible any not stored
       boolean[] visible = new boolean[ncols];
-      for (int i = 0; i < modelIndex.length; i++)
-        if (modelIndex[i] < ncols)
-          visible[modelIndex[i]] = true;
+      for (int aModelIndex : modelIndex)
+        if (aModelIndex < ncols)
+          visible[aModelIndex] = true;
 
       // modify popup menu
       for (int i = 0; i < ncols; i++)
@@ -272,13 +272,12 @@ public class JTreeTableSorted extends JPanel {
     if (colWidths == null)
       return;
     int[] size = (int[]) colWidths;
+    setColumnWidths(size);
 
-    if (size != null)
-      setColumnWidths(size);
     if (debug) {
       System.out.println(" read widths = ");
-      for (int i = 0; i < size.length; i++)
-        System.out.print(" " + size[i]);
+      for (int aSize : size)
+        System.out.print(" " + aSize);
       System.out.println();
     }
 
@@ -352,8 +351,8 @@ public class JTreeTableSorted extends JPanel {
 
     if (debug) {
       System.out.println(" store widths = ");
-      for (int i = 0; i < size.length; i++)
-        System.out.print(" " + size[i]);
+      for (int aSize : size)
+        System.out.print(" " + aSize);
       System.out.println();
     }
 
@@ -421,8 +420,8 @@ public class JTreeTableSorted extends JPanel {
       return null;
 
     HashSet set = new HashSet(2 * paths.length);
-    for (int i = 0; i < paths.length; i++) {
-      model.addRowsToSetFromPath(table.getTree(), paths[i], set);
+    for (TreePath path : paths) {
+      model.addRowsToSetFromPath(table.getTree(), path, set);
     }
 
     return set.iterator();
@@ -618,7 +617,6 @@ public class JTreeTableSorted extends JPanel {
   }
 
   private class ThreadHeaderRenderer extends SortedHeaderRenderer {
-    JLabel threadHead;
     JPanel sort, unsort;
     boolean isOn = false;
 

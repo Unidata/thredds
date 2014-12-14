@@ -47,7 +47,7 @@
 
 <p> The OS typically limits the number of open file handles per process. To check this value on Unix, use:</p>
 <pre> ulimit -n </pre>
-<p>If you are using the default <a href="ThreddsConfigXMLFile.html#FileHandles">TDS configuration values</a>, this value should be 1024 or greater. Otherwise
+<p>If you are using the default <a href="ThreddsConfigXMLFile.html#FileCache">TDS configuration values</a>, this value should be 1024 or greater. Otherwise
   you can tune this number based on your own settings. For example, to set this value to 2048 in the <em><strong>tomcat startup.sh</strong></em> script:</p>
 <pre> ulimit -n 2048</pre>
 <p>This affects the number of files to keep in the <a href="#cache">NetcdfFile Object Cache</a>. </p>
@@ -130,7 +130,7 @@
 
 <p>These numbers limit performance, but not functionality. For example, the number of files in an aggregation is not limited by these file handle limits. </p>
 
-<p>You can change these settings in the <a href="ThreddsConfigXMLFile.html#FileHandles">threddsConfig.xml</a> file. </p>
+<p>You can change these settings in the <a href="ThreddsConfigXMLFile.html#FileCache">threddsConfig.xml</a> file. </p>
 
 <p>Each NetcdfFile object encapsolates a file. NcML aggregations are careful not to keep component files open. When number of cache files &gt;
   maxElementsInMemory, a cleanup thread starts after 100 msecs. So the number of cached files can get larger than maxElementsInMemory in the interim, but unless

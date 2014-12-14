@@ -33,10 +33,7 @@
 
 package thredds.server.admin;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,6 +53,7 @@ import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.PathMatcher;
 import thredds.servlet.ServletUtil;
+import ucar.nc2.constants.CDM;
 
 /**
  * Handle the /admin/log interface
@@ -80,11 +78,14 @@ public class LogController{
   }
 
   private void init() {
-    for (File f : accessLogDirectory.listFiles(new FilenameFilter() {
+    File[] files = accessLogDirectory.listFiles(new FilenameFilter() {
       public boolean accept(File dir, String name) {
         return name.startsWith("access.");
       }
-    })) {
+    });
+    if (files == null) return;
+
+    for (File f : files) {
       accessLogFiles.add(f);
     }
   }
@@ -111,7 +112,7 @@ public class LogController{
 
     File file = null;
     if (path.equals("/log/dataroots.txt")) {
-      PrintWriter pw = new PrintWriter(res.getOutputStream());
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
       PathMatcher pathMatcher = DataRootHandler.getInstance().getPathMatcher();
       Iterator iter = pathMatcher.iterator();
       while (iter.hasNext()) {
@@ -157,7 +158,7 @@ public class LogController{
       return null;
 
     } else {
-      PrintWriter pw = new PrintWriter(res.getOutputStream());
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
       pw.format("/log/access/current%n");
       pw.format("/log/access/%n");
       pw.format("/log/thredds/current%n");
@@ -186,7 +187,7 @@ public class LogController{
     List<File> fileList = Arrays.asList(files);
     Collections.sort(fileList);
 
-    PrintWriter pw = new PrintWriter(res.getOutputStream());
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
     for (File f : fileList)
       pw.format("%s %d%n", f.getName(), f.length());
     pw.flush();

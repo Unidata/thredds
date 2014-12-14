@@ -52,6 +52,20 @@ import java.util.zip.Deflater;
  */
 public class GribData {
 
+  public static enum InterpolationMethod {none, cubic, linear}
+
+
+  private static GribData.InterpolationMethod useInterpolationMethod = GribData.InterpolationMethod.linear; // default
+
+  public static GribData.InterpolationMethod getInterpolationMethod() {
+    return useInterpolationMethod;
+  }
+
+  public static void setInterpolationMethod(GribData.InterpolationMethod interpolationMethod) {
+    useInterpolationMethod = interpolationMethod;
+  }
+
+
   public interface Bean {
 
     public float[] readData() throws IOException;
@@ -60,11 +74,11 @@ public class GribData {
 
     public long getDataLength();
 
-    public long getGribMsgLength();
+    public long getMsgLength();
 
     public int getBinScale();
 
-    public int getDecimalScale();
+    public int getDecScale();
 
     public double getMinimum();
 
@@ -74,11 +88,45 @@ public class GribData {
 
   }
 
+  /*
+  Code table 11 – Flag
+  Bit No. Value Meaning
+  1 0 Grid-point data
+    1 Spherical harmonic coefficients
+  2 0 Simple packing
+    1 Complex or second-order packing
+  3 0 Floating point values (in the original data) are represented
+    1 Integer values (in the original data) are represented
+  4 0 No additional flags at octet 14
+    1 Octet 14 contains additional flag bits
+  The following gives the meaning of the bits in octet 14 ONLY if bit 4 is set to 1. Otherwise octet 14 contains
+  regular binary data.
+  Bit No. Value Meaning
+  5 Reserved – set to zero
+  6 0 Single datum at each grid point
+  1 Matrix of values at each grid point
+  7 0 No secondary bit-maps
+  1 Secondary bit-maps present
+  8 0 Second-order values constant width
+  1 Second-order values different widths
+  9–12 Reserved for future use
+  Notes:
+  (1) Bit 4 shall be set to 1 to indicate that bits 5 to 12 are contained in octet 14 of the Binary data section.
+  (2) Bit 3 shall be set to 1 to indicate that the data represented are integer values; where integer values are
+  represented, any reference values, if not zero, should be rounded to integer before being applied.
+  (3) Where secondary bit-maps are present in the data (used in association with second-order packing and, optionally,
+  with a matrix of values at each point), this shall be indicated by setting bit 7 to 1.
+  (4) The indicated meaning of bit 6 shall be retained in anticipation of the future reintroduction of a system to define a
+  matrix of values at each grid point.
+  ____________
+   */
+
   public static class Info {
     public int bitmapLength;     // length of the bitmap section if any
-    public long msgLength;       // length of the data section
+    public long msgLength;       // length of the entire GRIB message
     public long dataLength;       // length of the data section
     public int ndataPoints;      // for Grib1, gds.getNumberPoints; for GRIB2, n data points stored
+    public int nPoints;         //  number of points in the GRID
     public float referenceValue;
     public int binaryScaleFactor, decimalScaleFactor, numberOfBits;
     public int originalType;  // code table 5.1
@@ -219,7 +267,7 @@ public class GribData {
     int packedBitsLen = npoints * nbits / 8;
     f.format(" uncompressed packed bits = %d%n", packedBitsLen);
     f.format(" grib data length = %d%n", bean1.getDataLength());
-    f.format(" grib msg length = %d%n", bean1.getGribMsgLength());
+    f.format(" grib msg length = %d%n", bean1.getMsgLength());
 
     byte[] bdata = convertToBytes(data);
     byte[] scaledData = bb.array();
@@ -234,7 +282,7 @@ public class GribData {
     f.format(" compressedSize = %d%n", compressedSize);
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
     f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-    f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getGribMsgLength());
+    f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     /////////////////////////////////////////////////////////
     f.format("%ndeflate (scaled ints)%n");
@@ -247,7 +295,7 @@ public class GribData {
     f.format(" compressedSize = %d%n", compressedSize);
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
     f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-    f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getGribMsgLength());
+    f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     //////////////////////////////////////////////////////////////
     f.format("%nbzip2 (floats)%n");
@@ -260,7 +308,7 @@ public class GribData {
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
       f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getGribMsgLength());
+      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
@@ -277,7 +325,7 @@ public class GribData {
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
       f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getGribMsgLength());
+      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     } catch (IOException ioe) {
       ioe.printStackTrace();

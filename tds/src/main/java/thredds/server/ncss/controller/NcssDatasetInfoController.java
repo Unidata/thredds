@@ -32,20 +32,14 @@
  */
 package thredds.server.ncss.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.jdom2.Document;
+import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import thredds.server.ncss.dataservice.FeatureDatasetService;
 import thredds.server.ncss.dataservice.NcssShowFeatureDatasetInfo;
 import thredds.server.ncss.params.NcssParamsBean;
@@ -58,27 +52,33 @@ import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 @Controller
 @Scope("request")
 class NcssDatasetInfoController extends AbstractNcssController {
-
-  // static private final Logger log = LoggerFactory.getLogger(NcssDatasetInfoController.class);
-
   @Autowired
   private NcssShowFeatureDatasetInfo ncssShowDatasetInfo;
 
   @Autowired
   FeatureDatasetService datasetService;
 
-  @RequestMapping(value = {"/ncss/**/dataset.html", "/ncss/**/dataset.xml", "/ncss/**/pointDataset.html", "/ncss/**/pointDataset.xml"}, params = {"!var"})
-  void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException {
-
+  @RequestMapping(
+          value = {"/ncss/**/dataset.html", "/ncss/**/dataset.xml",
+                  "/ncss/**/pointDataset.html", "/ncss/**/pointDataset.xml"},
+          params = {"!var"})
+  void getDatasetDescription(HttpServletRequest req, HttpServletResponse res)
+          throws IOException, TransformerException, JDOMException {
     if (!req.getParameterMap().isEmpty()) {
       //This is a 400
       throw new UnsupportedOperationException("Invalid info request.");
     }
 
-        // the forms and dataset description
+    // the forms and dataset description
     String path = req.getServletPath();
     boolean wantXML = path.endsWith("/dataset.xml") || path.endsWith("/pointDataset.xml");
     boolean showPointForm = path.endsWith("/pointDataset.html");
@@ -106,7 +106,6 @@ class NcssDatasetInfoController extends AbstractNcssController {
       if (fd != null) fd.close();
     }
   }
-
 
   @RequestMapping(value = {"/ncss/**/station.xml"})
   void getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {

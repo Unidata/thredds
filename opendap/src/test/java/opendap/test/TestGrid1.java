@@ -64,7 +64,7 @@ public class TestGrid1 extends UnitTestCommon
     static final protected String URLPATH_REMOTE =
             "/thredds/dodsC/testdods/"+DATASET;
     static final protected String URLPATH_LOCAL =
-            "/thredds/dodsC/testAll/"+DATASET;
+            "/thredds/dodsC/testdods/"+DATASET;
 
     protected String testserver = null;
 
@@ -81,10 +81,10 @@ public class TestGrid1 extends UnitTestCommon
         String url = null;
         boolean pass = true;
         NetcdfDataset ncfile = null;
-        if(TestDir.remoteTestServer.startsWith("localhost"))
-            url = "dods://" + TestDir.remoteTestServer + URLPATH_LOCAL;
+        if(TestDir.threddsTestServer.startsWith("localhost"))
+            url = "dods://" + TestDir.threddsTestServer + URLPATH_LOCAL;
         else
-            url = "dods://" + TestDir.remoteTestServer + URLPATH_REMOTE;
+            url = "dods://" + TestDir.threddsTestServer + URLPATH_REMOTE;
 
         try {
             ncfile = NetcdfDataset.openDataset(url);

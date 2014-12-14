@@ -91,8 +91,6 @@ public class GeoTiffWriter2 extends GeotiffWriter {
       if (!gcs.isLatLon()) {
 
         ProjectionPoint pjp0 = proj.latLonToProj(maxLat, minLon);
-        double[] lonArray = (double[]) lon.copyTo1DJavaArray();
-        double[] latArray = (double[]) lat.copyTo1DJavaArray();
         x1 = getXIndex(lon, pjp0.getX(), 0);
         y1 = getYIndex(lat, pjp0.getY(), 0);
         yStart = pjp0.getY() * 1000.0;  //latArray[y1];
@@ -316,9 +314,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
   }
 
   int getLatIndex(Array lat, double value, int side) {
-    int[] shape = lat.getShape();
     IndexIterator latIter = lat.getIndexIterator();
-    Index ind = lat.getIndex();
     int count = 0;
     int isInd = 0;
 
@@ -345,9 +341,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
   }
 
   int getLonIndex(Array lon, double value, int side) {
-    int[] shape = lon.getShape();
     IndexIterator lonIter = lon.getIndexIterator();
-    Index ind = lon.getIndex();
     int count = 0;
     int isInd = 0;
 
@@ -467,7 +461,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
           float curLat = latIter.getFloatNext();
           float curLon = lonIter.getFloatNext();
           float curPix = dataIter.getFloatNext();
-          float alreadyValue = 0;
+          float alreadyValue;
           int curPixelInBBoxIndex =
                   getIndexOfBBFromLatlonOfOri(startLat, startLon,
                           swathInfo[1], swathInfo[0], curLat, curLon,
@@ -536,73 +530,66 @@ public class GeoTiffWriter2 extends GeotiffWriter {
         {
           float tempPixelSum = 0;
           int numNeighborHasValue = 0;
-          float left = 0;
-          float right = 0;
-          float up = 0;
-          float down = 0;
-          float upleft = 0;
-          float upright = 0;
-          float downleft = 0;
-          float downright = 0;
           //Get the values of eight neighborhood
           if ((curIndex - 1 >= 0) && (curIndex - 1 < pixelNum)) {
-            left = arr.getFloat(curIndex - 1);
+            float left = arr.getFloat(curIndex - 1);
             if (left > 0) {
               tempPixelSum += left;
               numNeighborHasValue++;
             }
           }
           if ((curIndex + 1 >= 0) && (curIndex + 1 < pixelNum)) {
-            right = arr.getFloat(curIndex + 1);
+            float right = arr.getFloat(curIndex + 1);
             if (right > 0) {
               tempPixelSum += right;
               numNeighborHasValue++;
             }
           }
           if ((curIndex - width >= 0) && (curIndex - width < pixelNum)) {
-            up = arr.getFloat(curIndex - width);
+            float up = arr.getFloat(curIndex - width);
             if (up > 0) {
               tempPixelSum += up;
               numNeighborHasValue++;
             }
           }
           if ((curIndex + width >= 0) && (curIndex + width < pixelNum)) {
-            down = arr.getFloat(curIndex + width);
+            float down = arr.getFloat(curIndex + width);
             if (down > 0) {
               tempPixelSum += down;
               numNeighborHasValue++;
             }
           }
           if ((curIndex - width - 1 >= 0) && (curIndex - width - 1 < pixelNum)) {
-            upleft = arr.getFloat(curIndex - width - 1);
+            float upleft = arr.getFloat(curIndex - width - 1);
             if (upleft > 0) {
               tempPixelSum += upleft;
               numNeighborHasValue++;
             }
           }
           if ((curIndex - width + 1 >= 0) && (curIndex - width + 1 < pixelNum)) {
-            upright = arr.getFloat(curIndex - width + 1);
+            float upright = arr.getFloat(curIndex - width + 1);
             if (upright > 0) {
               tempPixelSum += upright;
               numNeighborHasValue++;
             }
           }
           if ((curIndex + width - 1 >= 0) && (curIndex + width - 1 < pixelNum)) {
-            downleft = arr.getFloat(curIndex + width - 1);
+            float downleft = arr.getFloat(curIndex + width - 1);
             if (downleft > 0) {
               tempPixelSum += downleft;
               numNeighborHasValue++;
             }
           }
           if ((curIndex + width + 1 >= 0) && (curIndex + width + 1 < pixelNum)) {
-            downright = arr.getFloat(curIndex + width + 1);
+            float downright = arr.getFloat(curIndex + width + 1);
             if (downright > 0) {
               tempPixelSum += downright;
               numNeighborHasValue++;
             }
           }
           if (tempPixelSum > 0) {
-            interpolatedArray.setFloat(curIndex, tempPixelSum / numNeighborHasValue);
+            float val =  numNeighborHasValue == 0 ? 0 : tempPixelSum / numNeighborHasValue;
+            interpolatedArray.setFloat(curIndex, val);
           }
         } else {
           interpolatedArray.setFloat(curIndex, curValue);
@@ -713,7 +700,6 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     ArrayFloat slon = new ArrayFloat(new int[]{lonShape[0]});
     Index slonIndex = slon.getIndex();
     IndexIterator lonIter = lon.getIndexIterator();
-    LatLonPointImpl llp = new LatLonPointImpl();
     LatLonPoint p0 = new LatLonPointImpl(0, lon.getFloat(lonIndex.set(lonShape[0] - 1)));
     LatLonPoint pN = new LatLonPointImpl(0, lon.getFloat(lonIndex.set(0)));
 
@@ -725,7 +711,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
     }
 
     //checking if the 0 point and the N point are the same point
-    int spoint = 0;
+    int spoint;
     if (p0.getLongitude() == pN.getLongitude()) {
       spoint = lonShape[0] - count - 1;
     } else {
@@ -734,7 +720,7 @@ public class GeoTiffWriter2 extends GeotiffWriter {
 
     if ((count > 0) && (lonShape[0] > count)) {
       for (int j = 1; j < lonShape[0]; j++) {
-        int jj = 0;
+        int jj;
         if (j >= count) {
           jj = j - count;
         } else {

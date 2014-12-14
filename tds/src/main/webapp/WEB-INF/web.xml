@@ -48,6 +48,16 @@
     <filter-class>thredds.servlet.filter.CookieFilter</filter-class>
   </filter>
 
+  <filter>
+    <filter-name>RequestCORSFilter</filter-name>
+    <!--filter-class>thredds.servlet.filter.RequestCORSFilter</filter-class-->
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <init-param>
+	    <param-name>targetBeanName</param-name>
+	    <param-value>corsFilter</param-value>
+    </init-param>
+  </filter>
+
   <filter-mapping>
     <filter-name>RequestBracketingLogMessageFilter</filter-name>
     <!-- servlet-name>metadata</servlet-name-->
@@ -91,6 +101,10 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>RestrictedDataset</servlet-name>
   </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestCORSFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>wcs</servlet-name>
@@ -116,7 +130,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <servlet-name>Dap4</servlet-name>
+    <servlet-name>dap4</servlet-name>
   </filter-mapping>
 
   <!--
@@ -136,7 +150,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>CookieFilter</filter-name>
-    <servlet-name>Dap4</servlet-name>
+    <servlet-name>dap4</servlet-name>
   </filter-mapping>
 
   <!--
@@ -237,8 +251,8 @@
   <!-- NetCDF/Dap4 server -->
   <servlet>
     <display-name>Dap4 Server</display-name>
-    <servlet-name>Dap4</servlet-name>
-    <servlet-class>dap4.dap4servlet.Dap4Servlet</servlet-class>
+    <servlet-name>dap4</servlet-name>
+    <servlet-class>thredds.server.dap4.Dap4Servlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
 
@@ -392,7 +406,7 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>Dap4</servlet-name>
+    <servlet-name>dap4</servlet-name>
     <url-pattern>/dap4/*</url-pattern>
   </servlet-mapping>
 
@@ -463,7 +477,7 @@
     <web-resource-collection>
       <web-resource-name>sensitive read access</web-resource-name>
       <url-pattern>/admin/*</url-pattern>
-      <http-method>GET</http-method>
+      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsConfig</role-name>
@@ -477,7 +491,7 @@
     <web-resource-collection>
       <web-resource-name>allow feature collection rescan to be triggered externally</web-resource-name>
       <url-pattern>/admin/collection/trigger</url-pattern>
-      <http-method>GET</http-method>
+      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsTrigger</role-name>
@@ -495,7 +509,7 @@
     <web-resource-collection>
       <web-resource-name>sensitive read access</web-resource-name>
       <url-pattern>/admin/log/*</url-pattern>
-      <http-method>GET</http-method>
+      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>tdsMonitor</role-name>
@@ -526,7 +540,7 @@
     <web-resource-collection>
       <web-resource-name>restricted access datasets</web-resource-name>
       <url-pattern>/restrictedAccess/*</url-pattern>
-      <http-method>GET</http-method>
+      <!-- http-method>GET</http-method -->
     </web-resource-collection>
     <auth-constraint>
       <role-name>restrictedDatasetUser</role-name>

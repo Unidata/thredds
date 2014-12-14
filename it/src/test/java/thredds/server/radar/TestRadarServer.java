@@ -49,12 +49,12 @@ public class TestRadarServer {
     try {
       HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver(catUri);
       httpUriResolver.makeRequest();
-      assert (httpUriResolver.getResponseStatusCode() == 200) : " response status= " +  httpUriResolver.getResponseStatusCode();
+      int status = httpUriResolver.getResponseStatusCode();
+      assert (status == 200) : path + " response status= " +  status;
       //assert (httpUriResolver.getResponseContentType().equals(xmlEncoding)) :
       //        " status = " +  httpUriResolver.getResponseContentType()+" expected= "+xmlEncoding;
 
       InputStream is = httpUriResolver.getResponseBodyAsInputStream();
-      System.out.printf("response= '%s'%n", IO.readContents(is));
       System.out.printf("response= '%s'%n", IO.readContents(is));
 
       /* InputStream is = httpUriResolver.getResponseBodyAsInputStream();

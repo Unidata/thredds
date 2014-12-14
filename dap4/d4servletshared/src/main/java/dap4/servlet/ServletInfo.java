@@ -10,10 +10,8 @@ import dap4.dap4shared.XURI;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.Set;
 
 /**
  * Servlet specific info is captured once
@@ -29,6 +27,7 @@ public class ServletInfo
     //////////////////////////////////////////////////
     // Constants
 
+    static public final String WEBINFPPATH = "WEB-INF";
     static public final String RESOURCEDIRNAME = "resources";
 
     //////////////////////////////////////////////////
@@ -39,15 +38,13 @@ public class ServletInfo
     protected ServletContext servletcontext = null;
     protected String servletname = null;
     protected String server = null;
-
-    // Following are absolute paths
-    protected String resourcedir = null;
+    protected String realpath = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
     public ServletInfo(HttpServlet sv)
-        throws DapException
+            throws DapException
     {
         this.servlet = sv;
         this.servletconfig = sv.getServletConfig();
@@ -55,26 +52,10 @@ public class ServletInfo
             throw new DapException("Cannot locate servlet config object");
         this.servletcontext = this.servletconfig.getServletContext();
         this.servletname = this.servletconfig.getServletName();
-        // See if we can get the absolute path of our resource directory
-        if(this.servletconfig != null) {
-            this.resourcedir = servletcontext.getRealPath("/WEB-INF/" + RESOURCEDIRNAME);
-            this.resourcedir = DapUtil.canonicalpath(this.resourcedir);
-        } else
-            this.resourcedir = null;
-        this.resourcedir = DapUtil.nullify(DapUtil.canonicalpath(this.resourcedir));
-        if(this.resourcedir == null)
-            throw new DapException("Cannot locate servlet resources directory")
-                .setCode(HttpServletResponse.SC_NOT_FOUND);
-
-        if(true) {
-            // Make sure the dir exists
-            File f = new File(resourcedir);
-            if(!f.exists() || !f.isDirectory() || !f.canRead())
-                throw new DapException("Cannot read servlet resources directory: " + f)
-                    .setCode(HttpServletResponse.SC_NOT_FOUND);
-        }
+        // Look around to see where the /resources dir is located
+        // relative to realpath.
+        this.realpath = DapUtil.canonicalpath(this.servletcontext.getRealPath(""));
     }
-
     //////////////////////////////////////////////////
     // Accessors
 
@@ -99,13 +80,23 @@ public class ServletInfo
     }
 
     /**
-     * Return the absolute path for the /WEB-INF/resources directory
+     * Return the absolute path for the "webapp/d4ts" directory
+     * (or its equivalent)
      *
      * @return the absolute path for the /WEB-INF/resources directory
      */
-    public String getResourcePath()
+
+    protected String getRealPath(String virtual)
     {
-        return this.resourcedir;
+        if(virtual.startsWith("/"))
+            virtual = virtual.substring(1);
+        return DapUtil.canonicalpath(this.realpath +"/"+ virtual);
+    }
+
+    public String
+    getContextPath()
+    {
+        return servletcontext.getContextPath();
     }
 
     public String getServer()
@@ -118,13 +109,12 @@ public class ServletInfo
     {
         try {
             XURI xurl = new XURI(url);
-            String simpleurl = xurl.getLeadProtocol()+"://"+xurl.getHost();
+            String simpleurl = xurl.getLeadProtocol() + "://" + xurl.getHost();
             if(this.server != null && !this.server.equals(simpleurl))
-                DapLog.warn("ServletInfo.setServer: server mismatch: "+this.server+" :: "+simpleurl);
+                DapLog.warn("ServletInfo.setServer: server mismatch: " + this.server + " :: " + simpleurl);
             this.server = simpleurl;
         } catch (URISyntaxException use) {
             DapLog.warn("ServletInfo.setServer: malformed url: " + url);
         }
     }
-
 }

@@ -47,7 +47,7 @@ import java.util.ArrayList;
 public class NetcdfFileCacheMonitorImpl implements NetcdfFileCacheMonitor {
 
   public List<String> getCachedFiles() {
-    ucar.nc2.util.cache.FileCache fc = NetcdfDataset.getNetcdfFileCache();
+    ucar.nc2.util.cache.FileCacheIF fc = NetcdfDataset.getNetcdfFileCache();
     if (fc == null) return new ArrayList<>();
 
     return fc.showCache();

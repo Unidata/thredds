@@ -50,6 +50,8 @@
 
   <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
 
+  <bean id="corsConfig" class="thredds.server.config.CorsConfig" />
+  <bean id="corsFilter" class="thredds.servlet.filter.RequestCORSFilter" />
 
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>

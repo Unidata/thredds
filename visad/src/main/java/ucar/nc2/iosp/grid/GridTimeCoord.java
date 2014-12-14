@@ -299,7 +299,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     return o.getNTimes() - getNTimes(); // reverse sort on number of coords
   }
 
-  protected class TimeCoordWithInterval implements Comparable<TimeCoordWithInterval> {
+  static protected class TimeCoordWithInterval implements Comparable<TimeCoordWithInterval> {
     public Date coord;
     public int start, interval;
 

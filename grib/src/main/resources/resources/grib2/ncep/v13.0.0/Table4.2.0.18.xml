@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.18</table>
+  <title>Nuclear/radiology</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-18.shtml</source>
+  <parameter code="0">
+    <shortName>ACCES</shortName>
+    <description>Air Concentration of Caesium 137</description>
+    <units>Bq m-3</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>ACIOD</shortName>
+    <description>Air Concentration of Iodine 131</description>
+    <units>Bq m-3</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>ACRADP</shortName>
+    <description>Air Concentration of Radioactive Pollutant</description>
+    <units>Bq m-3</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>GDCES</shortName>
+    <description>Ground Deposition of Caesium 137</description>
+    <units>Bq m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>GDIOD</shortName>
+    <description>Ground Deposition of Iodine 131</description>
+    <units>Bq m-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>GDRADP</shortName>
+    <description>Ground Deposition of Radioactive Pollutant</description>
+    <units>Bq m-2</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>TIACCP</shortName>
+    <description>Time Integrated Air Concentration of Cesium Pollutant See Note 1</description>
+    <units>Bq s m-3</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>TIACIP</shortName>
+    <description>Time Integrated Air Concentration of Iodine Pollutant See Note 1</description>
+    <units>Bq s m-3</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>TIACRP</shortName>
+    <description>Time Integrated Air Concentration of Radioactive Pollutant See Note 1</description>
+    <units>Bq s m-3</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>AIRCON</shortName>
+    <description>Air Concentration</description>
+    <units>Bq m-3</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>WETDEP</shortName>
+    <description>Wet Deposition</description>
+    <units>Bq m-2</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>DRYDEP</shortName>
+    <description>Dry Deposition</description>
+    <units>Bq m-2</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>TOTLWD</shortName>
+    <description>Total Deposition (Wet + Dry)</description>
+    <units>Bq m-2</units>
+  </parameter>
+</parameterMap>

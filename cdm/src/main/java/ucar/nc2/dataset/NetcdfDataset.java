@@ -33,34 +33,36 @@
 package ucar.nc2.dataset;
 
 import org.apache.http.Header;
-import ucar.ma2.Array;
-import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.util.CancelTaskImpl;
-import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.Misc;
+import thredds.catalog.ServiceType;
+import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.cache.FileFactory;
+import ucar.nc2.ncml.NcMLGWriter;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.ncml.NcMLGWriter;
+import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.CancelTaskImpl;
+import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.util.Misc;
+import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileFactory;
+import ucar.unidata.util.Urlencoded;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 // factories for remote access
 //import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.thredds.ThreddsDataFactory;
-
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
-
-import thredds.catalog.ServiceType;
-import ucar.httpservices.HTTPFactory;
-import ucar.unidata.util.Urlencoded;
 
 /**
  * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as
@@ -344,7 +346,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return File Cache or null if not enabled.
    */
-  static public ucar.nc2.util.cache.FileCache getNetcdfFileCache() {
+  static public ucar.nc2.util.cache.FileCacheIF getNetcdfFileCache() {
     return fileCache;
   }
 
@@ -680,10 +682,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       fragment = trueurl.substring(pos + 1, trueurl.length());
       trueurl = trueurl.substring(0, pos);
     }
-    String query = null;
     pos = location.lastIndexOf('?');
     if (pos >= 0) {
-      query = trueurl.substring(pos + 1, trueurl.length());
       trueurl = trueurl.substring(0, pos);
     }
 
@@ -957,7 +957,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         fragment = fragment.substring(1);
       String[] pairs = fragment.split("[ \t]*[&][ \t]*");
       for (String pair : pairs) {
-        String[] pieces = fragment.split("[ \t]*[=][ \t]*");
+        String[] pieces = pair.split("[ \t]*[=][ \t]*");
         switch (pieces.length) {
           case 1:
             map.put(EscapeStrings.unescapeURL(pieces[0]).toLowerCase(),
@@ -977,8 +977,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
 
   //////////////////////////////////////////////////
-
-  private static boolean isexternalclient = false;
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
@@ -1019,9 +1017,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile openDodsByReflection(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    Constructor con = null;
-    Class c = null;
-    NetcdfFile file = null;
+    Constructor con;
+    Class c;
+    NetcdfFile file;
     try {
       c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
       con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
@@ -1044,10 +1042,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private NetcdfFile openDap4ByReflection(String location, ucar.nc2.util.CancelTask cancelTask)
           throws IOException {
-    Constructor con = null;
-    Constructor constructormethod = null;
-    Class dap4class = null;
-    NetcdfFile file = null;
+    Constructor constructormethod;
+    Class dap4class;
+    NetcdfFile file;
     String target = DAP4_PATH + ".DapNetcdfFile";
     try {
       dap4class = NetcdfDataset.class.getClassLoader().loadClass(target);
@@ -1893,6 +1890,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param arg -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]
    * @throws IOException on read or write error
    */
+  // LOOK: Can we use CFPointWriter.CommandLine for CLI parsing instead? Would that break existing scripts?
   public static void main(String arg[]) throws IOException {
     String usage = "usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]";
     if (arg.length < 4) {

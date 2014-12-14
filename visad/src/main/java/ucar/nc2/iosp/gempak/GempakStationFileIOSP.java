@@ -38,25 +38,17 @@ package ucar.nc2.iosp.gempak;
 
 
 import ucar.ma2.*;
-
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-
 import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.ByteArrayOutputStream;
-
 import java.io.IOException;
-import java.io.PrintStream;
-
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import java.util.StringTokenizer;
 
 
 /**
@@ -363,23 +355,12 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
    */
   protected List<Variable> makeStationVars(List<GempakStation> stations, Dimension dim) {
     int numStations = stations.size();
-    boolean useSTID = true;
-    for (GempakStation station : stations) {
-      if (station.getSTID().equals("")) {
-        useSTID = false;
-        break;
-      }
-    }
     List<Variable> vars = new ArrayList<>();
     List<String> stnKeyNames = gemreader.getStationKeyNames();
     for (String varName : stnKeyNames) {
       Variable v = makeStationVariable(varName, dim);
-      // use STNM or STID as the name or description
       Attribute stIDAttr = new Attribute(CF.STANDARD_NAME, "station_id");
-      if (varName.equals(GempakStation.STID) && useSTID) {
-        v.addAttribute(stIDAttr);
-      }
-      if (varName.equals(GempakStation.STNM) && !useSTID) {
+      if (varName.equals(GempakStation.STID)) {  // Use STID as the station_id for the dataset.
         v.addAttribute(stIDAttr);
       }
       vars.add(v);
@@ -394,6 +375,8 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         } else {
           varArray = get1DArray(v.getDataType(), numStations);
         }
+        assert varArray != null;
+
         int index = 0;
         String varname = v.getFullName();
         for (GempakStation stn : stations) {

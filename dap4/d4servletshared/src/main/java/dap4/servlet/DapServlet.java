@@ -2,15 +2,17 @@
    See the LICENSE file for more information.
 */
 
+
 package dap4.servlet;
 
-import dap4.ce.*;
-import dap4.ce.parser.*;
-import dap4.core.dmr.*;
-import dap4.core.dmr.parser.Dap4Parser;
+import dap4.ce.CEAST;
+import dap4.ce.CECompiler;
+import dap4.ce.CEConstraint;
+import dap4.ce.parser.CEParser;
+import dap4.core.dmr.DapDataset;
+import dap4.core.dmr.ErrorResponse;
 import dap4.core.util.*;
 import dap4.dap4shared.*;
-import dap4.servlet.*;
 import net.jcip.annotations.NotThreadSafe;
 import org.xml.sax.SAXException;
 
@@ -46,14 +48,36 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     static protected final String FAVICON = "favicon.ico"; // relative to resource dir
 
     //////////////////////////////////////////////////
+    // static variables
+
+    // We need a singleton instance of a DapCache in order
+    // To avoid re-opening the same NetcdfFile instance.
+    // Assume:
+    // 1. This is subclassed only once and that class will fill in
+    //    this DapCache instance.
+
+    static protected DapCache cache = null;
+
+    //////////////////////////////////////////////////
+    // Static accessors
+
+    static protected void
+    setCache(DapCache cache)
+    {
+        DapServlet.cache = cache;
+    }
+
+    static protected DapCache
+    getCache()
+    {
+        return DapServlet.cache;
+    }
+
+
+    //////////////////////////////////////////////////
     // Instance variables
 
     protected boolean compress = true;
-
-    // Define the path prefix for finding a dataset
-    // given a url file spec
-
-    transient protected URLMap urlmap = new URLMapDefault();
 
     transient protected ByteOrder byteorder = ByteOrder.nativeOrder();
 
@@ -69,6 +93,34 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     }
 
     //////////////////////////////////////////////////////////
+    // Abstract methods
+
+    /**
+     * Process a favicon request.
+     *
+     * @param drq The merged dap state
+     */
+
+    abstract protected void doFavicon(DapRequest drq) throws IOException;
+
+    /**
+     * Process a capabilities request.
+     * Currently, does nothing (but see D4TSServlet.doCapabilities).
+     *
+     * @param drq The merged dap state
+     */
+
+    abstract protected void doCapabilities(DapRequest drq) throws IOException;
+
+    /**
+     * Convert a URL path into an absolute file path
+     *
+     * @param drq The wrapped request info
+     */
+
+    abstract protected String getResourcePath(DapRequest drq) throws IOException;
+
+    //////////////////////////////////////////////////////////
     // Accessors
 
     public ServletInfo
@@ -78,7 +130,7 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     }
 
     //////////////////////////////////////////////////////////
-    // Non-doXXX Servlet Methods
+    // Servlet init
 
     @Override
     public void init()
@@ -86,7 +138,6 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     {
         super.init();
         DapLog.info(getClass().getName() + " initialization start");
-        //String initParam  = config.getInitParameter("InitParam");
         try {
             this.svcinfo = new ServletInfo(this);
         } catch (Exception ioe) {
@@ -98,8 +149,10 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
             charset.setAccessible(true);
             charset.set(null, null);
         } catch (Exception e) {
+            throw new ServletException(e);
         }
     }
+
 
     //////////////////////////////////////////////////////////
     // doXXX Methods
@@ -117,20 +170,11 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
         // E.g. it gets invokes with url=http://localhost:8080/
         // and with url=http://localhost:8080/d4ts.
         //
-        // In any case, any request whose path does not start with svcinfo.servletname
-        // will be ignored.
-
-        try {
-            URI uri = new URI(url);
-            if(!uri.getPath().startsWith("/" + svcinfo.getServletname()))
-                return;
-        } catch (URISyntaxException use) {
-            return;
-        }
 
         synchronized (this) {
             this.svcinfo.setServer(url);
         }
+
         String query = req.getQueryString();
         DapLog.debug("doGet(): url = " + url + (query == null || query.length() == 0 ? "" : "?" + query));
 
@@ -195,44 +239,7 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     } // doGet
 
     //////////////////////////////////////////////////////////
-    // Capabilities processors
-
-    /**
-     * Process a capabilities request.
-     * Currently, does nothing (but see D4TSServlet.doCapabilities).
-     *
-     * @param drq The merged dap state
-     */
-
-    protected void
-    doCapabilities(DapRequest drq)
-            throws IOException
-    {
-        throw new IOException("Unsupported operation: get capabilities");
-    }
-
-    //////////////////////////////////////////////////////////
     // Extension processors
-
-    /**
-     * Process a favicon request.
-     *
-     * @param drq The merged dap state
-     */
-
-    protected void
-    doFavicon(DapRequest drq)
-            throws IOException
-    {
-        String favfile = getResourceFile(drq, false);
-        if(favfile != null) {
-            try (FileInputStream fav = new FileInputStream(favfile);) {
-                byte[] content = DapUtil.readbinaryfile(fav);
-                OutputStream out = drq.getOutputStream();
-                out.write(content);
-            }
-        }
-    }
 
     /**
      * Process a DSR request.
@@ -269,7 +276,9 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
             throws IOException
     {
 
-        String datasetpath = getResourceFile(drq, false);
+        String datasetpath = getResourcePath(drq);
+        if(datasetpath == null)
+            throw new DapException("Not such dataset: "+drq.getOriginalURL());
         DSP dsp = DapCache.open(datasetpath);
         DapDataset dmr = dsp.getDMR();
 
@@ -315,7 +324,9 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     doData(DapRequest drq)
             throws IOException
     {
-        String datasetpath = getResourceFile(drq, false); // dataset path is relative to resource path
+        String datasetpath = getResourcePath(drq); // dataset path is relative to resource path
+        if(datasetpath == null)
+            throw new DapException("Not such dataset: "+drq.getOriginalURL());
         DSP dsp = DapCache.open(datasetpath);
         if(dsp == null)
             throw new IOException("No such file: " + datasetpath);
@@ -415,46 +426,6 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
         return new DapRequest(info, rq, rsp);
     }
 
-    /**
-     * Return the full file path with
-     * respect to the resource directory.
-     *
-     * @param drq   The request info
-     * @param isdir do we want a file or a directory
-     */
-
-    protected String
-    getResourceFile(DapRequest drq, boolean isdir)
-            throws IOException
-    {
-        // Using context information, we need to
-        // construct a file path to the specified dataset
-
-        String urlpath = drq.getURLPath();
-        URLMap.Result mappath = null;
-        String datasetfilepath = null;
-        mappath = urlmap.mapURL(urlpath);
-        if(mappath == null)
-            throw new IOException("Unknown dataset: " + drq.getOriginalURL());
-
-        // Locate the dataset file
-        datasetfilepath = mappath.prefix + mappath.suffix;
-        // See if it really exists and is readable and of proper type
-        File dataset = new File(datasetfilepath);
-        if(!dataset.exists())
-            throw new DapException("Requested file does not exist: " + datasetfilepath)
-                    .setCode(HttpServletResponse.SC_NOT_FOUND);
-
-        if(!dataset.canRead())
-            throw new DapException("Requested file not readable: " + datasetfilepath)
-                    .setCode(HttpServletResponse.SC_FORBIDDEN);
-
-        if(isdir && !dataset.isDirectory())
-            throw new DapException("Requested file not a directory: " + datasetfilepath)
-                    .setCode(HttpServletResponse.SC_FORBIDDEN);
-        return datasetfilepath;
-    }
-
     //////////////////////////////////////////////////////////
     // Error Methods
 
@@ -521,5 +492,3 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
 }
 
 
-// Obtain the dataset as a NetcdfFile. Wrap in a DSP.
-//NetcdfFile ncd = DatasetHandler.getNetcdfFile(req.getRequest(), req.getResponse(), datasetpath);

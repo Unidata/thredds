@@ -146,7 +146,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     profileCoords.addMember(latName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLatitude());
     profileCoords.addMember(lonName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLongitude());
     if (profile.getTime() != null)
-      profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, (double) profile.getTime().getTime());  // LOOK time not always part of profile
+      profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false,  timeUnit.makeValue(profile.getTime()));  // LOOK time not always part of profile
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
     profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
 

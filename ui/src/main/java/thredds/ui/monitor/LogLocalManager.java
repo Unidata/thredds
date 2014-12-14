@@ -37,6 +37,7 @@ import ucar.nc2.util.IO;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;/*
@@ -163,7 +164,7 @@ public class LogLocalManager {
     return localFiles;
   }
 
-  private static class ServletFileCompare implements Comparator<FileDateRange> {
+  private static class ServletFileCompare implements Comparator<FileDateRange>, Serializable {
     public int compare(FileDateRange o1, FileDateRange o2) {
       if (o1.f.getName().equals(specialLog)) return 1;
       if (o2.f.getName().equals(specialLog)) return -1;

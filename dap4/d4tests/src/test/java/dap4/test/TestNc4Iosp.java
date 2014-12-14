@@ -107,7 +107,6 @@ public class TestNc4Iosp extends DapTestCommon
         throws Exception
     {
         super(name);
-        setSystemProperties();
         if(!HDF5) {
             CDMDSP.loadNc4Iosp();  // Load Nc4Iosp
         }

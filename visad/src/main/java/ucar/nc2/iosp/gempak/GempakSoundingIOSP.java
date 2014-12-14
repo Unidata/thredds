@@ -532,7 +532,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    *
    * @author Unidata Development Team
    */
-  class EmptyStructureDataIterator implements StructureDataIterator {
+  static class EmptyStructureDataIterator implements StructureDataIterator {
 
     /**
      * Do we have more?
@@ -596,7 +596,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
    *
    * @author Unidata Development Team
    */
-  private class SequenceIterator implements StructureDataIterator {
+  static private class SequenceIterator implements StructureDataIterator {
 
     /**
      * the number of records
@@ -687,44 +687,5 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
 
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Test this.
-   *
-   * @param args file name
-   * @throws IOException problem reading the file
-   */
-  public static void main(String[] args) throws IOException {
-    IOServiceProvider mciosp = new GempakSoundingIOSP();
-    RandomAccessFile rf = new RandomAccessFile(args[0], "r", 2048);
-    NetcdfFile ncfile = new MakeNetcdfFile(mciosp, rf, args[0], null);
-    if (args.length > 1) {
-      ucar.nc2.FileWriter.writeToFile(ncfile, args[1]);
-    } else {
-      System.out.println(ncfile);
-    }
-  }
-
-  /**
-   * TODO:  generalize this
-   * static class for testing
-   */
-  protected static class MakeNetcdfFile extends NetcdfFile {
-
-    /**
-     * Ctor
-     *
-     * @param spi        IOServiceProvider
-     * @param raf        RandomAccessFile
-     * @param location   location of file?
-     * @param cancelTask CancelTask
-     * @throws IOException problem opening the file
-     */
-    MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask)
-            throws IOException {
-      super(spi, raf, location, cancelTask);
-    }
-  }
 }
 

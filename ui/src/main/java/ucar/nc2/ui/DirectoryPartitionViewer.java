@@ -69,6 +69,7 @@ public class DirectoryPartitionViewer extends JPanel {
   private IndependentWindow infoWindow;
   private ComboBox cb;
   private FileManager dirFileChooser;
+  private boolean isFromIndex;
 
   public DirectoryPartitionViewer(PreferencesExt prefs, JPanel topPanel, JPanel buttPanel) {
     this.prefs = prefs;
@@ -97,6 +98,7 @@ public class DirectoryPartitionViewer extends JPanel {
           } else if (d.getName().endsWith(".ncx2")) {
             setCollectionFromIndex(d.getPath());
           }
+          cb.addItem(filename);
         }
       });
       topPanel.add(new JLabel("dir,ncx2,or config:"), BorderLayout.WEST);
@@ -257,7 +259,8 @@ public class DirectoryPartitionViewer extends JPanel {
 
   // ncx2 index
   private void setCollectionFromIndex(String indexFilename) {
-    config = new FeatureCollectionConfig();
+    isFromIndex = true;
+    config = new FeatureCollectionConfig(); // LOOK !!
 
     File indexFile = new File(indexFilename);
     File parentFile = indexFile.getParentFile();
@@ -270,37 +273,7 @@ public class DirectoryPartitionViewer extends JPanel {
     name = StringUtil2.removeFromEnd(name, "-");
     this.collectionName = name;
 
-    setDirectory(parentFile );
-  }
-
-  private void readMFiles(String name) {
-    Path path = Paths.get(name);
-    GribCdmIndex reader = new GribCdmIndex(logger);
-    List<MFile> result = new ArrayList<>();
-
-    try {
-      boolean ok = reader.readMFiles(path, result);
-      for (MFile mfile : result)
-        System.out.printf("%s%n", mfile);
-
-    } catch (IOException e) {
-      e.printStackTrace();
-      logger.info("Error opening ncx2 file ", e);
-    }
-  }
-
-  private void moveCdmIndexFile(NodeInfo indexFile) throws IOException {
-    GribCollection gc = null;
-    try {
-      boolean ok = GribCdmIndex.moveCdmIndex(indexFile.dir.toString(), logger);
-      Formatter f = new Formatter();
-      f.format("moved success=%s", ok);
-      infoTA.setText(f.toString());
-      infoTA.gotoTop();
-      infoWindow.show();
-    } finally {
-      if (gc != null) gc.close();
-    }
+    setDirectory(parentFile);
   }
 
   /* private void moveCdmIndexAll(NodeInfo indexFile) {
@@ -460,17 +433,36 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     List<NodeInfo> getChildren() {
+      return (isFromIndex) ? getChildrenFromIndex() : getChildrenFromScan();
+    }
+
+    private List<NodeInfo> getChildrenFromIndex() {
       List<NodeInfo> result = new ArrayList<>(100);
       try {
-        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex(logger), CollectionUpdateType.test)) {
+        for (DirectoryBuilder child : part.constructChildrenFromIndex(new GribCdmIndex(logger), true))
           result.add(new NodeInfo(child));
-        }
+
+        isPartition = (result.size() > 0);
 
       } catch (IOException e) {
         e.printStackTrace();
       }
 
-      isPartition = (result.size() > 0);
+      return result;
+    }
+
+    private List<NodeInfo> getChildrenFromScan() {
+      List<NodeInfo> result = new ArrayList<>(100);
+      try {
+        for (DirectoryBuilder child : part.constructChildren(new GribCdmIndex(logger), CollectionUpdateType.test))
+          result.add(new NodeInfo(child));
+
+        isPartition = (result.size() > 0);
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
       return result;
     }
 
@@ -746,17 +738,6 @@ public class DirectoryPartitionViewer extends JPanel {
       });
       toolBar.add(makeIndexButt); */
 
-    }
-
-    private void showThrowable(Throwable t) {
-      t.printStackTrace();
-      JOptionPane.showMessageDialog(
-              DirectoryPartitionViewer.this,
-              t.toString(),
-              t.getMessage(),
-              JOptionPane.ERROR_MESSAGE
-      );
-      repaint();
     }
 
     /**

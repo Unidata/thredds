@@ -33,10 +33,14 @@
 package ucar.nc2.util;
 
 
-import javax.print.URIException;
-import java.io.UnsupportedEncodingException;
-import java.net.*;
+import ucar.unidata.util.StringUtil2;
+
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * Networking utilities.
@@ -56,7 +60,7 @@ public class URLnaming {
   @Deprecated
   private static String escapeQueryNew(String urlString) {
     urlString = urlString.trim();
-    URI uri = null;
+    URI uri;
     try {
       uri = new URI(urlString);
       return uri.toASCIIString();
@@ -72,7 +76,7 @@ public class URLnaming {
     int posQ = urlString.indexOf("?");
     if ((posQ > 0) && (posQ < urlString.length() - 2)) {
       String query = urlString.substring(posQ + 1);
-      if (query.indexOf("%") < 0) { // assume that its not already encoded...
+      if (!query.contains("%")) { // assume that its not already encoded...
         String path = urlString.substring(0, posQ);
         try {
           urlString = path + "?" + URLEncoder.encode(query,"UTF-8");
@@ -189,9 +193,15 @@ public class URLnaming {
       if ((relativeUri.length() > 0) && (relativeUri.charAt(0) == '/'))
         return relativeUri;
 
+      baseUri = StringUtil2.substitute(baseUri, "\\", "/"); // assumes forward slash
       int pos = baseUri.lastIndexOf('/');
       if (pos > 0) {
-        return baseUri.substring(0, pos + 1) + relativeUri;
+        String baseDir = baseUri.substring(0, pos + 1);
+        if (relativeUri.equals(".")) {
+          return baseDir;
+        } else {
+          return baseDir + relativeUri;
+        }
       }
     }
 
@@ -199,13 +209,13 @@ public class URLnaming {
 
     //relativeUri = canonicalizeRead(relativeUri);
     try {
-      URI reletiveURI = URI.create(relativeUri);
-      if (reletiveURI.isAbsolute())
+      URI relativeURI = URI.create(relativeUri);
+      if (relativeURI.isAbsolute())
         return relativeUri;
 
       //otherwise let the URI class resolve it
       URI baseURI = URI.create(baseUri);
-      URI resolvedURI = baseURI.resolve(reletiveURI);
+      URI resolvedURI = baseURI.resolve(relativeURI);
       return resolvedURI.toASCIIString();
 
     } catch (IllegalArgumentException e) {
@@ -228,7 +238,7 @@ public class URLnaming {
 
   public static String resolveFile(String baseDir, String filepath) {
     if (baseDir == null) return filepath;
-    if (filepath == null) return filepath;
+    if (filepath == null) return null;
     File file = new File(filepath);
     if (file.isAbsolute()) return filepath;
 
@@ -268,11 +278,11 @@ public class URLnaming {
     System.out.println();
   }
 
-  public static void main1(String args[]) {
+  public static void main1() {
     testResolve("file:/test/me/", "blank in dir", "file:/test/me/blank in dir");
   }
 
-  public static void main2(String args[]) {
+  public static void main2() {
     test("file:test/dir");
     test("file:/test/dir");
     test("file://test/dir");
@@ -291,7 +301,7 @@ public class URLnaming {
       assert resolve(base, rel).equals(result);
   }
 
-  public static void main3(String args[]) {
+  public static void main3() {
     testResolve("http://test/me/", "wanna", "http://test/me/wanna");
     testResolve("http://test/me/", "/wanna", "http://test/wanna");
     testResolve("file:/test/me/", "wanna", "file:/test/me/wanna");
@@ -304,19 +314,18 @@ public class URLnaming {
   }
 
 
-  public static void main4(String args[]) {
+  public static void main4() {
     try {
-      URL url = new URL("file:src/test/data/ncml/nc/");
       URI uri = new URI("file:src/test/data/ncml/nc/");
-      File f = new File(uri);
+      new File(uri);
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  public static void main5(String args[]) throws URISyntaxException {
+  public static void main5() throws URISyntaxException {
     String uriString = "http://motherlode.ucar.edu:8081/dts/test.53.dods?types[0:1:9]";
-    URI uri = new URI(uriString);
+    new URI(uriString);
   }
 
   private static void checkEsc(String s) {

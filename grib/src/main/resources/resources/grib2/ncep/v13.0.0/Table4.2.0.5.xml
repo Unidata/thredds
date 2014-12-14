@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.5</table>
+  <title>Long wave radiation</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-5.shtml</source>
+  <parameter code="0">
+    <shortName>NLWRS</shortName>
+    <description>Net Long-Wave Radiation Flux (Surface)*</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>NLWRT</shortName>
+    <description>Net Long-Wave Radiation Flux (Top of Atmosphere)*</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>LWAVR</shortName>
+    <description>Long-Wave Radiation Flux*</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>DLWRF</shortName>
+    <description>Downward Long-Wave Rad. Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>ULWRF</shortName>
+    <description>Upward Long-Wave Rad. Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>NLWRF</shortName>
+    <description>Net Long-Wave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>NLWRCS</shortName>
+    <description>Net Long-Wave Radiation Flux, Clear Sky</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>DLWRF</shortName>
+    <description>Downward Long-Wave Rad. Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>ULWRF</shortName>
+    <description>Upward Long-Wave Rad. Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>LWHR</shortName>
+    <description>Long-Wave Radiative Heating Rate</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>CSULF</shortName>
+    <description>Clear Sky Upward Long Wave Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>CSDLF</shortName>
+    <description>Clear Sky Downward Long Wave Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>CFNLF</shortName>
+    <description>Cloud Forcing Net Long Wave Flux</description>
+    <units>W m-2</units>
+  </parameter>
+</parameterMap>

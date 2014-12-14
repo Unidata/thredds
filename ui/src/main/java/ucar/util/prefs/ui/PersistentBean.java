@@ -122,43 +122,12 @@ public class PersistentBean implements PersistenceManager {
   private class BeanMap {
     private Object bean;
     private PropertyMap pmap;
-    private Map<String, BeanMap> beanMaps = new HashMap<String, BeanMap>(); // nested BeanMap
+    private Map<String, BeanMap> beanMaps = new HashMap<>(); // nested BeanMap
     private Object[] args = new Object[1];
 
     BeanMap( Object bean){
       this.bean = bean;
       this.pmap = PropertyMap.getParser( bean.getClass());
-    }
-
-    private void checkExist(String name) {
-      // non-nested
-      PropertyDescriptor prop = pmap.findProperty(name);
-      if (prop != null) return;
-
-      // see if its nested
-      int pos = name.indexOf(".");
-      if (pos < 0)
-        throw new IllegalArgumentException("PersistentBean: no property named "+name);
-
-      // break out first bean name
-      String parentName = name.substring(0, pos);
-      String childrenName = name.substring(pos+1);
-      prop = pmap.findProperty( parentName);
-      if (prop == null)
-        throw new IllegalArgumentException("PersistentBean: no property named "+parentName);
-
-      BeanMap nested = beanMaps.get( parentName);
-      if (nested == null) {
-        // first time - create a nested BeanMap
-        Object bean = getObject( parentName);
-        if (bean == null) {
-          // create a new one
-          bean = createObject(prop);
-          putObject(parentName, bean);
-        }
-        nested = new BeanMap(bean);
-        beanMaps.put(parentName, nested);
-      }
     }
 
     private ProxyProp getPropertyDescriptor(String name) {
@@ -280,7 +249,7 @@ public class PersistentBean implements PersistenceManager {
   // one for each class
   private static class PropertyMap {
     private static boolean debugBeanParser = false, debugBeanParserDetail = false;
-    private static Map<Class,PropertyMap> parsers = new HashMap<Class,PropertyMap>();
+    private static Map<Class,PropertyMap> parsers = new HashMap<>();
 
     static PropertyMap getParser( Class beanClass) {
       PropertyMap parser;
@@ -291,16 +260,16 @@ public class PersistentBean implements PersistenceManager {
       return parser;
     }
 
-    private Map<String,PropertyDescriptor> properties = new LinkedHashMap<String,PropertyDescriptor>();
+    private Map<String,PropertyDescriptor> properties = new LinkedHashMap<>();
 
     PropertyMap( Class beanClass) {
-
       // get bean info
-      BeanInfo info = null;
+      BeanInfo info;
       try {
         info = Introspector.getBeanInfo(beanClass, Object.class);
       } catch (IntrospectionException e) {
         e.printStackTrace();
+        return;
       }
 
       if (debugBeanParser)

@@ -44,10 +44,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Describe
@@ -56,12 +53,14 @@ import java.util.List;
  * @since 2/7/14
  */
 public class CollectionGeneral extends CollectionAbstract {
-  private Path rootPath;
+  private final Path rootPath;
+  private final long lastModifiedTime;
 
-  public CollectionGeneral(String collectionName, Path rootPath, Logger logger) {
+  public CollectionGeneral(String collectionName, Path rootPath, String olderThan, Logger logger) {
     super(collectionName, logger);
     this.rootPath = rootPath;
     this.root = rootPath.toString();
+    this.lastModifiedTime = parseOlderThanString(olderThan);
   }
 
   @Override
@@ -90,12 +89,16 @@ public class CollectionGeneral extends CollectionAbstract {
 
     public boolean hasNext() {
       while (true) {
-        if (!dirStreamIterator.hasNext()) return false;
+        if (!dirStreamIterator.hasNext()) {
+          nextMFile = null;
+          return false;
+        }
 
         try {
           Path nextPath = dirStreamIterator.next();
           BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
           if (attr.isDirectory()) continue;  // LOOK fix this
+          if (attr.lastModifiedTime().toMillis() < lastModifiedTime) continue;
           nextMFile = new MFileOS7(nextPath, attr);
 
        } catch (IOException e) {
@@ -107,6 +110,7 @@ public class CollectionGeneral extends CollectionAbstract {
 
 
     public MFile next() {
+      if (nextMFile == null) throw new NoSuchElementException();
       return nextMFile;
     }
 

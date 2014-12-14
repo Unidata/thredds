@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.2.1</table>
+  <title>Agricultural/aquacultural special products</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-1.shtml</source>
+  <parameter code="192">
+    <shortName>CANL</shortName>
+    <description>Cold Advisory for Newborn Livestock</description>
+    <units />
+  </parameter>
+</parameterMap>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.1.2</table>
+  <title>Inland Water and Sediment Properties</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-1-2.shtml</source>
+  <parameter code="0">
+    <shortName>WDPTHIL</shortName>
+    <description>Water Depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>WTMPIL</shortName>
+    <description>Water Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>WFRACT</shortName>
+    <description>Water Fraction</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>SEDTK</shortName>
+    <description>Sediment Thickness</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>SEDTMP</shortName>
+    <description>Sediment Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>ICTKIL</shortName>
+    <description>Ice Thickness</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>ICETIL</shortName>
+    <description>Ice Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>ICECIL</shortName>
+    <description>Ice Cover</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>LANDIL</shortName>
+    <description>Land Cover (0=water, 1=land)</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>SFSAL</shortName>
+    <description>Shape Factor with Respect to Salinity Profile</description>
+    <units />
+  </parameter>
+  <parameter code="10">
+    <shortName>SFTMP</shortName>
+    <description>Shape Factor with Respect to Temperature Profile in Thermocline</description>
+    <units />
+  </parameter>
+  <parameter code="11">
+    <shortName>ACWSR</shortName>
+    <description>Attenuation Coefficient of Water with Respect to Solar Radiation</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>SALTIL</shortName>
+    <description>Salinity</description>
+    <units>kg kg-1</units>
+  </parameter>
+</parameterMap>

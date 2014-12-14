@@ -39,6 +39,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribLevelType;
 import ucar.unidata.util.StringUtil2;
 
@@ -129,7 +130,7 @@ public class NcepHtmlScraper {
      String x = fmt.outputString(doc);
 
      try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-       fout.write(x.getBytes());
+       fout.write(x.getBytes(CDM.utf8Charset));
      }
 
      if (show) System.out.printf("%s%n", x);
@@ -184,6 +185,7 @@ public class NcepHtmlScraper {
     Document doc = Jsoup.parse(new URL(source), 10 * 1000);
 
     Element table = doc.select("table").first();
+    if (table == null) return;
     List<Stuff> stuff = new ArrayList<>();
     Elements rows = table.select("tr");
     for (Element row : rows) {
@@ -202,7 +204,6 @@ public class NcepHtmlScraper {
           String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
           if (desc.startsWith("Reserved")) {
             System.out.printf("*** Skip Reserved %s%n", row.text());
-            continue;
           } else {
             System.out.printf("%d == %s%n", pnum, desc);
             stuff.add(new Stuff(pnum, desc));
@@ -244,7 +245,7 @@ public class NcepHtmlScraper {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-      fout.write(x.getBytes());
+      fout.write(x.getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", x);
@@ -267,6 +268,8 @@ public class NcepHtmlScraper {
       System.out.printf("%d == %s%n=%n", count++, e.text());
 
     Element body = doc.select("body").first();
+    if (body == null) return;
+
     Elements tables = body.select("table");
     for (int i = 0; i < tableVersions.length; i++) {
       if (tableVersions[i] == 0) continue;
@@ -347,7 +350,7 @@ public class NcepHtmlScraper {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-      fout.write(x.getBytes());
+      fout.write(x.getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", x);
@@ -361,7 +364,7 @@ public class NcepHtmlScraper {
       f.format("%3d:%s:%s [%s]%n", p.pnum, p.name, p.desc, p.unit); // 1:PRES:Pressure [Pa]
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
-      fout.write(f.toString().getBytes());
+      fout.write(f.toString().getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", f);

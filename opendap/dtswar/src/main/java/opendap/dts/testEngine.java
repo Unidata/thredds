@@ -297,7 +297,6 @@ public class testEngine {
         k = 0;
         for (dim = 0; dim < (ta.numDimensions() - 1); dim++) {
 
-            dad = ta.getDimension(dim);
 
             cIndices[dim] = (constrainedIndex - k) / cDimSteps[dim];
 

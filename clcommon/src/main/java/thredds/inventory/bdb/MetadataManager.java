@@ -80,7 +80,7 @@ public class MetadataManager implements StoreKeyValue {
     root = home + "/.unidata/bdb/";
   }
 
-  static public void setCacheDirectory(String dir, long _maxSizeBytes, int _jvmPercent) {
+  static public synchronized void setCacheDirectory(String dir, long _maxSizeBytes, int _jvmPercent) {
     root = dir;
     maxSizeBytes = _maxSizeBytes;
     jvmPercent = _jvmPercent;
@@ -178,7 +178,7 @@ public class MetadataManager implements StoreKeyValue {
     }
   }
 
-  static public String getCacheLocation() {
+  static public synchronized String getCacheLocation() {
     return root;
   }
 

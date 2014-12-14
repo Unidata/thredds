@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.stream.NcStreamWriter;
@@ -56,6 +57,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -266,9 +268,9 @@ public class DatasetViewer extends JPanel {
       infoWindow.show();
 
     } catch (Throwable ioe) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      ioe.printStackTrace(new PrintStream(bos));
-      infoTA.setText(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      infoTA.setText(sw.toString());
       infoTA.gotoTop();
       infoWindow.show();
 
@@ -277,7 +279,9 @@ public class DatasetViewer extends JPanel {
         try {
           compareFile.close();
         }
-        catch (Exception eek) { }
+        catch (Exception eek) {
+            eek.printStackTrace();
+        }
     }
   }
 
@@ -407,6 +411,11 @@ public class DatasetViewer extends JPanel {
       csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           dumpData(table);
+        }
+      });
+      csPopup.addAction("Write binary Data to file", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          writeData(table);
         }
       });
       if (level == 0) {
@@ -555,6 +564,21 @@ public class DatasetViewer extends JPanel {
     }
 
     dumpWindow.show();
+  }
+
+  private void writeData(BeanTable from) {
+    Variable v = getCurrentVariable(from);
+    if (v == null) return;
+    String name = "C:/temp/file.bin";
+    try (FileOutputStream stream = new FileOutputStream(name)) {
+      WritableByteChannel channel = stream.getChannel();
+      v.readToByteChannel(v.getShapeAsSection(), channel);
+      System.out.printf("Write ok to %s%n", name);
+
+    } catch (InvalidRangeException | IOException e) {
+      e.printStackTrace();
+    }
+
   }
 
   /* private void showMissingData(BeanTable from) {
@@ -742,10 +766,6 @@ public class DatasetViewer extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
     private Variable vs;
     private String name, dimensions, desc, units, dataType, shape;
-    private String coordSys;
-
-    // no-arg constructor
-    public VariableBean() {}
 
     // create from a dataset
     public VariableBean( Variable vs) {
@@ -830,9 +850,6 @@ public class DatasetViewer extends JPanel {
 
   public class AttributeBean {
     private Attribute att;
-
-    // no-arg constructor
-    public AttributeBean() {}
 
     // create from a dataset
     public AttributeBean( Attribute att) {

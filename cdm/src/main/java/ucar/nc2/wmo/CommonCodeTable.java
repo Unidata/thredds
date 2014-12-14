@@ -65,7 +65,8 @@ import java.util.*;
  */
 public class CommonCodeTable implements Comparable<CommonCodeTable> {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CommonCodeTable.class);
-  static private final Map<Integer, CommonCodeTable> tableMap = new HashMap<Integer, CommonCodeTable>();
+  static private final Map<Integer, CommonCodeTable> tableMap = new HashMap<>();
+  static private final String version = "_20141105_en";
 
   //////////////////////////////////////////////////////////////////////////
 /*
@@ -77,6 +78,15 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
 <Name_InternationalDataSubcategories_en>Profiles of atmospheric constituents concentrations</Name_InternationalDataSubcategories_en>
 <Status>Operational</Status>
 </Common_C13_20130508_en>
+
+<Common_C01_20141105_en>
+<No>6</No>
+<CodeFigureForF1F2>04</CodeFigureForF1F2>
+<CodeFigureForF3F3F3>004</CodeFigureForF3F3F3>
+<Octet5GRIB1_Octet6BUFR3>4</Octet5GRIB1_Octet6BUFR3>
+<OriginatingGeneratingCentres_en>Moscow</OriginatingGeneratingCentres_en>
+<Status>Operational</Status>
+</Common_C01_20141105_en>
 
    */
   public enum Table {                              // code                code2                  value
@@ -111,13 +121,11 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     }
 
     public String getResourceName() {
-      //return "/resources/wmo/CommonCodeTable_" + this.name() + "_02Nov11_en.xml"; // previous
-      //return "/resources/wmo/Common_C" + this.num0 + "_20121107_en.xml"; // nov 2012
-      return "/resources/wmo/Common_C" + this.num0 + "_20130508_en.xml"; // nov 2012
+      return "/resources/wmo/Common_C" + this.num0 + version +".xml";
     }
 
     public String getRootElemName() {
-      return "Common_C" + this.num0 + "_20130508_en";
+      return "Common_C" + this.num0 + version;
     }
 
     public int getTableNo() {
@@ -390,10 +398,10 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     @Override
     public int compareTo(TableEntry o) {
       if (type == 1)
-        return code - o.code;
+        return Integer.compare(code, o.code);
       else {
-        int diff = code - o.code;
-        return (diff == 0) ?  code2 - o.code2 : diff;
+        int diff = Integer.compare(code, o.code);
+        return (diff == 0) ?  Integer.compare(code2, o.code2) : diff;
       }
     }
 

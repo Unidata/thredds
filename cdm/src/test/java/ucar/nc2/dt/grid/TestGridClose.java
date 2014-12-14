@@ -64,7 +64,7 @@ public class TestGridClose extends TestCase {
     openDatasetAndView(url);
     alterExistingFile(url);
     checkFile(url);
-    TestAll.checkLeaks();
+    TestDir.checkLeaks();
   }
 
   public void openDatasetAndView(String url) throws IOException {

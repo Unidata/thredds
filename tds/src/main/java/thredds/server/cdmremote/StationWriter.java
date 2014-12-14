@@ -33,31 +33,13 @@
 
 package thredds.server.cdmremote;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import thredds.server.cdmremote.params.CdmrfQueryBean;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.remote.PointStream;
@@ -75,6 +57,15 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
 
 /**
  * CdmrFeature subsetting for station data.
@@ -266,7 +257,7 @@ public class StationWriter {
       long timeToScan = 0; // ??
       if (timeToScan > 0) {
         long writeTime = took - timeToScan;
-        double mps = 1000 * counter.matches / writeTime;
+        double mps = 1000.0 * counter.matches / writeTime;
         System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
       }
     }
@@ -439,8 +430,8 @@ public class StationWriter {
       }
     }
 
-    for (String name : map.keySet()) {
-      StationDataTracker track = map.get(name);
+    for (Map.Entry<String, StationDataTracker> entry : map.entrySet()) {
+      StationDataTracker track = entry.getValue();
       a.act(track.sobs, track.sobs.getData());
       limit.matches++;
 
@@ -450,7 +441,7 @@ public class StationWriter {
 
   }
 
-  private class StationDataTracker {
+  private static class StationDataTracker {
     PointFeature sobs;
     long timeDiff = Long.MAX_VALUE;
 
@@ -705,7 +696,7 @@ public class StationWriter {
     void act(PointFeature pf, StructureData sdata) throws IOException;
   }
 
-  private class Limit {
+  static private class Limit {
     int count;   // how many scanned
     int limit = Integer.MAX_VALUE; // max matches
     int matches; // how want matched

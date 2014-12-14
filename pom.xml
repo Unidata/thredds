@@ -200,11 +200,6 @@
       <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/</url>
     </repository>
  
-    <repository>
-      <id>geotoolkit</id>
-      <name>Geotk repository</name>
-      <url>http://maven.geotoolkit.org</url>
-    </repository>
     <!-- json-taglib  ( for ncWMS ) -->
     <repository>
       <id>mvmsearch</id>
@@ -282,17 +277,6 @@
           <exclusion>
             <groupId>edu.wisc.ssec</groupId> <!-- replaces visad -->
             <artifactId>visad</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>d4servlet</artifactId>
-        <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -565,9 +549,9 @@
       </dependency>
 
       <dependency>
-        <groupId>com.lexicalscope.jewelcli</groupId>
-        <artifactId>jewelcli</artifactId>
-        <version>0.8.5</version>
+        <groupId>com.beust</groupId>
+        <artifactId>jcommander</artifactId>
+        <version>${jcommander.version}</version>
       </dependency>
 
       <dependency>
@@ -647,7 +631,7 @@
       <dependency>
         <groupId>uk.ac.rdg.resc</groupId>
         <artifactId>ncwms</artifactId>
-        <version>${uk.ac.rdg.resc.version}</version>
+        <version>${uk.ac.rdg.resc.ncwms.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.slf4j</groupId>
@@ -662,11 +646,6 @@
             <artifactId>jfreechart</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.geotoolkit</groupId>
-        <artifactId>geotk-referencing</artifactId>
-        <version>${org.geotoolkit.version}</version>
       </dependency>
 
       <!-- server -->
@@ -712,21 +691,10 @@
         <artifactId>threddsIso</artifactId>
         <version>${eds.threddsIso.version}</version>
         <scope>runtime</scope>
-        <exclusions>
-          <!-- TODO Ask Dave to scope servlet-api as "provided". -->
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-          </exclusion>
-      		<exclusion>
-				<groupId>net.sf.saxon</groupId>
-				<artifactId>saxon</artifactId>      	
-      		</exclusion>                    
-        	</exclusions>
       </dependency>
       
-      <!-- saxon -->
-      <dependency>
+      <!-- THREDDS does not use saxon directly. Allow threddsISO to pull it in. TODO Remove this section-->
+      <!-- dependency>
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon</artifactId>
 			<version>${saxon.version}</version>
@@ -735,7 +703,7 @@
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon-dom</artifactId>
 			<version>${saxon.version}</version>
-	  </dependency>      
+	  </dependency-->
       
       <!-- THREDDS - END -->
 
@@ -972,7 +940,6 @@
     <module>dap4/d4cdmshared</module>
     <module>dap4/d4cdmclient</module>
     <module>dap4/d4servletshared</module>
-    <module>dap4/d4servlet</module>
     <module>dap4/d4ts</module>
     <module>dap4/d4tests</module>
     <module>dap4/d4tswar</module>
@@ -981,8 +948,6 @@
   </modules>
 
   <properties>
-    <thredds.version>4.5.0-SNAPSHOT</thredds.version>
-
     <!-- default is to skip tests. use mvn test -DskipTests=false to override on command line -->
     <skipTests>true</skipTests>
 
@@ -997,10 +962,9 @@
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
     <edu.wisc.version>2011-08-22</edu.wisc.version>
-	<uk.ac.rdg.resc.version>1.0.tds.4.4.0</uk.ac.rdg.resc.version>
-	  
-    <org.geotoolkit.version>3.21</org.geotoolkit.version>
-    <eds.threddsIso.version>2.3.1</eds.threddsIso.version>
+	  <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.4-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
+
+    <eds.threddsIso.version>2.2.4-SNAPSHOT</eds.threddsIso.version>
 
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
     <cas.version>3.1.10</cas.version>
@@ -1018,13 +982,13 @@
     <commons-io.version>2.4</commons-io.version>
     <derby.version>10.9.1.0</derby.version>
     <javax.activation.version>1.1.1</javax.activation.version>
-    <javax.servlet.version>3.0.1</javax.servlet.version>
+    <javax.servlet.version>3.1.0</javax.servlet.version>
     <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
     <jaxen.version>1.1.4</jaxen.version>
-    <org.jfree.jcommon.version>1.0.17</org.jfree.jcommon.version>
-    <org.jfree.jfreechart.version>1.0.14</org.jfree.jfreechart.version>
+    <org.jfree.jcommon.version>1.0.23</org.jfree.jcommon.version>
+    <org.jfree.jfreechart.version>1.0.19</org.jfree.jfreechart.version>
     <joda-time.version>2.2</joda-time.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.12</junit.version>
     <log4j.version>2.0-rc1</log4j.version>
     <net.jcip.version>1.0</net.jcip.version>
     <net.sf.ehcache.version>2.6.2</net.sf.ehcache.version>
@@ -1034,16 +998,17 @@
     <org.jdom2.version>2.0.4</org.jdom2.version>
     <org.jdom-legacy.version>1.1.3</org.jdom-legacy.version>
     <org.quartz-scheduler.version>2.2.0</org.quartz-scheduler.version>
-    <org.slf4j.version>1.7.5</org.slf4j.version>
-    <org.springframework.version>3.2.3.RELEASE</org.springframework.version>
-    <org.springframework.security.version>3.1.3.RELEASE</org.springframework.security.version>
+    <org.slf4j.version>1.7.7</org.slf4j.version>
+    <org.springframework.version>3.2.12.RELEASE</org.springframework.version>
+    <org.springframework.security.version>3.2.5.RELEASE</org.springframework.security.version>
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
-    <saxon.version>8.7</saxon.version>
+    <!--saxon.version>8.7</saxon.version-->
     <jna.groupId>net.java.dev.jna</jna.groupId>
-    <jna.version>4.0.0</jna.version>
+    <jna.version>4.1.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>
     <org.itadaki.bzip2.version>0.9.1</org.itadaki.bzip2.version>
+    <jcommander.version>1.35</jcommander.version>
 
     <!-- Plugins versions -->
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>

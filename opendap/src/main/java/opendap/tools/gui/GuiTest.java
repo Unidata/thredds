@@ -38,11 +38,11 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.util.gui;
+package opendap.tools.gui;
 
-import opendap.util.gui.msg_box;
-import opendap.util.gui.warning_box;
-import opendap.util.gui.error_box;
+import opendap.tools.gui.msg_box;
+import opendap.tools.gui.warning_box;
+import opendap.tools.gui.error_box;
 
 /**
  * Test routine for the opendap/util/gui classes
@@ -69,9 +69,8 @@ public class GuiTest {
         warning_box wbox1 = new warning_box("My Title2",
                 "Wow! A Warning Message Box!");
 
-        error_box ebox = new error_box("Wow! A Error Message Box!");
-        error_box ebox1 = new error_box("My Title3",
-                "Wow! A Error Message Box!");
+        new error_box("Wow! A Error Message Box!");
+        new error_box("My Title3","Wow! A Error Message Box!");
 
         System.exit(0);
     }

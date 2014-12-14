@@ -32,18 +32,13 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
-import junit.extensions.TestSetup;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.FileFilter;
 
-import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.dataset.NetcdfDataset;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -104,17 +99,6 @@ public class TestAll {
       }
     };
   } */
-
-  static public void checkLeaks() {
-    if (RandomAccessFile.getOpenFiles().size() > 0) {
-      System.out.println("RandomAccessFile still open:");
-      for (String filename : RandomAccessFile.getOpenFiles()) {
-        System.out.println(" open= " + filename);
-      }
-    } else {
-      System.out.println(" no leaks");
-    }
-  }
 
   /* static private void showFilesUsed() {
     System.out.println("All Files Used:");

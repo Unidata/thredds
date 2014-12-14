@@ -35,6 +35,7 @@
 package thredds.catalog.query;
 
 import thredds.catalog.XMLEntityResolver;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
 import org.jdom2.input.SAXBuilder;
@@ -66,7 +67,7 @@ import ucar.nc2.util.DiskCache2;
  */
 
 public class DqcFactory {
-  public static boolean debugURL = false, debugVersion = false;
+  public static boolean debugVersion = false;
   public static boolean showParsedXML = false;
 
   static private DiskCache2 diskCache = null;
@@ -80,8 +81,8 @@ public class DqcFactory {
   private SAXBuilder builder; // JAXP parser
   private DqcConvertIF defaultConverter;
 
-  private HashMap versionToNamespaceHash = new HashMap(10);
-  private HashMap namespaceToDqcConverterHash = new HashMap(10);   // HashMap<String, DqcConvertIF>
+  private HashMap<String, String> versionToNamespaceHash = new HashMap<>(10);
+  private HashMap<String, DqcConvertIF> namespaceToDqcConverterHash = new HashMap<>(10);
   private StringBuilder warnMessages, errMessages, fatalMessages;
 
 
@@ -119,7 +120,7 @@ public class DqcFactory {
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("DqcFactory: no implementing class found: " + e.getMessage());
     } catch (InstantiationException e) {
-      throw new RuntimeException("DqcFactory: instantition failed: " + e.getMessage());
+      throw new RuntimeException("DqcFactory: instantiation failed: " + e.getMessage());
     } catch (IllegalAccessException e) {
       throw new RuntimeException("DqcFactory: access failed: " + e.getMessage());
     }
@@ -127,7 +128,7 @@ public class DqcFactory {
 
   private void registerConverter(String version, String namespace, DqcConvertIF converter) {
     namespaceToDqcConverterHash.put(namespace, converter);
-    versionToNamespaceHash.put( version, namespace );
+    versionToNamespaceHash.put(version, namespace);
     // converter.setCatalogFactory( this);
   }
 
@@ -187,7 +188,6 @@ public class DqcFactory {
       File file = diskCache.getCacheFile(uriString);
       if (file != null) {
         HttpURLConnection conn = null;
-        java.io.InputStream is = null;
 
         try {
           URL url = uri.toURL();
@@ -197,26 +197,20 @@ public class DqcFactory {
 
           int code = conn.getResponseCode();
           if (code == HttpURLConnection.HTTP_OK) {
-            is = conn.getInputStream();
+            java.io.InputStream is = conn.getInputStream();
             if (is != null) {
-              FileOutputStream fout = new FileOutputStream(file);
-              IO.copyB(is, fout, buffer_size);  // cache it
-              fout.close();
-              InputStream fin = new BufferedInputStream( new FileInputStream(file), 50000);
-              try {
+              try (FileOutputStream fout = new FileOutputStream(file)) {
+                  IO.copyB(is, fout, buffer_size);  // cache it
+              }
+              try (InputStream fin = new BufferedInputStream( new FileInputStream(file), 50000)) {
                 return readXML(fin, uri);
-              } finally {
-                fin.close();
               }
             }
 
           } else {
             // use file
-            FileInputStream fin = new FileInputStream(file);
-            try {
+            try (FileInputStream fin = new FileInputStream(file)) {
               return readXML(fin, uri);
-            } finally {
-              fin.close();
             }
           }
 
@@ -230,11 +224,9 @@ public class DqcFactory {
 
       // no file - read and cache
       IO.readURLtoFileWithExceptions(uriString, file, buffer_size);
-      InputStream fin = new BufferedInputStream( new FileInputStream(file), 50000);
-      try {
+      try (InputStream fin = new BufferedInputStream(
+              new FileInputStream(file), 50000)) {
         return readXML(fin, uri);
-      } finally {
-        fin.close();
       }
 
     } // has diskCache
@@ -305,7 +297,7 @@ public class DqcFactory {
     // decide on converter based on namespace
     Element root = doc.getRootElement();
     String namespace = root.getNamespaceURI();
-    DqcConvertIF fac = (DqcConvertIF) namespaceToDqcConverterHash.get(namespace);
+    DqcConvertIF fac = namespaceToDqcConverterHash.get(namespace);
     if (fac == null) {
       fac = defaultConverter; // LOOK
       if (debugVersion)
@@ -334,7 +326,7 @@ public class DqcFactory {
   public String writeXML(QueryCapability dqc) throws IOException {
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     writeXML(dqc, os);
-    return os.toString();
+    return os.toString(CDM.utf8Charset.name());
   }
 
   /**
@@ -345,8 +337,8 @@ public class DqcFactory {
    * @throws IOException on an error.
    */
   public void writeXML(QueryCapability dqc, OutputStream os) throws IOException {
-    String ns = (String) versionToNamespaceHash.get( dqc.getVersion() );
-    DqcConvertIF fac = (DqcConvertIF) namespaceToDqcConverterHash.get( ns );
+    String ns = versionToNamespaceHash.get( dqc.getVersion() );
+    DqcConvertIF fac = namespaceToDqcConverterHash.get( ns );
 
     if ( fac == null )
       fac = defaultConverter;

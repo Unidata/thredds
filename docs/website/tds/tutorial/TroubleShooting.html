@@ -17,40 +17,37 @@
   <h3>Useful log files</h3>
   <table>
     <tr>
-      <th>
+      <th width="512">
         Log File
       </th>
-      <th>
+      <th width="829">
         Description
       </th>
     </tr>
     <tr>
       <td>
-        <code>${tomcat.home}/logs/catalina.out</code></td>
+        <code>${tomcat.home}/logs/catalina.{date}.log</code></td>
       <td>
-        This is where Tomcat prints messages about Tomcat startup and uncaught exceptions from any webapp. Monitor this occasionally.
+        Tomcat standard out. This is where Tomcat prints messages about Tomcat startup and uncaught exceptions from any webapp.
       </td>
     </tr>
     <tr>
       <td>
         <code>${tomcat.home}/logs/localhost.{date}.log</code></td>
       <td>
-        This is where log messages for Tomcat are sent.
+        This is where log messages from Tomcat are sent.
       </td>
     </tr>
     <tr>
       <td>
         <code>${tomcat.home}/content/thredds/logs/serverStartup.log</code></td>
-      <td>
-        As TDS starts up, it logs messages here. Usually only interesting if TDS is failing to start.
-      </td>
+      <td>This is where TDS logs messages about TDS startup.</td>
     </tr>
     <tr>
       <td>
         <code>${tomcat.home}/content/thredds/logs/catalogInit.log</code></td>
       <td>
-        Errors and warnings in your catalog configuration files are shown here. Look at this closely.
-      </td>
+        Errors and warnings in your catalog configuration files are shown here. Look at this closely every time you change your config catalogs.</td>
     </tr>
     <tr>
       <td>
@@ -61,7 +58,7 @@
     </tr>
     <tr>
       <td>
-        <code>${tomcat.home}/content/thredds/logs/threddsServlet.log</code></td>
+        <code>${tomcat.home}/content/thredds/logs/threddsServlet.log.{date}</code></td>
       <td>
         Each request that the TDS responds to gets logged here. Errors and warnings that are associated with a request are logged here. You need to manage these
         by removing them, say, once a month.
@@ -69,17 +66,14 @@
     </tr>
     <tr>
       <td>
-        <code>${tomcat.home}/content/thredds/logs/cache.log</code></td>
+        <code>${tomcat.home}/content/thredds/logs/featureCollectionScan.log</code></td>
       <td>
-        Cache scour messages are kept here. Only interesting if you are having problems with cache directories getting too large.
+        Log messages from feature collections.
       </td>
     </tr>
     <tr>
-      <td>
-        <code>${tomcat.home}/content/thredds/logs/featureCollectionScan.log</code></td>
-      <td>
-        Only used if you use feature collections.
-      </td>
+      <td><code>${tomcat.home}/content/thredds/logs/fc.&lt;collection_name&gt;.log</code></td>
+      <td>Log messages from feature collections. </td>
     </tr>
   </table>
 </div>
@@ -162,8 +156,7 @@ Invalid InvDatasetScan &lt;path=testAll; scanLocation=bad/content/testdata&gt: C
   <p>If you use a service on a file which that service cant deal with:</p>
 
 <pre>
-&lt;dataset name=&quot;Image of my Data&quot; urlPath=&quot;images/labyrinth.jpg&quot; serviceName=&quot;dodsServer&quot; 
-         dataType=&quot;Grid&quot; /&gt;
+&lt;dataset name=&quot;Image of my Data&quot; urlPath=&quot;images/labyrinth.jpg&quot; serviceName=&quot;dodsServer&quot; dataType=&quot;Grid&quot; /&gt;
 </pre>
 
   <ul>

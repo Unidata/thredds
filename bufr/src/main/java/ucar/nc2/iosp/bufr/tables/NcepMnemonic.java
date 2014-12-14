@@ -133,7 +133,7 @@ public class NcepMnemonic {
       //| ETACLS1  | HEADR {PROFILE} SURF FLUX HYDR D10M {SLYR} XTRA                   |
       while (true) {
         String line = dataIS.readLine();
-        //if (line == null) break;
+        if (line == null) break;
         if (line.contains("MNEMONIC")) break;
         if (line.contains("----")) continue;
         if (line.startsWith("|       ")) continue;

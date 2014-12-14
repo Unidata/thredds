@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.5</table>
+  <title>Fixed Surface Types and Units</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-5.shtml</source>
+  <parameter code="1">
+    <description>Ground or Water Surface</description>
+  </parameter>
+  <parameter code="2">
+    <description>Cloud Base Level</description>
+  </parameter>
+  <parameter code="3">
+    <description>Level of Cloud Tops</description>
+  </parameter>
+  <parameter code="4">
+    <description>Level of 0o C Isotherm</description>
+  </parameter>
+  <parameter code="5">
+    <description>Level of Adiabatic Condensation Lifted from the Surface</description>
+  </parameter>
+  <parameter code="6">
+    <description>Maximum Wind Level</description>
+  </parameter>
+  <parameter code="7">
+    <description>Tropopause</description>
+  </parameter>
+  <parameter code="8">
+    <description>Nominal Top of the Atmosphere</description>
+  </parameter>
+  <parameter code="9">
+    <description>Sea Bottom</description>
+  </parameter>
+  <parameter code="10">
+    <description>Entire Atmosphere</description>
+  </parameter>
+  <parameter code="11">
+    <description>Cumulonimbus Base (CB)</description>
+  </parameter>
+  <parameter code="12">
+    <description>Cumulonimbus Top (CT)</description>
+  </parameter>
+  <parameter code="20">
+    <description>Isothermal Level</description>
+  </parameter>
+  <parameter code="100">
+    <description>Isobaric Surface</description>
+  </parameter>
+  <parameter code="101">
+    <description>Mean Sea Level</description>
+  </parameter>
+  <parameter code="102">
+    <description>Specific Altitude Above Mean Sea Level</description>
+  </parameter>
+  <parameter code="103">
+    <description>Specified Height Level Above Ground</description>
+  </parameter>
+  <parameter code="104">
+    <description>Sigma Level</description>
+  </parameter>
+  <parameter code="105">
+    <description>Hybrid Level</description>
+  </parameter>
+  <parameter code="106">
+    <description>Depth Below Land Surface</description>
+  </parameter>
+  <parameter code="107">
+    <description>Isentropic (theta) Level</description>
+  </parameter>
+  <parameter code="108">
+    <description>Level at Specified Pressure Difference from Ground to Level</description>
+  </parameter>
+  <parameter code="109">
+    <description>Potential Vorticity Surface</description>
+  </parameter>
+  <parameter code="111">
+    <description>Eta Level</description>
+  </parameter>
+  <parameter code="113">
+    <description>Logarithmic Hybrid Level</description>
+  </parameter>
+  <parameter code="114">
+    <description>Snow Level</description>
+  </parameter>
+  <parameter code="117">
+    <description>Mixed Layer Depth</description>
+  </parameter>
+  <parameter code="118">
+    <description>Hybrid Height Level</description>
+  </parameter>
+  <parameter code="119">
+    <description>Hybrid Pressure Level</description>
+  </parameter>
+  <parameter code="150">
+    <description>Generalized Vertical Height Coordinate (see Note 5)</description>
+  </parameter>
+  <parameter code="160">
+    <description>Depth Below Sea Level</description>
+  </parameter>
+  <parameter code="161">
+    <description>Depth Below Water Surface</description>
+  </parameter>
+  <parameter code="162">
+    <description>Lake or River Bottom</description>
+  </parameter>
+  <parameter code="163">
+    <description>Bottom Of Sediment Layer</description>
+  </parameter>
+  <parameter code="164">
+    <description>Bottom Of Thermally Active Sediment Layer</description>
+  </parameter>
+  <parameter code="165">
+    <description>Bottom Of Sediment Layer Penetrated By Thermal Wave</description>
+  </parameter>
+  <parameter code="166">
+    <description>Maxing Layer</description>
+  </parameter>
+  <parameter code="167">
+    <description>Bottom of Root Zone</description>
+  </parameter>
+  <parameter code="200">
+    <description>Entire atmosphere (considered as a single layer)</description>
+  </parameter>
+  <parameter code="201">
+    <description>Entire ocean (considered as a single layer)</description>
+  </parameter>
+  <parameter code="204">
+    <description>Highest tropospheric freezing level</description>
+  </parameter>
+  <parameter code="206">
+    <description>Grid scale cloud bottom level</description>
+  </parameter>
+  <parameter code="207">
+    <description>Grid scale cloud top level</description>
+  </parameter>
+  <parameter code="209">
+    <description>Boundary layer cloud bottom level</description>
+  </parameter>
+  <parameter code="210">
+    <description>Boundary layer cloud top level</description>
+  </parameter>
+  <parameter code="211">
+    <description>Boundary layer cloud layer</description>
+  </parameter>
+  <parameter code="212">
+    <description>Low cloud bottom level</description>
+  </parameter>
+  <parameter code="213">
+    <description>Low cloud top level</description>
+  </parameter>
+  <parameter code="214">
+    <description>Low cloud layer</description>
+  </parameter>
+  <parameter code="215">
+    <description>Cloud ceiling</description>
+  </parameter>
+  <parameter code="220">
+    <description>Planetary Boundary Layer</description>
+  </parameter>
+  <parameter code="221">
+    <description>Layer Between Two Hybrid Levels</description>
+  </parameter>
+  <parameter code="222">
+    <description>Middle cloud bottom level</description>
+  </parameter>
+  <parameter code="223">
+    <description>Middle cloud top level</description>
+  </parameter>
+  <parameter code="224">
+    <description>Middle cloud layer</description>
+  </parameter>
+  <parameter code="232">
+    <description>High cloud bottom level</description>
+  </parameter>
+  <parameter code="233">
+    <description>High cloud top level</description>
+  </parameter>
+  <parameter code="234">
+    <description>High cloud layer</description>
+  </parameter>
+  <parameter code="235">
+    <description>Ocean Isotherm Level (1/10  C)</description>
+  </parameter>
+  <parameter code="236">
+    <description>Layer between two depths below ocean surface</description>
+  </parameter>
+  <parameter code="237">
+    <description>Bottom of Ocean Mixed Layer (m)</description>
+  </parameter>
+  <parameter code="238">
+    <description>Bottom of Ocean Isothermal Layer (m)</description>
+  </parameter>
+  <parameter code="239">
+    <description>Layer Ocean Surface and 26C Ocean Isothermal Level</description>
+  </parameter>
+  <parameter code="240">
+    <description>Ocean Mixed Layer</description>
+  </parameter>
+  <parameter code="241">
+    <description>Ordered Sequence of Data</description>
+  </parameter>
+  <parameter code="242">
+    <description>Convective cloud bottom level</description>
+  </parameter>
+  <parameter code="243">
+    <description>Convective cloud top level</description>
+  </parameter>
+  <parameter code="244">
+    <description>Convective cloud layer</description>
+  </parameter>
+  <parameter code="245">
+    <description>Lowest level of the wet bulb zero</description>
+  </parameter>
+  <parameter code="246">
+    <description>Maximum equivalent potential temperature level</description>
+  </parameter>
+  <parameter code="247">
+    <description>Equilibrium level</description>
+  </parameter>
+  <parameter code="248">
+    <description>Shallow convective cloud bottom level</description>
+  </parameter>
+  <parameter code="249">
+    <description>Shallow convective cloud top level</description>
+  </parameter>
+  <parameter code="251">
+    <description>Deep convective cloud bottom level</description>
+  </parameter>
+  <parameter code="252">
+    <description>Deep convective cloud top level</description>
+  </parameter>
+  <parameter code="253">
+    <description>Lowest bottom level of supercooled liquid water layer</description>
+  </parameter>
+  <parameter code="254">
+    <description>Highest top level of supercooled liquid water layer</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

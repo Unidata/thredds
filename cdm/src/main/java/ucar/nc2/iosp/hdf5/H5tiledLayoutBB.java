@@ -194,6 +194,8 @@ class H5tiledLayoutBB implements LayoutBB {
           data = shuffle(data, f.data[0]);
         } else if (f.id == 3) {
           data = checkfletcher32(data);
+        } else if (f.id == 307) {
+          data = unbzip2(data);
         } else
           throw new RuntimeException("Unknown filter type="+f.id);
       }
@@ -222,7 +224,28 @@ class H5tiledLayoutBB implements LayoutBB {
       return uncomp;
     }
 
-    // just strip off the 4-byte fletcher32 checksum at the end
+    private byte[] unbzip2(byte[] compressed) throws IOException {
+      int max = 20 * compressed.length;
+      byte[] buffer = new byte[max];
+      ByteArrayOutputStream out = new ByteArrayOutputStream(20 * compressed.length);
+      ByteArrayInputStream in = new ByteArrayInputStream(compressed);
+      try (org.itadaki.bzip2.BZip2InputStream bzIn = new org.itadaki.bzip2.BZip2InputStream(in, false)) {
+        int bytesRead;
+        int totRead = 0;
+        while ((bytesRead = bzIn.read (buffer)) != -1) {
+          out.write (buffer, 0, bytesRead) ;             // LOOK unneeded copy
+          totRead += bytesRead;
+        }
+        out.close();
+        //System.out.printf("unbzip2=%d%n", totRead);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      return out.toByteArray();
+     }
+
+     // just strip off the 4-byte fletcher32 checksum at the end
     private byte[] checkfletcher32(byte[] org) throws IOException {
       byte[] result = new byte[org.length-4];
       System.arraycopy(org, 0, result, 0, result.length);

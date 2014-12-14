@@ -49,6 +49,7 @@ import ucar.unidata.test.util.TestDir;
  */
 public class TestBufrRead {
   String unitDir =  TestDir.cdmUnitTestDir + "formats/bufr";
+  boolean show = false;
 
   class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
@@ -121,7 +122,7 @@ public class TestBufrRead {
           Message m = scan.next();
           if (m == null) continue;
           int nobs = m.getNumberDatasets();
-          System.out.printf(" %3d nobs = %4d (%s) center = %s table=%s cat=%s ", count++, nobs, m.getHeader(),
+          if (show) System.out.printf(" %3d nobs = %4d (%s) center = %s table=%s cat=%s ", count++, nobs, m.getHeader(),
                   m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.getLookup().getCategoryNo());
           assert m.isTablesComplete() : "incomplete tables";
 
@@ -138,7 +139,7 @@ public class TestBufrRead {
           }
 
           totalObs += nobs;
-          System.out.printf("%n");
+          if (show) System.out.printf("%n");
 
         } catch (Exception e) {
           e.printStackTrace();

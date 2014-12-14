@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.unidata.util.StringUtil2;
 
@@ -52,9 +53,17 @@ import java.util.Formatter;
 public class DssLocalTables extends LocalTables {
   private static final String tableName = "resources/grib2/local/cfsr.txt";
   private static boolean debug = false;
+  private static DssLocalTables single;
 
-  DssLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
+  public static DssLocalTables getCust(Grib2Table table) {
+    if (single == null) single = new DssLocalTables(table);
+    return single;
+  }
+
+  private DssLocalTables(Grib2Table grib2Table) {
+    super(grib2Table);
+    if (grib2Table.getPath() == null)
+      grib2Table.setPath(tableName);
     initLocalTable();
   }
 
@@ -66,10 +75,10 @@ public class DssLocalTables extends LocalTables {
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   protected void initLocalTable() {
-    ClassLoader cl = KmaLocalTables.class.getClassLoader();
+    ClassLoader cl = this.getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableName)) {
       if (is == null) throw new IllegalStateException("Cant find " + tableName);
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
 
       while (true) {
         String line = br.readLine();
@@ -117,7 +126,7 @@ public class DssLocalTables extends LocalTables {
 */
 
   public static void main(String[] args) {
-    DssLocalTables t = new DssLocalTables(7,0,0,0);
+    DssLocalTables t = new DssLocalTables(new Grib2Table("DSS",7, 0, 0, 0, -1, null, Grib2Table.Type.dss));
     Formatter f = new Formatter();
     Grib2Parameter.compareTables("DSS-093", "Standard WMO version 8", t.getParameters(), Grib2Customizer.factory(0,0,0,0,0), f);
     System.out.printf("%s%n", f);

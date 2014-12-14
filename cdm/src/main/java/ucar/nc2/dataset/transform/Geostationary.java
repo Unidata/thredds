@@ -129,11 +129,9 @@ public class Geostationary extends AbstractCoordTransBuilder {
       else
         isSweepX =  fixed_angle.equals("y");
 
-      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees,
-                                   perspective_point_height,
-                                      semi_minor_axis,
-                                         inv_flattening,
-                                            semi_major_axis, isSweepX);
+      // double subLonDegrees, double perspective_point_height, double semi_minor_axis, double semi_major_axis, double inv_flattening, boolean isSweepX
+      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(
+              subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX);
 
       return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
     }

@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.230</table>
+  <title>Atmospheric Chemical or Physical Type</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-230.shtml</source>
+  <parameter code="0">
+    <description>Ozone</description>
+  </parameter>
+  <parameter code="1">
+    <description>Water Vapour</description>
+  </parameter>
+  <parameter code="2">
+    <description>Methane</description>
+  </parameter>
+  <parameter code="3">
+    <description>Carbon Dioxide</description>
+  </parameter>
+  <parameter code="4">
+    <description>Carbon Monoxide</description>
+  </parameter>
+  <parameter code="5">
+    <description>Nitrogen Dioxide</description>
+  </parameter>
+  <parameter code="6">
+    <description>Nitrous Oxide</description>
+  </parameter>
+  <parameter code="7">
+    <description>Formaldehyde</description>
+  </parameter>
+  <parameter code="8">
+    <description>Sulphur Dioxide</description>
+  </parameter>
+  <parameter code="9">
+    <description>Ammonia</description>
+  </parameter>
+  <parameter code="10">
+    <description>Ammonium</description>
+  </parameter>
+  <parameter code="11">
+    <description>Nitrogen Monoxide</description>
+  </parameter>
+  <parameter code="12">
+    <description>Atomic Oxygen</description>
+  </parameter>
+  <parameter code="13">
+    <description>Nitrate Radical</description>
+  </parameter>
+  <parameter code="14">
+    <description>Hydroperoxyl Radical</description>
+  </parameter>
+  <parameter code="15">
+    <description>Dinitrogen Pentoxide</description>
+  </parameter>
+  <parameter code="16">
+    <description>Nitrous Acid</description>
+  </parameter>
+  <parameter code="17">
+    <description>Nitric Acid</description>
+  </parameter>
+  <parameter code="18">
+    <description>Peroxynitric Acid</description>
+  </parameter>
+  <parameter code="19">
+    <description>Hydrogen Peroxide</description>
+  </parameter>
+  <parameter code="20">
+    <description>Molecular Hydrogen</description>
+  </parameter>
+  <parameter code="21">
+    <description>Atomic Nitrogen</description>
+  </parameter>
+  <parameter code="22">
+    <description>Sulphate</description>
+  </parameter>
+  <parameter code="23">
+    <description>Radon</description>
+  </parameter>
+  <parameter code="24">
+    <description>Elemental Mercury</description>
+  </parameter>
+  <parameter code="25">
+    <description>Divalent Mercury</description>
+  </parameter>
+  <parameter code="26">
+    <description>Atomic Chlorine</description>
+  </parameter>
+  <parameter code="27">
+    <description>Chlorine Monoxide</description>
+  </parameter>
+  <parameter code="28">
+    <description>Dichlorine Peroxide</description>
+  </parameter>
+  <parameter code="29">
+    <description>Hypochlorous Acid</description>
+  </parameter>
+  <parameter code="30">
+    <description>Chlorine Nitrate</description>
+  </parameter>
+  <parameter code="31">
+    <description>Chlorine Dioxide</description>
+  </parameter>
+  <parameter code="32">
+    <description>Atomic Bromide</description>
+  </parameter>
+  <parameter code="33">
+    <description>Bromine Monoxide</description>
+  </parameter>
+  <parameter code="34">
+    <description>Bromine Chloride</description>
+  </parameter>
+  <parameter code="35">
+    <description>Hydrogen Bromide</description>
+  </parameter>
+  <parameter code="36">
+    <description>Hypobromous Acid</description>
+  </parameter>
+  <parameter code="37">
+    <description>Bromine Nitrate</description>
+  </parameter>
+  <parameter code="10000">
+    <description>Hydroxyl Radical</description>
+  </parameter>
+  <parameter code="10001">
+    <description>Methyl Peroxy Radical</description>
+  </parameter>
+  <parameter code="10002">
+    <description>Methyl Hydroperoxide</description>
+  </parameter>
+  <parameter code="10004">
+    <description>Methanol</description>
+  </parameter>
+  <parameter code="10005">
+    <description>Formic Acid</description>
+  </parameter>
+  <parameter code="10006">
+    <description>Hydrogen Cyanide</description>
+  </parameter>
+  <parameter code="10007">
+    <description>Aceto Nitrile</description>
+  </parameter>
+  <parameter code="10008">
+    <description>Ethane</description>
+  </parameter>
+  <parameter code="10009">
+    <description>Ethene (= Ethylene)</description>
+  </parameter>
+  <parameter code="10010">
+    <description>Ethyne (= Acetylene)</description>
+  </parameter>
+  <parameter code="10011">
+    <description>Ethanol</description>
+  </parameter>
+  <parameter code="10012">
+    <description>Acetic Acid</description>
+  </parameter>
+  <parameter code="10013">
+    <description>Peroxyacetyl Nitrate</description>
+  </parameter>
+  <parameter code="10014">
+    <description>Propane</description>
+  </parameter>
+  <parameter code="10015">
+    <description>Propene</description>
+  </parameter>
+  <parameter code="10016">
+    <description>Butanes</description>
+  </parameter>
+  <parameter code="10017">
+    <description>Isoprene</description>
+  </parameter>
+  <parameter code="10018">
+    <description>Alpha Pinene</description>
+  </parameter>
+  <parameter code="10019">
+    <description>Beta Pinene</description>
+  </parameter>
+  <parameter code="10020">
+    <description>Limonene</description>
+  </parameter>
+  <parameter code="10021">
+    <description>Benzene</description>
+  </parameter>
+  <parameter code="10022">
+    <description>Toluene</description>
+  </parameter>
+  <parameter code="10023">
+    <description>Xylene</description>
+  </parameter>
+  <parameter code="10500">
+    <description>Dimethyl Sulphide</description>
+  </parameter>
+  <parameter code="20001">
+    <description>Hydrogen Chloride</description>
+  </parameter>
+  <parameter code="20002">
+    <description>CFC-11</description>
+  </parameter>
+  <parameter code="20003">
+    <description>CFC-12</description>
+  </parameter>
+  <parameter code="20004">
+    <description>CFC-113</description>
+  </parameter>
+  <parameter code="20005">
+    <description>CFC-113a</description>
+  </parameter>
+  <parameter code="20006">
+    <description>CFC-114</description>
+  </parameter>
+  <parameter code="20007">
+    <description>CFC-115</description>
+  </parameter>
+  <parameter code="20008">
+    <description>HCFC-22</description>
+  </parameter>
+  <parameter code="20009">
+    <description>HCFC-141b</description>
+  </parameter>
+  <parameter code="20010">
+    <description>HCFC-142b</description>
+  </parameter>
+  <parameter code="20011">
+    <description>Halon-1202</description>
+  </parameter>
+  <parameter code="20012">
+    <description>Halon-1211</description>
+  </parameter>
+  <parameter code="20013">
+    <description>Halon-1301</description>
+  </parameter>
+  <parameter code="20014">
+    <description>Halon-2402</description>
+  </parameter>
+  <parameter code="20015">
+    <description>Methyl Chloride (HCC-40)</description>
+  </parameter>
+  <parameter code="20016">
+    <description>Carbon Tetrachloride (HCC-10)</description>
+  </parameter>
+  <parameter code="20017">
+    <description>HCC-140a</description>
+  </parameter>
+  <parameter code="20018">
+    <description>Methyl Bromide (HBC-40B1)</description>
+  </parameter>
+  <parameter code="20019">
+    <description>Hexachlorocyclohexane (HCH)</description>
+  </parameter>
+  <parameter code="20020">
+    <description>Alpha Hexachlorocyclohexane</description>
+  </parameter>
+  <parameter code="20021">
+    <description>Hexachlorobiphenyl (PCB-153)</description>
+  </parameter>
+  <parameter code="60000">
+    <description>HOx Radical (OH+HO2)</description>
+  </parameter>
+  <parameter code="60001">
+    <description>Total Inorganic and Organic Peroxy Radicals (HO2+RO2)</description>
+  </parameter>
+  <parameter code="60002">
+    <description>Passive Ozone</description>
+  </parameter>
+  <parameter code="60003">
+    <description>NOx Expressed As Nitrogen</description>
+  </parameter>
+  <parameter code="60004">
+    <description>All Nitrogen Oxides (NOy) Expressed As Nitrogen</description>
+  </parameter>
+  <parameter code="60005">
+    <description>Total Inorganic Chlorine</description>
+  </parameter>
+  <parameter code="60006">
+    <description>Total Inorganic Bromine</description>
+  </parameter>
+  <parameter code="60007">
+    <description>Total Inorganic Chlorine Except HCl, ClONO2: ClOx</description>
+  </parameter>
+  <parameter code="60008">
+    <description>Total Inorganic Bromine Except Hbr, BrONO2:BrOx</description>
+  </parameter>
+  <parameter code="60009">
+    <description>Lumped Alkanes</description>
+  </parameter>
+  <parameter code="60010">
+    <description>Lumped Alkenes</description>
+  </parameter>
+  <parameter code="60011">
+    <description>Lumped Aromatic Coumpounds</description>
+  </parameter>
+  <parameter code="60012">
+    <description>Lumped Terpenes</description>
+  </parameter>
+  <parameter code="60013">
+    <description>Non-Methane Volatile Organic Compounds Expressed as Carbon</description>
+  </parameter>
+  <parameter code="60014">
+    <description>Anthropogenic Non-Methane Volatile Organic Compounds Expressed as Carbon</description>
+  </parameter>
+  <parameter code="60015">
+    <description>Biogenic Non-Methane Volatile Organic Compounds Expressed as Carbon</description>
+  </parameter>
+  <parameter code="60016">
+    <description>Lumped Oxygenated Hydrocarbons</description>
+  </parameter>
+  <parameter code="62000">
+    <description>Total Aerosol</description>
+  </parameter>
+  <parameter code="62001">
+    <description>Dust Dry</description>
+  </parameter>
+  <parameter code="62002">
+    <description>water In Ambient</description>
+  </parameter>
+  <parameter code="62003">
+    <description>Ammonium Dry</description>
+  </parameter>
+  <parameter code="62004">
+    <description>Nitrate Dry</description>
+  </parameter>
+  <parameter code="62005">
+    <description>Nitric Acid Trihydrate</description>
+  </parameter>
+  <parameter code="62006">
+    <description>Sulphate Dry</description>
+  </parameter>
+  <parameter code="62007">
+    <description>Mercury Dry</description>
+  </parameter>
+  <parameter code="62008">
+    <description>Sea Salt Dry</description>
+  </parameter>
+  <parameter code="62009">
+    <description>Black Carbon Dry</description>
+  </parameter>
+  <parameter code="62010">
+    <description>Particulate Organic Matter Dry</description>
+  </parameter>
+  <parameter code="62011">
+    <description>Primary Particulate Organic Matter Dry</description>
+  </parameter>
+  <parameter code="62012">
+    <description>Secondary Particulate Organic Matter Dry</description>
+  </parameter>
+  <parameter code="65535">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ui.gis.shapefile;
 
+import ucar.nc2.constants.CDM;
+
 import java.io.DataInputStream;
 
 /**
@@ -45,9 +47,6 @@ class DbaseFieldDesc {
   byte Type;
   int FieldLength;
   int DecimalCount;
-  int SetFlags;
-  int WorkAreaID;
-  byte MDXflag;
   byte[] Header;
 
   DbaseFieldDesc(DataInputStream in, byte version) {
@@ -64,15 +63,12 @@ class DbaseFieldDesc {
     this.Type = Type;
     this.FieldLength = FieldLength;
     this.DecimalCount = DecimalCount;
-    this.SetFlags = SetFlags;
-    this.WorkAreaID = WorkAreaID;
-    this.MDXflag = MDXflag;
     Header = new byte[32];
     for (int i = 0; i < 32; i++) {
       Header[i] = (byte) ' ';
     }
     // put the name into the header
-    byte[] headerName = Name.getBytes();
+    byte[] headerName = Name.getBytes(CDM.utf8Charset);
     System.arraycopy(headerName, 0, Header, 0, headerName.length);
 
     Header[11] = Type;
@@ -84,10 +80,10 @@ class DbaseFieldDesc {
   }
 
   private int read_dbase3(DataInputStream in) {
-    double ver = 1.02;
+    double ver;
     try {
       String os = System.getProperty("java.version");
-      ver = Double.valueOf(os).doubleValue();
+      ver = Double.valueOf(os);
     } catch (NumberFormatException e) {
       ver = 1.02;
     }
@@ -104,7 +100,7 @@ class DbaseFieldDesc {
     */
 
     /* requires 1.1 compiler or higher */
-    Name = new String(Header, 0, 11);
+    Name = new String(Header, 0, 11, CDM.utf8Charset);
 
     Name = Name.trim();
     Type = Header[11];
@@ -112,8 +108,6 @@ class DbaseFieldDesc {
     if (FieldLength < 0) FieldLength += 256;
     DecimalCount = (int) Header[17];
     if (DecimalCount < 0) DecimalCount += 256;
-    SetFlags = (int) Header[23];
-    WorkAreaID = (int) Header[20];
     return 0;
   }
 
@@ -121,8 +115,6 @@ class DbaseFieldDesc {
 
   private int read_dbase4(DataInputStream in) {
     if (read_dbase3(in) != 0) return -1;
-    MDXflag = Header[31];
-    SetFlags = 0;
     return 0;
   }
 
@@ -130,8 +122,3 @@ class DbaseFieldDesc {
     return (Name);
   }
 }
-
-
-
-
-

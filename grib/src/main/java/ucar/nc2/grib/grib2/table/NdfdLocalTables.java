@@ -35,17 +35,23 @@ package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.grib.grib2.Grib2Parameter;
 
-import java.util.*;
-
 /**
  * Ndfd local tables
  * @see "http://graphical.weather.gov/docs/grib_design.html"
  */
 
 public class NdfdLocalTables extends LocalTables {
+  private static NdfdLocalTables single;
 
-  NdfdLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
+  public static Grib2Customizer getCust(Grib2Table table) {
+    if (single == null) single = new NdfdLocalTables(table);
+    return single;
+  }
+
+  private NdfdLocalTables(Grib2Table grib2Table) {
+    super(grib2Table);
+    if (grib2Table.getPath() == null)
+      grib2Table.setPath(this.getClass().getName());
     init();
   }
 

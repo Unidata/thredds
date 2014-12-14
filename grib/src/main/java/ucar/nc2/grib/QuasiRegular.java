@@ -37,13 +37,11 @@ package ucar.nc2.grib;
  * Converts a QuasiRegular grid into a regular rectanglar (lat/lon) grid.
  *
  * @author John, from rkambic, probably from gempak
+ * @author jkaehler@meteomatics.com
  * @see "http://lost-contact.mit.edu/afs/eos.ncsu.edu/service/pams/meteorology/nawips/unidata/ldmbridge/dcgrib2/qlin.c"
  * @since 9/10/11
  */
 public class QuasiRegular {
-
-  // private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(QuasiRegular.class);
-
   /**
    * @param quasi   input data
    * @param linePts npts in each line
@@ -51,10 +49,14 @@ public class QuasiRegular {
    * @param ny      num parellels or undefined
    * @return regular grid
    */
-  public static float[] convertQuasiGrid(float[] quasi, int[] linePts, int nx, int ny) {
+  public static float[] convertQuasiGrid(float[] quasi, int[] linePts, int nx, int ny, GribData.InterpolationMethod interpolationMethod) {
+
+    if (interpolationMethod == GribData.InterpolationMethod.none) return quasi;
+
 
     //int nrows;   /* number of rows in input */
-    //int ix[];    /* row i starts at idat[ix[i]], and ix[nrows] is 1 after last elem of idat */
+    // int ix[]; /* row i starts at idat[ix[i]], and ix[nrows] is 1 after
+    // last elem of idat */
     //float *idat; /* input quasi-regular data */
     //int ni;      /* constant length of each output row */
     //int nj;      /* number of output rows */
@@ -78,53 +80,94 @@ public class QuasiRegular {
 
     float[] data = new float[nx * ny];
 
-    for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
-      //int inrow;            /* input row to use */
-      int npoints;  /* number input points in current parrallel */
+    if (interpolationMethod == GribData.InterpolationMethod.cubic) {
 
-      //inrow = j * (nrows - 1) / (nj - 1);  /* set the row number */
-      //npoints = ix[inrow+1] - ix[inrow];   /* set number of input points */
-      npoints = linePts[j];  /* number of input points in this parellel */
+      for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
+        //int inrow;            /* input row to use */
+        int npoints;  /* number input points in current parrallel */
 
-      // skip the processing if npoints = number of points in output parrallel
-      if (npoints == nx) {
-        for (int i = 0; i < nx; i++) {
-          data[outputIdx++] = quasi[inputIdx++];
+        //inrow = j * (nrows - 1) / (nj - 1);  /* set the row number */
+        //npoints = ix[inrow+1] - ix[inrow];   /* set number of input points */
+        npoints = linePts[j];  /* number of input points in this parellel */
+
+        // skip the processing if npoints = number of points in output parrallel
+        if (npoints == nx) {
+          for (int i = 0; i < nx; i++) {
+            data[outputIdx++] = quasi[inputIdx++];
+          }
+          continue;
         }
-        continue;
-      }
-      //second_d = (float *)emalloc(npoints * sizeof(double));
-      second_d = new double[npoints];
+        //second_d = (float *)emalloc(npoints * sizeof(double));
+        second_d = new double[npoints];
 
       /* calculate the second derivatives of the input row */
-      secondDerivative(
-              //&idat[ix[inrow]], /* input row */
-              quasi,                /* input data */
-              inputIdx,             /* current index position in input */
-              npoints,              /*  number of points in input row */
-              x1_der,               /* first derivative of first element */
-              xn_der,               /* first derivative of nth element */
-              second_d);            /* output second derivative */
+        secondDerivative(
+                //&idat[ix[inrow]], /* input row */
+                quasi,                /* input data */
+                inputIdx,             /* current index position in input */
+                npoints,              /*  number of points in input row */
+                x1_der,               /* first derivative of first element */
+                xn_der,               /* first derivative of nth element */
+                second_d);            /* output second derivative */
 
       /* interpolate the output row */
-      for (int i = 0; i < nx; i++) {
-        double mapped_i;  /* i mapped to input space */
-
-        // https://github.com/lost-carrier 6/12/2014
-        mapped_i = (float) i / ((float) nx) * ((float) npoints);
+        for (int i = 0; i < nx; i++) {
+          double mapped_i;  /* i mapped to input space */
+          mapped_i = (float) i / ((float) nx) * ((float) npoints);
 
         /* map output point to input space */
-        cubicSpline(  /* interpolate the value */
-                //&idat[ix[inrow]],/* input row */
-                quasi,         /* input data */
-                inputIdx,      /* current index position in input */
-                second_d,      /* calculated second derivatives */
-                mapped_i,      /* element to be interpolated */
-                data,          /* output data */
-                outputIdx++);  /* where to put the interpolated value */
+          cubicSpline(  /* interpolate the value */
+                  quasi,         /* input data */
+                  inputIdx,      /* current index position in input */
+                  second_d,      /* calculated second derivatives */
+                  mapped_i,      /* element to be interpolated */
+                  data,          /* output data */
+                  outputIdx++);  /* where to put the interpolated value */
+        }
+        //System.out.println( "inputIdx ="+ inputIdx );
+        inputIdx += npoints;
       }
-      //System.out.println( "inputIdx ="+ inputIdx );
-      inputIdx += npoints;
+
+    } else if (interpolationMethod == GribData.InterpolationMethod.linear) { // =>
+      // USE_LINEAR
+
+      for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
+        // int inrow; /* input row to use */
+        int npoints; /* number input points in current parallel */
+
+        // inrow = j * (nrows - 1) / (nj - 1); /* set the row number */
+        // npoints = ix[inrow+1] - ix[inrow]; /* set number of input
+        // points */
+        npoints = linePts[j]; /* number of input points in this parallel */
+
+        // skip the processing if npoints = number of points in output
+        // parallel
+        if (npoints == nx) {
+          for (int i = 0; i < nx; i++) {
+            data[outputIdx++] = quasi[inputIdx++];
+          }
+          continue;
+        }
+
+        for (int i = 0; i < nx; i++) {
+          double mapped_i; /* i mapped to input space */
+          mapped_i = (float) i / ((float) nx) * ((float) npoints);
+
+          linear( /* interpolate the value */
+                  quasi, /* input data */
+                  inputIdx, /* current index position in input */
+                  mapped_i, /* element to be interpolated */
+                  data, /* output data */
+                  outputIdx++, /* where to put the interpolated value */
+                  npoints);
+        }
+
+        inputIdx += npoints;
+
+      }
+
+    } else {
+      throw new RuntimeException("unsupported interpolation method");
     }
 
     return data;
@@ -189,7 +232,7 @@ public class QuasiRegular {
 
 
   public static void cubicSpline(float[] inpt, int iIdx, double[] y2d, double x,
-                                  float[] outpt, int oIdx) {
+                                 float[] outpt, int oIdx) {
     //    float *inpt;        /* input row */
     //    int iIdx;           /* input data index*/
     //    float *y2d;         /* second derivatives of input row */
@@ -215,16 +258,48 @@ public class QuasiRegular {
     a = hi - x;
     b = x - low;
 
-    // https://github.com/lost-carrier 6/12/2014
     hi = hi > (y2d.length - 1) ? 0 : hi;
 
+		/* evalualte the polynomial */
 
-    // evaluate the polynomial
+    // *outpt = a * inpt[low] + b * inpt[hi] + ((a * a * a - a) * y2d[low] +
+    // (b * b * b - b) * y2d[hi]) / 6.0;
+    outpt[oIdx] = (float) (a * inpt[iIdx + low] + b * inpt[iIdx + hi] + ((a
+            * a * a - a)
+            * y2d[low] + (b * b * b - b) * y2d[hi]) / 6.0);
 
-    //*outpt = a * inpt[low] + b * inpt[hi] + ((a * a * a - a) * y2d[low] + (b * b * b - b) * y2d[hi]) / 6.0;
-    outpt[oIdx] = (float) (a * inpt[iIdx + low] + b * inpt[iIdx + hi]
-            + ((a * a * a - a) * y2d[low]
-            + (b * b * b - b) * y2d[hi]) / 6.0);
+  }
+
+  public static void linear(float[] inpt, int iIdx, double x, float[] outpt,
+                            int oIdx, int npoints) {
+
+    // float *inpt; /* input row */
+    // int iIdx; /* input data index*/
+    // float x; /* output point */
+    // float outpt; /* where to put the interpolated data */
+    // int oIdx; /* index in output, the interpolated data */
+
+    int hi;
+    int low;
+    double a;
+    double b;
+
+    if (java.lang.Math.floor(x) == x) { /* existing data point */
+      outpt[oIdx] = inpt[iIdx + (int) x];
+      return;
+    }
+
+		/* set the input bracket */
+    hi = (int) (java.lang.Math.ceil(x));
+    low = (int) (java.lang.Math.floor(x));
+
+    a = hi - x;
+    b = x - low;
+
+    int hiIdx = hi > (npoints - 1) ? iIdx : iIdx + hi;
+    int lowIdx = iIdx + low;
+
+    outpt[oIdx] = (float) (a * inpt[lowIdx] + b * inpt[hiIdx]);
 
   }
 

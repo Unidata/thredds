@@ -6,6 +6,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class TestAggCached {
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null);
       NetcdfDataset ncd2 = NetcdfDataset.wrap(ncd, NetcdfDataset.getEnhanceAll());
       Formatter out = new Formatter();
-      ok &= CompareNetcdf2.compareFiles(ncd, ncd2, out, false, true, false);
+      ok &= CompareNetcdf2.compareFiles(ncd, ncd2, out, false, false, false);
       System.out.printf("----------------%nfile=%s%n%s%n", filename, out);
 
       EnumSet<NetcdfDataset.Enhance> modes =  ncd2.getEnhanceMode();
@@ -42,7 +43,7 @@ public class TestAggCached {
       System.out.printf("==========%n");
     }
 
-    FileCache cache = NetcdfDataset.getNetcdfFileCache();
+    FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
     cache.showCache();
     assert ok;
   }
@@ -97,7 +98,7 @@ public class TestAggCached {
       nc1.close();
     }
 
-    FileCache cache = NetcdfDataset.getNetcdfFileCache();
+    FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
     cache.showCache();
   }
 

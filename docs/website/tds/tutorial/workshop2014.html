@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>2014 Training Workshop Schedule : TDS Configuration and Administration</title>
+  <link rel="stylesheet" href="tutorial2.css" type="text/css"/>
+</head>
+<body>
+<h1>2014 Training Workshop Schedule : TDS Configuration and Administration</h1>
+
+<div id="section">
+  <h2><a name="DayOne">23 October 2014 : TDS Installation, Management, and Configuration</a></h2>
+
+  <h3>8:00 Coffee and continental breakfast</h3>
+
+  <h3>8:30 Welcome and Logistics / TDS Overview (Ethan) </h3>
+  <ul><li>Introduction of Unidata staff</li>
+    <li>Review of schedule</li>
+    <li>Why use TDS? (<a href="TDSOverview.pptx">PPT</a>)(<a href="TDSOverview.pdf">PDF</a>)</li>
+    <li>TDS Resources:
+      <a href="../TDS.html">Web page</a>,
+      <a href="../reference/index.html">Reference</a>,
+      <a href="../faq.html">FAQ</a>
+    </li>
+    <li><a href="http://www.unidata.ucar.edu/community/surveys/2014training/survey.html">Feedback/Evaluation Form</a> (Repeated submissions encouraged)</li>
+  </ul>
+
+
+  <h3>9:00 Participant Introductions (John) </h3>
+  <ul>
+    <li>Name, organization, how you use TDS.</li>
+  </ul>
+  <h3>9:30 <a href="GettingStarted.html">Getting Started With the TDS: Local Test Server Setup</a> (Jenn) </h3>
+
+  <p>This section covers basic installation and configuration of Tomcat, JDK and the TDS for a local test server.</p>
+  <ul>
+    <li><a href="GettingStarted.html#install">Installing Java and Tomcat</a></li>
+    <li><a href="GettingStarted.html#tour">Tomcat Directory Structure: Quick Tour</a></li>
+    <li><a href="GettingStarted.html#running">Running Tomcat</a></li>
+    <li><a href="GettingStarted.html#logs">Tomcat Log Files</a></li>
+    <li><a href="GettingStarted.html#files">Tomcat (Server-Level) Configuration Files</a></li>
+    <li><a href="GettingStarted.html#deploying">Deploying the TDS</a></li>
+    <li><a href="GettingStarted.html#manager">Tomcat <code>manager</code> Application</a></li>
+    <li><a href="GettingStarted.html#next">Next Steps: Where To Go From Here</a></li>
+  </ul>
+
+
+  <h3>10:00 Break</h3>
+  <h3 dir="ltr">10:30 ToolsUI Demo (Ethan)</h3>
+  <ul>
+    <li>Running <a href="../../netcdf-java/ToolsUI.html">ToolsUI</a></li>
+    <li>IOSP and FeatureTypes  </li>
+  </ul>
+  <h3>11:00 Configuring TDS (Part 1) : Client and Server Catalogs (Christian) </h3>
+  <ul>
+    <li><a href="CatalogPrimer.html">TDS Client Catalog Overview</a></li>
+    <li><a href="BasicConfigCatalogs.html">Basic TDS Configuration Catalogs</a></li>
+  </ul>
+  <h3>11:45 Lunch in FL-2 Cafeteria</h3>
+  <h3>12:45 Configuring TDS (Part 2) : service, metadata, datasetScan (Ryan)</h3>
+  <ul>
+    <li>      <a href="ConfigCatalogs.html">TDS Configuration Catalogs</a>      </li>
+    <li>Remote Management</li>
+    <li><a href="http://www.github.com/Unidata/TDSConfig.git">TdsConfig on github</a></li>
+  </ul>
+  <h3>1:30  Configuring TDS (Part 3) : threddsConfig.xml (Sean)</h3>
+  <ul>
+    <li><a href="BasicThreddsConfig_xml.html">Basic threddsConfig.xml</a></li>
+    <li><a href="../reference/ThreddsConfigXMLFile.html">threddsConfig Reference</a></li>
+    <li><a href="../reference/Services.html">Services</a></li>
+    <li>enabling writing netCDF-4 files</li>
+  </ul>
+
+  <h3 dir="ltr">2:15 DAP Protocol Services (Dennis)</h3>
+  <ul>
+    <li><a href="DAP.html">OPeNDAP DAP2 and DAP4 Protocol Services</a></li>
+  </ul>
+  <h3>3:00 Break</h3>
+  <h3 dir="ltr">3:15 Python Demo (Sean) </h3>
+  <ul>
+    <li dir="ltr">DAP2 access to HRRR dataset</li>
+  </ul>
+  <h3>3:30 Advanced TDS Configuration (John)</h3>
+  <ul>
+    <li><a href="../reference/collections/FeatureCollections.html">FeatureCollections</a></li>
+    <li><a href="FmrcFeatureCollectionsTutorial.html">FMRC Tutorial</a></li>
+    <li><a href="../reference/collections/PointFeatures.html">Point Feature Collections</a></li>
+    <li><a href="../UpgradingTo4.5.html">Upgrading to 4.5</a></li>
+  </ul>
+  <h3>4:15 Software Engineering and Contributing (Ryan)  </h3>
+  <ul>
+  <li>Source on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
+  <li> Issue Tracking with <a href="http://www.unidata.ucar.edu/jira/">JIRA</a></li>
+  <li>Maven artifacts on <a href="https://artifacts.unidata.ucar.edu/index.html#view-repositories">Nexus</a></li>
+  <li>CDM/TDS Nightly Build/Test System (<a href="images/jenkins.png">Jenkins</a>)</li>
+  <li>Continuous Integration on <a href="https://travis-ci.org/Unidata/thredds">Travis</a></li>
+  <li>Static code analysis on <a href="https://scan.coverity.com/projects/388?tab=overview">Coverity</a></li>
+  <li><a href="http://www.unidata.ucar.edu/support/#mailinglists">Email Lists</a>: thredds@unidata.ucar.edu; netcdf-java@unidata.ucar.edu</li>
+  <li><a href="http://www.unidata.ucar.edu/support/index.html#archives">Support</a>: support-thredds@unidata.ucar.edu;
+    support-netcdf-java@unidata.ucar.edu
+  </li>
+  </ul>
+
+  <h3>4:30 Discussion and Questions</h3>
+  <h3>5:00 Day One Finish</h3>
+
+  <h3>6:00 Dinner TBD</h3>
+
+</div>
+<!-- end section -->
+
+<div id="section">
+  <h2><a name="DayTwo">24 October 2014: Advanced Uses of TDS, Clients and Tools</a></h2>
+
+  <h3>8:00 Coffee and continental breakfast</h3>
+
+  <h3>8:30 Tomcat Monitoring and Debugging (Jenn) </h3>
+
+  <p>This section covers log files generated by Tomcat and the TDS for the purposes of monitoring and debugging:</p>
+  <ul>
+    <li><a href="TomcatAndTDSLogs.html">Logs!</a></li>
+    <li><a href="TomcatAndTDSLogs.html#access">Tomcat Access Logs</a></li>
+    <li><a href="TomcatAndTDSLogs.html#tds">Log Files Generated by the TDS</a></li>
+  </ul>
+  <p>There are also various free, 3rd-party monitoring and debugging tools:</p>
+  <ul>
+    <li><a href="http://www.google.com/search?btnG=1&pws=0&q=log+analyzers">Log analyzers</a></li>
+    <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Tomcat manager application</a></li>
+    <li>
+      Browser-based HTTP header viewers
+      <ul>
+        <li><a href="http://www.youtube.com/watch?v=tKD50_zvZoo">Live HTTP Headers</a> (Firefox Add-On)</li>
+        <li><a href="https://developers.google.com/chrome-developer-tools/docs/network#http_headers">DevTools</a> (Chrome)</li>
+      </ul>
+    </li>
+    <li>
+      JVM monitoring tools
+      <ul>
+        <li><a href="http://visualvm.java.net/api-quickstart.html">VisualVM</a></li>
+        <li><a href="http://www.youtube.com/watch?v=Xy0tsT-GD68">JConsole</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>9:00 TDS Monitoring and Debugging (John)  </h3>
+  <ul>
+    <li>Looking at logs on the server</li>
+    <li>Looking at logs on the server using Remote Management (aka <a href="http://localhost:8080/thredds/admin/debug">debug</a> page)</li>
+    <li><a href="tdsMonitor.html">Using the TdsMonitor tool</a></li>
+    <li><a href="TroubleShooting.html">Troubleshooting Configuration Catalogs</a>  </li>
+  </ul>
+  <h3>9:45 Data Discovery (Sean)</h3>
+  <ul>
+    <li>Data discovery systems:
+    (<a href="files/metadata_ncISO.pdf">pdf</a>)    </li>
+    <li><a href="../reference/ncISO.html">ncIso</a></li>
+    <li>exercise- how can we increase our ncISO score?</li>
+    <li><a href="http://wiki.esipfed.org/index.php?title=Category:Attribute_Conventions_Dataset_Discovery">Attribute Convention for Data Discovery</a>  (Ethan)</li>
+  </ul>
+  <h3>10:30 Break</h3>
+
+  <h3>11:00 NcML modifications (John)</h3>
+  <ul>
+    <li><a href="../../netcdf-java/ncml/Tutorial.html">Basic NcML tutorial</a></li>
+    <li><a href="NcML.htm">Using NcML in the TDS</a></li>
+  </ul>
+  <h3>11:30 NcML Examples (Ryan)</h3>
+  <ul>
+    <li><a href="NcMLExamples.html">Example Problems</a>  </li>
+  </ul>
+  <h3>11:45 NcML aggregation (Sean)</h3>
+  <ul>
+    <li><a href="../../netcdf-java/ncml/Aggregation.html">NcML Aggregation</a></li>
+    <li><a href="files/NcMLvsFeatureCollections.pdf">NcML Aggregations vs Feature Collections</a></li>
+    <li><a href="NcMLAggExamples.html">NcML Aggregation Example Problems</a></li>
+  </ul>
+  <h3>12:15 Lunch FL-2 Cafeteria</h3>
+  <h3>1:15 Feature Collection Subsetting  (Christian)</h3>
+  <ul>
+    <li>Netcdf Subset Service <a href="../reference/NetcdfSubsetServiceConfigure.html">configure</a>, <a href="../reference/NetcdfSubsetServiceReference.html">reference</a> (<a href="../reference/files/NCSS_4_3.pdf">pdf</a>)</li>
+    <li>URL Builder</li>
+  </ul>
+  <h3>1:45 (Sean) <a href="http://www.unidata.ucar.edu/software/rosetta/">Rosetta</a> (<a href="http://rosetta.unidata.ucar.edu">live site</a>)</h3>
+
+  <h3>2:00 WMS Demos (Ethan)<a href="AddingServices.html#detailed_wms_configuration"></a></h3>
+  <ul>
+    <li><a href="AddingServices.html#styling_extensions">Styling features and non standard requests</a></li>
+  </ul>
+  <h3>2:30 Break (escape from GRIB)</h3>
+  <h3>2:45 GRIB Feature Collections (John)</h3>
+  <ul>
+    <li><a href="GribCollectionExamples.html">GRIB Collection Examples</a></li>
+    <li><a href="GRIBFeatureCollectionTutorial.html">GRIB Feature Collection Tutorial</a></li>
+    <li><a href="../reference/ThreddsConfigXMLFile.html#GribIndexWriting">GRIB Index redirection</a></li>
+    <li><a href="../reference/collections/TDM.html">TDM</a></li>
+  </ul>
+  <h3>3:30 Software Engineering and Contributing / Open Discussion / Participant feedback (Sean)  </h3>
+  <ul>
+    <li>Source on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
+    <li> Issue Tracking with <a href="http://www.unidata.ucar.edu/jira/">JIRA</a></li>
+    <li>Maven artifacts on <a href="https://artifacts.unidata.ucar.edu/index.html#view-repositories">Nexus</a></li>
+    <li>CDM/TDS Nightly Build/Test System (<a href="images/jenkins.png">Jenkins</a>)</li>
+    <li>Continuous Integration on <a href="https://travis-ci.org/Unidata/thredds">Travis</a></li>
+    <li>Static code analysis on <a href="https://scan.coverity.com/projects/388?tab=overview">Coverity</a></li>
+    <li><a href="http://www.unidata.ucar.edu/support/#mailinglists">Email Lists</a>: thredds@unidata.ucar.edu; netcdf-java@unidata.ucar.edu</li>
+    <li><a href="http://www.unidata.ucar.edu/support/index.html#archives">Support</a>: support-thredds@unidata.ucar.edu;
+      support-netcdf-java@unidata.ucar.edu  </li>
+  </ul>
+  <ul>
+    <li><a href="http://www.unidata.ucar.edu/community/surveys/2014training/survey.html">Feedback/Evaluation Form</a>
+      (Repeated submissions encouraged)
+    </li>
+  </ul>
+  <h3>4:00 Day Two Finish</h3>
+</div>
+
+</body>
+</html>

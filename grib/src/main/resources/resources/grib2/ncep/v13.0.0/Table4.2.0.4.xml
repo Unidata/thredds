@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.4</table>
+  <title>Short wave radiation</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-4.shtml</source>
+  <parameter code="0">
+    <shortName>NSWRS</shortName>
+    <description>Net Short-Wave Radiation Flux (Surface)*</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>NSWRT</shortName>
+    <description>Net Short-Wave Radiation Flux (Top of Atmosphere)*</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>SWAVR</shortName>
+    <description>Short-Wave Radiation Flux*</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>GRAD</shortName>
+    <description>Global Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>BRTMP</shortName>
+    <description>Brightness Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>LWRAD</shortName>
+    <description>Radiance (with respect to wave number)</description>
+    <units>W m-1 sr-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>SWRAD</shortName>
+    <description>Radiance (with respect to wavelength)</description>
+    <units>W m-3 sr-1</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>DSWRF</shortName>
+    <description>Downward Short-Wave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>USWRF</shortName>
+    <description>Upward Short-Wave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>NSWRF</shortName>
+    <description>Net Short Wave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>PHOTAR</shortName>
+    <description>Photosynthetically Active Radiation</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>NSWRFCS</shortName>
+    <description>Net Short-Wave Radiation Flux, Clear Sky</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>DWUVR</shortName>
+    <description>Downward UV Radiation</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="50">
+    <shortName>UVIUCS</shortName>
+    <description>UV Index (Under Clear Sky)**</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="51">
+    <shortName>UVI</shortName>
+    <description>UV Index**</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>DSWRF</shortName>
+    <description>Downward Short-Wave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>USWRF</shortName>
+    <description>Upward Short-Wave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>DUVB</shortName>
+    <description>UV-B Downward Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>CDUVB</shortName>
+    <description>Clear sky UV-B Downward Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>CSDSF</shortName>
+    <description>Clear Sky Downward Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>SWHR</shortName>
+    <description>Solar Radiative Heating Rate</description>
+    <units>K s-1</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>CSUSF</shortName>
+    <description>Clear Sky Upward Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>CFNSF</shortName>
+    <description>Cloud Forcing Net Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>VBDSF</shortName>
+    <description>Visible Beam Downward Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>VDDSF</shortName>
+    <description>Visible Diffuse Downward Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>NBDSF</shortName>
+    <description>Near IR Beam Downward Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>NDDSF</shortName>
+    <description>Near IR Diffuse Downward Solar Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>DTRF</shortName>
+    <description>Downward Total Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>UTRF</shortName>
+    <description>Upward Total Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+</parameterMap>

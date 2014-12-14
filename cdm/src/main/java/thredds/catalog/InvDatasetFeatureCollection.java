@@ -280,13 +280,13 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   /**
-   * A request has come in, check that the state is up-to-date and initialized.
+   * A request has come in, check that the state has been initialized.
    * this is called from the request thread.
    *
-   * @return the State, updated if needed
-   * @throws java.io.IOException on read error
+   * @return a copy of the State
    */
   protected State checkState() {
+    State localState;
 
     synchronized (lock) {
       if (first) {
@@ -295,9 +295,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
         makeDatasetTop(state);
         first = false;
       }
+      localState = state.copy();
     }
 
-    return state;
+    return localState;
   }
 
   /**
@@ -307,6 +308,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @param force test : update index if anything changed or nocheck - use index if it exists
    */
   protected void update(CollectionUpdateType force) {  // this may be called from a background thread
+    State localState;
 
     synchronized (lock) {
       if (first) {
@@ -314,10 +316,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
         state.lastInvChange = System.currentTimeMillis();
         return;
       }
+      // do the update in a local object
+      localState = state.copy();
     }
 
-    // do the update in a local object
-    State localState = state.copy();
     updateCollection(localState, force);
     makeDatasetTop(localState);
     localState.lastInvChange = System.currentTimeMillis();

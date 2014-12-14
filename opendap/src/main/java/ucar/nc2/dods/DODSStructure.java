@@ -34,7 +34,7 @@ package ucar.nc2.dods;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.DODSNode;
+import ucar.nc2.dods.DODSNode;
 import opendap.dap.*;
 
 import java.util.*;
@@ -46,6 +46,7 @@ import java.io.IOException;
  * @author caron
  */
 
+//Coverity[FB.EQ_DOESNT_OVERRIDE_EQUALS]
 public class DODSStructure extends ucar.nc2.Structure implements DODSNode
 {
   private DConstructor ds;
@@ -172,8 +173,7 @@ public class DODSStructure extends ucar.nc2.Structure implements DODSNode
       }
   }
 
-
-  //////////////////////////////////////////////////
+  ////////////////////////////////////////////
   // DODSNode Interface
   //Coverity[FB.UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD]
   String dodsName = null;

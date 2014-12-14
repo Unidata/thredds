@@ -152,6 +152,7 @@
              <include>**/TestServlet.java</include>
              <include>**/TestServletConstraints.java</include>
              <include>**/TestCDMClient.java</include>
+             <include>**/TestConstraints.java</include>
              <include>**/TestDSR.java</include>
 	 </includes>
        </configuration>

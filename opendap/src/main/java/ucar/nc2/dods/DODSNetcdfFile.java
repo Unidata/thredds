@@ -364,7 +364,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
                 if ((dodsVar.isCoordinateVariable() && size < preloadCoordVarSize) || dodsVar.isCaching() || dodsVar.getDataType() == DataType.STRING) {
                     dodsVar.setCaching(true);
                     preloadList.add(dodsVar);
-                    if (debugPreload) System.out.println("  preload" + dodsVar);
+                    if (debugPreload) System.out.printf("  preload (%6d) %s%n", size, dodsVar.getFullName());
                 }
             }
             if (cancelTask != null && cancelTask.isCancel()) return;
@@ -852,7 +852,7 @@ if(OLDGROUPCODE) {
                     } else if (gi >= 0 && ai >= 0) {
                         String apath = arrayname.substring(0, ai);
                         String gpath = gridname.substring(0, gi);
-                        if (gpath != apath) {// choose gridpath over the array path
+                        if (!gpath.equals(apath)) {// choose gridpath over the array path
                             String arraysuffix = arrayname.substring(gi + 1, arrayname.length());
                             arrayname = gpath + "/" + arraysuffix;
                             array.getBaseType().setClearName(arrayname);
@@ -1229,7 +1229,6 @@ if(OLDGROUPCODE) {
             } else { // see if shared
                 if (RC.getUseGroups()) {
                     if (name.indexOf('/') >= 0) {// place dimension in proper group
-                        int index = name.indexOf('/');
                         group = group.makeRelativeGroup(this, name, true);
                         // change our name
                         name = name.substring(name.lastIndexOf('/') + 1);
@@ -2311,12 +2310,12 @@ if(OLDGROUPCODE) {
         f.format("DDS = %n");
         ByteArrayOutputStream buffOS = new ByteArrayOutputStream(8000);
         dds.print(buffOS);
-        f.format("%s%n", buffOS.toString());
+        f.format("%s%n", new String(buffOS.toByteArray(),Util.UTF8));
 
         f.format("%nDAS = %n");
         buffOS = new ByteArrayOutputStream(8000);
         das.print(buffOS);
-        f.format("%s%n", buffOS.toString());
+        f.format("%s%n", new String(buffOS.toByteArray(),Util.UTF8));
     }
 
     public String getFileTypeId()

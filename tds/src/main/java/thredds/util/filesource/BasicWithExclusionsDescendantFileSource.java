@@ -99,9 +99,9 @@ public class BasicWithExclusionsDescendantFileSource implements DescendantFileSo
 
   public DescendantFileSource getDescendant(String relativePath) {
     DescendantFileSource dfs = this.root.getDescendant(relativePath);
+    if (dfs == null) return null;
     for (BasicDescendantFileSource curBdfs : this.exclusions) {
-      if (curBdfs.getRootDirectory().equals(dfs.getRootDirectory())
-              || curBdfs.isDescendant(dfs.getRootDirectory()))
+      if (curBdfs.getRootDirectory().equals(dfs.getRootDirectory()) || curBdfs.isDescendant(dfs.getRootDirectory()))
         return null;
     }
     return dfs;

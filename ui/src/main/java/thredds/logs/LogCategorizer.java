@@ -35,8 +35,6 @@ package thredds.logs;
 
 import ucar.unidata.util.StringUtil2;
 
-import java.io.*;
-
 /**
  * Class Description.
  *
@@ -198,7 +196,7 @@ public class LogCategorizer {
     String[] roots = rootString.split(",");
     for (int i = 0; i < roots.length; i += 2) {
       if (showRoots) System.out.printf("  %-40s %-40s%n", roots[i], roots[i + 1]);
-      pathMatcher.put(roots[i], roots[i + 1]);
+      pathMatcher.put(roots[i]);
     }
 
     return pathMatcher;
@@ -301,21 +299,6 @@ public class LogCategorizer {
   }
 
   //////////////////////////////////////////////////////////////////
-
-  static class MyLogFilter implements LogReader.LogFilter {
-
-    public boolean pass(LogReader.Log log) {
-      return (log.returnCode == 200) && log.path.startsWith(prefix);
-    }
-  }
-
-  static class MyFF implements FileFilter {
-
-    public boolean accept(File f) {
-      String name = f.getName();
-      return name.startsWith("access") && name.endsWith(".log");
-    }
-  }
 
 //  int datasetReq = 0;
 //  int unknownReq = 0;

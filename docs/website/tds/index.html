@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
- <html>   
+ <html>
   <head>
    <title>Unidata | THREDDS Data Server (TDS)</title>
    <meta name="description" content="Unidata's THREDDS Data Server (TDS) is a web server that provides metadata and data access for scientific datasets, using OPeNDAP, OGC WMS and WCS, HTTP, and other remote data access protocols.">
@@ -8,22 +8,24 @@
   </head>
   <body>
 
-      
+
     <ul id="breadcrumbs">
      <li><a href="/">Home</a></li>
     </ul>
-  
+
     <div id="tabs">
      <nav>
       <ul class="links">
-       <li><a href="#home">THREDDS Data Server</a></li>  
-       <a href="/projects/THREDDS/tech/TDS.html" class="external">Version History</a>
-       <a href="/projects/THREDDS/tech/tds4.3/faq.html" class="external">FAQs</a>
-       <a href="/projects/THREDDS/tech/TDS.html" class="external">Documentation</a>
+       <li><a href="#home">THREDDS Data Server</a></li>
+       <a href="TDS.html" class="external">Version History</a>
+       <a href="faq.html" class="external">FAQs</a>
+       <a href="TDS.html" class="external">Documentation</a>
        <a href="/downloads/thredds/" class="external">Download</a>
        <li><a href="#help">Support</a></li>
        <a href="/data/#tds" class="external">Data Available via the TDS</a>
        <li><a href="#developers">For Developers</a></li>
+       <li><a href="/software/thredds/steering/thredds_steering.inc" title="thredds_steering">THREDDS Steering Team</a></li>
+       <li style="display:none;"><a href="/software/thredds/steering/thredds-steering-team-latest.inc" title="tst_notes">Meeting notes</a></li>
        <li><a href="#related_projects">Related Projects</a></li>
       </ul>
      </nav>
@@ -35,10 +37,10 @@
      <!-- HOME -->
      <div id="home">
       <section>
-       <h1>THREDDS Data Server (TDS)</h1> 
+       <h1>THREDDS Data Server (TDS)</h1>
        <div class="nodec all">
         <p><img src="/img/v3/logos/thredds-50x50.png" alt="THREDDS Data Server" class="dec"> The THREDDS Data Server (TDS) is a web server that provides metadata and data access for scientific datasets, using a variety of remote data access protocols. </p>
-        <a href="/projects/THREDDS/tech/TDS.html" class="more">See the TDS package overview</a>
+        <a href="TDS.html" class="more">See the TDS package overview</a>
        </div> <!-- end -->
        <div class="left nodec">
         <section>
@@ -64,11 +66,11 @@
      <!-- SUPPORT -->
      <div id="help">
       <section>
-       <h1>THREDDS Data Server (TDS) Support</h1>   
+       <h1>THREDDS Data Server (TDS) Support</h1>
        <div class="left nodec">
         <article>
          <h5>How To Get TDS Support</h5>
-         <p>Didn't find a solution in the <a href="/projects/THREDDS/tech/TDS.html">TDS documentation</a>? Try the following:</p>
+         <p>Didn't find a solution in the <a href="TDS.html">TDS documentation</a>? Try the following:</p>
          <dl class="listCounter">
           <dt>Use the <strong><a href="/mailing_lists/archives/thredds/">TDS Mailing List</a></strong> to query experts in the Unidata community</dt>
           <dt>View <strong><a href="/support/help/MailArchives/thredds/maillist.html">Current Support Questions</a></strong> being asked of TDS developers</dt>
@@ -78,11 +80,11 @@
        </div> <!-- end left -->
        <div class="right">
         <article>
-         <h5>Training and Tutorials</h5>   
-         <ul class="tabular full">     
+         <h5>Training and Tutorials</h5>
+         <ul class="tabular full">
           <li><a href="/events/index.html#training"><img src="/community/img/awards2003-32x32.png" alt="Training Workshop" class="dec"></a> Attend the annual TDS <a href="/events/index.html#training">training<br> workshop</a> at the <a href="/about/index.html#visit">UPC</a> in Boulder</li>
-          <li><a href="/projects/THREDDS/tech/tds4.3/tutorial/"><img src="/support/img/documentation-32x32.png" alt="Tutorial" class="dec"></a> Learn about TDS administration<br> from an online and <a href="/projects/THREDDS/tech/tds4.3/tutorial/">in-depth tutorial</a></li>
-          <li><a href="/projects/THREDDS/tech/tds4.3/tutorial/workshop2013.html"><img src="/community/img/monitors-32x32.png" alt="Training Workshop" class="dec"></a> View the <a href="/projects/THREDDS/tech/tds4.3/tutorial/workshop2013.html">workshop tutorial</a> from<br> the latest TDS training session</li>
+          <li><a href="tutorial/"><img src="/support/img/documentation-32x32.png" alt="Tutorial" class="dec"></a> Learn about TDS administration<br> from an online and <a href="tutorial/">in-depth tutorial</a></li>
+          <li><a href="tutorial/workshop2013.html"><img src="/community/img/monitors-32x32.png" alt="Training Workshop" class="dec"></a> View the <a href="tutorial/workshop2013.html">workshop tutorial</a> from<br> the latest TDS training session</li>
          </ul>
         </article>
        </div> <!-- end right -->
@@ -96,7 +98,7 @@
      </div> <!-- end support -->
 
 
-    
+
      <!-- FOR DEVELOPERS -->
      <div id="developers">
       <section>
@@ -113,6 +115,10 @@
       </section>
      </div> <!-- end developers -->
 
+    <!-- THREDDS STEERING TEAM -->
+    <div id="thredds_steering"></div>
+    <div id="tst_notes"></div>
+
 
      <!-- RELATED PROJECTS -->
      <div id="related_projects">
@@ -123,7 +129,7 @@
         <h5><a href="/projects/index.html#cdm">Common Data Model</a></h5>
         <p><img src="/img/v3/logos/cdm-75x75.png" alt="Common Data Model" class="dec"/> Unidata's <a href="/software/netcdf-java/CDM/"><u>C</u>ommon <u>D</u>ata <u>M</u>odel</a> (<a href="/software/netcdf-java/CDM/">CDM</a>) is an abstract data model for scientific datasets. It merges the <a href="/software/netcdf/">netCDF</a>, <a href="http://www.opendap.org/">OPeNDAP</a>, and <a href="http://www.hdfgroup.org/products/hdf5/">HDF5</a> data models to create a common API for many types of scientific data.  The NetCDF Java library is an implementation of the CDM which can read many <a href="/software/netcdf-java/index.html#formats">file formats</a> besides netCDF.</p>
         <a href="/projects/index.html#cdm" class="more">More about the CDM</a>
-       </div> <!-- end all -->      
+       </div> <!-- end all -->
       </section>
      </div> <!-- end related projects -->
 

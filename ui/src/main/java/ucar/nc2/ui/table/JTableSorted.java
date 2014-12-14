@@ -47,7 +47,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 
   /**
@@ -553,7 +555,7 @@ public class JTableSorted extends JPanel {
     }
   }
 
-  private static class SortList implements java.util.Comparator {
+  private static class SortList implements Comparator, Serializable {
     private int col;
     private boolean reverse;
 
@@ -656,7 +658,6 @@ public class JTableSorted extends JPanel {
   }
 
   private class ThreadHeaderRenderer extends SortedHeaderRenderer {
-    JLabel threadHead;
     JPanel sort, unsort;
 
     ThreadHeaderRenderer(int modelCol) {

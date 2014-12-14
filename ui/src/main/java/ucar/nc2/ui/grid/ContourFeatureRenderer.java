@@ -32,7 +32,6 @@
  */
 package ucar.nc2.ui.grid;
 
-import ucar.nc2.ui.gis.GisFeatureAdapter;
 import ucar.nc2.ui.gis.GisFeatureRenderer;
 import ucar.nc2.ui.widget.FontUtil;
 import ucar.unidata.geoloc.*;
@@ -58,7 +57,6 @@ import java.awt.geom.Rectangle2D;
 public class ContourFeatureRenderer extends GisFeatureRenderer {
 
   private ProjectionImpl dataProjection;
-  private GisFeatureAdapter features;
   private ArrayList contourList = new ArrayList();  // list of ContourFeature-s
   private boolean ShowLabels;
 
@@ -190,11 +188,10 @@ public class ContourFeatureRenderer extends GisFeatureRenderer {
 
     if (Debug.isSet("contour/doLabels")) {
       // get iterator to the class member ArrayList of GisFeature-s
-      Iterator iter = contourList.iterator();
-      while (iter.hasNext()) {
+      for (Object aContourList : contourList) {
         //ContourFeature cf = iter.next();
         System.out.println(" ContourFeatureRenderer: contour value = "
-                + ((ContourFeature) iter.next()).getContourValue());
+                + ((ContourFeature) aContourList).getContourValue());
       }
     }
   }

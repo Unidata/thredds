@@ -315,10 +315,11 @@ public class StringUtil2 {
    */
   public static String padRight(String s, int desiredLength,
                                 String padString) {
-    while (s.length() < desiredLength) {
-      s = s + padString;
+    StringBuilder ret = new StringBuilder(s);
+    while (ret.length() < desiredLength) {
+      ret.append(padString);
     }
-    return s;
+    return ret.toString();
   }
 
   private static final char[] htmlIn = {'&', '"', '\'', '<', '>', '\n'};
@@ -635,20 +636,22 @@ public class StringUtil2 {
    * @return equivilent escaped string.
    */
   static public String escape(String x, String okChars) {
-    String newname = "";
+    StringBuilder newname = new StringBuilder();
     for (char c : x.toCharArray()) {
       if (c == '%') {
-        newname = newname + "%%";
+        newname.append("%%");
       } else if (!Character.isLetterOrDigit(c) && okChars.indexOf(c) < 0) {
-        newname = newname + '%' + Integer.toHexString((0xFF & (int) c));
+        newname.append('%');
+        newname.append(Integer.toHexString((0xFF & (int) c)));
       } else
-        newname = newname + c;
+        newname.append(c);
     }
-    return newname;
+    return newname.toString();
   }
 
   /**
-   * This finds any '%xx' and converts to the equivilent char. Inverse of escape().
+   * This finds any '%xx' and converts to the equivalent char. Inverse of
+   * escape().
    *
    * @param x operate on this String
    * @return original String.
@@ -913,8 +916,6 @@ public class StringUtil2 {
   }
 
   public static void main3() {
-    byte[] b = new byte[]{10};
-    //String s = new String(b);
     String s = "\n";
     System.out.printf("quoteXmlAttribute(%s) == %s%n", s, StringUtil2.quoteXmlAttribute(s));
     String s2 = StringUtil2.quoteXmlAttribute(s);
@@ -946,16 +947,16 @@ public class StringUtil2 {
    * @return equivilent escaped string.
    */
   static public String escape2(String x, String reservedChars) {
-    String newname = "";
+    StringBuilder newname = new StringBuilder();
     for (char c : x.toCharArray()) {
       if (c == '%') {
-        newname = newname + "%%";
+        newname.append("%%");
       } else if (reservedChars.indexOf(c) >= 0) {
-        newname = newname + '%' + Integer.toHexString((0xFF & (int) c));
+        newname.append('%' + Integer.toHexString((0xFF & (int) c)));
       } else
-        newname = newname + c;
+        newname.append(c);
     }
-    return newname;
+    return newname.toString();
   }
 
   static public String ignoreescape2(String x, String reservedChars) {

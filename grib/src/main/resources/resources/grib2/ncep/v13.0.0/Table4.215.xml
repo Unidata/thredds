@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.215</table>
+  <title>Remotely Sensed Snow Coverage</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-215.shtml</source>
+  <parameter code="50">
+    <description>No-Snow/No-Cloud</description>
+  </parameter>
+  <parameter code="100">
+    <description>Clouds</description>
+  </parameter>
+  <parameter code="250">
+    <description>Snow</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -307,7 +307,10 @@ class FmrcDataset {
         logger.debug("FmrcDataset: proto= " + proto.getName() + " " + proto.getRunDate() + " collection= " + fmrcInv.getName());
       for (GridDatasetInv file : files) {
         NetcdfDataset ncfile = open(file.getLocation(), openFilesProto);
-        transferGroup(ncfile.getRootGroup(), result.getRootGroup(), result);
+        if (ncfile != null)
+          transferGroup(ncfile.getRootGroup(), result.getRootGroup(), result);
+        else
+          logger.warn("Failed to open "+file.getLocation());
         if (logger.isDebugEnabled()) logger.debug("FmrcDataset: proto dataset= " + file.getLocation());
       }
 

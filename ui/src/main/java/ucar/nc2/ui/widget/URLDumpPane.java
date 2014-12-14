@@ -283,7 +283,7 @@ public class URLDumpPane extends TextHistoryPane {
   @Urlencoded
   private void openURL2(String urlString, Command cmd) {
 
-    HTTPMethod m = null;
+    HTTPMethod m;
 
     try (HTTPSession httpclient = HTTPFactory.newSession(urlString)) {
       /* you might think this works, but it doesnt:
@@ -310,6 +310,8 @@ public class URLDumpPane extends TextHistoryPane {
       else if (cmd == Command.PUT) {
           m = HTTPFactory.Put(httpclient);
           m.setRequestContent(new StringEntity(ta.getText())); // was  setRequestContentAsString(ta.getText());
+      } else {
+          throw new IOException("Unsupported command: " + cmd);
       }
 
       m.setRequestHeader("Accept-Encoding", "gzip,deflate");
@@ -372,7 +374,7 @@ public class URLDumpPane extends TextHistoryPane {
         appendLine(contents);
 
       } else if (cmd == Command.OPTIONS)
-        printSet("AllowedMethods = ", m.getAllowedMethods());
+        printSet("AllowedMethods = ", HTTPMethod.getAllowedMethods());
 
     } catch (IOException e) {
       StringWriter sw = new StringWriter(5000);
@@ -414,9 +416,9 @@ public class URLDumpPane extends TextHistoryPane {
 
       // request headers
       Map<String, List<String>> reqs = currentConnection.getRequestProperties();
-      for (String key : reqs.keySet()) {
-        append(" " + key + ": ");
-        for (String v : reqs.get(key))
+      for (Map.Entry<String, List<String>> ent : reqs.entrySet()) {
+        append(" " + ent.getKey() + ": ");
+        for (String v : ent.getValue())
           append(v + " ");
         appendLine("");
       }
@@ -475,9 +477,9 @@ public class URLDumpPane extends TextHistoryPane {
 
       // request headers
       Map<String, List<String>> reqs = currentConnection.getRequestProperties();
-      for (String key : reqs.keySet()) {
-        append(" " + key + ": ");
-        for (String v : reqs.get(key))
+      for (Map.Entry<String, List<String>> ent : reqs.entrySet()) {
+        append(" " + ent.getKey() + ": ");
+        for (String v : ent.getValue())
           append(v + " ");
         appendLine("");
       }
@@ -605,28 +607,6 @@ public class URLDumpPane extends TextHistoryPane {
       }
     }
   } */
-
-  private static class GetContentsTask extends ProgressMonitorTask {
-    String urlString;
-    String contents;
-
-    GetContentsTask(String urlString) {
-      this.urlString = urlString;
-    }
-
-    public void run() {
-      try {
-        contents = IO.readURLcontentsWithException(urlString);
-      } catch (IOException e) {
-        setError(e.getMessage());
-        done = true;
-        return;
-      }
-
-      success = !cancel;
-      done = true;
-    }
-  }
 
   private static XMLStore xstore;
   private static URLDumpPane main;

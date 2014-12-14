@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ui.util;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
 import javax.swing.text.*;
@@ -46,13 +47,8 @@ public class URLExtracter {
   private URL baseURL;
 
   private boolean wantURLS = false;
-  private String title;
-  private boolean isTitle;
 
-  private StringBuffer textBuffer;
-  private boolean wantText = false;
   private boolean debug = false,  debugIMG = false;
-  private boolean dump = true;
 
   public URLExtracter() {
     ParserGetter kit = new ParserGetter();
@@ -72,13 +68,12 @@ public class URLExtracter {
   } */
 
     // InputStreamReader r = new InputStreamReader(filterTag(in));
-    InputStreamReader r = new InputStreamReader(in);
+    InputStreamReader r = new InputStreamReader(in, CDM.utf8Charset);
 
     //InputStreamReader r = new InputStreamReader(in);
     HTMLEditorKit.ParserCallback callback = new CallerBacker();
 
     wantURLS = true;
-    wantText = false;
     parser.parse(r, callback, false);
 
     return urlList;
@@ -109,47 +104,6 @@ public class URLExtracter {
     }
   } */
 
-  String getTextContent(String url) throws IOException {
-    if (debug) System.out.println(" URL.getTextContent="+url);
-
-    baseURL = new URL(url);
-    InputStream in = baseURL.openStream();
-    InputStreamReader r = new InputStreamReader(filterTag(in));
-    HTMLEditorKit.ParserCallback callback = new CallerBacker();
-
-    textBuffer = new StringBuffer(3000);
-    wantURLS = false;
-    wantText = true;
-    parser.parse(r, callback, false);
-
-    return textBuffer.toString();
-  }
-
-
-
-    // workaround for HTMLEditorKit.Parser, cant deal with "content-encoding"
-  private InputStream filterTag(InputStream in) throws IOException {
-    DataInputStream dins = new DataInputStream( in);
-    ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-
-    DataInputStream din =  new DataInputStream(new BufferedInputStream(in));
-    while (din.available() > 0) {
-      String line = din.readLine();
-      String lline = line.toLowerCase();
-      if (0 <= lline.indexOf("<meta "))  // skip meta tags
-        continue;
-      //System.out.println("--"+line);
-      bos.write( line.getBytes());
-    }
-    din.close();
-
-    if (dump) {
-      System.out.println(" dumpFilter= "+ bos.toString());
-    }
-
-    return new ByteArrayInputStream( bos.toByteArray());
-  }
-
 
   private class CallerBacker extends HTMLEditorKit.ParserCallback {
 
@@ -161,7 +115,6 @@ public class URLExtracter {
 
     public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes, int position) {
       if (debug) System.out.println(" handleStartTag="+tag);
-      isTitle = (tag == HTML.Tag.TITLE);
 
       if (wantURLS && tag == HTML.Tag.A)
         extractHREF( attributes);
@@ -169,13 +122,10 @@ public class URLExtracter {
         extractIMG( attributes);
     }
 
-    public void handleEndTag(HTML.Tag tag, int position) {
-      isTitle = false;
-    }
+    public void handleEndTag(HTML.Tag tag, int position) {}
 
     public void handleSimpleTag(HTML.Tag tag, MutableAttributeSet attributes, int position) {
       if (debug) System.out.println(" handleSimpleTag="+tag);
-      isTitle = false; // (tag == HTML.Tag.TITLE); // ??
 
       //System.out.println(" "+tag);
       if (wantURLS && tag == HTML.Tag.A)

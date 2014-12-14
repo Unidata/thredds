@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<!-- saved from url=(0100)http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/GribFeatureCollectionTutorial.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
    <title>GRIB Feature Collection</title>
   <link rel="stylesheet" href="tutorial2.css" type="text/css"/>
-</head>
+  <script type="text/javascript" src="workshopNav.js"></script>
+  </head>
   <body>
   <h1>GRIB Feature Collection Tutorial</h1>
   
@@ -11,73 +11,91 @@
     <div id="note" class="info">
      <h4>For more information</h4>
      <ul>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">Collection specification</a></li>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/FeatureCollections.html">Feature Collections Reference </a></li>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/GribCollections.html">GRIB Collection Reference</a></li>
+      <li><a href="../reference/collections/CollectionSpecification.html">Collection specification</a></li>
+      <li><a href="../reference/collections/FeatureCollections.html">Feature Collections Reference </a></li>
+      <li><a href="../reference/collections/GribCollections.html">GRIB Collection Reference</a></li>
      </ul>
     </div>
     <p>The featureCollection element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used mostly for <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/GridDatatype.html">gridded data</a> whose time and spatial coordinates are recognized by the CDM software stack. In this tutorial, we will work with featureCollection for collections of GRIB files.</p>
     <div id="expanded" class="exercise">
      <h3>Creating a GRIB Feature Collection</h3>
-     <p>Download <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/files/catalogGribfc.xml">catalogGribfc.xml</a>, place it in<strong> ${tomcat_home}/content/thredds</strong> directory
+     <p>Download <a href="files/catalogGribfc.xml">catalogGribfc.xml</a>, place it in<strong> ${tomcat_home}/content/thredds</strong> directory
     and add a catalogRef to it from your main catalog. Heres the first feature collection in it:</p>
 
-     <pre> 
-1)&lt;featureCollection name="FNL" featureType="GRIB" path="gribfc/LocalFNLCollection"&gt;
-2) &lt;metadata inherited="true"&gt;
-3)   &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
-4)   &lt;serviceName&gt;all&lt;/serviceName&gt;
-     &lt;documentation type="summary"&gt;LOCAL FNL's TO TEST TIME PARTITION&lt;/documentation&gt;
+     <pre>1)&lt;featureCollection name=&quot;FNL&quot; featureType=&quot;GRIB1&quot; path=&quot;gribfc/LocalFNLCollection&quot;&gt;
+2) &lt;metadata inherited=&quot;true&quot;&gt;
+3)   &lt;serviceName&gt;all&lt;/serviceName&gt;
+4)    &lt;documentation type=&quot;summary&quot;&gt;LOCAL FNL's TO TEST TIME PARTITION&lt;/documentation&gt;
    &lt;/metadata&gt;
-
-5)   &lt;collection name="LOCAL_FNL"
-        spec="/machine/tds/tutorial/fnl/**/fnl_.*_00_c$"
-6)      timePartition="1 month"
-7)      dateFormatMark="#fnl_#yyyyMMdd_HH" /&gt;
-8) &lt;update startup="true"/&gt;
-&lt;/featureCollection&gt;</pre>
+5) &lt;collection name=&quot;ds083.2&quot;
+        spec=&quot;/machine/tds/data/grib/fnl/**/fnl_.*_00_c$&quot;
+6)      timePartition=&quot;directory&quot;
+7)      dateFormatMark=&quot;#fnl_#yyyyMMdd_HH&quot; /&gt;
+8) &lt;update startup=&quot;test&quot;/&gt;
+&lt;/featureCollection&gt;
+</pre>
      <ol>
-      <li>A THREDDS featureCollection is defined, of type GRIB. All contained datasets will all have a <em>path</em> starting with <strong>gribfc/LocalFNLCollection</strong>.</li>
+      <li>A THREDDS featureCollection is defined, of type GRIB1. All contained datasets will all have a <em>path</em> starting with <strong>gribfc/LocalFNLCollection</strong>.</li>
       <li>All the metadata contained here will be inherited by the contained datasets. </li>
-      <li>You must define a dataFormat element with contenet GRIB-1 or GRIB-2.</li>
-      <li>All services are defined in a compound service type called all.</li>
-      <li>The collection of files is defined, using a <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/fnl</strong> will be scanned for files with names that match the regular expression <strong>fnl_.*_00_c$</strong></li>
-      <li>The collection will be split into a time partition by month.</li>
+      <li>The services to be used are defined in a compound service type called <em>all</em>.</li>
+      <li>You can add any metadata that is appropriate.</li>
+      <li>The collection of files is defined, using a <a href="../reference/collections/CollectionSpecification.html">collection specification string</a>. Everything under<strong> /machine/tds/data/grib/fnl</strong> will be scanned for files with names that match the regular expression <strong>fnl_.*_00_c$</strong></li>
+      <li>The collection will be split into a time partition by directory.</li>
       <li>A date will be extracted from the filename by matching the characters after<strong> fnl_</strong> with <strong>yyyyMMdd_HH</strong>. An example filename is<strong> fnl_20100104_12_00_c</strong>, so the date will be year <strong>2010</strong>, month <strong>01</strong>, day <strong>04</strong> and hour <strong>12</strong>.</li>
-      <li>Read in the collection when the TDS starts up.</li>
+      <li>Read in the collection when the TDS starts up, and test that the indices are up to date.</li>
      </ol>
-     <p>The resulting web page looks like:</p>
-     <p><img src="./images/gribfc1.png" width="783" height="418"></p>
-     <p>The TDS has created a number of datasets out of the GRIB collection, and made them available through the catalog interface. There are datasets for each monthly partition of the data, as well as a "Best Timeseries" that combines all the data into a single logical dataset. If you open a monthly partition:</p>
-     <p><img src="./images/gribfc3.png" width="803" height="329"></p>
+     <p>The resulting top level web page for the dataset looks like:</p>
+     <p><img src="./images/gribfc1.png" ></p>
+     <p>The TDS has created a number of datasets out of the GRIB collection, and made them available through the catalog interface. There is </p>
+     <ul>
+       <li>&quot;Full Collection&quot; dataset : all the data is available with two dimensions of time: a reference time, and a valid time.</li>
+       <li>,&quot;Best Time series&quot; dataset: for each valid time, use the record with the smallest offfset from the refrence time.</li>
+       <li>&quot;Latest Reference Time&quot;dataset: All of the data from the latest reference time, eg latest model run.</li>
+       <li>For each  directory partition of the data, folder which you can click into, and follow the directory heirarchy. For example selecting the 2010 amd then the 2010.01 datasets:</li>
+     </ul>
+     <p><img src="images/gribfc2.png" width="856" height="251"></p>
+     <p><img src="images/gribfc3.png" width="860" height="472"></p>
+     <p>For each seperate reference time, there is a logical dataset, each with a &quot;Full&quot; (two time dimensions) and &quot;Best&quot; dataset. Drilling down to the bottom of one of these:</p>
      <p>You see that it has a "Best Timeseries" collection dataset as well as listing the individual files in the collection:</p>
-     <p><img src="./images/gribfc4.png" width="803" height="748"></p>
-     <p>All of these datasets have an HTML page that looks more or less like this:</p>
-     <p><img src="./images/gribfc2.png" width="803" height="785"></p>
+     <p><img src="./images/gribfc4.png"></p>
+     <p>Here is listed all of the metadata for this dataset, as well as the possible access methods (OpenDAP, WMS, etc). This is the &quot;HTML view&quot; of the catalog, with URL:     </p>
+     <pre>http://localhost:8080/thredds/catalog/gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/catalog.html?
+	dataset=gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC</pre>
+    Its instructive to look at the "XML view" of the catalog, by removing the query (after the "?") and changinf the "html" to "xml:, giving this URL:
+     <pre>http://localhost:8080/thredds/catalog/gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/catalog.xml</pre>
+     <p>and this is the result:     </p>
+     <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; name=&quot;ds083.2-2010.01-20100101-000000&quot; 
+		version=&quot;1.0.1&quot;&gt;<br>  &lt;service name=&quot;VirtualServices&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;<br>    &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;<br>    &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot; /&gt;<br>    &lt;service name=&quot;wms&quot; serviceType=&quot;WMS&quot; base=&quot;/thredds/wms/&quot; /&gt;<br>    &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid/&quot; /&gt;<br>    &lt;service name=&quot;cdmremote&quot; serviceType=&quot;CdmRemote&quot; base=&quot;/thredds/cdmremote/&quot; /&gt;<br>    &lt;service name=&quot;ncml&quot; serviceType=&quot;NCML&quot; base=&quot;/thredds/ncml/&quot; /&gt;<br>    &lt;service name=&quot;uddc&quot; serviceType=&quot;UDDC&quot; base=&quot;/thredds/uddc/&quot; /&gt;<br>    &lt;service name=&quot;iso&quot; serviceType=&quot;ISO&quot; base=&quot;/thredds/iso/&quot; /&gt;<br>  &lt;/service&gt;
+<br>  &lt;dataset name=&quot;ds083.2-2010.01-20100101-000000&quot; ID=&quot;gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC&quot; 
+		urlPath=&quot;gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC&quot;&gt;<br>    &lt;documentation type=&quot;summary&quot;&gt;Single reference time Grib Collection&lt;/documentation&gt;<br>    &lt;metadata inherited=&quot;true&quot;&gt;<br>      &lt;serviceName&gt;VirtualServices&lt;/serviceName&gt;<br>      &lt;dataType&gt;GRID&lt;/dataType&gt;<br>      &lt;documentation type=&quot;summary&quot;&gt;LOCAL FNL's TO TEST TIME PARTITION&lt;/documentation&gt;<br>      &lt;documentation type=&quot;Reference Time&quot;&gt;2010-01-01T00:00:00Z&lt;/documentation&gt;<br>      &lt;geospatialCoverage&gt;<br>        &lt;northsouth&gt;<br>          &lt;start&gt;-90.0&lt;/start&gt;<br>          &lt;size&gt;180.0&lt;/size&gt;<br>          &lt;resolution&gt;-1.0&lt;/resolution&gt;<br>          &lt;units&gt;degrees_north&lt;/units&gt;<br>        &lt;/northsouth&gt;<br>        &lt;eastwest&gt;<br>          &lt;start&gt;0.0&lt;/start&gt;<br>          &lt;size&gt;360.0&lt;/size&gt;<br>          &lt;resolution&gt;1.0&lt;/resolution&gt;<br>          &lt;units&gt;degrees_east&lt;/units&gt;<br>        &lt;/eastwest&gt;<br>        &lt;name&gt;global&lt;/name&gt;<br>      &lt;/geospatialCoverage&gt;<br>      &lt;timeCoverage&gt;<br>        &lt;start&gt;2010-01-01T00:00:00Z&lt;/start&gt;<br>        &lt;end&gt;2010-01-01T00:00:00Z&lt;/end&gt;<br>      &lt;/timeCoverage&gt;<br>      &lt;variableMap xlink:href=&quot;/thredds/metadata/gribfc/LocalFNLCollection/ds083.2-2010/ds083.2-2010.01/ds083.2-2010.01-20100101-000000.ncx2/GC?metadata=variableMap&quot; 
+			xlink:title=&quot;variables&quot; /&gt;<br>    &lt;/metadata&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;</pre>
+You can click around in these pages to familiarize yourself with the various datasets.
     </div>
     
   <div id="expanded" class="exercise">
     <h3>GRIB Feature Collection with multiple GDS</h3>
-     <p>The second feature collection in <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
+     <p>The second feature collection in <a href="files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
 
-     <pre>1)&lt;featureCollection name="ECMWF Data" featureType="GRIB" path="gribfc/ecmwf"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;<br>      &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;/metadata&gt;<br>2)  &lt;collection name="ECMWF_GNERA" spec="<strong>/machine/tds/tutorial/ecmwf/ECMWF_GNERA_d000..20121001$</strong>" dateFormatMark="#.#yyyyMMdd"/&gt;<br>3)  &lt;gribConfig&gt;<br>      <strong>&lt;gdsName hash='1562665966' groupName='domain1'/&gt;<br>     &lt;gdsName hash='-104750013' groupName='domain2'/&gt;</strong><br>    &lt;/gribConfig&gt;<br>  &lt;/featureCollection&gt;</pre>
+     <pre>
+1)&lt;featureCollection name=&quot;ECMWF Data&quot; featureType=&quot;GRIB1&quot; path=&quot;gribfc/ecmwf&quot; serviceName=&quot;all&quot;&gt;<br>2)  &lt;collection name=&quot;ECMWF_GNERA&quot; spec=&quot;C:/tmp/gnera/ECMWF_GNERA_d000..#yyyyMMdd#&quot; /&gt;<br>    &lt;gribConfig datasetTypes=&quot;Best LatestFile Files&quot;&gt;<br>3)     <strong>&lt;gdsName hash='1562665966' groupName='HighResolution'/&gt;<br>      &lt;gdsName hash='-104750013' groupName='LowResolution'/&gt;</strong><br>    &lt;/gribConfig&gt;<br>  &lt;/featureCollection&gt;</pre>
     <ol>
-      <li>A THREDDS featureCollection is defined, of type GRIB. All contained datasets will all have a <em>path</em> starting with <strong>gribfc/ecmwf</strong>.</li>
-      <li>The collection of files is defined, using a <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/ecmwf</strong> will be scanned for files with names that match the regular expression <strong>ECMWF_GNERA_d000..20121001</strong>$<strong>. </strong> A date will be extracted from the filename by matching the characters after<strong> the "." </strong> with <strong>yyyyMMdd</strong>. An example filename is<strong> ECMWF_GNERA_d0001.20121001</strong>, so the date will be year <strong>2012</strong>, month <strong>10</strong>, day <strong>01</strong>.</li>
+      <li>A THREDDS featureCollection is defined, of type GRIB1. All contained datasets will all have a <em>path</em> starting with <strong>gribfc/ecmwf</strong>.</li>
+      <li>The collection of files is defined, using a <a href="../reference/collections/CollectionSpecification.html">collection specification string</a>. Subdirectories of<strong> /machine/tds/tutorial/ecmwf</strong> will be scanned for files with names that match the regular expression <strong>ECMWF_GNERA_d000..20121001</strong>$<strong>. </strong> A date will be extracted from the filename by matching the characters after<strong> the "." </strong> with <strong>yyyyMMdd</strong>. An example filename is<strong> ECMWF_GNERA_d0001.20121001</strong>, so the date will be year <strong>2012</strong>, month <strong>10</strong>, day <strong>01</strong>.</li>
       <li>A  configuration element that is specific to GRIB collections. In this case we are changing the name of the group by matching the GDS hash code. </li>
       </ol>
      
      <p>Open up the ToolsUI <strong>IOSP/GRIB1/Grib1Collection</strong> tab, and enter "<strong>/work/tds/tutorial/ecmwf/ECMWF_GNERA_d000..20121001</strong>$" into the collection spec, you will see something like:</p>
-    <p><img src="./images/gribfc11.png" width="983" height="721"></p>
-     <p>The bottom table shows that there are two distinct GDS in this collection. The column marked "hash" shows the GDS hash code that you use in the TDS configuration table. Click the first Info button ("generate gds xml") to genetat XML that you can modify:</p>
+    <p><img src="./images/gribfc11.png"></p>
+     <p>The bottom table shows that there are two distinct GDS in this collection. The column marked "hash" shows the GDS hash code that you use in the TDS configuration table. Click the first Info button ("generate gds xml") to generate XML that you can modify. You can then cut and paste this into your TDS catalog file:</p>
      <p><img src="./images/gribfc12.png" width="500" height="300"></p>
      <p>After making the modifications in the TDS config catalog, the  resulting HTML view is:</p>
-    <p><img src="./images/gribfc10.png" width="938" height="457"></p>
+    <p><img src="./images/gribfc10.png"></p>
+    <p>So we have given  human meaningful names to the groups. This renaming can be done at any time, one just restarts the TDS for it to have affect.</p>
   </div>
   
     <div id="expanded" class="exercise">
     <h3>GRIB Feature Collection with spurious GDS</h3>
-     <p>The third feature collection in <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/tutorial/files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
+     <p>The third feature collection in <a href="files/catalogGribfc.xml">catalogGribfc.xml</a> has:</p>
 
      <pre>1)&lt;featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" path="gribfc/ndfd"&gt;<br>    &lt;metadata inherited="true"&gt;<br>2)    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>    &lt;/metadata&gt;<br>3)  &lt;collection spec="<strong>/machine/tds/tutorial/ndfd/.*grib2$</strong>" dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm" /&gt;<br>4)  &lt;gribConfig&gt;<br>      <strong>&lt;gdsHash from="-2121584860" to="28944332"/&gt;</strong><br>    &lt;/gribConfig&gt;<br>  &lt;/featureCollection&gt;<br>  &lt;/featureCollection&gt;</pre>
      <ol>
@@ -87,13 +105,11 @@
       <li>A  configuration element that is specific to GRIB collections. In this case we are combining records with GDS  hashcode -2121584860 into GDS 28944332. </li>
       </ol>
      <p>Open up the ToolsUI <strong>IOSP/GRIB2/Grib2Collection</strong> tab, and enter the  "<strong>/work/tds/tutorial/ndfd/.*grib2$</strong>" into the collection spec, you will see something like:</p>
-     <p><img src="./images/gribfc20.png" width="1270" height="732"></p>
+     <p><img src="./images/gribfc20.png"></p>
      <p>The bottom table shows that there are two distinct GDS in this collection. The column marked "hash" shows the GDS hash code that you use in the TDS configuration table. However, both GDS have the same <strong>nx</strong> and <strong>ny</strong>, which is a bit suspicious. Select both GDS, then right click on them and select "compare GDS" to get this:</p>
-     <p><img src="./images/gribfc21.png" width="438" height="450"></p>
-     <p>This compares the x and y coordinates of the two GDS. These are displaced by <strong>-.367 </strong>and<strong> .300 km</strong>, respectively. If you open this dataset up in the coordinate system tab, you will see that the x,y grid spacing is 5 km. Its possible that some of these variables are displaced 3/10 km, and its possible that there is a error in generating these GRIB records, and that in fact all of the variables should be on the same grid. If the latter, then the gdsConfig element in the TDS config catalog above will fix the problem.</p>
+     <p><img src="./images/gribfc21.png"></p>
+     <p>This compares the x and y coordinates of the two GDS. These are displaced by <strong>.367 </strong>and<strong> .300 km</strong>, respectively. If you open this dataset up in the coordinate system tab, you will see that the x,y grid spacing is 2.5 km. Its possible that some of these variables are displaced 3/10 km, and its possible that there is a error in generating these GRIB records, and that in fact all of the variables should be on the same grid. If the latter, then the gdsConfig element in the TDS config catalog above will fix the problem.</p>
+     <p>This effects the generation of the CDM index (ncx2) files. To have this take affect, delete any ncx2 files and regenerate.</p>
     </div>
-      
-
-  
-      <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. &nbsp; Last updated: July 24, 2013</p><ul id="breadcrumbs" "=""><li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tutorial/workshop2013.html">2013 TDS Workshop Home</a></li><li>GRIB Feature Collection</li></ul></div> <!-- end container -->
+ 
 </body></html>

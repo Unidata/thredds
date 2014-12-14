@@ -712,8 +712,8 @@ public class ContourGrid {
     char heading;
 
     // for positions in main grid coordinates
-    Point2D.Double mainGridPoint = new Point2D.Double();
-    Point2D.Double startGridPoint = new Point2D.Double();
+    Point2D.Double mainGridPoint;
+    Point2D.Double startGridPoint;
 
     // to hold contour line coords coordinates
     double oldx, oldy;

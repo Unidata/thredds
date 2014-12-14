@@ -141,7 +141,7 @@
 
   <!-- XML encoding of enum typedef object -->
  <xsd:element name="enumTypedef">
-    <xsd:complexType>
+   <xsd:complexType mixed="true">
       <xsd:sequence>
         <xsd:element name="enum" minOccurs="1" maxOccurs="unbounded">
           <xsd:complexType mixed="true">
@@ -189,7 +189,7 @@
 
   <xsd:element name="logicalReduce">
      <xsd:complexType>
-       <xsd:attribute name="dimName" type="xsd:string" use="required"/>
+       <xsd:attribute name="dimNames" type="xsd:string" use="required"/>
      </xsd:complexType>
    </xsd:element>
 

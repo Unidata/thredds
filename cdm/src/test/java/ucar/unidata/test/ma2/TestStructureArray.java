@@ -54,7 +54,7 @@ public class TestStructureArray {
     }
   }
 
-  private void testArrayStructureByMemberArray(ArrayStructure as) throws IOException {
+  private double testArrayStructureByMemberArray(ArrayStructure as) throws IOException {
     List<StructureMembers.Member> members = as.getMembers();
 
     for (StructureMembers.Member m : members) {
@@ -66,12 +66,13 @@ public class TestStructureArray {
         double sum = 0.0;
         while (memberArray.hasNext())
           sum += memberArray.nextDouble();
-        System.out.println(m.getName() + " sum= " + sum);
+        return sum;
       } else if (m.getDataType().isString()) {
         while (memberArray.hasNext())
           System.out.println(" " + memberArray.next());
       }
     }
+    return 0.0;
   }
 
   private void testArrayStructureByIterator(ArrayStructure as) throws IOException {

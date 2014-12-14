@@ -40,8 +40,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ucar.nc2.units.DateFormatter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,7 +65,7 @@ public class CalendarDateFormatter {
   
   private static DateTimeFormatter dtf_with_millis_of_second = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
-  private static DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
+  private static DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // udunits
 
   static public String toDateTimeStringISO(CalendarDate cd) {
 	
@@ -74,14 +78,13 @@ public class CalendarDateFormatter {
 
   static public String toDateTimeStringISO(Date d) {
 	  return toDateTimeStringISO( CalendarDate.of(d) );
-//	DateTime dt = new DateTime(d, DateTimeZone.UTC);
-//	if( dt.getMillisOfSecond() == 0 )
-//		return isof.print( dt);
-//	else
-//		return isof_with_millis_of_second.print(dt);
   }
 
-  static public String toDateTimeString(CalendarDate cd) {
+  static public String toDateTimeStringISO(long millisecs) {
+ 	  return toDateTimeStringISO( CalendarDate.of(millisecs) );
+   }
+
+   static public String toDateTimeString(CalendarDate cd) {
 
 	  if(cd.getDateTime().getMillisOfSecond()==0)	  
 		  return dtf.print(cd.getDateTime());
@@ -105,11 +108,20 @@ public class CalendarDateFormatter {
     return df.print(new DateTime());
   }
 
+  /**
+   * udunits formatting
+   * @param cd  the calendar date
+   * @return udunits formated date
+   */
   static public String toTimeUnits(CalendarDate cd){
-	  return  df_units.print(cd.getDateTime());
+	  return df_units.print(cd.getDateTime());
   }
 
-    
+  static public String toTimeUnits(Date date){
+	  return df_units.print(date.getTime());
+  }
+
+
   /////////////////////////////////////////////////////////////////////////////
   // reading an ISO formatted date
 
@@ -386,16 +398,25 @@ public class CalendarDateFormatter {
      System.out.printf("%s%n", DateTimeFormat.forStyle("FF").print(cd.getDateTime())); */
 
      System.out.printf("%s%n", cd);
-     System.out.printf("%s%n", toDateTimeStringISO(cd));
-     System.out.printf("%s%n", toDateTimeString(cd));
-     System.out.printf("%s%n", toDateString(cd));
+     System.out.printf("toDateTimeStringISO=%s%n", toDateTimeStringISO(cd));
+     System.out.printf("   toDateTimeString=%s%n", toDateTimeString(cd));
+     System.out.printf("       toDateString=%s%n", toDateString(cd));
+     System.out.printf("        toTimeUnits=%s%n", toTimeUnits(cd));
+     System.out.printf("===============================%n");
+     Date d = cd.toDate();
+     System.out.printf("cd.toDate()=%s%n", toDateTimeString(d));
 
-     Date d = new Date();
-     System.out.printf("%s%n", toDateTimeString(d));
+     SimpleDateFormat udunitDF = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+     udunitDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+     udunitDF.applyPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
+     System.out.printf("           udunitDF=%s%n", udunitDF.format(d));
 
+     System.out.printf("===============================%n");
      DateFormatter df = new DateFormatter();
-     System.out.printf("%s%n", df.toDateTimeString(d));
-     System.out.printf("%s%n", df.toDateOnlyString(d));
+     System.out.printf("     toTimeUnits(date)=%s%n", toTimeUnits(cd));
+     System.out.printf("toDateTimeString(date)=%s%n", df.toDateTimeString(d));
+     System.out.printf("toDateOnlyString(date)=%s%n", df.toDateOnlyString(d));
+
    }
 
 }

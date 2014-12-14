@@ -327,7 +327,7 @@ public class RadarDayCollection implements Serializable {
     }
   }
 
-  protected class CompareKeyDescend implements Comparator<String> {
+  protected static class CompareKeyDescend implements Comparator<String> {
     public int compare(String s1, String s2) {
       return s2.compareTo(s1);
     }

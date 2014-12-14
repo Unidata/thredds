@@ -39,6 +39,9 @@
 package ucar.nc2.iosp.vis5d;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.CDM;
 import visad.data.BadFormException;
 // original V5DStruct uses ucar.unidata.netcdf.RandomAccessFile
 import ucar.unidata.io.RandomAccessFile;
@@ -48,6 +51,9 @@ import java.io.IOException;
  *
  */
 public class V5DStruct {
+  
+  static private final Logger logger = LoggerFactory.getLogger(V5DStruct.class);
+  
 
   /** Amount of physical RAM in megabytes.
       Vis5D normally uses a bounded amount of memory to avoid swapping.
@@ -1241,31 +1247,29 @@ public class V5DStruct {
 
     // Number of variables
     if (NumVars < 0) {
-      System.err.println("Invalid number of variables: " + NumVars);
+      logger.warn("Invalid number of variables: " + NumVars);
       valid = false;
     }
     else if (NumVars > MAXVARS) {
-      System.err.println("Too many variables: " + NumVars +
-        "  (Maximum is " + MAXVARS + ")");
+      logger.warn("Too many variables: " + NumVars + "  (Maximum is " + MAXVARS + ")");
       valid = false;
     }
 
     // Variable Names
     for (i=0; i<NumVars; i++) {
       if (VarName[i][0] == 0) {
-        System.err.println("Missing variable name: VarName[" + i + "]=\"\"");
+        logger.warn("Missing variable name: VarName[" + i + "]=\"\"");
         valid = false;
       }
     }
 
     // Number of timesteps
     if (NumTimes < 0) {
-      System.err.println("Invalid number of timesteps: " + NumTimes);
+      logger.warn("Invalid number of timesteps: " + NumTimes);
       valid = false;
     }
     else if (NumTimes>MAXTIMES) {
-      System.err.println("Too many timesteps: " + NumTimes +
-        "  (Maximum is " + MAXTIMES + ")");
+      logger.warn("Too many timesteps: " + NumTimes + "  (Maximum is " + MAXTIMES + ")");
       valid = false;
     }
 
@@ -1300,12 +1304,12 @@ public class V5DStruct {
 
     // Rows
     if (Nr < 2) {
-      System.err.println("Too few rows: " + Nr + " (2 is minimum)");
+      logger.warn("Too few rows: " + Nr + " (2 is minimum)");
       valid = false;
     }
     /* Don't check on max rows in case user overrode defaults
     else if (Nr > MAXROWS) {
-      System.err.println("Too many rows: " + Nr +
+      logger.warn("Too many rows: " + Nr +
         " (" + MAXROWS + " is maximum)");
       valid = false;
     }
@@ -1313,12 +1317,12 @@ public class V5DStruct {
 
     // Columns
     if (Nc < 2) {
-      System.err.println("Too few columns: " + Nc + " (2 is minimum)");
+      logger.warn("Too few columns: " + Nc + " (2 is minimum)");
       valid = false;
     }
     /* Don't check on max columns in case user overrode defaults
     else if (Nc > MAXCOLUMNS) {
-      System.err.println("Too many columns: " + Nc +
+      logger.warn("Too many columns: " + Nc +
         " (" + MAXCOLUMNS + " is maximum)");
       valid = false;
     }
@@ -1328,18 +1332,15 @@ public class V5DStruct {
     maxnl = 0;
     for (vr=0; vr<NumVars; vr++) {
       if (LowLev[vr] < 0) {
-        System.err.println("Low level cannot be negative for var " +
-          VarName[vr] + ": " + LowLev[vr]);
+        logger.warn("Low level cannot be negative for var {} : {}", VarName[vr], LowLev[vr]);
         valid = false;
       }
       if (Nl[vr] < 1) {
-        System.err.println("Too few levels for var " + VarName[vr] + ": " +
-          Nl[vr] + " (1 is minimum)");
+        logger.warn("Too few levels for var {} : {}  (1 is minimum)", VarName[vr],Nl[vr] + " (1 is minimum)");
         valid = false;
       }
       if (Nl[vr] + LowLev[vr] > MAXLEVELS) {
-        System.err.println("Too many levels for var " + VarName[vr] + ": " +
-          (Nl[vr] + LowLev[vr]) + " (" + MAXLEVELS + " is maximum)");
+        logger.warn("Too many levels for var {} : {} ({} is maximum)", VarName[vr], (Nl[vr] + LowLev[vr]), MAXLEVELS);
         valid = false;
       }
       if (Nl[vr] + LowLev[vr] > maxnl) {
@@ -1348,8 +1349,7 @@ public class V5DStruct {
     }
 
     if (CompressMode != 1 && CompressMode != 2 && CompressMode != 4) {
-      System.err.println("Bad CompressMode: " + CompressMode +
-        " (must be 1, 2 or 4)");
+      logger.warn("Bad CompressMode: " + CompressMode + " (must be 1, 2 or 4)");
       valid = false;
     }
 
@@ -1357,8 +1357,7 @@ public class V5DStruct {
       case 0:
       case 1:
         if (VertArgs[1] == 0.0) {
-          System.err.println("Vertical level increment is zero, " +
-            "must be non-zero");
+          logger.warn("Vertical level increment is zero, must be non-zero");
           valid = false;
         }
         break;
@@ -1366,9 +1365,7 @@ public class V5DStruct {
         // Check that Height values increase upward
         for (i=1; i<maxnl; i++) {
           if (VertArgs[i] <= VertArgs[i - 1]) {
-            System.err.println("Height[" + i + "]=" + VertArgs[i] +
-              " <= Height[" + (i - 1) + "]=" + VertArgs[i-1] +
-              ", level heights must increase");
+            logger.warn("Height[" + i + "]=" + VertArgs[i] + " <= Height[" + (i - 1) + "]=" + VertArgs[i - 1] + ", level heights must increase");
             valid = false;
             break;
           }
@@ -1378,106 +1375,91 @@ public class V5DStruct {
         // Check that Pressure values decrease upward
         for (i=1; i<maxnl; i++) {
           if (VertArgs[i] <= VertArgs[i - 1]) {
-            System.err.println("Pressure[" + i + "]=" +
-              height_to_pressure(VertArgs[i]) + " >= Pressure[" + (i-1) +
-              "]=" + height_to_pressure(VertArgs[i-1]) +
-              ", level pressures must decrease");
+            logger.warn("Pressure[" + i + "]=" + height_to_pressure(VertArgs[i]) + " >= Pressure[" + (i - 1) + "]=" + height_to_pressure(VertArgs[i - 1]) + ", level pressures must decrease");
             valid = false;
             break;
           }
         }
         break;
       default:
-        System.err.println("VerticalSystem = " + VerticalSystem +
-          ", must be in 0..3");
+        logger.warn("VerticalSystem = " + VerticalSystem + ", must be in 0..3");
         valid = false;
     }
 
     switch (Projection) {
       case 0:  // Generic
         if (ProjArgs[2] == 0.0) {
-          System.err.println("Row Increment (ProjArgs[2]) can't be zero");
+          logger.warn("Row Increment (ProjArgs[2]) can't be zero");
           valid = false;
         }
         if (ProjArgs[3] == 0.0) {
-          System.err.println("Column increment (ProjArgs[3]) can't be zero");
+          logger.warn("Column increment (ProjArgs[3]) can't be zero");
           valid = false;
         }
         break;
       case 1:  // Cylindrical equidistant
         if (ProjArgs[2] < 0.0) {
-          System.err.println("Row Increment (ProjArgs[2]) = " +
-            ProjArgs[2] + "  (must be >=0.0)");
+          logger.warn("Row Increment (ProjArgs[2]) = " + ProjArgs[2] + "  (must be >=0.0)");
           valid = false;
         }
         if (ProjArgs[3] <= 0.0) {
-          System.err.println("Column Increment (ProjArgs[3]) = " +
-            ProjArgs[3] + "  (must be >=0.0)");
+          logger.warn("Column Increment (ProjArgs[3]) = " + ProjArgs[3] + "  (must be >=0.0)");
           valid = false;
         }
         break;
       case 2:  // Lambert Conformal
         if (ProjArgs[0] < -90.0 || ProjArgs[0] > 90.0) {
-          System.err.println("Lat1 (ProjArgs[0]) out of range: " + ProjArgs[0]);
+          logger.warn("Lat1 (ProjArgs[0]) out of range: " + ProjArgs[0]);
           valid = false;
         }
         if (ProjArgs[1] < -90.0 || ProjArgs[1] > 90.0) {
-          System.err.println("Lat2 (ProjArgs[1] out of range: " + ProjArgs[1]);
+          logger.warn("Lat2 (ProjArgs[1] out of range: " + ProjArgs[1]);
           valid = false;
         }
         if (ProjArgs[5] <= 0.0) {
-          System.err.println("ColInc (ProjArgs[5]) = " +
-            ProjArgs[5] + "  (must be >=0.0)");
+          logger.warn("ColInc (ProjArgs[5]) = " + ProjArgs[5] + "  (must be >=0.0)");
           valid = false;
         }
         break;
       case 3:  // Stereographic
         if (ProjArgs[0] < -90.0 || ProjArgs[0] > 90.0) {
-          System.err.println("Central Latitude (ProjArgs[0]) out of range: " +
-            ProjArgs[0] + "  (must be in +/-90)");
+          logger.warn("Central Latitude (ProjArgs[0]) out of range: " + ProjArgs[0] + "  (must be in +/-90)");
           valid = false;
         }
         if (ProjArgs[1] < -180.0 || ProjArgs[1] > 180.0) {
-          System.err.println("Central Longitude (ProjArgs[1]) out of range: " +
-            ProjArgs[1] + "  (must be in +/-180)");
+          logger.warn("Central Longitude (ProjArgs[1]) out of range: " + ProjArgs[1] + "  (must be in +/-180)");
           valid = false;
         }
         if (ProjArgs[4] < 0) {
-          System.err.println("Column spacing (ProjArgs[4]) = " +
-            ProjArgs[4] + "  (must be positive)");
+          logger.warn("Column spacing (ProjArgs[4]) = " + ProjArgs[4] + "  (must be positive)");
           valid = false;
         }
         break;
       case 4:  // Rotated
         // WLH 4-21-95
         if (ProjArgs[2] <= 0.0) {
-          System.err.println("Row Increment (ProjArgs[2]) = " +
-            ProjArgs[2] + "  (must be >=0.0)");
+          logger.warn("Row Increment (ProjArgs[2]) = " + ProjArgs[2] + "  (must be >=0.0)");
           valid = false;
         }
         if (ProjArgs[3] <= 0.0) {
-          System.err.println("Column Increment = (ProjArgs[3]) " +
-            ProjArgs[3] + "  (must be >=0.0)");
+          logger.warn("Column Increment = (ProjArgs[3]) " + ProjArgs[3] + "  (must be >=0.0)");
           valid = false;
         }
         if (ProjArgs[4] < -90.0 || ProjArgs[4] > 90.0) {
-          System.err.println("Central Latitude (ProjArgs[4]) out of range: " +
-            ProjArgs[4] + "  (must be in +/-90)");
+          logger.warn("Central Latitude (ProjArgs[4]) out of range: " + ProjArgs[4] + "  (must be in +/-90)");
           valid = false;
         }
         if (ProjArgs[5] < -180.0 || ProjArgs[5] > 180.0) {
-          System.err.println("Central Longitude (ProjArgs[5]) out of range: " +
-            ProjArgs[5] + "  (must be in +/-180)");
+          logger.warn("Central Longitude (ProjArgs[5]) out of range: " + ProjArgs[5] + "  (must be in +/-180)");
           valid = false;
         }
         if (ProjArgs[6] < -180.0 || ProjArgs[6] > 180.0) {
-          System.err.println("Central Longitude (ProjArgs[6]) out of range: " +
-            ProjArgs[6] + "  (must be in +/-180)");
+          logger.warn("Central Longitude (ProjArgs[6]) out of range: " + ProjArgs[6] + "  (must be in +/-180)");
           valid = false;
         }
         break;
       default:
-        System.err.println("Projection = " + Projection + ", must be in 0..4");
+        logger.warn("Projection = " + Projection + ", must be in 0..4");
         valid = false;
     }
 
@@ -1493,11 +1475,11 @@ public class V5DStruct {
   */
   boolean v5dGetMcIDASgrid(int time, int vr, int[] mcfile, int[] mcgrid) {
     if (time < 0 || time >= NumTimes) {
-      System.err.println("Bad time argument to v5dGetMcIDASgrid: " + time);
+      logger.warn("Bad time argument to v5dGetMcIDASgrid: " + time);
       return false;
     }
     if (vr < 0 || vr >= NumVars) {
-      System.err.println("Bad var argument to v5dGetMcIDASgrid: " + vr);
+      logger.warn("Bad var argument to v5dGetMcIDASgrid: " + vr);
       return false;
     }
 
@@ -1516,11 +1498,11 @@ public class V5DStruct {
   */
   boolean v5dSetMcIDASgrid(int time, int vr, int mcfile, int mcgrid) {
      if (time < 0 || time >= NumTimes) {
-        System.err.println("Bad time argument to v5dSetMcIDASgrid: " + time);
+        logger.warn("Bad time argument to v5dSetMcIDASgrid: " + time);
         return false;
      }
      if (vr < 0 || vr >= NumVars) {
-        System.err.println("Bad var argument to v5dSetMcIDASgrid: " + vr);
+        logger.warn("Bad var argument to v5dSetMcIDASgrid: " + vr);
         return false;
      }
 
@@ -1829,7 +1811,7 @@ public class V5DStruct {
     RandomAccessFile f;
 
     f = FileDesc;
-    int order = f.BIG_ENDIAN;
+    int order = RandomAccessFile.BIG_ENDIAN;
 
     // first try to read the header id, check the endianness
     while (true) {
@@ -1847,8 +1829,8 @@ public class V5DStruct {
         FileFormat = id;
         return read_comp_header();
       }
-      else if (order == f.BIG_ENDIAN) {
-        order = f.LITTLE_ENDIAN;
+      else if (order == RandomAccessFile.BIG_ENDIAN) {
+        order = RandomAccessFile.LITTLE_ENDIAN;
         continue;  // try again
       } else {
         // unknown file type
@@ -1871,7 +1853,7 @@ public class V5DStruct {
         case TAG_VERSION:
           V5Dassert(length == 10);
           byte[] b = new byte[10];
-          f.read(b, 0, 10);
+          f.readFully(b);
           int index = 10;
           for (int q=0; q<10; q++) {
             if (b[q] == 0) {
@@ -1882,8 +1864,7 @@ public class V5DStruct {
           FileVersion = new String(b, 0, index);
           // Check if reading a file made by a future version of Vis5D
           if (FileVersion.compareTo(FILE_VERSION) > 0) {
-            System.err.println("Warning: Trying to read a version " +
-              FileVersion + " file, you should upgrade Vis5D.");
+            logger.warn("Warning: Trying to read a version " + FileVersion + " file, you should upgrade Vis5D.");
           }
           break;
         case TAG_NUMTIMES:
@@ -1973,8 +1954,7 @@ public class V5DStruct {
           V5Dassert(length == 4);
           VerticalSystem = f.readInt();
           if (VerticalSystem < 0 || VerticalSystem > 3) {
-            System.err.println("Error: bad vertical coordinate system: " +
-              VerticalSystem);
+            logger.warn("Error: bad vertical coordinate system: " + VerticalSystem);
           }
           break;
         case TAG_VERT_ARGS:
@@ -2004,8 +1984,7 @@ public class V5DStruct {
           Projection = f.readInt();
           // WLH 4-21-95
           if (Projection < 0 || Projection > 4) {
-            System.err.println("Error while reading header, bad projection (" +
-              Projection + ")");
+            logger.warn("Error while reading header, bad projection (" + Projection + ")");
             return false;
           }
           break;
@@ -2159,7 +2138,7 @@ public class V5DStruct {
 
         default:
           // unknown tag, skip to next tag
-          System.err.println("Unknown tag: " + tag + "  length=" + length);
+          logger.warn("Unknown tag: " + tag + "  length=" + length);
           f.skipBytes(length);
           break;
       }
@@ -2198,12 +2177,10 @@ public class V5DStruct {
     boolean k = false;
 
     if (time < 0 || time >= NumTimes) {
-      throw new IOException("Error in v5dReadCompressedGrid: " +
-        "bad timestep argument (" + time + ")");
+      throw new IOException("Error in v5dReadCompressedGrid: bad timestep argument (" + time + ")");
     }
     if (vr < 0 || vr >= NumVars) {
-      throw new IOException("Error in v5dReadCompressedGrid: " +
-        "bad var argument (" + vr + ")");
+      throw new IOException("Error in v5dReadCompressedGrid: bad var argument (" + vr + ")");
     }
 
     if (FileFormat != 0) {
@@ -2232,8 +2209,7 @@ public class V5DStruct {
     }
     if (!k) {
       // error
-      System.err.println("Error in v5dReadCompressedGrid: " +
-        "read failed, bad file?");
+      logger.warn("Error in v5dReadCompressedGrid: read failed, bad file?");
     }
 
     // n = Nr * Nc * Nl[vr] * CompressMode;
@@ -2258,13 +2234,11 @@ public class V5DStruct {
     int bytes;
 
     if (time < 0 || time >= NumTimes) {
-      System.err.println("Error in v5dReadGrid: " +
-        "bad timestep argument (" + time + ")");
+      logger.warn("Error in v5dReadGrid: bad timestep argument (" + time + ")");
       return false;
     }
     if (vr < 0 || vr >= NumVars) {
-      System.err.println("Error in v5dReadGrid: " +
-        "bad variable argument (" + vr + ")");
+      logger.warn("Error in v5dReadGrid: bad variable argument (" + vr + ")");
       return false;
     }
 
@@ -2282,8 +2256,7 @@ public class V5DStruct {
       bytes = Nr * Nc * Nl[vr] * 4; // sizeof(float);
     }
     else {
-      System.err.println("Error in v5dReadGrid: " +
-        "bad compression mode (" + CompressMode + ")");
+      logger.warn("Error in v5dReadGrid: bad compression mode (" + CompressMode + ")");
       return false;
     }
     compdata = new byte[bytes];
@@ -2306,7 +2279,7 @@ public class V5DStruct {
     if (!newfile) {
       // have to check that there's room in header to write this tagged item
       if (CurPos+8+length > FirstGridPos) {
-        System.err.println("Error: out of header space!");
+        logger.warn("Error: out of header space!");
         // Out of header space!
         return false;
       }
@@ -2329,8 +2302,7 @@ public class V5DStruct {
     boolean newfile;
 
     if (FileFormat != 0) {
-      System.err.println("Error: " +
-        "v5d library can't write comp5d format files.");
+      logger.warn("Error: v5d library can't write comp5d format files.");
       return false;
     }
 
@@ -2359,7 +2331,7 @@ public class V5DStruct {
 
     // File Version
     if (!write_tag(TAG_VERSION, 10, newfile)) return false;
-    f.write(FILE_VERSION.getBytes(), 0, 10);
+    f.write(FILE_VERSION.getBytes(CDM.utf8Charset), 0, 10);
 
     // Number of timesteps
     if (!write_tag(TAG_NUMTIMES, 4, newfile)) return false;
@@ -2467,20 +2439,9 @@ public class V5DStruct {
   */
   boolean v5dCreateFile(String filename) throws IOException {
     RandomAccessFile fd = new RandomAccessFile(filename, "rw");
-
-    if (fd == null) {
-      System.err.println("Error in v5dCreateFile: open failed");
-      FileDesc = null;
-      Mode = 0;
-      return false;
-    }
-    else {
-      // ok
-      FileDesc = fd;
-      Mode = 'w';
-      // write header and return status
-      return write_v5d_header();
-    }
+    FileDesc = fd;
+    Mode = 'w';
+    return write_v5d_header();  // write header and return status
   }
 
   /** Write a compressed grid to a v5d file.
@@ -2499,18 +2460,15 @@ public class V5DStruct {
 
     // simple error checks
     if (Mode != 'w') {
-      System.err.println("Error in v5dWriteCompressedGrid: " +
-        "file opened for reading, not writing.");
+      logger.warn("Error in v5dWriteCompressedGrid: file opened for reading, not writing.");
       return false;
     }
     if (time < 0 || time >= NumTimes) {
-      System.err.println("Error in v5dWriteCompressedGrid: " +
-        "bad timestep argument (" + time + ")");
+      logger.warn("Error in v5dWriteCompressedGrid: bad timestep argument (" + time + ")");
       return false;
     }
     if (vr < 0 || vr >= NumVars) {
-      System.err.println("Error in v5dWriteCompressedGrid: " +
-        "bad variable argument (" + vr + ")");
+      logger.warn("Error in v5dWriteCompressedGrid: bad variable argument (" + vr + ")");
       return false;
     }
 
@@ -2537,14 +2495,13 @@ public class V5DStruct {
 
     if (!k) {
       // Error while writing
-      System.err.println("Error in v5dWrite[Compressed]Grid: " +
-        "write failed, disk full?");
+      logger.warn("Error in v5dWrite[Compressed]Grid: write failed, disk full?");
     }
     return k;
 
     // n = Nr * Nc * Nl[vr] * CompressMode;
     // if (write_bytes(FileDesc, compdata, n) != n) {
-    //   System.err.println("Error in v5dWrite[Compressed]Grid: " +
+    //   logger.warn("Error in v5dWrite[Compressed]Grid: " +
     //     "write failed, disk full?");
     //   return false;
     // }
@@ -2566,18 +2523,15 @@ public class V5DStruct {
     float min, max;
 
     if (Mode != 'w') {
-      System.err.println("Error in v5dWriteGrid: " +
-       "file opened for reading, not writing.");
+      logger.warn("Error in v5dWriteGrid: file opened for reading, not writing.");
       return false;
     }
     if (time < 0 || time >= NumTimes) {
-      System.err.println("Error in v5dWriteGrid: " +
-       "bad timestep argument (" + time + ")");
+      logger.warn("Error in v5dWriteGrid: bad timestep argument (" + time + ")");
       return false;
     }
     if (vr < 0 || vr >= NumVars) {
-      System.err.println("Error in v5dWriteGrid: " +
-       "bad variable argument (" + vr + ")");
+      logger.warn("Error in v5dWriteGrid: bad variable argument (" + vr + ")");
       return false;
     }
 
@@ -2592,8 +2546,7 @@ public class V5DStruct {
       bytes = Nr * Nc * Nl[vr] * 4; // sizeof(float);
     }
     else {
-      System.err.println("Error in v5dWriteGrid: " +
-       "bad compression mode (" + CompressMode + ")");
+      logger.warn("Error in v5dWriteGrid: bad compression mode (" + CompressMode + ")");
       return false;
     }
     compdata = new byte[bytes];
@@ -2634,7 +2587,7 @@ public class V5DStruct {
       FileDesc.close();
     }
     else {
-      System.err.println("Error in v5dCloseFile: bad V5DStruct argument");
+      logger.warn("Error in v5dCloseFile: bad V5DStruct argument");
       return false;
     }
     FileDesc = null;

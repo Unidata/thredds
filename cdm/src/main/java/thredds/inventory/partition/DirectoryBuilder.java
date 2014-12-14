@@ -43,7 +43,7 @@ public class DirectoryBuilder {
     if (hasIndex) {
       return dpart.makeChildCollection(builder);
     } else {
-      DirectoryCollection result = new DirectoryCollection(config.name, topDir, logger); // no index file
+      DirectoryCollection result = new DirectoryCollection(config.name, topDir, config.olderThan, logger); // no index file
       result.setLeaf(true);
       return result;
     }
@@ -92,6 +92,10 @@ public class DirectoryBuilder {
     findIndex();
   }
 
+  public void setChildrenConstructed(boolean childrenConstructed) {
+    this.childrenConstructed = childrenConstructed;
+  }
+
   /**
    * Find the index file, using its canonical name
    * @return true if found
@@ -123,7 +127,7 @@ public class DirectoryBuilder {
 
       } else { // no index file  */
         // temporary - just to scan 100 files in the directory
-        DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null);
+        DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null, null);
         partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
       // }
     }
@@ -149,11 +153,7 @@ public class DirectoryBuilder {
     if (childrenConstructed) return children;
 
     if (index != null && forceCollection == CollectionUpdateType.nocheck) { // use index if it exists
-      childrenConstructed = true;  // otherwise we are good
-      if (!indexReader.readChildren(index, new AddChild())) {
-        partitionStatus =  PartitionStatus.isLeaf;
-        return children;  // no children - we are at the GribCollection leaves
-      }
+      constructChildrenFromIndex(indexReader, false);
 
     } else {
       scanForChildren();
@@ -161,7 +161,15 @@ public class DirectoryBuilder {
 
     //once we have found children, we know that this is a time partition
     partitionStatus = (children.size() > 0) ?  PartitionStatus.isDirectoryPartition : PartitionStatus.isLeaf;
+    childrenConstructed = true;  // otherwise we are good
 
+    return children;
+  }
+
+  public List<DirectoryBuilder> constructChildrenFromIndex(IndexReader indexReader, boolean substituteParentDir) throws IOException {
+    if (!indexReader.readChildren(index, new AddChildSub(substituteParentDir))) {
+      partitionStatus =  PartitionStatus.isLeaf;
+    }
     return children;
   }
 
@@ -170,6 +178,23 @@ public class DirectoryBuilder {
   private class AddChild implements IndexReader.AddChildCallback {
     public void addChild(String dirName, String indexFilename, long lastModified) throws IOException {
       Path indexPath = Paths.get(indexFilename);
+      DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified);
+      children.add(child);
+    }
+  }
+
+  private class AddChildSub implements IndexReader.AddChildCallback {
+    boolean substituteParentDir;
+    AddChildSub(boolean substituteParentDir) {
+      this.substituteParentDir = substituteParentDir;
+    }
+    public void addChild(String dirName, String indexFilename, long lastModified) throws IOException {
+      Path indexPath = Paths.get(dirName, indexFilename);
+      if (substituteParentDir) {
+        Path parent = index.getParent();
+        Path indexPath2 = parent.resolve( indexFilename);
+        indexPath = indexPath2;
+      }
       DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified);
       children.add(child);
     }

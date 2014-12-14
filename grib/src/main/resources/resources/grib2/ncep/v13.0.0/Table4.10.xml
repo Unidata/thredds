@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.10</table>
+  <title>Type of Statistical Processing</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-10.shtml</source>
+  <parameter code="0">
+    <description>Average</description>
+  </parameter>
+  <parameter code="1">
+    <description>Accumulation (see Note 1)</description>
+  </parameter>
+  <parameter code="2">
+    <description>Maximum</description>
+  </parameter>
+  <parameter code="3">
+    <description>Minimum</description>
+  </parameter>
+  <parameter code="4">
+    <description>Difference (value at the end of the time range minus value at the beginning)</description>
+  </parameter>
+  <parameter code="5">
+    <description>Root Mean Square</description>
+  </parameter>
+  <parameter code="6">
+    <description>Standard Deviation</description>
+  </parameter>
+  <parameter code="7">
+    <description>Covariance (temporal variance) (see Note 2)</description>
+  </parameter>
+  <parameter code="8">
+    <description>Difference ( value at the beginning of the time range minus value at the end)</description>
+  </parameter>
+  <parameter code="9">
+    <description>Ratio (see Note 3)</description>
+  </parameter>
+  <parameter code="10">
+    <description>Standardized Anomaly</description>
+  </parameter>
+  <parameter code="11">
+    <description>Summation</description>
+  </parameter>
+  <parameter code="12">
+    <description>Confidence Index (see Note 4)  Validation</description>
+  </parameter>
+  <parameter code="13">
+    <description>Quality Indicator (see Note 5)  Validation</description>
+  </parameter>
+  <parameter code="192">
+    <description>Climatological Mean Value: multiple year averages of quantities which are themselves means over some period of time (P2) less than a year. The reference time (R) indicates the date and time of the start of a period of time, given by R to R + P2, over which a mean is formed; N indicates the number of such period-means that are averaged together to form the climatological value, assuming that the N period-mean fields are separated by one year. The reference time indicates the start of the N-year climatology. N is given in octets 22-23 of the PDS. If P1 = 0 then the data averaged in the basic interval P2 are assumed to be continuous, i.e., all available data are simply averaged together. If P1 = 1 (the units of time - octet 18, code table 4 - are not relevant here) then the data averaged together in the basic interval P2 are valid only at the time (hour, minute) given in the reference time, for all the days included in the P2 period. The units of P2 are given by the contents of octet 18 and Table 4.</description>
+  </parameter>
+  <parameter code="193">
+    <description>Average of N forecasts (or initialized analyses); each product has forecast period of P1 (P1=0 for initialized analyses); products have reference times at intervals of P2, beginning at the given reference time.</description>
+  </parameter>
+  <parameter code="194">
+    <description>Average of N uninitialized analyses, starting at reference time, at intervals of P2.</description>
+  </parameter>
+  <parameter code="195">
+    <description>Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period. Reference time is the start time of the first forecast, other forecasts at 24-hour intervals. Number in Ave = number of forecasts used.</description>
+  </parameter>
+  <parameter code="196">
+    <description>Average of successive forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period. Reference time is the start time of the first forecast, other forecasts at (P2 - P1) intervals. Number in Ave = number of forecasts used</description>
+  </parameter>
+  <parameter code="197">
+    <description>Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is the start time of the first forecast, other forecasts at 24-hour intervals. Number in Ave = number of forecast used</description>
+  </parameter>
+  <parameter code="198">
+    <description>Average of successive forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is the start time of the first forecast, other forecasts at (P2 - P1) intervals. Number in Ave = number of forecasts used</description>
+  </parameter>
+  <parameter code="199">
+    <description>Climatological Average of N analyses, each a year apart, starting from initial time R and for the period from R+P1 to R+P2.</description>
+  </parameter>
+  <parameter code="200">
+    <description>Climatological Average of N forecasts, each a year apart, starting from initial time R and for the period from R+P1 to R+P2.</description>
+  </parameter>
+  <parameter code="201">
+    <description>Climatological Root Mean Square difference between N forecasts and their verifying analyses, each a year apart, starting with initial time R and for the period from R+P1 to R+P2.</description>
+  </parameter>
+  <parameter code="202">
+    <description>Climatological Standard Deviation of N forecasts from the mean of the same N forecasts, for forecasts one year apart. The first forecast starts wtih initial time R and is for the period from R+P1 to R+P2.</description>
+  </parameter>
+  <parameter code="203">
+    <description>Climatological Standard Deviation of N analyses from the mean of the same N analyses, for analyses one year apart. The first analyses is valid for period R+P1 to R+P2.</description>
+  </parameter>
+  <parameter code="204">
+    <description>Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period. Reference time is the start time of the first forecast, other forecasts at 6-hour intervals. Number in Ave = number of forecast used</description>
+  </parameter>
+  <parameter code="205">
+    <description>Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is the start time of the first forecast, other forecasts at 6-hour intervals. Number in Ave = number of forecast used</description>
+  </parameter>
+  <parameter code="206">
+    <description>Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period. Reference time is the start time of the first forecast, other forecasts at 12-hour intervals. Number in Ave = number of forecast used</description>
+  </parameter>
+  <parameter code="207">
+    <description>Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is the start time of the first forecast, other forecasts at 12-hour intervals. Number in Ave = number of forecast used</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

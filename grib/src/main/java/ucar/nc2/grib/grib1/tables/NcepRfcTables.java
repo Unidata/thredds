@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.unidata.util.StringUtil2;
 
@@ -40,6 +41,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,20 +113,22 @@ public class NcepRfcTables extends NcepTables {
   */
   @Override
   public String getSubCenterName(int subcenter) {
-    if (nwsoSubCenter == null) readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
+    if (nwsoSubCenter == null)
+      nwsoSubCenter = readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
     if (nwsoSubCenter == null) return null;
+
     return nwsoSubCenter.get(subcenter);
   }
 
     // order: num, name, desc, unit
-  private static void readNwsoSubCenter(String path) {
-    HashMap<Integer, String> result = new HashMap<>();
+  private static Map<Integer, String> readNwsoSubCenter(String path) {
+    Map<Integer, String> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path)) {
 
-      if (is == null) return;
+      if (is == null) return null;
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
 
       // rdg - added the 0 line length check to cover the case of blank lines at
       //       the end of the parameter table file.
@@ -143,10 +147,11 @@ public class NcepRfcTables extends NcepTables {
         result.put(val, name);
       }
 
-      nwsoSubCenter = result; // all at once - thread safe
+      return Collections.unmodifiableMap(result);  // all at once - thread safe
 
     } catch (IOException ioError) {
       logger.warn("An error occurred in Grib1Tables while trying to open the table " + path + " : " + ioError);
+      return null;
     }
 
   }

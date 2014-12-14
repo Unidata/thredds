@@ -33,6 +33,7 @@
 package ucar.nc2.ui.grid;
 
 import ucar.ma2.Array;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -105,7 +106,6 @@ public class GridController {
   private int currentTime;
   private int currentEnsemble;
   private int currentRunTime;
-  private boolean drawWinds = false;
   boolean drawHorizOn = true, drawVertOn = false;
   private boolean hasDependentTimeAxis = false;
 
@@ -124,7 +124,7 @@ public class GridController {
   private javax.swing.JLabel dataValueLabel, posLabel;
 
     // event management
-  AbstractAction dataProjectionAction, exitAction, helpAction, showGridAction, showContoursAction, showContourLabelsAction, showWindsAction;
+  AbstractAction dataProjectionAction, showGridAction, showContoursAction, showContourLabelsAction;
   AbstractAction drawHorizAction, drawVertAction;
 
   JSpinner strideSpinner;
@@ -137,8 +137,7 @@ public class GridController {
   private ProjectionPointImpl projPoint = new ProjectionPointImpl();
 
     // debugging
-  private final boolean debug = false, debugOpen = false, debugBeans = false, debugTime = false, debugThread = false;
-  private final boolean debugBB = false, debugBounds = false, debugPrinting = false, debugChooser = false;
+  private final boolean debugThread = false;
 
   public GridController( GridUI ui, PreferencesExt store) {
     this.ui = ui;
@@ -152,7 +151,7 @@ public class GridController {
       cs = (ColorScale) store.getBean( ColorScaleName, null);
 
     // set up the renderers; Maps are added by addMapBean()
-    renderGrid = new GridRenderer(store);
+    renderGrid = new GridRenderer();
     renderGrid.setColorScale(cs);
     //renderWind = new WindRenderer();
 
@@ -161,7 +160,7 @@ public class GridController {
     strideSpinner.addChangeListener( new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Integer val = (Integer) strideSpinner.getValue();
-        renderGrid.setHorizStride( val.intValue());
+        renderGrid.setHorizStride(val);
       }
     });
 
@@ -232,31 +231,29 @@ public class GridController {
      // draw horiz
     drawHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        drawHorizOn = (Boolean) getValue(BAMutil.STATE);
         // System.out.println("showGridAction state "+state);
-        drawHorizOn = state.booleanValue();
         ui.setDrawHorizAndVert( drawHorizOn, drawVertOn);
         draw(false);
       }
     };
     BAMutil.setActionProperties( drawHorizAction, "DrawHoriz", "draw horizontal", true, 'H', 0);
     state = store.getBoolean( "drawHorizAction", true);
-    drawHorizAction.putValue(BAMutil.STATE, new Boolean(state));
+    drawHorizAction.putValue(BAMutil.STATE, state);
     drawHorizOn = state;
 
      // draw Vert
     drawVertAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        drawVertOn = (Boolean) getValue(BAMutil.STATE);
         // System.out.println("showGridAction state "+state);
-        drawVertOn = state.booleanValue();
         ui.setDrawHorizAndVert( drawHorizOn, drawVertOn);
         draw(false);
        }
     };
     BAMutil.setActionProperties( drawVertAction, "DrawVert", "draw vertical", true, 'V', 0);
     state = store.getBoolean( "drawVertAction", false);
-    drawVertAction.putValue(BAMutil.STATE, new Boolean(state));
+    drawVertAction.putValue(BAMutil.STATE, state);
     drawVertOn = state;
 
        // show grid
@@ -264,39 +261,39 @@ public class GridController {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
         // System.out.println("showGridAction state "+state);
-        renderGrid.setDrawGridLines( state.booleanValue());
+        renderGrid.setDrawGridLines(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties( showGridAction, "Grid", "show grid lines", true, 'G', 0);
     state = store.getBoolean( "showGridAction", false);
-    showGridAction.putValue(BAMutil.STATE, new Boolean(state));
+    showGridAction.putValue(BAMutil.STATE, state);
     renderGrid.setDrawGridLines( state);
 
      // contouring
     showContoursAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        renderGrid.setDrawContours( state.booleanValue());
+        renderGrid.setDrawContours(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties( showContoursAction, "Contours", "show contours", true, 'C', 0);
     state = store.getBoolean( "showContoursAction", false);
-    showContoursAction.putValue(BAMutil.STATE, new Boolean(state));
+    showContoursAction.putValue(BAMutil.STATE, state);
     renderGrid.setDrawContours( state);
 
      // contouring labels
     showContourLabelsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        renderGrid.setDrawContourLabels( state.booleanValue());
+        renderGrid.setDrawContourLabels(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties( showContourLabelsAction, "ContourLabels", "show contour labels", true, 'L', 0);
     state = store.getBoolean( "showContourLabelsAction", false);
-    showContourLabelsAction.putValue(BAMutil.STATE, new Boolean(state));
+    showContourLabelsAction.putValue(BAMutil.STATE, state);
     renderGrid.setDrawContourLabels( state);
 
      /* winds
@@ -528,8 +525,10 @@ public class GridController {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       GridDatasetInfo info = new GridDatasetInfo(gridDataset, "path");
       info.writeXML( info.makeDatasetDescription(), bos);
-      return bos.toString();
-    } catch (IOException ioe) {}
+      return bos.toString(CDM.utf8Charset.name());
+    } catch (IOException ioe) {
+        ioe.printStackTrace();
+    }
     return "";
   }
 

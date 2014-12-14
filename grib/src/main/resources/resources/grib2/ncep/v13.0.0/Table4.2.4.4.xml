@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.4</table>
+  <title>Energetic Particles</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-4.shtml</source>
+  <parameter code="0">
+    <shortName>DIFPFLUX</shortName>
+    <description>Proton Flux (Differential)</description>
+    <units>(m2 s sr eV)-1</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>INTPFLUX</shortName>
+    <description>Proton Flux (Integral)</description>
+    <units>(m2 s sr)-1</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>DIFEFLUX</shortName>
+    <description>Electron Flux (Differential)</description>
+    <units>(m2 s sr eV)-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>INTEFLUX</shortName>
+    <description>Electron Flux (Integral)</description>
+    <units>(m2 s sr)-1</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>DIFIFLUX</shortName>
+    <description>Heavy Ion Flux (Differential)</description>
+    <units>(m2 s sr eV / nuc)-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>INTIFLUX</shortName>
+    <description>Heavy Ion Flux (iIntegral)</description>
+    <units>(m2 s sr)-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>NTRNFLUX</shortName>
+    <description>Cosmic Ray Neutron Flux</description>
+    <units>h-1</units>
+  </parameter>
+</parameterMap>

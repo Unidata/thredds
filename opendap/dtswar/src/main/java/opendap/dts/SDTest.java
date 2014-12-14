@@ -190,7 +190,7 @@ public class SDTest {
 
     public static void main(String[] args) throws Exception {
 
-        SDTest sdt = new SDTest();
+        //SDTest sdt = new SDTest();
 
         try {
 

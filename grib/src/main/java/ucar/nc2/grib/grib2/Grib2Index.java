@@ -119,11 +119,11 @@ public class Grib2Index extends GribIndex {
     File idxFile = GribCollection.getFileInCache(filename + GBX9_IDX);
     if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
-    if ((force == CollectionUpdateType.test) && (idxModified < gribLastModified)) return false; // force new index if file was updated
+    if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
     try (FileInputStream fin = new FileInputStream(idxFile)) {
         //// check header is ok
-        if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
+        if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(CDM.utf8Charset))) {
           logger.info("Bad magic number of grib index on file= {}", idxFile);
           return false;
         }

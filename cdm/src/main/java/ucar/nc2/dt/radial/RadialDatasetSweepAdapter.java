@@ -42,9 +42,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.DataType;
 
@@ -62,6 +61,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   protected HashMap csHash = new HashMap();
   protected ucar.nc2.units.DateUnit dateUnits;
   protected ucar.nc2.time.CalendarDateUnit calDateUnits;
+  protected FileCacheIF fileCache;
 
   public RadialDatasetSweepAdapter() {}
   
@@ -254,10 +254,8 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     return (ncfile != null) ? ncfile.getLastModified() : 0;
   }
 
-  protected FileCache fileCache;
-
   @Override
-  public void setFileCache(FileCache fileCache) {
+  public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
 

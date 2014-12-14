@@ -1,6 +1,6 @@
 netcdf test_atomic_array.syn {
   types:
-    byte enum cloud_class_t { 'Clear' = 0, 'Cumulonimbus' = 1, 'Stratus' = 2, 'Stratocumulus' = 3, 'Cumulus' = 4, 'Altostratus' = 5, 'Nimbostratus' = 6, 'Altocumulus' = 7, 'Missing' = 127, 'Cirrostratus' = 8, 'Cirrocumulus' = 9, 'Cirrus' = 10};
+    byte enum cloud_class_t { 'Clear' = 0, 'Cumulonimbus' = 1, 'Stratus' = 2, 'Stratocumulus' = 3, 'Cumulus' = 4, 'Altostratus' = 5, 'Nimbostratus' = 6, 'Altocumulus' = 7, 'Cirrostratus' = 8, 'Cirrocumulus' = 9, 'Cirrus' = 10, 'Missing' = 127};
 
   dimensions:
     d1 = 1;
@@ -30,7 +30,7 @@ netcdf test_atomic_array.syn {
       :_DAP4_Checksum_CRC32 = "0x40414293";
 
     opaque vo(d1=1, d2=2);
-      :_DAP4_Checksum_CRC32 = "0x30e1e2f3";
+      :_DAP4_Checksum_CRC32 = "0x209182d3";
 
     enum cloud_class_t primary_cloud(d5=5);
       :_FillValue = "Missing";
@@ -57,8 +57,8 @@ vc =  "CO"
 vs =
   {  "{S",   "gb8^OE$",  "4a/q%n9;5Y",   "{fIl?T"\A["
   }
-vo =  0x0000,
-  0x04fa;
+vo =  0xa2177aa7287c04fa8bb57bcdf76ec80f,
+  0x34fa472aa9404dd543143caded303a75;
 
 primary_cloud =
   {2, 9, 6, 8, 3}

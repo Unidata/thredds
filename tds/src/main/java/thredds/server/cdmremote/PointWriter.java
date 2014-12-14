@@ -59,11 +59,13 @@ import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
+import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
@@ -271,7 +273,7 @@ public class PointWriter {
     void act(PointFeature pf, StructureData sdata) throws IOException;
   }
 
-  private class Limit {
+  static private class Limit {
     int count;   // how many scanned
     int limit = Integer.MAX_VALUE; // max matches
     int matches; // how want matched
@@ -302,7 +304,8 @@ public class PointWriter {
       netcdfResult = diskCache.createUniqueFile("CdmrFeature", ".nc");
       List<Attribute> atts = new ArrayList<>();
       atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fd.getLocation() ));
-      cfWriter = null; // LOOK new WriterCFPointCollection(null, netcdfResult.getAbsolutePath(), atts );
+      // String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra, DateUnit timeUnit, String altUnits, CFPointWriterConfig config
+      cfWriter = null; // new WriterCFPointCollection(netcdfResult.getPath(), atts,  );
     }
 
     public void header() {

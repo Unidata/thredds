@@ -1,3 +1,92 @@
+Oct 2014  docs/website/tds/reference
+
+r       	AccessLog.html                      // jenn check
+r    		CatalogConfiguration.html	        // christian check, merge into tutorial?
+r       	CatalogService.html                 // john check, merge into Services?
+r           ChecklistReference.html             // ok
+r    		ConfigWithTdsProperties.html	    // ethan check
+r       	DatasetScan.html                    // ryan check
+r       	DatasetSource.html                  // ok
+r       	DigitalLibraries.html               // ok
+r       	DirectoryLocations.html             // ok
+r    	    DLexport.html                       // ok
+r       	HTTPsecurityChallenge.html          // ok
+r			ncISO.html                          // ok
+r       	NetcdfSubsetServiceConfigure.html   // christian check
+r       	NetcdfSubsetServiceReference.html   // christian check
+caron    	Performance.html                    // john check
+r       	PluggableRestrictedAccess.html      // ok
+r       	RecommendedUpgradeProcessForTDS.html// ok
+r    		RemoteManagement.html		        // john check, merge into tutorial?
+r       	RestrictedAccess.html               // ok
+r    		RunningMultipleTDS.html		        // jenn check
+r       	Services.html                       // ethan check
+r       	ServletLog.html                     // ok
+*    		TDSarchictecture.ppt		        // john check
+r       	ThreddsConfigXMLFile.html           // john check
+r      		TomcatBehindProxyServer.html        // jenn check, esp "Changing the TDS Context Path"
+r       	TomcatSecurity.html                 // john check
+r       	Viewers.html                        // ok
+r       	WCS.html                            // ok
+r       	WMS.html                            // ok
+
+sean    	tdsUrlMaps.xml                      // sean check
+
+collections
+	CollectionSpecification.html
+	FCvsAgg.html					// get rid of
+r   	    FeatureCollections.html
+	FmrcCollection.html
+	GribCollectionInternal.html
+	GribCollections.html
+	GribConfig.html
+	LargeCollections.html			// get rid of
+	PointFeatures.html
+	SimpleDateFormat.html
+r	        TDM.html
+	
+radarServer
+	RadarLevel2SubsetService.html
+	RadarLevel3SubsetService.html
+
+---------------------------------------------------------------------
+Oct 2014  docs/website/tds/tutorial
+
+marcos		AddingServices.html
+r		    AdditionalSecurityConfiguration.html    // consolidate in reference ??
+-ryan	    BasicConfigCatalogs.html
+-christian	BasicThreddsConfig_xml.html
+-jenn		BasicTomcatAndTDSSecurity.html
+-christian 	CatalogPrimer.html
+-sean		Checklist.html                  // sean check, merge into reference?
+ryan	    ConfigCatalogs.html
+caron		FmrcFeatureCollectionsTutorial.html
+-jenn		GettingStarted.html
+caron		GRIB.pptx
+caron		GribFeatureCollectionsTutorial.html
+ 	        Metadata.html		            // tutorial only
+ethan 	    MoreThreddsConfig_xml.html
+sean		NcML.htm
+sean		NcMLAggExamples.html
+sean		NcMLExamples.html
+sean		NcMLvsFeatureCollections.pptx
+sean        pythonTds.ppt
+-jenn		Security.html
+sean        tdsConfigChecklist.html         // sean check, merge into reference?
+caron       tdsMonitor.html
+jenn		TDSMonitoringAndDebugging.html
+ethan		TDSOverview-1.ppt
+ethan		TDSOverview-2.ppt
+caron		TroubleShooting.html
+-caron		index.html
+sean		pythonTDS.ppt
+caron		tdsMonitor.html
+
+caron		/software/netcdf/ncml/Tutorial.html
+caron		/software/netcdf/ncml/Aggregation.html
+
+
+==================================================================================
 Oct 2013 /c/dev/github/thredds/docs/website/tds/reference (target-4.4.0)
 
 caron    	AccessLog.html

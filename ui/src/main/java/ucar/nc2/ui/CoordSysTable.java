@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.grid.impl.CoverageCSFactory;
@@ -45,7 +46,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.*;
-
 import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
@@ -513,7 +513,7 @@ public class CoordSysTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (infoWindow != null) prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());
   }
 

@@ -1,564 +1,763 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>NetCDF Subset Service</title>
-  <link rel="stylesheet" href="../tds.css" type="text/css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>NetCDF Subset Service</title>
+    <link rel="stylesheet" href="../tds.css" type="text/css"/>
+
+    <!-- Table styles from /thredds/docs/website/tds/tutorial/tutorial2.css -->
+    <style type="text/css">
+        table {
+            table-layout: auto;
+            border-collapse: separate;
+            font-size: 11pt;
+        }
+        th {
+            text-align: left;
+            background-color: #E7E7E7;
+            border-spacing: 2px;
+            border: 1px solid #CFCFCF;
+            padding: 2px 5px 2px 5px;
+            vertical-align: top;
+        }
+        td {
+            text-align: left;
+            background-color: #F7F7F7;
+            border-spacing: 2px;
+            border: 1px solid #CFCFCF;
+            padding: 2px 5px 2px 5px;
+            vertical-align: top;
+        }
+        td.request {
+            background-color: #FFFFFF;
+            border: 0;
+            padding-top: 20px;
+        }
+
+        code {
+            color: #708090 !important;
+        }
+    </style>
 </head>
+
+
+
 <body>
-	<h1>
-	  NetCDF Subset Service Reference (TDS 4.5)	</h1>
-    <h3>Please note that the interface described here is still a
-		prototype, and subject to change.</h3>
+<h1>NetCDF Subset Service Reference (TDS 4.5) </h1>
+
+<h3>Please note that the interface described here is still a
+    prototype, and subject to change.</h3>
+
 <h3>
-		<strong>Contents:</strong>
-	</h3>
-	<ol>
-		<li><a href="#Overview">Overview</a></li>
-		<li><a href="#DatasetDescription">Dataset Descriptions</a></li>
-		<li><a href="#Common">Subsetting Parameters (summary)</a></li>		
-		<li><a href="#Subsetting">Subsetting types and use cases</a>
-			<ol>
-				<li><a href="#Spatial">Spatial and coordinate subsetting</a></li>
-				<li><a href="#GridAsPoint">Grid as point requests</a></li>
-				<li><a href="#Temporal">Temporal subsetting and valid time ranges</a></li>
-				<li><a href="#Vertical">Vertical coordinate subsetting</a></li>
-				<li><a href="#Variables">Single variable requests</a></li>
-			</ol></li>
-		<li><a href="#Reference">Reference</a></li>
+    <strong>Contents:</strong>
+</h3>
+
+<ol>
+    <li><a href="#Overview">Overview</a></li>
+    <li><a href="#DatasetDescription">Dataset Descriptions</a></li>
+    <li><a href="#Common">Subsetting Parameters (summary)</a></li>
+    <li><a href="#Subsetting">Subsetting types and use cases</a>
+        <ol>
+            <li><a href="#Spatial">Spatial and coordinate subsetting</a></li>
+            <li><a href="#GridAsPoint">Grid as point requests</a></li>
+            <li><a href="#Temporal">Temporal subsetting and valid time ranges</a></li>
+            <li><a href="#Vertical">Vertical coordinate subsetting</a></li>
+            <li><a href="#Variables">Single variable requests</a></li>
+        </ol>
+    </li>
+    <li><a href="#Reference">Reference</a></li>
 </ol>
 
 <h2>
-		<a name="Overview"></a>Overview
-	</h2>
-	<p>
-	    The NetCDF Subset Service (NCSS) is a web service for subsetting <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using earth
-		coordinates, such as lat/lon or projection coordinates bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but not resampled or
-		reprojected, and preserve the resolution and accuracy of the original dataset.
-	</p>
-	<p>
-		As of version 4.4.0 of TDS, NCSS supports spatial and temporal subsetting on collections of grids, stations and points. A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which describes the dataset in enough detail to enable a programmatic client to form valid data requests.
-	</p>
-	<p>NCSS may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
-	<p>NCSS uses HTTP GET with key-value pairs (KVP) which may in any order. The service interface follows <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as <a href="https://developers.google.com/kml/">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. <!-- 
-  <p>Currently both Grids and Station data can be used with this service. See:</p>
-  <ul>
-    <li><a href="StationDataSubsetService.html">NetCDF Subset Service for Point Data</a></li>
-    <li><a href="GridDataSubsetService.html">NetCDF Subset Service for Gridded Data</a></li>
-  </ul>
-  <p>&nbsp;</p>
-   --></p>
+    <a name="Overview">Overview</a>
+</h2>
+
+<p>
+    The NetCDF Subset Service (NCSS) is a web service for subsetting <a
+        href="../../netcdf-java/CDM/index.html">CDM scientific
+    datasets.</a> The subsetting is specified using earth
+    coordinates, such as lat/lon or projection coordinates bounding boxes and date ranges, rather than index ranges that
+    refer to the underlying data arrays. The data arrays are subsetted but not resampled or
+    reprojected, and preserve the resolution and accuracy of the original dataset.
+</p>
+
+<p>
+    As of version 4.4.0 of TDS, NCSS supports spatial and temporal subsetting on collections of grids, stations and
+    points. A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which
+    describes the dataset in enough detail to enable a programmatic client to form valid data requests.
+</p>
+
+<p>NCSS may return netCDF binary files (using
+    <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html">CF-1.6</a>
+    when possible), XML, ASCII, or
+    <a href="http://www.opengeospatial.org/standards/waterml">WaterML2</a> depending on the request and the dataset.
+</p>
+
+<p>NCSS uses HTTP GET with key-value pairs (KVP) which may appearin any order. The service interface follows
+    <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as
+    <a href="https://developers.google.com/kml/">Google/KML</a> and
+    <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable.</p>
+
 <h3>REST URLs</h3>
   <pre>http://{host}/{context}/{service}/{dataset}[/dataset.xml | /dataset.html | {?query}]
 
 where
-  {host}     	= server name, eg thredds.ucar.edu
-  {context} 	= &quot;thredds&quot; (usually)
-  {service} 	= &quot;ncss&quot; (always)
-  {dataset} 	= logical path for the dataset, obtained from the catalog
-  dataset.xml = to get the dataset description in xml
-  dataset.html= to get the human-readable web form
-  datasetBoundaries = to get a human-readable description of the bounding boxes
-  {?query}    = the key-value pairs to describe the subset that you want (see below for valid combinations)
+  {host}     	        = server name, eg thredds.ucar.edu
+  {context} 	        = "thredds" (usually)
+  {service} 	        = "ncss" (always)
+  {dataset} 	        = logical path for the dataset, obtained from the catalog
+  dataset.xml           = to get the dataset description in xml
+  dataset.html          = to get the human-readable web form
+  datasetBoundaries.xml = to get a human-readable description of the bounding boxes
+  {?query}              = the KVPs to describe the subset that you want (see below for valid combinations)
+</pre>
 
-examples:
-
-  http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best/dataset.html
-  http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&amp;west=-114.841&amp;east=-112.641&amp;south=44.8534
-    &amp;time_start=present&amp;time_duration=PT3H&amp;accept=netcdf
-    &amp;var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground</pre>
-  <h2>Dataset Descriptions<a name="DatasetDescription"></a></h2>
-  <p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content of these documents is still evolving.</strong> </p>
-  <!-- 
-  <h3>Station Observation Dataset</h3>
-  <p>A Station Observation Dataset is a collection of time series of observations at named locations called <em>stations</em>. </p>
-  <p>The dataset is described by a <em><strong>stationObsDataset</strong></em> document, which in turn points to the list of valid stations   in a seperate <em><strong>stationCollection</strong></em> document. The stationCollection document can be quite large, and caching on the client (eg using the <em>If-Modified-Since</em> header) is an important optimization. </p>
-  <ul>
-    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml"><strong>stationObsDataset</strong></a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
-    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml"><strong>stationCollection</strong></a> document (<a href="metars/stations.xml">offline</a> example) </li>
-  </ul>
-   -->
-  <h3>Grid Dataset</h3>
-  <p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time coordinates. Grid data points next to each other in index space are next to each other in coordinate space. </p>
-  <ul>
-    <li>Example <a href="http://thredds.ucar.edu/thredds/ncss/grib/NCEP/DGEX/CONUS_12km/best/dataset.xml"><strong>gridDataset</strong></a> document (<a href="files/gridsDataset.xml">offline</a> example) </li>
-  </ul>
-  <h3>Station Dataset</h3>
-  <p>Station datasets contain a collection of point features representing time-series of data points at named locations.
-  <ul>
-  	<li>Example <a href="http://thredds-dev.ucar.edu/thredds/cdmrfeature/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr?req=capabilities"><strong>Station Dataset</strong></a> document (<a href="files/stationsDataset.xml">offline</a> example) </li>
-  	<li>Station datasets also support <a href="http://thredds.ucar.edu/thredds/cdmrfeature/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr?req=stations&accept=xml" > station list</a> requests. This request will return all the stations within a specified bounding box. </li>
-  </ul>
-  <h3>Point Dataset</h3>
-<p>Point datasets contain a collection of point features which can be subset by space and time.
-  <ul>
-    <li>Example <a href="http://thredds-dev.ucar.edu/thredds/cdmrfeature/nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr?req=capabilities"><strong>Point  Dataset</strong></a> document (<a href="files/pointDataset.xml">offline</a> example) </li>
-  </ul>
-  <p>&nbsp;</p>
-  <hr>   
-   
-   
-	<h2>
-		<strong><a name="Common"></a> Subsetting Parameters (summary)
-		</strong>
-	</h2>
-
-	<table width="95%" border="2">
-		<thead>
-			<tr>
-				<th width="143">Parameter Name</th>
-				<th width="64">Required</th>
-				<th width="555">Description / possible values</th>
-				<th width="522">Constraints</th>
-				<th width="3">&nbsp;</th>
-				<th width="266">default</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>var</td>
-				<td>yes</td>
-				<td><span>Name of <strong>variables</strong>, separated by ',' (comma).</span></td>
-				<td>Variables must be in the dataset description. Bounding box requests on grid datasets only support requests on variables with same vertical levels and time coordinates.</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-			<tr>
-				<td><p>latitude, longitude</p></td>
-				<td>no</td>
-				<td><span>Point location. units of degrees_east, degrees_north</span></td>
-				<td><span>Must be within the dataset bounding box(*). </span></td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-			<tr>
-				<td>north, south, east, west</td>
-				<td>no</td>
-				<td>Lat/lon bounding box, units of degrees_east, degrees_north</td>
-				<td>north > south,  if crossing 180 meridian, use east boundary &gt; 180</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-			<tr>
-				<td>minx, miny, maxx, maxy</td>
-				<td>no</td>
-				<td>Projection bounding box, in projection coordinate units.</td>
-				<td>Only on grid datasets. min &lt; max</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-			<tr>
-			  <td>horizStride</td>
-			  <td>no</td>
-			  <td>Take only every nth point (both x and y)</td>
-			  <td>Only on grid datasets.</td>
-			  <td>&nbsp;</td>
-			  <td>1</td>
-		  </tr>
-			<tr>
-			  <td>addLatLon</td>
-			  <td>no</td>
-			  <td>if present, make output strictly CF compliant by adding lat/lon coordinates if needed.</td>
-			  <td>Only on grid datasets, when writing to netCDF: make output strictly CF compliant.</td>
-			  <td>&nbsp;</td>
-			  <td>false</td>
-		  </tr>
-			<tr>
-				<td>time</td>
-				<td>no</td>
-				<td>Time as a <a rel="nofollow"
-					" href="#W3Cdate">W3C
-				  date</a> or "present". The time slice closest to the requested time is
-				  returned</td>
-				<td>Must be a time within the dataset time range</td>
-				<td>&nbsp;</td>
-				<td><em>present</em></td>
-			</tr>
-			<tr>
-				<td>time_start, time_end, time_duration</td>
-				<td>no</td>
-				<td>Used to specify a time range. Time as
-				  a <a rel="nofollow"
-					" href="#W3Cdate">W3C
-				    date</a> or "present".  Duration	as a <a rel="nofollow" href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html#W3Cduration">W3C time duration</a>.</td>
-				<td>Two of time_start, time_end,
-				      time_duration must be present to define a valid time range. The provided time range must intersect the dataset time
-					range</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-			<tr>
-				<td>temporal</td>
-				<td>no</td>
-				<td><em>all</em></td>
-				<td>Must be equal to "all" to have effect</td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-			<tr>
-				<td>timeStride</td>
-				<td>no</td>
-				<td>Take only every nth time in the available series</td>
-				<td>Only on grid datasets.</td>
-				<td>&nbsp;</td>
-				<td>1</td>
-			</tr>
-			<tr>
-				<td>vertCoord</td>
-				<td>no</td>
-				<td>&nbsp;</td>
-				<td>Bounding box requests on grid datasets must have the same vertical levels.
-				</td>
-				<td>&nbsp;</td>
-				<td>All the
-					vertical levels will be returned</td>
-			</tr>
-			<tr>
-				<td>accept</td>
-				<td>no</td>
-				<td>Used to specify the returned format. Grid: <em>netCDF</em>, <em>netCDF4</em>. Station and Point:<em> csv, xml, netCDF, netCDF4</em></td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-				<td><p>grid: <em>netCDF; </em>point:<em> csv</em></p></td>
-			</tr>
-			<tr>
-				<td>subset</td>
-				<td>NOT</td>
-				<td>Used to specify the subsetting type on a station feature. subset=stns means we will provide a station list. </td>
-				<td>Only on station datasets. Accepted values are stns and bb</td>
-				<td>&nbsp;</td>
-				<td>Default subset type is bounding box.</td>
-			</tr>
-			<tr>
-				<td>stns</td>
-				<td>no</td>
-				<td>Used when subset=stns to specify the list of stations in the subset.</td>
-				<td>Only on station datasets.</td>
-				<td>&nbsp;</td>
-				<td></td>
-			</tr>						
-			<tr>
-				<td colspan="6">(*)Note the lat/lon
-						bounding box declared in the dataset description is an
-						approximated rectangle to the actual lat/lon boundaries so there
-						may be valid points within the data but ouside of the declared
-						bounding box in the dataset description.</td>
-			</tr>
-		</tbody>
-	</table>
-	<h4><strong>Variable subsetting:</strong></h4>
-	<ul>
-	  <li>For all types, you <strong>must</strong> specify a list of valid variable names.</li>
-</ul>
-	<h4><strong> Horizontal spatial subsetting:</strong></h4>
-    <ul>
-      <li>grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire horizontal grid.</li>
-      <li>grids as point: you <strong>must</strong> specify a point location with the<em> latitude, longitude</em> parameters. </li>
-      <li>stations: you may specify a lat/lon bounding box, a point location, or a list of stations. If none, do not filter.</li>
-      <li>points: you may specify a lat/lon bounding box. If none, do not filter.</li>
-    </ul>
-    <h4><strong>Vertical spatial subsetting:</strong></h4>
-    <ul>
-      <li>grids: you may specify a vertical coordinate. If none, return all vertical levels</li>
-    </ul>
-    <h4><strong>Temporal subsetting:</strong></h4>
+Examples:
 <ul>
-      <li>For all types, you may specify a time range or a specific time. If none, return the time closest to the present. </li>
-      <li>A time range will request all features that intersect the range.</li>
-      <li>A time point will request the feature that is closest to that time.</li>
-      <li>If you include <em>temporal=all</em>, then return all times.</li>
+    <li>
+        <a href="http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best/dataset.html">
+            http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best/dataset.html
+        </a>
+    </li>
+    <li>
+        <a href="http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground">
+            http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground
+        </a>
+    </li>
+</ul>
+
+<h2>Dataset Descriptions<a name="DatasetDescription"></a></h2>
+
+<p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are
+    intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients
+        with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content
+        of these documents is still evolving.</strong></p>
+
+<h3>Grid Dataset</h3>
+
+<p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time
+    coordinates. Grid data points next to each other in index space are next to each other in coordinate space. </p>
+<ul>
+    <li>Example <a href="http://thredds.ucar.edu/thredds/ncss/grib/NCEP/DGEX/CONUS_12km/best/dataset.xml"><strong>gridDataset</strong></a>
+        document (<a href="files/gridsDataset.xml">offline</a> example)
+    </li>
+</ul>
+<h3>Station Dataset</h3>
+
+<p>Station datasets contain a collection of point features representing time-series of data points at named locations.
+<ul>
+    <li>Example <a
+            href="http://thredds-test.unidata.ucar.edu/thredds/ncss/pointData/cf_doc_dsg/example/H.2.2.1.nc/dataset.xml"><strong>Station
+        Dataset</strong></a> document (<a href="files/stationsDataset.xml">offline</a> example)
+    </li>
+    <li>Station datasets also support <a
+            href="http://thredds-test.unidata.ucar.edu/thredds/ncss/pointData/cf_doc_dsg/example/H.2.2.1.nc/station.xml">
+        station list</a> requests. This request will return all the stations within a specified bounding box.
+        [NOTE: Broken as of 4.5.3. Will be fixed in 4.5.4.]
+    </li>
+</ul>
+<h3>Point Dataset</h3>
+
+<p>Point datasets contain a collection of point features which can be subset by space and time.
+<ul>
+    <li>Example <a
+            href="http://thredds-test.unidata.ucar.edu/thredds/ncss/pointData/cf_doc_dsg/example/H.1.1.nc/dataset.xml"><strong>Point
+        Dataset</strong></a> document (<a href="files/pointDataset.xml">offline</a> example)
+    </li>
+</ul>
+<p>&nbsp;</p>
+<hr>
+
+
+<h2>
+    <strong><a name="Common"></a> Subsetting Parameters (summary)
+    </strong>
+</h2>
+
+<table>
+    <tr>
+        <th width="143">Parameter Name</th>
+        <th width="64">Required</th>
+        <th width="555">Description / possible values</th>
+        <th width="522">Constraints</th>
+        <th width="266">default</th>
+    </tr>
+    <tr>
+        <td>var</td>
+        <td>yes</td>
+        <td><span>Name of <strong>variables</strong>, separated by ',' (comma).</span></td>
+        <td>Variables must be in the dataset description. Bounding box requests on grid datasets only support requests
+            on variables with same vertical levels and time coordinates.
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><p>latitude, longitude</p></td>
+        <td>no</td>
+        <td><span>Point location. units of degrees_east, degrees_north</span></td>
+        <td><span>Must be within the dataset bounding box(*). </span></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>north, south, east, west</td>
+        <td>no</td>
+        <td>Lat/lon bounding box, units of degrees_east, degrees_north</td>
+        <td>north > south,  if crossing 180 meridian, use east boundary &gt; 180</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>minx, miny, maxx, maxy</td>
+        <td>no</td>
+        <td>Projection bounding box, in projection coordinate units.</td>
+        <td>Only on grid datasets. min &lt; max</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>horizStride</td>
+        <td>no</td>
+        <td>Take only every nth point (both x and y)</td>
+        <td>Only on grid datasets.</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>addLatLon</td>
+        <td>no</td>
+        <td>if present, make output strictly CF compliant by adding lat/lon coordinates if needed.</td>
+        <td>Only on grid datasets, when writing to netCDF: make output strictly CF compliant.</td>
+        <td>false</td>
+    </tr>
+    <tr>
+        <td>time</td>
+        <td>no</td>
+        <td>Time as a <a rel="nofollow"
+                         href="#W3Cdate">W3C
+            date</a> or "present". The time slice closest to the requested time is
+            returned
+        </td>
+        <td>Must be a time within the dataset time range</td>
+        <td><em>present</em></td>
+    </tr>
+    <tr>
+        <td>time_start, time_end, time_duration</td>
+        <td>no</td>
+        <td>Used to specify a time range. Time as
+            a <a rel="nofollow"
+                 href="#W3Cdate">W3C
+                date</a> or "present".  Duration as a <a rel="nofollow" href="#W3Cduration">W3C time duration</a>.
+        </td>
+        <td>Two of time_start, time_end,
+            time_duration must be present to define a valid time range. The provided time range must intersect the
+            dataset time
+            range
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>temporal</td>
+        <td>no</td>
+        <td><em>all</em></td>
+        <td>Must be equal to "all" to have effect</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>timeStride</td>
+        <td>no</td>
+        <td>Take only every nth time in the available series</td>
+        <td>Only on grid datasets.</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>vertCoord</td>
+        <td>no</td>
+        <td></td>
+        <td>Bounding box requests on grid datasets must have the same vertical levels.
+        </td>
+        <td>All the
+            vertical levels will be returned
+        </td>
+    </tr>
+    <tr>
+        <td>accept</td>
+        <td>no</td>
+        <td>Used to specify the returned format.
+            Grid: <em>netCDF</em> and <em>netCDF4</em>.
+            Point: <em>netCDF</em>, <em>netCDF4</em>, <em>XML</em>, <em>CSV</em>.
+            Station: <em>netCDF</em>, <em>netCDF4</em>, <em>XML</em>, <em>CSV</em>, <em>WaterML2</em>.
+        </td>
+        <td></td>
+        <td>
+            Grid: <em>netCDF</em>.
+            Point: <em>CSV</em>.
+            Station: <em>CSV</em>.
+        </td>
+    </tr>
+    <tr>
+        <td>subset</td>
+        <td>no</td>
+        <td>Used to specify the subsetting type on a station feature. subset=stns means we will provide a station
+            list.
+        </td>
+        <td>Only on station datasets. Accepted values are stns and bb</td>
+        <td>Default subset type is bounding box.</td>
+    </tr>
+    <tr>
+        <td>stns</td>
+        <td>no</td>
+        <td>Used when subset=stns to specify the list of stations in the subset.</td>
+        <td>Only on station datasets.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="6">(*)Note the lat/lon
+            bounding box declared in the dataset description is an
+            approximated rectangle to the actual lat/lon boundaries so there
+            may be valid points within the data but ouside of the declared
+            bounding box in the dataset description.
+        </td>
+    </tr>
+</table>
+<h4><strong>Variable subsetting:</strong></h4>
+<ul>
+    <li>For all types, you <strong>must</strong> specify a list of valid variable names.</li>
+</ul>
+<h4><strong> Horizontal spatial subsetting:</strong></h4>
+<ul>
+    <li>grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire
+        horizontal grid.
+    </li>
+    <li>grids as point: you <strong>must</strong> specify a point location with the<em> latitude, longitude</em>
+        parameters.
+    </li>
+    <li>stations: you may specify a lat/lon bounding box, a point location, or a list of stations. If none, do not
+        filter.
+    </li>
+    <li>points: you may specify a lat/lon bounding box. If none, do not filter.</li>
+</ul>
+<h4><strong>Vertical spatial subsetting:</strong></h4>
+<ul>
+    <li>grids: you may specify a vertical coordinate. If none, return all vertical levels</li>
+</ul>
+<h4><strong>Temporal subsetting:</strong></h4>
+<ul>
+    <li>For all types, you may specify a time range or a specific time. If none, return the time closest to the
+        present.
+    </li>
+    <li>A time range will request all features that intersect the range.</li>
+    <li>A time point will request the feature that is closest to that time.</li>
+    <li>If you include <em>temporal=all</em>, then return all times.</li>
 </ul>
 <h4>Output Format (<em>accept</em> parameter):</h4>
 <ul>
-  <li><em>csv</em>: Comma-separated values, one feature per line</li>
-  <li><em>xml</em>: Collection of feature elements</li>
-  <li><em>netCDF</em>: CF/NetCDF-3</li>
-  <li><em>netCDF4</em>: CF/NetCDF-4 classic model</li>
-  <li><em>netCDF4ext</em>: NetCDF-4 extended model</li>
+    <li><em>csv</em>: Comma-separated values, one feature per line</li>
+    <li><em>xml</em>: Collection of feature elements</li>
+    <li><em>netCDF</em>: CF/NetCDF-3</li>
+    <li><em>netCDF4</em>: CF/NetCDF-4 classic model</li>
+    <li><em>netCDF4ext</em>: NetCDF-4 extended model</li>
+    <li><em>WaterML2</em>: <a href="http://www.opengeospatial.org/standards/waterml">OGC WaterML 2.0 Timeseries</a></li>
 </ul>
 <h2><strong><a name="Subsetting"></a> Subsetting types and use cases </strong>
 </h2>
-	
-	<h3>
-		<strong><a name="GridAsPoint"></a> Spatial and coordinate subsetting </strong>
-	</h3>
-<p>NCSS  provides two types of bounding boxes to subset the data:</p>
-	<ul>
-		<li><span class="bold">Lat/lon bounding box:</span> is specified with the params <em>north, south, east </em>and<em> west.</em> The <em>north </em>and<em> south</em> parameters are latitude values, and must be in units of <em>degrees_north</em> and lie between +/- 90.  The <em>east </em>and<em> west</em> parameters are longitude values with units of <em>degrees_east</em>, and may be positive or negative, and will be interpreted modulo 360. The requested subset starts at the west longitude and goes eastward until the east longitude. Therefore, when crossing the dateline, the west edge may be greater than the east edge. 
-		For grids, if the underlying dataset is on a projection, the minimum enclosing projection bounding box will be calculated and used. The data contained in the intersection of this rectangle with the data is returned. To use, inspect the dataset.xml for the &lt;LatLonBox&gt; elements, which indicate the min and max extensions of the grid, for example:
+
+<h3>
+    <strong><a name="Spatial"></a> Spatial and coordinate subsetting </strong>
+</h3>
+
+<p>NCSS provides two types of bounding boxes to subset the data:</p>
+<ul>
+    <li><span class="bold">Lat/lon bounding box:</span> is specified with the params <em>north, south, east </em>and<em>
+        west.</em> The <em>north </em>and<em> south</em> parameters are latitude values, and must be in units of <em>degrees_north</em>
+        and lie between +/- 90. The <em>east </em>and<em> west</em> parameters are longitude values with units of <em>degrees_east</em>,
+        and may be positive or negative, and will be interpreted modulo 360. The requested subset starts at the west
+        longitude and goes eastward until the east longitude. Therefore, when crossing the dateline, the west edge may
+        be greater than the east edge.
+        For grids, if the underlying dataset is on a projection, the minimum enclosing projection bounding box will be
+        calculated and used. The data contained in the intersection of this rectangle with the data is returned. To use,
+        inspect the dataset.xml for the &lt;LatLonBox&gt; elements, which indicate the min and max extensions of the
+        grid, for example:
         <pre>
 &lt;LatLonBox&gt;<br>  &lt;west&gt;-153.5889&lt;/west&gt;<br>  &lt;east&gt;-48.5984&lt;/east&gt;<br>  &lt;south&gt;11.7476&lt;/south&gt;<br>  &lt;north&gt;57.4843&lt;/north&gt;<br>&lt;/LatLonBox&gt;
         </pre>
-        </li>
-		<li><span class="bold">Projection bounding box (only on grid datasets):</span> is specified with the params<em> minx, miny, maxx </em>and<em> maxy</em>. These are projection coordinates in km on the projection plane; the data contained in the intersection of this rectangle with the data is returned. To use, inspect the dataset.xml for the &lt;projectionBox&gt; elements, which indicate the min and max extensions of the grid, for example:
+    </li>
+    <li><span class="bold">Projection bounding box (only on grid datasets):</span> is specified with the params<em>
+        minx, miny, maxx </em>and<em> maxy</em>. These are projection coordinates in km on the projection plane; the
+        data contained in the intersection of this rectangle with the data is returned. To use, inspect the dataset.xml
+        for the &lt;projectionBox&gt; elements, which indicate the min and max extensions of the grid, for example:
           <pre>
-  &lt;gridSet name=&quot;time layer_between_two_pressure_difference_from_ground_layer y x&quot;&gt;<br>    &lt;projectionBox&gt;<br>      &lt;minx&gt;-4264.248291015625&lt;/minx&gt;<br>      &lt;maxx&gt;3293.955078125&lt;/maxx&gt;<br>      &lt;miny&gt;-872.8428344726562&lt;/miny&gt;<br>      &lt;maxy&gt;4409.772216796875&lt;/maxy&gt;<br>    &lt;/projectionBox&gt;
+  &lt;gridSet name="time layer_between_two_pressure_difference_from_ground_layer y x"&gt;<br>    &lt;projectionBox&gt;<br>      &lt;minx&gt;-4264.248291015625&lt;/minx&gt;<br>      &lt;maxx&gt;3293.955078125&lt;/maxx&gt;<br>      &lt;miny&gt;-872.8428344726562&lt;/miny&gt;<br>      &lt;maxy&gt;4409.772216796875&lt;/maxy&gt;<br>    &lt;/projectionBox&gt;
     ...<br></pre>
-	  </li>
-	</ul>
-	<p>Note that the declared LatLonBox is an approximated rectangle to the full extension of the data and there may be points outside of the declared LatLonBox but within the data. So 
-	the provided lat/lon bounding box does not necesarily have to intersect it but it has to intersect the actual data.</p>
-	<p>By default, if no spatial subsetting is specified, the service returns all the features in the dataset.</p>
-	<p>Examples of query strings for spatial and coordinate subsetting:    </p>
-	<ul>
-	  <pre><strong>Lat/lon bounding box:    </strong><strong>north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong>
-<strong>Projection bounding box: </strong><strong>minx=-500&amp;miny=-1600&amp;maxx=500&amp;maxy=0</strong></pre>
-    </ul>	
-	
-	<h3>
-		<strong><a name="Spatial"></a> Point requests </strong>
-	</h3>
-	<p>The NetCDF Subset Service allows the user to extract data for a single point. This is done specifying the latitude and longitude for our point of interest. When these parameters are provided the service will
-	extract point features types from the grid on grid features and will return the data for the closest station on station features.</p> 
-	<p>Point requests support netCDF, netCDF4, csv and xml as format result for a request.</p>
-  	<p>Examples:</p>
-  	<ul>
-    	<li><strong> latitude</strong><strong>=17.3&amp;longitude=140.2</strong></li>
-  	</ul>	
-	
-	<h3>
-		<strong><a name="Temporal"></a> Temporal subsetting and valid time ranges </strong>
-	</h3>
-	<p>There are several ways to do temporal subsetting requests:</p>
-	<ul>
-		<li><span class="bold">Default:</span>if no temporal subseting is specified the closest time to the current time is returned</li>
-		<li><span class="bold">All time range:</span>A shorthand to request all the time range in a dataset is setting the parameter temporal=all. This can also be done providing a valid temporal range containing
-		all the dataset time range</li>
-		<li><span class="bold">One single time:</span>Passing the parameter time will get the time slice closest to the requested time if it is within the time range of the dataset</li>
-		<li><span class="bold">Valid time range:</span>A valid time range is defined with two of the three parameters: time_start, time_end and time_duration</li>
-	</ul>
-	<p>Times (time, time_start and time_end) must be specified as <a href="#W3Cdate">W3C date string</a> or "present" and time_duration as a <a rel="nofollow" href="#W3Cduration">W3C time duration</a></p>
-  	<p>Examples of time query strings with valid temporal ranges:</p>
-  	<ul>
-    	<li><strong>time_start=2007-03-29T12:00:00Z&amp;time_end=2007-03-29T13:00:00Z</strong> (between 12 and 1 pm Greenwich time)</li>
-    	<li><strong>time_start=present&amp;time_duration=P3D</strong> (get 3 day forecast starting from the present) </li>
-    	<li><strong>time_end=present&amp;time_duration=PT3H</strong> (get last 3 hours) </li>
-    	<li><strong>time=2007-03-29T12:00:00Z</strong></li>
-    	<li><strong>time=present</strong></li>
-    	<li><strong>temporal=all</strong></li>    	
-  	</ul>
+    </li>
+</ul>
+
+<p>Note that the declared LatLonBox is an approximated rectangle to the full extension of the data and there may be
+    points outside of the declared LatLonBox but within the data. So
+    the provided lat/lon bounding box does not necesarily have to intersect it but it has to intersect the actual
+    data.</p>
+
+<p>By default, if no spatial subsetting is specified, the service returns all the features in the dataset.</p>
+
+<p>Examples of query strings for spatial and coordinate subsetting:</p>
+
+<ul>
+    <li>
+        Lat/lon bounding box: <pre>north=17.3&south=12.088&west=140.2&east=160.0</pre>
+    </li>
+    <li>
+        Projection bounding box: <pre>minx=-500&miny=-1600&maxx=500&maxy=0</pre>
+    </li>
+</ul>
+
+<h3>
+    <strong><a name="GridAsPoint"></a>Single-point requests</strong>
+</h3>
+
+<p>The NetCDF Subset Service allows the user to extract data for a point of interest by specifying its latitude and
+    longitude. The result differs depending on the underlying dataset.</p>
+
+<ul>
+    <li>If it's a grid dataset, that means we're using the grid-as-point service. NCSS will find the grid cell in
+        which the lat/lon falls and return its data as if it were a point feature. The supported output formats are
+        <em>netCDF</em>, <em>netCDF4</em>, <em>XML</em>, and <em>CSV</em></li>
+    <li>If it's a station dataset, NCSS will return data for the station nearest the specified lat/lon.
+        The supported output formats are
+        <em>netCDF</em>, <em>netCDF4</em>, <em>XML</em>, <em>CSV</em>, and <em>WaterML2</em></li>
+    <li>
+        Point datasets do not support single-point requests.
+    </li>
+</ul>
+
+For example: <pre>?req=station&var=temp&latitude=40.2&longitude=61.8</pre>
+This finds the station nearest to (lat=40.2, lon=61.8) and returns its temperature data.
 
 
-	
-	<h3>
-		<strong><a name="Vertical"></a> Vertical coordinate subsetting </strong>
-	</h3>
-	<p>Subset on the vertical axis of a variable or variables with the same vertical levels may be done with the vertCoord parameter.</p>
-	<p>By default, all vertical levels are returned.</p>		
-	
+<h3>
+    <strong><a name="Temporal"></a> Temporal subsetting and valid time ranges </strong>
+</h3>
 
-	<h3>
-		<strong><a name="Variables"></a> Single Variable requests </strong>
-	</h3>
-	<p>
-		Note that these single variable requests can be easily extended to
-		multivariable request by simply passing a comma separated list of
-		variables in the var= parameter. Please note that <span class="bold"> on grid datasets only
-			requests on variables with same vertical levels are supported</span>
-	.</p>
-	<h3>Examples:</h3>
+<p>There are several ways to do temporal subsetting requests:</p>
+<ul>
+    <li><span class="bold">Default:</span> If no temporal subseting is specified, the closest time to the current time
+        is returned.
+    </li>
+    <li><span class="bold">All time range:</span> A shorthand to request all the time range in a dataset is setting the
+        parameter temporal=all. This can also be done by providing a valid temporal range containing
+        all the dataset time range.
+    </li>
+    <li><span class="bold">One single time:</span> Passing the parameter time will get the time slice closest to the
+        requested time if it is within the time range of the dataset.
+    </li>
+    <li><span class="bold">Valid time range:</span> A valid time range is defined with two of the three parameters:
+        time_start, time_end and time_duration.
+    </li>
+</ul>
 
-	<!-- h4>
-		<span class="bold">Basic Request:</span>
-	</h4>
-	<p>
-		<em>"Give me all of the data for the variable
-			Temperature_pressure"</em>
-	</p -->
-	<!-- p>
-		<b>Most simple request: ?var=Temperature_pressure</b>
-	</p-->
+<p>Times (time, time_start and time_end) must be specified as <a href="#W3Cdate">W3C date string</a> or "present" and
+    time_duration as a <a rel="nofollow" href="#W3Cduration">W3C time duration</a></p>
 
-	<div>
-		<table>
-			<tbody>				
-				<tr>
-					<th><font>var</font></th>
-					<th><font>Spatial subset</font></th>
-					<th>Coordinate subset</th>
-					<th>Horizontal Stride</th>
-					<th>Time range</th>
-					<th>Temporal Stride</th>
-					<th>Vertical Coordinate	</th>
-					<th>Query string</th>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me all of the data for the variable Temperature_pressure for the closest time to the current time"</em></span></td></td>
-				</tr>	
-				<tr>
-					<td>Temperature_pressure</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>?var=Temperature_pressure</td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me all of the data for the variable Temperature_pressure for all the available time range in the dataset"</em></span></td></td>
-				</tr>				
-				<tr>
-					<td>Temperature_pressure</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>
-						temporal=all
-					</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>?var=Temperature_pressure&amp;temporal=all</td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me all of the data for the variable Temperature_pressure available in a given time range"</em></span></td></td>
-				</tr>				
-				<tr>
-					<td>Temperature_pressure</td>
-					<td>&nbsp; </td>
-					<td>&nbsp; </td>
-					<td>&nbsp; </td>
-					<td>time_start=YYYY-MM-DDThh:mm:ss.sTZD <br /> time_end=YYYY-MM-DDThh:mm:ss.sTZD (Using full temporal bounds) </td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>?var=Temperature_pressure&amp;time_start=YYYY-MM-DDThh:mm:ss.sTZD&amp;time_end=YYYY-MM-DDThh:mm:ss.sTZD</td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me all of the data for the variable Temperature_pressure for a specific time"</em></span></td></td>
-				</tr>				
-				<tr>
-					<td>Temperature_pressure</td>
-					<td>&nbsp; </td>
-					<td>&nbsp; </td>
-					<td>&nbsp; </td>
-					<td>time=YYYY-MM-DDThh:mm:ss.sTZD</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>?var=Temperature_pressure&amp;time=YYYY-MM-DDThh:mm:ss.sTZD</td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me the data for the variable Temperature_pressure over a given lat/lon bouding box for a specific time"</em></span></td></td>
-				</tr>				
-				<tr>
-					<td>Temperature_pressure</td>
-					<td>
-					north=41 <br/>
-					west=-109.05 <br />
-					east==102.05 <br />
-					south=37 
-					</td>
-					<td>&nbsp; </td>
-					<td>&nbsp; </td>
-					<td>time=YYYY-MM-DDThh:mm:ss.sTZD</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>?var=Temperature_pressure&amp;time=YYYY-MM-DDThh:mm:ss.sTZD&amp;north=41&amp;west=-109.05&amp;east=-102.05&amp;south=37</td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me variable Temperature_pressure for every 5th point on the grid (deltax=deltay=5)"</em></span></td></td>
-				</tr>				
-				<tr>
-					<td>Temperature_pressure</td>
-					<td>&nbsp; </td>
-					<td>&nbsp; </td>
-					<td>5 </td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>?var=Temperature_pressure&amp;horStride=5</td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me variable Temperature_pressure for every 5th point on the grid (deltax=deltay=5) over a given lat/lon bounding box"</em></span></td></td>
-				</tr>				
-				<tr>
-					<td>Temperature_pressure</td>
-					<td>
-					north=41 <br/>
-					west=-109.05 <br />
-					east==102.05 <br />
-					south=37 
-					</td>
-					<td>&nbsp; </td>
-					<td>5 </td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>?var=Temperature_pressure&amp;north=41&amp;west=-109.05&amp;east=-102.05&amp;south=37&amp;horStride=5</td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me variable Temperature_pressure at a particular vertical level: 1000 mb*"</em></span></td></td>
-				</tr>				
-				<tr>
-					<td>Temperature_pressure</td>
-					<td>&nbsp;</td>
-					<td>&nbsp; </td>
-					<td>&nbsp; </td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>1000</td>
-					<td>?var=Temperature_pressure&amp;vertCoord=1000</td>
-				</tr>
-				<tr>
-					<td colspan="8"><span class="bold">Request: <em>"Give me variable air_temperature for stations named LECO, LEST and LEVX "</em></span></td></td>
-				</tr>
-				<tr>
-					<td>air_temperature</td>
-					<td>
-						subset=stns <br/>
-						stns=LECO,LEST,LEVX
-					</td>
-					<td>&nbsp; </td>
-					<td>&nbsp; </td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>?var=air_temperature&amp;subset=stns&amp;stns=LECO,LEST,LEVX</td>
-				</tr>								
-				<tr><td colspan="8">* note that the vertical level value must be in the same units used in the dataset - in this example we assume millibars but you will need to check the dataset description to be sure.</td></tr>																					
-			</tbody>
-		</table>
-	</div>
+<p>Examples of time query strings with valid temporal ranges:</p>
+<ul>
+    <li><strong>time_start=2007-03-29T12:00:00Z&time_end=2007-03-29T13:00:00Z</strong> (between 12 and 1 pm
+        Greenwich time)
+    </li>
+    <li><strong>time_start=present&time_duration=P3D</strong> (get 3 day forecast starting from the present)</li>
+    <li><strong>time_end=present&time_duration=PT3H</strong> (get last 3 hours)</li>
+    <li><strong>time=2007-03-29T12:00:00Z</strong></li>
+    <li><strong>time=present</strong></li>
+    <li><strong>temporal=all</strong></li>
+</ul>
 
-    <hr>
-    <h2><a name="Reference"></a>Reference</h2>
-<h3>W3C Time Duration<a name="W3Cduration"></a> </h3>
-    <p> The lexical representation for <b>duration</b> is the</a><a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a> extended format P<em>n</em>Y<em>n</em> M<em>n</em>DT<em>n</em>H <em>n</em>M<em>n</em>S, where <em>n</em>Y represents the number of years, <em>n</em>M the number of months, <em>n</em>D the number of days, 'T' is the date/time separator, <em>n</em>H the number of hours, <em>n</em>M the number of minutes and <em>n</em>S the number of seconds. The number of seconds can include decimal digits to arbitrary precision.</p>
-    <p> The values of the Year, Month, Day, Hour and Minutes components are not restricted but allow an arbitrary unsigned integer, i.e., an integer that conforms to the pattern <code>[0-9]+</code>.. Similarly, the value of the Seconds component allows an arbitrary unsigned decimal. Following <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>, at least one digit must follow the decimal point if it appears. That is, the value of the Seconds component must conform to the pattern <code>[0-9]+(\.[0-9]+)?</code>. Thus, the lexical representation of <b>duration</b> does not follow the alternative format of &sect; 5.5.3.2.1 of <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>.</p>
-    <p> An optional preceding minus sign ('-') is allowed, to indicate a negative duration. If the sign is omitted a positive duration is indicated. See also <a href="http://www.w3.org/TR/xmlschema-2/#isoformats">ISO 8601 Date and Time Formats (&sect;D)</a>. </p>
-    <p> For example, to indicate a duration of 1 year, 2 months, 3 days, 10 hours, and 30 minutes, one would write: <code>P1Y2M3DT10H30M</code>. One could also indicate a duration of minus 120 days as: <code>-P120D</code>. </p>
-    <p> Reduced precision and truncated representations of this format are allowed provided they conform to the following: </p>
-    <ul>
-      <li> If the number of years, months, days, hours, minutes, or seconds in any expression equals zero, the number and its corresponding designator <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-may"><span class="arrow">&middot;</span>may<span class="arrow">&middot;</span></a> be omitted. However, at least one number and its designator <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-must"><span class="arrow">&middot;</span>must<span class="arrow">&middot;</span></a> be present. </li>
-      <li> The seconds part <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-may"><span class="arrow">&middot;</span>may<span class="arrow">&middot;</span></a> have a decimal fraction. </li>
-      <li> The designator 'T' must be absent if and only if all of the time items are absent. The designator 'P' must always be present. </li>
-    </ul>
-    <p> For example, P1347Y, P1347M and P1Y2MT2H are all allowed; P0Y1347M and P0Y1347M0D are allowed. P-1347M is not allowed although -P1347M is allowed. P1Y2MT is not allowed. </p>
-    <p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#duration">duration</a> for full details. </p>
-    <h3>W3C Dates<a name="W3Cdate" id="W3Cdate"></a></h3>
-    <p> For our purposes, and ISO Date can be a dateTime or a date: </p>
-    <p><b>A dateTime</b> has the form: <code>'-'? yyyy '-' mm '-' dd 'T' hh ':' mm ':' ss ('.' s+)? (zzzzzz)?</code></p>
-    <p>where </p>
-    <ul>
-      <li>'-'? <em>yyyy</em> is a four-or-more digit optionally negative-signed numeral that represents the year; if more than four digits, leading zeros are prohibited, and '0000' is prohibited (see the Note above <a href="http://www.w3.org/TR/xmlschema-2/#year-zero"> (&sect;3.2.7)</a>; also note that a plus sign is <b>not</b> permitted);</li>
-      <li>the remaining '-'s are separators between parts of the date portion;</li>
-      <li>the first <em>mm</em> is a two-digit numeral that represents the month;</li>
-      <li><em>dd</em> is a two-digit numeral that represents the day;</li>
-      <li>'T' is a separator indicating that time-of-day follows;</li>
-      <li><em>hh</em> is a two-digit numeral that represents the hour; '24' is permitted if the minutes and seconds represented are zero, and the <b>dateTime</b> value so represented is the first instant of the following day (the hour property of a <b>dateTime</b> object in the <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-value-space"><span class="arrow">&middot;</span>value space<span class="arrow">&middot;</span></a> cannot have a value greater than 23);</li>
-      <li>':' is a separator between parts of the time-of-day portion;</li>
-      <li>the second <em>mm</em> is a two-digit numeral that represents the minute;</li>
-      <li><em>ss</em> is a two-integer-digit numeral that represents the whole seconds;</li>
-      <li>'.' <em>s+</em> (if present) represents the fractional seconds;</li>
-      <li><em>zzzzzz</em> (if present) represents the time zone (as described below).</li>
-    </ul>
-    <p> For example, 2002-10-10T12:00:00-05:00 (noon on 10 October 2002, Central Daylight Savings Time as well as Eastern Standard Time in the U.S.) is 2002-10-10T17:00:00Z, five hours later than 2002-10-10T12:00:00Z. </p>
-    <p>A <strong>date</strong> is the same as a dateTime without the time part : <code>'-'? yyyy '-' mm '-' dd zzzzzz?</code></p>
-    <p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a> and <a href="http://www.w3.org/TR/xmlschema-2/#date">date</a> for full details </p>
-    <p> </p>
+
+<h3>
+    <strong><a name="Vertical"></a> Vertical coordinate subsetting </strong>
+</h3>
+
+<p>Subsetting on the vertical axis of a variable or variables with the same vertical levels may be done with the
+    vertCoord parameter.</p>
+
+<p>By default, all vertical levels are returned.</p>
+
+
+<h3>
+    <strong><a name="Variables">Single Variable requests</a></strong>
+</h3>
+
+<p> Note that these single variable requests can be easily extended to
+    multivariable request by simply passing a comma separated list of
+    variables in the var= parameter. Please note that for grid datasets, each variable in the request must have the
+    same vertical levels.</p>
+
+<h3>Examples:</h3>
+
+<div>
+    <table>
+        <tr>
+            <th>var</th>
+            <th>Spatial subset</th>
+            <th>Coordinate subset</th>
+            <th>Horizontal Stride</th>
+            <th>Time range</th>
+            <th>Temporal Stride</th>
+            <th>Vertical Coordinate</th>
+            <th>Query string</th>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me all of the data for the variable
+                Temperature_pressure for the closest time to the current time"</em>
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature_pressure</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>?var=Temperature_pressure</td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me all of the data for the variable
+                Temperature_pressure for all the available time range in the dataset"</em>
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature_pressure</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>temporal=all</td>
+            <td></td>
+            <td></td>
+            <td>?var=Temperature_pressure&temporal=all</td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me all of the data for the variable
+                Temperature_pressure available in a given time range"</em>
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature_pressure</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>time_start=YYYY-MM-DDThh:mm:ss.sTZD <br/> time_end=YYYY-MM-DDThh:mm:ss.sTZD (Using full temporal bounds)
+            </td>
+            <td></td>
+            <td></td>
+            <td>
+                ?var=Temperature_pressure&time_start=YYYY-MM-DDThh:mm:ss.sTZD&time_end=YYYY-MM-DDThh:mm:ss.sTZD
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me all of the data for the variable
+                Temperature_pressure for a specific time"</em>
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature_pressure</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>time=YYYY-MM-DDThh:mm:ss.sTZD</td>
+            <td></td>
+            <td></td>
+            <td>?var=Temperature_pressure&time=YYYY-MM-DDThh:mm:ss.sTZD</td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me the data for the variable Temperature_pressure over
+                a given lat/lon bouding box for a specific time"</em>
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature_pressure</td>
+            <td>
+                north=41 <br/>
+                west=-109.05 <br/>
+                east==102.05 <br/>
+                south=37
+            </td>
+            <td></td>
+            <td></td>
+            <td>time=YYYY-MM-DDThh:mm:ss.sTZD</td>
+            <td></td>
+            <td></td>
+            <td>?var=Temperature_pressure&time=YYYY-MM-DDThh:mm:ss.sTZD&north=41&west=-109.05&east=-102.05&south=37</td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me variable Temperature_pressure for every 5th point
+                on the grid (deltax=deltay=5)"</em>
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature_pressure</td>
+            <td></td>
+            <td></td>
+            <td>5</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>?var=Temperature_pressure&horStride=5</td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me variable Temperature_pressure for every 5th point
+                on the grid (deltax=deltay=5) over a given lat/lon bounding box"</em>
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature_pressure</td>
+            <td>
+                north=41 <br/>
+                west=-109.05 <br/>
+                east==102.05 <br/>
+                south=37
+            </td>
+            <td></td>
+            <td>5</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>?var=Temperature_pressure&north=41&west=-109.05&east=-102.05&south=37&horStride=5
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me variable Temperature_pressure at a particular
+                vertical level: 1000 mb*"</em>
+            </td>
+        </tr>
+        <tr>
+            <td>Temperature_pressure</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>1000</td>
+            <td>?var=Temperature_pressure&vertCoord=1000</td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">Request: <em>"Give me variable air_temperature for stations named LECO,
+                LEST and LEVX "</em>
+            </td>
+        </tr>
+        <tr>
+            <td>air_temperature</td>
+            <td>
+                subset=stns <br/>
+                stns=LECO,LEST,LEVX
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>?var=air_temperature&subset=stns&stns=LECO,LEST,LEVX</td>
+        </tr>
+        <tr>
+            <td colspan="8" class="request">* note that the vertical level value must be in the same units used in the
+                dataset - in this example we assume millibars but you will need to check the dataset description to be
+                sure.
+            </td>
+        </tr>
+    </table>
+</div>
+
+<hr>
+<h2><a name="Reference"></a>Reference</h2>
+
+<h3>W3C Time Duration<a name="W3Cduration"></a></h3>
+
+<p> The lexical representation for <b>duration</b> is the <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO
+    8601]</a> extended format P<em>n</em>Y<em>n</em> M<em>n</em>DT<em>n</em>H <em>n</em>M<em>n</em>S, where <em>n</em>Y
+    represents the number of years, <em>n</em>M the number of months, <em>n</em>D the number of days, 'T' is the
+    date/time separator, <em>n</em>H the number of hours, <em>n</em>M the number of minutes and <em>n</em>S the number
+    of seconds. The number of seconds can include decimal digits to arbitrary precision.</p>
+
+<p> The values of the Year, Month, Day, Hour and Minutes components are not restricted but allow an arbitrary unsigned
+    integer, i.e., an integer that conforms to the pattern <code>[0-9]+</code>. Similarly, the value of the Seconds
+    component allows an arbitrary unsigned decimal. According to <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO
+        8601]</a>, at least one digit must follow the decimal point if it appears. That is, the value of the Seconds
+    component must conform to the pattern <code>[0-9]+(\.[0-9]+)?</code>. Thus, the lexical representation of <b>duration</b>
+    does not follow the alternative format of &sect; 5.5.3.2.1 in <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO
+        8601]</a>.</p>
+
+<p> An optional preceding minus sign (<code>-</code>) is allowed, to indicate a negative duration. If the sign is omitted, a
+    positive duration is indicated. See also <a href="http://www.w3.org/TR/xmlschema-2/#isoformats">ISO 8601 Date and
+        Time Formats (&sect;D)</a>.</p>
+
+<p> For example, to indicate a duration of 1 year, 2 months, 3 days, 10 hours, and 30 minutes, one would write: <code>P1Y2M3DT10H30M</code>.
+    One could also indicate a duration of minus 120 days as: <code>-P120D</code>. </p>
+
+<p> Reduced precision and truncated representations of this format are allowed provided they conform to the
+    following:</p>
+
+<ul>
+    <li> If the number of years, months, days, hours, minutes, or seconds in any expression equals zero, the number and
+        its corresponding designator <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-may"><span
+                class="arrow">&middot;</span>may<span class="arrow">&middot;</span></a> be omitted. However, at least
+        one number and its designator <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-must"><span
+                class="arrow">&middot;</span>must<span class="arrow">&middot;</span></a> be present.
+    </li>
+    <li> The seconds part <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-may"><span
+            class="arrow">&middot;</span>may<span class="arrow">&middot;</span></a> have a decimal fraction.
+    </li>
+    <li> The designator 'T' must be absent if and only if all of the time items are absent. The designator 'P' must
+        always be present.
+    </li>
+</ul>
+
+<p> For example, <code>P1347Y</code>, <code>P1347M</code>, and <code>P1Y2MT2H</code> are all allowed, as are
+    <code>P0Y1347M</code> and <code>P0Y1347M0D</code>.</p>
+
+<p><code>P-1347M</code> is not allowed although <code>-P1347M</code> is. <code>P1Y2MT</code> is not.</p>
+
+<p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#duration">duration</a> for full details. </p>
+
+<h3>W3C Dates<a name="W3Cdate" id="W3Cdate"></a></h3>
+
+<p> For our purposes, and ISO Date can be a dateTime or a date: </p>
+
+<p><b>A dateTime</b> has the form: <code>'-'? yyyy '-' mm '-' dd 'T' hh ':' mm ':' ss ('.' s+)? (zzzzzz)?</code></p>
+
+<p>where:</p>
+
+<ul>
+    <li><code>'-'? yyyy</code> is a four-or-more digit, optionally negative-signed numeral that represents the year;
+        if more than four digits, leading zeros are prohibited, and <code>'0000'</code> is prohibited
+        (see the Note above <a href="http://www.w3.org/TR/xmlschema-2/#year-zero"> (&sect;3.2.7)</a>;
+        also note that a plus sign is <strong>not</strong> permitted);
+    </li>
+    <li>the remaining <code>'-'</code>s are separators between parts of the date portion;</li>
+    <li>the first <code>mm</code> is a two-digit numeral that represents the month;</li>
+    <li><code>dd</code> is a two-digit numeral that represents the day;</li>
+    <li><code>'T'</code> is a separator indicating that time-of-day follows;</li>
+    <li><code>hh</code> is a two-digit numeral that represents the hour; <code>'24'</code> is permitted if the minutes and seconds
+        represented are zero, and the <strong>dateTime</strong> value so represented is the first instant of the following day
+        (the hour property of a <strong>dateTime</strong> object in the
+        <a class="termref" href="http://www.w3.org/TR/xmlschema-2/#dt-value-space">
+            <span class="arrow">&middot;</span>value space<span class="arrow">&middot;</span>
+        </a> cannot have a value greater than 23);
+    </li>
+    <li><code>':'</code> is a separator between parts of the time-of-day portion;</li>
+    <li>the second <code>mm</code> is a two-digit numeral that represents the minute;</li>
+    <li><code>ss</code> is a two-integer-digit numeral that represents the whole seconds;</li>
+    <li><code>'.' s+</code> (if present) represents the fractional seconds;</li>
+    <li><code>zzzzzz</code> (if present) represents the time zone (as described below).</li>
+</ul>
+
+<p> For example, <code>2002-10-10T12:00:00-05:00</code> (noon on 10 October 2002, Central Daylight Savings Time
+    as well as Eastern Standard Time in the U.S.) is <code>2002-10-10T17:00:00Z</code>,
+    five hours later than <code>2002-10-10T12:00:00Z</code>.</p>
+
+<p>A <strong>date</strong> is the same as a dateTime without the time part : <code>'-'? yyyy '-' mm '-' dd
+    zzzzzz?</code></p>
+
+<p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a> and <a
+        href="http://www.w3.org/TR/xmlschema-2/#date">date</a> for full details </p>
+
 <hr WIDTH="100%">
+
 <address>
-<img src="../images/thread.png" width="110" height="108">This document  was last updated October 2013
+    <img src="../images/thread.png" width="110" height="108">This document was last updated October 2014.
 </address>
-<p>&nbsp;</p>  
+
 </body>
 </html>

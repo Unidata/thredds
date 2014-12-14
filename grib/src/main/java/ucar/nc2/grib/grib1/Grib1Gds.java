@@ -91,6 +91,8 @@ public abstract class Grib1Gds {
         return new PolarStereographic(data, 5);
       case 10:
         return new RotatedLatLon(data, 10);
+      case 50:    // Spherical harmonic coefficients
+        return new SphericalHarmonicCoefficients(data, 50);
       default:
         throw new UnsupportedOperationException("Unsupported GDS type = " + template);
     }
@@ -1223,6 +1225,39 @@ Grid definition –   polar stereographic
       double endx = cs.startx + (nx - 1) * cs.dx;
       double endy = cs.starty + (ny - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
+    }
+
+  }
+
+  public static class SphericalHarmonicCoefficients extends Grib1Gds {
+    int j,k,m,type,mode;
+    SphericalHarmonicCoefficients(byte[] data, int template) {
+      super(data, template);
+
+      j = getOctet2(7);
+      k = getOctet2(9);
+      m = getOctet2(11);
+      type = getOctet(13);
+      mode = getOctet(14);
+    }
+
+    @Override
+    public float getDxRaw() {
+      return 0;
+    }
+
+    @Override
+    public float getDyRaw() {
+      return 0;
+    }
+
+    @Override
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      return null;
+    }
+
+    @Override
+    public void testHorizCoordSys(Formatter f) {
     }
 
   }

@@ -42,7 +42,6 @@ import ucar.unidata.util.Format;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -335,7 +334,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   @Override
   public boolean isContiguous() {
-    if (!wasBoundsDone) makeBounds();
+    if (!wasBoundsDone) makeBounds();  // this sets isContiguous
     return isContiguous;
   }
 
@@ -347,7 +346,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return true if coordinate has interval values
    */
   public boolean isInterval() {
-    if (!wasBoundsDone) makeBounds();
+    if (!wasBoundsDone) makeBounds();      // this sets isInterval
     return isInterval;
   }
 
@@ -385,17 +384,15 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return bound2.clone();
   }
 
-
   /**
-   * Get the coordinate edges for the ith coordinate.
+   * Get the coordinate bounds for the ith coordinate.
    * Can use this for isContiguous() true or false.
    *
    * @param i coordinate index
    * @return double[2] edges for ith coordinate
    */
-  public double[] getCoordEdges(int i) {
+  public double[] getCoordBounds(int i) {
     if (!wasBoundsDone) makeBounds();
-    if (!isContiguous()) makeBoundsFromEdges();
 
     double[] e = new double[2];
     if (isContiguous()) {
@@ -748,8 +745,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return;
     }
 
-    if (!wasRead)
-      doRead();
+    if (!wasRead) doRead();
+    if (!wasBoundsDone) makeBounds();
 
     boolean monotonic = true;
     for (int i = 0; i < coords.length - 1; i++)
@@ -835,6 +832,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
       coords[count++] = iter.getDoubleNext();
   }
 
+  /**
+   * Calculate bounds, set isInterval, isContiguous
+   */
   private void makeBounds() {
     if (!wasRead) doRead();
     if (isNumeric()) {
@@ -905,7 +905,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       edge[0] = value1[0];
       for (int i = 1; i < n + 1; i++)
         edge[i] = value2[i - 1];
-    } else {
+    } else {                           // what does edge mean when not contiguous ??
       edge = new double[n + 1];
       edge[0] = value1[0];
       for (int i = 1; i < n; i++)
@@ -929,6 +929,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       edge[i] = (coords[i - 1] + coords[i]) / 2;
     edge[0] = coords[0] - (edge[1] - coords[0]);
     edge[size] = coords[size - 1] + (coords[size - 1] - edge[size - 1]);
+    isContiguous = true;
   }
 
   private void makeBoundsFromEdges() {

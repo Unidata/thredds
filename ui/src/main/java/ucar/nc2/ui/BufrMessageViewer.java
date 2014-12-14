@@ -36,14 +36,16 @@ package ucar.nc2.ui;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.bufr.*;
+import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
@@ -126,8 +128,7 @@ public class BufrMessageViewer extends JPanel {
 
     AbstractAction seperateWindowAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        seperateWindow = state;
+        seperateWindow = (Boolean) getValue(BAMutil.STATE);
       }
     };
     BAMutil.setActionProperties(seperateWindowAction, "DrawVert", "seperate DDS window", true, 'C', -1);
@@ -162,9 +163,9 @@ public class BufrMessageViewer extends JPanel {
 
         } catch (Exception ex) {
           ex.printStackTrace();
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          ex.printStackTrace(new PrintStream(bos));
-          infoTA2.setText(bos.toString());
+          StringWriter sw = new StringWriter(10000);
+          ex.printStackTrace(new PrintWriter(sw));
+          infoTA2.setText(sw.toString());
         }
         infoTA2.gotoTop();
         infoWindow2.show();
@@ -184,9 +185,9 @@ public class BufrMessageViewer extends JPanel {
 
         } catch (Exception ex) {
           ex.printStackTrace();
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          ex.printStackTrace(new PrintStream(bos));
-          infoTA2.setText(bos.toString());
+          StringWriter sw = new StringWriter(10000);
+          ex.printStackTrace(new PrintWriter(sw));
+          infoTA2.setText(sw.toString());
         }
         infoTA2.gotoTop();
         infoWindow2.show();
@@ -204,7 +205,7 @@ public class BufrMessageViewer extends JPanel {
 
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         if (mb == null) return;
-        java.util.List<DdsBean> beanList = new ArrayList<DdsBean>();
+        java.util.List<DdsBean> beanList = new ArrayList<>();
         try {
           setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
           setObs(mb.m);
@@ -219,14 +220,14 @@ public class BufrMessageViewer extends JPanel {
     obsTable = new BeanTable(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
     obsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        ObsBean csb = (ObsBean) obsTable.getSelectedBean();
+        obsTable.getSelectedBean();
       }
     });
 
     ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
     ddsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
+        ddsTable.getSelectedBean();
       }
     });
 
@@ -323,10 +324,10 @@ public class BufrMessageViewer extends JPanel {
           infoTA2.appendLine(out.toString());
 
         } catch (Exception ex) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          ex.printStackTrace(new PrintStream(bos));
+          StringWriter sw = new StringWriter(5000);
+          ex.printStackTrace(new PrintWriter(sw));
           infoTA2.appendLine(out.toString());
-          infoTA2.appendLine(bos.toString());
+          infoTA2.appendLine(sw.toString());
         }
 
         infoTA2.gotoTop();
@@ -369,7 +370,7 @@ public class BufrMessageViewer extends JPanel {
           WritableByteChannel wbc = fos.getChannel();
           String headerS = mb.m.getHeader();
           if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes()));
+            wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
 
           byte[] raw = scan.getMessageBytes(mb.m);
           wbc.write(ByteBuffer.wrap(raw));
@@ -398,10 +399,10 @@ public class BufrMessageViewer extends JPanel {
           infoTA.setText(out.toString());
 
         } catch (Exception ex) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          ex.printStackTrace(new PrintStream(bos));
+          StringWriter sw = new StringWriter();
+          ex.printStackTrace(new PrintWriter(sw));
           infoTA.appendLine(out.toString());
-          infoTA.appendLine(bos.toString());
+          infoTA.appendLine(sw.toString());
         }
 
         infoTA.gotoTop();
@@ -476,7 +477,7 @@ public class BufrMessageViewer extends JPanel {
 
   private void writeAll() {
     List<MessageBean> beans = messageTable.getBeans();
-    HashMap<Integer, Message> map = new HashMap<Integer, Message>(2 * beans.size());
+    HashMap<Integer, Message> map = new HashMap<>(2 * beans.size());
 
     for (MessageBean mb : beans) {
       map.put(mb.m.hashCode(), mb.m);
@@ -504,7 +505,7 @@ public class BufrMessageViewer extends JPanel {
              WritableByteChannel wbc = fos.getChannel()) {
           String headerS = m.getHeader();
           if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes()));
+            wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
           byte[] raw = scan.getMessageBytes(m);
           wbc.write(ByteBuffer.wrap(raw));
         }
@@ -529,15 +530,15 @@ public class BufrMessageViewer extends JPanel {
       f.format("Read %d messages", count);
 
     } catch (Exception e) {
-       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-       e.printStackTrace(new PrintStream(bos));
-       f.format("%s", bos.toString());
+       StringWriter sw = new StringWriter(10000);
+       e.printStackTrace(new PrintWriter(sw));
+       f.format("%s", sw.toString());
     }
   }
 
   private void dumpDDS() {
     List<MessageBean> beans = messageTable.getBeans();
-    HashMap<Integer, Message> map = new HashMap<Integer, Message>(2 * beans.size());
+    HashMap<Integer, Message> map = new HashMap<>(2 * beans.size());
 
     // unique DDS
     for (MessageBean mb : beans) {
@@ -552,18 +553,17 @@ public class BufrMessageViewer extends JPanel {
     String filename = fileChooser.chooseFilenameToSave(defloc + ".txt");
     if (filename == null) return;
 
-    try {
-      File file = new File(filename);
-      FileOutputStream fos = new FileOutputStream(file);
+    try (FileOutputStream out = new FileOutputStream(filename)) {
+      OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+      BufferedWriter bw = new BufferedWriter(fout);
+      Formatter f = new Formatter(bw);
 
       int count = 0;
       for (Message m : map.values()) {
-        Formatter f = new Formatter(fos);
         m.dump(f);
         f.flush();
         count++;
       }
-      fos.close();
       JOptionPane.showMessageDialog(BufrMessageViewer.this, count + " successfully written to " + filename);
 
     } catch (IOException e1) {
@@ -640,7 +640,7 @@ public class BufrMessageViewer extends JPanel {
 
   public void setBufrFile(RandomAccessFile raf) throws IOException {
     this.raf = raf;
-    java.util.List<MessageBean> beanList = new ArrayList<MessageBean>();
+    java.util.List<MessageBean> beanList = new ArrayList<>();
     center = -1;
 
     scan = new MessageScanner(raf, 0, true);
@@ -659,22 +659,16 @@ public class BufrMessageViewer extends JPanel {
 
   private NetcdfFile makeBufrMessageAsDataset(Message m) throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
-    BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
+    NetcdfFileSubclass ncfile = new NetcdfFileSubclass(iosp, raf.getLocation());
     iosp.open(raf, ncfile, m);
     return ncfile;
   }
 
   private NetcdfFile makeBufrDataset() throws IOException {
     BufrIosp2 iosp = new BufrIosp2();
-    BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
+    NetcdfFileSubclass ncfile = new NetcdfFileSubclass(iosp, raf.getLocation());
     iosp.open(raf, ncfile, (CancelTask) null);
     return ncfile;
-  }
-
-  private static class BufrNetcdf extends NetcdfFile {
-    protected BufrNetcdf(IOServiceProvider spi, String location) throws IOException {
-      super(spi, location);
-    }
   }
 
   private int setDataDescriptors(java.util.List<DdsBean> beanList, DataDescriptor dds, int seqno) {
@@ -688,7 +682,7 @@ public class BufrMessageViewer extends JPanel {
 
   private void setObs(Message m) {
 
-    java.util.List<ObsBean> beanList = new ArrayList<ObsBean>();
+    java.util.List<ObsBean> beanList = new ArrayList<>();
     try {
       NetcdfFile ncd = makeBufrMessageAsDataset(m);
       Variable v = ncd.findVariable(BufrIosp2.obsRecord);
@@ -847,11 +841,6 @@ public class BufrMessageViewer extends JPanel {
   public class DdsBean {
     DataDescriptor dds;
     int seq;
-
-    // no-arg constructor
-
-    public DdsBean() {
-    }
 
     // create from a dataset
 

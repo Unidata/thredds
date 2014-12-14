@@ -104,9 +104,7 @@ class Utm_To_Gdc_Converter {
 
   private double A; // major axis
   private double F; // flattening
-  private double C, Eps2, Eps21, Eps25, Con, Con2, EF, Epsp2, Con6,
-      Con24, Con120, Con720, polx2b, polx3b, polx4b, polx5b,
-      conap;
+  private double Eps2, Eps25, Con2, EF, Epsp2, Con6, Con24, Con120, Con720, polx2b, polx3b, polx4b, polx5b, conap;
 
   private int zone;
 
@@ -167,11 +165,9 @@ class Utm_To_Gdc_Converter {
     this.hemisphere_north = hemisphere_north;
 
     //  Create the ERM constants.
-    C = (A) * (1 - F);
     Eps2 = (F) * (2.0 - F);
     Eps25 = .25 * (Eps2);
     EF = F / (2.0 - F);
-    Con = (1.0 - Eps2);
     Con2 = 2 / (1.0 - Eps2);
     Con6 = .166666666666667;
     Con24 = 4 * .0416666666666667 / (1 - Eps2);

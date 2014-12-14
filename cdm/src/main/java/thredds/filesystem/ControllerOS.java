@@ -121,6 +121,7 @@ public class ControllerOS implements MController {
     }
 
     public MFile next() {
+      if (next == null) throw new NoSuchElementException();
       return next;
     }
 

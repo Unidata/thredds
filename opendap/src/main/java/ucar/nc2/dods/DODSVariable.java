@@ -35,7 +35,7 @@ package ucar.nc2.dods;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Group;
-import ucar.nc2.DODSNode;
+import ucar.nc2.dods.DODSNode;
 
 
 import opendap.dap.*;
@@ -143,6 +143,26 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
   protected boolean hasCE(){ return CE != null; }
   protected String nameWithCE() { return hasCE() ? getShortName() + CE : getShortName(); }
 
+  /**
+   * Instances which have same content are equal.
+   */
+  @Override
+  public boolean equals(Object oo) {
+    if (this == oo) return true;
+    if (!(oo instanceof DODSVariable)) return false;
+    DODSVariable o = (DODSVariable) oo;
+    if(this.CE == null  ^ o.CE == null)
+        return false;
+    return super.equals(oo);
+  }
+
+    public int hashCode()
+    {
+        int supercode = super.hashCode();
+        if(CE != null)
+            supercode += (37 * CE.hashCode());
+        return supercode;
+    }
 
   //////////////////////////////////////////////////
   // DODSNode Interface

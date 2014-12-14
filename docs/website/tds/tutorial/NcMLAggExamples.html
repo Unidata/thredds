@@ -16,7 +16,7 @@ Our goal in this section is to aggregate datafiles using NcML.
   <div id="expanded" class="exercise">
     <h3>Example 1: JoinExisting</h3>
     <ol>
-      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/aggNcmlOne/data/archv.2012_240_00.nc</code></p></li>
+      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/aggAdvancedNcmlOne/data/archv.2012_240_00.nc</code></p></li>
       <li><p>Note that the variable "MT" has a shape of 1 - there is only one time in the file.</p></li>
       <li><p>In the data file path, change <code>archv.2012_240_00.nc</code> to <code>archv.2012_240_01.nc</code>. Did you notice any changes between the two
         files>?</p></li>
@@ -33,7 +33,7 @@ Our goal in this section is to aggregate datafiles using NcML.
         </pre>
 
       </li>
-      <li><p>Save the file as <code>/machine/tds/data/ncmlExamples/aggNcmlOne/joinExisting.ncml</code></p></p></li>
+      <li><p>Save the file as <code>/machine/tds/data/ncmlExamples/aggAdvancedNcmlOne/joinExisting.ncml</code></p></p></li>
       <li><p>Now, switch back to the Viewer tab and open the NcML file you just created. Note that the MT variable now has a size of 2 - yay, we aggregated the
         files. All done. Let's close up shop . . . not so fast.</p></li>
       <li><p>Notice anything funky? What is the difference between the variable "MT" vs. "Date"? Which one should be used to obtain the time values? How would
@@ -65,7 +65,7 @@ Our goal in this section is to aggregate datafiles using NcML.
     <p>In this example, we will use NcML to aggregate data files produced from the same model (same run, actually). However, something key is missing, and we
       will have to add it ourselves. Once again, we will see that joining these files is only part of the battle!</p>
     <ol>
-      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/aggNcmlTwo/data/umwmout_2013-06-04_23-00-00.nc</code></p></li>
+      <li><p>In the ToolsUI "Viewer" tab, open <code>/machine/tds/data/ncmlExamples/aggAdvancedNcmlTwo/data/umwmout_2013-06-04_23-00-00.nc</code></p></li>
       <li><p>In the data file path, change <code>umwmout_2013-06-04_23-00-00.nc</code> to <code>umwmout_2013-06-05_00-00-00.nc</code>. Did you notice any
         changes between the two files>?</p></li>
       <li><p>Do you notice anything missing? What dimension will we use to aggregate?></p></li>
@@ -82,7 +82,7 @@ Our goal in this section is to aggregate datafiles using NcML.
 &lt;/netcdf&gt;
           </pre>
       </li>
-      <li><p>Save the file as <code>/machine/tds/data/ncmlExamples/aggNcmlTwo/joinNew.ncml</code></p></p></li>
+      <li><p>Save the file as <code>/machine/tds/data/ncmlExamples/aggAdvancedNcmlTwo/joinNew.ncml</code></p></p></li>
       <li><p>Open your NcML file in the Viewer tab. Looks good, right? Ok, cool. All done. Let's close up shop . . . not so fast. Ugh.</p></li>
       <li><p>As it is, this will add a time dimension to all variables in the file. Is that what we want? What about the 1D coordinate variables?</p></li>
       <li><p>We should explicitly list the variables that we want to aggregate. This can be very tedious. Go ahead and add the following to your NcML file

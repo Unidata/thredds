@@ -30,48 +30,24 @@ public class DapTestCommon extends TestCase
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
 
-    static public final String FILESERVER = "dap4:file://localhost:8080";
+    static public final String FILESERVER = "file://localhost:8080";
 
     // NetcdfDataset enhancement to use: need only coord systems
     static Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
     static public final String CONSTRAINTTAG = "dap4.ce";
 
-    // System properties
-    protected boolean prop_ascii = true;
-    protected boolean prop_diff = true;
-    protected boolean prop_baseline = false;
-    protected boolean prop_visual = false;
-    protected boolean prop_debug = DEBUG;
-    protected boolean prop_generate = true;
-    protected String prop_controls = null;
+    // Equivalent to the path to the webapp/d4ts for testing purposes
+    static protected final String PSEUDOWEBAPPPATH = "/d4tests/src/test/data";
+    static protected final String RESOURCEPATH = "/resources";
 
     //////////////////////////////////////////////////
-    // Static variables
+    // Static Variables
 
     static public org.slf4j.Logger log;
 
-    // Define a tree pattern to recognize the root.
-    static protected String threddsroot = null;
-    static protected String dap4root = null;
-    static protected String d4tsServer = null;
-
-    static {
-        // Compute the root path
-        threddsroot = locateThreddsRoot();
-        if(threddsroot != null)
-            dap4root = threddsroot + "/" + DEFAULTTREEROOT;
-        // Compute the set of SOURCES
-        d4tsServer = TestDir.dap4TestServer;
-    }
-
     //////////////////////////////////////////////////
-    // static methods
-
-    static public String getDAP4Root()
-    {
-        return dap4root;
-    }
+    // Static methods
 
     // Walk around the directory structure to locate
     // the path to the thredds root (which may not
@@ -79,7 +55,8 @@ public class DapTestCommon extends TestCase
     // Same as code in UnitTestCommon, but for
     // some reason, Intellij will not let me import it.
 
-    static String locateThreddsRoot()
+    static String
+    locateThreddsRoot()
     {
         // Walk up the user.dir path looking for a node that has
         // all the directories in SUBROOTS.
@@ -115,11 +92,15 @@ public class DapTestCommon extends TestCase
     }
 
     static String
-    locateDAP4Root()
+    locateDAP4Root(String threddsroot)
     {
-        String root = locateThreddsRoot();
+        String root = threddsroot;
         if(root != null)
             root = root + "/" + DEFAULTTREEROOT;
+        // See if it exists
+        File f = new File(root);
+        if(!f.exists() || !f.isDirectory())
+            root = null;
         return root;
     }
 
@@ -151,7 +132,23 @@ public class DapTestCommon extends TestCase
     }
 
     //////////////////////////////////////////////////
-    // Instance databuffer
+    // Instance variables
+
+    // System properties
+    protected boolean prop_ascii = true;
+    protected boolean prop_diff = true;
+    protected boolean prop_baseline = false;
+    protected boolean prop_visual = false;
+    protected boolean prop_debug = DEBUG;
+    protected boolean prop_generate = true;
+    protected String prop_controls = null;
+
+    // Define a tree pattern to recognize the root.
+    protected String threddsroot = null;
+    protected String dap4root = null;
+    protected String d4tsServer = null;
+    protected String webapproot = null;
+    protected String resourcedir = null;
 
     protected String title = "Testing";
 
@@ -165,114 +162,25 @@ public class DapTestCommon extends TestCase
         super(name);
         this.title = name;
         setSystemProperties();
+        initPaths();
     }
 
-    public void setTitle(String title)
+    protected void
+    initPaths()
     {
-        this.title = title;
-    }
-
-    public String getTitle()
-    {
-        return this.title;
-    }
-
-    // Copy result into the a specified dir
-    public void
-    writefile(String path, String content)
-            throws IOException
-    {
-        FileWriter out = new FileWriter(path);
-        out.write(content);
-        out.close();
-    }
-
-    // Copy result into the a specified dir
-    static public void
-    writefile(String path, byte[] content)
-            throws IOException
-    {
-        FileOutputStream out = new FileOutputStream(path);
-        out.write(content);
-        out.close();
-    }
-
-    static public String
-    readfile(String filename)
-            throws IOException
-    {
-        StringBuilder buf = new StringBuilder();
-        FileReader file = new FileReader(filename);
-        BufferedReader rdr = new BufferedReader(file);
-        String line;
-        while((line = rdr.readLine()) != null) {
-            if(line.startsWith("#")) continue;
-            buf.append(line + "\n");
-        }
-        return buf.toString();
-    }
-
-    static public byte[]
-    readbinaryfile(String filename)
-            throws IOException
-    {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        FileInputStream file = new FileInputStream(filename);
-        return DapUtil.readbinaryfile(file);
-    }
-
-    public void
-    visual(String header, String captured)
-    {
-        if(!captured.endsWith("\n"))
-            captured = captured + "\n";
-        // Dump the output for visual comparison
-        System.out.println("Testing " + getName() + ": " + header + ":");
-        System.out.println("---------------");
-        System.out.print(captured);
-        System.out.println("---------------");
-    }
-
-    public boolean
-    compare(String baselinecontent, String testresult)
-            throws Exception
-    {
-        StringReader baserdr = new StringReader(baselinecontent);
-        StringReader resultrdr = new StringReader(testresult);
-        // Diff the two files
-        Diff diff = new Diff("Testing " + getTitle());
-        boolean pass = !diff.doDiff(baserdr, resultrdr);
-        baserdr.close();
-        resultrdr.close();
-        return pass;
-    }
-
-    // Properly access a dataset
-    static public NetcdfDataset openDataset(String url)
-            throws IOException
-    {
-        return NetcdfDataset.acquireDataset(null, url, ENHANCEMENT, -1, null, null);
-    }
-
-    // Fix up a filename reference in a string
-    static public String shortenFileName(String text, String filename)
-    {
-        // In order to achieve diff consistentcy, we need to
-        // modify the output to change "netcdf .../file.nc {...}"
-        // to "netcdf file.nc {...}"
-        String fixed = filename.replace('\\', '/');
-        String shortname = filename;
-        if(fixed.lastIndexOf('/') >= 0)
-            shortname = filename.substring(fixed.lastIndexOf('/') + 1, filename.length());
-        text = text.replaceAll(filename, shortname);
-        return text;
-    }
-
-    static public void
-    tag(String t)
-    {
-        System.err.println(t);
-        System.err.flush();
+        // Compute the root path
+        this.threddsroot = locateThreddsRoot();
+        if(this.threddsroot == null)
+            System.err.println("Cannot locate /thredds parent dir");
+        this.dap4root = locateDAP4Root(this.threddsroot);
+        if(this.dap4root == null)
+            System.err.println("Cannot locate /dap4 parent dir");
+        this.webapproot = this.dap4root + PSEUDOWEBAPPPATH;
+        this.resourcedir = this.webapproot + RESOURCEPATH;
+        // Compute the set of SOURCES
+        this.d4tsServer = TestDir.dap4TestServer;
+        if(DEBUG)
+            System.err.println("DapTestCommon: d4tsServer=" + d4tsServer);
     }
 
     /**
@@ -299,16 +207,70 @@ public class DapTestCommon extends TestCase
         prop_controls = System.getProperty("controls", "");
     }
 
+    //////////////////////////////////////////////////
+    // Accessor
+
+    public String getDAP4Root()
+    {
+        return this.dap4root;
+    }
+
+    public String getResourceDir()
+    {
+        return this.resourcedir;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    public String getTitle()
+    {
+        return this.title;
+    }
+
+    //////////////////////////////////////////////////
+    // Instance Utilities
+
+    public void
+    visual(String header, String captured)
+    {
+        if(!captured.endsWith("\n"))
+            captured = captured + "\n";
+        // Dump the output for visual comparison
+        System.out.println("Testing " + getName() + ": " + header + ":");
+        System.out.println("---------------");
+        System.out.print(captured);
+        System.out.println("---------------");
+    }
+
+    public boolean
+
+    compare(String baselinecontent, String testresult)
+            throws Exception
+    {
+        StringReader baserdr = new StringReader(baselinecontent);
+        StringReader resultrdr = new StringReader(testresult);
+        // Diff the two files
+        Diff diff = new Diff("Testing " + getTitle());
+        boolean pass = !diff.doDiff(baserdr, resultrdr);
+        baserdr.close();
+        resultrdr.close();
+        return pass;
+    }
+
     protected void
     findServer(String path)
             throws DapException
     {
-        if(d4tsServer.startsWith("file")) {
+        if(d4tsServer.startsWith("file:")) {
             d4tsServer = FILESERVER + "/" + path;
         } else {
             String svc = "http://" + d4tsServer + "/d4ts";
             if(!checkServer(svc))
                 throw new DapException("D4TS Server not reachable: " + svc);
+            // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
             d4tsServer = "dap4://" + d4tsServer + "/d4ts";
         }
     }
@@ -339,6 +301,88 @@ public class DapTestCommon extends TestCase
         }
     }
 
+    //////////////////////////////////////////////////
+    // Static utilities
+
+    // Copy result into the a specified dir
+    static public void
+    writefile(String path, String content)
+            throws IOException
+    {
+        File f = new File(path);
+        if(f.exists()) f.delete();
+        FileWriter out = new FileWriter(f);
+        out.write(content);
+        out.close();
+    }
+
+    // Copy result into the a specified dir
+    static public void
+    writefile(String path, byte[] content)
+            throws IOException
+    {
+        File f = new File(path);
+        if(f.exists()) f.delete();
+        FileOutputStream out = new FileOutputStream(f);
+        out.write(content);
+        out.close();
+    }
+
+    static public String
+    readfile(String filename)
+            throws IOException
+    {
+        StringBuilder buf = new StringBuilder();
+        File xx = new File(filename);
+        if(!xx.canRead()) {
+            int x = 0;
+        }
+        FileReader file = new FileReader(filename);
+        BufferedReader rdr = new BufferedReader(file);
+        String line;
+        while((line = rdr.readLine()) != null) {
+            if(line.startsWith("#")) continue;
+            buf.append(line + "\n");
+        }
+        return buf.toString();
+    }
+
+    static public byte[]
+    readbinaryfile(String filename)
+            throws IOException
+    {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        FileInputStream file = new FileInputStream(filename);
+        return DapUtil.readbinaryfile(file);
+    }
+
+    // Properly access a dataset
+    static public NetcdfDataset openDataset(String url)
+            throws IOException
+    {
+        return NetcdfDataset.acquireDataset(null, url, ENHANCEMENT, -1, null, null);
+    }
+
+    // Fix up a filename reference in a string
+    static public String shortenFileName(String text, String filename)
+    {
+        // In order to achieve diff consistentcy, we need to
+        // modify the output to change "netcdf .../file.nc {...}"
+        // to "netcdf file.nc {...}"
+        String fixed = filename.replace('\\', '/');
+        String shortname = filename;
+        if(fixed.lastIndexOf('/') >= 0)
+            shortname = filename.substring(fixed.lastIndexOf('/') + 1, filename.length());
+        text = text.replaceAll(filename, shortname);
+        return text;
+    }
+
+    static public void
+    tag(String t)
+    {
+        System.err.println(t);
+        System.err.flush();
+    }
 
 }
 

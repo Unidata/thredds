@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.10.0</table>
+  <title>Waves</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-0.shtml</source>
+  <parameter code="0">
+    <shortName>WVSP1</shortName>
+    <description>Wave Spectra (1)</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>WVSP2</shortName>
+    <description>Wave Spectra (2)</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>WVSP3</shortName>
+    <description>Wave Spectra (3)</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>HTSGW</shortName>
+    <description>Significant Height of Combined Wind Waves and Swell</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>WVDIR</shortName>
+    <description>Direction of Wind Waves</description>
+    <units>degree true</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>WVHGT</shortName>
+    <description>Significant Height of Wind Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>WVPER</shortName>
+    <description>Mean Period of Wind Waves</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>SWDIR</shortName>
+    <description>Direction of Swell Waves</description>
+    <units>degree true</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>SWELL</shortName>
+    <description>Significant Height of Swell Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>SWPER</shortName>
+    <description>Mean Period of Swell Waves</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>DIRPW</shortName>
+    <description>Primary Wave Direction</description>
+    <units>degree true</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>PERPW</shortName>
+    <description>Primary Wave Mean Period</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>DIRSW</shortName>
+    <description>Secondary Wave Direction</description>
+    <units>degree true</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>PERSW</shortName>
+    <description>Secondary Wave Mean Period</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>WWSDIR</shortName>
+    <description>Direction of Combined Wind Waves and Swell</description>
+    <units>degree true</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>MWSPER</shortName>
+    <description>Mean Period of Combined Wind Waves and Swell</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>CDWW</shortName>
+    <description>Coefficient of Drag With Waves</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>FRICV</shortName>
+    <description>Friction Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>WSTR</shortName>
+    <description>Wave Stress</description>
+    <units>N m-2</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>NWSTR</shortName>
+    <description>Normalised Waves Stress</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>MSSW</shortName>
+    <description>Mean Square Slope of Waves</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>USSD</shortName>
+    <description>U-component Surface Stokes Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="22">
+    <shortName>VSSD</shortName>
+    <description>V-component Surface Stokes Drift</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>PMAXWH</shortName>
+    <description>Period of Maximum Individual Wave Height</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>MAXWH</shortName>
+    <description>Maximum Individual Wave Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>IMWF</shortName>
+    <description>Inverse Mean Wave Frequency</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>IMFWW</shortName>
+    <description>Inverse Mean Frequency of The Wind Waves</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>IMFTSW</shortName>
+    <description>Inverse Mean Frequency of The Total Swell</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>MZWPER</shortName>
+    <description>Mean Zero-Crossing Wave Period</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>MZPWW</shortName>
+    <description>Mean Zero-Crossing Period of The Wind Waves</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>MZPTSW</shortName>
+    <description>Mean Zero-Crossing Period of The Total Swell</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>WDIRW</shortName>
+    <description>Wave Directional Width</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="32">
+    <shortName>DIRWWW</shortName>
+    <description>Directional Width of The Wind Waves</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>DIRWTS</shortName>
+    <description>Directional Width of The Total Swell</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>PWPER</shortName>
+    <description>Peak Wave Period</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>PPERWW</shortName>
+    <description>Peak Period of The Wind Waves</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="36">
+    <shortName>PPERTS</shortName>
+    <description>Peak Period of The Total Swell</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>ALTWH</shortName>
+    <description>Altimeter Wave Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>ALCWH</shortName>
+    <description>Altimeter Corrected Wave Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>ALRRC</shortName>
+    <description>Altimeter Range Relative Correction</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="40">
+    <shortName>MNWSOW</shortName>
+    <description>10 Metre Neutral Wind Speed Over Waves</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="41">
+    <shortName>MWDIRW</shortName>
+    <description>10 Metre Wind Direction Over Waves</description>
+    <units>degree true</units>
+  </parameter>
+  <parameter code="42">
+    <shortName>WESP</shortName>
+    <description>Wave Engery Spectrum</description>
+    <units>m-2 s rad-1</units>
+  </parameter>
+  <parameter code="43">
+    <shortName>KSSEW</shortName>
+    <description>Kurtosis of The Sea Surface Elevation Due to Waves</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="44">
+    <shortName>BENINX</shortName>
+    <description>Benjamin-Feir Index</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="45">
+    <shortName>SPFTR</shortName>
+    <description>Spectral Peakedness Factor</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>WSTP</shortName>
+    <description>Wave Steepness</description>
+    <units>proportion</units>
+  </parameter>
+</parameterMap>

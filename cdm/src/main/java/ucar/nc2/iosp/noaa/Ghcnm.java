@@ -1116,15 +1116,9 @@ public class Ghcnm extends AbstractIOServiceProvider {
   static private NetcdfFile open(String filename) throws IOException {
     Ghcnm iosp = new Ghcnm();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    MyNetcdfFile ncfile = new MyNetcdfFile(iosp);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, filename);
     iosp.open(raf, ncfile, null);
     return ncfile;
-  }
-
-  static private class MyNetcdfFile extends NetcdfFile {
-    MyNetcdfFile(Ghcnm iosp) {
-      this.spi = iosp;
-    }
   }
 
   static private void stnDuplicates(String filename, Set<Integer> stns, boolean wantDups) throws IOException {

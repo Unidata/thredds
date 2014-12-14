@@ -778,9 +778,6 @@ public class HtmlWriter {
       // Get last modified time.
       DateType lastModDateType = ds.getLastModifiedDate();
       if (lastModDateType == null) {
-        if (!ds.hasAccess())
-          sb.append("--");// "");
-        else
           sb.append("--");// "Unknown");
       } else {
         sb.append(lastModDateType.toDateTimeString());

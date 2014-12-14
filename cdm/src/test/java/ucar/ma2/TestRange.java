@@ -32,7 +32,7 @@
 
 package ucar.ma2;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * test Range class
@@ -40,25 +40,34 @@ import junit.framework.TestCase;
  * @author John
  * @since 11/2/11
  */
-public class TestRange extends TestCase {
+public class TestRange {
 
-  public TestRange( String name) {
-    super(name);
-  }
-
+  @Test
   public void testStride() throws InvalidRangeException {
     int nx = 1237;
     Range r = new Range(0,nx-1,9);
     System.out.printf("%s%n",r);
     System.out.printf("%d %d %d %d%n",r.first(),r.last(),r.stride(),r.length());
+    assert r.first() == 0;
+    assert r.last() == 1233;
+    assert r.stride() == 9;
+    assert r.length() == 138;
 
+    Section s = new Section( r, r);
+    Section.Iterator iter = s.getIterator(new int[] {nx, nx});
+    int[] iterResult = new int[2];
+    int count = 0;
     for (int y = r.first(); y <= r.last(); y += r.stride()) {
       for (int x = r.first(); x <= r.last(); x += r.stride()) {
-        int dataIdx = y * nx + x;
-        System.out.printf("%d,%d ",y,x);
+        assert iter.hasNext();
+        int iterN = iter.next(iterResult);
+        assert iterResult[0] == y;
+        assert iterResult[1] == x;
+        assert iterN == y * nx + x;
+        count++;
       }
-      System.out.printf("%n");
     }
+    assert count == 138 * 138;
 
   }
 }

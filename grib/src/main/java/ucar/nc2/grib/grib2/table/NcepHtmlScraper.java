@@ -40,8 +40,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -168,7 +170,7 @@ public class NcepHtmlScraper  {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename+".xml")) {
-      fout.write(x.getBytes());
+      fout.write(x.getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", x);
@@ -203,6 +205,8 @@ public class NcepHtmlScraper  {
     // System.out.printf("%s%n", title);
 
     Element table = doc.select("table").first();
+    assert table != null;
+
     List<Param> stuff = new ArrayList<>();
     Elements rows = table.select("tr");
     for (Element row : rows) {
@@ -298,7 +302,7 @@ public class NcepHtmlScraper  {
     String x = fmt.outputString(doc);
 
     try (FileOutputStream fout = new FileOutputStream(dirOut + filename+".xml")) {
-      fout.write(x.getBytes());
+      fout.write(x.getBytes(CDM.utf8Charset));
     }
 
     if (show) System.out.printf("%s%n", x);
@@ -312,13 +316,17 @@ public class NcepHtmlScraper  {
       f.format("%3d:%s:%s [%s]%n", p.pnum, p.name, p.desc, p.unit); // 1:PRES:Pressure [Pa]
 
     FileOutputStream fout = new FileOutputStream(dirOut + filename);
-    fout.write(f.toString().getBytes());
+    fout.write(f.toString().getBytes(CDM.utf8Charset));
     fout.close();
 
     if (show) System.out.printf("%s%n", f);
   }
 
+  // C:\dev\github\thredds\grib\src\main\resources\resources\grib2\ncep
+
   public static void main(String[] args) throws IOException {
+    File dir = new File(dirOut);
+    dir.mkdirs();
     NcepHtmlScraper scraper = new NcepHtmlScraper();
     scraper.parseTopDoc();
   }

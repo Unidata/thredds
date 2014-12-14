@@ -49,6 +49,27 @@ public class Grib2RecordScanner {
     return false;
   }
 
+  /**
+   * tricky bit of business. recapture the entire record based on drs position.
+   * for validation.
+   * @param raf             from this RandomAccessFile
+   * @param drsPos          Grib2SectionDataRepresentation starts here
+   */
+  public static Grib2Record findRecordByDrspos(RandomAccessFile raf, long drsPos) throws IOException {
+    long pos = Math.max(0, drsPos- (20*1000)); // go back 20K
+    Grib2RecordScanner scan = new Grib2RecordScanner(raf, pos);
+    while (scan.hasNext()) {
+      ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
+      Grib2SectionDataRepresentation drs = gr.getDataRepresentationSection();
+      if (drsPos == drs.getStartingPosition()) return gr;
+      if (raf.getFilePointer() > drsPos) break;   // missed it.
+    }
+    return null;
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////
+
   private Map<Long, Grib2SectionGridDefinition> gdsMap = new HashMap<>();
   private ucar.unidata.io.RandomAccessFile raf = null;
 
@@ -68,6 +89,13 @@ public class Grib2RecordScanner {
     lastPos = 0;
 
     if (debugRepeat) System.out.printf(" Grib2RecordScanner %s%n", raf.getLocation());
+  }
+
+  private Grib2RecordScanner(RandomAccessFile raf, long startFrom) throws IOException {
+    this.raf = raf;
+    raf.seek(startFrom);
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    lastPos = startFrom;
   }
 
   public boolean hasNext() throws IOException {
@@ -295,26 +323,6 @@ public class Grib2RecordScanner {
     if (debugRepeat) System.out.printf(" REPEAT DONE%n");
     repeatPos = -1; // no more repeats in this record
     return true;
-  }
-
-  /**
-   * tricky bit of business. recapture the entire record based on drs position.
-   * for validation.
-   * @param raf             from this RandomAccessFile
-   * @param drsPos          Grib2SectionDataRepresentation starts here
-   */
-  static public Grib2Record findRecordByDrspos(RandomAccessFile raf, long drsPos) throws IOException {
-    Grib2RecordScanner scanner = new Grib2RecordScanner(raf);
-    long pos = Math.max(0, drsPos-10000); // go back 10000 bytes
-    raf.seek(pos);
-    while (scanner.hasNext()) {  // find GRIB header
-      Grib2Record result = scanner.next();
-      if (result.getDataRepresentationSection().getStartingPosition() == drsPos)
-        return result;
-      if (raf.getFilePointer() > drsPos)
-        break;
-    }
-    return null;
   }
 
   public static void main2(String[] args) throws IOException {

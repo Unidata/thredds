@@ -1,0 +1,1968 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Common_C11_20141105_en.xsd" generated="2014-11-05T17:29:41">
+<Common_C11_20141105_en>
+<No>1</No>
+<CREX2>00000</CREX2>
+<GRIB2_BUFR4>0</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>WMO Secretariat</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>2</No>
+<OriginatingGeneratingCentre_en>00001-00009: WMCs</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>3</No>
+<CREX2>00001</CREX2>
+<GRIB2_BUFR4>1</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Melbourne</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>4</No>
+<CREX2>00002</CREX2>
+<GRIB2_BUFR4>2</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Melbourne</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>5</No>
+<CREX2>00003</CREX2>
+<GRIB2_BUFR4>3</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>6</No>
+<CREX2>00004</CREX2>
+<GRIB2_BUFR4>4</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Moscow</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>7</No>
+<CREX2>00005</CREX2>
+<GRIB2_BUFR4>5</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Moscow</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>8</No>
+<CREX2>00006</CREX2>
+<GRIB2_BUFR4>6</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>9</No>
+<CREX2>00007</CREX2>
+<GRIB2_BUFR4>7</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>US National Weather Service, National Centres for Environmental Prediction (NCEP)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>10</No>
+<CREX2>00008</CREX2>
+<GRIB2_BUFR4>8</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>US National Weather Service Telecommunications Gateway (NWSTG)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>11</No>
+<CREX2>00009</CREX2>
+<GRIB2_BUFR4>9</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>US National Weather Service - Other</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>12</No>
+<OriginatingGeneratingCentre_en>00010-00025: Centres in Region I</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>13</No>
+<CREX2>00010</CREX2>
+<GRIB2_BUFR4>10</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Cairo (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>14</No>
+<CREX2>00011</CREX2>
+<GRIB2_BUFR4>11</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>15</No>
+<CREX2>00012</CREX2>
+<GRIB2_BUFR4>12</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Dakar (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>16</No>
+<CREX2>00013</CREX2>
+<GRIB2_BUFR4>13</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>17</No>
+<CREX2>00014</CREX2>
+<GRIB2_BUFR4>14</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Nairobi (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>18</No>
+<CREX2>00015</CREX2>
+<GRIB2_BUFR4>15</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>19</No>
+<CREX2>00016</CREX2>
+<GRIB2_BUFR4>16</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Casablanca (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>20</No>
+<CREX2>00017</CREX2>
+<GRIB2_BUFR4>17</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Tunis (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>21</No>
+<CREX2>00018</CREX2>
+<GRIB2_BUFR4>18</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Tunis-Casablanca (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>22</No>
+<CREX2>00019</CREX2>
+<GRIB2_BUFR4>19</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>23</No>
+<CREX2>00020</CREX2>
+<GRIB2_BUFR4>20</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Las Palmas</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>24</No>
+<CREX2>00021</CREX2>
+<GRIB2_BUFR4>21</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Algiers (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>25</No>
+<CREX2>00022</CREX2>
+<GRIB2_BUFR4>22</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>ACMAD</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>26</No>
+<CREX2>00023</CREX2>
+<GRIB2_BUFR4>23</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Mozambique (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>27</No>
+<CREX2>00024</CREX2>
+<GRIB2_BUFR4>24</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Pretoria (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>28</No>
+<CREX2>00025</CREX2>
+<GRIB2_BUFR4>25</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>La Réunion (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>29</No>
+<OriginatingGeneratingCentre_en>00026-00040: Centres in Region II</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>30</No>
+<CREX2>00026</CREX2>
+<GRIB2_BUFR4>26</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Khabarovsk (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>31</No>
+<CREX2>00027</CREX2>
+<GRIB2_BUFR4>27</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>32</No>
+<CREX2>00028</CREX2>
+<GRIB2_BUFR4>28</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>New Delhi (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>33</No>
+<CREX2>00029</CREX2>
+<GRIB2_BUFR4>29</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>34</No>
+<CREX2>00030</CREX2>
+<GRIB2_BUFR4>30</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Novosibirsk (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>35</No>
+<CREX2>00031</CREX2>
+<GRIB2_BUFR4>31</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>36</No>
+<CREX2>00032</CREX2>
+<GRIB2_BUFR4>32</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Tashkent (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>37</No>
+<CREX2>00033</CREX2>
+<GRIB2_BUFR4>33</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Jeddah (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>38</No>
+<CREX2>00034</CREX2>
+<GRIB2_BUFR4>34</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Tokyo (RSMC), Japan Meteorological Agency</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>39</No>
+<CREX2>00035</CREX2>
+<GRIB2_BUFR4>35</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>40</No>
+<CREX2>00036</CREX2>
+<GRIB2_BUFR4>36</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bangkok</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>41</No>
+<CREX2>00037</CREX2>
+<GRIB2_BUFR4>37</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Ulaanbaatar</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>42</No>
+<CREX2>00038</CREX2>
+<GRIB2_BUFR4>38</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Beijing (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>43</No>
+<CREX2>00039</CREX2>
+<GRIB2_BUFR4>39</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>44</No>
+<CREX2>00040</CREX2>
+<GRIB2_BUFR4>40</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Seoul</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>45</No>
+<OriginatingGeneratingCentre_en>00041-00050: Centres in Region III</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>46</No>
+<CREX2>00041</CREX2>
+<GRIB2_BUFR4>41</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Buenos Aires (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>47</No>
+<CREX2>00042</CREX2>
+<GRIB2_BUFR4>42</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>48</No>
+<CREX2>00043</CREX2>
+<GRIB2_BUFR4>43</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Brasilia (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>49</No>
+<CREX2>00044</CREX2>
+<GRIB2_BUFR4>44</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>50</No>
+<CREX2>00045</CREX2>
+<GRIB2_BUFR4>45</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Santiago</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>51</No>
+<CREX2>00046</CREX2>
+<GRIB2_BUFR4>46</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Brazilian Space Agency ­ INPE</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>52</No>
+<CREX2>00047</CREX2>
+<GRIB2_BUFR4>47</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Colombia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>53</No>
+<CREX2>00048</CREX2>
+<GRIB2_BUFR4>48</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Ecuador (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>54</No>
+<CREX2>00049</CREX2>
+<GRIB2_BUFR4>49</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Peru (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>55</No>
+<CREX2>00050</CREX2>
+<GRIB2_BUFR4>50</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Venezuela (Bolivarian Republic of) (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>56</No>
+<OriginatingGeneratingCentre_en>00051-00063: Centres in Region IV</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>57</No>
+<CREX2>00051</CREX2>
+<GRIB2_BUFR4>51</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Miami (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>58</No>
+<CREX2>00052</CREX2>
+<GRIB2_BUFR4>52</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Miami RSMC, National Hurricane Centre</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>59</No>
+<CREX2>00053</CREX2>
+<GRIB2_BUFR4>53</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Montreal (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>60</No>
+<CREX2>00054</CREX2>
+<GRIB2_BUFR4>54</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>61</No>
+<CREX2>00055</CREX2>
+<GRIB2_BUFR4>55</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>San Francisco</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>62</No>
+<CREX2>00056</CREX2>
+<GRIB2_BUFR4>56</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>ARINC Centre</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>63</No>
+<CREX2>00057</CREX2>
+<GRIB2_BUFR4>57</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>US Air Force - Air Force Global Weather Central</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>64</No>
+<CREX2>00058</CREX2>
+<GRIB2_BUFR4>58</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Fleet Numerical Meteorology and Oceanography Center, Monterey, CA, United States</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>65</No>
+<CREX2>00059</CREX2>
+<GRIB2_BUFR4>59</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>The NOAA Forecast Systems Laboratory, Boulder, CO, United States</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>66</No>
+<CREX2>00060</CREX2>
+<GRIB2_BUFR4>60</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>United States National Center for Atmospheric Research (NCAR)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>67</No>
+<CREX2>00061</CREX2>
+<GRIB2_BUFR4>61</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Service ARGOS - Landover</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>68</No>
+<CREX2>00062</CREX2>
+<GRIB2_BUFR4>62</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>US Naval Oceanographic Office</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>69</No>
+<CREX2>00063</CREX2>
+<GRIB2_BUFR4>63</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>International Research Institute for Climate and Society (IRI)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>70</No>
+<OriginatingGeneratingCentre_en>00064-00073: Centres in Region V</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>71</No>
+<CREX2>00064</CREX2>
+<GRIB2_BUFR4>64</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Honolulu (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>72</No>
+<CREX2>00065</CREX2>
+<GRIB2_BUFR4>65</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Darwin (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>73</No>
+<CREX2>00066</CREX2>
+<GRIB2_BUFR4>66</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>74</No>
+<CREX2>00067</CREX2>
+<GRIB2_BUFR4>67</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Melbourne (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>75</No>
+<CREX2>00068</CREX2>
+<GRIB2_BUFR4>68</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reserved</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>76</No>
+<CREX2>00069</CREX2>
+<GRIB2_BUFR4>69</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Wellington (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>77</No>
+<CREX2>00070</CREX2>
+<GRIB2_BUFR4>70</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>78</No>
+<CREX2>00071</CREX2>
+<GRIB2_BUFR4>71</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Nadi (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>79</No>
+<CREX2>00072</CREX2>
+<GRIB2_BUFR4>72</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Singapore</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>80</No>
+<CREX2>00073</CREX2>
+<GRIB2_BUFR4>73</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Malaysia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>81</No>
+<OriginatingGeneratingCentre_en>00074-00099: Centres in Region VI</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>82</No>
+<CREX2>00074</CREX2>
+<GRIB2_BUFR4>74</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>UK Meteorological Office ­ Exeter (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>83</No>
+<CREX2>00075</CREX2>
+<GRIB2_BUFR4>75</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>84</No>
+<CREX2>00076</CREX2>
+<GRIB2_BUFR4>76</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Moscow (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>85</No>
+<CREX2>00077</CREX2>
+<GRIB2_BUFR4>77</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reserved</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>86</No>
+<CREX2>00078</CREX2>
+<GRIB2_BUFR4>78</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Offenbach (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>87</No>
+<CREX2>00079</CREX2>
+<GRIB2_BUFR4>79</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>88</No>
+<CREX2>00080</CREX2>
+<GRIB2_BUFR4>80</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Rome (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>89</No>
+<CREX2>00081</CREX2>
+<GRIB2_BUFR4>81</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>90</No>
+<CREX2>00082</CREX2>
+<GRIB2_BUFR4>82</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Norrköping</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>91</No>
+<CREX2>00083</CREX2>
+<GRIB2_BUFR4>83</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>92</No>
+<CREX2>00084</CREX2>
+<GRIB2_BUFR4>84</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Toulouse (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>93</No>
+<CREX2>00085</CREX2>
+<GRIB2_BUFR4>85</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Toulouse (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>94</No>
+<CREX2>00086</CREX2>
+<GRIB2_BUFR4>86</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Helsinki</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>95</No>
+<CREX2>00087</CREX2>
+<GRIB2_BUFR4>87</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Belgrade</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>96</No>
+<CREX2>00088</CREX2>
+<GRIB2_BUFR4>88</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Oslo</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>97</No>
+<CREX2>00089</CREX2>
+<GRIB2_BUFR4>89</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Prague</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>98</No>
+<CREX2>00090</CREX2>
+<GRIB2_BUFR4>90</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Episkopi</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>99</No>
+<CREX2>00091</CREX2>
+<GRIB2_BUFR4>91</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Ankara</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>100</No>
+<CREX2>00092</CREX2>
+<GRIB2_BUFR4>92</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Frankfurt/Main</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>101</No>
+<CREX2>00093</CREX2>
+<GRIB2_BUFR4>93</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>London (WAFC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>102</No>
+<CREX2>00094</CREX2>
+<GRIB2_BUFR4>94</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Copenhagen</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>103</No>
+<CREX2>00095</CREX2>
+<GRIB2_BUFR4>95</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Rota</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>104</No>
+<CREX2>00096</CREX2>
+<GRIB2_BUFR4>96</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Athens</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>105</No>
+<CREX2>00097</CREX2>
+<GRIB2_BUFR4>97</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>European Space Agency (ESA)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>106</No>
+<CREX2>00098</CREX2>
+<GRIB2_BUFR4>98</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>European Centre for Medium Range Weather Forecasts (ECMWF) (RSMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>107</No>
+<CREX2>00099</CREX2>
+<GRIB2_BUFR4>99</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>De Bilt</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>108</No>
+<OriginatingGeneratingCentre_en>Additional Centres</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>109</No>
+<CREX2>00100</CREX2>
+<GRIB2_BUFR4>100</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Brazzaville</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>110</No>
+<CREX2>00101</CREX2>
+<GRIB2_BUFR4>101</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Abidjan</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>111</No>
+<CREX2>00102</CREX2>
+<GRIB2_BUFR4>102</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Libya (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>112</No>
+<CREX2>00103</CREX2>
+<GRIB2_BUFR4>103</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Madagascar (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>113</No>
+<CREX2>00104</CREX2>
+<GRIB2_BUFR4>104</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Mauritius (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>114</No>
+<CREX2>00105</CREX2>
+<GRIB2_BUFR4>105</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Niger (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>115</No>
+<CREX2>00106</CREX2>
+<GRIB2_BUFR4>106</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Seychelles (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>116</No>
+<CREX2>00107</CREX2>
+<GRIB2_BUFR4>107</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Uganda (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>117</No>
+<CREX2>00108</CREX2>
+<GRIB2_BUFR4>108</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>United Republic of Tanzania (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>118</No>
+<CREX2>00109</CREX2>
+<GRIB2_BUFR4>109</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Zimbabwe (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>119</No>
+<CREX2>00110</CREX2>
+<GRIB2_BUFR4>110</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Hong Kong, China</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>120</No>
+<CREX2>00111</CREX2>
+<GRIB2_BUFR4>111</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Afghanistan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>121</No>
+<CREX2>00112</CREX2>
+<GRIB2_BUFR4>112</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bahrain (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>122</No>
+<CREX2>00113</CREX2>
+<GRIB2_BUFR4>113</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bangladesh (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>123</No>
+<CREX2>00114</CREX2>
+<GRIB2_BUFR4>114</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bhutan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>124</No>
+<CREX2>00115</CREX2>
+<GRIB2_BUFR4>115</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Cambodia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>125</No>
+<CREX2>00116</CREX2>
+<GRIB2_BUFR4>116</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Democratic People&apos;s Republic of Korea (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>126</No>
+<CREX2>00117</CREX2>
+<GRIB2_BUFR4>117</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Islamic Republic of Iran (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>127</No>
+<CREX2>00118</CREX2>
+<GRIB2_BUFR4>118</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Iraq (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>128</No>
+<CREX2>00119</CREX2>
+<GRIB2_BUFR4>119</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Kazakhstan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>129</No>
+<CREX2>00120</CREX2>
+<GRIB2_BUFR4>120</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Kuwait (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>130</No>
+<CREX2>00121</CREX2>
+<GRIB2_BUFR4>121</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Kyrgyzstan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>131</No>
+<CREX2>00122</CREX2>
+<GRIB2_BUFR4>122</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Lao People&apos;s Democratic Republic (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>132</No>
+<CREX2>00123</CREX2>
+<GRIB2_BUFR4>123</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Macao, China</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>133</No>
+<CREX2>00124</CREX2>
+<GRIB2_BUFR4>124</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Maldives (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>134</No>
+<CREX2>00125</CREX2>
+<GRIB2_BUFR4>125</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Myanmar (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>135</No>
+<CREX2>00126</CREX2>
+<GRIB2_BUFR4>126</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Nepal (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>136</No>
+<CREX2>00127</CREX2>
+<GRIB2_BUFR4>127</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Oman (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>137</No>
+<CREX2>00128</CREX2>
+<GRIB2_BUFR4>128</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Pakistan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>138</No>
+<CREX2>00129</CREX2>
+<GRIB2_BUFR4>129</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Qatar (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>139</No>
+<CREX2>00130</CREX2>
+<GRIB2_BUFR4>130</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Yemen (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>140</No>
+<CREX2>00131</CREX2>
+<GRIB2_BUFR4>131</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Sri Lanka (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>141</No>
+<CREX2>00132</CREX2>
+<GRIB2_BUFR4>132</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Tajikistan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>142</No>
+<CREX2>00133</CREX2>
+<GRIB2_BUFR4>133</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Turkmenistan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>143</No>
+<CREX2>00134</CREX2>
+<GRIB2_BUFR4>134</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>United Arab Emirates (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>144</No>
+<CREX2>00135</CREX2>
+<GRIB2_BUFR4>135</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Uzbekistan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>145</No>
+<CREX2>00136</CREX2>
+<GRIB2_BUFR4>136</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Viet Nam (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>146</No>
+<CREX2>00137-00139</CREX2>
+<GRIB2_BUFR4>137-139</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reserved for other centres</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>147</No>
+<CREX2>00140</CREX2>
+<GRIB2_BUFR4>140</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bolivia (Plurinational State of) (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>148</No>
+<CREX2>00141</CREX2>
+<GRIB2_BUFR4>141</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Guyana (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>149</No>
+<CREX2>00142</CREX2>
+<GRIB2_BUFR4>142</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Paraguay (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>150</No>
+<CREX2>00143</CREX2>
+<GRIB2_BUFR4>143</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Suriname (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>151</No>
+<CREX2>00144</CREX2>
+<GRIB2_BUFR4>144</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Uruguay (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>152</No>
+<CREX2>00145</CREX2>
+<GRIB2_BUFR4>145</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>French Guiana</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>153</No>
+<CREX2>00146</CREX2>
+<GRIB2_BUFR4>146</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Brazilian Navy Hydrographic Centre</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>154</No>
+<CREX2>00147</CREX2>
+<GRIB2_BUFR4>147</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>National Commission on Space Activities (CONAE) - Argentina</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>155</No>
+<CREX2>00148-00149</CREX2>
+<GRIB2_BUFR4>148-149</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reserved for other centres</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>156</No>
+<CREX2>00150</CREX2>
+<GRIB2_BUFR4>150</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Antigua and Barbuda (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>157</No>
+<CREX2>00151</CREX2>
+<GRIB2_BUFR4>151</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bahamas (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>158</No>
+<CREX2>00152</CREX2>
+<GRIB2_BUFR4>152</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Barbados (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>159</No>
+<CREX2>00153</CREX2>
+<GRIB2_BUFR4>153</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Belize (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>160</No>
+<CREX2>00154</CREX2>
+<GRIB2_BUFR4>154</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>British Caribbean Territories Centre</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>161</No>
+<CREX2>00155</CREX2>
+<GRIB2_BUFR4>155</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>San José</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>162</No>
+<CREX2>00156</CREX2>
+<GRIB2_BUFR4>156</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Cuba (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>163</No>
+<CREX2>00157</CREX2>
+<GRIB2_BUFR4>157</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Dominica (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>164</No>
+<CREX2>00158</CREX2>
+<GRIB2_BUFR4>158</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Dominican Republic (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>165</No>
+<CREX2>00159</CREX2>
+<GRIB2_BUFR4>159</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>El Salvador (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>166</No>
+<CREX2>00160</CREX2>
+<GRIB2_BUFR4>160</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>US NOAA/NESDIS</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>167</No>
+<CREX2>00161</CREX2>
+<GRIB2_BUFR4>161</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>US NOAA Office of Oceanic and Atmospheric Research</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>168</No>
+<CREX2>00162</CREX2>
+<GRIB2_BUFR4>162</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Guatemala (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>169</No>
+<CREX2>00163</CREX2>
+<GRIB2_BUFR4>163</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Haiti (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>170</No>
+<CREX2>00164</CREX2>
+<GRIB2_BUFR4>164</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Honduras (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>171</No>
+<CREX2>00165</CREX2>
+<GRIB2_BUFR4>165</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Jamaica (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>172</No>
+<CREX2>00166</CREX2>
+<GRIB2_BUFR4>166</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Mexico</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>173</No>
+<CREX2>00167</CREX2>
+<GRIB2_BUFR4>167</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Curaçao and Sint Maarten (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>174</No>
+<CREX2>00168</CREX2>
+<GRIB2_BUFR4>168</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Nicaragua (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>175</No>
+<CREX2>00169</CREX2>
+<GRIB2_BUFR4>169</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Panama (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>176</No>
+<CREX2>00170</CREX2>
+<GRIB2_BUFR4>170</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Saint Lucia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>177</No>
+<CREX2>00171</CREX2>
+<GRIB2_BUFR4>171</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Trinidad and Tobago (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>178</No>
+<CREX2>00172</CREX2>
+<GRIB2_BUFR4>172</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>French Departments in RA IV</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>179</No>
+<CREX2>00173</CREX2>
+<GRIB2_BUFR4>173</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>US National Aeronautics and Space Administration (NASA)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>180</No>
+<CREX2>00174</CREX2>
+<GRIB2_BUFR4>174</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Integrated Science Data Management/Marine Environmental Data Service (ISDM/MEDS - Canada)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>181</No>
+<CREX2>00175</CREX2>
+<GRIB2_BUFR4>175</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>University Corporation for Atmospheric Research (UCAR) - United States</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>182</No>
+<CREX2>00176</CREX2>
+<GRIB2_BUFR4>176</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Cooperative Institute for Meteorological Satellite Studies (CIMSS) - United States</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>183</No>
+<CREX2>00177</CREX2>
+<GRIB2_BUFR4>177</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>NOAA National Ocean Service - United States</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>184</No>
+<CREX2>00178-00189</CREX2>
+<GRIB2_BUFR4>178-189</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reserved for other centres</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>185</No>
+<CREX2>00190</CREX2>
+<GRIB2_BUFR4>190</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Cook Islands (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>186</No>
+<CREX2>00191</CREX2>
+<GRIB2_BUFR4>191</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>French Polynesia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>187</No>
+<CREX2>00192</CREX2>
+<GRIB2_BUFR4>192</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Tonga (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>188</No>
+<CREX2>00193</CREX2>
+<GRIB2_BUFR4>193</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Vanuatu (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>189</No>
+<CREX2>00194</CREX2>
+<GRIB2_BUFR4>194</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Brunei Darussalam (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>190</No>
+<CREX2>00195</CREX2>
+<GRIB2_BUFR4>195</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Indonesia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>191</No>
+<CREX2>00196</CREX2>
+<GRIB2_BUFR4>196</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Kiribati (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>192</No>
+<CREX2>00197</CREX2>
+<GRIB2_BUFR4>197</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Federated States of Micronesia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>193</No>
+<CREX2>00198</CREX2>
+<GRIB2_BUFR4>198</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>New Caledonia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>194</No>
+<CREX2>00199</CREX2>
+<GRIB2_BUFR4>199</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Niue</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>195</No>
+<CREX2>00200</CREX2>
+<GRIB2_BUFR4>200</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Papua New Guinea (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>196</No>
+<CREX2>00201</CREX2>
+<GRIB2_BUFR4>201</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Philippines (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>197</No>
+<CREX2>00202</CREX2>
+<GRIB2_BUFR4>202</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Samoa (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>198</No>
+<CREX2>00203</CREX2>
+<GRIB2_BUFR4>203</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Solomon Islands (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>199</No>
+<CREX2>00204</CREX2>
+<GRIB2_BUFR4>204</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>National Institute of Water and Atmospheric Research (NIWA - New Zealand)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>200</No>
+<CREX2>00205-00209</CREX2>
+<GRIB2_BUFR4>205-209</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reserved for other centres</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>201</No>
+<CREX2>00210</CREX2>
+<GRIB2_BUFR4>210</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Frascati (ESA/ESRIN)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>202</No>
+<CREX2>00211</CREX2>
+<GRIB2_BUFR4>211</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Lannion</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>203</No>
+<CREX2>00212</CREX2>
+<GRIB2_BUFR4>212</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Lisboa</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>204</No>
+<CREX2>00213</CREX2>
+<GRIB2_BUFR4>213</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reykjavik</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>205</No>
+<CREX2>00214</CREX2>
+<GRIB2_BUFR4>214</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Madrid</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>206</No>
+<CREX2>00215</CREX2>
+<GRIB2_BUFR4>215</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Zurich</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>207</No>
+<CREX2>00216</CREX2>
+<GRIB2_BUFR4>216</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Service ARGOS Toulouse</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>208</No>
+<CREX2>00217</CREX2>
+<GRIB2_BUFR4>217</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bratislava</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>209</No>
+<CREX2>00218</CREX2>
+<GRIB2_BUFR4>218</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Budapest</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>210</No>
+<CREX2>00219</CREX2>
+<GRIB2_BUFR4>219</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Ljubljana</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>211</No>
+<CREX2>00220</CREX2>
+<GRIB2_BUFR4>220</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Warsaw</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>212</No>
+<CREX2>00221</CREX2>
+<GRIB2_BUFR4>221</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Zagreb</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>213</No>
+<CREX2>00222</CREX2>
+<GRIB2_BUFR4>222</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Albania (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>214</No>
+<CREX2>00223</CREX2>
+<GRIB2_BUFR4>223</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Armenia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>215</No>
+<CREX2>00224</CREX2>
+<GRIB2_BUFR4>224</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Austria (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>216</No>
+<CREX2>00225</CREX2>
+<GRIB2_BUFR4>225</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Azerbaijan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>217</No>
+<CREX2>00226</CREX2>
+<GRIB2_BUFR4>226</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Belarus (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>218</No>
+<CREX2>00227</CREX2>
+<GRIB2_BUFR4>227</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Belgium (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>219</No>
+<CREX2>00228</CREX2>
+<GRIB2_BUFR4>228</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bosnia and Herzegovina (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>220</No>
+<CREX2>00229</CREX2>
+<GRIB2_BUFR4>229</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Bulgaria (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>221</No>
+<CREX2>00230</CREX2>
+<GRIB2_BUFR4>230</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Cyprus (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>222</No>
+<CREX2>00231</CREX2>
+<GRIB2_BUFR4>231</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Estonia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>223</No>
+<CREX2>00232</CREX2>
+<GRIB2_BUFR4>232</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Georgia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>224</No>
+<CREX2>00233</CREX2>
+<GRIB2_BUFR4>233</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Dublin</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>225</No>
+<CREX2>00234</CREX2>
+<GRIB2_BUFR4>234</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Israel (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>226</No>
+<CREX2>00235</CREX2>
+<GRIB2_BUFR4>235</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Jordan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>227</No>
+<CREX2>00236</CREX2>
+<GRIB2_BUFR4>236</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Latvia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>228</No>
+<CREX2>00237</CREX2>
+<GRIB2_BUFR4>237</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Lebanon (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>229</No>
+<CREX2>00238</CREX2>
+<GRIB2_BUFR4>238</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Lithuania (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>230</No>
+<CREX2>00239</CREX2>
+<GRIB2_BUFR4>239</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Luxembourg</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>231</No>
+<CREX2>00240</CREX2>
+<GRIB2_BUFR4>240</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Malta (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>232</No>
+<CREX2>00241</CREX2>
+<GRIB2_BUFR4>241</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Monaco</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>233</No>
+<CREX2>00242</CREX2>
+<GRIB2_BUFR4>242</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Romania (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>234</No>
+<CREX2>00243</CREX2>
+<GRIB2_BUFR4>243</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Syrian Arab Republic (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>235</No>
+<CREX2>00244</CREX2>
+<GRIB2_BUFR4>244</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>The former Yugoslav Republic of Macedonia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>236</No>
+<CREX2>00245</CREX2>
+<GRIB2_BUFR4>245</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Ukraine (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>237</No>
+<CREX2>00246</CREX2>
+<GRIB2_BUFR4>246</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Republic of Moldova (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>238</No>
+<CREX2>00247</CREX2>
+<GRIB2_BUFR4>247</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Operational Programme for the Exchange of weather RAdar information (OPERA) - EUMETNET</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>239</No>
+<CREX2>00248</CREX2>
+<GRIB2_BUFR4>248</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Montenegro (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>240</No>
+<CREX2>00249</CREX2>
+<GRIB2_BUFR4>249</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Barcelona Dust Forecast Center</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>241</No>
+<CREX2>00250</CREX2>
+<GRIB2_BUFR4>250</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>COnsortium for Small scale MOdelling (COSMO)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>242</No>
+<CREX2>00251</CREX2>
+<GRIB2_BUFR4>251</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Meteorological Cooperation on Operational NWP (MetCoOp)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>243</No>
+<CREX2>00252</CREX2>
+<GRIB2_BUFR4>252</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Max Planck Institute for Meteorology (MPI-M)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>244</No>
+<CREX2>00253</CREX2>
+<GRIB2_BUFR4>253</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reserved for other centres</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>245</No>
+<CREX2>00254</CREX2>
+<GRIB2_BUFR4>254</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>EUMETSAT Operation Centre</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>246</No>
+<CREX2>00255</CREX2>
+<GRIB2_BUFR4>255</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Not to be used</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>247</No>
+<CREX2>00256</CREX2>
+<GRIB2_BUFR4>256</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Angola (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>248</No>
+<CREX2>00257</CREX2>
+<GRIB2_BUFR4>257</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Benin (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>249</No>
+<CREX2>00258</CREX2>
+<GRIB2_BUFR4>258</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Botswana (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>250</No>
+<CREX2>00259</CREX2>
+<GRIB2_BUFR4>259</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Burkina Faso (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>251</No>
+<CREX2>00260</CREX2>
+<GRIB2_BUFR4>260</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Burundi (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>252</No>
+<CREX2>00261</CREX2>
+<GRIB2_BUFR4>261</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Cameroon (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>253</No>
+<CREX2>00262</CREX2>
+<GRIB2_BUFR4>262</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Cabo Verde (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>254</No>
+<CREX2>00263</CREX2>
+<GRIB2_BUFR4>263</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Central African Republic (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>255</No>
+<CREX2>00264</CREX2>
+<GRIB2_BUFR4>264</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Chad (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>256</No>
+<CREX2>00265</CREX2>
+<GRIB2_BUFR4>265</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Comoros (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>257</No>
+<CREX2>00266</CREX2>
+<GRIB2_BUFR4>266</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Democratic Republic of the Congo (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>258</No>
+<CREX2>00267</CREX2>
+<GRIB2_BUFR4>267</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Djibouti (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>259</No>
+<CREX2>00268</CREX2>
+<GRIB2_BUFR4>268</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Eritrea (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>260</No>
+<CREX2>00269</CREX2>
+<GRIB2_BUFR4>269</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Ethiopia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>261</No>
+<CREX2>00270</CREX2>
+<GRIB2_BUFR4>270</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Gabon (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>262</No>
+<CREX2>00271</CREX2>
+<GRIB2_BUFR4>271</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Gambia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>263</No>
+<CREX2>00272</CREX2>
+<GRIB2_BUFR4>272</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Ghana (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>264</No>
+<CREX2>00273</CREX2>
+<GRIB2_BUFR4>273</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Guinea (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>265</No>
+<CREX2>00274</CREX2>
+<GRIB2_BUFR4>274</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Guinea-Bissau (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>266</No>
+<CREX2>00275</CREX2>
+<GRIB2_BUFR4>275</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Lesotho (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>267</No>
+<CREX2>00276</CREX2>
+<GRIB2_BUFR4>276</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Liberia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>268</No>
+<CREX2>00277</CREX2>
+<GRIB2_BUFR4>277</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Malawi (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>269</No>
+<CREX2>00278</CREX2>
+<GRIB2_BUFR4>278</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Mali (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>270</No>
+<CREX2>00279</CREX2>
+<GRIB2_BUFR4>279</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Mauritania (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>271</No>
+<CREX2>00280</CREX2>
+<GRIB2_BUFR4>280</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Namibia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>272</No>
+<CREX2>00281</CREX2>
+<GRIB2_BUFR4>281</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Nigeria (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>273</No>
+<CREX2>00282</CREX2>
+<GRIB2_BUFR4>282</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Rwanda (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>274</No>
+<CREX2>00283</CREX2>
+<GRIB2_BUFR4>283</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Sao Tome and Principe (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>275</No>
+<CREX2>00284</CREX2>
+<GRIB2_BUFR4>284</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Sierra Leone (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>276</No>
+<CREX2>00285</CREX2>
+<GRIB2_BUFR4>285</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Somalia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>277</No>
+<CREX2>00286</CREX2>
+<GRIB2_BUFR4>286</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Sudan (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>278</No>
+<CREX2>00287</CREX2>
+<GRIB2_BUFR4>287</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Swaziland (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>279</No>
+<CREX2>00288</CREX2>
+<GRIB2_BUFR4>288</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Togo (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>280</No>
+<CREX2>00289</CREX2>
+<GRIB2_BUFR4>289</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Zambia (NMC)</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>281</No>
+<CREX2>00290-65534</CREX2>
+<GRIB2_BUFR4>290-65534</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Reserved for other centres</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>282</No>
+<CREX2>65535</CREX2>
+<GRIB2_BUFR4>65535</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Missing value</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+<Common_C11_20141105_en>
+<No>283</No>
+<CREX2>65536-99999</CREX2>
+<GRIB2_BUFR4>Not applicable</GRIB2_BUFR4>
+<OriginatingGeneratingCentre_en>Not used</OriginatingGeneratingCentre_en>
+<Status>Operational</Status>
+</Common_C11_20141105_en>
+</dataroot>

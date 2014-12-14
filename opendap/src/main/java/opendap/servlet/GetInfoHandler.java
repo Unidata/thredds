@@ -108,7 +108,7 @@ public class GetInfoHandler {
      * @see GuardedDataset
      * @see ReqState
      */
-    public void sendINFO(PrintStream pw, GuardedDataset gds, ReqState rs) throws DAP2Exception, ParseException {
+    public void sendINFO(PrintWriter pw, GuardedDataset gds, ReqState rs) throws DAP2Exception, ParseException {
 
         if (_Debug) System.out.println("opendap.servlet.GetInfoHandler.sendINFO() reached.");
 
@@ -184,7 +184,7 @@ public class GetInfoHandler {
         try {
             File fin = new File(infoDir + overrideFile);
             try (
-            BufferedReader svIn = new BufferedReader(new InputStreamReader(new FileInputStream(fin)));
+            BufferedReader svIn = new BufferedReader(new InputStreamReader(new FileInputStream(fin),Util.UTF8));
             ) {
                 boolean done = false;
                 while(!done) {
@@ -291,7 +291,7 @@ public class GetInfoHandler {
 
                 try {
                     AttributeTable attr = das.getAttributeTable(name);
-
+		    if(attr != null) {
                     Enumeration e = attr.getNames();
                     while (e.hasMoreElements()) {
                         String aName = (String) e.nextElement();
@@ -313,16 +313,15 @@ public class GetInfoHandler {
                         ga.append("</td></tr>\n");
 
                     }
+		  }
                 } catch (NoSuchAttributeException nsae) {
                 }
 
             }
         }
         ga.append("</table>\n<p>\n");
-
         if (!found)
             ga.setLength(0);
-
         return (ga.toString());
     }
 

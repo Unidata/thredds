@@ -173,7 +173,10 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
    */
   protected void makeFileSubType() {
     // determine file type
-    String latType = findKey(GempakStation.SLAT).type;
+    Key key = findKey(GempakStation.SLAT);
+    if (key == null)
+      throw new IllegalStateException("File does not have key="+GempakStation.SLAT);
+    String latType = key.type;
     if (!(findKey(DATE).type.equals(latType))) {
       if (latType.equals(ROW)) {
         subType = CLIMATE;

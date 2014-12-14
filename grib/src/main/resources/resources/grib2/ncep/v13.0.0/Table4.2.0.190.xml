@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.190</table>
+  <title>CCITT IA5 string</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-190.shtml</source>
+  <parameter code="0">
+    <shortName>ATEXT</shortName>
+    <description>Arbitrary Text String</description>
+    <units>CCITTIA5</units>
+  </parameter>
+</parameterMap>

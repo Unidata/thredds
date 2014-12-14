@@ -115,7 +115,6 @@ public class ValueClause
     public void printConstraint(PrintWriter os)
     {
         if (constant) {
-            StringWriter w = new StringWriter();
             value.printVal(os, "", false);
         } else {
             value.printConstraint(os);

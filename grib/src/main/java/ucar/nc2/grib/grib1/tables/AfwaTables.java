@@ -39,7 +39,9 @@ import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Air Force Weather Center (center 57)
@@ -50,9 +52,9 @@ import java.util.HashMap;
 public class AfwaTables extends Grib1Customizer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AfwaTables.class);
 
-  private static HashMap<Integer, GribLevelType> levelTypesMap;  // shared by all instances
-  private static HashMap<Integer, String> genProcessMap;  // shared by all instances
-  private static HashMap<Integer, String> subcenterMap;  // shared by all instances
+  private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, String> genProcessMap;  // shared by all instances
+  private static Map<Integer, String> subcenterMap;  // shared by all instances
 
   AfwaTables(Grib1ParamTables tables) {
     super(57, tables);
@@ -62,40 +64,43 @@ public class AfwaTables extends Grib1Customizer {
 
   @Override
   public String getSubCenterName(int subcenter) {
-    if (subcenterMap == null) makeSubcenterMap();
+    if (subcenterMap == null)
+      subcenterMap = makeSubcenterMap();
     return subcenterMap.get(subcenter);
   }
 
-  static private void makeSubcenterMap() {
-    subcenterMap = new HashMap<>(100);
+  static private Map<Integer, String> makeSubcenterMap() {
+    Map<Integer, String> result = new HashMap<>(100);
 
-    subcenterMap.put(0, "AFWA Primary Table");
-    subcenterMap.put(1, "AFWA Numerical Weather Prediction Models Products");
-    subcenterMap.put(2, "AFWA Special Environmental Models Products");
-    subcenterMap.put(3, "AFWA Space Products");
-    subcenterMap.put(4, "AFWA Ensemble Products");
-    subcenterMap.put(6, "AFWA Aerosol Products");
-    subcenterMap.put(7, "CDFS-II Aerosol Model");
-    subcenterMap.put(8, "AFWA Volcano Products");
-    subcenterMap.put(10, "14 WS (Formerly Air Force Combat Climatology Center (AFCCC))");
-    subcenterMap.put(11, "14 WS Numerical Weather Prediction Models Products");
-    subcenterMap.put(15, "15 OWS (Scott)");
-    subcenterMap.put(17, "17 OWS (Hickam)");
-    subcenterMap.put(20, "20 OWS (Yokota)");
-    subcenterMap.put(21, "21 OWS (Sembach)");
-    subcenterMap.put(25, "25 OWS (Davis-Monthan)");
-    subcenterMap.put(26, "26 OWS (Barksdale)");
-    subcenterMap.put(27, "27 OWS (Offutt)");
-    subcenterMap.put(28, "28 OWS (Shaw)");
-    subcenterMap.put(29, "Air Force Tactical Application Center (AFTAC) ");
-    subcenterMap.put(90, "AFWA 4DF 1");
-    subcenterMap.put(91, "AFWA 4DF 2");
-    subcenterMap.put(92, "AFWA 4DF 3");
-    subcenterMap.put(93, "AFWA 4DF 4");
-    subcenterMap.put(94, "AFWA 4DF 5");
-    subcenterMap.put(110, "Air Force Research Lab (AFRL) Office of Research and Applications");
-    subcenterMap.put(130, "Patrick AFB OWS Eastern Test Range");
-    subcenterMap.put(150, "IPDS Satellite");
+    result.put(0, "AFWA Primary Table");
+    result.put(1, "AFWA Numerical Weather Prediction Models Products");
+    result.put(2, "AFWA Special Environmental Models Products");
+    result.put(3, "AFWA Space Products");
+    result.put(4, "AFWA Ensemble Products");
+    result.put(6, "AFWA Aerosol Products");
+    result.put(7, "CDFS-II Aerosol Model");
+    result.put(8, "AFWA Volcano Products");
+    result.put(10, "14 WS (Formerly Air Force Combat Climatology Center (AFCCC))");
+    result.put(11, "14 WS Numerical Weather Prediction Models Products");
+    result.put(15, "15 OWS (Scott)");
+    result.put(17, "17 OWS (Hickam)");
+    result.put(20, "20 OWS (Yokota)");
+    result.put(21, "21 OWS (Sembach)");
+    result.put(25, "25 OWS (Davis-Monthan)");
+    result.put(26, "26 OWS (Barksdale)");
+    result.put(27, "27 OWS (Offutt)");
+    result.put(28, "28 OWS (Shaw)");
+    result.put(29, "Air Force Tactical Application Center (AFTAC) ");
+    result.put(90, "AFWA 4DF 1");
+    result.put(91, "AFWA 4DF 2");
+    result.put(92, "AFWA 4DF 3");
+    result.put(93, "AFWA 4DF 4");
+    result.put(94, "AFWA 4DF 5");
+    result.put(110, "Air Force Research Lab (AFRL) Office of Research and Applications");
+    result.put(130, "Patrick AFB OWS Eastern Test Range");
+    result.put(150, "IPDS Satellite");
+
+    return Collections.unmodifiableMap(result);  // all at once - thread safe
   }
 
   // gen process

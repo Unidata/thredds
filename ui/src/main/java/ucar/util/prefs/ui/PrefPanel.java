@@ -114,13 +114,13 @@ public class PrefPanel extends JPanel {
   private PersistenceManager storeData;
 
   private boolean finished = false;
-  private HashMap<String, Field> flds = new HashMap<String, Field>(40);
+  private HashMap<String, Field> flds = new HashMap<>(40);
   // private ArrayList currentComps, colList; // track columns of components
   private List<LayoutComponent> layoutComponents; // use with form layout
   private int cursorRow = 0, cursorCol = 0; // current row and column
 
   private JPanel mainPanel;
-  private List<JComponent> auxButtons = new ArrayList<JComponent>();
+  private List<JComponent> auxButtons = new ArrayList<>();
 
   // event handling
   private EventListenerList listenerList = new EventListenerList();
@@ -148,7 +148,7 @@ public class PrefPanel extends JPanel {
     //colList = new ArrayList( 5);
     //currentComps = new ArrayList( 10);
     //colList.add( currentComps);
-    layoutComponents = new ArrayList<LayoutComponent>(20);
+    layoutComponents = new ArrayList<>(20);
 
     /* manager.addPropertyChangeListener( "focusOwner", new PropertyChangeListener() {
        public void propertyChange(PropertyChangeEvent evt) {
@@ -203,7 +203,7 @@ public class PrefPanel extends JPanel {
    *  ActionEvent to any listeners.
    */
   public boolean accept() {
-    StringBuffer buff = new StringBuffer();
+    StringBuffer buff = new StringBuffer("Invalid field value ");
     boolean ok = true;
     for (Object o : flds.values())
       ok &= ((Field) o).accept(buff);
@@ -881,13 +881,11 @@ public class PrefPanel extends JPanel {
   // Each field gets one of these
   private static class LayoutComponent {
     Object comp;
-    String constraint;
     int row, col;
     CellConstraints cc, ccLabel;
 
     LayoutComponent(Object comp, int col, int row, String constraint ) {
       this.comp = comp;
-      this.constraint = constraint;
       this.row = row;
       this.col = col;
 

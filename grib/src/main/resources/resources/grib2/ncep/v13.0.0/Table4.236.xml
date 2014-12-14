@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.236</table>
+  <title>Soil Texture Cover Fraction</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-236.shtml</source>
+  <parameter code="1">
+    <description>Coarse</description>
+  </parameter>
+  <parameter code="2">
+    <description>Medium</description>
+  </parameter>
+  <parameter code="3">
+    <description>Medium-fine</description>
+  </parameter>
+  <parameter code="4">
+    <description>Fine</description>
+  </parameter>
+  <parameter code="5">
+    <description>Very-fine</description>
+  </parameter>
+  <parameter code="6">
+    <description>Organic</description>
+  </parameter>
+  <parameter code="7">
+    <description>Tropical-organic</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -35,6 +35,8 @@ package ucar.nc2.ui;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.ui.widget.BAMutil;
@@ -50,9 +52,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -206,16 +206,16 @@ public class Hdf5ObjectTable extends JPanel {
     java.util.List<ObjectBean> beanList = new ArrayList<>();
 
     iosp = new H5iosp();
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     ncfile.sendIospMessage(H5iosp.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
 
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(20000);
-      PrintStream s = new PrintStream(bos);
+      StringWriter sw = new StringWriter(20000);
+      PrintWriter s = new PrintWriter(sw);
       t.printStackTrace(s);
-      dumpTA.setText( bos.toString());      
+      dumpTA.setText(sw.toString());
     }
 
     H5header header = (H5header) iosp.sendIospMessage("header");
@@ -241,22 +241,14 @@ public class Hdf5ObjectTable extends JPanel {
     if (iosp == null) return;
 
     ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
-    PrintStream ps = new PrintStream(ff);
+    PrintStream ps = new PrintStream(ff, false, CDM.utf8Charset.name());
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/headerDetails H5header/symbolTable H5header/memTracker"));
     H5header headerEmpty = (H5header) iosp.sendIospMessage("headerEmpty");
     headerEmpty.read(ps);
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
     ps.flush();
-    f.format("%s", ff.toString());
+    f.format("%s", ff.toString(CDM.utf8Charset.name()));
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
-  }
-
-  private static class MyNetcdfFile extends NetcdfFile {
-    private MyNetcdfFile(H5iosp iosp, String location) {
-      super();
-      spi = iosp;
-      this.location = location;
-    }
   }
 
   public class ObjectBean {

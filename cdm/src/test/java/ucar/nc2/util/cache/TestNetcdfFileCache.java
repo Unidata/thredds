@@ -32,11 +32,12 @@
  */
 package ucar.nc2.util.cache;
 
-import junit.framework.TestCase;
+import junit.framework.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.TestLocal;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -49,28 +50,49 @@ import java.util.concurrent.*;
  * @author caron
  * @since May 31, 2008
  */
-public class TestNetcdfFileCache extends TestCase {
+public class TestNetcdfFileCache {
 
-  public TestNetcdfFileCache(String name) {
-    super(name);
-  }
+  static FileCache cache;
+  static FileFactory factory = new MyFileFactory();
 
-  FileCache cache;
-  FileFactory factory = new MyFileFactory();
-
-  protected void setUp() throws java.lang.Exception {
+  @BeforeClass
+  static public void setUp() throws java.lang.Exception {
     cache = new FileCache(5, 100, 60 * 60);
   }
 
-  class MyFileFactory implements FileFactory {
+  static public class MyFileFactory implements FileFactory {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
     }
   }
 
 
+  int count = 0;
+
+  void loadFilesIntoCache(File dir, FileCache cache) {
+    if(dir.listFiles() != null)
+    for (File f : dir.listFiles())
+      if (f.isDirectory())
+        loadFilesIntoCache(f, cache);
+
+      else if (f.getPath().endsWith(".nc") && f.length() > 0) {
+        //System.out.println(" open "+f.getPath());
+        try {
+          String want = StringUtil2.replace(f.getPath(), '\\', "/");
+          cache.acquire(factory, want, null);
+          count++;
+        } catch (IOException e) {
+          // e.printStackTrace();
+          System.out.println(" *** failed on " + f.getPath());
+        }
+      }
+  }
+
+  @Test
   public void testNetcdfFileCache() throws IOException {
-    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
+    System.out.printf("TestNetcdfFileCache%n");
+
+    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     System.out.println(" loaded " + count);
 
     cache.showCache(new Formatter(System.out));
@@ -87,7 +109,7 @@ public class TestNetcdfFileCache extends TestCase {
 
     // load same files again - should be added to the list, rather than creating a new elem
     int saveCount = count;
-    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
+    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -103,7 +125,7 @@ public class TestNetcdfFileCache extends TestCase {
     assert map.values().size() == 0;
 
     // load again
-    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
+    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -124,8 +146,8 @@ public class TestNetcdfFileCache extends TestCase {
     assert map.values().size() == 0 : map.values().size();
 
     // load twice
-    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
-    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
+    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
+    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     map = cache.getCache();
     assert map.values().size() == saveCount;
 
@@ -158,7 +180,7 @@ public class TestNetcdfFileCache extends TestCase {
     FileCache.CacheElement.CacheFile first = null;
     for (FileCache.CacheElement.CacheFile file : list) {
       assert file.isLocked.get();
-      assert file.countAccessed == 1;
+      Assert.assertEquals(file.toString(), 1, file.countAccessed);
       assert file.lastAccessed != 0;
 
       if (first == null)
@@ -170,30 +192,10 @@ public class TestNetcdfFileCache extends TestCase {
     }
   }
 
-  int count = 0;
-
-  void loadFiles(File dir, FileCache cache) {
-    if(dir.listFiles() != null)
-    for (File f : dir.listFiles())
-      if (f.isDirectory())
-        loadFiles(f, cache);
-
-      else if (f.getPath().endsWith(".nc") && f.length() > 0) {
-        //System.out.println(" open "+f.getPath());
-        try {
-          String want = StringUtil2.replace(f.getPath(), '\\', "/");
-          cache.acquire(factory, want, null);
-          count++;
-        } catch (IOException e) {
-          // e.printStackTrace();
-          System.out.println(" *** failed on " + f.getPath());
-        }
-      }
-  }
-
 
   /////////////////////////////////////////////////////////////////////////////////
 
+  @Test
   public void testPeriodicClear() throws IOException {
     FileCache cache = new FileCache(0, 10, 60 * 60);
     testPeriodicCleanup(cache);
@@ -207,7 +209,7 @@ public class TestNetcdfFileCache extends TestCase {
   }
 
   private void testPeriodicCleanup(FileCache cache) throws IOException {
-    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
+    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     System.out.println(" loaded " + count);
 
     // close all
@@ -238,8 +240,9 @@ public class TestNetcdfFileCache extends TestCase {
   // int QSIZE = 10;
   int SKIP = 100;
 
+  @Test
   public void testConcurrentAccess() throws InterruptedException {
-    loadFiles(new File(TestDir.cdmLocalTestDataDir), cache);
+    loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     Map<Object, FileCache.CacheElement> map = cache.getCache();
     List<String> files = new ArrayList<String>();
     for (Object key : map.keySet()) {

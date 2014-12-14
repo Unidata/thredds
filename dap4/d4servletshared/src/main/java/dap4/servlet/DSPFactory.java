@@ -19,17 +19,18 @@ abstract public class DSPFactory
 {
 
     //////////////////////////////////////////////////
-    // Class variables
+    // Instance variables
 
     /**
      * Define a map of known DSP classes.
      */
-    static List<Class> dspRegistry = new ArrayList<Class>();
+    protected  List<Class> dspRegistry = new ArrayList<Class>();
 
     //////////////////////////////////////////////////
-    // Static initialization
+    // Constructor(s)
 
-    static {
+    public DSPFactory()
+    {
         // Register known DSP classes: order is important.
         // Only used in server
         registerDSP(SynDSP.class, true);
@@ -37,7 +38,7 @@ abstract public class DSPFactory
     }
 
     //////////////////////////////////////////////////
-    // Class methods
+    // Methods
 
     /**
      * Register a DSP, using its class string name.
@@ -47,7 +48,7 @@ abstract public class DSPFactory
      * @throws InstantiationException if class doesnt have a no-arg constructor.
      * @throws ClassNotFoundException if class not found.
      */
-    static public void registerDSP(String className)
+    public void registerDSP(String className)
         throws DapException
     {
         try {
@@ -66,7 +67,7 @@ abstract public class DSPFactory
      * @throws InstantiationException if class doesnt have a no-arg constructor.
      * @throws ClassCastException     if class doesnt implement DSP interface.
      */
-    static public void registerDSP(Class klass)
+    public void registerDSP(Class klass)
     {
         registerDSP(klass, false);
     }
@@ -80,7 +81,7 @@ abstract public class DSPFactory
      * @throws InstantiationException if class doesnt have a no-arg constructor.
      * @throws ClassCastException     if class doesnt implement DSP interface.
      */
-    static synchronized public void registerDSP(Class klass, boolean last)
+    synchronized public void registerDSP(Class klass, boolean last)
     {
         // is this already defined?
         int pos = dspRegistry.indexOf(klass);
@@ -99,7 +100,7 @@ abstract public class DSPFactory
      * @param klass Class for which to search
      */
 
-    static synchronized public boolean dspRegistered(Class klass)
+    synchronized public boolean dspRegistered(Class klass)
     {
         return dspRegistry.contains(klass);
     }
@@ -109,7 +110,7 @@ abstract public class DSPFactory
      *
      * @param klass Class for which to search
      */
-    static synchronized public void dspUnregister(Class klass)
+    synchronized public void dspUnregister(Class klass)
     {
         dspRegistry.remove(klass);
     }
@@ -119,7 +120,7 @@ abstract public class DSPFactory
      * @return DSP object that can process this path
      * @throws DapException
      */
-    static synchronized public DSP
+    synchronized public DSP
     create(String path)
         throws DapException
     {

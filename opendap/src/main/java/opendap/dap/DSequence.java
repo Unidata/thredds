@@ -361,6 +361,7 @@ public class DSequence extends DConstructor implements ClientIO {
      *                   semicolon at the end of the declaration.
      * @see BaseType#printDecl(PrintWriter, String, boolean)
      */
+    //Coverity[CALL_SUPER]
     public void printDecl(PrintWriter os, String space,
                           boolean print_semi, boolean constrained) {
 

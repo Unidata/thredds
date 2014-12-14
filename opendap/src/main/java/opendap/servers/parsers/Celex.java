@@ -229,7 +229,7 @@ class Celex implements Lexer, ExprParserConstants
                     removetrailingblanks();
                     /* If this looks like a number, then treat it as such.*/
                     try {
-                        Double number = new Double(yytext.toString());
+                        new Double(yytext.toString());
                         isnumber = true;
                     } catch (NumberFormatException nfe) {
                         isnumber = false;
@@ -289,11 +289,11 @@ class Celex implements Lexer, ExprParserConstants
     {
         switch (token) {
         case SCAN_STRINGCONST:
-            System.out.printf("TOKEN = |\"%s\"|\n", lval);
+            System.out.printf("TOKEN = |\"%s\"|%n", lval);
             break;
         case SCAN_WORD:
         case SCAN_NUMBERCONST:
-            System.out.printf("TOKEN = |%s|\n", lval);
+            System.out.printf("TOKEN = |%s|%n", lval);
             break;
         default:
             System.out.printf("TOKEN = |%c|%n", (char) token);

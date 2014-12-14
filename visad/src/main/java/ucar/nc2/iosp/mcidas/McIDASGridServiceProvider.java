@@ -168,42 +168,5 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
         return mcGridReader.readGrid((McIDASGridRecord) gr);
     }
 
-    /**
-     * Test this
-     *
-     * @param args filename
-     *
-     * @throws IOException  problem reading file
-     */
-    public static void main(String[] args) throws IOException {
-        IOServiceProvider mciosp = new McIDASGridServiceProvider();
-        RandomAccessFile  rf     = new RandomAccessFile(args[0], "r", 2048);
-        NetcdfFile ncfile = new MakeNetcdfFile(mciosp, rf, args[0], null);
-    }
-
-    /**
-     *   Not sure why we need this
-     *  
-     *   @author IDV Development Team
-     *   @version $Revision: 1.3 $
-     */
-    static class MakeNetcdfFile extends NetcdfFile {
-
-        /**
-         * wrapper for a netCDF file
-         *
-         * @param spi  iosp
-         * @param raf  random access file
-         * @param location    location of the file
-         * @param cancelTask  cancel task
-         *
-         * @throws IOException  problem reading file
-         */
-        MakeNetcdfFile(IOServiceProvider spi, RandomAccessFile raf,
-                       String location, CancelTask cancelTask)
-                throws IOException {
-            super(spi, raf, location, cancelTask);
-        }
-    }
 }
 

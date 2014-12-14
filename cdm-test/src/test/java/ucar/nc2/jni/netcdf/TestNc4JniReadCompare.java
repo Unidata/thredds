@@ -9,10 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.util.CompareNetcdf2;
@@ -121,18 +118,10 @@ public class TestNc4JniReadCompare {
 
   private NetcdfFile openJni(String location) throws IOException {
     Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
+    NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);
     RandomAccessFile raf = new RandomAccessFile(location, "r");
     iosp.open(raf, ncfile, null);
     return ncfile;
-  }
-
-  private class MyNetcdfFile extends NetcdfFile {
-    private MyNetcdfFile(Nc4Iosp iosp, String location) {
-      super();
-      spi = iosp;
-      this.location = location;
-    }
   }
 
   public static class Netcdf4ObjectFilter implements CompareNetcdf2.ObjFilter {

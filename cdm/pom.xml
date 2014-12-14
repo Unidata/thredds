@@ -104,6 +104,17 @@
       <artifactId>slf4j-jdk14</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.itadaki</groupId>
+      <artifactId>bzip2</artifactId>
+    </dependency>
+
+    <!-- Command line argument parsing in CFPointWriter -->
+    <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+    </dependency>
   </dependencies>
 
 
@@ -118,12 +129,6 @@
       <name>Oracle Maven repository</name>
       <url>http://download.oracle.com/maven</url>
     </repository>
-    <!-- Temporary repository for edu.wisc.visad
-    <repository>
-      <id>geotoolkit</id>
-      <name>Geotoolkit binaries</name>
-      <url>http://maven.geotoolkit.org/</url>
-    </repository -->
   </repositories>
 
   <build>

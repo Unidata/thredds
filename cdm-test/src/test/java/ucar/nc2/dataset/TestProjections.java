@@ -184,9 +184,11 @@ public class TestProjections {
       assert projClass.isInstance(proj) : proj.getClass().getName();
 
       if (projClass != RotatedPole.class) {
+        System.out.printf("Projection Parameters%n");
         boolean found = false;
         double radius = 0.0;
         for (Parameter p : proj.getProjectionParameters()) {
+          System.out.printf("%s%n", p);
           if (p.getName().equals(CF.EARTH_RADIUS)) {
             found = true;
             radius = p.getNumericValue();
@@ -196,6 +198,7 @@ public class TestProjections {
             radius = p.getNumericValue();
           }
         }
+        System.out.printf("%n");
 
         assert found;
         assert (radius > 10000) : radius; // meters

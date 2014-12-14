@@ -7,11 +7,9 @@ import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Superclass for report panels
@@ -66,9 +64,9 @@ public abstract class ReportPanel extends JPanel {
       reportPane.gotoTop();
 
     } catch (IOException ioe) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(50000);
-      ioe.printStackTrace(new PrintStream(bos));
-      f.format(bos.toString());
+      StringWriter sw = new StringWriter(50000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
       ioe.printStackTrace();
     }
   }
@@ -102,29 +100,83 @@ public abstract class ReportPanel extends JPanel {
     try {
       return CollectionAbstract.open(spec, spec, null, f);
     } catch (IOException e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      reportPane.setText(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      e.printStackTrace(new PrintWriter(sw));
+      reportPane.setText(sw.toString());
       return null;
     }
   }
 
   ///////////////////////////////////////////////
+  public static class Counters {
+    List<Counter> counters = new ArrayList<>();
+    Map<String, Counter> map = new HashMap<>();
+
+    public void add(Counter c) {
+      counters.add(c);
+      map.put(c.getName(), c);
+    }
+
+    public void show (Formatter f) {
+      for (Counter c : counters)
+        c.show(f);
+    }
+
+    public void count(String name, int value) {
+      CounterOfInt counter = (CounterOfInt) map.get(name);
+      counter.count(value);
+    }
+
+    public void countS(String name, String value) {
+      CounterOfString counter = (CounterOfString) map.get(name);
+      counter.count(value);
+    }
+
+    public void addTo(Counters sub) {
+      for (Counter subC : sub.counters) {
+        Counter all = map.get(subC.getName());
+        all.addTo(subC);
+      }
+    }
+
+    public Counters makeSubCounters() {
+      Counters result = new Counters();
+      for (Counter c : counters) {
+        if (c instanceof CounterOfInt)
+          result.add( new CounterOfInt(c.getName()));
+        else
+          result.add( new CounterOfString(c.getName()));
+      }
+      return result;
+    }
+
+  }
+
+  public static interface Counter {
+    public void show(Formatter f);
+    public String getName();
+    public void addTo(Counter sub);
+  }
+
 
   // a counter whose keys are ints
-  protected static class Counter {
-    Map<Integer, Integer> set = new HashMap<>();
-    String name;
+  public static class CounterOfInt implements Counter {
+    private Map<Integer, Integer> set = new HashMap<>();
+    private String name;
 
-    Counter(String name) {
+    public String getName() {
+      return name;
+    }
+
+    public CounterOfInt(String name) {
       this.name = name;
     }
 
-    void reset() {
+    public void reset() {
       set = new HashMap<>();
     }
 
-    void count(int value) {
+    public void count(int value) {
       Integer count = set.get(value);
       if (count == null)
         set.put(value, 1);
@@ -132,19 +184,19 @@ public abstract class ReportPanel extends JPanel {
         set.put(value, count + 1);
     }
 
-    void add(Counter sub) {
-      for (int key : sub.set.keySet()) {
-        Integer value = sub.set.get(key);
-        Integer count = this.set.get(key);
+    public void addTo(Counter sub) {
+      CounterOfInt subi = (CounterOfInt) sub;
+      for (Map.Entry<Integer, Integer> entry : subi.set.entrySet()) {
+        Integer count = this.set.get(entry.getKey());
         if (count == null)
           count = 0;
-        set.put(key, count + value);
+        set.put(entry.getKey(), count + entry.getValue());
       }
     }
 
-    void show(Formatter f) {
+    public void show(Formatter f) {
       f.format("%n%s%n", name);
-      java.util.List<Integer> list = new ArrayList<Integer>(set.keySet());
+      java.util.List<Integer> list = new ArrayList<>(set.keySet());
       Collections.sort(list);
       for (int template : list) {
         int count = set.get(template);
@@ -153,17 +205,20 @@ public abstract class ReportPanel extends JPanel {
     }
   }
 
-
   // a counter whose keys are strings
-  protected static class CounterS {
-    Map<String, Integer> set = new HashMap<String, Integer>();
-    String name;
+  public static class CounterOfString implements Counter {
+    private Map<String, Integer> set = new HashMap<>();
+    private String name;
 
-    CounterS(String name) {
+    public String getName() {
+      return name;
+    }
+
+    public CounterOfString(String name) {
       this.name = name;
     }
 
-    void count(String value) {
+    public void count(String value) {
       Integer count = set.get(value);
       if (count == null)
         set.put(value, 1);
@@ -171,9 +226,19 @@ public abstract class ReportPanel extends JPanel {
         set.put(value, count + 1);
     }
 
-    void show(Formatter f) {
+    public void addTo(Counter sub) {
+      CounterOfString subs = (CounterOfString) sub;
+      for (Map.Entry<String, Integer> entry : subs.set.entrySet()) {
+        Integer count = this.set.get(entry.getKey());
+        if (count == null)
+          count = 0;
+        set.put(entry.getKey(), count + entry.getValue());
+      }
+    }
+
+    public void show(Formatter f) {
       f.format("%n%s%n", name);
-      java.util.List<String> list = new ArrayList<String>(set.keySet());
+      java.util.List<String> list = new ArrayList<>(set.keySet());
       Collections.sort(list);
       for (String key : list) {
         int count = set.get(key);

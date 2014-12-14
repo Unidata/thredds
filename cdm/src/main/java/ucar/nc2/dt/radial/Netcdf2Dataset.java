@@ -37,13 +37,10 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.util.cache.FileCache;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
 
@@ -187,7 +184,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     }
 
     public String getDataFormat() {
-        return RadialDatasetSweep.LevelII;
+        return "NetCDF Level II";
     }
 
 

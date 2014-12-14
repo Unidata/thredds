@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -56,25 +57,24 @@ public class VerticalPerspective extends AbstractCoordTransBuilder {
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
 
-    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
-    double distance = readAttributeDouble( ctv, "height_above_earth", Double.NaN);
-    if (Double.isNaN(lon0) || Double.isNaN(lat0) || Double.isNaN(distance))
-      throw new IllegalArgumentException("Vertical Perspective must have longitude_of_projection_origin, latitude_of_projection_origin, height_above_earth attributes");
+    readStandardParams(ds, ctv);
 
-    double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
-    double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
-
-    if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(ds, ctv);
-      false_easting *= scalef;
-      false_northing *= scalef;
+    double distance = readAttributeDouble(ctv, CF.PERSPECTIVE_POINT_HEIGHT, Double.NaN);
+    if (Double.isNaN(distance)) {
+        distance = readAttributeDouble(ctv, "height_above_earth", Double.NaN);
     }
+    if (Double.isNaN(lon0) || Double.isNaN(lat0) || Double.isNaN(distance))
+      throw new IllegalArgumentException("Vertical Perspective must have: " +
+              CF.LONGITUDE_OF_PROJECTION_ORIGIN + ", " +
+              CF.LATITUDE_OF_PROJECTION_ORIGIN + ", and " +
+              CF.PERSPECTIVE_POINT_HEIGHT + "(or height_above_earth) " +
+              "attributes");
 
-    double earth_radius = getEarthRadiusInKm(ctv);
-
+    // We assume distance comes in 'm' (CF-compliant) and we pass in as 'km'
     ucar.unidata.geoloc.projection.VerticalPerspectiveView proj =
-            new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0, lon0, earth_radius, distance, false_easting, false_northing);
+            new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0,
+                    lon0, earth_radius, distance / 1000., false_easting,
+                    false_northing);
 
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }

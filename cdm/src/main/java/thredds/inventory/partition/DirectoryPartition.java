@@ -1,7 +1,5 @@
 package thredds.inventory.partition;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
@@ -77,7 +75,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     if (hasIndex)
       result = new DirectoryCollectionFromIndex(dpb, dateExtractor, indexReader, this.logger);
     else
-      result = new DirectoryCollection(topCollection, dpb.getDir(), this.logger);
+      result = new DirectoryCollection(topCollection, dpb.getDir(), config.olderThan, this.logger);
     return result;
   }
 

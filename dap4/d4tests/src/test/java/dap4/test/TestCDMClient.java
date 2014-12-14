@@ -160,7 +160,6 @@ public class TestCDMClient extends DapTestCommon
     {
         super(name);
         DapCache.flush();
-        setSystemProperties();
         this.root = getDAP4Root();
         if(this.root == null)
             throw new Exception("dap4 root cannot be located");
@@ -181,7 +180,8 @@ public class TestCDMClient extends DapTestCommon
     chooseTestcases()
     {
         if(true) {
-            chosentests = locate("test_opaque_array.nc");
+            chosentests = locate("test_opaque.nc");
+            prop_visual = true;
         } else {
             for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);

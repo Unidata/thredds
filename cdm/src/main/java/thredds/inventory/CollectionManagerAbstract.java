@@ -107,7 +107,7 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   protected ChangeChecker changeChecker = null;
 
   @Override
-  public void setChangeChecker(ChangeChecker strat) {
+  public synchronized void setChangeChecker(ChangeChecker strat) {
     this.changeChecker = strat;
   }
 

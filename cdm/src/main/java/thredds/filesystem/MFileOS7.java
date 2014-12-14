@@ -46,7 +46,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /**
- * Describe
+ * Use Java 7 nio Paths
  *
  * @author caron
  * @since 11/16/13
@@ -131,5 +131,9 @@ public class MFileOS7 implements MFile {
   @Override
   public String toString() {
     return getPath();
+  }
+
+  public Path getNioPath() {
+    return path;
   }
 }

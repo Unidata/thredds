@@ -37,6 +37,7 @@ import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import ucar.ma2.StructureData;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
@@ -63,10 +64,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.*;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -334,14 +332,14 @@ public class PointFeatureDatasetViewer extends JPanel {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
         MarshallingUtil.marshalPointDataset(pfDataset, pfDataset.getDataVariables(), outStream);
 
-        infoTA.setText(outStream.toString());
+        infoTA.setText(outStream.toString(CDM.utf8Charset.name()));
         infoTA.gotoTop();
         infoWindow.setVisible(true);
       } catch (IOException | XMLHandlingException ex) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-        ex.printStackTrace(new PrintStream(bos));
+        StringWriter sw = new StringWriter(5000);
+        ex.printStackTrace(new PrintWriter(sw));
 
-        infoTA.setText(bos.toString());
+        infoTA.setText(sw.toString());
         infoTA.gotoTop();
         infoWindow.setVisible(true);
       }
@@ -820,13 +818,13 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     public String showFields() {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      StringWriter sw = new StringWriter(10000);
       try {
-        NCdumpW.printStructureData(new PrintWriter(bos), sdata);
+        NCdumpW.printStructureData(new PrintWriter(sw), sdata);
       } catch (IOException e) {
-        e.printStackTrace(new PrintStream(bos));
+        e.printStackTrace(new PrintWriter(sw));
       }
-      return bos.toString();
+      return sw.toString();
     }
 
   }

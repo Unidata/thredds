@@ -33,14 +33,17 @@
 
 package ucar.nc2.jni.netcdf;
 
+import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 import thredds.catalog.DataFormatType;
+import ucar.ma2.*;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
@@ -48,19 +51,14 @@ import ucar.nc2.util.DebugFlags;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.ma2.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 import java.nio.IntBuffer;
-
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
+import java.nio.ShortBuffer;
+import java.util.*;
 
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 
@@ -98,7 +96,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private String jnaPath = null;
   static private String libName = DEFAULTNETCDF4LIBNAME;
 
-  static private boolean warn = true;
   static private final boolean debug = false,
           debugCompound = false,
           debugCompoundAtt = false,
@@ -106,27 +103,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           debugUserTypes = false,
           debugLoad = true,
           debugWrite = false;
-
-  /**
-   * Test if the netcdf C library is present and loaded
-   *
-   * @return true if present
-   */
-  static public boolean isClibraryPresent() {
-    try {
-      load();
-      if (warn) {
-        startupLog.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
-        warn = false;
-      }
-    } catch (Throwable t) {
-      if (warn) {
-        startupLog.warn("netcdf4 c library not present jna_path='" + jnaPath + "' libname='" + libName + "' " + t.getMessage());
-        warn = false;
-      }
-    }
-    return (nc4 != null);
-  }
 
   /**
    * Use the default path to try to set jna.library.path
@@ -156,41 +132,69 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
   static public void setLibraryAndPath(String jna_path, String lib_name) {
     lib_name = nullify(lib_name);
-    jna_path = nullify(jna_path);
-    if (lib_name == null)
+
+    if (lib_name == null) {
       lib_name = DEFAULTNETCDF4LIBNAME;
-    libName = lib_name;
-    if (jna_path == null) {
-      // Look at -D flags first, then env variables
-      jna_path = System.getProperty(JNA_PATH);
-      jna_path = nullify(jna_path);
-      if (jna_path == null)
-        jna_path = System.getenv(JNA_PATH_ENV);
     }
+
     jna_path = nullify(jna_path);
-    if (jna_path == null)
-      jna_path = defaultNetcdf4Library();
-    if (jna_path == null)
-      System.err.println("Cannot determine Netcdf4 library path");
-    else
+
+    if (jna_path == null) {
+      jna_path = nullify(System.getProperty(JNA_PATH));  // First, try system property (-D flag).
+    }
+    if (jna_path == null) {
+      jna_path = nullify(System.getenv(JNA_PATH_ENV));   // Next, try environment variable.
+    }
+    if (jna_path == null) {
+      jna_path = defaultNetcdf4Library();                // Last, try some default paths.
+    }
+
+    if (jna_path != null) {
       System.setProperty(JNA_PATH, jna_path);
+    }
+
+    libName = lib_name;
     jnaPath = jna_path;
   }
 
   static private Nc4prototypes load() {
     if (nc4 == null) {
-      if (jnaPath == null)
-        setLibraryAndPath(null, null);
       if (jnaPath == null) {
-        System.err.println("Cannot determine Netcdf4 library path");
-        return null;
+        setLibraryAndPath(null, null);
       }
-      //Native.setProtected(true);
-      nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
-      if (debugLoad)
-        System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
+
+      try {
+        // jna_path may still be null (the user didn't specify a "jna.library.path"), but try to load anyway;
+        // the necessary libs may be on the system PATH.
+        nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+
+        String message = String.format("NetCDF-4 C library loaded (jna_path='%s', libname='%s').", jnaPath, libName);
+        startupLog.info(message);
+
+        if (debugLoad) {
+          System.out.println(message);
+          System.out.printf("Netcdf nc_inq_libvers='%s' isProtected=%s%n", nc4.nc_inq_libvers(), Native.isProtected());
+        }
+      } catch (Throwable t) {
+        String message = String.format("NetCDF-4 C library not present (jna_path='%s', libname='%s').", jnaPath, libName);
+        startupLog.warn(message);
+
+        if (debugLoad) {
+          System.out.println(message);
+        }
+      }
     }
+
     return nc4;
+  }
+
+  /**
+   * Test if the netcdf C library is present and loaded
+   *
+   * @return true if present
+   */
+  public static boolean isClibraryPresent() {
+    return load() != null;
   }
 
   /**
@@ -202,13 +206,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static protected String nullify(String s) {
     if (s != null && s.length() == 0) s = null;
     return s;
-  }
-
-  /**
-   * Suppress warning messages
-   */
-  static public void setWarnOff() {
-    warn = false;
   }
 
   static private boolean skipEos = false;
@@ -292,7 +289,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   private void _open(RandomAccessFile raf, NetcdfFile ncfile, boolean readOnly) throws IOException {
-    load(); // load jni
+    if (!isClibraryPresent()) {
+      throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
+    }
 
     if(raf != null)
         raf.close(); // not used
@@ -2232,7 +2231,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public void create(String filename, NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException {
-    load(); // load jni
+    if (!isClibraryPresent()) {
+      throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
+    }
+
     this.ncfile = ncfile;
 
     // finish any structures
@@ -3211,35 +3213,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   getNativeAddr(int pos, ByteBuffer buf)
   {
      return (NativeLong.SIZE == (Integer.SIZE/8) ? buf.getInt(pos) : buf.getLong(pos));
-  }
-
-/////////////////////////////////////////////////////////////////////////
-
-  private static class MyNetcdfFile extends NetcdfFile {
-    MyNetcdfFile(IOServiceProvider spi) {
-      this.spi = spi;
-    }
-
-  }
-
-  public NetcdfFile open(String location) throws Exception {
-    MyNetcdfFile ncfile = new MyNetcdfFile(this);
-    ncfile.setLocation(location);
-    try {
-      open(null, ncfile, null);
-    } catch (Exception e) {
-      close(); // make sure that the file gets closed
-      throw e;
-    }
-    return ncfile;
-  }
-
-  public static void main(String args[]) throws Exception {
-    Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
-
-    String loc4 = "Q:/cdmUnitTest/formats/netcdf4/testNestedStructure.nc";
-    NetcdfFile ncfile = iosp.open(loc4);
-    System.out.println("" + ncfile);
   }
 
 }

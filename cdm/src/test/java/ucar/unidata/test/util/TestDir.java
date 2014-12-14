@@ -4,6 +4,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -82,15 +83,21 @@ public class TestDir {
    * available as system properties. */
   private static String threddsPropFileName = "thredds.properties";
 
-  // Remote Test server
+  // Remote Test server(s)
 
-  private static String remoteTestServerPropName = "remotetest";
+  private static String threddsTestServerPropName = "threddstestserver";
 
-  static public String remoteTestServer = "remotetest.unidata.ucar.edu";
+  static public String threddsTestServer = "remotetest.unidata.ucar.edu";
+
+  // DAP 2 Test server (for testing)
+
+  static public String dap2TestServerPropName = "dts";
+
+  static public String dap2TestServer = "remotetest.unidata.ucar.edu";
 
   // DAP4 Test server (for testing)
 
-  private static String dap4TestServerPropName = "d4ts";
+  static public String dap4TestServerPropName = "d4ts";
 
   static public String dap4TestServer = "remotetest.unidata.ucar.edu";
 
@@ -112,7 +119,7 @@ public class TestDir {
           userThreddsProps.load( new FileInputStream( userThreddsPropsFile ) );
         }
         catch ( IOException e ) {
-          System.out.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
+          System.err.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
         }
         if ( userThreddsProps != null && ! userThreddsProps.isEmpty() ) {
           if ( testdataDir == null )
@@ -123,8 +130,8 @@ public class TestDir {
 
     // Use default paths if needed.
     if ( testdataDir == null ) {
-      System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/share/testdata/\"." );
       testdataDir = "/share/testdata/";
+      System.err.printf( "**No '%s' property, defaulting to '%s'%n", testdataDirPropName, testdataDir );
     }
     // Make sure paths ends with a slash.
     testdataDir = testdataDir.replace('\\','/'); //canonical
@@ -134,20 +141,24 @@ public class TestDir {
     cdmUnitTestDir = testdataDir + "cdmUnitTest/";
 
     File file = new File( cdmUnitTestDir );
-    if ( ! file.exists() || !file.isDirectory() ) {
-      System.out.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
+    if ( !file.exists() || !file.isDirectory() ) {
+      System.err.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
     }
 
     File tmpDataDir = new File(temporaryLocalDataDir);
     if ( ! tmpDataDir.exists() ) {
       if ( ! tmpDataDir.mkdirs() ) {
-        System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
+        System.err.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
       }
     }
 
-    String rts = System.getProperty(remoteTestServerPropName);
+    String rts = System.getProperty(threddsTestServerPropName);
 	if(rts != null && rts.length() > 0)
-		remoteTestServer = rts;
+		threddsTestServer = rts;
+
+    String dts = System.getProperty(dap2TestServerPropName);
+      if(dts != null && dts.length() > 0)
+            dap2TestServer = dts;
 
     String d4ts = System.getProperty(dap4TestServerPropName);
     if(d4ts != null && d4ts.length() > 0)
@@ -194,6 +205,18 @@ public class TestDir {
     return open( TestDir.cdmLocalTestDataDir +filename);
   }
 
+  static public void checkLeaks() {
+    if (RandomAccessFile.getOpenFiles().size() > 0) {
+      System.out.printf("RandomAccessFile still open:%n");
+      for (String filename : RandomAccessFile.getOpenFiles()) {
+        System.out.printf(" open= %s%n", filename);
+      }
+    } else {
+      System.out.printf("RandomAccessFile: no leaks%n");
+    }
+    System.out.printf("RandomAccessFile: count open=%d, max=%d%n", RandomAccessFile.getOpenFileCount(), RandomAccessFile.getMaxOpenFileCount());
+  }
+
 
   ////////////////////////////////////////////////
 
@@ -236,6 +259,24 @@ public class TestDir {
 
   public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
     return actOnAll( dirName, ff, act, true);
+  }
+
+  public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames) throws IOException {
+    return actOnAll( dirName, ff, new ListAction(filenames), true);
+  }
+
+  static class ListAction implements Act {
+    Collection<Object[]> filenames;
+
+    ListAction(Collection<Object[]> filenames) {
+      this.filenames = filenames;
+    }
+
+    @Override
+    public int doAct(String filename) throws IOException {
+      filenames.add( new Object[] {filename} );
+      return 0;
+    }
   }
 
   /**

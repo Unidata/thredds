@@ -41,30 +41,25 @@
 
 package thredds.server.radarServer;
 
-import thredds.catalog.query.*;
-
-import java.io.*;
-import java.util.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-import java.text.SimpleDateFormat;
-
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import thredds.catalog.query.Location;
+import thredds.catalog.query.SelectStation;
 import thredds.catalog.query.Station;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.NodeList;
-import org.w3c.dom.NamedNodeMap;
-import org.xml.sax.SAXException;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ServerMethods {
 
@@ -96,20 +91,17 @@ public class ServerMethods {
     public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("(\\d{8}_\\d{4})");
     public static final String epic = "1970-01-01T00:00:00";
 
-    static protected SimpleDateFormat dateFormatISO;
-    static protected SimpleDateFormat dateFormat;
-
-    static {
-        dateFormatISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        dateFormatISO.setTimeZone(TimeZone.getTimeZone("GMT")); // same as UTC
-        dateFormat = new SimpleDateFormat("yyyyMMdd");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT")); // same as UTC
-    }
     private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
     //private org.slf4j.Logger log;
 
+    protected SimpleDateFormat dateFormatISO;
+    protected SimpleDateFormat dateFormat;
+
     public ServerMethods( org.slf4j.Logger log ) {
-        //this.log = log;
+      dateFormatISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+      dateFormatISO.setTimeZone(TimeZone.getTimeZone("GMT")); // same as UTC
+      dateFormat = new SimpleDateFormat("yyyyMMdd");
+      dateFormat.setTimeZone(TimeZone.getTimeZone("GMT")); // same as UTC
     }
 
     /*
@@ -408,7 +400,7 @@ public class ServerMethods {
         return s;
     } // end getInputStream
 
-    protected class CompareKeyDescend implements Comparator<String> {
+    protected static class CompareKeyDescend implements Comparator<String> {
 
         public int compare(String s1, String s2) {
             return s2.compareTo(s1);

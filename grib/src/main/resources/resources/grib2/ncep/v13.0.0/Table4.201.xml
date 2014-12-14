@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.201</table>
+  <title>Precipitation Type</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-201.shtml</source>
+  <parameter code="1">
+    <description>Rain</description>
+  </parameter>
+  <parameter code="2">
+    <description>Thunderstorm</description>
+  </parameter>
+  <parameter code="3">
+    <description>Freezing Rain</description>
+  </parameter>
+  <parameter code="4">
+    <description>Mixed/Ice</description>
+  </parameter>
+  <parameter code="5">
+    <description>Snow</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

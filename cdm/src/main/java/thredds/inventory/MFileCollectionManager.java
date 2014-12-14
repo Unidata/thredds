@@ -95,8 +95,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   //protected String rootDir;
   protected FeatureCollectionConfig config;
 
-  // this can change = keep under lock
-  private Map<String, MFile> map; // current map of MFile in the collection
+  @GuardedBy("this")
+  private Map<String, MFile> map; // current map of MFile in the collection. this can change = keep under lock
 
   @GuardedBy("this")
   private long lastScanned;       // last time scanned
@@ -141,12 +141,16 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
-    this.recheck = makeRecheck(config.updateConfig.recheckAfter);
-    protoChoice = config.protoConfig.choice;
+    if (config.protoConfig != null)
+      protoChoice = config.protoConfig.choice;
 
-    // static means never rescan on checkState; let it be externally triggered.
-    if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null) &&  (config.updateConfig.deleteAfter == null))
-      setStatic(true);
+    if (config.updateConfig != null) {
+      this.recheck = makeRecheck(config.updateConfig.recheckAfter);
+
+      // static means never rescan on checkState; let it be externally triggered.
+      if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null) && (config.updateConfig.deleteAfter == null))
+        setStatic(true);
+    }
 
     if (this.auxInfo == null) this.auxInfo = new HashMap<>(10);
     this.auxInfo.put(FeatureCollectionConfig.AUX_CONFIG, config);
@@ -317,9 +321,11 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       return false;
     }
 
-    if (map == null && !isStatic()) {
-      logger.debug("{}: scan needed, never scanned", collectionName);
-      return true;
+    synchronized (this) {
+      if (map == null && !isStatic()) {
+        logger.debug("{}: scan needed, never scanned", collectionName);
+        return true;
+      }
     }
 
     Date now = new Date();
@@ -336,7 +342,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   /**
    * Do not use
    * @throws IOException
-   */
+   *
   public void scanDebug(Formatter f) throws IOException {
     getController(); // make sure a controller is instantiated
 
@@ -344,7 +350,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     for (CollectionConfig mc : scanList) {
 
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
-      Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl/**/gfsanl_3_.*\.grb$
+      Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl..gfsanl_3_.*\.grb$
       if (iter == null) {
         logger.error(collectionName + ": Invalid collection= " + mc);
         continue;
@@ -360,10 +366,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       logger.debug("{} : was scanned nfiles= {} ", collectionName, count);
     }
 
-  }
+  } */
 
   @Override
-  public boolean scan(boolean sendEvent) throws IOException {
+  public synchronized boolean scan(boolean sendEvent) throws IOException {
     if (map == null) {
       boolean changed = scanFirstTime();
       if (changed && sendEvent)
@@ -375,7 +381,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     // rescan
     Map<String, MFile> oldMap = map;
-    Map<String, MFile> newMap = new HashMap<String, MFile>();
+    Map<String, MFile> newMap = new HashMap<>();
     reallyScan(newMap);
 
     // replace with previous datasets if they exist
@@ -422,15 +428,11 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       if (logger.isInfoEnabled())
         logger.info("{}: scan found changes {}: nnew={}, nchange={}, ndelete={}", collectionName, new Date(), nnew, nchange, ndelete);
 
-      synchronized (this) {
         map = newMap;
         this.lastScanned = System.currentTimeMillis();
         this.lastChanged.set(this.lastScanned);
-      }
     } else {
-      synchronized (this) {
         this.lastScanned = System.currentTimeMillis();
-      }
     }
 
     if (changed && sendEvent) {  // event is processed on this thread
@@ -441,7 +443,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   public void setFiles(Iterable<MFile> files) {
-    Map<String, MFile> newMap = new HashMap<String, MFile>();
+    Map<String, MFile> newMap = new HashMap<>();
     for (MFile file : files)
       newMap.put(file.getPath(), file);
 
@@ -453,7 +455,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   }
 
   @Override
-  public Iterable<MFile> getFilesSorted() {
+  public synchronized Iterable<MFile> getFilesSorted() {
     if (map == null)
       try {
         scanFirstTime(); // never scanned
@@ -462,7 +464,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         return Collections.emptyList();
       }
 
-    List<MFile> result = new ArrayList<MFile>(map.values());
+    List<MFile> result = new ArrayList<>(map.values());
     if (hasDateExtractor()) {
       Collections.sort(result, new DateSorter());
     } else {
@@ -477,11 +479,12 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     return (dateExtractor != null) && !(dateExtractor instanceof DateExtractorNone);
   }
 
+  // only called from synch methods
   private boolean scanFirstTime() throws IOException {
     Map<String, MFile> newMap = new HashMap<>();
     if (!hasScans()) {
-      map = newMap;
-      return false;
+        map = newMap;
+        return false;
     }
 
     reallyScan(newMap);
@@ -501,11 +504,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       }
     }
 
-    synchronized (this) {
-      map = newMap;
-      this.lastScanned = System.currentTimeMillis();
-      this.lastChanged.set(this.lastScanned);
-    }
+    map = newMap;
+    this.lastScanned = System.currentTimeMillis();
+    this.lastChanged.set(this.lastScanned);
     logger.debug("{} : initial scan found n datasets = {} ", collectionName, map.keySet().size());
     return map.keySet().size() > 0;
   }

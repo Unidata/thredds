@@ -1,9 +1,15 @@
 package dap4.test.servlet;
 
+import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.d4ts.D4TSServlet;
+import dap4.servlet.DapRequest;
+import dap4.servlet.DapServlet;
+import dap4.servlet.URLMap;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -11,18 +17,20 @@ import java.util.*;
 /**
  * Define a subclass of D4TSServlet that overrides some
  * methods of HttpServlet to provide fake context information
- *
+ * <p/>
  * Implements servlet api 3.0
  */
 
 public class FakeServlet extends D4TSServlet
-    implements javax.servlet.ServletConfig,
-    javax.servlet.ServletContext
+        implements javax.servlet.ServletConfig,
+        javax.servlet.ServletContext
 {
     //////////////////////////////////////////////////
     // Constants
 
     static final String DEFAULTSERVLETNAME = "d4ts";
+
+    static final String FAKETESTDATADIR = "/resources/testfiles";
 
     //////////////////////////////////////////////////
     // Instance Variables
@@ -32,7 +40,7 @@ public class FakeServlet extends D4TSServlet
     // Define the prefix of the URL file that refers to the servlet
     String servletpath = "/" + DEFAULTSERVLETNAME;
 
-    String datasetpath = null;   // absolute path to the directory containing datasets
+    String realpathroot = null;  // absolute path to the directory containing datasets (typically .../resources)
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -40,7 +48,7 @@ public class FakeServlet extends D4TSServlet
     public FakeServlet(String datasetpath)
     {
         datasetpath = DapUtil.canonicalpath(datasetpath);
-        this.datasetpath = datasetpath;
+        this.realpathroot = datasetpath;
     }
 
     //////////////////////////////////////////////////
@@ -112,18 +120,18 @@ public class FakeServlet extends D4TSServlet
         suffix = DapUtil.absolutize(suffix); //guarantee leading /
         if(!suffix.startsWith("/WEB-INF"))
             return null;
-        String suffix2 = suffix.substring("/WEB-INF".length(),suffix.length());
+        String suffix2 = suffix.substring("/WEB-INF".length(), suffix.length());
         suffix2 = DapUtil.absolutize(suffix);
         // Assume it is relative to datasetpath
-        String root = datasetpath + suffix2;
+        String root = realpathroot + suffix2;
         File f = new File(root);
         if(!f.exists() || !f.isDirectory())
             return null;
-        String[] contents =  f.list();
+        String[] contents = f.list();
         Set contentset = new HashSet();
-        for(String s: contents) {
+        for(String s : contents) {
             // Make s relative to suffix
-            contentset.add(suffix+"/"+s);
+            contentset.add(suffix + "/" + s);
         }
         return contentset;
     }
@@ -166,19 +174,17 @@ public class FakeServlet extends D4TSServlet
     {
         path = DapUtil.canonicalpath(path); // clean and make relative
         path = DapUtil.absolutize(path);
-        // Assume path starts with /WEB-INF
-        if(!path.startsWith("/WEB-INF"))
-            return null;
-        path = path.substring("/WEB-INF".length(),path.length());
-        path = DapUtil.absolutize(path);
-
         // Assume it is relative to datasetpath
-        path = datasetpath + path;
+        path = this.realpathroot + path;
         return path;
     }
 
     public String getServerInfo()
     {
+        return null;
+    }
+
+    public String getVirtualServerName() {
         return null;
     }
 
@@ -236,97 +242,171 @@ public class FakeServlet extends D4TSServlet
     // servlet API 3.0 Additions
 
     public String getContextPath()
-	{return null;}
-    
+    {
+        return null;
+    }
+
     public int getEffectiveMajorVersion()
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public int getEffectiveMinorVersion()
-	{throw new UnsupportedOperationException();}
+    {
+        throw new UnsupportedOperationException();
+    }
 
     // Implemented in ServletConfig interface
     //     public String getInitParameter(String p0);
-    
+
     // Implemented in ServletConfig interface
     //     public Enumeration<String> getInitParameterNames();
-    
+
     public boolean setInitParameter(String p0, String p1)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.ServletRegistration.Dynamic addServlet(String p0, String p1)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.ServletRegistration.Dynamic addServlet(String p0, javax.servlet.Servlet p1)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.ServletRegistration.Dynamic addServlet(String p0, Class<? extends javax.servlet.Servlet> p1)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public <T extends javax.servlet.Servlet> T createServlet(Class<T> p0) throws javax.servlet.ServletException
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.ServletRegistration getServletRegistration(String p0)
-	{throw new UnsupportedOperationException();}
-    
-    public Map<String,? extends javax.servlet.ServletRegistration> getServletRegistrations()
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public Map<String, ? extends javax.servlet.ServletRegistration> getServletRegistrations()
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.FilterRegistration.Dynamic addFilter(String p0, String p1)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.FilterRegistration.Dynamic addFilter(String p0, javax.servlet.Filter p1)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.FilterRegistration.Dynamic addFilter(String p0, Class<? extends javax.servlet.Filter> p1)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public <T extends javax.servlet.Filter> T createFilter(Class<T> p0) throws javax.servlet.ServletException
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.FilterRegistration getFilterRegistration(String p0)
-	{throw new UnsupportedOperationException();}
-    
-    public Map<String,? extends javax.servlet.FilterRegistration> getFilterRegistrations()
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public Map<String, ? extends javax.servlet.FilterRegistration> getFilterRegistrations()
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.SessionCookieConfig getSessionCookieConfig()
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public void setSessionTrackingModes(Set<javax.servlet.SessionTrackingMode> p0) throws IllegalStateException, IllegalArgumentException
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public Set<javax.servlet.SessionTrackingMode> getDefaultSessionTrackingModes()
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public Set<javax.servlet.SessionTrackingMode> getEffectiveSessionTrackingModes()
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public void addListener(Class<? extends EventListener> p0)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public void addListener(String p0)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public <T extends EventListener> void addListener(T p0)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public <T extends EventListener> T createListener(Class<T> p0) throws javax.servlet.ServletException
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public void declareRoles(String... p0)
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public ClassLoader getClassLoader()
-	{throw new UnsupportedOperationException();}
-    
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public javax.servlet.descriptor.JspConfigDescriptor getJspConfigDescriptor()
-	{throw new UnsupportedOperationException();}
+    {
+        throw new UnsupportedOperationException();
+    }
 
     // end interface ServletContext
-    //////////////////////////////////////////////////
 
-}    
+    // DapServlet Interface
 
+    @Override
+    protected String
+    getResourcePath(DapRequest drq)
+            throws IOException
+    {
+        // Using context information, we need to
+        // construct a file path to the specified dataset
+        String urlpath = drq.getURLPath();
+        String suffix = DapUtil.denullify(drq.getDataset());
+        String datasetfilepath = drq.getRealPath(FAKETESTDATADIR + DapUtil.canonicalpath(suffix));
 
+        // See if it really exists and is readable and of proper type
+        File dataset = new File(datasetfilepath);
+        if(!dataset.exists())
+            throw new DapException("Requested file does not exist: " + datasetfilepath)
+                    .setCode(HttpServletResponse.SC_NOT_FOUND);
 
-    
+        if(!dataset.canRead())
+            throw new DapException("Requested file not readable: " + datasetfilepath)
+                    .setCode(HttpServletResponse.SC_FORBIDDEN);
+        return datasetfilepath;
+    }
+
+}

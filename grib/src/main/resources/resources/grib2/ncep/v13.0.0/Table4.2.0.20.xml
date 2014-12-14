@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.20</table>
+  <title>Atmospheric Chemical Constituents</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-20.shtml</source>
+  <parameter code="0">
+    <shortName>MASSDEN</shortName>
+    <description>Mass Density (Concentration)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>COLMD</shortName>
+    <description>Column-Integrated Mass Density (See Note 1)</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>MASSMR</shortName>
+    <description>Mass Mixing Ratio (Mass Fraction in Air)</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>AEMFLX</shortName>
+    <description>Atmosphere Emission Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>ANPMFLX</shortName>
+    <description>Atmosphere Net Production Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>ANPEMFLX</shortName>
+    <description>Atmosphere Net Production And Emision Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>SDDMFLX</shortName>
+    <description>Surface Dry Deposition Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>SWDMFLX</shortName>
+    <description>Surface Wet Deposition Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>AREMFLX</shortName>
+    <description>Atmosphere Re-Emission Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>WLSMFLX</shortName>
+    <description>Wet Deposition by Large-Scale Precipitation Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>WDCPMFLX</shortName>
+    <description>Wet Deposition by Convective Precipitation Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>SEDMFLX</shortName>
+    <description>Sedimentation Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>DDMFLX</shortName>
+    <description>Dry Deposition Mass Flux</description>
+    <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>TRANHH</shortName>
+    <description>Transfer From Hydrophobic to Hydrophilic</description>
+    <units>kg kg-1s-1</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>TRSDS</shortName>
+    <description>Transfer From SO2 (Sulphur Dioxide) to SO4 (Sulphate)</description>
+    <units>kg kg-1s-1</units>
+  </parameter>
+  <parameter code="50">
+    <shortName>AIA</shortName>
+    <description>Amount in Atmosphere</description>
+    <units>mol</units>
+  </parameter>
+  <parameter code="51">
+    <shortName>CONAIR</shortName>
+    <description>Concentration In Air</description>
+    <units>mol m-3</units>
+  </parameter>
+  <parameter code="52">
+    <shortName>VMXR</shortName>
+    <description>Volume Mixing Ratio (Fraction in Air)</description>
+    <units>mol mol-1</units>
+  </parameter>
+  <parameter code="53">
+    <shortName>CGPRC</shortName>
+    <description>Chemical Gross Production Rate of Concentration</description>
+    <units>mol m-3s-1</units>
+  </parameter>
+  <parameter code="54">
+    <shortName>CGDRC</shortName>
+    <description>Chemical Gross Destruction Rate of Concentration</description>
+    <units>mol m-3s-1</units>
+  </parameter>
+  <parameter code="55">
+    <shortName>SFLUX</shortName>
+    <description>Surface Flux</description>
+    <units>mol m-2s-1</units>
+  </parameter>
+  <parameter code="56">
+    <shortName>COAIA</shortName>
+    <description>Changes Of Amount in Atmosphere (See Note 1)</description>
+    <units>mol s-1</units>
+  </parameter>
+  <parameter code="57">
+    <shortName>TYABA</shortName>
+    <description>Total Yearly Average Burden of The Atmosphere&gt;</description>
+    <units>mol</units>
+  </parameter>
+  <parameter code="58">
+    <shortName>TYAAL</shortName>
+    <description>Total Yearly Average Atmospheric Loss (See Note 1)</description>
+    <units>mol s-1</units>
+  </parameter>
+  <parameter code="59">
+    <shortName>ANCON</shortName>
+    <description>Aerosol Number Concentration</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="100">
+    <shortName>SADEN</shortName>
+    <description>Surface Area Density (Aerosol)</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="101">
+    <shortName>ATMTK</shortName>
+    <description>Vertical Visual Range</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="102">
+    <shortName>AOTK</shortName>
+    <description>Aerosol Optical Thickness</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="103">
+    <shortName>SSALBK</shortName>
+    <description>Single Scattering Albedo</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="104">
+    <shortName>ASYSFK</shortName>
+    <description>Asymmetry Factor</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="105">
+    <shortName>AECOEF</shortName>
+    <description>Aerosol Extinction Coefficient</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="106">
+    <shortName>AACOEF</shortName>
+    <description>Aerosol Absorption Coefficient</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="107">
+    <shortName>ALBSAT</shortName>
+    <description>Aerosol Lidar Backscatter from Satellite</description>
+    <units>m-1sr-1</units>
+  </parameter>
+  <parameter code="108">
+    <shortName>ALBGRD</shortName>
+    <description>Aerosol Lidar Backscatter from the Ground</description>
+    <units>m-1sr-1</units>
+  </parameter>
+  <parameter code="109">
+    <shortName>ALESAT</shortName>
+    <description>Aerosol Lidar Extinction from Satellite</description>
+    <units>m-1</units>
+  </parameter>
+  <parameter code="110">
+    <shortName>ALEGRD</shortName>
+    <description>Aerosol Lidar Extinction from the Ground</description>
+    <units>m-1</units>
+  </parameter>
+</parameterMap>

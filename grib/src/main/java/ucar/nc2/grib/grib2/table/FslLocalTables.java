@@ -33,53 +33,73 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-import ucar.nc2.iosp.nexrad2.Level2VolumeScan;
 import ucar.nc2.util.TableParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * FSL/GSD (center 59)
  * genProcessId 125 = HRRR
  * genProcessId 116 = FIM
- * @see "http://ruc.noaa.gov/hrrr/GRIB2Table.txt"
  *
  * @author caron
+ * @see "http://ruc.noaa.gov/hrrr/GRIB2Table.txt"
  * @since 2/1/12
  */
 public class FslLocalTables extends NcepLocalTables {
   public static final int center_id = 59;
-  private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr.csv";
-  private static final String fimTable = "resources/grib2/noaa_gsd/fim.gribtable";
-  //private static final String tableName2 = "resources/grib2/local/Fsl-hrrr2.csv";
-  private static final boolean debug = false;
+  // private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr.csv";
+  private static final String fimTable = "resources/grib2/noaa_gsd/fim.gribtable";   // look not used right now
+  private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr2.csv";
+  private static Map<String, FslLocalTables> tables = new HashMap<>();
 
-  static FslLocalTables localFactory(int subCenter, int masterVersion, int localVersion, int genProcessId) {
-    return new FslLocalTables(subCenter, masterVersion, localVersion, genProcessId);
+  // not a singleton
+  public static FslLocalTables getCust(Grib2Table table) {
+    FslLocalTables cust = tables.get(getPath(table));
+    if (cust != null) return cust;
+    cust = new FslLocalTables(table);
+    tables.put(table.getPath(), cust);
+    return cust;
   }
 
-  ////////////////////////////////
-  private Grib2Table tableDef;
+  static private String getPath(Grib2Table grib2Table) {
+    if (grib2Table.getId().genProcessId == 125)
+      return fimTable;
+    else
+      return hrrrTable;
+  }
 
-  private FslLocalTables(int subCenter, int masterVersion, int localVersion, int genProcessId) {
-    super(center_id, subCenter, masterVersion, localVersion, genProcessId);
-    tableDef = genProcessId == 125 ? new Grib2Table(hrrrTable, Grib2Table.Type.test) : new Grib2Table(fimTable, Grib2Table.Type.test);
+  private FslLocalTables(Grib2Table grib2Table) {
+    super(grib2Table);   // default resource path
+    grib2Table.setPath(getPath(grib2Table));
     initLocalTable(null);
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return tableDef.path;
+    return grib2Table.getPath();
   }
+
+  // must override since we are subclassing NcepLocalTables
+  @Override
+  public List<GribTables.Parameter> getParameters() {
+    List<GribTables.Parameter> result = new ArrayList<>();
+    for (Grib2Parameter p : local.values()) result.add(p);
+    Collections.sort(result, new ParameterSort());
+    return result;
+  }
+
+  @Override
+  public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
+    return local.get(makeHash(discipline, category, number));
+   }
 
   // LOOK  maybe combine grib1, grib2 and bufr ??
   @Override
@@ -100,11 +120,11 @@ public class FslLocalTables extends NcepLocalTables {
   public String getGeneratingProcessName(int genProcess) {
     switch (genProcess) {
       case 103:
-         return "ExREF";
+        return "ExREF";
       case 105:
-         return "RAP/ RUC";
+        return "RAP/ RUC";
       case 106:
-         return "Developmental Testbed Center Winter Field Experiment, WRF-ARW";
+        return "Developmental Testbed Center Winter Field Experiment, WRF-ARW";
       case 112:
         return "Developmental Testbed Center Winter Field Experiment, WRF-NMM";
       case 116:
@@ -141,13 +161,14 @@ public class FslLocalTables extends NcepLocalTables {
 
   public String getStatisticNameShort(int id) {
     switch (id) {
-      case 255: return "Interval";
+      case 255:
+        return "Interval";
     }
     return super.getStatisticNameShort(id);
   }
 
   protected void initLocalTable(Formatter f) {
-    if (tableDef.path.equals(hrrrTable))
+    if (grib2Table.getPath().equals(hrrrTable))
       local = readCsv(hrrrTable, f);
     else
       local = readFim(fimTable, f);
@@ -171,6 +192,7 @@ public class FslLocalTables extends NcepLocalTables {
 
       while (true) {
         String line = br.readLine();
+        if (line == null) break;
         if (line.startsWith("Record")) break;
       }
 
@@ -185,6 +207,7 @@ public class FslLocalTables extends NcepLocalTables {
         System.out.printf("%n"); */
 
         // RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
+        //RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
 
         String recordNumber = flds[0].trim();
         int tableNumber = Integer.parseInt(flds[1].trim());
@@ -197,15 +220,16 @@ public class FslLocalTables extends NcepLocalTables {
         String FieldType = flds[7].trim();
         String Description = flds[8].trim();
         String Units = flds[9].trim();
-        if (debug) System.out.printf("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber,	tableNumber,	disciplineNumber,	categoryNumber,	parameterNumber,
-                WGrib2Name,	NCLName, FieldType, Description, Units);
+        if (f != null)
+          f.format("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber, tableNumber, disciplineNumber, categoryNumber, parameterNumber,
+                  WGrib2Name, NCLName, FieldType, Description, Units);
 
         String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
         Grib2Parameter s = new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, Description);
         s.desc = Description;
         result.put(makeHash(disciplineNumber, categoryNumber, parameterNumber), s);
-        if (debug) System.out.printf(" %s%n", s);
-          if (categoryNumber > 191 || parameterNumber > 191) {
+        if (f != null) f.format(" %s%n", s);
+        if (categoryNumber > 191 || parameterNumber > 191) {
           Grib2Parameter dup = names.get(s.getName());
           if (dup != null && f != null) {
             if (header) f.format("Problems in table %s %n", resourcePath);
@@ -243,24 +267,24 @@ ozone mixing ratio - b                                      154   109           
 
    */
 
-
+  // this doesnt work - its a GRIB1 table
   private Map<Integer, Grib2Parameter> readFim(String resourcePath, Formatter f) {
-    boolean header = true;
     Map<Integer, Grib2Parameter> result = new HashMap<>(100);
 
     ClassLoader cl = getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(resourcePath)) {
       if (is == null) throw new IllegalStateException("Cant find " + resourcePath);
 
+      if (f != null) f.format("%50s == %s, %s, %-20s, %-20s%n", "desc", "param", "ztype", "abbrev", "units");
       List<TableParser.Record> recs = TableParser.readTable(is, "56,63i,68i,93,102,112", 50000);
       for (TableParser.Record record : recs) {
-        String desc = (String) record.get(0);
-        int param =  (Integer) record.get(1);
-        int ztype =  (Integer) record.get(2);
-        String abbrev = (String) record.get(4);
-        String units = (String) record.get(5);
+        String desc = ((String) record.get(0)).trim();
+        int param = (Integer) record.get(1);
+        int ztype = (Integer) record.get(2);
+        String abbrev = ((String) record.get(4)).trim();
+        String units = ((String) record.get(5)).trim();
 
-        if (debug) System.out.printf("%s == %3d %3d %-20s %-20s%n", desc, param, ztype, abbrev, units);
+        if (f != null) f.format("%50s == %3d, %3d, %-20s, %-20s%n", desc, param, ztype, abbrev, units);
 
         Grib2Parameter gp = new Grib2Parameter(0, 0, param, abbrev, units, null, desc);
         result.put(makeHash(0, 0, param), gp);
@@ -274,14 +298,14 @@ ozone mixing ratio - b                                      154   109           
   }
 
   public static void main(String[] args) {
-    FslLocalTables hrrr = new FslLocalTables(0,0,1, 125);
+    FslLocalTables hrrr = new FslLocalTables(new Grib2Table("GSD_HRRR", 59, -1, -1, -1, 125, null, Grib2Table.Type.gsd));
     // FslLocalTables fim = new FslLocalTables(0,0,1,116);
     Formatter f = new Formatter();
-    Grib2Parameter.compareTables("FSL-HRRR", "Standard WMO version", hrrr.getParameters(), Grib2Customizer.factory(0,0,0,0, 0), f);
+    Grib2Parameter.compareTables("FSL-HRRR", "Standard WMO version", hrrr.getParameters(), Grib2Customizer.factory(0, 0, 0, 0, 0), f);
     System.out.printf("%s%n", f);
 
     Formatter f2 = new Formatter();
-    Grib2Parameter.compareTables("FSL-HRRR", "NCEP Table", hrrr.getParameters(), Grib2Customizer.factory(7,0,0,0, 0), f2);
+    Grib2Parameter.compareTables("FSL-HRRR", "NCEP Table", hrrr.getParameters(), Grib2Customizer.factory(7, 0, 0, 0, 0), f2);
     System.out.printf("%s%n", f2);
 
   }

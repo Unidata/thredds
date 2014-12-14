@@ -444,7 +444,7 @@ public class GridIndexToNC {
 
   }
 
-  private class VertCollection implements Comparable<VertCollection> {
+  private static class VertCollection implements Comparable<VertCollection> {
     GridVertCoord vc;
     List<GridVariable> list = new ArrayList<>(3);
 
@@ -509,7 +509,7 @@ public class GridIndexToNC {
    * @author IDV Development Team
    * @version $Revision: 1.3 $
    */
-  private class CompareGridVariableByVertName implements Comparator {
+  static private class CompareGridVariableByVertName implements Comparator {
 
     /**
      * Compare the two lists of names
@@ -526,7 +526,7 @@ public class GridIndexToNC {
     }
   }
 
-  private class CompareGridVariableByNumberVertLevels implements Comparator {
+  static private class CompareGridVariableByNumberVertLevels implements Comparator {
 
     /**
      * Compare the two lists of names

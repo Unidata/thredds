@@ -84,7 +84,7 @@ public class TestGrib2Netcdf {
 
     long totalBytes;
     try {
-      totalBytes = CFGridWriter2.writeFile(gds, null, null, null, 1, null, null, 1, true, writer);
+      totalBytes = CFGridWriter2.writeFile(gds, null, null, null, 1, null, null, 1, false, writer);
       totalBytes /= 1000 * 1000;
     } catch (Throwable e) {
       e.printStackTrace();
@@ -117,7 +117,7 @@ public class TestGrib2Netcdf {
     public int doAct(String filename) throws IOException {
 
       TestGrib2Netcdf writer = new TestGrib2Netcdf();
-      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 3, false);
+      total += writer.writeNetcdf(filename, NetcdfFileWriter.Version.netcdf4, Nc4Chunking.Strategy.grib, 9, false);
 
       System.out.format("   total so far: %10.3f%n%n", total);
       fw.flush();
@@ -163,14 +163,19 @@ public class TestGrib2Netcdf {
 
 
   public static void main(String[] args) throws IOException {
-    dirOut = "G:/write2/";
-    csvOut = "results2.grib.csv";
+    dirOut = "C:/compress/writeBzip3/";
+    File dir = new File(dirOut);
+    dir.mkdirs();
+
+    csvOut = "results.csv";
     writeHeader();
 
     try {
-      DeflateByLevelAct act = new DeflateByLevelAct();
+      ChunkGribAct act = new ChunkGribAct();
       // act.doAct("Q:/cdmUnitTest/tds/ncep/NAM_CONUS_12km_conduit_20140804_0000.grib2");
-      act.doAct("Q:\\cdmUnitTest\\tds\\ncep\\GFS_Puerto_Rico_0p5deg_20140106_1800.grib2");
+      act.doAct("Q:\\cdmUnitTest\\tds\\ncep\\RUC2_CONUS_20km_surface_20100516_1600.grib2");
+      act.doAct("Q:\\cdmUnitTest\\tds\\ncep\\WW3_Coastal_US_West_Coast_20140804_1800.grib2");
+      act.doAct("Q:\\cdmUnitTest\\tds\\ncep\\RR_CONUS_13km_20121028_0000.grib2");
 
       System.out.printf("%n%n%10.3f Mbytes%n", total);
 

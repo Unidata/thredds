@@ -41,6 +41,7 @@ import ucar.coord.SparseArray;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.ui.grib.Grib2ReportPanel;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
@@ -53,13 +54,13 @@ import java.util.*;
  * Run through ncx2 indices and make reports
  *
  * @author caron
- * @since Dec 13, 2010
+ * @since 5/15/2014
  */
 public class CdmIndexReportPanel extends ReportPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public static enum Report {
-    misplacedFlds
+    misplacedFlds             // find misplaced records for NCDC
   }
 
   public CdmIndexReportPanel(PreferencesExt prefs) {
@@ -103,10 +104,12 @@ public class CdmIndexReportPanel extends ReportPanel {
     }
   }
 
+  private static final int MIN_COUNT = 400;
+
   // seperate report for each file in collection
   private void doMisplacedFieldsEach(Formatter f2, MFile mfile, Set<String> filenames, boolean extra) throws IOException {
     Formatter f = new Formatter(System.out);
-    f.format("Check Misplaced Fields for %s%n", mfile);
+    f.format("Check Misplaced Fields for %s, records count < %d%n", mfile, MIN_COUNT);
     Map<Integer, VarInfo> varCount = new HashMap<>();
     int countMisplaced = 0;
 
@@ -118,7 +121,7 @@ public class CdmIndexReportPanel extends ReportPanel {
     Collections.sort(sorted);
     for (VarInfo vinfo : sorted) {
       f.format(" %20s = %d%n", vinfo.name, vinfo.count);
-      if (vinfo.count > 400) vinfo.ok = true; // LOOK arbitrary cutoff
+      if (vinfo.count > MIN_COUNT) vinfo.ok = true; // LOOK arbitrary cutoff
       if (!vinfo.ok) countMisplaced += vinfo.count;
     }
     f.format("countMisplaced = %d%n", countMisplaced);
@@ -127,13 +130,13 @@ public class CdmIndexReportPanel extends ReportPanel {
     f.format("%nFind Misplaced Files%n");
     File indexFile = new File(mfile.getPath());
     countMisplaced += doOneIndex(indexFile, f, varCount, filenames, new Indent(2), extra);
-    f.format("%nDone countMisplaced=%d (n < 400)%n%nFiles%n", countMisplaced);
+    f.format("%nDone countMisplaced=%d (n < %d)%n%nFiles%n", MIN_COUNT, countMisplaced);
     f2.format("%s", f.toString());
   }
 
    //  report over all files in collection
   private void doMisplacedFields(Formatter f, MCollection dcm, boolean useIndex, boolean extra) throws IOException {
-     f.format("Check Misplaced Fields%n");
+     f.format("Check Misplaced Fields, records count < %d%n", MIN_COUNT);
      Map<Integer, VarInfo> varCount = new HashMap<>();
 
      for (MFile mfile : dcm.getFilesSorted()) {
@@ -147,7 +150,7 @@ public class CdmIndexReportPanel extends ReportPanel {
      Collections.sort(sorted);
      for (VarInfo vinfo : sorted) {
        f.format(" %20s = %d%n", vinfo.name, vinfo.count);
-       if (vinfo.count > 400) vinfo.ok = true; // LOOK arbitrary cutoff
+       if (vinfo.count > MIN_COUNT) vinfo.ok = true; // LOOK arbitrary cutoff
        if (!vinfo.ok) countMisplaced += vinfo.count;
      }
      f.format("countMisplaced = %d%n", countMisplaced);
@@ -159,7 +162,7 @@ public class CdmIndexReportPanel extends ReportPanel {
        File indexFile = new File(mfile.getPath());
        countMisplaced += doOneIndex(indexFile, f, varCount, filenames, new Indent(2), extra);
      }
-     f.format("%nDone countMisplaced=%d (n < 400)%n%nFiles%n", countMisplaced);
+     f.format("%nDone countMisplaced=%d (n < %d)%n%nFiles%n", MIN_COUNT, countMisplaced);
      for (String filename : filenames)
        f.format("  %s%n", filename);
    }
@@ -167,13 +170,11 @@ public class CdmIndexReportPanel extends ReportPanel {
   ///////////////////////////////////////////////
 
   private static class VarInfo implements Comparable<VarInfo> {
-    int hash;
     String name;
     int count = 0;
     boolean ok;
 
-    private VarInfo(int hash, String name) {
-      this.hash = hash;
+    private VarInfo(String name) {
       this.name = name;
     }
 
@@ -202,7 +203,7 @@ public class CdmIndexReportPanel extends ReportPanel {
             int hash = vi.cdmHash + g.getGdsHash(); // must be both group and var
             VarInfo vinfo = varCount.get(hash);
             if (vinfo == null) {
-              vinfo = new VarInfo(hash, name);
+              vinfo = new VarInfo(name);
               varCount.put(hash, vinfo);
             }
             vinfo.count += vi.nrecords;

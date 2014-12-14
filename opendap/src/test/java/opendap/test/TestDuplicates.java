@@ -65,7 +65,7 @@ public class TestDuplicates extends UnitTestCommon
   public void
   testDuplicates() throws Exception {
     // Check if we are running against remote or localhost, or what.
-    String testserver = TestDir.remoteTestServer;
+    String testserver = TestDir.dap2TestServer;
 
     List<Result> results = new ArrayList<Result>();
     if (true) {

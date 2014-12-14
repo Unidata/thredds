@@ -40,6 +40,7 @@
 
 package opendap.dap;
 
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -49,7 +50,11 @@ import java.util.Vector;
  * @author jehamby
  * @version $Revision: 15901 $
  */
-class Util {
+public class Util {
+
+
+    static public Charset UTF8 = Charset.forName("UTF-8");
+
     /**
      * Compares elements in a <code>Vector</code> of <code>BaseType</code>s and
      * throw a <code>BadSemanticsException</code> if there are any
@@ -123,6 +128,7 @@ class Util {
 
         if (hi0 > lo0) {
             // Arbitrarily establishing partition element as the array midpoint */
+            //Coverity[FB.IM_AVERAGE_COMPUTATION_COULD_OVERFLOW]
             mid = a[(lo0 + hi0) / 2];
 
             // loop through the array until indices cross
@@ -199,6 +205,20 @@ class Util {
         }
         return buf.toString();
     }
+
+    /**
+     * Filter out runtime exceptions from other exceptions and re-throw
+     */
+
+    static public void check(Exception ex)
+	    throws RuntimeException
+    {
+        if (ex instanceof RuntimeException)
+            throw (RuntimeException)ex;
+    }
+
+
+
 }
 
 

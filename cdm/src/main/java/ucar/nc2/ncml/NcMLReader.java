@@ -417,7 +417,7 @@ public class NcMLReader {
       if (iospS != null) {
         NetcdfFile ncfile;
         try {
-          ncfile = new NcMLNetcdfFile(iospS, iospParam, referencedDatasetUri, buffer_size, cancelTask);
+          ncfile = new NetcdfFileSubclass(iospS, iospParam, referencedDatasetUri, buffer_size, cancelTask);
         } catch (Exception e) {
           throw new IOException(e);
         }
@@ -457,16 +457,6 @@ public class NcMLReader {
     readNetcdf(ncmlLocation, targetDS, refds, netcdfElem, cancelTask);
 
     return targetDS;
-  }
-
-  // need access to protected constructor
-
-  private static class NcMLNetcdfFile extends NetcdfFile {
-    NcMLNetcdfFile(String iospClassName, Object iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
-            throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException {
-
-      super(iospClassName, iospParam, location, buffer_size, cancelTask);
-    }
   }
 
   ///////// Heres where the parsing work starts

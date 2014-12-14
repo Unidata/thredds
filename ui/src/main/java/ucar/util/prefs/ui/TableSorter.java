@@ -32,15 +32,17 @@
  */
 package ucar.util.prefs.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
-
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.Serializable;
+import java.util.*;
+import java.util.List;
 
 /**
  * TableSorter is a decorator for TableModels; adding sorting
@@ -352,7 +354,7 @@ public class TableSorter extends AbstractTableModel {
     }
   }
 
-  private class TableModelHandler implements TableModelListener {
+  private class TableModelHandler implements TableModelListener, Serializable {
     public void tableChanged(TableModelEvent e) {
       // If we're not sorting by anything, just pass the event along.
       if (!isSorting()) {
@@ -406,7 +408,7 @@ public class TableSorter extends AbstractTableModel {
     }
   }
 
-  private class MouseHandler extends MouseAdapter {
+  private class MouseHandler extends MouseAdapter implements Serializable {
     public void mouseClicked(MouseEvent e) {
       JTableHeader h = (JTableHeader) e.getSource();
       TableColumnModel columnModel = h.getColumnModel();

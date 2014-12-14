@@ -42,6 +42,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -794,7 +795,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to hold the DM File header info
    */
-  protected class DMFileHeaderInfo {
+  protected static class DMFileHeaderInfo {
 
     /**
      * file header name
@@ -837,7 +838,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to mimic the DMKEYS common block.
    */
-  protected class DMPart {
+  protected static class DMPart {
 
     /**
      * part name
@@ -916,7 +917,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to hold DM Parameter info
    */
-  protected class DMParam {
+  protected static class DMParam {
 
     /**
      * part name
@@ -966,7 +967,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to hold DM Integer packing info
    */
-  protected class PackingInfo {
+  protected static class PackingInfo {
 
     /**
      * offsets
@@ -1047,7 +1048,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to hold information about a key.
    */
-  protected class Key {
+  protected static class Key {
 
     /**
      * the key name
@@ -1151,7 +1152,7 @@ public class GempakFileReader implements GempakConstants {
   /**
    * Class to mimic the DMHDRS common block.
    */
-  protected class DMHeaders {
+  static protected class DMHeaders {
 
     /**
      * last valid row
@@ -1735,18 +1736,18 @@ public class GempakFileReader implements GempakConstants {
    * @return a bit string (e.g.: 01100001|11000000|10011010|10110100|)
    */
   protected static String getBits(int b) {
-    String s = "";
+    Formatter s = new Formatter();
     for (int i = 31; i >= 0; i--) {
       if ((b & (1 << i)) != 0) {
-        s = s + "1";
+        s.format("1");
       } else {
-        s = s + "0";
+        s.format("0");
       }
       if (i % 8 == 0) {
-        s = s + "|";
+        s.format("|");
       }
     }
-    return s;
+    return s.toString();
   }
 
   /**
@@ -1768,7 +1769,7 @@ public class GempakFileReader implements GempakConstants {
    *
    * @author Unidata Development Team
    */
-  public class RData {
+  static public class RData {
 
     /**
      * the header

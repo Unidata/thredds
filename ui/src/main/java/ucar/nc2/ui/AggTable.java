@@ -53,9 +53,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Formatter;
 
@@ -74,9 +72,6 @@ public class AggTable extends JPanel {
   private TextHistoryPane infoTA, aggTA;
   private IndependentWindow infoWindow;
 
-  private StructureTable dataTable;
-  private IndependentWindow dataWindow;
-
   private NetcdfDataset current;
 
   public AggTable(PreferencesExt prefs, JPanel buttPanel) {
@@ -85,7 +80,7 @@ public class AggTable extends JPanel {
     datasetTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
     datasetTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        DatasetBean mb = (DatasetBean) datasetTable.getSelectedBean();
+        datasetTable.getSelectedBean();
       }
     });
 
@@ -152,7 +147,7 @@ public class AggTable extends JPanel {
     current = ncd;
 
     Aggregation agg = ncd.getAggregation();
-    java.util.List<DatasetBean> beanList = new ArrayList<DatasetBean>();
+    java.util.List<DatasetBean> beanList = new ArrayList<>();
     for (Aggregation.Dataset dataset : agg.getDatasets()) {
       beanList.add(new DatasetBean(dataset));
     }
@@ -190,9 +185,9 @@ public class AggTable extends JPanel {
         }
       }
     } catch (Throwable t) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      t.printStackTrace(new PrintStream(bos));
-      f.format(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      t.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
     }
   }
 
@@ -215,9 +210,9 @@ public class AggTable extends JPanel {
       }
       if (org != null) org.close();
     } catch (Throwable t) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      t.printStackTrace(new PrintStream(bos));
-      f.format(bos.toString());
+      StringWriter sw = new StringWriter(10000);
+      t.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
     }
   }
 
@@ -231,10 +226,6 @@ public class AggTable extends JPanel {
         e.printStackTrace();
         return null;
       }
-    }
-
-    // no-arg constructor
-    public DatasetBean() {
     }
 
     // create from a dataset

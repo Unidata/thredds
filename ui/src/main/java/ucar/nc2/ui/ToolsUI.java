@@ -37,10 +37,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
-import ucar.nc2.NCdumpW;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Variable;
+import ucar.httpservices.HTTPSession;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordSysBuilder;
@@ -56,6 +54,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.geotiff.GeoTiff;
+import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
@@ -72,6 +71,7 @@ import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
+import ucar.nc2.ui.grib.*;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
@@ -85,7 +85,6 @@ import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCache;
-import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -320,7 +319,7 @@ public class ToolsUI extends JPanel {
 
     // nested tab - feature collection
     fcTabPane.addTab("DirectoryPartition", new JLabel("DirectoryPartition"));
-    fcTabPane.addTab("PartitionReport", new JLabel("PartitionReport"));
+    // fcTabPane.addTab("PartitionReport", new JLabel("PartitionReport"));
     fcTabPane.addTab("CollectionSpec", new JLabel("CollectionSpec"));
     addListeners(fcTabPane);
 
@@ -705,7 +704,7 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         f.format("NetcdfFileCache contents%n");
-        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
         if (null != cache)
           cache.showCache(f);
         viewerPanel.detailTA.setText(f.toString());
@@ -717,7 +716,7 @@ public class ToolsUI extends JPanel {
 
     AbstractAction clearCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
         if (cache != null)
           cache.clearCache(true);
       }
@@ -731,13 +730,13 @@ public class ToolsUI extends JPanel {
         if (state == isCacheInit) return;
         isCacheInit = state;
         if (isCacheInit) {
-          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
           if (cache != null)
             cache.enable();
           else
             NetcdfDataset.initNetcdfFileCache(10, 20, 10 * 60);
         } else {
-          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
           if (cache != null) cache.disable();
         }
       }
@@ -900,7 +899,6 @@ public class ToolsUI extends JPanel {
     Nc4Iosp.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
-    ucar.nc2.FileWriter.setDebugFlags(debugFlags);
     ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
     ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
     ucar.nc2.grib.collection.GribIosp.setDebugFlags(debugFlags);
@@ -1003,6 +1001,17 @@ public class ToolsUI extends JPanel {
     boolean strictMode = Grib1ParamTables.isStrict();
     a.putValue(BAMutil.STATE, strictMode);
     BAMutil.setActionPropertiesToggle(a, null, "GRIB1 strict", strictMode, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        GribData.setInterpolationMethod( state ? GribData.InterpolationMethod.cubic : GribData.InterpolationMethod.linear);
+      }
+    };
+    boolean useCubic = GribData.getInterpolationMethod() == GribData.InterpolationMethod.cubic;
+    a.putValue(BAMutil.STATE, useCubic);
+    BAMutil.setActionPropertiesToggle(a, null, "Use Cubic Interpolation on Thin Grids", useCubic, 'I', -1);
     BAMutil.addActionToMenu(subMenu, a);
 
     /////////////////////////////////////
@@ -1477,7 +1486,7 @@ public class ToolsUI extends JPanel {
             System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " when=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
 
           // eliminate multiple events from same selection
-          if (eventOK && (e.getWhen() > lastEvent + 10000)) { // not sure of units - must be nanosecs - ?? platform dependednt ??
+          if (eventOK) { //  && (e.getWhen() > lastEvent + 10000)) { // not sure of units - must be nanosecs - ?? platform dependednt ??
             doit(cb.getSelectedItem());
             lastEvent = e.getWhen();
           }
@@ -2531,14 +2540,14 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class GribFilesPanel extends OpPanel {
-    ucar.nc2.ui.GribFilesPanel gribTable;
+    ucar.nc2.ui.grib.GribFilesPanel gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
     GribFilesPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.GribFilesPanel(prefs);
+      gribTable = new ucar.nc2.ui.grib.GribFilesPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
@@ -2595,7 +2604,7 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   // GRIB2
   private class Grib2CollectionPanel extends OpPanel {
-    ucar.nc2.ui.Grib2CollectionPanel gribTable;
+    ucar.nc2.ui.grib.Grib2CollectionPanel gribTable;
 
     void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
@@ -2603,7 +2612,7 @@ public class ToolsUI extends JPanel {
 
     Grib2CollectionPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib2CollectionPanel(prefs, buttPanel);
+      gribTable = new ucar.nc2.ui.grib.Grib2CollectionPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -2821,14 +2830,14 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class Grib2DataPanel extends OpPanel {
-    ucar.nc2.ui.Grib2DataPanel gribTable;
+    ucar.nc2.ui.grib.Grib2DataPanel gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
     Grib2DataPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib2DataPanel(prefs);
+      gribTable = new ucar.nc2.ui.grib.Grib2DataPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -2903,14 +2912,14 @@ public class ToolsUI extends JPanel {
 
     /////////////////////////////////////////////////////////////////////
   private class Grib1DataPanel extends OpPanel {
-    ucar.nc2.ui.Grib1DataTable gribTable;
+    Grib1DataTable gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
       Grib1DataPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib1DataTable(prefs);
+      gribTable = new Grib1DataTable(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -3124,7 +3133,7 @@ public class ToolsUI extends JPanel {
 
  /////////////////////////////////////////////////////////////////////
   private class GribIndexPanel extends OpPanel {
-    ucar.nc2.ui.GribIndexPanel gribTable;
+    ucar.nc2.ui.grib.GribIndexPanel gribTable;
 
     void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
@@ -3132,7 +3141,7 @@ public class ToolsUI extends JPanel {
 
    GribIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-      gribTable = new ucar.nc2.ui.GribIndexPanel(prefs, buttPanel);
+      gribTable = new ucar.nc2.ui.grib.GribIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
     }
 
@@ -3170,14 +3179,14 @@ public class ToolsUI extends JPanel {
   // raw grib access - dont go through the IOSP
   private class Grib1CollectionPanel extends OpPanel {
     //ucar.unidata.io.RandomAccessFile raf = null;
-    ucar.nc2.ui.Grib1CollectionPanel gribTable;
+    ucar.nc2.ui.grib.Grib1CollectionPanel gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
     Grib1CollectionPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib1CollectionPanel(buttPanel, prefs);
+      gribTable = new ucar.nc2.ui.grib.Grib1CollectionPanel(buttPanel, prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
@@ -3340,7 +3349,7 @@ public class ToolsUI extends JPanel {
   }
 
   /* private class Grib2ReportPanel extends OpPanel {
-    ucar.nc2.ui.Grib2ReportPanel gribReport;
+    ucar.nc2.ui.grib.Grib2ReportPanel gribReport;
     boolean useIndex = true;
     boolean eachFile = false;
     boolean extra = false;
@@ -3348,10 +3357,10 @@ public class ToolsUI extends JPanel {
 
     Grib2ReportPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribReport = new ucar.nc2.ui.Grib2ReportPanel(prefs, buttPanel);
+      gribReport = new ucar.nc2.ui.grib.Grib2ReportPanel(prefs, buttPanel);
       add(gribReport, BorderLayout.CENTER);
 
-      reports = new JComboBox(ucar.nc2.ui.Grib2ReportPanel.Report.values());
+      reports = new JComboBox(ucar.nc2.ui.grib.Grib2ReportPanel.Report.values());
       buttPanel.add(reports);
 
       AbstractAction useIndexButt = new AbstractAction() {
@@ -3406,7 +3415,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribReport.doReport(command, useIndex, eachFile, extra, (ucar.nc2.ui.Grib2ReportPanel.Report) reports.getSelectedItem());
+        gribReport.doReport(command, useIndex, eachFile, extra, (ucar.nc2.ui.grib.Grib2ReportPanel.Report) reports.getSelectedItem());
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
@@ -3433,16 +3442,16 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   /* private class Grib1ReportPanel extends OpPanel {
-    ucar.nc2.ui.Grib1ReportPanel gribReport;
+    ucar.nc2.ui.grib.Grib1ReportPanel gribReport;
     boolean useIndex = true;
     JComboBox reports;
 
     Grib1ReportPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribReport = new ucar.nc2.ui.Grib1ReportPanel(prefs, buttPanel);
+      gribReport = new ucar.nc2.ui.grib.Grib1ReportPanel(prefs, buttPanel);
       add(gribReport, BorderLayout.CENTER);
 
-      reports = new JComboBox(ucar.nc2.ui.Grib1ReportPanel.Report.values());
+      reports = new JComboBox(ucar.nc2.ui.grib.Grib1ReportPanel.Report.values());
       buttPanel.add(reports);
 
       AbstractAction useIndexButt = new AbstractAction() {
@@ -3474,7 +3483,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribReport.doReport(command, useIndex, (ucar.nc2.ui.Grib1ReportPanel.Report) reports.getSelectedItem());
+        gribReport.doReport(command, useIndex, (ucar.nc2.ui.grib.Grib1ReportPanel.Report) reports.getSelectedItem());
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
@@ -3652,11 +3661,11 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   private class Grib2TablePanel extends OpPanel {
-    Grib2TablesViewer codeTable;
+    Grib2TableViewer2 codeTable;
 
     Grib2TablePanel(PreferencesExt p) {
       super(p, "table:", false, false);
-      codeTable = new Grib2TablesViewer(prefs, buttPanel);
+      codeTable = new Grib2TableViewer2(prefs, buttPanel);
       add(codeTable, BorderLayout.CENTER);
     }
 
@@ -3676,11 +3685,11 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   private class GribRenamePanel extends OpPanel {
-    ucar.nc2.ui.GribRenamePanel panel;
+    ucar.nc2.ui.grib.GribRenamePanel panel;
 
     GribRenamePanel(PreferencesExt p) {
       super(p, "matchNcepName: ", true, false, false);
-      panel = new ucar.nc2.ui.GribRenamePanel(prefs, buttPanel);
+      panel = new ucar.nc2.ui.grib.GribRenamePanel(prefs, buttPanel);
       add(panel, BorderLayout.CENTER);
     }
 
@@ -3700,13 +3709,13 @@ public class ToolsUI extends JPanel {
 
     /////////////////////////////////////////////////////////////////////
   private class GribRewritePanel extends OpPanel {
-    ucar.nc2.ui.GribRewritePanel ftTable;
+    ucar.nc2.ui.grib.GribRewritePanel ftTable;
     final FileManager dirChooser;
 
       GribRewritePanel(PreferencesExt prefs) {
       super(prefs, "dir:", false, false);
       dirChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
-      ftTable = new ucar.nc2.ui.GribRewritePanel(prefs, buttPanel);
+      ftTable = new ucar.nc2.ui.grib.GribRewritePanel(prefs, buttPanel);
       add(ftTable, BorderLayout.CENTER);
 
       ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -4594,82 +4603,6 @@ public class ToolsUI extends JPanel {
 
   }  */
 
-  /* the old Fmrc Impl stuff
-  private class FmrcImplPanel extends OpPanel {
-    FmrcImpl fmrc;
-    FmrcTable table;
-
-    FmrcImplPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      table = new FmrcTable(prefs);
-      table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openNetcdfFile")) {
-            NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
-            openNetcdfFile(dataset);
-          } else if (e.getPropertyName().equals("openCoordSystems")) {
-            NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
-            openCoordSystems(dataset);
-          } else if (e.getPropertyName().equals("openGridDataset")) {
-            NetcdfDataset dataset = (NetcdfDataset) e.getNewValue();
-            openGridDataset(dataset);
-          }
-        }
-      });
-      add(table, BorderLayout.CENTER);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (fmrc != null) {
-            Formatter f = new Formatter();
-            try {
-              fmrc.dump(f);
-            } catch (IOException ioe) {
-              ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-              ioe.printStackTrace();
-              ioe.printStackTrace(new PrintStream(bos));
-              // ta.setText( datasetFactory.getErrorMessages());
-              ta.appendLine(bos.toString());
-            }
-            detailTA.setText(f.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-        }
-      });
-      buttPanel.add(infoButton);
-    }
-
-    boolean process(Object o) {
-      String command = (String) o;
-      if (command == null) return false;
-
-      if (fmrc != null) {
-        try {
-          fmrc.close();
-        } catch (IOException ioe) {
-        }
-      }
-
-      try {
-        fmrc = new FmrcImpl(command);
-        table.setFmrc(fmrc);
-        return true;
-
-      } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
-      }
-
-      return false;
-    }
-  }  */
-
   // new ucar.nc2.ft.fmrc stuff
   private class FmrcPanel extends OpPanel {
     Fmrc2Panel table;
@@ -4728,7 +4661,7 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(collectionButton);
 
-      AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show in Netcdf Viewer", false);
+      AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show Dataset", false);
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           try {
@@ -5296,7 +5229,7 @@ public class ToolsUI extends JPanel {
       try {
         if (jni) {
           Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
-          ncnew = new MyNetcdfFile(iosp, location);
+          ncnew = new NetcdfFileSubclass(iosp, location);
           ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "r");
           iosp.open(raf, ncnew, null);
         } else {
@@ -5343,14 +5276,6 @@ public class ToolsUI extends JPanel {
     }
 
   }
-
-  private static class MyNetcdfFile extends NetcdfFile {
-     private MyNetcdfFile(Nc4Iosp iosp, String location) {
-       super();
-       spi = iosp;
-       this.location = location;
-     }
-   }
 
   ///////////////////////////////////////////////////////////
   private class DatasetWriterPanel extends OpPanel {
@@ -6261,8 +6186,7 @@ public class ToolsUI extends JPanel {
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
       if (is == null) return "4.5.0";
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is,
-              CDM.utf8Charset));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
         sbuff.append(dataIS.readLine());
@@ -6314,7 +6238,7 @@ public class ToolsUI extends JPanel {
     }
 
     done = true; // on some systems, still get a window close event
-    ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+    ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
     if (cache != null)
       cache.clearCache(true);
     FileCache.shutdown(); // shutdown threads
@@ -6356,22 +6280,6 @@ public class ToolsUI extends JPanel {
   static boolean isCacheInit = false;
 
   public static void main(String args[]) {
-    try {
-      // Switch to Nimbus Look and Feel, if it's available.
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-            UnsupportedLookAndFeelException e) {
-      log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
-    }
-
-    // get a splash screen up right away
-    // final SplashScreen splash = new SplashScreen();
-
     if (debugListen) {
       System.out.println("Arguments:");
       for (String arg : args) {
@@ -6472,7 +6380,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-        // prefs storage
+    // prefs storage
     try {
       // 4.4
       String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
@@ -6533,6 +6441,7 @@ public class ToolsUI extends JPanel {
     */
 
     SwingUtilities.invokeLater(new Runnable() {
+       @Override
        public void run() {
          createGui();
        }
@@ -6549,7 +6458,8 @@ public class ToolsUI extends JPanel {
           break;
         }
       }
-    } catch (Exception e) {  // TODO: In Java 7, replace this with multi-catch of specific exceptions.
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+            UnsupportedLookAndFeelException e) {
       log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
     }
 

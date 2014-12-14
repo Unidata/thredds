@@ -29,7 +29,7 @@ export CATALINA_BASE
 JAVA_HOME=&quot;/opt/jdk&quot;
 export JAVA_HOME
 #
-<strong>CONTENT_ROOT=-Dtds.content.root.path=/data/thredds/tds-dev/content</strong>
+<strong>CONTENT_ROOT=&quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong>
 NORMAL=&quot;-d64 -Xmx4090m -Xms512m -server&quot;
 MAX_PERM_GEN=&quot;-XX:MaxPermSize=256m&quot;
 HEADLESS=&quot;-Djava.awt.headless=true&quot;
@@ -41,7 +41,13 @@ export JAVA_OPTS
 </blockquote>
 </li>
   <p><strong>Troubleshooting</strong>: </p>
-  <p>If the content root is not correctly set, you will see a message like: &quot;<strong>SEVERE: Error listenerStart</strong>&quot; in <strong>{tomcat}/logs/catalina.out</strong> and &quot;<strong>Error creating bean with name 'tdsContext'</strong>&quot; in  <strong>{$tomcat}/logs/localhost.log.</strong></p>
+  <p>Don't leave a space after the =</p>
+  <pre><strong> CONTENT_ROOT=&quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong>
+
+not
+
+<strong> CONTENT_ROOT= &quot;-Dtds.content.root.path=/data/thredds/tds-dev/content&quot;</strong></pre>
+  <p>If the content root is not correctly set, you will see a message like: &quot;<strong>SEVERE: Error listenerStart</strong>&quot; in <strong>{tomcat}/logs/catalina.out</strong> and &quot;<strong>Error creating bean with name 'tdsContext'</strong>&quot;<strong>, </strong>and<strong> &quot;Content directory not a directory&quot;</strong> in  <strong>{$tomcat}/logs/localhost.log.</strong><strong></strong></p>
   <p>By default, the content root is set to <strong>&quot;../content&quot;</strong> relative to where tomcat is started. Since this directory varies and is not standard across servlet containers, you should always explicitly set <strong>-Dtds.content.root.path</strong>.</p>
   <p>We recommend that you use an absolute path, like <strong>/opt/tomcat/content</strong>, instead of a reletive path like <strong>&quot;../content&quot;</strong>.</p>
   <p>Note  that your catalogs are  under <strong>${tomcat}</strong><strong>/content/thredds</strong> but  <strong>tds.content.root.path</strong> does not include the <strong>thredds</strong> subdirectory.</p>
@@ -94,7 +100,7 @@ export JAVA_OPTS
   </pre> 
   Note the only difference is the absence of &quot;grid&quot; after &quot;thredds/ncss&quot; in the URL.
 </blockquote>
-<li>The REST interface has changed.  If you have been using NCSS from a script, you will need to check your URLs and parameters, and possibly change them, see the <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html">NCSS REST API</a>. (If you are accessing NCSS from the HTML form, then you dont need to do anything different).</li>
+<li>The REST interface has changed.  If you have been using NCSS from a script, you will need to check your URLs and parameters, and possibly change them, see the <a href="reference/NetcdfSubsetServiceReference.html">NCSS REST API</a>. (If you are accessing NCSS from the HTML form, then you dont need to do anything different).</li>
 </ol>
 <h2>New Features in version 4.5</h2>
 <ul>
@@ -116,6 +122,7 @@ export JAVA_OPTS
   <li>CDM
     <ul>
       <li>add Albers Equal Area projection</li>
+      <li>add Geostationary projection (Tom Rink SSEC)</li>
       <li>CFPointWriter refactored, can write to netCDF-4</li>
       <li>CFGridWriter2 replaces CFGridWriter</li>
     </ul>
@@ -161,8 +168,8 @@ export JAVA_OPTS
   <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
   <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service is coming soon.</li>
   <li>Point dataset unit tests upgraded to CF 1.6.</li>
-  <li>    Unit testing framework now complete; 2500+ unit tests.</li>
-  <li>Covarity defects actively being eliminated.</li>
+  <li>    Unit testing framework now complete; 2700+ unit tests.</li>
+  <li><a href="https://scan.coverity.com/projects/388?tab=overview">Covarity</a> static analysis now being done. 3000+ defects eliminated, about 1000 to go.</li>
   <li>Code being converted to use Java 7 constructs, eg try-with-resources, generics.</li>
 </ul>
 <p>&nbsp;</p>
@@ -170,7 +177,7 @@ export JAVA_OPTS
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated Aug 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated Oct 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

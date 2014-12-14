@@ -350,7 +350,7 @@ public class InvCatalogRef extends InvDatasetImpl {
     return isRead() ? proxy.check(out, show) : super.check(out, show);
   }
 
-  public boolean equals(Object o) {
+  /* public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof InvCatalogRef)) return false;
     InvCatalogRef invCatalogRef = (InvCatalogRef) o;
@@ -366,6 +366,28 @@ public class InvCatalogRef extends InvDatasetImpl {
     //int result = super.hashCode();
     int result = 17;
     result = 29 * result + (href != null ? href.hashCode() : 0);
+    result = 29 * result + (name != null ? name.hashCode() : 0);
+    return result;
+  }  */
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    // if (!super.equals(o)) return false;
+
+    InvCatalogRef that = (InvCatalogRef) o;
+
+    if (href != null ? !href.equals(that.href) : that.href != null) return false;
+    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 17;
+    result = 31 * result + (href != null ? href.hashCode() : 0);
     result = 29 * result + (name != null ? name.hashCode() : 0);
     return result;
   }

@@ -37,15 +37,13 @@ import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.time.CalendarTimeZone;
-import ucar.nc2.ui.table.ColumnWidthsResizer;
-import ucar.nc2.ui.table.HidableTableColumnModel;
-import ucar.nc2.ui.table.TableAligner;
-import ucar.nc2.ui.table.TableAppearanceAction;
+import ucar.nc2.ui.table.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.HashMapLRU;
@@ -195,7 +193,7 @@ public class StructureTable extends JPanel {
   private void initTable(StructureTableModel m) {
     TableColumnModel tcm = new HidableTableColumnModel(m);
     jtable = new JTable(m, tcm);
-    jtable.setAutoCreateRowSorter(true);
+    jtable.setRowSorter(new UndoableRowSorter<>(m));
 
     // Fixes this bug: http://stackoverflow.com/questions/6601994/jtable-boolean-cell-type-background
     ((JComponent) jtable.getDefaultRenderer(Boolean.class)).setOpaque(true);
@@ -266,6 +264,10 @@ public class StructureTable extends JPanel {
     scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, cornerButton);
     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+    // This keeps the corner button visible even when the table is empty (or all columns are hidden).
+    scrollPane.setColumnHeaderView(new JViewport());
+    scrollPane.getColumnHeader().setPreferredSize(jtable.getTableHeader().getPreferredSize());
+
     add(scrollPane, BorderLayout.CENTER);
 
     revalidate();
@@ -316,23 +318,24 @@ public class StructureTable extends JPanel {
     String filename = fileChooser.chooseFilename();
     if (filename == null) return;
     try {
-      PrintStream ps = new PrintStream(new FileOutputStream(new File(filename)));
+      PrintWriter pw = new PrintWriter(new File(filename),
+              CDM.utf8Charset.name());
 
       TableModel model = jtable.getModel();
       for (int col = 0; col < model.getColumnCount(); col++) {
-        if (col > 0) ps.print(",");
-        ps.print(model.getColumnName(col));
+        if (col > 0) pw.print(",");
+        pw.print(model.getColumnName(col));
       }
-      ps.println();
+      pw.println();
 
       for (int row = 0; row < model.getRowCount(); row++) {
         for (int col = 0; col < model.getColumnCount(); col++) {
-          if (col > 0) ps.print(",");
-          ps.print(model.getValueAt(row, col).toString());
+          if (col > 0) pw.print(",");
+          pw.print(model.getValueAt(row, col).toString());
         }
-        ps.println();
+        pw.println();
       }
-      ps.close();
+      pw.close();
       JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
@@ -345,14 +348,14 @@ public class StructureTable extends JPanel {
     StructureData sd = getSelectedStructureData();
     if (sd == null) return;
 
-    ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+    StringWriter sw = new StringWriter(10000);
     try {
-      NCdumpW.printStructureData(new PrintWriter(bos), sd);
+      NCdumpW.printStructureData(new PrintWriter(sw), sd);
     } catch (IOException e) {
       String mess = e.getMessage();
-      bos.write(mess.getBytes(), 0, mess.length());
+      sw.write(mess);
     }
-    dumpTA.setText(bos.toString());
+    dumpTA.setText(sw.toString());
     dumpWindow.setVisible(true);
   }
 

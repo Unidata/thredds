@@ -35,20 +35,23 @@ package ucar.nc2.ui.grid;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
-
+import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.Format;
-import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Render grids using Java2D API.
@@ -57,9 +60,6 @@ import java.util.*;
  */
 
 public class GridRenderer {
-
-  private PreferencesExt store;
-
   // draw state
   private boolean drawGrid = true;
   private boolean drawGridLines = true;
@@ -83,7 +83,6 @@ public class GridRenderer {
   private GridDatatype lastGrid = null;
 
   // drawing optimization
-  private boolean colorScaleChanged = true, dataVolumeChanged = true;
   private boolean useModeForProjections = false; // use colorMode optimization for different projections
   private boolean sameProjection = false;
   private LatLonProjection projectll;       // special handling for LatLonProjection
@@ -91,15 +90,9 @@ public class GridRenderer {
   // working objects to minimize excessive gc
   private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
 
-  private final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
-  private boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
+  private static final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
+  private static boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
 
-  /**
-   * constructor
-   */
-  public GridRenderer(PreferencesExt store) {
-    this.store = store;
-  }
 
   ///// bean properties
 
@@ -115,7 +108,6 @@ public class GridRenderer {
    */
   public void setColorScale(ColorScale cs) {
     this.cs = cs;
-    colorScaleChanged = true;
   }
 
   /**
@@ -125,7 +117,6 @@ public class GridRenderer {
   public void setDataMinMaxType(ColorScale.MinMaxType type) {
     if (type != dataMinMaxType) {
       dataMinMaxType = type;
-      colorScaleChanged = true;
     }
   }
 
@@ -625,9 +616,6 @@ public class GridRenderer {
       cs.setMinMax(minmax.min, minmax.max);
       cs.setGeoGrid(stridedGrid);
     }
-
-    dataVolumeChanged = false;
-    colorScaleChanged = false;
   }
 
   /**

@@ -39,6 +39,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 
@@ -64,7 +65,7 @@ public class Grib2Collection extends GribCollection {
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
       Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
+      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getIndexFilepathInCache(), null);
       return new NetcdfDataset(ncfile);
 
     } else {
@@ -74,7 +75,7 @@ public class Grib2Collection extends GribCollection {
         if (gc == null) return null;
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
+        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getIndexFilepathInCache(), null);
         return new NetcdfDataset(ncfile);
       }
       return null;
@@ -87,7 +88,7 @@ public class Grib2Collection extends GribCollection {
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf
       Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
-      NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache()+"#"+group.getId(), null);
+      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getIndexFilepathInCache()+"#"+group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
@@ -98,7 +99,7 @@ public class Grib2Collection extends GribCollection {
         if (gc == null) return null;
 
         Grib2Iosp iosp = new Grib2Iosp(gc);
-        NetcdfFile ncfile = new NetcdfFileGC(iosp, null, getIndexFilepathInCache(), null);
+        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getIndexFilepathInCache(), null);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
         return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
       }
