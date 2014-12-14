@@ -897,7 +897,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
-  private class DatasetParse {
+  private static class DatasetParse {
     final PartitionCollection.Partition partition; // missing for collection level
     final GribCollection gc;
     final GribCollection.Dataset ds;

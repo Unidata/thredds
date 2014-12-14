@@ -56,6 +56,8 @@ public class GaussianLatitudes {
    * @param nlat the total number of latitudes from pole to pole (degree of the polynomial)
    */
   public GaussianLatitudes(int nlat) {
+    if (nlat == 0) throw new IllegalArgumentException("nlats may not be zero");
+
     // the number of latitudes between pole and equator
     int  nzero = nlat/2;
     cosc = new double[nlat];

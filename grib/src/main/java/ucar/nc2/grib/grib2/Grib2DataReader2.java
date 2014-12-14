@@ -743,7 +743,7 @@ public class Grib2DataReader2 {
       if (bitmap == null) { // must be one decoded value in idata for every expected data point
         if (idata.length != dataNPoints) {
           log.debug("Number of points in the data record {} != {} expected from GDS", idata.length, dataNPoints);
-          return null;
+          throw new IllegalStateException("Number of points in the data record {} != expected from GDS");
         }
 
         for (int i = 0; i < dataNPoints; i++) {

@@ -266,7 +266,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     else return m1 - o.m1;
   }
 
-  public class Field implements Comparable<Field> {
+  public static class Field implements Comparable<Field> {
     public String octet, content, status, note;
     public int start, nbytes;
 

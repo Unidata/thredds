@@ -55,8 +55,8 @@ import java.util.*;
  * @since 11/21/11
  */
 public class NcepHtmlScraper {
-  private final boolean debug = false;
-  private final boolean show = false;
+  static private final boolean debug = false;
+  static private final boolean show = false;
 
  //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
@@ -217,7 +217,7 @@ public class NcepHtmlScraper {
     writeTableAXml("NCEP GRIB-1 Table A", source, "ncepTableA.xml", stuff);
   }
 
-  private class Stuff {
+  private static class Stuff {
     int no;
     String desc;
 
@@ -312,7 +312,7 @@ public class NcepHtmlScraper {
     return result;
   }
 
-  private class Param {
+  private static class Param {
     int pnum;
     String desc, unit, name;
 
