@@ -56,7 +56,7 @@ import java.util.List;
  */
 public class TestGribIndexCreation {
 
-  @Test
+  //@Test
   public void testGdsHashChange() throws IOException {
     String dataDir = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/";
     FeatureCollectionConfig config = FeatureCollectionReader

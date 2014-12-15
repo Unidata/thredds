@@ -86,7 +86,7 @@ public class TestGribCollectionsBig {
      RandomAccessFile.setDebugLeaks(false);
    }
 
-  @Test
+  //@Test
   public void testGC() throws IOException {
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/fnl_20081003_18_00.grib1.ncx2");
     TestDir.checkLeaks();
@@ -95,7 +95,7 @@ public class TestGribCollectionsBig {
     assert count.nmiss == 0;
   }
 
-  @Test
+  //@Test
   public void testPofG() throws IOException {
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx2");
     TestDir.checkLeaks();
@@ -105,7 +105,7 @@ public class TestGribCollectionsBig {
     assert count.nmiss == 0;
   }
 
-  @Test
+  //@Test
   public void testPofP() throws IOException {
     try {
       TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx2");

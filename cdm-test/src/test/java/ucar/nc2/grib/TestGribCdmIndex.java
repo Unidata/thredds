@@ -102,17 +102,17 @@ public class TestGribCdmIndex {
     this.remLen = remLen;
   }
 
-  @Test
+  //@Test
   public void testRemoveFileFromCollectionAlways() throws IOException {
     testRemoveFileFromCollection(CollectionUpdateType.always, orgLen, remLen);
   }
 
-  @Test
+  //@Test
   public void testRemoveFileFromCollectionTest() throws IOException {
     testRemoveFileFromCollection(CollectionUpdateType.test, orgLen, remLen);
   }
 
-  @Test
+  //@Test
   public void testRemoveFileFromCollectionTestOnly() throws IOException {
     testRemoveFileFromCollection(CollectionUpdateType.testIndexOnly, orgLen, orgLen);
   }
