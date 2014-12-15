@@ -927,13 +927,16 @@
     <module>tdcommon</module>
     <module>tds</module>
     <module>tdm</module>
-    <!-- module>wmotables</module -->
-    <!-- module>cdmvalidator</module -->
     <module>cdm-test</module>
     <module>it</module>
     <module>netcdf4</module>
     <module>clcommon</module>
     <module>httpservices</module>
+    <module>waterml</module>
+
+    <!-- module>wmotables</module -->
+    <!-- module>cdmvalidator</module -->
+
     <module>dap4/d4core</module>
     <module>dap4/d4shared</module>
     <module>dap4/d4client</module>
@@ -943,8 +946,6 @@
     <module>dap4/d4ts</module>
     <module>dap4/d4tests</module>
     <module>dap4/d4tswar</module>
-
-    <module>waterml</module>
   </modules>
 
   <properties>
@@ -962,7 +963,7 @@
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
     <edu.wisc.version>2011-08-22</edu.wisc.version>
-	  <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.4-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
+	<uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.4-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
 
     <eds.threddsIso.version>2.2.4-SNAPSHOT</eds.threddsIso.version>
 

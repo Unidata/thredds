@@ -6,5 +6,5 @@ jar {
 
 dependencies {
   compile project(':cdm')
-  compile 'net.java.dev.jna:jna:4.0.0'
+  compile group: 'net.java.dev.jna', name: 'jna', version: jnaVersion
 }

@@ -3,7 +3,7 @@ subprojects {
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
-    version = '4.5.3'
+    version = '4.5.4'
 
     compileJava.options.encoding = 'UTF-8'
     javadoc.options.encoding = 'UTF-8'
@@ -25,12 +25,17 @@ subprojects {
     }
 
     ext {
-        jfreechartVersion = "1.0.14"
-        junitVersion = "4.11"
+        // Dependency versions
+        jfreechartVersion = "1.0.19"
+        junitVersion = "4.12"
         log4jVersion = "2.0-rc1"
-        servletVersion = "3.0.1"
-        slf4jVersion = "1.7.5"
-        springVersion = "3.2.3.RELEASE"
+        servletVersion = "3.1.0"
+        slf4jVersion = "1.7.7"
+        springVersion = "3.2.12.RELEASE"
+        jcommanderVersion = "1.35"
+        jnaVersion = "4.1.0"
+        commonsLang3Version = "3.3.2"
+        commonsIoVersion = "2.4"
     }
 
     buildscript {

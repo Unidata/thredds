@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransfor
 
 dependencies {
   compile project(':cdm')
-  compile (project(':grib')) { transitive = false } // jsoup
+  compile project(':grib')
   compile project(':tdcommon')
 
   compile group: 'org.springframework', name: 'spring-context', version: springVersion

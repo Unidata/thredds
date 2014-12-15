@@ -141,7 +141,6 @@
        <configuration>
          <skip>${skipTests}</skip>
          <argLine>-Dfile.encoding=UTF-8</argLine>
-	 <encoding>UTF-8</encoding>                    
          <systemPropertyVariables>
             <file.encoding>UTF-8</file.encoding>
          </systemPropertyVariables>

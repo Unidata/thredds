@@ -24,7 +24,6 @@
   <url>http://www.unidata.ucar.edu/software/tds/</url>
 
   <dependencies>
-
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>cdm</artifactId>
@@ -71,11 +70,6 @@
       <artifactId>waterml</artifactId>
     </dependency>
 
-    <dependency>
-        <groupId>com.coverity.security</groupId>
-        <artifactId>coverity-escapers</artifactId>
-    </dependency>
-
     <!-- DAP4 Dependencies (technically forward) -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -88,6 +82,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>d4servletshared</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>com.coverity.security</groupId>
+        <artifactId>coverity-escapers</artifactId>
     </dependency>
 
     <!-- Apache httpclient libraries -->

@@ -7,11 +7,6 @@ jar {
 }
 
 sourceSets {
-    main {
-        java {
-            exclude 'ucar/nc2/util/reflect/*.java'
-        }
-    }
     test {
        java {
            exclude 'thredds/catalog2/**/*.java'
@@ -33,18 +28,17 @@ task integrationTest(type: Test, dependsOn: jar) {
 dependencies {
   compile project(':udunits')
   compile project(':httpservices')
-  compile ('org.apache.httpcomponents:httpcore:4.2.5')
+  compile 'org.apache.httpcomponents:httpcore:4.2.5'
   compile 'com.google.protobuf:protobuf-java:2.5.0'
   compile 'com.google.guava:guava:17.0'
   compile 'joda-time:joda-time:2.2'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'org.jdom:jdom2:2.0.4'
   compile 'org.itadaki:bzip2:0.9.1'
-  compile ('org.quartz-scheduler:quartz:2.2.0') {   // eliminate c3p0
-    transitive = false
-  }
+  compile 'org.quartz-scheduler:quartz:2.2.0'
   compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
   runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
+  compile group: 'com.beust', name: 'jcommander', version: jcommanderVersion
 }
 
 javadoc {

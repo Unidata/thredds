@@ -87,15 +87,15 @@
     </dependency>
     <dependency>
       <groupId>org.jfree</groupId>
+      <artifactId>jcommon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>
     </dependency>
     <dependency>
       <groupId>com.jgoodies</groupId>
       <artifactId>jgoodies-forms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jfree</groupId>
-      <artifactId>jcommon</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -104,12 +104,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>lucene</groupId>
-      <artifactId>lucene</artifactId>
-      <version>1.4.3</version>
     </dependency>
 
     <dependency>
@@ -232,7 +226,6 @@
                   <exclude>com.jgoodies:forms</exclude>
                   <exclude>commons-logging:commons-logging</exclude>
                   <exclude>jfree:*</exclude>
-                  <exclude>lucene:lucene</exclude>
                   <exclude>org.springframework:*</exclude>
                   <exclude>org.bounce:*</exclude>
                   <exclude>edu.ucar:d4tswar</exclude>
@@ -260,7 +253,6 @@
                   <exclude>com.jgoodies:forms</exclude>
                   <exclude>commons-logging:commons-logging</exclude>
                   <exclude>jfree:*</exclude>
-                  <exclude>lucene:lucene</exclude>
                   <exclude>org.springframework:*</exclude>
                   <exclude>org.bounce:*</exclude>
                 </excludes>
