@@ -105,9 +105,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
       try {
         total_length = Long.parseLong(head.getValue());
-        /* Some HTTP server report 0 bytes length. 
-         * Do the Range bytes test if the server is reporting 0 bytes length*/
-        if(total_length==0) needtest = true;
       } catch (NumberFormatException e) {
         throw new IOException("Server has malformed Content-Length header");
       }
@@ -141,14 +138,13 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     HTTPMethod method = null;
     try {
       method = HTTPMethod.Get(session,url);
-      method.setRequestHeader("Range", "bytes=" + 0 + "-" + 0);
+      method.setRequestHeader("Range", "bytes=" + 0 + "-" + 1);
       doConnect(method);
 
       int code = method.getStatusCode();
       if (code != 206)
         throw new IOException("Server does not support Range requests, code= " + code);
-      Header head = method.getResponseHeader("Content-Range");
-      total_length=Long.parseLong(head.getValue().substring(head.getValue().lastIndexOf("/")+1));
+
       // clear stream
       method.close();
       return true;
