@@ -88,28 +88,28 @@ public class TestGribCollectionsDense {
      RandomAccessFile.setDebugLeaks(false);
    }
 
-  @Test
+  //@Test
   public void testLeaf() throws IOException {
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2");
     assert count.nread == 1009;
     assert count.nmiss == 0;
   }
 
-  @Test
+  //@Test
   public void testGC() throws IOException {
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX-test-20141011-20141011-060000.ncx2");
     assert count.nread == 1009;
     assert count.nmiss == 0;
   }
 
-  @Test
+  //@Test
   public void testPofG() throws IOException {
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX-test-20141011.ncx2");
     assert count.nread == 3140;
     assert count.nmiss == 0;
   }
 
-  @Test
+  //@Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/DGEX-test-dgex.ncx2");

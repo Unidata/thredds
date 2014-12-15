@@ -99,7 +99,7 @@ public class TestGribCollections {
      RandomAccessFile.setDebugLeaks(false);
    }
 
-  @Test
+  //@Test
   public void testGC_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2");
 
@@ -108,7 +108,7 @@ public class TestGribCollections {
     assert count.nmiss == 0;
   }
 
-  @Test
+  //@Test
   public void testPofG_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
 
@@ -118,7 +118,7 @@ public class TestGribCollections {
   }
 
   //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2 has lots of missing records
-  @Test
+  //@Test
   public void testGC_Grib1() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
 
@@ -126,7 +126,7 @@ public class TestGribCollections {
     assert count.nmiss == 200;
   }
 
-  @Test
+  //@Test
   public void testPofG_Grib1() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
 
@@ -134,7 +134,7 @@ public class TestGribCollections {
     assert count.nmiss == 1646;
   }
 
-  @Test
+  //@Test
   public void testPofP_Grib1() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
 
@@ -144,7 +144,7 @@ public class TestGribCollections {
     assert count.nerrs == 0;
   }
 
-  @Test
+  //@Test
   // RandomAccessFile gets opened 1441 times (!) for PofGC
   public void problem() throws IOException {
 
@@ -171,7 +171,7 @@ public class TestGribCollections {
   }
 
 
-  @Test
+  //@Test
   // RandomAccessFile gets opened 1441 times (!) for PofGC
   public void openFileProblem() throws IOException {
 

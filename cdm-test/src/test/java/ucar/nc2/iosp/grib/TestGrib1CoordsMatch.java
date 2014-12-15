@@ -65,7 +65,7 @@ import java.util.Formatter;
  */
 public class TestGrib1CoordsMatch {
 
-  @Test
+  //@Test
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
@@ -91,7 +91,7 @@ public class TestGrib1CoordsMatch {
 
   }
 
-  @Test
+  //@Test
   public void testGC() throws IOException {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
 
@@ -101,7 +101,7 @@ public class TestGrib1CoordsMatch {
     assert count.nerrs == 0;
   }
 
-  @Test
+  //@Test
   public void testPofG() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
 
@@ -112,7 +112,7 @@ public class TestGrib1CoordsMatch {
   }
 
 
-  @Test
+  //@Test
   public void testPofP() throws IOException {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
 

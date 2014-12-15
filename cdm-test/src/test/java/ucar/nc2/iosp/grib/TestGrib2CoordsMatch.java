@@ -80,7 +80,7 @@ public class TestGrib2CoordsMatch {
     Grib2Record.getlastRecordRead = false;
   }
 
-  @Test
+  //@Test
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
@@ -106,7 +106,7 @@ public class TestGrib2CoordsMatch {
 
   }
 
-  @Test
+  //@Test
   public void testGC() throws IOException {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2");
 
