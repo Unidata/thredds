@@ -17,6 +17,8 @@ before_install:
   - make
   - sudo make install
   - cd ..
+  - wget http://www.unidata.ucar.edu/staff/rmay/maven-repo.tar.gz
+  - tar -C $HOME/.m2 -xf maven-repo.tar.gz
 
 install:
   - mvn install -DskipTests=true
