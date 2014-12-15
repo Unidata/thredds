@@ -12,7 +12,7 @@ public class FakeServletResponse implements javax.servlet.http.HttpServletRespon
     FakeServletOutputStream stream;
     PrintWriter pw;
     String contenttype = null;
-    int contentlength = 0;
+    long contentlength = 0;
 
     Map<String, List<String>> fakeheaders;
 
@@ -59,6 +59,10 @@ public class FakeServletResponse implements javax.servlet.http.HttpServletRespon
 
     public void setContentLength(int i)
     {
+        contentlength = i;
+    }
+
+    public void setContentLengthLong(long i) {
         contentlength = i;
     }
 

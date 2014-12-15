@@ -691,21 +691,10 @@
         <artifactId>threddsIso</artifactId>
         <version>${eds.threddsIso.version}</version>
         <scope>runtime</scope>
-        <exclusions>
-          <!-- TODO Ask Dave to scope servlet-api as "provided". -->
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-          </exclusion>
-      		<exclusion>
-				<groupId>net.sf.saxon</groupId>
-				<artifactId>saxon</artifactId>      	
-      		</exclusion>                    
-        	</exclusions>
       </dependency>
       
-      <!-- saxon -->
-      <dependency>
+      <!-- THREDDS does not use saxon directly. Allow threddsISO to pull it in. TODO Remove this section-->
+      <!-- dependency>
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon</artifactId>
 			<version>${saxon.version}</version>
@@ -714,7 +703,7 @@
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon-dom</artifactId>
 			<version>${saxon.version}</version>
-	  </dependency>      
+	  </dependency-->
       
       <!-- THREDDS - END -->
 
@@ -959,8 +948,6 @@
   </modules>
 
   <properties>
-    <thredds.version>4.5.0-SNAPSHOT</thredds.version>
-
     <!-- default is to skip tests. use mvn test -DskipTests=false to override on command line -->
     <skipTests>true</skipTests>
 
@@ -977,7 +964,7 @@
     <edu.wisc.version>2011-08-22</edu.wisc.version>
 	  <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.4-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
 
-    <eds.threddsIso.version>2.3.1</eds.threddsIso.version>
+    <eds.threddsIso.version>2.2.4-SNAPSHOT</eds.threddsIso.version>
 
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
     <cas.version>3.1.10</cas.version>
@@ -1001,7 +988,7 @@
     <org.jfree.jcommon.version>1.0.23</org.jfree.jcommon.version>
     <org.jfree.jfreechart.version>1.0.19</org.jfree.jfreechart.version>
     <joda-time.version>2.2</joda-time.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.12</junit.version>
     <log4j.version>2.0-rc1</log4j.version>
     <net.jcip.version>1.0</net.jcip.version>
     <net.sf.ehcache.version>2.6.2</net.sf.ehcache.version>
@@ -1016,7 +1003,7 @@
     <org.springframework.security.version>3.2.5.RELEASE</org.springframework.security.version>
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
-    <saxon.version>8.7</saxon.version>
+    <!--saxon.version>8.7</saxon.version-->
     <jna.groupId>net.java.dev.jna</jna.groupId>
     <jna.version>4.1.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>

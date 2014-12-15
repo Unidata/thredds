@@ -4,6 +4,7 @@ import dap4.core.util.DapUtil;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 import java.io.*;
 import java.net.URL;
@@ -116,6 +117,11 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
 
     public int getContentLength()
     {
+        return 0;
+    }
+
+    @Override
+    public long getContentLengthLong() {
         return 0;
     }
 
@@ -252,6 +258,12 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
     @Override
     public Part getPart(String s)
     {
+        return null;
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> tClass) throws
+            IOException, ServletException {
         return null;
     }
 
@@ -438,6 +450,11 @@ public class FakeServletRequest implements javax.servlet.http.HttpServletRequest
 
     public javax.servlet.http.HttpSession getSession()
     {
+        return null;
+    }
+
+    @Override
+    public String changeSessionId() {
         return null;
     }
 
