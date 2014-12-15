@@ -1,0 +1,9 @@
+dependencies {
+    compile project(':dap4:d4core')
+    compile project(':dap4:d4shared')
+    compile project(':httpservices')
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.2.6'
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.2.5'
+    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.2.6'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.2'
+}
