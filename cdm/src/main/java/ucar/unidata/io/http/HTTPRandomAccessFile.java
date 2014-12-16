@@ -139,7 +139,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   private boolean rangeOk(String url) {
     HTTPMethod method = null;
     try {
-      method = HTTPMethod.Get(session,url);
+      method = HTTPFactory.Get(session,url);
       method.setRequestHeader("Range", "bytes=" + 0 + "-" + 0);
       doConnect(method);
 
