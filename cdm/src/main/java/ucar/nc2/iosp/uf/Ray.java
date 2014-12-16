@@ -247,7 +247,7 @@ public class Ray {
 
     public long setDateMesc() {
         Calendar cal;
-        if("UT".equals(uf_header2.timeZone)) {
+        if(uf_header2.timeZone.equals("UT") || uf_header2.timeZone.equals("GM")) {
             cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         }else{
             cal = Calendar.getInstance();
@@ -326,8 +326,8 @@ public class Ray {
             rayNumber= getShort(data, 14);
             recordNumber1= getShort(data, 16);
             sweepNumber= getShort(data, 18);
-            radarName= new String(data, 20, 8, CDM.utf8Charset) ;
-            siteName= new String(data, 28, 8, CDM.utf8Charset);
+            radarName= new String(data, 20, 8, CDM.utf8Charset).trim();
+            siteName= new String(data, 28, 8, CDM.utf8Charset).trim();
             latitudeD= getShort(data, 36);
             latitudeM= getShort(data, 38);
             latitudeS= getShort(data, 40);

@@ -202,7 +202,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     ncfile.addVariable(null, elevVar);
 
     elevVar.addAttribute(new Attribute(CDM.UNITS, "degrees"));
-    elevVar.addAttribute(new Attribute(CDM.LONG_NAME, "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular"));
+    elevVar.addAttribute(new Attribute(CDM.LONG_NAME, "elevation angle in degrees: 0 = parallel to pedestal base, 90 = perpendicular"));
     elevVar.addAttribute(new Attribute(CDM.MISSING_VALUE, firstRay.getMissingData()));
     elevVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
 

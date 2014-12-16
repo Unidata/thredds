@@ -49,6 +49,7 @@ public class UFheader {
   static final boolean littleEndianData = true;
   String dataFormat = "UNIVERSALFORMAT";  // temp setting
   Ray firstRay = null;
+  Date endDate = null;
 
   Map<String, List<List<Ray>>> variableGroup;  // key = data type, value = List by sweep number
   private int max_radials = 0;
@@ -111,7 +112,12 @@ public class UFheader {
 
       ByteBuffer bos = ByteBuffer.wrap(buffer);
       Ray r = new Ray(bos, rsize, offset);
-      if (firstRay == null) firstRay = r;
+      if (firstRay == null)
+      {
+          firstRay = r;
+          endDate = r.getDate();
+      } else if (r.getTitleMsecs() > firstRay.getTitleMsecs())
+        endDate = r.getDate();
 
       Map<String, Ray.UF_field_header2> rayMap = r.field_header_map;      // each ray has a list of variables
       for (Map.Entry<String, Ray.UF_field_header2> entry : rayMap.entrySet()) {
@@ -201,7 +207,7 @@ public class UFheader {
   }
 
   public Date getEndDate() {
-    return firstRay.getDate();
+    return endDate;
   }
 
   public float getHorizontalBeamWidth(String ab) {
