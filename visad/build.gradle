@@ -54,7 +54,7 @@ apply plugin: 'shadow'
 dependencies {
   compile project(':cdm')
   compile project(':grib')
-  compile 'edu.wisc.ssec:visad:2.0-20130124'
+  compile group: 'edu.wisc.ssec', name: 'visad', version: visadVersion
   testCompile project(':cdm').sourceSets.test.output
 }
 

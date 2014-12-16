@@ -6,8 +6,8 @@ jar {
 
 dependencies {
   compile project(':cdm')
-  compile 'org.jsoup:jsoup:1.6.1'
-  compile 'edu.ucar:jj2000:5.2'
-  compile 'org.itadaki:bzip2:0.9.1'
+  compile group: 'org.jsoup', name: 'jsoup', version: orgJsoupVersion
+  compile group: 'edu.ucar', name: 'jj2000', version: eduUcarJj2000Version
+  compile group: 'org.itadaki', name: 'bzip2', version: orgItadakiBzip2Version
   testCompile project(':cdm').sourceSets.test.output
 }

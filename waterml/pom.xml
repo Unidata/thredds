@@ -38,13 +38,11 @@
         <dependency>
             <groupId>org.n52.sensorweb</groupId>
             <artifactId>52n-xml-waterML-dr-v20</artifactId>
-            <version>1.1.5</version>
         </dependency>
 
         <dependency>
             <groupId>org.n52.sensorweb</groupId>
             <artifactId>52n-oxf-xmlbeans</artifactId>
-            <version>1.12</version>
         </dependency>
 
         <dependency>

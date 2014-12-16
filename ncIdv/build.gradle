@@ -9,7 +9,6 @@ dependencies {
 
   runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
   runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
-
 }
 
 jar {

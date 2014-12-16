@@ -14,6 +14,6 @@ jar {
 
 dependencies {
   compile project(':cdm')
-  compile 'com.sleepycat:je:4.0.92'
+  compile group: 'com.sleepycat', name: 'je', version: comSleepycatVersion
   testCompile project(':cdm').sourceSets.test.output
 }

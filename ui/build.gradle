@@ -25,17 +25,17 @@ dependencies {
     compile project(':dap4:d4cdmshared')
     compile project(':dap4:d4cdmclient')
 
-    compile('org.jfree:jcommon:1.0.23')
-    compile(group: 'org.jfree', name: 'jfreechart', version: jfreechartVersion) {
+    compile group: 'org.jfree', name: 'jcommon', version: orgJfreeJcommonVersion
+    compile(group: 'org.jfree', name: 'jfreechart', version: orgJfreeJfreechartVersion) {
         exclude group: 'com.lowagie'
     }
-    compile('com.jgoodies:jgoodies-forms:1.6.0')
+    compile group: 'com.jgoodies', name: 'jgoodies-forms', version: comJgoodiesVersion
 
-    compile('org.bounce:bounce:0.14')
-    compile('org.imgscalr:imgscalr-lib:4.2')
-    compile('org.itadaki:bzip2:0.9.1')
-    compile('net.sf.ehcache:ehcache-core:2.6.2')
-    compile('org.apache.commons:commons-lang3:3.1')
+    compile group: 'org.bounce', name: 'bounce', version: bounceVersion
+    compile group: 'org.imgscalr', name: 'imgscalr-lib', version: imgscalrLibVersion
+    compile group: 'org.itadaki', name: 'bzip2', version: orgItadakiBzip2Version
+    compile group: 'net.sf.ehcache', name: 'ehcache-core', version: netSfEhcacheVersion
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: commonsLang3Version
 
     compile(group: 'org.springframework', name: 'spring-core', version: springVersion) {
         transitive = false  // commons-logging

@@ -15,7 +15,7 @@ dependencies {
 }
 
 shadow {
-  outputFile = file("${destinationDir }/tdms-${version}.jar")
+  outputFile = file("${destinationDir}/tdms-${version}.jar")
   stats = true
 
   exclude 'com/sleepycat/**'

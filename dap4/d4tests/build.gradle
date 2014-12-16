@@ -10,9 +10,9 @@ dependencies {
     compile project(':netcdf4')
     compile project(':tdm')
 
-    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.2.5'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.2.6'
-    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.2.6'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: httpclientVersion
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: httpcoreVersion
+    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: httpmimeVersion
 
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion

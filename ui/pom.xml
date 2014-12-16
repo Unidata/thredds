@@ -122,23 +122,16 @@
     <dependency>
       <groupId>org.bounce</groupId>
       <artifactId>bounce</artifactId>
-      <version>0.14</version>
     </dependency>
 
     <dependency>
       <groupId>org.imgscalr</groupId>
       <artifactId>imgscalr-lib</artifactId>
-      <version>4.2</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.itadaki</groupId>
       <artifactId>bzip2</artifactId>
-      <version>0.9.1</version>
-      <type>jar</type>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -157,9 +150,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.1</version>
     </dependency>
-
   </dependencies>
 
   <build>

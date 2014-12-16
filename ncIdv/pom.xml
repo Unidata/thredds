@@ -20,32 +20,26 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>cdm</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>bufr</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>grib</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>netcdf4</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>visadCdm</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -256,12 +256,10 @@
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-      <version>1.0.0.GA</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
-      <version>${org.hibernate.version}</version>
     </dependency>
 
     <!-- test -->
@@ -281,7 +279,6 @@
     <dependency>
       <groupId>httpunit</groupId>
       <artifactId>httpunit</artifactId>
-      <version>1.7</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

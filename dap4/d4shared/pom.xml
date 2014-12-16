@@ -36,17 +36,14 @@ Dependencies: Mandatory dependencies are listed first. Then
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>${org.apache.httpcomponents.httpclient.version}</version>
     </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>${org.apache.httpcomponents.httpcore.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>${org.apache.httpcomponents.httpmime.version}</version>
       </dependency>
 
 </dependencies>

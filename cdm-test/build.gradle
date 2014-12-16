@@ -8,10 +8,10 @@ dependencies {
   compile project(':opendap')
   compile project(':visad')
 
-  compile 'org.apache.commons:commons-compress:1.8.1'
-  compile 'org.itadaki:bzip2:0.9.1'
-  compile 'org.tukaani:xz:1.0'
+  compile group: 'org.apache.commons', name: 'commons-compress', version: commonsCompressVersion
+  compile group: 'org.itadaki', name: 'bzip2', version: orgItadakiBzip2Version
+  compile group: 'org.tukaani', name: 'xz', version: orgTukaaniXzVersion
 
   testCompile project(':cdm').sourceSets.test.output
-  testCompile 'commons-io:commons-io:2.4'
+  testCompile group: 'commons-io', name: 'commons-io', version: commonsIoVersion
 }

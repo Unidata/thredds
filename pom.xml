@@ -325,7 +325,6 @@
         <artifactId>d4tswar</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>waterml</artifactId>
@@ -427,7 +426,37 @@
       <dependency>
           <groupId>com.coverity.security</groupId>
           <artifactId>coverity-escapers</artifactId>
-          <version>1.1.1</version>
+          <version>${coverity-escapers.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>httpunit</groupId>
+        <artifactId>httpunit</artifactId>
+        <version>${httpunit.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bounce</groupId>
+        <artifactId>bounce</artifactId>
+        <version>${bounce.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.imgscalr</groupId>
+        <artifactId>imgscalr-lib</artifactId>
+        <version>${imgscalr-lib.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.n52.sensorweb</groupId>
+        <artifactId>52n-xml-waterML-dr-v20</artifactId>
+        <version>${org.n52.waterML.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.n52.sensorweb</groupId>
+        <artifactId>52n-oxf-xmlbeans</artifactId>
+        <version>${org.n52.xmlbeans.version}</version>
       </dependency>
 
             
@@ -461,28 +490,29 @@
        <groupId>cglib</groupId>
        <artifactId>cglib-nodep</artifactId>
        <version>${cglib.version}</version>
-      </dependency>
-      <dependency>
-       <groupId>org.hibernate</groupId>
-       <artifactId>hibernate-validator</artifactId>
-       <version>${org.hibernate.version}</version>
       </dependency>  -->
 
       <!-- client -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>${org.apache.httpcomponents.httpclient.version}</version>
+        <version>${httpclient.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>${org.apache.httpcomponents.httpcore.version}</version>
+        <version>${httpcore.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>${org.apache.httpcomponents.httpmime.version}</version>
+        <version>${httpmime.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-cli</groupId>
+        <artifactId>commons-cli</artifactId>
+        <version>${commons-cli.version}</version>
       </dependency>
 
       <dependency>
@@ -577,6 +607,12 @@
         <version>${org.itadaki.bzip2.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.tukaani</groupId>
+        <artifactId>xz</artifactId>
+        <version>${org.tukaani.xz.version}</version>
+      </dependency>
+
         <!-- UI -->
       <dependency>
         <groupId>org.jfree</groupId>
@@ -611,6 +647,11 @@
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commons-io.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${commons-compress.version}</version>
       </dependency>
       <!-- dependency>
       	<groupId>org.jasig.cas</groupId>
@@ -661,6 +702,18 @@
         <version>${javax.servlet.jstl.version}</version>
         <scope>runtime</scope>
       </dependency>
+
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${javax.validation.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${org.hibernate.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>json-taglib</groupId>
         <artifactId>json-taglib</artifactId>
@@ -733,7 +786,6 @@
         <artifactId>tds</artifactId>
         <version>${project.version}</version>
         <classifier>classes</classifier>
-        <type>jar</type>
         <!-- scope>provided</scope-->
       </dependency>
 
@@ -977,10 +1029,12 @@
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
     <org.apache.commons.commons-lang3>3.3.2</org.apache.commons.commons-lang3>
-    <org.apache.httpcomponents.httpcore.version>4.2.5</org.apache.httpcomponents.httpcore.version>
-    <org.apache.httpcomponents.httpclient.version>4.2.6</org.apache.httpcomponents.httpclient.version>
-    <org.apache.httpcomponents.httpmime.version>4.2.6</org.apache.httpcomponents.httpmime.version>
+    <httpclient.version>4.2.6</httpclient.version>
+    <httpcore.version>4.2.5</httpcore.version>
+    <httpmime.version>4.2.6</httpmime.version>
+    <commons-cli.version>1.2</commons-cli.version>
     <commons-io.version>2.4</commons-io.version>
+    <commons-compress.version>1.8.1</commons-compress.version>
     <derby.version>10.9.1.0</derby.version>
     <javax.activation.version>1.1.1</javax.activation.version>
     <javax.servlet.version>3.1.0</javax.servlet.version>
@@ -994,6 +1048,7 @@
     <net.jcip.version>1.0</net.jcip.version>
     <net.sf.ehcache.version>2.6.2</net.sf.ehcache.version>
     <!-- org.apache.tomcat.version>7.0.50</org.apache.tomcat.version !-->
+    <javax.validation.version>1.0.0.GA</javax.validation.version>
     <org.hibernate.version>4.3.1.Final</org.hibernate.version>
     <org.jsoup.version>1.7.2</org.jsoup.version>
     <org.jdom2.version>2.0.4</org.jdom2.version>
@@ -1002,6 +1057,12 @@
     <org.slf4j.version>1.7.7</org.slf4j.version>
     <org.springframework.version>3.2.12.RELEASE</org.springframework.version>
     <org.springframework.security.version>3.2.5.RELEASE</org.springframework.security.version>
+    <coverity-escapers.version>1.1.1</coverity-escapers.version>
+    <httpunit.version>1.7</httpunit.version>
+    <bounce.version>0.14</bounce.version>
+    <imgscalr-lib.version>4.2</imgscalr-lib.version>
+    <org.n52.waterML.version>1.1.5</org.n52.waterML.version>
+    <org.n52.xmlbeans.version>1.12</org.n52.xmlbeans.version>
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
     <!--saxon.version>8.7</saxon.version-->
@@ -1009,6 +1070,7 @@
     <jna.version>4.1.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>
     <org.itadaki.bzip2.version>0.9.1</org.itadaki.bzip2.version>
+    <org.tukaani.xz.version>1.0</org.tukaani.xz.version>
     <jcommander.version>1.35</jcommander.version>
 
     <!-- Plugins versions -->

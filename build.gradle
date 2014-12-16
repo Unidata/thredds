@@ -24,17 +24,60 @@ subprojects {
     }
 
     ext {
-        // Dependency versions
-        jfreechartVersion = "1.0.19"
-        junitVersion = "4.12"
-        log4jVersion = "2.0-rc1"
-        servletVersion = "3.1.0"
-        slf4jVersion = "1.7.7"
-        springVersion = "3.2.12.RELEASE"
-        jcommanderVersion = "1.35"
-        jnaVersion = "4.1.0"
-        commonsLang3Version = "3.3.2"
-        commonsIoVersion = "2.4"
+        visadVersion = '2.0-20130124'
+        eduWiscVersion = '2011-08-22'
+        ncwmsVersion = '1.2.tds.4.5.4-SNAPSHOT'
+        edsThreddsIsoVersion = '2.2.4-SNAPSHOT'
+        atgTaglibJsonVersion = '0.4.1'
+        casVersion = '3.1.10'
+        cglibVersion = '2.2'
+        guavaVersion = '17.0'
+        protobufVersion = '2.5.0'
+        comJgoodiesVersion = '1.6.0'
+        comSleepycatVersion = '4.0.92'
+        commonsDbcpVersion = '1.4'
+        commonsFileuploadVersion = '1.2.2'
+        commonsLang3Version = '3.3.2'
+        httpclientVersion = '4.2.6'
+        httpcoreVersion = '4.2.5'
+        httpmimeVersion = '4.2.6'
+        commonsCliVersion = '1.2'
+        commonsIoVersion = '2.4'
+        commonsCompressVersion = '1.8.1'
+        derbyVersion = '10.9.1.0'
+        javaxActivationVersion = '1.1.1'
+        servletVersion = '3.1.0'
+        servletJstlVersion = '1.2'
+        jaxenVersion = '1.1.4'
+        orgJfreeJcommonVersion = '1.0.23'
+        orgJfreeJfreechartVersion = '1.0.19'
+        jodaTimeVersion = '2.2'
+        junitVersion = '4.12'
+        log4jVersion = '2.0-rc1'
+        netJcipVersion = '1.0'
+        netSfEhcacheVersion = '2.6.2'
+        javaxValidationVersion = '1.0.0.GA'
+        orgHibernateVersion = '4.3.1.Final'
+        orgJsoupVersion = '1.7.2'
+        orgJdom2Version = '2.0.4'
+        orgJdomLegacyVersion = '1.1.3'
+        orgQuartzSchedulerVersion = '2.2.0'
+        slf4jVersion = '1.7.7'
+        springVersion = '3.2.12.RELEASE'
+        springSecurityVersion = '3.2.5.RELEASE'
+        coverityEscapersVersion = '1.1.1'
+        httpunitVersion = '1.7'
+        bounceVersion = '0.14'
+        imgscalrLibVersion = '4.2'
+        orgN52WaterMLVersion = '1.1.5'
+        orgN52XmlbeansVersion = '1.12'
+        oroVersion = '2.0.8'
+        taglibsVersion = '1.1.2'
+        jnaVersion = '4.1.0'
+        eduUcarJj2000Version = '5.2'
+        orgItadakiBzip2Version = '0.9.1'
+        orgTukaaniXzVersion = '1.0'
+        jcommanderVersion = '1.35'
     }
 
     buildscript {
