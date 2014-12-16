@@ -812,7 +812,7 @@ public class OpendapServlet extends AbstractServlet {
         othersize += fieldsize;
       }
       if (debugSize) {
-        System.out.printf("computeSize %s fieldsize=%d projectsize=%d othersize=%d %n", field.getLongName(), fieldsize, projectsize, othersize);
+        System.out.printf("  computeSize field %s isProject %s fieldsize=%d%n", field.getLongName(), field.isProject(), fieldsize);
       }
     }
     // Cases to consider:
@@ -822,14 +822,20 @@ public class OpendapServlet extends AbstractServlet {
     //    then return othersize
     // 3. otherwise, at least one field, but not all, is projected,
     //    => return projectsize;
+    long result;
     if (projectedcount == fieldcount)
-      return projectsize;
+      result = projectsize;
     else if (projectedcount == 0)
-      return othersize;
+      result =  othersize;
     else {
       assert (projectedcount > 0 && projectedcount < fieldcount);
-      return projectsize;
+      result =  projectsize;
     }
+
+    if (debugSize) {
+      System.out.printf("  computeSize return=%d (%d, %d) %n", result, projectedcount, fieldcount);
+    }
+    return result;
   }
 
   long computeFieldSize(BaseType bt, boolean isAscii)

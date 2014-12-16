@@ -176,7 +176,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
   public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
     Partition part = getPartition(partno);
-    try (GribCollectionImmutable gc = part.getGribCollection()) {  // LOOK this closes the GC.ncx2
+    try (GribCollectionImmutable gc = part.getGribCollection()) {
       return gc.getDataRaf(fileno);
     }
   }
@@ -184,7 +184,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   // debugging
   public String getFilename(int partno, int fileno) throws IOException {
     Partition part = getPartition(partno);
-    try (GribCollectionImmutable gc = part.getGribCollection()) {  // LOOK this closes the GC.ncx2
+    try (GribCollectionImmutable gc = part.getGribCollection()) {
       return gc.getFilename(fileno);
     }
   }

@@ -186,10 +186,10 @@ public class TestGribIndexCreation {
   ////////////////
 
   @Test
-  public void testRdvamds083p2_SampleMonth() throws IOException {
+  public void testRdvamds083p2_PofP() throws IOException {
     //GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-union", "test/GCpass1", FeatureCollectionType.GRIB1,
-           TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/sampleMonth/.*grib1",
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-pofp", "test/ds083.2-pofp", FeatureCollectionType.GRIB1,
+           TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/**/.*grib1",
             null, null,  null, "directory", null);
     config.gribConfig.unionRuntimeCoord = true;
 
