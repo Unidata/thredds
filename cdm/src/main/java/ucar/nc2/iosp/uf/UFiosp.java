@@ -92,8 +92,8 @@ public class UFiosp extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", headerParser.getDataFormat()));
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
-    ncfile.addAttribute(null, new Attribute("Station", headerParser.getStationId()));
-    ncfile.addAttribute(null, new Attribute("StationName", headerParser.getStationId()));
+    ncfile.addAttribute(null, new Attribute("instrument_name", headerParser.getRadarName()));
+    ncfile.addAttribute(null, new Attribute("site_name", headerParser.getSiteName()));
     //Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     //ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
     ncfile.addAttribute(null, new Attribute("StationLatitude", (double) headerParser.getStationLatitude()));
@@ -112,7 +112,8 @@ public class UFiosp extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of UF Radar by CDM (version 4.5)"));
     ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
 
-    ncfile.addAttribute(null, new Attribute("Title", "Nexrad Level 2 Station " + headerParser.getStationId() + " from " +
+    ncfile.addAttribute(null, new Attribute("Title", "Radar Data from station" +
+            " " + headerParser.getRadarName() + " from " +
             formatter.toDateTimeStringISO(headerParser.getStartDate()) + " to " +
             formatter.toDateTimeStringISO(headerParser.getEndDate())));
 

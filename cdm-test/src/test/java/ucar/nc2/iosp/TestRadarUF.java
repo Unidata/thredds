@@ -74,10 +74,10 @@ public class TestRadarUF {
             Assert.assertEquals(height, att.getNumericValue().doubleValue(),
                     0.1);
 
-            att = ncf.findGlobalAttribute("Station");
+            att = ncf.findGlobalAttribute("instrument_name");
             Assert.assertEquals(radarName, att.getStringValue());
 
-            att = ncf.findGlobalAttribute("StationName");
+            att = ncf.findGlobalAttribute("site_name");
             Assert.assertEquals(siteName, att.getStringValue());
 
             att = ncf.findGlobalAttribute("time_coverage_start");

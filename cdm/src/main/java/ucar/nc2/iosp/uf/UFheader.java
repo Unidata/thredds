@@ -215,7 +215,15 @@ public class UFheader {
   }
 
   public String getStationId() {
+      return getSiteName();
+  }
+
+  public String getSiteName() {
     return firstRay.uf_header2.siteName;
+  }
+
+  String getRadarName() {
+      return firstRay.uf_header2.radarName;
   }
 
   public Short getSweepMode() {
