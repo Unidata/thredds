@@ -88,6 +88,7 @@ public class DatasetViewer extends JPanel {
   private DatasetTreeView datasetTree;
   private NCdumpPane dumpPane;
   private VariablePlot dataPlot;
+  private VariableTable variableTable;
 
   private TextHistoryPane infoTA;
   private StructureTable dataTable;
@@ -127,8 +128,9 @@ public class DatasetViewer extends JPanel {
 
     // the data Table
     dataTable = new StructureTable( (PreferencesExt) prefs.node("structTable"));
+    variableTable = new VariableTable( (PreferencesExt) prefs.node("variableTable"));
     dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
-    dataWindow.setBounds( (Rectangle) prefs.getBean("dataWindow", new Rectangle( 50, 300, 1000, 600)));
+    dataWindow.setBounds( (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle( 50, 300, 1000, 1200)));
 
     // the ncdump Pane
     dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
@@ -692,13 +694,32 @@ public class DatasetViewer extends JPanel {
       catch (Exception ex) {
         ex.printStackTrace();
       }
-    }
-    else {
-        JOptionPane.showMessageDialog(this, "Variable '" + v.getShortName() + "' not a Structure");
-        return;
-    }
+      dataWindow.setComponent(dataTable);
+  	}
+  	else {
+	  List<VariableBean> l = from.getSelectedBeans();
+	  List<Variable> vl = new ArrayList<Variable>();
 
-    dataWindow.show();
+	  for(VariableBean vb1  : l) {
+		  if (vb1 == null) return;
+		  v = vb1.vs;
+		  if (v != null) {
+			  vl.add(v);
+		  }
+		  else return;
+	  }
+ 
+	  variableTable.setDataset(ds);
+	  variableTable.setVariableList(vl);
+	  variableTable.createTable();
+ 
+	  dataWindow.setComponent(variableTable);
+    }
+    Rectangle r = (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle( 50, 300, 1000, 1200));
+    dataWindow.setBounds( r );
+  	dataWindow.show();
+  
+    return;
   }
 
   private void dataPlot(BeanTable from) {
@@ -712,7 +733,7 @@ public class DatasetViewer extends JPanel {
 		    if (v != null) {
 		      try {
 		    	  dataPlot.setDataset(ds);
-		        dataPlot.setVariable(v);
+                  dataPlot.setVariable(v);
 		      }
 		      catch (Exception ex) {
 		        ex.printStackTrace();
@@ -720,7 +741,7 @@ public class DatasetViewer extends JPanel {
 		    }
 		    else return;
 	    }
-
+        dataPlot.autoScale(); // rescale the plot
 	    plotWindow.show();
 	  }
   
@@ -739,6 +760,7 @@ public class DatasetViewer extends JPanel {
       nt.saveState();
     }
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    prefs.putBeanObject("dataWindowBounds", dataWindow.getBounds());
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
     prefs.putBeanObject("PlotWindowBounds", plotWindow.getBounds());    
     if (attWindow != null) prefs.putBeanObject("AttWindowBounds", attWindow.getBounds());

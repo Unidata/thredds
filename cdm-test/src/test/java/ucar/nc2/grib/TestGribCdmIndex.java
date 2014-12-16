@@ -58,10 +58,10 @@ import java.util.List;
  * @author caron
  * @since 10/15/2014
  */
-@RunWith(Parameterized.class)
+//@RunWith(Parameterized.class)
 public class TestGribCdmIndex {
 
-  @Parameterized.Parameters
+  //@Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

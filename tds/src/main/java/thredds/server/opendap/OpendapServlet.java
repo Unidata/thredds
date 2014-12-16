@@ -789,7 +789,7 @@ public class OpendapServlet extends AbstractServlet {
     }
   }
 
-  private static final boolean debugSize = true;
+  private static final boolean debugSize = false;
 
   // Recursively compute size of the dds to be returned
   // Note that the dds may be empty (e-support ZTH-269982)
