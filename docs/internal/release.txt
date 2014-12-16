@@ -83,6 +83,15 @@ last edited 08/26/2014
       gradle -p cdm releaseDocs
   d. release all javadocs to conan:/content/software/netcdf-java/v{version}/javadocAll
       gradle -p ui releaseDocs
+  e. Change permissions of the files you just copied.
+       cd to conan:/content/software/netcdf-java/v{version}/
+       Execute:
+         find webstart -type d -exec chmod 775 {} \;
+         find webstart -type f -exec chmod 664 {} \;
+         find javadoc -type d -exec chmod 775 {} \;
+         find javadoc -type f -exec chmod 664 {} \;
+         find javadocAll -type d -exec chmod 775 {} \;
+         find javadocAll -type f -exec chmod 664 {} \;
 
 10. update Unidata download page(s)
   - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
