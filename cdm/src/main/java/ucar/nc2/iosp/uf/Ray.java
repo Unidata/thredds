@@ -222,7 +222,7 @@ public class Ray {
     public float getLongtitude(){
         return uf_header2.longitudeD + (uf_header2.longitudeM + uf_header2.longitudeS/(64*60.f))/60.f;
     }
-
+    
     public float getHorizontalBeamWidth(String abbrev) {
         UF_field_header2 header = field_header_map.get(abbrev);
         return header.HorizontalBeamWidth/64.f;
@@ -246,9 +246,14 @@ public class Ray {
     }
 
     public long setDateMesc() {
-        Calendar cal = Calendar.getInstance();
+        Calendar cal;
+        if("UT".equals(uf_header2.timeZone)) {
+            cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        }else{
+            cal = Calendar.getInstance();
+        }
         cal.set(Calendar.YEAR, uf_header2.year);
-        cal.set(Calendar.MONTH,uf_header2.month );
+        cal.set(Calendar.MONTH,uf_header2.month - 1 );
         cal.set(Calendar.DAY_OF_MONTH, uf_header2.day );
         cal.set(Calendar.HOUR_OF_DAY, uf_header2.hour);
         cal.set(Calendar.MINUTE, uf_header2.minute);
