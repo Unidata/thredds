@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import org.junit.Assert;
 import ucar.ma2.*;
 import ucar.unidata.test.util.TestDir;
 
@@ -61,19 +62,23 @@ public class TestStructure extends TestCase {
   }
 
   public void testNames() {
-    List vars = ncfile.getVariables();
+    List<Variable> vars = ncfile.getVariables();
+    String[] trueNames = {"rh", "T", "lat", "lon", "time", "recordvarTest",
+            "record"};
     for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      System.out.println(" " + v.getShortName() + " == " + v.getFullName());
+      Assert.assertEquals("Checking names", trueNames[i],
+              vars.get(i).getFullName());
     }
 
     Structure record = (Structure) ncfile.findVariable("record");
     assert record != null;
 
     vars = record.getVariables();
+    String[] trueRecordNames = {"record.rh", "record.T", "record.time",
+            "record.recordvarTest"};
     for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      System.out.println(" " + v.getShortName() + " == " + v.getFullName());
+      Assert.assertEquals("Checking record names", trueRecordNames[i],
+              vars.get(i).getFullName());
     }
 
     Variable time = ncfile.findVariable("record.time");
@@ -82,7 +87,7 @@ public class TestStructure extends TestCase {
     Variable time2 = record.findVariable("time");
     assert time2 != null;
 
-    assert time.equals(time2);
+    Assert.assertEquals(time, time2);
   }
 
   public void testReadStructureCountBytesRead() throws IOException, InvalidRangeException {
@@ -104,7 +109,7 @@ public class TestStructure extends TestCase {
         totalAll += data.getSize() * m.getDataType().getSize();
       }
     }
-    System.out.println("  total bytes readAll= " + totalAll);
+    Assert.assertEquals("Total bytes read", 304, totalAll);
 
     // read one at a time
     int numrecs = record.getShape()[0];
@@ -119,14 +124,14 @@ public class TestStructure extends TestCase {
         totalOne += data.getSize() * m.getDataType().getSize();
       }
     }
-    assert totalOne == totalAll;
+    Assert.assertEquals("testReadStructureCountBytesRead", totalAll, totalOne);
 
     // read with the iterator
     long totalIter = 0;
     StructureDataIterator iter2 = record.getStructureIterator();
     try {
       while (iter2.hasNext()) {
-        StructureData sd = (StructureData) iter2.next();
+        StructureData sd = iter2.next();
         Iterator viter = sd.getMembers().iterator();
         while (viter.hasNext()) {
           StructureMembers.Member m = (StructureMembers.Member) viter.next();
@@ -137,9 +142,7 @@ public class TestStructure extends TestCase {
     } finally {
       iter2.finish();
     }
-    assert totalOne == totalIter;
-
-    System.out.println("*** testReadStructureCountBytesRead ok");
+    Assert.assertEquals("Bytes through iteration", totalIter, totalOne);
   }
 
   public void testN3ReadStructureCheckValues() throws IOException, InvalidRangeException {
@@ -174,7 +177,7 @@ public class TestStructure extends TestCase {
     StructureDataIterator iter2 = record.getStructureIterator();
     try {
       while (iter2.hasNext()) {
-        StructureData s = (StructureData) iter2.next();
+        StructureData s = iter2.next();
         Array rh = s.getArray("rh");
         assert (rh instanceof ArrayInt.D2);
         checkValues(rh, recnum); // check the values are right
@@ -183,7 +186,6 @@ public class TestStructure extends TestCase {
     } finally {
       iter2.finish();
     }
-    System.out.println("*** testN3ReadStructureCheckValues ok");
   }
 
   /* public void testN3ReadStructureWithCE() throws IOException, InvalidRangeException {
@@ -248,7 +250,7 @@ public class TestStructure extends TestCase {
     readBothWays(TestDir.cdmLocalTestDataDir + "testWriteRecord.nc");
     //readBothWays(TestAll.testdataDir+"station/ldm-old/2004061915_metar.nc");
 
-    System.out.println("*** testReadBothWaysV3mode ok");
+    //System.out.println("*** testReadBothWaysV3mode ok");
   }
 
   private void checkValues(Array rh, int recnum) {
@@ -261,8 +263,8 @@ public class TestStructure extends TestCase {
       for (int k = 0; k < shape[1]; k++) {
         int want = 20 * recnum + 4 * j + k + 1;
         int val = rha.get(j, k);
-        System.out.println(" " + recnum + " " + j + " " + k + " " + want + " " + val);
-        assert (want == val) : want + " " + val;
+        Assert.assertEquals(" " + recnum + " " + j + " " + k + " " + want +
+                " " + val, want, val);
       }
     }
   }

@@ -179,7 +179,7 @@ public class TestDir {
 
   public static NetcdfFile open( String filename) {
     try {
-      System.out.println("**** Open "+filename);
+      if (dumpFile) System.out.println("**** Open "+filename);
       NetcdfFile ncfile = NetcdfFile.open(filename, null);
       if (dumpFile) System.out.println("open "+ncfile);
       return ncfile;
