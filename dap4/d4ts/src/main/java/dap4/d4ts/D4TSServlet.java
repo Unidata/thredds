@@ -134,4 +134,10 @@ public class D4TSServlet extends DapServlet
                     .setCode(HttpServletResponse.SC_FORBIDDEN);
         return datasetfilepath;
     }
+
+    @Override
+    protected long getBinaryWriteLimit()
+    {
+        return DEFAULTBINARYWRITELIMIT;
+    }
 }

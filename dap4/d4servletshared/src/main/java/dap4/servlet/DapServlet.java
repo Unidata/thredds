@@ -47,6 +47,8 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
 
     static protected final String FAVICON = "favicon.ico"; // relative to resource dir
 
+    static public final long DEFAULTBINARYWRITELIMIT = 100*1000000; // in bytes
+
     //////////////////////////////////////////////////
     // static variables
 
@@ -57,6 +59,8 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     //    this DapCache instance.
 
     static protected DapCache cache = null;
+
+    static protected long binarywritelimit = ChunkWriter.DEFAULTWRITELIMIT;
 
     //////////////////////////////////////////////////
     // Static accessors
@@ -73,6 +77,10 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
         return DapServlet.cache;
     }
 
+    static public void setBinaryWritelimit(long limit)
+    {
+        binarywritelimit = limit;
+    }
 
     //////////////////////////////////////////////////
     // Instance variables
@@ -120,6 +128,12 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
 
     abstract protected String getResourcePath(DapRequest drq) throws IOException;
 
+    /**
+     * Set the limit of the max amount of binary data to return to caller.
+     * @return limit to the max amount to write
+     */
+    abstract protected long getBinaryWriteLimit();
+
     //////////////////////////////////////////////////////////
     // Accessors
 
@@ -151,6 +165,7 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
         } catch (Exception e) {
             throw new ServletException(e);
         }
+        setBinaryWritelimit(getBinaryWriteLimit());
     }
 
 
@@ -278,7 +293,7 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
 
         String datasetpath = getResourcePath(drq);
         if(datasetpath == null)
-            throw new DapException("Not such dataset: "+drq.getOriginalURL());
+            throw new DapException("Not such dataset: " + drq.getOriginalURL());
         DSP dsp = DapCache.open(datasetpath);
         DapDataset dmr = dsp.getDMR();
 
@@ -326,7 +341,7 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     {
         String datasetpath = getResourcePath(drq); // dataset path is relative to resource path
         if(datasetpath == null)
-            throw new DapException("Not such dataset: "+drq.getOriginalURL());
+            throw new DapException("Not such dataset: " + drq.getOriginalURL());
         DSP dsp = DapCache.open(datasetpath);
         if(dsp == null)
             throw new IOException("No such file: " + datasetpath);
@@ -353,6 +368,7 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
         // Wrap the outputstream with a Chunk writer
         OutputStream out = drq.getOutputStream();
         ChunkWriter cw = new ChunkWriter(out, RequestMode.DAP, this.byteorder);
+        cw.setWriteLimit(this.binarywritelimit);
         cw.writeDMR(sdmr);
         cw.flush();
 
