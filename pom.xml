@@ -339,11 +339,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>${log4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${log4j.version}</version>
         <scope>runtime</scope>
@@ -448,9 +443,9 @@
       </dependency>
 
       <dependency>
-        <groupId>org.n52.sensorweb</groupId>
-        <artifactId>52n-xml-waterML-dr-v20</artifactId>
-        <version>${org.n52.waterML.version}</version>
+        <groupId>org.apache.xmlbeans</groupId>
+        <artifactId>xmlbeans</artifactId>
+        <version>${xmlbeans.version}</version>
       </dependency>
 
       <dependency>
@@ -459,6 +454,11 @@
         <version>${org.n52.xmlbeans.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.n52.sensorweb</groupId>
+        <artifactId>52n-xml-waterML-v20</artifactId>
+        <version>${org.n52.waterML.version}</version>
+      </dependency>
             
       <!-- stuff for wmotables
       <dependency>
@@ -1061,8 +1061,9 @@
     <httpunit.version>1.7</httpunit.version>
     <bounce.version>0.14</bounce.version>
     <imgscalr-lib.version>4.2</imgscalr-lib.version>
-    <org.n52.waterML.version>1.1.5</org.n52.waterML.version>
+    <xmlbeans.version>2.6.0</xmlbeans.version>
     <org.n52.xmlbeans.version>1.12</org.n52.xmlbeans.version>
+    <org.n52.waterML.version>1.1.5</org.n52.waterML.version>
     <oro.version>2.0.8</oro.version>
     <taglibs.version>1.1.2</taglibs.version>
     <!--saxon.version>8.7</saxon.version-->

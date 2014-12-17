@@ -74,6 +74,10 @@
       <artifactId>cdm</artifactId>
     </dependency>
     <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>httpservices</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
@@ -91,15 +95,6 @@
       <artifactId>httpcore</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>net.jcip</groupId>
       <artifactId>jcip-annotations</artifactId>
     </dependency>
@@ -109,6 +104,11 @@
       <artifactId>cdm</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <dependency>

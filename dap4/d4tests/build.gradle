@@ -19,7 +19,6 @@ dependencies {
     runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
 
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
     runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion
 
     testCompile group: 'org.springframework', name: 'spring-test', version: springVersion

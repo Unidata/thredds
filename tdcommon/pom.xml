@@ -32,10 +32,6 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-    </dependency>
 
     <!-- Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files. -->
     <dependency>

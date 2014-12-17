@@ -11,15 +11,9 @@
   <name>client side common library. java.awt dependencies</name>
 
   <dependencies>
-
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>cdm</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>net.jcip</groupId>
-      <artifactId>jcip-annotations</artifactId>
     </dependency>
 
     <dependency>
@@ -28,17 +22,13 @@
     </dependency>
 
     <dependency>
-      <artifactId>je</artifactId>
-      <groupId>com.sleepycat</groupId>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>cdm</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
+      <artifactId>je</artifactId>
+      <groupId>com.sleepycat</groupId>
     </dependency>
-
   </dependencies>
-
 </project>

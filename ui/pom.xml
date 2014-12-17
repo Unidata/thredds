@@ -45,37 +45,16 @@
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>visadCdm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.ucar</groupId>
       <artifactId>waterml</artifactId>
     </dependency>
-    <!-- DAP4 Dependencies (technically forward) -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>d4core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>d4shared</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>d4cdmshared</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>d4cdmclient</artifactId>
+      <artifactId>httpservices</artifactId>
     </dependency>
 
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sleepycat</groupId>
-      <artifactId>je</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jdom</groupId>
@@ -114,10 +93,6 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.bounce</groupId>
@@ -142,14 +117,18 @@
     </dependency>
 
     <dependency>
-      <groupId>edu.wisc.ssec</groupId>
-      <artifactId>visad</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.n52.sensorweb</groupId>
+      <artifactId>52n-oxf-xmlbeans</artifactId>
     </dependency>
   </dependencies>
 

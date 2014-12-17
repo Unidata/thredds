@@ -41,10 +41,6 @@ Dependencies: Mandatory dependencies are listed first. Then
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
       </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpmime</artifactId>
-      </dependency>
 
 </dependencies>
 
