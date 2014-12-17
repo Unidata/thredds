@@ -840,8 +840,10 @@ public class DTSServlet extends AbstractServlet
             // Finish up sending the compressed stuff, but don't
             // close the stream (who knows what the Servlet may expect!)
             if(rs.getAcceptsCompressed()) {
-                bOut.flush();
-                ((DeflaterOutputStream) dOut).finish();
+                if(bOut != null)
+                    bOut.flush();
+                if(dOut != null)
+                    ((DeflaterOutputStream) dOut).finish();
             }
 
             //? if(null != dOut) dOut.finish();
@@ -928,7 +930,7 @@ public class DTSServlet extends AbstractServlet
             // Send the Data delimiter back to the client
             //pw.println("Data:"); // JCARON CHANGED
             pw.flush();
-            bOut.write("\nData:\r\n".getBytes()); // JCARON CHANGED
+            bOut.write("\nData:\r\n".getBytes("UTF-8")); // JCARON CHANGED
             bOut.flush();
 
             int seqLength = 5;

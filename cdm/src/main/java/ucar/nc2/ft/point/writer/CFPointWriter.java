@@ -32,6 +32,10 @@
 
 package ucar.nc2.ft.point.writer;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterDescription;
+import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -44,9 +48,13 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -564,6 +572,12 @@ public abstract class CFPointWriter implements AutoCloseable {
       } else {
         newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
       }
+
+      if (newVar == null) {
+        logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
+        continue;
+      }
+
       for (Attribute att : oldVar.getAttributes())
         newVar.addAttribute(att);
       varMap.put(newVar.getShortName(), newVar);
@@ -573,10 +587,15 @@ public abstract class CFPointWriter implements AutoCloseable {
 
   // added as members of the given structure
   protected void addCoordinatesExtended(Structure parent, List<VariableSimpleIF> coords) throws IOException {
-
     for (VariableSimpleIF vs : coords) {
       String dims = Dimension.makeDimensionsString(vs.getDimensions());
       Variable member = writer.addStructureMember(parent, vs.getShortName(), vs.getDataType(), dims);
+
+      if (member == null) {
+        logger.warn("Variable already exists =" + vs.getShortName());  // LOOK barf
+        continue;
+      }
+
       for (Attribute att : vs.getAttributes())
         member.addAttribute(att);
     }
@@ -616,7 +635,7 @@ public abstract class CFPointWriter implements AutoCloseable {
        } else {
          newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dims);
          if (newVar == null) {
-           logger.warn("Variable already exists ="+oldVar.getShortName());
+           logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
            continue;
          }
        }
@@ -654,6 +673,10 @@ public abstract class CFPointWriter implements AutoCloseable {
       }
 
       Variable newVar = writer.addStructureMember(record, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
+      if (newVar == null) {
+        logger.warn("Variable already exists =" + oldVar.getShortName());  // LOOK barf
+        continue;
+      }
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
@@ -807,5 +830,106 @@ public abstract class CFPointWriter implements AutoCloseable {
   @Override
   public void close() throws IOException {
     writer.close();
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private static class CommandLine {
+    @Parameter(names = {"-i", "--input"}, description = "Input file.", required = true)
+    public File inputFile;
+
+    @Parameter(names = {"-o", "--output"}, description = "Output file.", required = true)
+    public File outputFile;
+
+    @Parameter(names = {"-f", "--format"}, description = "Output file format. Allowed values = " +
+                    "[netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
+    public NetcdfFileWriter.Version format = NetcdfFileWriter.Version.netcdf3;
+
+    @Parameter(names = {"-st", "--strategy"}, description = "Chunking strategy. Only used in NetCDF 4. " +
+            "Allowed values = [standard, grib, none]")
+    public Nc4Chunking.Strategy strategy = Nc4Chunking.Strategy.standard;
+
+    @Parameter(names = {"-d", "--deflateLevel"}, description = "Compression level. Only used in NetCDF 4. " +
+            "Allowed values = 0 (no compression, fast) to 9 (max compression, slow)")
+    public int deflateLevel = 5;
+
+    @Parameter(names = {"-sh", "--shuffle"}, description = "Enable the shuffle filter, which may improve compression. " +
+            "Only used in NetCDF 4. This option is ignored unless a non-zero deflate level is specified.")
+    public boolean shuffle = true;
+
+    @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+    public boolean help = false;
+
+
+    private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
+      // Display parameters in this order in the usage information.
+      private final List<String> orderedParamNames = Arrays.asList(
+              "--input", "--output", "--format", "--strategy", "--deflateLevel", "--shuffle", "--help");
+
+      @Override
+      public int compare(ParameterDescription p0, ParameterDescription p1) {
+        int index0 = orderedParamNames.indexOf(p0.getLongestName());
+        int index1 = orderedParamNames.indexOf(p1.getLongestName());
+        assert index0 >= 0 : "Unexpected parameter name: " + p0.getLongestName();
+        assert index1 >= 0 : "Unexpected parameter name: " + p1.getLongestName();
+
+        return Integer.compare(index0, index1);
+      }
+    }
+
+
+    private final JCommander jc;
+
+    public CommandLine(String progName, String[] args) throws ParameterException {
+      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName);           // Displayed in the usage information.
+
+      // Set the ordering of of parameters in the usage information.
+      jc.setParameterDescriptionComparator(new ParameterDescriptionComparator());
+    }
+
+    public void printUsage() {
+      jc.usage();
+    }
+
+    public Nc4Chunking getNc4Chunking() {
+      return Nc4ChunkingStrategy.factory(strategy, deflateLevel, shuffle);
+    }
+
+    public CFPointWriterConfig getCFPointWriterConfig() {
+      return new CFPointWriterConfig(format, getNc4Chunking());
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    String progName = CFPointWriter.class.getName();
+
+    try {
+      CommandLine cmdLine = new CommandLine(progName, args);
+
+      if (cmdLine.help) {
+        cmdLine.printUsage();
+        return;
+      }
+
+      FeatureType wantFeatureType = FeatureType.ANY_POINT;
+      String location = cmdLine.inputFile.getAbsolutePath();
+      CancelTask cancel = null;
+      Formatter errlog = new Formatter();
+
+      try (FeatureDatasetPoint fdPoint =
+              (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(wantFeatureType, location, cancel, errlog)) {
+        if (fdPoint == null) {
+          System.err.println(errlog.toString());
+        } else {
+          System.out.printf("CFPointWriter: reading from %s, writing to %s%n", cmdLine.inputFile, cmdLine.outputFile);
+          writeFeatureCollection(fdPoint, cmdLine.outputFile.getAbsolutePath(), cmdLine.getCFPointWriterConfig());
+          System.out.println("Done.");
+        }
+      }
+    } catch (ParameterException e) {
+      System.err.println(e.getMessage());
+      System.err.printf("Try \"%s --help\" for more information.%n", progName);
+    }
   }
 }

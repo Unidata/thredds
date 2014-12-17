@@ -789,7 +789,7 @@ public class OpendapServlet extends AbstractServlet {
     }
   }
 
-  private static final boolean debugSize = true;
+  private static final boolean debugSize = false;
 
   // Recursively compute size of the dds to be returned
   // Note that the dds may be empty (e-support ZTH-269982)
@@ -881,11 +881,11 @@ public class OpendapServlet extends AbstractServlet {
     int n = da.numDimensions();
     List<Range> ranges = new ArrayList<>(n);
     long size = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
       ranges.add(new Range(da.getStart(i), da.getStop(i), da.getStride(i)));
-      Section s = new Section(ranges);
-      size += s.computeSize() * elemSize;
-    }
+    Section s = new Section(ranges);
+    size += s.computeSize() * elemSize;
+
     return size;
   }
 

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Common_C04_20141105_en.xsd" generated="2014-11-05T17:27:22">
+<Common_C04_20141105_en>
+<No>1</No>
+<CodeFigureForXRXR>01</CodeFigureForXRXR>
+<CodeFigureForBUFR>1</CodeFigureForBUFR>
+<Meaning_en>Sippican Strip Chart Recorder</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>2</No>
+<CodeFigureForXRXR>02</CodeFigureForXRXR>
+<CodeFigureForBUFR>2</CodeFigureForBUFR>
+<Meaning_en>Sippican MK2A/SSQ-61</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>3</No>
+<CodeFigureForXRXR>03</CodeFigureForXRXR>
+<CodeFigureForBUFR>3</CodeFigureForBUFR>
+<Meaning_en>Sippican MK-9</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>4</No>
+<CodeFigureForXRXR>04</CodeFigureForXRXR>
+<CodeFigureForBUFR>4</CodeFigureForBUFR>
+<Meaning_en>Sippican AN/BHQ-7/MK8</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>5</No>
+<CodeFigureForXRXR>05</CodeFigureForXRXR>
+<CodeFigureForBUFR>5</CodeFigureForBUFR>
+<Meaning_en>Sippican MK-12</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>6</No>
+<CodeFigureForXRXR>06</CodeFigureForXRXR>
+<CodeFigureForBUFR>6</CodeFigureForBUFR>
+<Meaning_en>Sippican MK-21</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>7</No>
+<CodeFigureForXRXR>07</CodeFigureForXRXR>
+<CodeFigureForBUFR>7</CodeFigureForBUFR>
+<Meaning_en>Sippican MK-8 Linear Recorder</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>8</No>
+<CodeFigureForXRXR>08</CodeFigureForXRXR>
+<CodeFigureForBUFR>8</CodeFigureForBUFR>
+<Meaning_en>Sippican MK-10</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>9</No>
+<CodeFigureForXRXR>10</CodeFigureForXRXR>
+<CodeFigureForBUFR>10</CodeFigureForBUFR>
+<Meaning_en>Sparton SOC BT/SV Processor Model 100</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>10</No>
+<CodeFigureForXRXR>11</CodeFigureForXRXR>
+<CodeFigureForBUFR>11</CodeFigureForBUFR>
+<Meaning_en>Lockheed-Sanders Model OL5005</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>11</No>
+<CodeFigureForXRXR>20</CodeFigureForXRXR>
+<CodeFigureForBUFR>20</CodeFigureForBUFR>
+<Meaning_en>ARGOS XBT-ST</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>12</No>
+<CodeFigureForXRXR>21</CodeFigureForXRXR>
+<CodeFigureForBUFR>21</CodeFigureForBUFR>
+<Meaning_en>CLS-ARGOS/Protecno XBT-ST Model-1</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>13</No>
+<CodeFigureForXRXR>22</CodeFigureForXRXR>
+<CodeFigureForBUFR>22</CodeFigureForBUFR>
+<Meaning_en>CLS-ARGOS/Protecno XBT-ST Model-2</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>14</No>
+<CodeFigureForXRXR>30</CodeFigureForXRXR>
+<CodeFigureForBUFR>30</CodeFigureForBUFR>
+<Meaning_en>BATHY Systems SA-810</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>15</No>
+<CodeFigureForXRXR>31</CodeFigureForXRXR>
+<CodeFigureForBUFR>31</CodeFigureForBUFR>
+<Meaning_en>Scripps Metrobyte Controller</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>16</No>
+<CodeFigureForXRXR>32</CodeFigureForXRXR>
+<CodeFigureForBUFR>32</CodeFigureForBUFR>
+<Meaning_en>Murayama Denki Z-60-16 III</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>17</No>
+<CodeFigureForXRXR>33</CodeFigureForXRXR>
+<CodeFigureForBUFR>33</CodeFigureForBUFR>
+<Meaning_en>Murayama Denki Z-60-16 II</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>18</No>
+<CodeFigureForXRXR>34</CodeFigureForXRXR>
+<CodeFigureForBUFR>34</CodeFigureForBUFR>
+<Meaning_en>Protecno ETSM2</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>19</No>
+<CodeFigureForXRXR>35</CodeFigureForXRXR>
+<CodeFigureForBUFR>35</CodeFigureForBUFR>
+<Meaning_en>Nautilus Marine Service NMS-XBT</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>20</No>
+<CodeFigureForXRXR>40</CodeFigureForXRXR>
+<CodeFigureForBUFR>40</CodeFigureForBUFR>
+<Meaning_en>TSK MK-2A</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>21</No>
+<CodeFigureForXRXR>41</CodeFigureForXRXR>
+<CodeFigureForBUFR>41</CodeFigureForBUFR>
+<Meaning_en>TSK MK-2S</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>22</No>
+<CodeFigureForXRXR>42</CodeFigureForXRXR>
+<CodeFigureForBUFR>42</CodeFigureForBUFR>
+<Meaning_en>TSK MK-30</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>23</No>
+<CodeFigureForXRXR>43</CodeFigureForXRXR>
+<CodeFigureForBUFR>43</CodeFigureForBUFR>
+<Meaning_en>TSK MK-30N</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>24</No>
+<CodeFigureForXRXR>45</CodeFigureForXRXR>
+<CodeFigureForBUFR>45</CodeFigureForBUFR>
+<Meaning_en>TSK MK-100</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>25</No>
+<CodeFigureForXRXR>46</CodeFigureForXRXR>
+<CodeFigureForBUFR>46</CodeFigureForBUFR>
+<Meaning_en>TSK MK-130 Compatible recorder for both XBT and XCTD</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>26</No>
+<CodeFigureForXRXR>47</CodeFigureForXRXR>
+<CodeFigureForBUFR>47</CodeFigureForBUFR>
+<Meaning_en>TSK MK-130A XCTD recorder</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>27</No>
+<CodeFigureForXRXR>48</CodeFigureForXRXR>
+<CodeFigureForBUFR>48</CodeFigureForBUFR>
+<Meaning_en>TSK AXBT RECEIVER MK-300</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>28</No>
+<CodeFigureForXRXR>49</CodeFigureForXRXR>
+<CodeFigureForBUFR>49</CodeFigureForBUFR>
+<Meaning_en>TSK MK-150/MK-150N Compatible recorder for both XBT and XCTD</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>29</No>
+<CodeFigureForXRXR>50</CodeFigureForXRXR>
+<CodeFigureForBUFR>50</CodeFigureForBUFR>
+<Meaning_en>JMA ASTOS</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>30</No>
+<CodeFigureForXRXR>60</CodeFigureForXRXR>
+<CodeFigureForBUFR>60</CodeFigureForBUFR>
+<Meaning_en>ARGOS communications, sampling on up transit</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>31</No>
+<CodeFigureForXRXR>61</CodeFigureForXRXR>
+<CodeFigureForBUFR>61</CodeFigureForBUFR>
+<Meaning_en>ARGOS communications, sampling on down transit</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>32</No>
+<CodeFigureForXRXR>62</CodeFigureForXRXR>
+<CodeFigureForBUFR>62</CodeFigureForBUFR>
+<Meaning_en>Orbcomm communications, sampling on up transit</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>33</No>
+<CodeFigureForXRXR>63</CodeFigureForXRXR>
+<CodeFigureForBUFR>63</CodeFigureForBUFR>
+<Meaning_en>Orbcomm communications, sampling on down transit</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>34</No>
+<CodeFigureForXRXR>64</CodeFigureForXRXR>
+<CodeFigureForBUFR>64</CodeFigureForBUFR>
+<Meaning_en>Iridium communications, sampling on up transit</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>35</No>
+<CodeFigureForXRXR>65</CodeFigureForXRXR>
+<CodeFigureForBUFR>65</CodeFigureForBUFR>
+<Meaning_en>Iridium communications, sampling on down transit</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>36</No>
+<CodeFigureForXRXR>70</CodeFigureForXRXR>
+<CodeFigureForBUFR>70</CodeFigureForBUFR>
+<Meaning_en>CSIRO Devil-1 XBT acquisition system</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>37</No>
+<CodeFigureForXRXR>71</CodeFigureForXRXR>
+<CodeFigureForBUFR>71</CodeFigureForBUFR>
+<Meaning_en>CSIRO Devil-2 XBT acquisition system</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>38</No>
+<CodeFigureForXRXR>72</CodeFigureForXRXR>
+<CodeFigureForBUFR>72</CodeFigureForBUFR>
+<Meaning_en>TURO/CSIRO Quoll XBT acquisition system</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>39</No>
+<CodeFigureForXRXR>80</CodeFigureForXRXR>
+<CodeFigureForBUFR>80</CodeFigureForBUFR>
+<Meaning_en>Applied Microsystems Ltd., MICRO-SVT&amp;P</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>40</No>
+<CodeFigureForXRXR>81</CodeFigureForXRXR>
+<CodeFigureForBUFR>81</CodeFigureForBUFR>
+<Meaning_en>Sea Mammal Research Unit, Univ. St. Andrews, UK, uncorrected salinity from a sea mammal mounted instrument</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>41</No>
+<CodeFigureForXRXR>82</CodeFigureForXRXR>
+<CodeFigureForBUFR>82</CodeFigureForBUFR>
+<Meaning_en>Sea Mammal Research Unit, Univ. St. Andrews, UK, corrected salinity from a sea mammal mounted instrument</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>42</No>
+<CodeFigureForXRXR>99</CodeFigureForXRXR>
+<CodeFigureForBUFR>99</CodeFigureForBUFR>
+<Meaning_en>Unknown</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+<Common_C04_20141105_en>
+<No>43</No>
+<CodeFigureForBUFR>127</CodeFigureForBUFR>
+<Meaning_en>Missing value</Meaning_en>
+<Status>Operational</Status>
+</Common_C04_20141105_en>
+</dataroot>

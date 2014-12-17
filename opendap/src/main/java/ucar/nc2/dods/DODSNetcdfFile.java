@@ -2308,12 +2308,12 @@ if(OLDGROUPCODE) {
         f.format("DDS = %n");
         ByteArrayOutputStream buffOS = new ByteArrayOutputStream(8000);
         dds.print(buffOS);
-        f.format("%s%n", buffOS.toString());
+        f.format("%s%n", new String(buffOS.toByteArray(),Util.UTF8));
 
         f.format("%nDAS = %n");
         buffOS = new ByteArrayOutputStream(8000);
         das.print(buffOS);
-        f.format("%s%n", buffOS.toString());
+        f.format("%s%n", new String(buffOS.toByteArray(),Util.UTF8));
     }
 
     public String getFileTypeId()

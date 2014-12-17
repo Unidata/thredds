@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Common_COV_20141105_en.xsd" generated="2014-11-05T17:32:12">
+<Common_COV_20141105_en>
+<No>1</No>
+<CommonCodeTable>1</CommonCodeTable>
+<Title_en>Identification of originating/generating centre</Title_en>
+<Applicable_en>F1F2 for alphanumeric codes</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>2</No>
+<CommonCodeTable>1</CommonCodeTable>
+<Title_en>Identification of originating/generating centre</Title_en>
+<Applicable_en>F3F3F3 for alphanumeric codes</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>3</No>
+<CommonCodeTable>1</CommonCodeTable>
+<Title_en>Identification of originating/generating centre</Title_en>
+<Applicable_en>Code table 0 in GRIB Edition 1/Code table 0 01 033 for BUFR Edition 3</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>4</No>
+<CommonCodeTable>1</CommonCodeTable>
+<Title_en>Identification of originating/generating centre</Title_en>
+<Applicable_en>Octet 5 in Section 1 of GRIB Edition 1/Octet 6 in Section 1 of BUFR Edition 3</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>5</No>
+<CommonCodeTable>2</CommonCodeTable>
+<Title_en>Radiosonde/ sounding system used</Title_en>
+<Applicable_en>Code table 3685 - rara (Radiosonde/sounding system used) - for alphanumeric codes</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>6</No>
+<CommonCodeTable>2</CommonCodeTable>
+<Title_en>Radiosonde/ sounding system used</Title_en>
+<Applicable_en>Code table 0 02 011 (Radiosonde type) in BUFR</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>7</No>
+<CommonCodeTable>3</CommonCodeTable>
+<Title_en>Instrument make and type for water temperature profile measurement with fall rate equation coefficients</Title_en>
+<Applicable_en>Code table 1770 - IXIXIX (Instrument type for XBT, with fall rate equation coefficients) - for alphanumeric codes</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>8</No>
+<CommonCodeTable>3</CommonCodeTable>
+<Title_en>Instrument make and type for water temperature profile measurement with fall rate equation coefficients</Title_en>
+<Applicable_en>Code table 0 22 067 (Instrument type for water temperature profile measurement) in BUFR</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>9</No>
+<CommonCodeTable>4</CommonCodeTable>
+<Title_en>Water temperature profile recorder types</Title_en>
+<Applicable_en>Code table 4770 - XRXR (Recorder type) - for alphanumeric codes</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>10</No>
+<CommonCodeTable>4</CommonCodeTable>
+<Title_en>Water temperature profile recorder types</Title_en>
+<Applicable_en>Code table 0 22 068 (Water temperature profile recorder types) in BUFR</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>11</No>
+<CommonCodeTable>5</CommonCodeTable>
+<Title_en>Satellite identifier</Title_en>
+<Applicable_en>I6I6I6 for alphanumeric codes</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>12</No>
+<CommonCodeTable>5</CommonCodeTable>
+<Title_en>Satellite identifier</Title_en>
+<Applicable_en>Code table 0 01 007 in BUFR</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>13</No>
+<CommonCodeTable>5</CommonCodeTable>
+<Title_en>Satellite identifier</Title_en>
+<Applicable_en>Code used in GRIB Edition 2</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>14</No>
+<CommonCodeTable>6</CommonCodeTable>
+<Title_en>List of units for TDCFs</Title_en>
+<Applicable_en>(Used only in Volume I.2, Parts B and C)</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>15</No>
+<CommonCodeTable>7</CommonCodeTable>
+<Title_en>Tracking technique/status of system used</Title_en>
+<Applicable_en>Code table 3872 - sasa for alphanumeric code</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>16</No>
+<CommonCodeTable>7</CommonCodeTable>
+<Title_en>Tracking technique/status of system used</Title_en>
+<Applicable_en>Code table 0 02 014 in BUFR</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>17</No>
+<CommonCodeTable>8</CommonCodeTable>
+<Title_en>Satellite Instruments</Title_en>
+<Applicable_en>Code table 0 02 019 in BUFR</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>18</No>
+<CommonCodeTable>11</CommonCodeTable>
+<Title_en>Originating/generating centres</Title_en>
+<Applicable_en>BUFR 0 01 035</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>19</No>
+<CommonCodeTable>11</CommonCodeTable>
+<Title_en>Originating/generating centres</Title_en>
+<Applicable_en>CREX Edition 2, ooooo in Group Poooooppp in Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>20</No>
+<CommonCodeTable>11</CommonCodeTable>
+<Title_en>Originating/generating centres</Title_en>
+<Applicable_en>GRIB Edition 2, Octets 6-7 in Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>21</No>
+<CommonCodeTable>11</CommonCodeTable>
+<Title_en>Originating/generating centres</Title_en>
+<Applicable_en>BUFR Edition 4, Octets 5-6 in Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>22</No>
+<CommonCodeTable>12</CommonCodeTable>
+<Title_en>Sub-centres of originating centres defined by entries in Common Code tables C-1 or C-11</Title_en>
+<Applicable_en>BUFR 0 01 034</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>23</No>
+<CommonCodeTable>12</CommonCodeTable>
+<Title_en>Sub-centres of originating centres defined by entries in Common Code tables C-1 or C-11</Title_en>
+<Applicable_en>BUFR Edition 3, Octet 5 in Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>24</No>
+<CommonCodeTable>12</CommonCodeTable>
+<Title_en>Sub-centres of originating centres defined by entries in Common Code tables C-1 or C-11</Title_en>
+<Applicable_en>BUFR Edition 4, Octets 7-8 in Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>25</No>
+<CommonCodeTable>12</CommonCodeTable>
+<Title_en>Sub-centres of originating centres defined by entries in Common Code tables C-1 or C-11</Title_en>
+<Applicable_en>GRIB Edition 1, Octet 26 in Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>26</No>
+<CommonCodeTable>12</CommonCodeTable>
+<Title_en>Sub-centres of originating centres defined by entries in Common Code tables C-1 or C-11</Title_en>
+<Applicable_en>GRIB Edition 2, Octets 8-9 in Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>27</No>
+<CommonCodeTable>12</CommonCodeTable>
+<Title_en>Sub-centres of originating centres defined by entries in Common Code tables C-1 or C-11</Title_en>
+<Applicable_en>CREX Edition 2, ppp in Group Poooooppp in Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>28</No>
+<CommonCodeTable>13</CommonCodeTable>
+<Title_en>Data sub-categories of categories defined by entries in BUFR Table A</Title_en>
+<Applicable_en>BUFR Edition 4, Octet 12 in Section 1 (if = 255, it means other sub-category or undefined)</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>29</No>
+<CommonCodeTable>13</CommonCodeTable>
+<Title_en>Data sub-categories of categories defined by entries in BUFR Table A</Title_en>
+<Applicable_en>CREX Edition 2,  mmm in Group Annnmmm of Section 1</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+<Common_COV_20141105_en>
+<No>30</No>
+<CommonCodeTable>14</CommonCodeTable>
+<Title_en>Atmospheric chemical or physical constituent type</Title_en>
+<Applicable_en>Code Table 4.230 in GRIB 2</Applicable_en>
+<Status>Operational</Status>
+</Common_COV_20141105_en>
+</dataroot>

@@ -532,7 +532,7 @@ public class DConnect2
         return command.das;
     }
 
-    private class DASCommand implements Command
+    static private class DASCommand implements Command
     {
         DAS das = new DAS();
 
@@ -591,7 +591,7 @@ public class DConnect2
         return command.dds;
     }
 
-    private class DDSCommand implements Command
+    static private class DDSCommand implements Command
     {
         DDS dds = new DDS();
         String url = null;
@@ -717,7 +717,7 @@ public class DConnect2
         return command.dds;
     }
 
-    private class DDXCommand implements Command
+    static private class DDXCommand implements Command
     {
         DDS dds = new DDS();
 
@@ -799,16 +799,16 @@ public class DConnect2
         ParseException, DDSException, DAP2Exception
     {
 
-        DataDDXCommand command = new DataDDXCommand(btf);
+        DataDDXCommand command = new DataDDXCommand(btf,this.ver);
         openConnection(urlString + ".ddx" + (getCompleteCE(CE)), command);
         return command.dds;
     }
 
-    private class DataDDXCommand implements Command
+    static private class DataDDXCommand implements Command
     {
         DataDDS dds;
 
-        DataDDXCommand(BaseTypeFactory btf)
+        DataDDXCommand(BaseTypeFactory btf,ServerVersion ver)
         {
             dds = new DataDDS(ver, btf);
         }

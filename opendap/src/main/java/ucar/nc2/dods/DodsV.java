@@ -283,8 +283,11 @@ class DodsV implements Comparable {
     this.elemType = bt;
   }
 
-  public int compareTo(Object o) {
-    return seq - ((DodsV) o).seq;
+  public int compareTo(Object o)
+  {
+    if(o instanceof DodsV)
+        return seq - ((DodsV) o).seq;
+    return -1;
   }
 
   void show( PrintStream out, String space) {

@@ -184,6 +184,10 @@ public class FakeServlet extends D4TSServlet
         return null;
     }
 
+    public String getVirtualServerName() {
+        return null;
+    }
+
     public Object getAttribute(String s)
     {
         return null;

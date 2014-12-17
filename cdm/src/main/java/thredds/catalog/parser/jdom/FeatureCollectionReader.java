@@ -21,6 +21,22 @@ import java.util.List;
 public class FeatureCollectionReader {
   static private final Logger logger = LoggerFactory.getLogger(FeatureCollectionReader.class);
 
+    // input is xml file with just the <featureCollection>
+  static public FeatureCollectionConfig getConfigFromSnippet(String filename) {
+
+    org.jdom2.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(filename);
+    } catch (Exception e) {
+      System.out.printf("Error parsing featureCollection %s err = %s", filename, e.getMessage());
+      return null;
+    }
+
+    return FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
+  }
+
+
   /**
    * Read a catalog and extract a FeatureCollectionConfig from it
    * @param catalogAndPath catalog filename, or catalog#featureName

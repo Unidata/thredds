@@ -17,6 +17,8 @@ public abstract class TableDemo {
     private final static int numCols = 5;
 
     public static void main(String[] args) {
+        System.out.println("Testing Travis!");
+
         try {
             // Switch to Nimbus Look and Feel, if it's available.
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -38,7 +40,7 @@ public abstract class TableDemo {
                 TableModel model = createTableModel(numRows, numCols);
                 TableColumnModel tcm = new HidableTableColumnModel(model);
                 JTable table = new JTable(model, tcm);
-                table.setAutoCreateRowSorter(true);
+                table.setRowSorter(new UndoableRowSorter<>(model));
 
                 // Set the preferred column widths so that they're big enough to display all data without truncation.
                 ColumnWidthsResizer resizer = new ColumnWidthsResizer(table);

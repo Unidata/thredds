@@ -31,20 +31,22 @@
  */
 package ucar.nc2.ft.scan;
 
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.grid.CoverageCS;
 import ucar.nc2.ft.grid.impl.CoverageCSFactory;
 
-import java.io.*;
-import java.util.Formatter;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Scan a directory, try to open files as a Feature Type dataset.
@@ -297,7 +299,6 @@ public class FeatureScan {
       ff.format("CoverageCS.Type = %s", type);
       return ff.toString();
     }
-
   }
 
   public static void main(String arg[]) {
@@ -309,7 +310,7 @@ public class FeatureScan {
 
     boolean subdirs = false;
 
-    for (int i = 2; i < arg.length; i++) {
+    for (int i = 1; i < arg.length; i++) {
       String s = arg[i];
       if (s.equalsIgnoreCase("-subdirs")) subdirs = true;
     }
@@ -322,6 +323,4 @@ public class FeatureScan {
       System.out.printf(" %-60s %-20s %-10s %-10s%n", b.getName(), b.getFileType(), b.getFeatureType(), b.getFeatureImpl());
 
   }
-
-
 }

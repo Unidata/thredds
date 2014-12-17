@@ -32,6 +32,7 @@
  */
 package thredds.server.ncss.controller;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -52,128 +53,123 @@ import java.util.List;
 
 /**
  * @author mhermida
- *
  */
 public class AbstractNcssController {
-	
-	protected static final String servletPath = "/ncss/";
+    protected static final String servletPath = "/ncss/";
 
-	protected static final String servletCachePath = "/cache/ncss";
-	
-	static private final Logger log = LoggerFactory.getLogger(AbstractNcssController.class);
-	
-  protected void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult validationResult) {
+    protected static final String servletCachePath = "/cache/ncss";
 
- 		List<ObjectError> errors = validationResult.getAllErrors();
- 		response.setStatus(status);
- 		// String responseStr="Validation errors: ";
- 		StringBuilder responseStr = new StringBuilder();
- 		responseStr.append("Validation errors: ");
- 		for (ObjectError err : errors) {
- 			responseStr.append(err.getDefaultMessage());
- 			responseStr.append("  -- ");
- 		}
+    static private final Logger logger = LoggerFactory.getLogger(AbstractNcssController.class);
 
- 		try {
- 			PrintWriter pw = response.getWriter();
- 			pw.write(responseStr.toString());
- 			pw.flush();
+    protected void handleValidationErrorsResponse(HttpServletResponse response, int status,
+            BindingResult validationResult) {
 
- 		} catch (IOException ioe) {
- 			log.error(ioe.getMessage());
- 		}
+        List<ObjectError> errors = validationResult.getAllErrors();
+        response.setStatus(status);
+        // String responseStr="Validation errors: ";
+        StringBuilder responseStr = new StringBuilder();
+        responseStr.append("Validation errors: ");
+        for (ObjectError err : errors) {
+            responseStr.append(err.getDefaultMessage());
+            responseStr.append("  -- ");
+        }
 
- 	}
+        try {
+            PrintWriter pw = response.getWriter();
+            pw.write(responseStr.toString());
+            pw.flush();
 
-  protected void handleValidationErrorMessage(HttpServletResponse response, int status, String errorMessage) {
+        } catch (IOException ioe) {
+            logger.error(ioe.getMessage());
+        }
 
- 		response.setStatus(status);
-
- 		try {
- 			PrintWriter pw = response.getWriter();
- 			pw.write(errorMessage);
- 			pw.flush();
-
- 		} catch (IOException ioe) {
- 			log.error(ioe.getMessage());
- 		}
-
- 	}
-
-  ////////////////////////////////////////////////////////
-	// Exception handlers
-
-	@ExceptionHandler(FileNotFoundException.class)
-	public ResponseEntity<String> handle(FileNotFoundException ncsse) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<>(
-				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
-				HttpStatus.NOT_FOUND);
-	}
-
-	@ExceptionHandler(NcssException.class)
-	public ResponseEntity<String> handle(NcssException ncsse) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<>(
-				"NetCDF Subset Service exception handled : " + ncsse.getMessage(), responseHeaders,
-				HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(UnsupportedOperationException.class)
-	public ResponseEntity<String> handle(UnsupportedOperationException ex) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<>(
-				"UnsupportedOperationException exception handled : " + ex.getMessage(), responseHeaders,
-				HttpStatus.BAD_REQUEST);
-	}	
-	
-	@ExceptionHandler(Throwable.class)
-	public ResponseEntity<String> handle(Throwable ex) {
-  //  ex.printStackTrace();
-    log.error("AbstractNcssController", ex);
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<>("Throwable exception handled : " + ex.getMessage(), responseHeaders,
-            HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	public static String getNCSSServletPath() {
-		return servletPath;
-	}
-
-	public static String getServletCachePath() {
-		return servletCachePath;
-	}
-
-  private static final String[] endings = new String[] { "/dataset.xml", "/dataset.html", "/pointDataset.html",
-          "/pointDataset.xml", "/datasetBoundaries.xml", "/station.xml"
-  };
-  public static String getDatasetPath(HttpServletRequest req) {
-    return getDatasetPath( req.getServletPath());
-  }
-
-  public static String getDatasetPath(String path) {
-    // strip off /ncss/
-    if (path.startsWith(NcssController.servletPath))
-      path = path.substring(NcssController.servletPath.length());
-
-    // strip off endings
-    for (String ending : endings) {
-      if (path.endsWith(ending)) {
-        int len = path.length() - ending.length();
-        path = path.substring(0, len);
-        break;
-      }
     }
 
-    return path;
-  }
+    protected void handleValidationErrorMessage(HttpServletResponse response, int status, String errorMessage) {
+        response.setStatus(status);
+
+        try {
+            PrintWriter pw = response.getWriter();
+            pw.write(errorMessage);
+            pw.flush();
+
+        } catch (IOException ioe) {
+            logger.error(ioe.getMessage());
+        }
+    }
+
+    ////////////////////////////////////////////////////////
+    // Exception handlers
+
+    @ExceptionHandler(NcssException.class)
+    public ResponseEntity<String> handle(NcssException e) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(ExceptionUtils.getStackTrace(e), responseHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<String> handle(FileNotFoundException e) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(ExceptionUtils.getStackTrace(e), responseHeaders, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<String> handle(UnsupportedOperationException e) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(ExceptionUtils.getStackTrace(e), responseHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<String> handle(Throwable t) {
+        logger.error("Uncaught exception", t);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(ExceptionUtils.getStackTrace(t), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public static String getNCSSServletPath() {
+        return servletPath;
+    }
+
+    public static String getServletCachePath() {
+        return servletCachePath;
+    }
+
+    private static final String[] endings = new String[]{"/dataset.xml", "/dataset.html", "/pointDataset.html",
+            "/pointDataset.xml", "/datasetBoundaries.xml", "/station.xml"
+    };
+
+    public static String getDatasetPath(HttpServletRequest req) {
+        return getDatasetPath(req.getServletPath());
+    }
+
+    public static String getDatasetPath(String path) {
+        // strip off /ncss/
+        if (path.startsWith(NcssController.servletPath)) {
+            path = path.substring(NcssController.servletPath.length());
+        }
+
+        // strip off endings
+        for (String ending : endings) {
+            if (path.endsWith(ending)) {
+                int len = path.length() - ending.length();
+                path = path.substring(0, len);
+                break;
+            }
+        }
+
+        return path;
+    }
 
   /* String extractRequestPathInfo(String requestPathInfo) {
-
     requestPathInfo = requestPathInfo.substring(servletPath.length(), requestPathInfo.length());
     if (requestPathInfo.endsWith("datasetBoundaries")) {
       requestPathInfo = requestPathInfo.trim();
@@ -189,8 +185,6 @@ public class AbstractNcssController {
 
     return requestPathInfo;
   } */
-
-
     /* String[] servletPathTokens = servletPath.split("/");
     String lastToken = servletPathTokens[servletPathTokens.length - 1];
     if (lastToken.endsWith(".html") || lastToken.endsWith(".xml")) {
@@ -211,5 +205,4 @@ public class AbstractNcssController {
             servletPath.length());
   }
      */
-
 }

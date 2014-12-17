@@ -70,7 +70,6 @@ import ucar.unidata.geoloc.ProjectionPointImpl;
 
 import java.lang.*;
 
-
 /**
  * Converts GDC coordinate(s) to UTM.
  * <p/>
@@ -98,34 +97,12 @@ import java.lang.*;
  */
 
 class Gdc_To_Utm_Converter {
-
-  /**
-   * _more_
-   */
   static final double RADIANS_PER_DEGREE = 0.0174532925199432957692;
 
-  /**
-   * _more_
-   */
   private double A;
   private double F; // flattening
-  private double C, Eps2, Eps25, Epps2,
-      CScale = .9996, poly1b, poly2b, poly3b, poly4b, poly5b;
-
-  /**
-   * _more_
-   */
-  private int zone;
-
-  /**
-   * _more_
-   */
+  private double C, Eps2, Eps25, Epps2, CScale = .9996, poly1b, poly2b, poly3b, poly4b, poly5b;
   private double axlon0, axlon0_deg;
-
-  /**
-   * _more_
-   */
-  private boolean isNorth;
 
   /**
    * Constructor.
@@ -149,20 +126,12 @@ class Gdc_To_Utm_Converter {
     this(EarthEllipsoid.WGS84, zone, hemisphere_north);  // default to wgs 84
   }
 
-  /*
-  * Constructor with ellipsoid.
-  * @param E an Ellipsoid instance for the ellipsoid, e.g. WE_Ellipsoid
-  * @param zone             the UTM zone number (1..60)
-  * @param hemisphere_north true if the UTM coordinate is in the northern hemisphere
-  */
-
   /**
-   * _more_
-   *
-   * @param ellipse _more_
-   * @param zone    _more_
-   * @param isNorth _more_
-   */
+  * Constructor with ellipsoid.
+  * @param ellipse an EarthEllipsoid, e.g. WE_Ellipsoid
+  * @param zone             the UTM zone number (1..60)
+  * @param isNorth   true if the UTM coordinate is in the northern hemisphere
+  */
   public Gdc_To_Utm_Converter(EarthEllipsoid ellipse, int zone, boolean isNorth) {
     init(ellipse.getMajor(), 1.0 / ellipse.getFlattening(), zone, isNorth);
   }
@@ -179,8 +148,6 @@ class Gdc_To_Utm_Converter {
   protected void init(double a, double f, int zone, boolean isNorth) {
     A = a;
     F = 1.0 / f;  // F is flattening
-    this.zone = zone;
-    this.isNorth = isNorth;
     this.axlon0_deg = (zone * 6 - 183);
     this.axlon0 = axlon0_deg * RADIANS_PER_DEGREE;
 
@@ -214,7 +181,6 @@ class Gdc_To_Utm_Converter {
     poly4b = polx4b * -32.0 + polx5b * 192.0;
 
     poly5b = polx5b * -128.0;
-
   }
 
   /**
@@ -225,16 +191,7 @@ class Gdc_To_Utm_Converter {
     return this.axlon0_deg;
   }
 
-  /**
-   * _more_
-   *
-   * @param latitude  _more_
-   * @param longitude _more_
-   * @param result    _more_
-   * @return _more_
-   */
-  public ProjectionPoint latLonToProj(double latitude, double longitude,
-                                      ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(double latitude, double longitude, ProjectionPointImpl result) {
     double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2,
         cee, poly1, poly2;
 
@@ -287,23 +244,12 @@ class Gdc_To_Utm_Converter {
     return result;
   }
 
-  /**
-   * _more_
-   *
-   * @param from     _more_
-   * @param to       _more_
-   * @param latIndex _more_
-   * @param lonIndex _more_
-   * @return _more_
-   */
-  public double[][] latLonToProj(double[][] from, double[][] to,
-                                 int latIndex, int lonIndex) {
-    double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2,
-        cee, poly1, poly2;
+
+  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
+    double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2, cee, poly1, poly2;
 
     for (int i = 0; i < from[0].length; i++) {
-      double longitude = LatLonPointImpl.lonNormal(from[lonIndex][i],
-          axlon0_deg);  // normalize to the central meridian
+      double longitude = LatLonPointImpl.lonNormal(from[lonIndex][i], axlon0_deg);  // normalize to the central meridian
       source_lat = from[latIndex][i] * RADIANS_PER_DEGREE;
       source_lon = longitude * RADIANS_PER_DEGREE;
 
@@ -354,23 +300,11 @@ class Gdc_To_Utm_Converter {
     return to;
   }
 
-  /**
-   * _more_
-   *
-   * @param from     _more_
-   * @param to       _more_
-   * @param latIndex _more_
-   * @param lonIndex _more_
-   * @return _more_
-   */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
-                                int lonIndex) {
-    double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2,
-        cee, poly1, poly2;
+  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
+    double source_lat, source_lon, s1, c1, tx, s12, rn, al, al2, sm, tn2, cee, poly1, poly2;
 
     for (int i = 0; i < from[0].length; i++) {
-      double longitude = LatLonPointImpl.lonNormal(from[lonIndex][i],
-          axlon0_deg);  // normalize to the central meridian
+      double longitude = LatLonPointImpl.lonNormal(from[lonIndex][i], axlon0_deg);  // normalize to the central meridian
       source_lat = from[latIndex][i] * RADIANS_PER_DEGREE;
       source_lon = longitude * RADIANS_PER_DEGREE;
 

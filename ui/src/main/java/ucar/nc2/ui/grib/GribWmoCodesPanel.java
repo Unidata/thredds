@@ -114,7 +114,7 @@ public class GribWmoCodesPanel extends JPanel {
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
 
-    setTable(WmoCodeTable.Version.GRIB2_13_0_1);
+    setTable(WmoCodeTable.standard);
   }
 
   private WmoCodeTable.Version currTable = null;

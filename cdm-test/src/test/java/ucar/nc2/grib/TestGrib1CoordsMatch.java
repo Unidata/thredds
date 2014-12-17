@@ -107,7 +107,7 @@ public class TestGrib1CoordsMatch {
     RandomAccessFile.setDebugLeaks(false);
   }
 
-  @Test
+  //@Test
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
     String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx3";
@@ -132,7 +132,7 @@ public class TestGrib1CoordsMatch {
 
   }
 
-  @Test
+  //@Test
   public void testGC() throws IOException {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_1200.grib1.ncx3");
 
@@ -142,7 +142,7 @@ public class TestGrib1CoordsMatch {
     assert count.nerrs == 0;
   }
 
-  @Test
+  //@Test
   public void testPofG() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
 
@@ -153,7 +153,7 @@ public class TestGrib1CoordsMatch {
   }
 
 
-  @Test
+  //@Test
   public void testPofP() throws IOException {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46-gfs_conus80.ncx3");
 

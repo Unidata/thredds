@@ -51,43 +51,37 @@ import java.util.*;
 
 public class WmoCodeTable implements Comparable<WmoCodeTable> {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
-  static public final Version standard = Version.GRIB2_13_0_1;
+  static public final Version standard = Version.GRIB2_14_0_0;
 
   public enum Version {
-    // GRIB2_10_0_1, GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0;
-    GRIB2_13_0_1;
+    // GRIB2_10_0_1, GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0, GRIB2_13_0_1;
+    GRIB2_14_0_0;
 
     String getResourceName() {
       return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
     }
 
     String[] getElemNames() {
-      /* if (this == GRIB2_5_2_0) {
-        return new String[]{"ForExport_CodeFlag_E", "TableTitle_E", "TableSubTitle_E", "Meaning_E", "AsciiUnit_x002F_Description_E"};
 
-      } else if (this == GRIB2_6_0_1) {
-        return new String[]{"Exp_codeflag_E", "Title_E", "SubTitle_E", "MeaningParameterDescription_E", "AsciiUnitComments_E"};
-
-      } else if (this == GRIB2_7_0_0) {
-        return new String[]{"Exp_CodeFlag_E", "Title_E", "SubTitle_E", "MeaningParameterDescription_E", "UnitComments_E"};
-
-      } else if (this == GRIB2_8_0_0) {
-        return new String[]{"GRIB2_8_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
-
-      } else if (this == GRIB2_10_0_1) {
-        return new String[]{"GRIB2_10_0_1_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
-
-      }  else */
-
-      if (this == GRIB2_13_0_1) {
-        return new String[]{"GRIB2_13_0_1_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
-      }
+      if (this == GRIB2_14_0_0)
+        return new String[]{"GRIB2_14_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
 
       return null;
     }
   }
 
   /*
+
+  <GRIB2_14_0_0_CodeFlag_en>
+    <No>861</No>
+    <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
+    <SubTitle_en>Product discipline 2 - Land surface products, parameter category 3: soil products</SubTitle_en>
+    <CodeFlag>1</CodeFlag>
+    <MeaningParameterDescription_en>Upper layer soil temperature</MeaningParameterDescription_en>
+    <Note_en>*</Note_en>
+    <UnitComments_en>K</UnitComments_en>
+    <Status>Deprecated</Status>
+  </GRIB2_14_0_0_CodeFlag_en>
 
   <GRIB2_10_0_1_CodeFlag_en>
     <No>412</No>

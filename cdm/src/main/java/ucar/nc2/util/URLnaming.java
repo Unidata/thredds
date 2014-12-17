@@ -35,9 +35,12 @@ package ucar.nc2.util;
 
 import ucar.unidata.util.StringUtil2;
 
-import java.io.UnsupportedEncodingException;
-import java.net.*;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * Networking utilities.
@@ -193,7 +196,12 @@ public class URLnaming {
       baseUri = StringUtil2.substitute(baseUri, "\\", "/"); // assumes forward slash
       int pos = baseUri.lastIndexOf('/');
       if (pos > 0) {
-        return baseUri.substring(0, pos + 1) + relativeUri;
+        String baseDir = baseUri.substring(0, pos + 1);
+        if (relativeUri.equals(".")) {
+          return baseDir;
+        } else {
+          return baseDir + relativeUri;
+        }
       }
     }
 
@@ -201,13 +209,13 @@ public class URLnaming {
 
     //relativeUri = canonicalizeRead(relativeUri);
     try {
-      URI reletiveURI = URI.create(relativeUri);
-      if (reletiveURI.isAbsolute())
+      URI relativeURI = URI.create(relativeUri);
+      if (relativeURI.isAbsolute())
         return relativeUri;
 
       //otherwise let the URI class resolve it
       URI baseURI = URI.create(baseUri);
-      URI resolvedURI = baseURI.resolve(reletiveURI);
+      URI resolvedURI = baseURI.resolve(relativeURI);
       return resolvedURI.toASCIIString();
 
     } catch (IllegalArgumentException e) {

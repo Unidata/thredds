@@ -39,7 +39,7 @@
 
 
 
-package opendap.util.geturl.gui;
+package opendap.tools;
 
 import opendap.tools.GeturlFrame;
 

@@ -34,6 +34,8 @@
 package ucar.unidata.geoloc;
 
 import net.jcip.annotations.Immutable;
+
+import java.io.Serializable;
 import java.util.Formatter;
 
 /**
@@ -42,7 +44,7 @@ import java.util.Formatter;
  * @author Russ Rew
  */
 @Immutable
-public class Earth {
+public class Earth implements Serializable {
   private static final double earthRadius = 6371229.;  // canonical radius of the spherical earth in meters
 
   /**

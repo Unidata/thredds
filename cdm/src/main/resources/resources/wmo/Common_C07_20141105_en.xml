@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Common_C07_20141105_en.xsd" generated="2014-11-05T17:28:30">
+<Common_C07_20141105_en>
+<No>1</No>
+<CodeFigureForsasa>00</CodeFigureForsasa>
+<CodeFigureForBUFR>0</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>No wind finding</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>2</No>
+<CodeFigureForsasa>01</CodeFigureForsasa>
+<CodeFigureForBUFR>1</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Automatic with auxiliary optical direction finding</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>3</No>
+<CodeFigureForsasa>02</CodeFigureForsasa>
+<CodeFigureForBUFR>2</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Automatic with auxiliary radio direction finding</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>4</No>
+<CodeFigureForsasa>03</CodeFigureForsasa>
+<CodeFigureForBUFR>3</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Automatic with auxiliary ranging</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>5</No>
+<CodeFigureForsasa>04</CodeFigureForsasa>
+<CodeFigureForBUFR>4</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Not used</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>6</No>
+<CodeFigureForsasa>05</CodeFigureForsasa>
+<CodeFigureForBUFR>5</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Automatic with multiple VLF-Omega signals</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>7</No>
+<CodeFigureForsasa>06</CodeFigureForsasa>
+<CodeFigureForBUFR>6</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Automatic cross chain Loran-C</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>8</No>
+<CodeFigureForsasa>07</CodeFigureForsasa>
+<CodeFigureForBUFR>7</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Automatic with auxiliary wind profiler</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>9</No>
+<CodeFigureForsasa>08</CodeFigureForsasa>
+<CodeFigureForBUFR>8</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Automatic satellite navigation</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>10</No>
+<CodeFigureForsasa>09-18</CodeFigureForsasa>
+<CodeFigureForBUFR>9-18</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Reserved</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>11</No>
+<CodeFigureForsasa>19</CodeFigureForsasa>
+<CodeFigureForBUFR>19</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Tracking technique not specified</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>12</No>
+<TrackingTechniquesStatusOfSystemUsed_en>TRACKING TECHNIQUES/STATUS OF ASAP SYSTEM</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>13</No>
+<TrackingTechniquesStatusOfSystemUsed_en>STATUS OF SHIP SYSTEM</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>14</No>
+<CodeFigureForsasa>20</CodeFigureForsasa>
+<CodeFigureForBUFR>20</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Vessel stopped</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>15</No>
+<CodeFigureForsasa>21</CodeFigureForsasa>
+<CodeFigureForBUFR>21</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Vessel diverted from original destination</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>16</No>
+<CodeFigureForsasa>22</CodeFigureForsasa>
+<CodeFigureForBUFR>22</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Vessel&apos;s arrival delayed</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>17</No>
+<CodeFigureForsasa>23</CodeFigureForsasa>
+<CodeFigureForBUFR>23</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Container damaged</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>18</No>
+<CodeFigureForsasa>24</CodeFigureForsasa>
+<CodeFigureForBUFR>24</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Power failure to container</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>19</No>
+<CodeFigureForsasa>25-28</CodeFigureForsasa>
+<CodeFigureForBUFR>25-28</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Reserved for future use</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>20</No>
+<CodeFigureForsasa>29</CodeFigureForsasa>
+<CodeFigureForBUFR>29</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Other problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>21</No>
+<TrackingTechniquesStatusOfSystemUsed_en>SOUNDING SYSTEM</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>22</No>
+<CodeFigureForsasa>30</CodeFigureForsasa>
+<CodeFigureForBUFR>30</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Major power problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>23</No>
+<CodeFigureForsasa>31</CodeFigureForsasa>
+<CodeFigureForBUFR>31</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>UPS inoperative</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>24</No>
+<CodeFigureForsasa>32</CodeFigureForsasa>
+<CodeFigureForBUFR>32</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Receiver hardware problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>25</No>
+<CodeFigureForsasa>33</CodeFigureForsasa>
+<CodeFigureForBUFR>33</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Receiver software problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>26</No>
+<CodeFigureForsasa>34</CodeFigureForsasa>
+<CodeFigureForBUFR>34</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Processor hardware problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>27</No>
+<CodeFigureForsasa>35</CodeFigureForsasa>
+<CodeFigureForBUFR>35</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Processor software problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>28</No>
+<CodeFigureForsasa>36</CodeFigureForsasa>
+<CodeFigureForBUFR>36</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>NAVAID system damaged</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>29</No>
+<CodeFigureForsasa>37</CodeFigureForsasa>
+<CodeFigureForBUFR>37</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Shortage of lifting gas</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>30</No>
+<CodeFigureForsasa>38</CodeFigureForsasa>
+<CodeFigureForBUFR>38</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Reserved</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>31</No>
+<CodeFigureForsasa>39</CodeFigureForsasa>
+<CodeFigureForBUFR>39</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Other problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>32</No>
+<TrackingTechniquesStatusOfSystemUsed_en>LAUNCH FACILITIES</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>33</No>
+<CodeFigureForsasa>40</CodeFigureForsasa>
+<CodeFigureForBUFR>40</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Mechanical defect</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>34</No>
+<CodeFigureForsasa>41</CodeFigureForsasa>
+<CodeFigureForBUFR>41</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Material defect (hand launcher)</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>35</No>
+<CodeFigureForsasa>42</CodeFigureForsasa>
+<CodeFigureForBUFR>42</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Power failure</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>36</No>
+<CodeFigureForsasa>43</CodeFigureForsasa>
+<CodeFigureForBUFR>43</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Control failure</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>37</No>
+<CodeFigureForsasa>44</CodeFigureForsasa>
+<CodeFigureForBUFR>44</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Pneumatic/hydraulic failure</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>38</No>
+<CodeFigureForsasa>45</CodeFigureForsasa>
+<CodeFigureForBUFR>45</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Other problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>39</No>
+<CodeFigureForsasa>46</CodeFigureForsasa>
+<CodeFigureForBUFR>46</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Compressor problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>40</No>
+<CodeFigureForsasa>47</CodeFigureForsasa>
+<CodeFigureForBUFR>47</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Balloon problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>41</No>
+<CodeFigureForsasa>48</CodeFigureForsasa>
+<CodeFigureForBUFR>48</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Balloon release problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>42</No>
+<CodeFigureForsasa>49</CodeFigureForsasa>
+<CodeFigureForBUFR>49</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Launcher damaged</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>43</No>
+<TrackingTechniquesStatusOfSystemUsed_en>DATA ACQUISITION SYSTEM</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>44</No>
+<CodeFigureForsasa>50</CodeFigureForsasa>
+<CodeFigureForBUFR>50</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>R/S receiver antenna defect</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>45</No>
+<CodeFigureForsasa>51</CodeFigureForsasa>
+<CodeFigureForBUFR>51</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>NAVAID antenna defect</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>46</No>
+<CodeFigureForsasa>52</CodeFigureForsasa>
+<CodeFigureForBUFR>52</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>R/S receiver cabling (antenna) defect</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>47</No>
+<CodeFigureForsasa>53</CodeFigureForsasa>
+<CodeFigureForBUFR>53</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>NAVAID antenna cabling defect</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>48</No>
+<CodeFigureForsasa>54-58</CodeFigureForsasa>
+<CodeFigureForBUFR>54-58</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Reserved</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>49</No>
+<CodeFigureForsasa>59</CodeFigureForsasa>
+<CodeFigureForBUFR>59</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Other problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>50</No>
+<TrackingTechniquesStatusOfSystemUsed_en>COMMUNICATIONS</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>51</No>
+<CodeFigureForsasa>60</CodeFigureForsasa>
+<CodeFigureForBUFR>60</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>ASAP communications defect</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>52</No>
+<CodeFigureForsasa>61</CodeFigureForsasa>
+<CodeFigureForBUFR>61</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Communications facility rejected data</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>53</No>
+<CodeFigureForsasa>62</CodeFigureForsasa>
+<CodeFigureForBUFR>62</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>No power at transmitting antenna</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>54</No>
+<CodeFigureForsasa>63</CodeFigureForsasa>
+<CodeFigureForBUFR>63</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Antenna cable broken</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>55</No>
+<CodeFigureForsasa>64</CodeFigureForsasa>
+<CodeFigureForBUFR>64</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Antenna cable defect</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>56</No>
+<CodeFigureForsasa>65</CodeFigureForsasa>
+<CodeFigureForBUFR>65</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Message transmitted power below normal</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>57</No>
+<CodeFigureForsasa>66-68</CodeFigureForsasa>
+<CodeFigureForBUFR>66-68</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Reserved</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>58</No>
+<CodeFigureForsasa>69</CodeFigureForsasa>
+<CodeFigureForBUFR>69</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Other problems</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>59</No>
+<CodeFigureForsasa>70</CodeFigureForsasa>
+<CodeFigureForBUFR>70</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>All systems in normal operation</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>60</No>
+<CodeFigureForsasa>71-98</CodeFigureForsasa>
+<CodeFigureForBUFR>71-98</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Reserved</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>63</No>
+<CodeFigureForsasa>99</CodeFigureForsasa>
+<CodeFigureForBUFR>99</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Status of system and its components not specified</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>64</No>
+<CodeFigureForsasa>Not available</CodeFigureForsasa>
+<CodeFigureForBUFR>100-126</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Reserved</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+<Common_C07_20141105_en>
+<No>65</No>
+<CodeFigureForsasa>Not available</CodeFigureForsasa>
+<CodeFigureForBUFR>127</CodeFigureForBUFR>
+<TrackingTechniquesStatusOfSystemUsed_en>Missing value</TrackingTechniquesStatusOfSystemUsed_en>
+<Status>Operational</Status>
+</Common_C07_20141105_en>
+</dataroot>

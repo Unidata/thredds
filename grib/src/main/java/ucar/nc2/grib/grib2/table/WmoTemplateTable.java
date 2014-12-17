@@ -51,37 +51,20 @@ import java.util.*;
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
 
-  public static final Version standard = Version.GRIB2_13_0_1;
+  public static final Version standard = Version.GRIB2_14_0_0;
 
   public enum Version {
-    // GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0, GRIB2_10_0_1, ;
-    GRIB2_13_0_1;
+    // GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0, GRIB2_10_0_1, GRIB2_13_0_1;
+    GRIB2_14_0_0;
 
     String getResourceName() {
       return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
     }
 
     String[] getElemNames() {
-      /* if (this == GRIB2_5_2_0) {
-        return new String[]{"ForExport_Templates_E", "TemplateName_E", "Nindicator_E", "Contents_E"};
 
-      } else if (this == GRIB2_6_0_1) {
-        return new String[]{"Exp_template_E", "Title_E", "Note_E", "Contents_E"};
-
-      } else if (this == GRIB2_7_0_0) {
-        return new String[]{"Exp_Temp_E", "Title_E", "Note_E", "Contents_E"};
-
-      } else if (this == GRIB2_8_0_0) {
-        return new String[]{"GRIB2_8_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
-
-      } else if (this == GRIB2_10_0_1) {
-        return new String[]{"GRIB2_10_0_1_Template_en", "Title_en", "Note_en", "Contents_en"};
-
-      } else */
-
-      if (this == GRIB2_13_0_1) {
-        return new String[]{"GRIB2_13_0_1_Template_en", "Title_en", "Note_en", "Contents_en"};
-      }
+      if (this == GRIB2_14_0_0)
+        return new String[]{"GRIB2_14_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
 
       return null;
     }
@@ -395,7 +378,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   public static void main(String arg[]) throws IOException {
-    List<WmoTemplateTable> tlist = readXml(Version.GRIB2_13_0_1).list;
+    List<WmoTemplateTable> tlist = readXml(standard).list;
 
     for (WmoTemplateTable t : tlist) {
       System.out.printf("%n(%s) %s %n", t.name, t.desc);

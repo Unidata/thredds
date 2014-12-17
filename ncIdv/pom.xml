@@ -74,7 +74,6 @@
                   <exclude>com.jgoodies:forms</exclude>
                   <exclude>commons-logging:commons-logging</exclude>
                   <exclude>jfree:*</exclude>
-                  <exclude>lucene:lucene</exclude>
                   <exclude>org.springframework:*</exclude>
                   <exclude>org.bounce:*</exclude>
                   <exclude>c3p0:c3p0</exclude>

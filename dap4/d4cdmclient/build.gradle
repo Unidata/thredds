@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':dap4:d4core')
+    compile project(':dap4:d4shared')
+    compile project(':dap4:d4cdmshared')
+    compile project(':cdm')
+}

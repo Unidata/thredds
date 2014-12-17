@@ -136,4 +136,8 @@ public class MFileOS7 implements MFile {
   public String toString() {
     return getPath();
   }
+
+  public Path getNioPath() {
+    return path;
+  }
 }

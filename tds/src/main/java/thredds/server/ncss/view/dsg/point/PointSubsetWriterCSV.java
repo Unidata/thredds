@@ -37,8 +37,8 @@ public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
 
         if (!isStream) {
             httpHeaders.set("Content-Location", datasetPath);
-            httpHeaders.set("Content-Disposition",
-                    "attachment; filename=\"" + NcssRequestUtils.nameFromPathInfo(datasetPath) + ".csv\"");
+            String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, ".csv");
+            httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             httpHeaders.add(ContentType.HEADER, ContentType.csv.getContentHeader());
         } else {
             // The problem is that the browser won't display text/csv inline.

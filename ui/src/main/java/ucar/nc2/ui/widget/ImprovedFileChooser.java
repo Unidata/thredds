@@ -43,6 +43,12 @@ import java.util.List;
 public class ImprovedFileChooser extends JFileChooser {
     private static final Logger logger = LoggerFactory.getLogger(ImprovedFileChooser.class);
 
+    static {
+        // Disable editable "Name" column in JFileChooser details table.
+        // This setting is honored by sun.swing.FilePane.DetailsTableModel.
+        UIManager.put("FileChooser.readOnly", Boolean.TRUE);
+    }
+
     // This is a reference to the JDialog created by JFileChooser.createDialog().
     // JFileChooser also has this data member, but it's private. We need our own.
     private JDialog dialog = null;

@@ -61,8 +61,8 @@ that can be used inside of a <strong>dataset</strong> element can be used inside
 4)            dateFormatMark=&quot;#NAM_Alaska_11km_#yyyyMMdd_HHmm&quot;
 5)            timePartition=&quot;file&quot;
 6)            olderThan=&quot;5 min&quot;/&gt;  
-7)&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;
-8)&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+7)&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt;
+8)&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; /&gt;
 9)&lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;
 &lt;/featureCollection&gt;
 </pre>
@@ -73,7 +73,7 @@ that can be used inside of a <strong>dataset</strong> element can be used inside
   <li>A date will be extracted from the  filename, and the files will then be sorted by date. Important if the lexigraphic ordering is different that the date order.</li>
   <li>Partitioning will happen at the file level.</li>
   <li>Only include files whose lastModified date is more than 5 minutes old. This is to exclude files that are actively being created.</li>
-  <li>Instruct the  TDS to read, but never write indexes. </li>
+  <li>Instruct the  TDS to use the collection index if it already exists, without testing if its up-to-date, and also to allow external triggers. These are the defaults.</li>
   <li>Instruct the TDM to examine all the files to detect if they have changed since the index was written. Rescan every 15 minutes.</li>
   <li>(GRIB specific) Show the <em>TwoD</em> and <em>Best</em> datasets, as well as a link to the <em>latest</em> partition.</li>
 </ol>
@@ -97,7 +97,7 @@ Here is an example
    &lt;/metadata&gt;
  
 3) &lt;collection spec=&quot;/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$&quot; /&gt;
-4) &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+4) &lt;update startup=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot;/&gt;
 5) &lt;protoDataset choice=&quot;Penultimate&quot; /&gt;
 6) &lt;pointConfig datasetTypes=&quot;cdmrFeature Files&quot;/&gt;
 7) &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br/>     &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;<br/>   &lt;/netcdf&gt;
@@ -111,7 +111,7 @@ Here is an example
   </li>
   <li>As is usual with dataset elements, a block of metadata can be declared that will be inherited by all the datasets.</li>
   <li>The collection of files is defined. Each dataset is assigned a nominal time by extracting a date from the filename.</li>
-  <li>Specify that the collection is updated in a backround thread, every 15 minutes.</li>
+  <li>Specify that the collection is updated, when the TDS starts and in a background thread, every 15 minutes.</li>
   <li>The prototype dataset is the next-to-last in the collection when sorted by time.</li>
   <li>Configuration specific to the Point feature type: expose a <em>cdmrRemote</em> service on the entire collection, and also serve all the component files
     using the default service, in this example the compound service <em>fullServices</em>.
@@ -152,12 +152,12 @@ The XML Schema for the <em>collection</em> element:
     characters of the filename to create a date. A DateExtractor can also be defined in the <a href="CollectionSpecification.html">collection specification</a>
     string, but in that case the date must be contained just in the file name, as opposed to the complete file path which includes all of the parent directory
     names. <em>Use this OR a date extractor in the specification string, but not both.</em></li>
-  <li><strong>timePartition</strong> (optional): [ <em>directory</em> | <em>file</em> | &lt;time interval&gt;] : This defines the time intervals from which the collection is partitioned. This is used for very large datasets, and it has far reaching effects on how your data is processed and presented.
-  The values may be the string <em>directory</em> or <em>file</em> or a time period like <em>day</em>, <em>month</em>, <em>year</em>.
-  <ol>
-    <li><strong>Time period:</strong> all files are scanned in, then divided into partitions based on the time period.</li>
-    <li><strong>Directory: </strong>the files must be divided into subdirectories of the root. All the files that pass the filter are scanned in and made into a time partition. This is much faster when there are many files (&gt; 1M).</li>
-    <li><strong>File: </strong>use this when each file contains only one runtime in it.</li>
+  <li><strong>timePartition</strong> (optional): [ <em>directory</em> | <em>file</em> | <em>none</em>] : This defines the time intervals from which the collection is partitioned. This is used for very large datasets, and it has far reaching effects on how your data is processed and presented.
+  The values may be:
+    <ol>
+    <li><strong>none:</strong> all files are scanned in, then divided into partitions based on the time period (if needed) and a collection level index is built.</li>
+    <li><strong>directory:</strong> each directory is a partition<strong>. default</strong></li>
+    <li><strong>file: </strong>each file is a partition.</li>
   </ol>
   </li>
 </ol>
@@ -247,16 +247,16 @@ The XML Schema definition for the <em>protoDataset</em> element:
   indexes are never updated by the TDS. (To force updated indices, delete the collection index, usually<strong> &lt;collection root directory&gt; / &lt;dataset
     name&gt;.ncx</strong>.). Examples:</p>
 <pre>
-&lt;update startup=&quot;test&quot; rescan=&quot;0 0/30 * * * ? *&quot; /&gt;
+&lt;update startup=&quot;test&quot; rescan=&quot;0 0/30 * * * ? *&quot; trigger=&quot;false&quot;/&gt;
 
 &lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;
 
 &lt;update startup=&quot;never&quot; trigger=&quot;allow&quot; /&gt;
 </pre>
 <ol>
-  <li>The first example says to test if the dataset has been updated when the TDS starts up, then test in a background process every 30 minutes. (Can not use for GRIB collections, see <em>tdm</em> element below)</li>
+  <li>The first example says to test if the dataset has been updated when the TDS starts up, then test in a background process every 30 minutes. (Cannot use for GRIB collections, see <em>tdm</em> element below). Do not allow external triggers.</li>
   <li>The second example says to test if the dataset has been updated only when a request comes in for it, and the dataset hasn't been checked for 15 minutes.</li>
-  <li>The third example tells the TDS to never update the collection indices, but to allow an external program (such as the TDM) to send a trigger telling the TDS that it should reread the collection into memory. This is the default behaviour (as of 4.5.4) if you do not specify an <em>update</em> element. This is useful for large collections of data where even testing if a dataset has changed can be costly.</li>
+  <li>The third example tells the TDS to never update the collection indices, but to allow an external program (such as the TDM) to send a trigger telling the TDS that it should reread the collection into memory. This is useful for large collections of data where even testing if a dataset has changed can be costly.</li>
 </ol>
 <p>The XML Schema definition for the <em>update</em> element:
 </p>
@@ -266,23 +266,32 @@ The XML Schema definition for the <em>protoDataset</em> element:
 
 <p> where: </p>
 <ol>
-  <li><strong>startup</strong>: [<em>never</em> | <em>test</em> | <em>always</em>] The collection is rescanned on server startup. If &quot;<em>never</em>&quot;, the collection index is always used and must exist. If &quot;<em>always</em>&quot;, the collection is rescanned and the indices rebuilt when the TDS starts. If
-    &quot;<em>true</em>&quot; or &quot;<em>test</em>&quot;, the collection is scanned and a new index is built if needed when the TDS starts.
+  <li><strong>startup</strong>: [<em>never</em> | <em>nocheck</em> | <em>testIndexOnly</em> | <em>test</em> | <em>always</em>] The collection is always read in on server startup. This attribute controls whether the collection index is tested and rebuilt.
+    <ul>
+      <li>If &quot;<em>never</em>&quot;, the collection index is always used and must exist. Use this for very large collections that you dont want to inadvertently scan.</li>
+      <li>If &quot;<em>nocheck</em>&quot;, the collection index is  used if it exists, without checking whether its up-to-date. <strong>This is the default.</strong></li>
+      <li>If
+      &quot;<em>testIndexOnly</em>&quot;, the collection index is  used if it exists and it is newer than all of its immediate children. (<strong>experimental</strong>)</li>
+      <li>If
+      &quot;<em>test</em>&quot; or &quot;<em>true</em>&quot;, the collection is scanned and the new collection of children is compared to the old collection. If there are any changes the index is rebuilt.</li>
+      <li>If &quot;<em>always</em>&quot;, the collection is always rescanned and the indices are rebuilt. </li>
+    </ul>
   </li>
+
   <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will
     wait until the scan is finished and a new collection is built (if needed), and so is called <em>synchronous updating</em>. <em><strong>This option will be
-      ignored if you are using the rescan attribute or if you have a tdm element.</strong></em></li>
+  ignored if you are using the rescan attribute or if you have a tdm element.</strong></em></li>
   <li><strong>rescan</strong>: uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the
     collection should be rescanned in a background task. This is called <em>asynchronous updating</em>.
   </li>
   <li><strong>trigger</strong>: if set to &quot;allow&quot; (default), then external triggering will be allowed. This allows
     collections to be updated by an external program (or person using a browser) sending an explicit &quot;trigger&quot; URL to the server.
-  This URL is protected by HTTPS, so you must <a href="#trigger">enable triggers</a><a href="../RemoteManagement.html"></a> for this to work.  </li>
+  This URL is protected by HTTPS, so you must <a href="#trigger">enable triggers</a><a href="../RemoteManagement.html"></a> for this to work. Set this to &quot;false&quot; to disable triggering.</li>
 </ol>
 <p>For GRIB collections, dynamic updating of the collection by the TDS is no longer supported (use the TDM for this). Therefore <em>recheckAfter</em> and <em>rescan</em> are ignored on an <em>update</em> element for a GRIB collection.</p>
 <h3>tdm element (GRIB only)</h3>
 <p>You must use the <strong>tdm</strong> element for GRIB collections that change. The <a href="TDM.html">TDM</a> is a seperate process that uses the same configuration catalogs as the TDS, and updates  GRIB collections in the background. Example:</p>
-<pre>&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 4,19,34,49 * * * ? *&quot; trigger=&quot;allow&quot; /&gt;
+<pre>&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 4,19,34,49 * * * ? *&quot;  /&gt;
 </pre>
 <ul>
   <li>This example tells the TDM (not the TDS) to test if the dataset has changed 4 times every hour, specifically, at 4,19,34, and 49 minutes past the hour. If the collection has changed, new indices will be recreated, and a trigger will be sent to the TDS. </li>
@@ -385,13 +394,13 @@ The XML Schema definition for the <em>protoDataset</em> element:
 <h3><strong>Very Large  GRIB Collection </strong>that doesnt change</h3>
 <p>You have a very large collection, which takes a long time to scan. You must carefully control when/if it will be scanned. </p>
 <blockquote>
-  <pre>&lt;update startup=&quot;never&quot;/&gt;<br />&lt;tdm rewrite=&quot;always&quot;/&gt;  </pre>
+  <pre>&lt;update startup=&quot;never&quot;/&gt;<br />&lt;tdm rewrite=&quot;test&quot;/&gt;  </pre>
 </blockquote>
 <p>The TDS never scans the collection, it always uses existing indices, which must already exist. Run the TDM first, then after the indices are made, you can stop the TDM and start the TDS.</p>
 <h3><strong>Very Large  GRIB Collection that changes</strong></h3>
 <p>You have a very large collection which changes, and takes a long time to scan. You must carefully control when/if it will be scanned. </p>
 <blockquote>
-  <pre>&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;<br />&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0 3 * * ? *&quot; trigger=&quot;allow&quot;/&gt;</pre>
+  <pre>&lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;<br />&lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0 3 * * ? *&quot; /&gt;</pre>
 </blockquote>
 <p>The dataset will be read in at startup time by using the existing indexes which must exist. The  <a href="TDM.html">TDM</a> will test if its changed once a day at 3 am, and  send a trigger to the TDS if needed.</p>
 <hr/>

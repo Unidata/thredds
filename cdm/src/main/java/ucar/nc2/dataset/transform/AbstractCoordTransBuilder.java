@@ -90,11 +90,10 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
 
-        // check for ellipsoidal earth
+    earth_radius = getEarthRadiusInKm(ctv);
+    // check for ellipsoidal earth
     if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
       earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
-    } else {
-      earth_radius = getEarthRadiusInKm(ctv);
     }
   }
 

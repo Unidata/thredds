@@ -173,10 +173,10 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
     return name.hashCode();
   }
 
-  private static class StationFeatureSubset extends StationTimeSeriesFeatureImpl {
-    StationTimeSeriesFeatureImpl from;
+  public static class StationFeatureSubset extends StationTimeSeriesFeatureImpl {
+    private final StationTimeSeriesFeatureImpl from;
 
-    StationFeatureSubset(StationTimeSeriesFeatureImpl from, CalendarDateRange filter_date) {
+    public StationFeatureSubset(StationTimeSeriesFeatureImpl from, CalendarDateRange filter_date) {
       super(from.s, from.getTimeUnit(), from.getAltUnits(), -1);
       this.from = from;
 

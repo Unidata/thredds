@@ -56,10 +56,11 @@
       <artifactId>jcip-annotations</artifactId>
     </dependency>
 
+    <!-- Command line argument parsing in BufrSplitter -->
     <dependency>
-       <groupId>com.lexicalscope.jewelcli</groupId>
-       <artifactId>jewelcli</artifactId>
-     </dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>edu.ucar</groupId>

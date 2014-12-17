@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
@@ -85,7 +86,6 @@ import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCache;
-import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -6333,22 +6333,6 @@ public class ToolsUI extends JPanel {
   static boolean isCacheInit = false;
 
   public static void main(String args[]) {
-    try {
-      // Switch to Nimbus Look and Feel, if it's available.
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-            UnsupportedLookAndFeelException e) {
-      log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
-    }
-
-    // get a splash screen up right away
-    // final SplashScreen splash = new SplashScreen();
-
     if (debugListen) {
       System.out.println("Arguments:");
       for (String arg : args) {
@@ -6448,7 +6432,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-        // prefs storage
+    // prefs storage
     try {
       // 4.4
       String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
@@ -6511,6 +6495,7 @@ public class ToolsUI extends JPanel {
     */
 
     SwingUtilities.invokeLater(new Runnable() {
+       @Override
        public void run() {
          createGui();
        }
@@ -6527,7 +6512,8 @@ public class ToolsUI extends JPanel {
           break;
         }
       }
-    } catch (Exception e) {  // TODO: In Java 7, replace this with multi-catch of specific exceptions.
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+            UnsupportedLookAndFeelException e) {
       log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
     }
 

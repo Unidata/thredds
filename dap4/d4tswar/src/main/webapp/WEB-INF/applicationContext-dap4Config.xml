@@ -21,4 +21,4 @@
 
  <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
 
-</Beans>
+</beans>

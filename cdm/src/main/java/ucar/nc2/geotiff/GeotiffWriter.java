@@ -169,7 +169,6 @@ public class GeotiffWriter {
     int elemSize = greyScale ? 1 : 4;
     int height = data.getShape()[0];         // Y
     int width = data.getShape()[1];         // X
-    int size = elemSize * height * width;  // size in bytes
     geotiff.addTag(new IFDEntry(Tag.ImageWidth, FieldType.SHORT).setValue(width));
     geotiff.addTag(new IFDEntry(Tag.ImageLength, FieldType.SHORT).setValue(height));
 
@@ -183,6 +182,7 @@ public class GeotiffWriter {
     geotiff.addTag(new IFDEntry(Tag.RowsPerStrip, FieldType.SHORT).setValue(1));  //height));
     // the following changes to make it viewable in ARCMAP
         /*
+        int size = elemSize * height * width;  // size in bytes
         geotiff.addTag( new IFDEntry(Tag.StripByteCounts, FieldType.LONG).setValue( size));
         // data starts here, header is written at the end
         if( imageNumber == 1 )

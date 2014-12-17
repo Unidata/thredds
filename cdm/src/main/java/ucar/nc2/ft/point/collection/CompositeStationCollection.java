@@ -40,6 +40,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
@@ -238,9 +239,44 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     }
 
     @Override
+    public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
+      return subset(CalendarDateRange.of(dateRange));  // Handles dateRange == null.
+    }
+
+    @Override
     public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
       if (dateRange == null) return this;
-      return new CompositeStationFeature(s, getTimeUnit(), getAltUnits(), sdata, collForFeature.subset(dateRange));
+
+      // Extract the collection members that intersect dateRange. For example, if we have:
+      //     collForFeature == CollectionManager{
+      //         Dataset{location='foo_20141015.nc', dateRange=2014-10-15T00:00:00Z - 2014-10-16T00:00:00Z}
+      //         Dataset{location='foo_20141016.nc', dateRange=2014-10-16T00:00:00Z - 2014-10-17T00:00:00Z}
+      //         Dataset{location='foo_20141017.nc', dateRange=2014-10-17T00:00:00Z - 2014-10-18T00:00:00Z}
+      //         Dataset{location='foo_20141018.nc', dateRange=2014-10-18T00:00:00Z - 2014-10-19T00:00:00Z}
+      //     }
+      // and we want to subset it with:
+      //     dateRange == 2014-10-16T12:00:00Z - 2014-10-17T12:00:00Z
+      // the result will be:
+      //     collectionSubset == CollectionManager{
+      //         Dataset{location='foo_20141016.nc', dateRange=2014-10-16T00:00:00Z - 2014-10-17T00:00:00Z}
+      //         Dataset{location='foo_20141017.nc', dateRange=2014-10-17T00:00:00Z - 2014-10-18T00:00:00Z}
+      //     }
+      TimedCollection collectionSubset = collForFeature.subset(dateRange);
+
+      // Create a new CompositeStationFeature from the subsetted collection.
+      CompositeStationFeature compStnFeatSubset =
+              new CompositeStationFeature(s, getTimeUnit(), getAltUnits(), sdata, collectionSubset);
+
+      // We're not done yet! While compStnFeatSubset has been limited to only include datasets that intersect dateRange,
+      // it'll often be the case that those datasets contain some times that we don't want. In the example above,
+      // we only want:
+      //     dateRange == 2014-10-16T12:00:00Z - 2014-10-17T12:00:00Z
+      // but the range of compStnFeatSubset is:
+      //     2014-10-16T00:00:00Z - 2014-10-18T00:00:00Z
+      // We don't want the first or last 12 hours! So, wrap in a StationFeatureSubset to do per-feature filtering.
+      // Note that the TimedCollection.subset() call above is still worth doing, as it limits the number of features
+      // we must iterate over.
+      return new StationFeatureSubset(compStnFeatSubset, dateRange);
     }
 
     @Override

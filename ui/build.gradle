@@ -2,8 +2,6 @@ apply plugin: 'shadow'
 
 import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
 import org.codehaus.groovy.runtime.NioGroovyMethods
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -15,21 +13,28 @@ dependencies {
     compile project(':bufr')
     compile project(':grib')
     compile project(':netcdf4')
-    compile(project(':opendap')) { // eliminate servlet
-        transitive = false
+    compile(project(':opendap')) {
+        exclude module: 'javax.servlet-api'
     }
-    compile(project(':visad')) {   // eliminate original visad.jar
-        transitive = false
-    }
+    compile project(':visad')
     compile project(':waterml')
-    compile('com.jgoodies:forms:1.0.7')
+
+    // DAP4 dependencies (technically forward)
+    compile project(':dap4:d4core')
+    compile project(':dap4:d4shared')
+    compile project(':dap4:d4cdmshared')
+    compile project(':dap4:d4cdmclient')
+
+    compile('org.jfree:jcommon:1.0.23')
     compile(group: 'org.jfree', name: 'jfreechart', version: jfreechartVersion) {
         exclude group: 'com.lowagie'
     }
+    compile('com.jgoodies:jgoodies-forms:1.6.0')
+
     compile('org.bounce:bounce:0.14')
     compile('org.imgscalr:imgscalr-lib:4.2')
     compile('org.itadaki:bzip2:0.9.1')
-    compile('net.sf.ehcache:ehcache:1.6.2')
+    compile('net.sf.ehcache:ehcache-core:2.6.2')
     compile('org.apache.commons:commons-lang3:3.1')
 
     compile(group: 'org.springframework', name: 'spring-core', version: springVersion) {
@@ -151,11 +156,11 @@ task releaseWebstart(dependsOn: jar) << {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
-task releaseCdm(dependsOn: releaseWebstart) << {
+task releaseCdm(dependsOn: shadowJar) << {
     if (project.hasProperty("ftpdir")) {
         println "copy " + toolsUIjar + " to " + ftpdir
         copy { // does not give error message
-            from 'build/libs/' + toolsUIjar
+            from 'build/distributions/' + toolsUIjar
             into ftpdir
         }
     } else {
@@ -178,6 +183,11 @@ javadoc {
     source = source.plus(fileTree(dir: '../ui/src/main/java', include: '**/*.java'))
     source = source.plus(fileTree(dir: '../visad/src/main/java', include: '**/*.java'))
     source = source.plus(fileTree(dir: '../waterml/src/main/java', include: '**/*.java'))
+
+    source = source.plus(fileTree(dir: '../dap4/d4core/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../dap4/d4shared/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../dap4/d4cdmshared/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../dap4/d4cdmclient/src/main/java', include: '**/*.java'))
 }
 
 task releaseDocs(dependsOn: javadoc) << {

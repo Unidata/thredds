@@ -5,7 +5,6 @@ import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
-import thredds.server.ncss.view.gridaspoint.NetCDFPointDataWriter;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
@@ -78,7 +77,7 @@ public class PointSubsetWriterNetcdf extends AbstractPointSubsetWriter {
     public HttpHeaders getHttpHeaders(String datasetPath, boolean isStream) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        String fileName = NetCDFPointDataWriter.getFileNameForResponse(version, datasetPath);
+        String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, version);
         String url = NcssRequestUtils.getTdsContext().getContextPath() +
                 NcssController.getServletCachePath() + "/" + fileName;
 

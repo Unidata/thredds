@@ -48,6 +48,7 @@ import ucar.unidata.util.StringUtil2;
  * @author caron
  */
 
+//Coverity[FB.EQ_DOESNT_OVERRIDE_EQUALS]
 public class DODSAttribute extends ucar.nc2.Attribute
 {
 
