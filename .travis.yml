@@ -10,6 +10,9 @@ env:
   global:
     - MAVEN_OPTS="-Djna.library.path=${TRAVIS_BUILD_DIR}/travis -DskipTests=false -DfailIfNoTests=false"
 
+before_install:
+  - cp ${TRAVIS_BUILD_DIR}/travis/settings.xml ${HOME}/.m2
+
 install:
   - mvn install -DskipTests=true
 
