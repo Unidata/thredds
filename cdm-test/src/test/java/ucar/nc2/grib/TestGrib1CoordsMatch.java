@@ -165,7 +165,7 @@ public class TestGrib1CoordsMatch {
 
   @Test
   public void testRdavmDs083p2() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/sampleMonth/ds083.2-union-sampleMonth.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp-PofP.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 34320;

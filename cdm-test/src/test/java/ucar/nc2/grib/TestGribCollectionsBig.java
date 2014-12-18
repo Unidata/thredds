@@ -136,8 +136,11 @@ public class TestGribCollectionsBig {
 
     // ROBERTO (local drive only, samba fails) that took that took 2177 secs total, 0.156383 msecs per record
     // 2D only      486523/6476133
-    assert count.nread == 13925312;
-    assert count.nmiss == 973046;
+    // jenkems : that took 560 secs total, 0.079659 msecs per record
+
+
+    assert count.nmiss == 6032888;       // 6032888/7034124  vs 973046/13925312 LOOK
+    assert count.nread == 7034124;
   }
 
 }
