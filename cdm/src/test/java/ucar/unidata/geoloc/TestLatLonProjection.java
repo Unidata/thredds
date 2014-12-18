@@ -32,6 +32,7 @@
  */
 package ucar.unidata.geoloc;
 
+import org.junit.Assert;
 import ucar.unidata.geoloc.projection.*;
 import junit.framework.*;
 
@@ -68,9 +69,7 @@ public class TestLatLonProjection extends TestCase {
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
       LatLonRect p2 = p.projToLatLonBB(ma2);
 
-      assert llbb.equals( p2) : llbb + " => " + ma2 + " => " + p2;
-
-      System.out.println(llbb + " => " + p2);
+      Assert.assertEquals(llbb + " => " + ma2 + " => " + p2, llbb, p2);
     }
   }
 
@@ -85,9 +84,7 @@ public class TestLatLonProjection extends TestCase {
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
       LatLonRect p2 = p.projToLatLonBB(ma2);
 
-      assert llbb.equals( p2) : llbb + " => " + ma2 + " => " + p2;
-
-      System.out.println(llbb + " => " + p2);
+      Assert.assertEquals(llbb + " => " + ma2 + " => " + p2, llbb, p2);
     }
   }
 
@@ -100,13 +97,12 @@ public class TestLatLonProjection extends TestCase {
   }
 
   public LatLonRect testIntersection(LatLonRect bbox, LatLonRect bbox2) {
-    System.out.println("\n     bbox= "+ bbox.toString2());
-    System.out.println("    bbox2= "+bbox2.toString2());
     LatLonRect result = bbox.intersect(bbox2);
-    System.out.println("intersect= "+(result == null ? "null" : result.toString2()));
-    //System.out.println("intersect= "+bbox2.intersect(bbox).toString2());
     if (result != null)
-      assert bbox.intersect(bbox2).equals(bbox2.intersect(bbox));
+      Assert.assertEquals("bbox= " + bbox.toString2() + "\nbbox2= " +
+              bbox2.toString2() + "\nintersect= " +
+              (result == null ? "null" : result.toString2()),
+              bbox.intersect(bbox2), bbox2.intersect(bbox));
     return result;
   }
 
@@ -132,10 +128,7 @@ public class TestLatLonProjection extends TestCase {
   }
 
   private LatLonRect testExtend(LatLonRect bbox, LatLonRect bbox2) {
-    System.out.println("\n bbox ="+bbox.toString2()+" width="+bbox.getWidth());
-    System.out.println(" bbox extend by="+bbox2.toString2()+" width="+bbox2.getWidth());
     bbox.extend( bbox2);
-    System.out.println(" result="+bbox.toString2()+" width="+bbox.getWidth());
     return bbox;
   }
 
@@ -146,51 +139,50 @@ public class TestLatLonProjection extends TestCase {
     //   --------
     bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, 30.0), new LatLonPointImpl(-60.0, 120.0)),
                         new LatLonRect(new LatLonPointImpl(-81.0, -10.0), new LatLonPointImpl(-60.0, 55.0)));
-    assert bbox.getWidth() == 130.0;
-    assert !bbox.crossDateline();
+    Assert.assertEquals(bbox.toString2(), 130.0, bbox.getWidth(), 0.01);
+    Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
     //   ---------
     //     ----
     bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -200.0), new LatLonPointImpl(-60.0, -100.0)),
                         new LatLonRect(new LatLonPointImpl(-81.0, 177.0), new LatLonPointImpl(-60.0, 200.0)));
-    assert bbox.getWidth() == 100.0;
-    assert bbox.crossDateline();
+    Assert.assertEquals(bbox.toString2(), 100.0, bbox.getWidth(), 0.01);
+    Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     //  ---------
     //     --------------
     bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -200.0), new LatLonPointImpl(-60.0, -100.0)),
                         new LatLonRect(new LatLonPointImpl(-81.0, -150.0), new LatLonPointImpl(-60.0, 200.0)));
-    assert bbox.getWidth() == 360.0;
-    assert !bbox.crossDateline();
+    Assert.assertEquals(bbox.toString2(), 360.0, bbox.getWidth(), 0.01);
+    Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
     //  -------
     //         ---------
     bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 135.0)),
                         new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)));
-    assert bbox.getWidth() == 360.0;
-    assert !bbox.crossDateline();
+    Assert.assertEquals(bbox.toString2(), 360.0, bbox.getWidth(), 0.01);
+    Assert.assertFalse(bbox.toString2(), bbox.crossDateline());
 
     //  ------
     //            ------
     bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)),
                         new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 160.0)));
-    assert bbox.getWidth() == 225.0;
-    assert bbox.crossDateline();
+    Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
+    Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     //  ---------
     //               ------
     bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)),
                         new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)));
-    assert bbox.getWidth() == 225.0;
-    assert bbox.crossDateline();
+    Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
+    Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
 
     //         ---------
     //   ------
     bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)),
         new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)));
-    assert bbox.getWidth() == 225.0;
-    assert bbox.crossDateline();
+    Assert.assertEquals(bbox.toString2(), 225.0, bbox.getWidth(), 0.01);
+    Assert.assertTrue(bbox.toString2(), bbox.crossDateline());
   }
-
 
 }
