@@ -47,7 +47,7 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.util.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.DiskCache2;
@@ -202,7 +202,7 @@ public class Tdm {
     gribCache.setPolicy(gribIndexPolicy);
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);
-    GribIndex.setDiskCache2(gribCache);
+    GribIndexCache.setDiskCache2(gribCache);
 
     return true;
   }

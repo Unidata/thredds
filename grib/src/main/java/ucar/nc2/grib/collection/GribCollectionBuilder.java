@@ -45,8 +45,8 @@ import thredds.inventory.partition.PartitionManagerFromIndexList;
 import ucar.coord.Coordinate;
 import ucar.coord.CoordinateRuntime;
 import ucar.coord.CoordinateTime2D;
-import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
@@ -90,8 +90,8 @@ abstract class GribCollectionBuilder {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribIndex.getFileInCache(dcm.getIndexFilename());
-    if (!collectionIndexFile.exists()) return true;
+    File collectionIndexFile = GribIndexCache.getExistingFileInCache(dcm.getIndexFilename());
+    if (collectionIndexFile == null) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
 

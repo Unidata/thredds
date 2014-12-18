@@ -11,6 +11,7 @@ import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
@@ -187,7 +188,11 @@ public class TestGribIndexCreation {
 
   @Test
   public void testRdvamds083p2_PofP() throws IOException {
-    //GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    DiskCache2 gribCache = DiskCache2.getDefault();
+    //gribCache.setRootDirectory("C:/dev/github/thredds46/tds/content/thredds/cache/grib/");
+    gribCache.setAlwaysUseCache(true);
+    GribIndexCache.setDiskCache2(gribCache);
+
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-pofp", "test/ds083.2-pofp", FeatureCollectionType.GRIB1,
            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/**/.*grib1",
             null, null,  null, "directory", null);

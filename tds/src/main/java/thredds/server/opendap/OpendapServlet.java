@@ -67,11 +67,7 @@ import ucar.nc2.util.EscapeStrings;
  * @since Apr 27, 2009 (branched)
  */
 public class OpendapServlet extends AbstractServlet {
-  static final String DEFAULTCONTEXTPATH = "/thredds";
-  static final String GDATASET = "guarded_dataset";
-
-  static public org.slf4j.Logger log
-             = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
+  static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 
   private boolean allowSessions = false;
   private boolean allowDeflate = false; // handled by Tomcat
@@ -138,7 +134,7 @@ public class OpendapServlet extends AbstractServlet {
     else
       return -1;
 
-    // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox behviour?
+    // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox behaviour?
 
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
     if ((file != null) && file.exists())
@@ -244,7 +240,7 @@ public class OpendapServlet extends AbstractServlet {
 
       // plain ol' 404
     } catch (FileNotFoundException e) {
-      //e.printStackTrace();
+      // e.printStackTrace();
       sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
       // DAP2Exception bad url

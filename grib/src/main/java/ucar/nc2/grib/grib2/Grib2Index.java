@@ -36,6 +36,7 @@ import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -116,7 +117,8 @@ public class Grib2Index extends GribIndex {
   public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) throws IOException {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
-    File idxFile = getFileInCache(idxPath);
+    File idxFile = GribIndexCache.getExistingFileInCache(idxPath);
+    if (idxFile == null) return false;
 
     long idxModified = idxFile.lastModified();
     if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
@@ -217,8 +219,8 @@ public class Grib2Index extends GribIndex {
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
-    File idxFile = getFileInCache(idxPath);
-    File idxFileTmp = getFileInCache(idxFile+ ".tmp");
+    File idxFile = GribIndexCache.getFileInCache(idxPath);
+    File idxFileTmp = GribIndexCache.getFileInCache(idxFile+ ".tmp");
 
     boolean ok = false;
     RandomAccessFile raf = null;

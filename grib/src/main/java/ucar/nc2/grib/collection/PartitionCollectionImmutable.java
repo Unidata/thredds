@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.coord.*;
 import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
@@ -239,7 +239,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       public String getIndexFilenameInCache() throws FileNotFoundException {
         File file = new File(directory, filename);
-        File existingFile = GribIndex.getExistingFileOrCache(file.getPath());
+        File existingFile = GribIndexCache.getExistingFileInCache(file.getPath());
 
         /* if (existingFile == null) {
           existingFile = new File(directory, filename); // try the Collection directory

@@ -43,7 +43,7 @@ import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
@@ -170,7 +170,7 @@ public class GribCdmIndex implements IndexReader {
 
     // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? GribIndex.getFileInCache(indexFilename) : new File(indexFilename);
+    File indexFileInCache = useCache ? GribIndexCache.getExistingFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionImmutable result = null;
@@ -207,10 +207,10 @@ public class GribCdmIndex implements IndexReader {
     return result;
   }
 
-    // used by PartitionCollectionMutable.Partition
+  // used by PartitionCollectionMutable.Partition
   // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionMutable openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? GribIndex.getFileInCache(indexFilename) : new File(indexFilename);
+    File indexFileInCache = useCache ? GribIndexCache.getExistingFileInCache(indexFilename) : new File(indexFilename);
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionMutable result = null;

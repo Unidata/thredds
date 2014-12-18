@@ -37,7 +37,6 @@ import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
-import ucar.nc2.util.DiskCache2;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -47,7 +46,7 @@ import java.io.IOException;
  * Abstract superclass for Grib1Index and Grib2Index.
  * Handles gbx9 index for grib.
  * <p/>
- * Static methods for creating gbx9 and ncx indices for a single file.
+ * Static methods for creating gbx9 indices for a single file.
  *
  * @author John
  * @since 9/5/11
@@ -60,9 +59,9 @@ public abstract class GribIndex {
     public boolean hasChangedSince(MFile file, long when) {
       String idxPath = file.getPath();
       if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
-      File idxFile = getFileInCache(idxPath);
+      File idxFile = GribIndexCache.getExistingFileInCache(idxPath);
+      if (idxFile == null) return true;
 
-      if (!idxFile.exists()) return true;
       long idxLastModified =  idxFile.lastModified();
       if (idxLastModified < file.getLastModified()) return true;
       if (0 < when && when < idxLastModified) return true;
@@ -71,16 +70,15 @@ public abstract class GribIndex {
     public boolean hasntChangedSince(MFile file, long when) {
       String idxPath = file.getPath();
       if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
-      File idxFile = getFileInCache(idxPath);
+      File idxFile = GribIndexCache.getExistingFileInCache(idxPath);
+      if (idxFile == null) return true;
 
-      if (!idxFile.exists()) return true;
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && idxFile.lastModified() < when) return true;
       return false;
     }
   };
   /////////////////////////////////////////////////////////////////////////
-  public static DiskCache2 diskCache;
 
   public static CollectionManager.ChangeChecker getChangeChecker() {
     return gribCC;
@@ -99,7 +97,7 @@ public abstract class GribIndex {
 
   /**
    * Create a gbx9 and ncx index from a single grib1 or grib2 file.
-   * Use the existing index is it already exists.
+   * Use the existing index if it already exists.
    *
    * @param isGrib1 true if grib1
    * @param mfile the grib file
@@ -121,29 +119,7 @@ public abstract class GribIndex {
     return index;
   }
 
-  static synchronized public void setDiskCache2(DiskCache2 dc) {
-    diskCache = dc;
-  }
-
-  static synchronized public DiskCache2 getDiskCache2() {
-    if (diskCache == null)
-      diskCache = DiskCache2.getDefault();
-    return diskCache;
-  }
-
-  /**
-   * Get index file, may be in cache directory, may not exist
-   *
-   * @param path full path of index file
-   * @return File, possibly in cache
-   */
-  static public File getFileInCache(String path) {
-    return getDiskCache2().getFile(path);     // diskCache manages where the index file lives
-  }
-
-  static public File getExistingFileOrCache(String path) {
-    return getDiskCache2().getExistingFileOrCache(path);
-  }
+  //////////////////////////////////////////
 
   /**
    * Read the gbx9 index file.

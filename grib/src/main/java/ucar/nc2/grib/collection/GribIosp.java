@@ -865,15 +865,21 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       return data.sectionNoReduce(sectionFilled.getRanges());
     }
 
-    Array result;
-    if (isPartitioned)
-      result = readDataFromPartition(v2, section, null);
-    else
-      result = readDataFromCollection(v2, section, null);
+    try {
+      Array result;
+      if (isPartitioned)
+        result = readDataFromPartition(v2, section, null);
+      else
+        result = readDataFromCollection(v2, section, null);
 
-    long took = System.currentTimeMillis() - start;
-    if (debugTime) System.out.println("  read data took=" + took + " msec ");
-    return result;
+      long took = System.currentTimeMillis() - start;
+      if (debugTime) System.out.println("  read data took=" + took + " msec ");
+      return result;
+
+    } catch (IOException ioe) {
+      logger.error("Failed to readData ", ioe);
+      throw ioe;
+    }
   }
 
   // LOOK this is by Variable - might want to do over variables, so only touch a file once, if multiple variables in a file

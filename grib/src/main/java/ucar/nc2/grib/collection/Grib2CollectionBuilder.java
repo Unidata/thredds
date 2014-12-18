@@ -41,6 +41,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -217,7 +218,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
     List<Grib2CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib2CollectionWriter.Group) g); // copy to change GribCollectionBuilder.Group ->  Grib2CollectionWriter.Group
-    File indexFileInCache = GribIndex.getFileInCache(indexFilepath);
+    File indexFileInCache = GribIndexCache.getFileInCache(indexFilepath);
     return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type);
   }
 

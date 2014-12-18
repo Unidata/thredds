@@ -93,25 +93,28 @@ public enum CollectionUpdater {
       return;
     }
 
-    // startup always runs
-    map = new org.quartz.JobDataMap();
-    map.put(UpdateType, updateConfig.startupType);
-    Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
-    SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
-            .withIdentity(jobName, "startup")
-            .startAt(runTime)
-            .forJob(updateJob)
-            .usingJobData(map)
-            .build();
+    // startup
+    if (updateConfig.startupType != CollectionUpdateType.never) {
+      map = new org.quartz.JobDataMap();
+      map.put(UpdateType, updateConfig.startupType);
+      Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
+      SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
+              .withIdentity(jobName, "startup")
+              .startAt(runTime)
+              .forJob(updateJob)
+              .usingJobData(map)
+              .build();
 
-    try {
-      scheduler.scheduleJob(startupTrigger);
-      if (logger != null)logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.collectionName, runTime);
-    } catch (Throwable e) {
-      if (logger != null)logger.error("cronExecutor failed to schedule startup Job for " + config, e);
-      return;
+      try {
+        scheduler.scheduleJob(startupTrigger);
+        if (logger != null) logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.collectionName, runTime);
+      } catch (Throwable e) {
+        if (logger != null) logger.error("cronExecutor failed to schedule startup Job for " + config, e);
+        return;
+      }
     }
 
+    // rescan
     if (updateConfig.rescan != null) {
         map = new org.quartz.JobDataMap();
         map.put(UpdateType, updateConfig.updateType);

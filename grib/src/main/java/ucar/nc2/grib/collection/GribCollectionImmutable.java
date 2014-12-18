@@ -44,6 +44,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.time.CalendarDateRange;
@@ -60,7 +61,7 @@ import java.util.*;
 
 /**
  * An Immutable GribCollection, corresponds to one index (ncx) file.
- * The index file is opened on demand.
+ * The index file has already been read; it is opened and the closed when a variable is first accessed to read in the record array (sa).
  *
  * @author caron
  * @since 11/10/2014
@@ -93,8 +94,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   protected final Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
   protected final GribTables cust;
-  //protected Map<String, MFile> filenameMap;
-  protected final String indexFilename;
+  protected final String indexFilename;          // full path of index Filename
 
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
 
@@ -120,7 +120,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     this.cust = gc.cust;
 
     File indexFile = GribCdmIndex.makeIndexFile(name, directory);
-    indexFilename = indexFile.getPath();
+    File indexFileInCache = GribIndexCache.getExistingFileInCache(indexFile.getPath());
+    if (indexFileInCache == null)
+      throw new IllegalStateException(indexFile.getPath()+" does not exist, nor in cache");
+    indexFilename = indexFileInCache.getPath();
   }
 
   // overridden in PartitionCollection

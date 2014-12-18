@@ -43,7 +43,7 @@ import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -82,8 +82,8 @@ abstract class GribPartitionBuilder  {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribIndex.getFileInCache(partitionManager.getIndexFilename());
-    if (!collectionIndexFile.exists()) return true;
+    File collectionIndexFile = GribIndexCache.getExistingFileInCache(partitionManager.getIndexFilename());
+    if (collectionIndexFile == null) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;
 
@@ -97,8 +97,8 @@ abstract class GribPartitionBuilder  {
     Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
       String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(), '\\', "/");
-      File partitionIndexFile = GribIndex.getFileInCache(partitionIndexFilename);
-      if (!partitionIndexFile.exists())                                 // make sure each partition has an index
+      File partitionIndexFile = GribIndexCache.getExistingFileInCache(partitionIndexFilename);
+      if (partitionIndexFile == null)                                 // make sure each partition has an index
         return true;
       if (collectionLastModified < partitionIndexFile.lastModified())  // and the partition index is earlier than the collection index
         return true;
@@ -553,7 +553,7 @@ abstract class GribPartitionBuilder  {
   GribCollectionIndex (sizeIndex bytes)
   */
   protected boolean writeIndex(PartitionCollectionMutable pc, Formatter f) throws IOException {
-    File idxFile = GribIndex.getFileInCache(partitionManager.getIndexFilename());
+    File idxFile = GribIndexCache.getFileInCache(partitionManager.getIndexFilename());
     if (idxFile.exists()) {
       if (!idxFile.delete())
         logger.error("gc2tp cant delete " + idxFile.getPath());

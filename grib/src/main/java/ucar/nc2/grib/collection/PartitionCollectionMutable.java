@@ -39,7 +39,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
-import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.util.StringUtil2;
@@ -276,7 +276,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     public String getIndexFilenameInCache() {
       File file = new File(directory, filename);
-      File existingFile = GribIndex.getExistingFileOrCache(file.getPath());
+      File existingFile = GribIndexCache.getExistingFileInCache(file.getPath());
       if (existingFile == null) {
         // try reletive to index file
         File parent = getIndexParentFile();
