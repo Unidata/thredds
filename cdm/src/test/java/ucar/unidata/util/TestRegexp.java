@@ -34,8 +34,6 @@
 package ucar.unidata.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,13 +77,16 @@ public class TestRegexp {
 
   @Test
   public void test4() {
-    testMatch(".*(J.....) (....) .*", "WMO JUBE99 EGRR 030000", true);
-    testMatch(".*([IJ].....) (....) .*", "WMO IUBEs9 sssR 030000", true);
+    testMatch(".*(J.....) (....) .*", "WMO JUBE99 EGRR 030000", true,
+            new String[] {"JUBE99", "EGRR"});
+    testMatch(".*([IJ].....) (....) .*", "WMO IUBEs9 sssR 030000", true,
+            new String[] {"IUBEs9", "sssR"});
   }
 
   @Test
   public void test5() {
-    testMatch("(.*)\\(see Note.*", "Software identification (see Note 2)", true);
+    testMatch("(.*)\\(see Note.*", "Software identification (see Note 2)",
+            true, new String[] {"Software identification "});
   }
 
   @Test
@@ -98,31 +99,32 @@ public class TestRegexp {
 
   
   private void testOneLine(String line) {
-    testMatch("([^\\s]*) ([^\\s]*) ([^\\s]*) ([^\\*-]*) ([^\\s]*)?", line, true);
+    testMatch("([^\\s]*) ([^\\s]*) ([^\\s]*) ([^\\*-]*) ([^\\s]*)?", line,
+            true, null);
   }
   
   @Test
   public void testSplit() {
     String[] split = "what is  it".split("[ ]+");
-    for (String s : split)
-      System.out.println("("+s+")");
+    String[] res = {"what", "is", "it"};
+    for (int i=0; i < res.length; ++i)
+      assertEquals("split wrong", res[i], split[i]);
   }
 
   @Test
   public void testEnd() {
-    testMatch(".*\\.nc", "yomama.nc", true);
-    testMatch(".*\\.nc", "yomamanc", false);
-    testMatch(".*\\.nc", "yomama.nc.stuff", false);
-    testMatch(".*\\.nc$", "yomama.nc.stuff", false);
+    testOne(".*\\.nc", "yomama.nc", true);
+    testOne(".*\\.nc", "yomamanc", false);
+    testOne(".*\\.nc", "yomama.nc.stuff", false);
+    testOne(".*\\.nc$", "yomama.nc.stuff", false);
   }
 
   // test pattern ps against match, test expected result
   private void testOne(String ps, String match, boolean expect) {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
-    System.out.printf(" match %s against %s = %s %n", ps, match, matcher.matches());
-    //assert matcher.matches() == expect;
-    assertEquals(expect, matcher.matches() );
+    assertEquals("match " + ps + " against: " + match, expect,
+            matcher.matches() );
   }
 
   @Test
@@ -131,14 +133,20 @@ public class TestRegexp {
     String p = "(\\d{11})(\\d{4})TAVG([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"+
             "([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"+
             "([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)?(.)?(.)?.*";
-    testMatch(p, m, true);
+    testMatch(p, m, true, new String[] {"10160355000", "1932", " 1010", " ",
+            " ", "1", "  980", " ", " ", "1", "-9999", " ", " ", " ",
+            " 1420", " ", " ", "1", " 1840", " ", " ", "1", "-9999", " ",
+            " ", " ", " 2290", " ", " ", "1", "-9999", " " , " ", " ",
+            " 2440", " ", " ", "1", "-9999", " ", " ", " ", "-9999", " ",
+            " ", " ", "-9999", null, null, null});
   }
   
   @Test
   public void testGhcnm2() {
     String m = "101603550001932TAVG 1010  1  980  1-9999    1420  1 1840  1-9999    2290  1-9999    2440  1-9999   -9999   -9999";
     String p = "(\\d{11})(\\d{4})TAVG(([ \\-\\d]{5})(.)(.)(.)){3}.*";
-    testMatch(p, m, true);
+    testMatch(p, m, true, new String[] {"10160355000", "1932", "-9999   ",
+            "-9999", " ", " ", " "});
   }
 
   @Test
@@ -148,7 +156,10 @@ public class TestRegexp {
     //String m = "10160490000  35.6000   -0.6000   90.0 ORAN/ES SENIA       ALGERIA      98U  492HIxxCO10A 6WARM CROPS      B";
     String m = "20558362000  31.2000  121.4000    7.0 SHANGHAI            CHINA        23U10980FLxxCO25A 1PADDYLANDS      C";
     String p = "(\\d{11}) ([ \\.\\-\\d]{8}) ([ \\.\\-\\d]{9}) ([ \\.\\-\\d]{6}) (.{30}) ([ \\-\\d]{4})(.)([ \\-\\d]{5})(..)(..)(..)([ \\-\\d]{2})(.)(..)(.{16})(.).*";
-    testMatch(p, m, true);
+    testMatch(p, m, true, new String[] {"20558362000", " 31.2000",
+            " 121.4000", "   7.0", "SHANGHAI            CHINA     ", "  23",
+            "U", "10980", "FL", "xx", "CO", "25", "A", " 1",
+            "PADDYLANDS      ", "C"});
   }
 
   @Test
@@ -156,30 +167,34 @@ public class TestRegexp {
     String m = "JN  01001  JAN MAYEN                            70.93   -8.67    9 GL   1963 2007";
     //String m = "ID  96845  SURAKARTA PANASAN                    -7.87  110.92  104      1973 1993";
     String p = "([A-Z]{2})  (\\d{5})  (.{35}) ([ \\.\\-\\d]{6}) ([ \\.\\-\\d]{7}) ([ \\-\\d]{4}) (.)(.)(.)  ([ \\d]{4}) ([ \\d]{4})$";
-    testMatch(p, m, true);
+    testMatch(p, m, true, new String[] {"JN", "01001",
+            "JAN MAYEN                          ", " 70.93", "  -8.67",
+            "   9", "G", "L", " ", "1963", "2007"});
   }
 
   @Test
   public void testIgraPorHead() {
     String m = "#0309119891109069999  11";
     String p = "#(\\d{5})(\\d{4})(\\d{2})(\\d{2})(\\d{2})(\\d{4})([ \\d]{4})$";
-    testMatch(p, m, true);
+    testMatch(p, m, true,
+            new String[] {"03091", "1989", "11", "09", "06", "9999", "  11"});
   }
 
   @Test
   public void testIgraPor() {
     String m = "20 99200 -9999    44    48-9999-9999";
     String p = "(\\d{2})([ \\-\\d]{6})(.)([ \\-\\d]{5})(.)([ \\-\\d]{5})(.)([ \\-\\d]{5})([ \\-\\d]{5})([ \\-\\d]{5})$";
-    testMatch(p, m, true);
+    testMatch(p, m, true, new String[] {"20", " 99200", " ", "-9999", " ",
+            "   44", " ", "   48", "-9999", "-9999"});
   }
 
   // "(\\w*)\\s*since\\s*([\\+\\-\\d]*)[ T]?([\\.\\:\\d]*)([ \\+\\-]\\S*)?$"
   @Test
   public void testDate() {
     String m = "secs since 1997-07-16T19:20+01:00";
-    //           1                  2                  3             4
-    String p = "(\\w*)\\s*since\\s*"+"([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";
-    testMatch(p, m, true);
+    String p = "(\\w*)\\s*since\\s*([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";
+    testMatch(p, m, true, new String[] {"secs", "1997-07-16", "T19:20+01:00",
+            "19:20", "+01:00"});
   }
 
   @Test
@@ -187,7 +202,8 @@ public class TestRegexp {
     String p = CalendarDateFormatter.isodatePatternString;
     //String m = "2012-05-03 10:03:29Z";
     String m = "2012-04-27t08:00:00-0600";
-    testMatch(p, m, true);
+    testMatch(p, m, true, new String[] {"2012-04-27", "t08:00:00-0600",
+              "08:00:00", "-0600"});
   }
 
   @Test
@@ -195,14 +211,16 @@ public class TestRegexp {
     String p = "([\\+\\-\\d]+)([ t])([\\.\\:\\d]*)(([ \\+\\-]\\S*)?z?)?$";
     //String m = "2012-05-03 10:03:29Z";
     String m = "2012-05-03 10:03:29+03";
-    testMatch(p, m, true);
+    testMatch(p, m, true,
+            new String[] {"2012-05-03", " ", "10:03:29", "+03", "+03"});
   }
 
   @Test
   public void testFrag() {
     String m = "2011-02-09T06:00:00Z";
     String p = "([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";
-    testMatch(p, m, true);
+    testMatch(p, m, true,
+            new String[] {"2011-02-09", "T06:00:00Z", "06:00:00", null});
   }
 
   /*
@@ -292,50 +310,48 @@ public class TestRegexp {
   public void testUdunit() {
     String m = "3 secs since 1991-01-01T03:12";
     String p = "(\\d*) (\\w*) since ([+-]?[0-9]{1,4})\\-([0-9]{1,2})\\-([0-9]{1,2})[T ]([+-]?[0-9]{1,2}):([0-9]{1,2})(:([0-9]{1,2}))?.*$";
-    testMatch(p, m, true);
+    testMatch(p, m, true, new String[] {"3", "secs", "1991", "01", "01",
+            "03", "12", null, null});
   }
   
   @Test
   public void testUdunit2() {
     String m = "hours since 1900-1-1 0:0:0";
     String p = "(\\d*)\\s*(\\w*)\\s*since\\s*(.*)$";
-    testMatch(p, m, true);
+    testMatch(p, m, true, new String[] {"", "hours", "1900-1-1 0:0:0"});
   }
 
-   public void testCalendarDate() {
-     String m = "sec since 1970-1-1 00:00:00Z";
+//  @Test
+  public void testCalendarDate() {
+    String m = "sec since 1970-1-1 00:00:00Z";
      //String m = "1422175657634555 microsecs since 1970-1-1T0:0:0Z";
-     String p = "(\\w*)\\s*since\\s*([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
-     testMatch(CalendarDateUnit.udunitPatternString, m, true);
-   }
+//     String p = "(\\w*)\\s*since\\s*([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+    testMatch(CalendarDateUnit.udunitPatternString, m, true, null);
+  }
 
   // {7, "Geopotential height", "gpm", "ZGEO"},
-   @Test
-   public void testNclGrib1Table() {
+  @Test
+  public void testNclGrib1Table() {
     String m = "{7, \"Geopotential height\", \"gpm\", \"ZGEO\"},";
     //String p = "\\{(\\d*)\\,\\s*\"([^\"]*)\".*";
     String p = "\\{(\\d*)\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\".*";
-    testMatch(p, m, true);
+    testMatch(p, m, true,
+            new String[] {"7", "Geopotential height", "gpm", "ZGEO"});
   }
   /////////////////////////////////////////////////////////
 
   // test pattern ps against match, show result
-  private void testMatch(String ps, String match, boolean expect) {
-    System.out.printf("%npattern %s%n", ps);
-    System.out.printf("match    %s%n", match);
-
+  private void testMatch(String ps, String match, boolean expect,
+                         String[] groups) {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
 
-    if (matcher.matches() != expect)
-        System.out.printf("No match found.%n");
+    assertEquals("Match " + ps + " against " + match, expect,
+            matcher.matches());
     
-    assertTrue( matcher.matches() == expect);
-    
-    System.out.printf("matches = %s %n", matcher.matches());
-    if (matcher.matches()) {
-      for (int i=1; i<=matcher.groupCount(); i++)
-        System.out.printf(" group %d == '%s'%n",i,matcher.group(i));
+    if (groups != null) {
+      for (int i=1; i<=matcher.groupCount(); ++i)
+        assertEquals("Wrong group " + i, groups[i - 1], matcher.group(i));
     }
   }
 
