@@ -28,11 +28,6 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>clcommon</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>edu.ucar</groupId>
       <artifactId>grib</artifactId>
     </dependency>
 
@@ -43,7 +38,7 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>opendap</artifactId>
+      <artifactId>httpservices</artifactId>
     </dependency>
 
     <dependency>
@@ -62,6 +57,21 @@
       <artifactId>cdm</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <dependency>
@@ -89,6 +99,11 @@
     <dependency>
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>jj2000</artifactId>
     </dependency>
   </dependencies>
 

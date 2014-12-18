@@ -32,12 +32,6 @@
      his own pom.xml file if we want to read some formats.
  =========================================================== -->
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
     <!-- thredds dependencies are not needed jet. Cargo takes the thredds.war from the tds/target directory -->
     <!-- dependency>
       <groupId>edu.ucar</groupId>

@@ -50,14 +50,6 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
-    </dependency>
 
     <!-- logging -->
     <dependency>
@@ -76,12 +68,6 @@
       <artifactId>jdom2</artifactId>
     </dependency>
 
-    <!-- Required for reading THREDDS files. -->
-    <dependency>
-      <groupId>org.quartz-scheduler</groupId>
-      <artifactId>quartz</artifactId>
-    </dependency>
-
     <!-- spring -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -93,12 +79,6 @@
       <artifactId>spring-context</artifactId>
       <version>${org.springframework.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <version>${org.springframework.version}</version>
-    </dependency>
-
   </dependencies>
 
   <build>

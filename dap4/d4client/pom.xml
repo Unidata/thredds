@@ -43,29 +43,9 @@
       <artifactId>d4shared</artifactId>
     </dependency>
 
-    <!-- Apache HttpClient -->
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>httpservices</artifactId>
-      <!-- version>${thredds.version}</version -->
     </dependency>
   </dependencies>
 

@@ -51,6 +51,26 @@
         </dependency>
 
         <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-gml-v321</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sweCommon-v20</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-om-v20</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sampling-v20</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>

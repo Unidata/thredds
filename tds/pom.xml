@@ -34,11 +34,6 @@
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>bufr</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>edu.ucar</groupId>
       <artifactId>grib</artifactId>
     </dependency>
     <dependency>
@@ -55,29 +50,17 @@
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>udunits</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>visadCdm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.wisc.ssec</groupId>
-      <artifactId>visad</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.ucar</groupId>
       <artifactId>waterml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>httpservices</artifactId>
     </dependency>
 
     <!-- DAP4 Dependencies (technically forward) -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>d4core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>d4shared</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -98,10 +81,7 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
@@ -118,11 +98,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
@@ -132,17 +107,24 @@
       <artifactId>commons-io</artifactId>
     </dependency>
 
-    <!-- 
     <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
-      <scope>runtime</scope>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
     </dependency>
-     -->
 
     <dependency>
-      <artifactId>je</artifactId>
-      <groupId>com.sleepycat</groupId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.n52.sensorweb</groupId>
+      <artifactId>52n-xml-waterML-v20</artifactId>
     </dependency>
 
     <dependency>
@@ -160,6 +142,23 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
@@ -177,60 +176,28 @@
       <artifactId>threddsIso</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom-legacy</artifactId>
-    </dependency>
-    <!--dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon-dom</artifactId>
-    </dependency-->
 
     <!-- wms -->
     <dependency>
       <groupId>uk.ac.rdg.resc</groupId>
       <artifactId>ncwms</artifactId>
       <exclusions>
-        <exclusion>
-          <groupId>edu.ucar</groupId>
-          <artifactId>cdm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-webmvc</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
+        <!-- We're using log4j-slf4j-impl instead. -->
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-
-        <exclusion>
-          <groupId>joda-time</groupId>
-          <artifactId>joda-time</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
 
     <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
+      <groupId>org.opengis</groupId>
+      <artifactId>geoapi-pending</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jfree</groupId>
-      <artifactId>jfreechart</artifactId>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
     </dependency>
 
     <!-- dependency>
@@ -253,12 +220,15 @@
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-    </dependency>
 
     <!-- test -->
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>${hamcrest.version}</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>cdm</artifactId>

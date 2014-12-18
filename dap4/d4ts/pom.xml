@@ -20,23 +20,7 @@
   </dependency>
   <dependency>
     <groupId>${project.groupId}</groupId>
-    <artifactId>d4shared</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>${project.groupId}</groupId>
     <artifactId>d4servletshared</artifactId>
-  </dependency>
-
-  <!-- thredds dependencies -->
-  <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>cdm</artifactId>
-      <!-- version>${thredds.version}</version -->
-  </dependency>
-  <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>netcdf4</artifactId>
-    <!-- version>${thredds.version}</version -->
   </dependency>
 
   <!-- library dependencies -->

@@ -13,7 +13,6 @@
 <packaging>jar</packaging>
 
 <dependencies>
-
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
@@ -41,13 +40,8 @@
       <artifactId>cdm</artifactId>
   </dependency>
   <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>netcdf4</artifactId>
-  </dependency>
-  <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>tdm</artifactId>
-      <version>${project.version}</version>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>httpservices</artifactId>
   </dependency>
 
   <!-- testing dependencies -->
@@ -65,34 +59,12 @@
     <scope>test</scope>
   </dependency>
 
-  <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-  </dependency>
-
   <!-- library dependencies -->
-  <dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <scope>provided</scope>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpcore</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpclient</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpmime</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-api</artifactId>
-  </dependency>
+  <!--<dependency>-->
+    <!--<groupId>javax.servlet</groupId>-->
+    <!--<artifactId>javax.servlet-api</artifactId>-->
+    <!--<scope>provided</scope>-->
+  <!--</dependency>-->
   <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>

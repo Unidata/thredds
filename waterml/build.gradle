@@ -12,7 +12,7 @@ jar {
 
 dependencies {
   compile project(':cdm')
-  compile group: 'org.n52.sensorweb', name: '52n-xml-waterML-v20', version: orgN52WaterMLVersion
+  compile group: 'org.n52.sensorweb', name: '52n-xml-waterML-v20', version: orgN52CommonXmlVersion
   compile group: 'org.n52.sensorweb', name: '52n-oxf-xmlbeans', version: orgN52XmlbeansVersion
   compile group: 'com.google.guava', name: 'guava', version: guavaVersion
   compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
