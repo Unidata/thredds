@@ -28,6 +28,7 @@
 
 package uk.ac.rdg.resc.edal.time;
 
+import java.util.Locale;
 import java.util.StringTokenizer;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
@@ -52,7 +53,7 @@ public final class TimeUtils
      */
     public static long getUnitLengthMillis(String unit)
     {
-        unit = unit.trim();
+        unit = unit.toLowerCase( Locale.ENGLISH).trim();
         if (unit.equals("seconds") || unit.equals("second") || unit.equals("secs") || unit.equals("sec") || unit.equals("s"))
         {
             return 1000;
@@ -83,13 +84,13 @@ public final class TimeUtils
         }
         else if (unit.equals("leap_year") || unit.equals("leap_years"))
         {
-            return 1000 * 60 * 60 * 24 * 365;
+            return 1000 * 60 * 60 * 24 * 366;
         }
-        else if (unit.equals("Julian_year") || unit.equals("Julian_years"))
+        else if (unit.equals("julian_year") || unit.equals("julian_years"))
         {
             return (long) (1000 * 60 * 60 * 24 * 365.25);
         }
-        else if (unit.equals("Gregorian_year") || unit.equals("Gregorian_years"))
+        else if (unit.equals("gregorian_year") || unit.equals("gregorian_years"))
         {
             return (long) (1000 * 60 * 60 * 24 * 365.2425);
         }
