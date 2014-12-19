@@ -48,7 +48,6 @@ public class TestBeans extends TestCase {
   }
 
   public void testDefault() {
-    System.out.println("***TestBeans");
     try {
       XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
       PreferencesExt prefs = store2.getPreferences();

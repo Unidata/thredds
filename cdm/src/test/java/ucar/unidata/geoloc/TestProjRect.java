@@ -49,7 +49,7 @@ public class TestProjRect {
     private double x1, x2, y1, y2;
     private ProjectionRect projectionRect;
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "[{0}, {1}, {2}, {3}]")
     public static Collection projectionRectsInits() {
         Object[][] data = new Object[][] {
                 {-1, -1, 1, 1},

@@ -46,14 +46,14 @@ import ucar.nc2.util.Misc;
 public class TestBB extends TestCase {
 
   void doTest(ProjectionImpl p, LatLonRect rect) {
-    System.out.println("\n--Projection= "+p);
-    System.out.println("  llbb= "+rect.toString2());
     ProjectionRect prect = p.latLonToProjBB( rect);
     ProjectionRect prect2 = p.latLonToProjBB2( rect);
-    System.out.println("  latLonToProjBB= "+prect);
-    System.out.println("  latLonToProjBB2= "+prect2);
     if (!equals( prect, prect2))
-      System.out.printf("FAIL%n");
+      System.out.println("\n--Projection= "+p);
+      System.out.println("  llbb= "+rect.toString2());
+      System.out.println("  latLonToProjBB= "+prect);
+      System.out.println("  latLonToProjBB2= "+prect2);
+      System.out.println("FAIL");
   }
 
   void doTests(ProjectionImpl p) {
