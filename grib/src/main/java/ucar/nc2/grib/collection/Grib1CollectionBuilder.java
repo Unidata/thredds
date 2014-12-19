@@ -98,6 +98,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         try {
           if (GribIosp.debugGbxIndexOnly) {
             index = (Grib1Index) GribIndex.open(true, mfile);
+            if (index == null) continue;
           } else {
             // LOOK here is where gbx9 files get recreated
             index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, mfile, CollectionUpdateType.test, logger);

@@ -52,7 +52,7 @@ import static org.junit.Assert.assertTrue;
  * @author caron
  * @since 7/30/2014
  */
-public class TestCFGridWriter2 {
+public class TestCFWriter2 {
 
 
   @Test
