@@ -152,6 +152,7 @@ public class GCpass1 {
     countersAll.add("variable");
     countersAll.add("gds");
 
+    countersAll.add("gdsTemplate");
     countersAll.add("vertCoordInGDS");
     countersAll.add("predefined");
     countersAll.add("thin");
@@ -448,6 +449,7 @@ public class GCpass1 {
     String name =  Grib1Iosp.makeVariableName(cust1, gribConfig, pds);
     counters.count("variable", new Variable(cdmHash, name));
     counters.count("gds", gdsHash);
+    counters.count("gdsTemplate", gdss.getGridTemplate());
 
     if (gdss.isThin()) {
       //fm.format("  THIN= (gds=%d)%n", gdss.getGridTemplate());
@@ -487,6 +489,7 @@ public class GCpass1 {
     String name = GribUtils.makeNameFromDescription(cust2.getVariableName(gr));
     counters.count("variable", new Variable(cdmHash, name));
     counters.count("gds", gdsHash);
+    counters.count("gdsTemplate", gr.getGDSsection().getGDSTemplateNumber());
   }
 
 

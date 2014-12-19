@@ -68,14 +68,15 @@ public class CoordinateUnionizer {
           if (!runtimeFrom2D.equals(runtime))
             logger.warn("HEY CoordinateUnionizer runtimes not equal");
           break;
-        case vert:
-          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode());
-          vertBuilder.addAll(coord);
-          break;
         case ens:
           if (ensBuilder == null) ensBuilder = new CoordinateEns.Builder2(coord.getCode());
           ensBuilder.addAll(coord);
           break;
+        case vert:
+          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode());
+          vertBuilder.addAll(coord);
+          break;
+
       }
     }
   }
@@ -105,10 +106,10 @@ public class CoordinateUnionizer {
     else
       logger.warn("HEY CoordinateUnionizer missing time");
 
+    if (ensBuilder != null) // ens must come before vert to preserve order
+       unionCoords.add(ensBuilder.finish());
     if (vertBuilder != null)
       unionCoords.add(vertBuilder.finish());
-    if (ensBuilder != null)
-       unionCoords.add(ensBuilder.finish());
 
     // result = new CoordinateND<>(unionCoords);
     return unionCoords;
