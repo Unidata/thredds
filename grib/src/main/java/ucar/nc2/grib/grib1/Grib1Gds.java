@@ -100,7 +100,7 @@ public abstract class Grib1Gds {
 
   ///////////////////////////////////////////////////
   private static final float scale3 = (float) 1.0e-3;
-  private static final float scale6 = (float) 1.0e-6;
+  // private static final float scale6 = (float) 1.0e-6;
 
   protected final byte[] data;
   protected int[] nptsInLine; // thin grids, else null
@@ -516,7 +516,7 @@ public abstract class Grib1Gds {
       double Lo2 = lo2;
       if (Lo2 < lo1) Lo2 += 360;
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPointImpl endLL = new LatLonPointImpl(la2, lo2);
+      LatLonPointImpl endLL = new LatLonPointImpl(la2, Lo2);
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
@@ -787,7 +787,7 @@ Grid definition –   polar stereographic
         scale = (1.0 + Math.sin(Math.toRadians( Math.abs(lad)))) / 2;
       }
 
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1130,7 +1130,7 @@ Grid definition –   polar stereographic
       double Lo2 = lo2;
       if (Lo2 < lo1) Lo2 += 360;
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
-      LatLonPointImpl endLL = new LatLonPointImpl(la2, lo2);
+      LatLonPointImpl endLL = new LatLonPointImpl(la2, Lo2);
 
       f.format("%s testProjection%n", getClass().getName());
       f.format("  start at latlon= %s%n", startLL);
@@ -1185,8 +1185,7 @@ Grid definition –   polar stereographic
       if (!super.equals(o)) return false;
 
       RotatedLatLon other = (RotatedLatLon) o;
-      if (!Misc.closeEnough(angleRotation, other.angleRotation)) return false;
-      return true;
+      return Misc.closeEnough(angleRotation, other.angleRotation);
     }
 
     @Override

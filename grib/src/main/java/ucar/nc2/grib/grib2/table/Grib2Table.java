@@ -181,7 +181,7 @@ public class Grib2Table {
   static public class Id {
     public final int center, subCenter, masterVersion, localVersion, genProcessId;
 
-    Id(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+    public Id(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
       this.center = center;
       this.subCenter = subCenter;
       this.masterVersion = masterVersion;

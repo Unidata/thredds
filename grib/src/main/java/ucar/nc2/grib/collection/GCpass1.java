@@ -84,7 +84,7 @@ public class GCpass1 {
     }
   }
 
-  class Variable implements Comparable<Variable> {
+  static class Variable implements Comparable<Variable> {
     int cdmHash;
     String name;
 
@@ -98,8 +98,7 @@ public class GCpass1 {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Variable variable = (Variable) o;
-      if (cdmHash != variable.cdmHash) return false;
-      return true;
+      return cdmHash == variable.cdmHash;
     }
 
     @Override
@@ -210,19 +209,20 @@ public class GCpass1 {
     Path rootPath = Paths.get(specp.getRootDir());
     boolean isGrib1 = config.type == FeatureCollectionType.GRIB1;
 
-    MCollection topCollection = DirectoryBuilder.factory(config, rootPath, null, logger);
+    try (MCollection topCollection = DirectoryBuilder.factory(config, rootPath, null, logger)) {
 
-    if (topCollection instanceof DirectoryPartition) {
-      DirectoryPartition dpart = (DirectoryPartition) topCollection;
-      dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-      accumAll.add(scanDirectoryPartitionRecurse(isGrib1, dpart, config, countersAll, logger, indent, fm));
+      if (topCollection instanceof DirectoryPartition) {
+        DirectoryPartition dpart = (DirectoryPartition) topCollection;
+        dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+        accumAll.add(scanDirectoryPartitionRecurse(isGrib1, dpart, config, countersAll, logger, indent, fm));
 
-    } else if (topCollection instanceof DirectoryCollection) {
-      // otherwise its a leaf directory
-      accumAll.add(scanLeafDirectoryCollection(isGrib1, config, countersAll, logger, rootPath, indent, fm));
+      } else if (topCollection instanceof DirectoryCollection) {
+        // otherwise its a leaf directory
+        accumAll.add(scanLeafDirectoryCollection(isGrib1, config, countersAll, logger, rootPath, indent, fm));
+      }
+
+      reportAll(indent, fm);
     }
-
-    reportAll(indent, fm);
   }
 
 
@@ -461,8 +461,8 @@ public class GCpass1 {
     }
 
     Grib2SectionIdentification id = gr.getId();
-    Grib2SectionProductDefinition pds = gr.getPDSsection();
-    Grib2Pds pdss = gr.getPDSsection().getPDS();
+    //Grib2SectionProductDefinition pds = gr.getPDSsection();
+    //Grib2Pds pdss = gr.getPDSsection().getPDS();
 
     String table = id.getCenter_id() + "-" + id.getSubcenter_id() + "-" + id.getMaster_table_version() + "-" + id.getLocal_table_version();
     counters.count("table version", table);

@@ -161,8 +161,7 @@ public class Grib1ParamTableReader {
     if (parameters == null)
       readParameterTable();
 
-    Grib1Parameter p = parameters.get(id);
-    return p;
+    return parameters.get(id);
   }
 
   /**
@@ -242,7 +241,6 @@ TBLE2 cptec_254_params[] = {
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
       // Ignore header
-      int count = 0;
       while (true) {
         String line = br.readLine();
         if (line == null) break; // done with the file
@@ -254,7 +252,6 @@ TBLE2 cptec_254_params[] = {
           subcenter_id = extract(line, "Subcenter:");
         else if (line.contains("version:"))
           version = extract(line, "version:");
-        count++;
       }
 
       while (true) {
@@ -369,7 +366,6 @@ TBLE2 cptec_254_params[] = {
         // optional notes
         line = br.readLine();
         String notes = (line == null || line.startsWith("...")) ? null : line.trim();
-
         if (desc != null && desc.equalsIgnoreCase("undefined")) continue; // skip
 
         int p1;
@@ -381,7 +377,7 @@ TBLE2 cptec_254_params[] = {
         }
         Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units1);
         result.put(parameter.getNumber(), parameter);
-        if (debug) System.out.printf(" %s%n", parameter);
+        if (debug) System.out.printf(" %s (%s)%n", parameter, notes);
       }
 
       parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
@@ -685,18 +681,5 @@ TBLE2 cptec_254_params[] = {
       return false;
     }
 
-  }
-
-  static public void main(String[] args) throws IOException {
-    String dirS = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncl";
-    File dir = new File(dirS);
-    if (dir.listFiles() == null) return;
-    for (File f : dir.listFiles()) {
-      if (!f.getName().endsWith(".h")) continue;
-      Grib1ParamTableReader table = new Grib1ParamTableReader(f.getPath());
-
-      //  60:	 1:		180:	WMO_GRIB1.60-1.180.xml
-      System.out.printf("%5d: %5d: %5d: %s%n", table.getCenter_id(), table.getSubcenter_id(), table.getVersion(), table.getName());
-    }
   }
 }

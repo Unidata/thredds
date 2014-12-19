@@ -682,7 +682,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   private void makeTimeAuxReference(NetcdfFile ncfile, Group g, String timeName, String units, CoordinateTimeAbstract time) {
     if (time.getTime2runtime() == null) return;
-    int ntimes = time.getTime2runtime().length;
     String tcName = "ref"+timeName;
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, timeName));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
