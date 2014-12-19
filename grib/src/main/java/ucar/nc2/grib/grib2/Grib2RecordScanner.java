@@ -25,28 +25,24 @@ public class Grib2RecordScanner {
   static public boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
-      while (raf.getFilePointer() < maxScan) {
-        boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
-        if (!found) return false;
-        raf.skipBytes(7); // will be positioned on byte 0 of indicator section
-        int edition = raf.read(); // read at byte 8
-        if (edition != 2) return false;
+      boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
+      if (!found) return false;
+      raf.skipBytes(7); // will be positioned on byte 0 of indicator section
+      int edition = raf.read(); // read at byte 8
+      if (edition != 2) return false;
 
-        // check ending = 7777
-        long len = GribNumbers.int8(raf);
-        if (len > raf.length()) return false;
-        raf.skipBytes(len-20);
-        for (int i = 0; i < 4; i++) {
-          if (raf.read() != 55) return false;
-        }
-        return true;
+      // check ending = 7777
+      long len = GribNumbers.int8(raf);
+      if (len > raf.length()) return false;
+      raf.skipBytes(len-20);
+      for (int i = 0; i < 4; i++) {
+        if (raf.read() != 55) return false;
       }
+      return true;
 
     } catch (IOException e) {
       return false;
     }
-
-    return false;
   }
 
   /**
@@ -232,8 +228,7 @@ public class Grib2RecordScanner {
   private boolean nextRepeating() throws IOException {
     raf.seek(repeatPos);
 
-    // octets 1-4 (Length of GDS)
-    int length = GribNumbers.int4(raf);
+    GribNumbers.int4(raf); // octets 1-4 (Length of GDS)
     int section = raf.read();
     raf.seek(repeatPos);
 

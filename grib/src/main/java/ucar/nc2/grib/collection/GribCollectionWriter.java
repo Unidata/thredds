@@ -253,7 +253,7 @@ class GribCollectionWriter {
     FeatureCollectionConfig config = new FeatureCollectionConfig();
     config.name = pconfig.getName();
     config.collectionName = pconfig.getName();
-    config.type = isGrib1 ? FeatureCollectionType.GRIB1 : FeatureCollectionType.GRIB1;
+    config.type = isGrib1 ? FeatureCollectionType.GRIB1 : FeatureCollectionType.GRIB2;
     config.spec = pconfig.getCollectionSpec();
     config.ptype = FeatureCollectionConfig.PartitionType.valueOf(pconfig.getPartitionType());
     if (pconfig.hasDateFormatMark())

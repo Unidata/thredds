@@ -204,6 +204,10 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   static public WmoTables readGribCodes(Version version) throws IOException {
+    String[] elems = version.getElemNames();
+    if (elems == null)
+      throw new IllegalStateException("unknon version = "+version);
+
     try (InputStream ios = WmoCodeTable.class.getResourceAsStream(version.getResourceName())) {
       if (ios == null) {
         logger.error("cant open WmoCodeTable=" + version.getResourceName());
@@ -220,7 +224,6 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       Element root = doc.getRootElement();
 
       Map<String, WmoCodeTable> map = new HashMap<>();
-      String[] elems = version.getElemNames();
 
       List<Element> featList = root.getChildren(elems[0]); // main element
       for (Element elem : featList) {

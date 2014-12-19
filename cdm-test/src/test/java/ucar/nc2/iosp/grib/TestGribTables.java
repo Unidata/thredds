@@ -1,7 +1,5 @@
-// $Id: TestDebug.java,v 1.1.1.1 2002/12/20 16:40:27 john Exp $
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -31,64 +29,49 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.util.prefs.ui;
 
-import junit.framework.*;
-import ucar.util.prefs.*;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.XMLStore;
+package ucar.nc2.iosp.grib;
 
-public class TestDebug extends TestCase {
-  static {
-      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
-  }
-  private static PreferencesExt store;
-  private static XMLStore xstore;
+import org.junit.*;
+import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
+import ucar.nc2.grib.grib2.table.Grib2Table;
+import ucar.nc2.grib.grib2.table.KmaLocalTables;
+import ucar.unidata.test.util.TestDir;
 
-  public TestDebug( String name) {
-    super(name);
-    try {
-      xstore = XMLStore.createFromFile(TestAllPrefs.dir+"testDebug.xml", null);
-      store = xstore.getPreferences();
-    } catch (java.io.IOException e) {}
-    //store = new PreferencesExt(null,"");
-    Debug.setStore( store.node("Debug"));
-  }
+import java.io.File;
+import java.io.IOException;
 
-  public void testDebug() {
-    Debug.set("testit", true);
-    assert( Debug.isSet("testit"));
+/**
+ * Description
+ *
+ * @author John
+ * @since 12/18/2014
+ */
+public class TestGribTables {
 
-    Debug.set("fart/allow", true);
-    //assert( Debug.isSet("fart.allow"));
-    assert( Debug.isSet("fart/allow"));
-
-    Debug.set("fart/allow", false);
-    assert( !Debug.isSet("fart/allow"));
-
-    assert( !Debug.isSet("fart/notSet"));
-    try {
-      assert( !store.nodeExists("fart"));
-      assert( store.nodeExists("/Debug/fart"));
-      assert( store.nodeExists("Debug/fart"));
-    } catch (Exception e) {
-      assert (false);
-    }
+  @Test
+  public void testKmaTable() {
+    Grib2Table.Id id = new Grib2Table.Id(40,-1,-1,-1,-1);
+    Grib2Table table = Grib2Table.getTable(id);
+    KmaLocalTables kma = KmaLocalTables.getCust(table);
+    assert kma != null;
+    assert kma.getParameters().size() > 0;
+    for (GribTables.Parameter p : kma.getParameters())
+      System.out.printf("%s%n", p);
   }
 
-  public void testMenu() {
-    Debug.constructMenu( new javax.swing.JMenu());
-    try {
-      xstore.save();
-    } catch (java.io.IOException e) {
-      assert(false);
+  @Test
+  public void testNclParameterTable() throws IOException {
+    String dirS = "../grib/src/main/resources/resources/grib1/ncl";
+    File dir = new File(dirS);
+    assert (dir.listFiles() != null);
+    for (File f : dir.listFiles()) {
+      if (!f.getName().endsWith(".h")) continue;
+      Grib1ParamTableReader table = new Grib1ParamTableReader(f.getPath());
+      //  60:	 1:		180:	WMO_GRIB1.60-1.180.xml
+      System.out.printf("%5d: %5d: %5d: %s%n", table.getCenter_id(), table.getSubcenter_id(), table.getVersion(), table.getName());
     }
   }
 
 }
-/* Change History:
-   $Log: TestDebug.java,v $
-   Revision 1.1.1.1  2002/12/20 16:40:27  john
-   start new cvs root: prefs
-
-*/

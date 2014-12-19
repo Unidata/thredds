@@ -48,12 +48,11 @@ public class TestJavaUtilPreferences {
   @Before
   public void testWho() {
     System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
-    System.out.printf("TestJavaUtilPreferences: java.util.prefs.PreferencesFactory='%s'%n", System.getProperty("java.util.prefs.PreferencesFactory"));
 
     // this makes PreferencesExt the SPI
     Preferences userRoot = Preferences.userRoot();
-    assert userRoot instanceof PreferencesExt : "Factory not set = " + userRoot.getClass().getName();
-    //assert false : "assert is on";
+    assert userRoot instanceof PreferencesExt : "Factory not set = " +
+            userRoot.getClass().getName() + " Property: " + System.getProperty("java.util.prefs.PreferencesFactory");
   }
 
   @Test

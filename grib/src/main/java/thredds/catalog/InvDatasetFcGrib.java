@@ -658,7 +658,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return findDatasetPartition(visit, pc, pathList);    // case 3 and 4
   }
 
-  private class DatasetAndGroup {
+  private static class DatasetAndGroup {
     GribCollectionImmutable.Dataset ds;
     GribCollectionImmutable.GroupGC group;
 

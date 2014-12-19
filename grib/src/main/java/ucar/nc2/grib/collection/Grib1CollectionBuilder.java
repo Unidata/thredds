@@ -98,6 +98,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         try {
           if (GribIosp.debugGbxIndexOnly) {
             index = (Grib1Index) GribIndex.open(true, mfile);
+            if (index == null) continue;
           } else {
             // LOOK here is where gbx9 files get recreated
             index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, mfile, CollectionUpdateType.test, logger);
@@ -108,8 +109,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
           continue;
         }
-        if (index == null)
-          System.out.println("HEY");
         int n = index.getNRecords();
         totalRecords += n;
 

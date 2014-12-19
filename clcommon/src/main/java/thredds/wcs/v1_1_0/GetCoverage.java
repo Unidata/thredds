@@ -46,7 +46,6 @@ import java.io.File;
 
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.grid.CFGridWriter;
 import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.util.DiskCache2;
 import ucar.ma2.InvalidRangeException;

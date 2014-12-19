@@ -52,6 +52,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -170,7 +171,9 @@ public class GribCdmIndex implements IndexReader {
 
     // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
+    File indexFileInCache = useCache ? GribIndexCache.getExistingFileInCache(indexFilename) : new File(indexFilename);
+    if (indexFileInCache == null)
+        return null;
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionImmutable result = null;
@@ -210,7 +213,9 @@ public class GribCdmIndex implements IndexReader {
   // used by PartitionCollectionMutable.Partition
   // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionMutable openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
+    File indexFileInCache = useCache ? GribIndexCache.getExistingFileInCache(indexFilename) : new File(indexFilename);
+    if (indexFileInCache == null)
+        return null;
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionMutable result = null;
