@@ -41,26 +41,17 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
     </dependency>
-     
-    <!-- replace commons-logging assume this is done in final artifact eg war or app
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <scope>provided</scope>
-    </dependency -->
+    </dependency>
 
     <!-- logging facade -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-
-    <!-- dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <scope>provided</scope>
-    </dependency -->
-
   </dependencies>
 
   <build>

@@ -333,6 +333,30 @@
 
       <!-- logging -->
       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${org.slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- "org.springframework:spring-core" and "org.apache.httpcomponents:httpclient" compile against -->
+      <!-- "commons-logging:commons-logging", but we use slf4j. We've excluded those depedencies, but we still -->
+      <!-- need to convert their jcl calls to slf4j. -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${org.slf4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!-- These two are only used in tdcommon. -->
+      <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
         <version>${log4j.version}</version>
@@ -342,29 +366,7 @@
         <artifactId>log4j-core</artifactId>
         <version>${log4j.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
-        <version>${log4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>  <!-- Adapts apache commons to slf4j, and so replaces commons-logging.jar -->
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
-      <dependency>  <!-- Should never be needed at compile time. -->
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-jdk14</artifactId>
-        <version>${org.slf4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
+
 
       <!-- spring -->
       <dependency>
@@ -439,7 +441,6 @@
         <artifactId>httpunit</artifactId>
         <version>${httpunit.version}</version>
         <exclusions>
-          <!-- Replaced with jcl-over-slf4j. -->
           <exclusion>
             <groupId>jtidy</groupId>
             <artifactId>jtidy</artifactId>
@@ -554,6 +555,13 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${httpclient.version}</version>
+        <exclusions>
+          <!-- We're using "jcl-over-slf4j" to convert "commons-logging" calls to "slf4j". -->
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -730,20 +738,6 @@
         <groupId>uk.ac.rdg.resc</groupId>
         <artifactId>ncwms</artifactId>
         <version>${uk.ac.rdg.resc.ncwms.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jfree</groupId>
-            <artifactId>jcommon</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.opengis</groupId>
@@ -893,16 +887,21 @@
         <type>test-jar</type>
         <version>${project.version}</version>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 
-  <!-- All modules use JUnit for their test. -->
   <dependencies>
+    <!-- All modules use JUnit for their test. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <!-- Use Log4J for all logging during tests. -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
   </dependencies>
 

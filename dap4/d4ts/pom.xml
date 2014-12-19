@@ -13,7 +13,6 @@
 <packaging>jar</packaging>
 
 <dependencies>
-
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
@@ -23,12 +22,14 @@
     <artifactId>d4servletshared</artifactId>
   </dependency>
 
-  <!-- library dependencies -->
+  <!-- mvn dependency:analyze claims that this is an unused declared dependency. However, I can only assume that the
+       report is a false positive, because this artifact is clearly used in D4TSServlet. -->
   <dependency>
     <groupId>javax.servlet</groupId>
     <artifactId>javax.servlet-api</artifactId>
     <scope>provided</scope>
   </dependency>
+
   <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
