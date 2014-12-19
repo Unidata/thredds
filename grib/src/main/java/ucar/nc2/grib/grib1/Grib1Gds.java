@@ -32,6 +32,8 @@
 
 package ucar.nc2.grib.grib1;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.QuasiRegular;
@@ -91,7 +93,7 @@ public abstract class Grib1Gds {
         return new PolarStereographic(data, 5);
       case 10:
         return new RotatedLatLon(data, 10);
-      case 50:    // Spherical harmonic coefficients
+      case 50:
         return new SphericalHarmonicCoefficients(data, 50);
       default:
         throw new UnsupportedOperationException("Unsupported GDS type = " + template);
@@ -1229,6 +1231,25 @@ Grid definition –   polar stereographic
 
   }
 
+  /*
+  Grid definition – spherical harmonic coefficients (including rotated, stretched or stretched and rotated)
+  Octet No. Contents
+  7–8   J – pentagonal resolution parameter
+  9–10  K – pentagonal resolution parameter
+  11–12 M – pentagonal resolution parameter
+  13    Representation type (see Code table 9)
+  14    Representation mode (see Code table 10)
+  15–32 Set to zero (reserved)
+  33–35 Latitude of the southern pole in millidegrees (integer)
+        Latitude of pole of stretching in millidegrees (integer)
+  36–38 Longitude of the southern pole in millidegrees (integer)
+        Longitude of pole of stretching in millidegrees (integer)
+  39–42 Angle of rotation (represented in the same way as the reference value)
+        Stretching factor (representation as for the reference value)
+  43–45 Latitude of pole of stretching in millidegrees (integer)
+  46–48 Longitude of pole of stretching in millidegrees (integer)
+  49–52 Stretching factor (representation as for the reference value
+   */
   public static class SphericalHarmonicCoefficients extends Grib1Gds {
     int j,k,m,type,mode;
     SphericalHarmonicCoefficients(byte[] data, int template) {
@@ -1237,8 +1258,8 @@ Grid definition –   polar stereographic
       j = getOctet2(7);
       k = getOctet2(9);
       m = getOctet2(11);
-      type = getOctet(13);
-      mode = getOctet(14);
+      type = getOctet(13);  // code table 9
+      mode = getOctet(14);  // code table 10
     }
 
     @Override
@@ -1260,6 +1281,17 @@ Grid definition –   polar stereographic
     public void testHorizCoordSys(Formatter f) {
     }
 
+    @Override
+    public String toString() {
+
+      return MoreObjects.toStringHelper(this)
+              .add("j", j)
+              .add("k", k)
+              .add("m", m)
+              .add("type", type)
+              .add("mode", mode)
+              .toString();
+    }
   }
 
 }

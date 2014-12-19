@@ -59,7 +59,7 @@ public abstract class GribIndex {
     public boolean hasChangedSince(MFile file, long when) {
       String idxPath = file.getPath();
       if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
-      File idxFile = GribIndexCache.getExistingFileInCache(idxPath);
+      File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
       if (idxFile == null) return true;
 
       long idxLastModified =  idxFile.lastModified();
@@ -70,7 +70,7 @@ public abstract class GribIndex {
     public boolean hasntChangedSince(MFile file, long when) {
       String idxPath = file.getPath();
       if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
-      File idxFile = GribIndexCache.getExistingFileInCache(idxPath);
+      File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
       if (idxFile == null) return true;
 
       if (idxFile.lastModified() < file.getLastModified()) return true;
@@ -96,7 +96,7 @@ public abstract class GribIndex {
   }
 
   /**
-   * Create a gbx9 and ncx index from a single grib1 or grib2 file.
+   * Create a gbx9 index from a single grib1 or grib2 file.
    * Use the existing index if it already exists.
    *
    * @param isGrib1 true if grib1

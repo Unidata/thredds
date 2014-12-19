@@ -27,7 +27,7 @@ import java.util.Formatter;
  * @since 11/14/2014
  */
 public class TestGribIndexCreation {
-  private static CollectionUpdateType updateMode = CollectionUpdateType.always;
+  private static CollectionUpdateType updateMode = CollectionUpdateType.test;
 
   @BeforeClass
   static public void before() {
@@ -178,6 +178,16 @@ public class TestGribIndexCreation {
   public void testGFSglobalOnedeg() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("gfsOnedeg_46", "test/gfsOnedeg", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/.*grib2", null, null,  null, "file", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void testEnsembles() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("gefs_ens", "test/gefs_ens", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/ens/.*grib2", null, null,  null, "file", null);
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);

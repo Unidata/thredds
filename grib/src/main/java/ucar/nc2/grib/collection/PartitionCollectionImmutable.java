@@ -239,7 +239,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       public String getIndexFilenameInCache() throws FileNotFoundException {
         File file = new File(directory, filename);
-        File existingFile = GribIndexCache.getExistingFileInCache(file.getPath());
+        File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
 
         /* if (existingFile == null) {
           existingFile = new File(directory, filename); // try the Collection directory

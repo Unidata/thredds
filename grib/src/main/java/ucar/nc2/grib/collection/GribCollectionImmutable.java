@@ -120,7 +120,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     this.cust = gc.cust;
 
     File indexFile = GribCdmIndex.makeIndexFile(name, directory);
-    File indexFileInCache = GribIndexCache.getExistingFileInCache(indexFile.getPath());
+    File indexFileInCache = GribIndexCache.getExistingFileOrCache(indexFile.getPath());
     if (indexFileInCache == null)
       throw new IllegalStateException(indexFile.getPath()+" does not exist, nor in cache");
     indexFilename = indexFileInCache.getPath();

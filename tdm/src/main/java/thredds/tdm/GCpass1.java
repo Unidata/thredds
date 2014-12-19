@@ -1,4 +1,4 @@
-package ucar.nc2.grib.collection;
+package thredds.tdm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +7,10 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.collection.Grib1Iosp;
+import ucar.nc2.grib.collection.Grib2Iosp;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib1.Grib1SectionGridDefinition;
@@ -18,6 +21,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Counters;
+import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.Indent;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -28,7 +32,7 @@ import java.nio.file.Paths;
 import java.util.Formatter;
 
 /**
- * GribCollection Building - pass1 : gather information
+ * GribCollection Building - pass1 : gather information, optionally make gbx9 files
  *
  * @author caron
  * @since 11/15/2014
@@ -37,8 +41,9 @@ public class GCpass1 {
   static private final Logger logger = LoggerFactory.getLogger(GCpass1.class);
 
   public static void main(String[] args) throws IOException {
-    String usage = "usage: ucar.nc2.grib.collection.GCpass1 -spec <collectionSpec> [-isGrib2] -partition [none|file|directory]";
-    String def = "default: -isGrib1 partition=directory";
+    String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -partition [none|file|directory] -useTableVersion [true|false] "+
+            "-useCacheDir <dir>";
+    String def = "default: -isGrib1 -partition directory -useTableVersion false";
     if (args.length < 2) {
       System.out.printf("%s%n%s%n", usage, def);
       System.exit(0);
@@ -51,15 +56,23 @@ public class GCpass1 {
     FeatureCollectionType type = FeatureCollectionType.GRIB1;
     String partition = "directory";
     String useTableVersionS = null;
+    String cacheDir = null;
     for (int i = 0; i < args.length; i++) {
       String s = args[i];
       if (s.equalsIgnoreCase("-spec")) spec = args[i + 1];
       if (s.equalsIgnoreCase("-isGrib2")) type = FeatureCollectionType.GRIB2;
       if (s.equalsIgnoreCase("-partition")) partition = args[i + 1];
       if (s.equalsIgnoreCase("-useTableVersion")) useTableVersionS = args[i + 1];
+      if (s.equalsIgnoreCase("-useCacheDir")) cacheDir = args[i + 1];
     }
-
     Boolean useTableVersion = (useTableVersionS != null) ? Boolean.parseBoolean(useTableVersionS) : null;  // default true
+
+    if (cacheDir != null) {
+      DiskCache2 gribCache = DiskCache2.getDefault();
+      gribCache.setRootDirectory(cacheDir);
+      gribCache.setAlwaysUseCache(true);
+      GribIndexCache.setDiskCache2(gribCache);
+    }
 
     Formatter fm = new Formatter(System.out);
     GCpass1 pass1 = new GCpass1(spec, type, partition, useTableVersion, fm);
@@ -381,7 +394,7 @@ public class GCpass1 {
         int nrecords = 0;
 
         if (isGrib1) {
-          Grib1Index grib1Index = readGrib1Index(mfile, true);
+          Grib1Index grib1Index = readGrib1Index(mfile, false);
           if (grib1Index == null) {
             System.out.printf("%s%s: read or create failed%n", indent, mfile.getPath());
             continue;
@@ -391,7 +404,7 @@ public class GCpass1 {
             nrecords++;
           }
         } else {
-          Grib2Index grib2Index = readGrib2Index(mfile, true);
+          Grib2Index grib2Index = readGrib2Index(mfile, false);
           if (grib2Index == null) {
             System.out.printf("%s%s: read or create failed%n", indent, mfile.getPath());
             continue;
@@ -483,7 +496,7 @@ public class GCpass1 {
       path = StringUtil2.removeFromEnd(path, Grib1Index.GBX9_IDX);
 
     Grib1Index index = new Grib1Index();
-    if (!index.readIndex(path, mf.getLastModified())) {
+    if (!index.readIndex(path, mf.getLastModified(), CollectionUpdateType.test)) {
       if (readOnly) return null;
       try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
         if (!Grib1RecordScanner.isValidFile(raf)) return null;
@@ -499,7 +512,7 @@ public class GCpass1 {
       path = StringUtil2.removeFromEnd(path, Grib1Index.GBX9_IDX);
 
     Grib2Index index = new Grib2Index();
-    if (!index.readIndex(path, mf.getLastModified())) {
+    if (!index.readIndex(path, mf.getLastModified(), CollectionUpdateType.test)) {
       if (readOnly) return null;
       try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
         if (!Grib2RecordScanner.isValidFile(raf)) return null;
