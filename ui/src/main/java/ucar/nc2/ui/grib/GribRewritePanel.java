@@ -423,7 +423,7 @@ public class GribRewritePanel extends JPanel {
 
       FeatureCollectionConfig config = new FeatureCollectionConfig();
 
-      try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFilename, config, false, false, logger)) {
+      try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFilename, config, false, logger)) {
         if (gc == null)
           throw new IOException("Not a grib collection index file");
 

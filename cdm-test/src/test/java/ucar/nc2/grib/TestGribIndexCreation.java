@@ -209,7 +209,7 @@ public class TestGribIndexCreation {
     config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }

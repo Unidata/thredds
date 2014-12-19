@@ -15,7 +15,7 @@ public interface Coordinate {
   /**
    * Enumerated list of coordinate types
    */
-  public enum Type {runtime, time, timeIntv, time2D, ens, vert }
+  public enum Type {runtime, time, timeIntv, vert, time2D, ens }  // cant change order, protobuf uses the ordinal
 
   void showInfo(Formatter info, Indent indent);
   void showCoords(Formatter info);

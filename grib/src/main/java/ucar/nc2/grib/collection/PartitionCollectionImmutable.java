@@ -71,7 +71,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       try (RandomAccessFile raf = RandomAccessFile.acquire(location)) {
         Partition p = (Partition) iospMessage;
-        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), true, p.getLogger()); // do we know its a partition ?
+        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger()); // do we know its a partition ?
 
       } catch (Throwable t) {
         RandomAccessFile.eject(location);

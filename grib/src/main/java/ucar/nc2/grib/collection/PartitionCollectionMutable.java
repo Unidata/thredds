@@ -309,9 +309,13 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory.open(path, -1, null, this);
     }
 
-    // LOOK force not used, equivilent to  force = never. Why not use getGribCollection(): GribCollectionImmutable vs GribCollectionMutable
+    // the children must already exist
     public GribCollectionMutable makeGribCollection(CollectionUpdateType force) throws IOException {
       GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger);
+      if (result == null) {
+        logger.error("Failed to openMutableGCFromIndex {}", dcm.getIndexFilename());
+        return null;
+      }
       lastModified = result.lastModified;
       fileSize = result.fileSize;
       if (result.masterRuntime != null)
