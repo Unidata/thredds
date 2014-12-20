@@ -237,7 +237,7 @@ public class GribCdmIndex implements IndexReader {
           result = Grib1PartitionBuilderFromIndex.openMutablePCFromIndex(name, raf, config, logger);
           break;
         default:
-          logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFilenameInCache, type);
+          logger.warn("GribCdmIndex.openMutableGCFromIndex failed on {} type={}", indexFilenameInCache, type);
       }
 
       if (result != null) {
@@ -246,12 +246,18 @@ public class GribCdmIndex implements IndexReader {
       }
 
     } catch (Throwable t) {
-      logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFilenameInCache, t);
+        logger.warn("GribCdmIndex.openMutableGCFromIndex failed on "+indexFilenameInCache, t);
+    }
+
+    if (result == null) {
       try {
-        RandomAccessFile.eject(indexFilenameInCache);   // remove from cache in case it needs to be recreated
+        RandomAccessFile.eject(indexFilenameInCache);   // remove from cache
+        boolean ok = indexFileInCache.delete();          // delete so it will get recreated next time
+        logger.warn("GribCdmIndex.openMutableGCFromIndex {} deleted {}", indexFilenameInCache, ok);
       } catch (IOException e) {
         e.printStackTrace();
       }
+
     }
 
 

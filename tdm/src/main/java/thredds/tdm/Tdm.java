@@ -203,6 +203,7 @@ public class Tdm {
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);
     GribIndexCache.setDiskCache2(gribCache);
+    log.info("TDM set "+gribCache);
 
     return true;
   }
@@ -321,6 +322,7 @@ public class Tdm {
     @Override
     public void run() {
       try {
+        log.info("updateGribCollection "+config.collectionName);
         if (debug) System.out.printf("---------------------%nIndexTask updateGribCollection %s%n", config.collectionName);
         boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
 

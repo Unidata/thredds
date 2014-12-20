@@ -313,7 +313,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     public GribCollectionMutable makeGribCollection(CollectionUpdateType force) throws IOException {
       GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger);
       if (result == null) {
-        logger.error("Failed to openMutableGCFromIndex {}", dcm.getIndexFilename());
+        logger.error("Failed on openMutableGCFromIndex {}", dcm.getIndexFilename());
         return null;
       }
       lastModified = result.lastModified;
