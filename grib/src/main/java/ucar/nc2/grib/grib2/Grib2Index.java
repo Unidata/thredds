@@ -148,8 +148,7 @@ public class Grib2Index extends GribIndex {
       NcStream.readFully(fin, m);
 
       Grib2IndexProto.Grib2Index proto = Grib2IndexProto.Grib2Index.parseFrom(m);
-      String fname = proto.getFilename();
-      if (debug) System.out.printf("%s for %s%n", fname, filename);
+      if (debug) System.out.printf("%s for %s%n", proto.getFilename(), filename);
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib2IndexProto.GribGdsSection pgds : proto.getGdsListList()) {
