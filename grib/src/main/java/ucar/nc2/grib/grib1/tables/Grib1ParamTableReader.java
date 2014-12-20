@@ -37,6 +37,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.ncml.NcMLReader;
@@ -238,7 +239,7 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) return false;
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
 
       // Ignore header
       while (true) {
@@ -341,8 +342,12 @@ TBLE2 cptec_254_params[] = {
         return false;
       }
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       String line = br.readLine();
+      if (line == null) {
+        logger.error("File is empty " + path);
+        return false;
+      }
       if (!line.startsWith("...")) name = line; // maybe ??
       while (!line.startsWith("..."))
         line = br.readLine(); // skip
@@ -421,9 +426,12 @@ TBLE2 cptec_254_params[] = {
         return false;
       }
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       String line = br.readLine();
-
+      if (line == null) {
+        logger.error("File is empty " + path);
+        return false;
+      }
       // create table name from file name
       String[] splitPath = path.split("/");
       String tableNum = splitPath[splitPath.length - 1].replace(".table", "");
@@ -601,7 +609,7 @@ TBLE2 cptec_254_params[] = {
 
       if (is == null) return false;
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
 
       // rdg - added the 0 line length check to cover the case of blank lines at
       //       the end of the parameter table file.
@@ -642,7 +650,7 @@ TBLE2 cptec_254_params[] = {
         logger.error("Grib1ParamTable: error getInputStream on " + this);
         return false;
       }
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       br.readLine(); // skip a line
 
       HashMap<Integer, Grib1Parameter> params = new HashMap<>(); // thread safe - local var

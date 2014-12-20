@@ -96,6 +96,7 @@ public abstract class LocalTables extends Grib2Customizer {
     if ((category <= 191) && (number <= 191))  {
       GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
       if (plocal == null) return pwmo;
+      if (pwmo == null) return plocal;
 
       // allow local table to override all but name, units  LOOK WTF ??
       plocal.name = pwmo.getName();

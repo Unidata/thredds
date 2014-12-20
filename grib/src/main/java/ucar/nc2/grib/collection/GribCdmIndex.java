@@ -142,9 +142,7 @@ public class GribCdmIndex implements IndexReader {
     String magic;
 
     raf.seek(0);
-    byte[] b = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length];   // they are all the same
-    raf.readFully(b);
-    magic = new String(b);
+    magic = raf.readString(Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length);
 
     switch (magic) {
       case Grib2CollectionWriter.MAGIC_START:

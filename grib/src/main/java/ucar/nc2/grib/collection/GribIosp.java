@@ -590,8 +590,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           }
         }
         return Array.factory(DataType.DOUBLE, v2.getShape(), data);
+
+      default:
+        throw new IllegalStateException();
     }
-    return null;
   }
 
   /* private void makeTimeCoordinate2D(NetcdfFile ncfile, Group g, Coordinate tc, CoordinateRuntime runtime) {

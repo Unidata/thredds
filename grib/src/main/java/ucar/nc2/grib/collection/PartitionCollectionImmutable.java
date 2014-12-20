@@ -405,7 +405,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       int firstIndex = indexWanted[0];
       int masterIdx;
       if (group.ds.gctype == Type.TwoD || group.ds.gctype == Type.TP) {
-
         // find the partition by matching run coordinate with master runtime
         CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
         Object val = runtime.getValue(firstIndex);
@@ -496,6 +495,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         getVariable2DByHash(group.horizCoordSys, info.cdmHash) :
         this;
 
+      if (vip == null)
+        throw new IllegalStateException();
+
       int idx = vip.partnoSA.findIdx(partno);
       if (idx < 0 ||  idx >= vip.nparts) {
         if (GribIosp.debugRead) System.out.printf("  cant find partition=%d in vip=%s%n", partno, vip);
@@ -554,6 +556,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
           CoordinateTime2D compCoord2D = (CoordinateTime2D) compCoord; // of the component
           CoordinateTimeAbstract wholeCoord1Dtime = (CoordinateTimeAbstract) wholeCoord1D;
           Object wholeVal = wholeCoord1D.getValue(idx);
+          if (wholeVal == null)  // is this possible?
+            return null;
+
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
           // if (resultIdx < 0) resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate()); // debug
 
