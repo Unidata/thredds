@@ -34,7 +34,7 @@
 package ucar.nc2.iosp.hdf5;
 
 import ucar.ma2.Array;
-import ucar.nc2.NCdump;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
@@ -55,7 +55,7 @@ public class TestH5problem {
       Variable v = ncfile.findVariable("/U-MARF/EPS/IASI_xxx_1C/DATA/SPECT_LAT_ARRAY");
       Array data = v.read();
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-      NCdump.printArray(data, "primary_cloud", System.out, null);
+      NCdumpW.printArray(data, "primary_cloud", System.out, null);
     }
   }
 

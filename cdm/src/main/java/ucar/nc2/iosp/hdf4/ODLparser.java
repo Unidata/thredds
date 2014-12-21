@@ -126,7 +126,7 @@ public class ODLparser {
       }
     }
 
-    if (show) showDoc(new PrintWriter( new OutputStreamWriter(System.out)));
+    if (show) showDoc(new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset)));
     return rootElem;
   }
 

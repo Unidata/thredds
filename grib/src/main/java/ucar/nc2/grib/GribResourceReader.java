@@ -69,7 +69,8 @@ public class GribResourceReader {
     // Try the file system
     File f = new File(resourceName);
     if (f.exists())
-      return new FileInputStream(f);
+      return new       BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
+      (f);
 
     // give up
     return null;

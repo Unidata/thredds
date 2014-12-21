@@ -33,9 +33,9 @@
 package ucar.nc2;
 
 import java.io.*;
-import java.util.*;
 
 import ucar.ma2.Array;
+import ucar.nc2.constants.CDM;
 
 /**
  * Static utililities for testing
@@ -48,8 +48,9 @@ public class TestUtils  {
 
   static public void NCdump( String filename) {
     try {
-      NCdump.print(filename, System.out, false, true, false, false, null, null);
-      NCdump.printNcML(filename, System.out);
+      PrintWriter pw = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
+      NCdumpW.print(filename, pw, false, true, false, false, null, null);
+      NCdumpW.printNcML(filename, pw);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       assert (false);

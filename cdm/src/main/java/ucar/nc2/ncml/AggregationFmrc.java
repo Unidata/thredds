@@ -57,7 +57,6 @@ import java.io.*;
 public class AggregationFmrc extends AggregationOuterDimension {
   static protected Set<NetcdfDataset.Enhance> fmrcEnhanceMode = NetcdfDataset.getDefaultEnhanceMode();
 
-  private boolean debug = false;
   private Fmrc fmrc;
   private String runMatcher; // , forecastMatcher, offsetMatcher; // scanFmrc
 
@@ -141,7 +140,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     CoordinateAxis1DTime rtaxis = gsys.getRunTimeAxis();
     CoordinateAxis taxis2D = gsys.getTimeAxis();
     Array data = taxis2D.read();
-    NCdump.printArray(data, "2D time array", System.out, null);
+    NCdumpW.printArray(data, "2D time array", System.out, null);
 
     System.out.println("Run Time, Valid Times");
     List<CalendarDate> runtimes = rtaxis.getCalendarDates();
@@ -150,8 +149,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
       CoordinateAxis1DTime taxis = gsys.getTimeAxisForRun(i);
       List<CalendarDate> times = taxis.getCalendarDates();
-      for (int j = 0; j < times.size(); j++) {
-        System.out.println("   " + times.get(j));
+      for (CalendarDate time : times) {
+        System.out.println("   " + time);
       }
     }
 

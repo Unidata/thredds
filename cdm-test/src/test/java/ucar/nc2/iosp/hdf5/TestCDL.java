@@ -33,13 +33,13 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NCdump;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
 
 import java.io.*;
 
-import junit.framework.TestCase;
 import ucar.unidata.test.util.TestDir;
 
 /**
@@ -72,7 +72,8 @@ public class TestCDL {
     System.out.println("File "+filename);
 
     ByteArrayOutputStream bout = new ByteArrayOutputStream(30 * 1000);
-    NCdump.print(ncfile, bout, false, false, false, true, null, null);
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(bout, CDM.utf8Charset));
+    NCdumpW.print(ncfile, pw, false, false, false, true, null, null);
     String njCDL = bout.toString();
     if (show) System.out.println("============================================");
     if (show) System.out.println("njCDL " + njCDL);
