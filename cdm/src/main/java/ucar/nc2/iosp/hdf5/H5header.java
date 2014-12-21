@@ -2596,7 +2596,7 @@ public class H5header {
   }
 
   // Header Message: Level 2A1 and 2A2 (part of Data Object)
-  public class HeaderMessage implements Comparable {
+  public class HeaderMessage implements Comparable<HeaderMessage> {
     long start;
     byte headerMessageFlags;
     int size;
@@ -2774,8 +2774,8 @@ public class H5header {
       return header_length + size;
     }
 
-    public int compareTo(Object o) {
-      return type - ((HeaderMessage) o).type;
+    public int compareTo(HeaderMessage o) {
+      return Short.compare(type, o.type);
     }
 
     public String toString() {

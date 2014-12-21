@@ -796,7 +796,7 @@ public class FileCache implements FileCacheIF {
       }
 
       public int compareTo(CacheFile o) {
-        return (int) (lastAccessed - o.lastAccessed);
+        return Long.compare(lastAccessed, o.lastAccessed);
       }
     }
   }

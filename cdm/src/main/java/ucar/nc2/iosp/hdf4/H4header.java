@@ -1026,7 +1026,7 @@ public class H4header {
     }
 
     public int compareTo(Vinfo o) {
-      return refno - o.refno;
+      return Short.compare(refno, o.refno);
     }
 
     void setData(TagData data, int elemSize) throws IOException {
@@ -2092,7 +2092,7 @@ public class H4header {
       debugOut.println(sbuff.toString());
     }
 
-    class Mem implements Comparable {
+    class Mem implements Comparable<Mem> {
       public String name;
       public long start, end;
 
@@ -2102,9 +2102,8 @@ public class H4header {
         this.end = end;
       }
 
-      public int compareTo(Object o1) {
-        Mem m = (Mem) o1;
-        return (int) (start - m.start);
+      public int compareTo(Mem m) {
+        return Long.compare(start, m.start);
       }
 
     }
