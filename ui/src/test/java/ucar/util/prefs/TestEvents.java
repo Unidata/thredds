@@ -83,7 +83,6 @@ public class TestEvents extends TestCase {
 
       node.addPreferenceChangeListener(new PreferenceChangeListener () {
         public void preferenceChange(PreferenceChangeEvent evt) {
-          System.out.println();
           if (evt.getKey().equals("love"))
             Assert.assertEquals(" node "+ evt.getNode().name()+" key = <" +
                     evt.getKey()+"> val= <"+evt.getNewValue()+">", "ok",

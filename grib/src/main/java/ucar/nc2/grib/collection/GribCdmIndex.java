@@ -52,7 +52,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,11 +90,11 @@ public class GribCdmIndex implements IndexReader {
   }
 
       // open GribCollectionImmutable from an existing index file. return null on failure
-  static public GribCollectionImmutable acquireGribCollection(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
+  static public GribCollectionImmutable acquireGribCollection(String indexFilename, FeatureCollectionConfig config, boolean useCache, Logger logger) {
     if (gribCollectionCache != null) {
       return null;  // TBD
     }  else {
-      return openCdmIndex(indexFilename, config, dataOnly, useCache, logger);
+      return openCdmIndex(indexFilename, config, useCache, logger);
     }
   }
 
@@ -143,9 +142,7 @@ public class GribCdmIndex implements IndexReader {
     String magic;
 
     raf.seek(0);
-    byte[] b = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length];   // they are all the same
-    raf.readFully(b);
-    magic = new String(b);
+    magic = raf.readString(Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length);
 
     switch (magic) {
       case Grib2CollectionWriter.MAGIC_START:
@@ -165,13 +162,13 @@ public class GribCdmIndex implements IndexReader {
   }
 
     // open GribCollection from an existing index file. return null on failure
-  static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, Logger logger) {
-    return openCdmIndex(indexFilename, config, dataOnly, true, logger);
+  static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, Logger logger) {
+    return openCdmIndex(indexFilename, config, true, logger);
   }
 
     // open GribCollectionImmutable from an existing index file. return null on failure
-  static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? GribIndexCache.getExistingFileInCache(indexFilename) : new File(indexFilename);
+  static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean useCache, Logger logger) {
+    File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
     if (indexFileInCache == null)
         return null;
     String indexFilenameInCache = indexFileInCache.getPath();
@@ -183,16 +180,16 @@ public class GribCdmIndex implements IndexReader {
 
       switch (type) {
         case GRIB2:
-          result = Grib2CollectionBuilderFromIndex.readFromIndex(name, raf, config, dataOnly, logger);
+          result = Grib2CollectionBuilderFromIndex.readFromIndex(name, raf, config, logger);
           break;
         case Partition2:
-          result = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, raf, config, dataOnly, logger);
+          result = Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, raf, config, logger);
           break;
         case GRIB1:
-          result = Grib1CollectionBuilderFromIndex.readFromIndex(name, raf, config, dataOnly, logger);
+          result = Grib1CollectionBuilderFromIndex.readFromIndex(name, raf, config, logger);
           break;
         case Partition1:
-          result = Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, raf, config, dataOnly, logger);
+          result = Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, raf, config, logger);
           break;
         default:
           logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFilenameInCache, type);
@@ -213,9 +210,10 @@ public class GribCdmIndex implements IndexReader {
   // used by PartitionCollectionMutable.Partition
   // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionMutable openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
-    File indexFileInCache = useCache ? GribIndexCache.getExistingFileInCache(indexFilename) : new File(indexFilename);
-    if (indexFileInCache == null)
-        return null;
+    File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
+    if (indexFileInCache == null) {
+      return null;
+    }
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionMutable result = null;
@@ -225,19 +223,19 @@ public class GribCdmIndex implements IndexReader {
 
       switch (type) {
         case GRIB2:
-          result = Grib2CollectionBuilderFromIndex.openMutableGCFromIndex(name, raf, config, dataOnly, logger);
+          result = Grib2CollectionBuilderFromIndex.openMutableGCFromIndex(name, raf, config, logger);
           break;
         case Partition2:
-          result = Grib2PartitionBuilderFromIndex.openMutablePCFromIndex(name, raf, config, dataOnly, logger);
+          result = Grib2PartitionBuilderFromIndex.openMutablePCFromIndex(name, raf, config, logger);
           break;
         case GRIB1:
-          result = Grib1CollectionBuilderFromIndex.openMutableGCFromIndex(name, raf, config, dataOnly, logger);
+          result = Grib1CollectionBuilderFromIndex.openMutableGCFromIndex(name, raf, config, logger);
           break;
         case Partition1:
-          result = Grib1PartitionBuilderFromIndex.openMutablePCFromIndex(name, raf, config, dataOnly, logger);
+          result = Grib1PartitionBuilderFromIndex.openMutablePCFromIndex(name, raf, config, logger);
           break;
         default:
-          logger.warn("GribCdmIndex.openCdmIndex failed on {} type={}", indexFilenameInCache, type);
+          logger.warn("GribCdmIndex.openMutableGCFromIndex failed on {} type={}", indexFilenameInCache, type);
       }
 
       if (result != null) {
@@ -246,12 +244,18 @@ public class GribCdmIndex implements IndexReader {
       }
 
     } catch (Throwable t) {
-      logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFilenameInCache, t);
+        logger.warn("GribCdmIndex.openMutableGCFromIndex failed on "+indexFilenameInCache, t);
+    }
+
+    if (result == null) {
       try {
-        RandomAccessFile.eject(indexFilenameInCache);   // remove from cache in case it needs to be recreated
+        RandomAccessFile.eject(indexFilenameInCache);   // remove from cache
+        boolean ok = indexFileInCache.delete();          // delete so it will get recreated next time
+        logger.warn("GribCdmIndex.openMutableGCFromIndex {} deleted {}", indexFilenameInCache, ok);
       } catch (IOException e) {
         e.printStackTrace();
       }
+
     }
 
 
@@ -691,7 +695,7 @@ public class GribCdmIndex implements IndexReader {
       raf.close();
 
     } else {  // check its an ncx2 file
-      result = openGribCollectionFromIndexFile(raf, config, true, logger);
+      result = openGribCollectionFromIndexFile(raf, config, logger);
     }
 
     return result;
@@ -755,7 +759,7 @@ public class GribCdmIndex implements IndexReader {
    * @throws IOException on io error
    */
   public static GribCollectionImmutable openGribCollectionFromIndexFile(RandomAccessFile indexRaf, FeatureCollectionConfig config,
-                                                               boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+                                                               org.slf4j.Logger logger) throws IOException {
 
     GribCollectionType type = getType(indexRaf);
 
@@ -766,13 +770,13 @@ public class GribCdmIndex implements IndexReader {
 
     switch (type) {
       case Partition1 :
-         return Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, dataOnly, logger);
+         return Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, logger);
       case GRIB1 :
-        return Grib1CollectionBuilderFromIndex.readFromIndex(name, indexRaf, config, dataOnly, logger);
+        return Grib1CollectionBuilderFromIndex.readFromIndex(name, indexRaf, config, logger);
       case Partition2 :
-         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, dataOnly, logger);
+         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, logger);
       case GRIB2 :
-        return Grib2CollectionBuilderFromIndex.readFromIndex(name, indexRaf, config, dataOnly, logger);
+        return Grib2CollectionBuilderFromIndex.readFromIndex(name, indexRaf, config, logger);
     }
 
     return null;

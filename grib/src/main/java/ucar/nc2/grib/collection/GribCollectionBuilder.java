@@ -90,7 +90,7 @@ abstract class GribCollectionBuilder {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
-    File collectionIndexFile = GribIndexCache.getExistingFileInCache(dcm.getIndexFilename());
+    File collectionIndexFile = GribIndexCache.getExistingFileOrCache(dcm.getIndexFilename());
     if (collectionIndexFile == null) return true;
 
     if (ff == CollectionUpdateType.nocheck) return false;

@@ -117,7 +117,7 @@ public class Grib2Index extends GribIndex {
   public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) throws IOException {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
-    File idxFile = GribIndexCache.getExistingFileInCache(idxPath);
+    File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
     if (idxFile == null) return false;
 
     long idxModified = idxFile.lastModified();
@@ -148,8 +148,7 @@ public class Grib2Index extends GribIndex {
       NcStream.readFully(fin, m);
 
       Grib2IndexProto.Grib2Index proto = Grib2IndexProto.Grib2Index.parseFrom(m);
-      String fname = proto.getFilename();
-      if (debug) System.out.printf("%s for %s%n", fname, filename);
+      if (debug) System.out.printf("%s for %s%n", proto.getFilename(), filename);
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib2IndexProto.GribGdsSection pgds : proto.getGdsListList()) {
@@ -219,8 +218,8 @@ public class Grib2Index extends GribIndex {
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
-    File idxFile = GribIndexCache.getFileInCache(idxPath);
-    File idxFileTmp = GribIndexCache.getFileInCache(idxFile+ ".tmp");
+    File idxFile = GribIndexCache.getFileOrCache(idxPath);
+    File idxFileTmp = GribIndexCache.getFileOrCache(idxPath + ".tmp");
 
     boolean ok = false;
     RandomAccessFile raf = null;

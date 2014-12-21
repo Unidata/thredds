@@ -30,8 +30,8 @@ public class GribIndexCache {
    * @param fileLocation full path of original index filename
    * @return File, possibly in cache, may or may not exist
    */
-  static public File getFileInCache(String fileLocation) {
-    File result = getExistingFileInCache(fileLocation);
+  static public File getFileOrCache(String fileLocation) {
+    File result = getExistingFileOrCache(fileLocation);
     if (result != null) return result;
     return getDiskCache2().getFile(fileLocation);
   }
@@ -42,7 +42,7 @@ public class GribIndexCache {
    * @param fileLocation full path of original index filename
    * @return existing file if you can find it, else null
    */
-  static public File getExistingFileInCache(String fileLocation) {
+  static public File getExistingFileOrCache(String fileLocation) {
     return getDiskCache2().getExistingFileOrCache(fileLocation);
   }
 }

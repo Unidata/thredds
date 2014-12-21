@@ -100,7 +100,7 @@ public class TimeCoord {
     Object atom = (coords == null || coords.size() == 0) ? null : coords.get(0);
 
     if (atom instanceof CalendarDate) {
-      List<Integer> offsets = new ArrayList<Integer>(coords.size());
+      List<Integer> offsets = new ArrayList<>(coords.size());
       double duration = timeUnit.getValueInMillisecs();
       for (Object coord : coords) {
         CalendarDate cd = (CalendarDate) coord;
@@ -120,11 +120,11 @@ public class TimeCoord {
         if (startDate == null) startDate = tinvd.start;
         else if (startDate.isAfter(tinvd.start)) startDate = tinvd.start;
       }
-      int count = 0;
-      List<Tinv> offsets = new ArrayList<Tinv>(coords.size());
+      //int count = 0;
+      List<Tinv> offsets = new ArrayList<>(coords.size());
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
-        tinvd.index = count++;
+        //tinvd.index = count++;
         offsets.add(tinvd.convertReferenceDate(startDate, timeUnit));
       }
       this.runDate = startDate;
@@ -215,7 +215,7 @@ public class TimeCoord {
     int firstValue = -1;
     boolean same = true;
     for (Tinv tinv : intervals) {
-      int value = (int) (tinv.b2 - tinv.b1);
+      int value = (tinv.b2 - tinv.b1);
       if (firstValue < 0) firstValue = value;
       else if (value != firstValue) same = false;
     }
@@ -383,7 +383,7 @@ public class TimeCoord {
   public static class TinvDate implements Comparable<TinvDate>  {
     private final CalendarDate start, end;
     //private final CalendarPeriod period;
-    public int index = -1; // LOOK
+    // public int index = -1; //
 
     public TinvDate(CalendarPeriod period, CalendarDate end) {
       //super(0, period.getValue()); // kludge

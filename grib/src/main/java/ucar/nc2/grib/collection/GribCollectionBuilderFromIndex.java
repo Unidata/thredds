@@ -44,7 +44,6 @@ import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -57,20 +56,18 @@ import java.util.*;
  * @since 2/20/14
  */
 abstract class GribCollectionBuilderFromIndex {
+  static protected final boolean debug = false;
 
-  protected final boolean dataOnly; // dont need the extra metadata like twot
   protected GribCollectionMutable gc;
   protected final org.slf4j.Logger logger;
-  protected boolean debug = false;
   protected GribTables tables;
 
   protected abstract void readGds(GribCollectionProto.Gds p);
   protected abstract GribTables makeCustomizer() throws IOException;
   protected abstract String getLevelNameShort(int levelCode);
 
-  protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, boolean dataOnly, org.slf4j.Logger logger) {
+  protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, org.slf4j.Logger logger) {
     this.logger = logger;
-    this.dataOnly = dataOnly;
     this.gc = gc;
   }
 

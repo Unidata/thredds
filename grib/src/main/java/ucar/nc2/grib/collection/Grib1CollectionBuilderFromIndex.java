@@ -54,9 +54,9 @@ import java.io.IOException;
 public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
-  static public Grib1Collection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+  static public Grib1Collection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
-    Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, dataOnly, logger);
+    Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
       return null;
 
@@ -69,9 +69,9 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
   }
 
   // read in the index, index raf already open; return null on failure
-  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
-    Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, dataOnly, logger);
+    Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
       return null;
 
@@ -88,8 +88,8 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
   protected FeatureCollectionConfig config;
   protected Grib1Customizer cust; // gets created in readIndex, after center etc is read in
 
-  protected Grib1CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) {
-    super( new GribCollectionMutable(name, null, config, true), dataOnly, logger);  // directory will be set in readFromIndex
+  protected Grib1CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+    super( new GribCollectionMutable(name, null, config, true), logger);  // directory will be set in readFromIndex
     this.config = config;
   }
 

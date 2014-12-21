@@ -27,7 +27,7 @@ import java.util.Formatter;
  * @since 11/14/2014
  */
 public class TestGribIndexCreation {
-  private static CollectionUpdateType updateMode = CollectionUpdateType.always;
+  private static CollectionUpdateType updateMode = CollectionUpdateType.test;
 
   @BeforeClass
   static public void before() {
@@ -184,14 +184,24 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
   }
 
+  @Test
+  public void testEnsembles() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("gefs_ens", "test/gefs_ens", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/ens/.*grib2", null, null,  null, "file", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
   ////////////////
 
   @Test
   public void testRdvamds083p2_PofP() throws IOException {
-    DiskCache2 gribCache = DiskCache2.getDefault();
+    //DiskCache2 gribCache = DiskCache2.getDefault();
     //gribCache.setRootDirectory("C:/dev/github/thredds46/tds/content/thredds/cache/grib/");
-    gribCache.setAlwaysUseCache(true);
-    GribIndexCache.setDiskCache2(gribCache);
+    //gribCache.setAlwaysUseCache(true);
+    //GribIndexCache.setDiskCache2(gribCache);
 
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-pofp", "test/ds083.2-pofp", FeatureCollectionType.GRIB1,
            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/**/.*grib1",
@@ -199,7 +209,7 @@ public class TestGribIndexCreation {
     config.gribConfig.unionRuntimeCoord = true;
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }

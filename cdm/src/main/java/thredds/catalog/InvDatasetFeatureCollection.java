@@ -300,9 +300,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * Collection was changed, update internal objects.
    * called by CollectionUpdater, trigger via handleCollectionEvent, so in a quartz scheduler thread
    *
-   * @param force test : update index if anything changed or nocheck - use index if it exists
+   * @param force update type
    */
-  protected void update(CollectionUpdateType force) throws IOException {  // this may be called from a background thread
+  protected void update(CollectionUpdateType force) throws IOException {  // this may be called from a background thread, or from checkState() request thread
     State localState;
 
     synchronized (lock) {

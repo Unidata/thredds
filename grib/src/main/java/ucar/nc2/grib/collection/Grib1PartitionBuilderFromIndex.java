@@ -52,9 +52,9 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
   static public Grib1Partition createTimePartitionFromIndex(String name, RandomAccessFile raf,
-           FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+           FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
-    Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, dataOnly, logger);
+    Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, logger);
     if (builder.readIndex(raf))
       return new Grib1Partition(builder.pc);
 
@@ -63,9 +63,9 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
   static public PartitionCollectionMutable openMutablePCFromIndex(String name, RandomAccessFile raf,
-           FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+           FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
-    Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, dataOnly, logger);
+    Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, logger);
     if (builder.readIndex(raf))
       return builder.pc;
 
@@ -77,8 +77,8 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
   //private final PartitionManager tpc; // defines the partition
   private PartitionCollectionMutable pc;  // build this object
 
-  private Grib1PartitionBuilderFromIndex(String name, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) {
-    super(name, config, dataOnly, logger);
+  private Grib1PartitionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+    super(name, config, logger);
     this.pc = new PartitionCollectionMutable(name, null, config, true, logger);
     this.gc = pc;
   }
