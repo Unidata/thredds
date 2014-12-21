@@ -31,11 +31,7 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
-
 package ucar.nc2.iosp.mcidas;
-
-
 import ucar.ma2.Array;
 
 import ucar.nc2.Attribute;
@@ -46,7 +42,6 @@ import ucar.nc2.dataset.ProjectionCT;
 
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
-
 
 /**
  * Projection based on Mcidas Area files.
@@ -87,9 +82,8 @@ public class McIDASAreaTransformBuilder extends AbstractCoordTransBuilder {
         int[] area = getIntArray(ctv, McIDASAreaProjection.ATTR_AREADIR);
         int[] nav  = getIntArray(ctv, McIDASAreaProjection.ATTR_NAVBLOCK);
         int[] aux  = null;
-        if (ctv.findAttributeIgnoreCase(McIDASAreaProjection.ATTR_AUXBLOCK)
-                != null) {
-            aux = getIntArray(ctv, McIDASAreaProjection.ATTR_AUXBLOCK);
+        if (ctv.findAttributeIgnoreCase(McIDASAreaProjection.ATTR_AUXBLOCK) != null) {
+          aux = getIntArray(ctv, McIDASAreaProjection.ATTR_AUXBLOCK);
         }
 
         McIDASAreaProjection proj = new McIDASAreaProjection(area, nav, aux);

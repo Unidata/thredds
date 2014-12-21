@@ -621,9 +621,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
           throw new IOException("unable to make vertical system");
         }
         break;
-
-      default:
-        throw new IOException("vert_sys unknown");
     }
     vertVar.setCachedData(data, false);
     return vertVar;

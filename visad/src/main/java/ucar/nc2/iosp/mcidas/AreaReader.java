@@ -165,8 +165,8 @@ public class AreaReader {
     } catch (McIDASException me) {
       throw new AreaFileException(me.getMessage());
     }
-    int sensor = dirBlock[af.AD_SENSORID];
-    String calName = McIDASUtil.intBitsToString(dirBlock[af.AD_CALTYPE]);
+    int sensor = dirBlock[AreaFile.AD_SENSORID];
+    String calName = McIDASUtil.intBitsToString(dirBlock[AreaFile.AD_CALTYPE]);
     int calType = getCalType(calName);
 
     // TODO:  Need to support calibrated data.
@@ -311,16 +311,12 @@ public class AreaReader {
     proj.setDataType(DataType.CHAR);
     proj.setDimensions("");
 
-    List params = projection.getProjectionParameters();
-    for (int i = 0; i < params.size(); i++) {
-      Parameter p = (Parameter) params.get(i);
+    for (Parameter p : projection.getProjectionParameters()) {
       proj.addAttribute(new Attribute(p));
     }
 
     // For now, we have to overwrite the parameter versions of thes
-    proj.addAttribute(
-            new Attribute(
-                    "grid_mapping_name", McIDASAreaProjection.GRID_MAPPING_NAME));
+    proj.addAttribute(new Attribute("grid_mapping_name", McIDASAreaProjection.GRID_MAPPING_NAME));
         /*
         proj.addAttribute(new Attribute(McIDASAreaProjection.ATTR_AREADIR,
                                         dirArray));
@@ -375,8 +371,7 @@ public class AreaReader {
    * @throws IOException           problem reading file
    * @throws InvalidRangeException range doesn't match data
    */
-  public Array readVariable(Variable v2, Section section)
-          throws IOException, InvalidRangeException {
+  public Array readVariable(Variable v2, Section section) throws IOException, InvalidRangeException {
     // not sure why timeRange isn't used...will comment out
     // for now
     // TODO: use timeRange in readVariable
@@ -387,9 +382,8 @@ public class AreaReader {
     Array dataArray;
 
     if (section == null) {
-      dataArray =
-              Array.factory(v2.getDataType().getPrimitiveClassType(),
-                      v2.getShape());
+      dataArray = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape());
+
     } else if (section.getRank() > 0) {
       if (section.getRank() > 3) {
         //timeRange = (Range) section.getRange(0);
@@ -405,9 +399,8 @@ public class AreaReader {
         geoXRange = section.getRange(1);
       }
 
-      dataArray =
-              Array.factory(v2.getDataType().getPrimitiveClassType(),
-                      section.getShape());
+      dataArray = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
+
     } else {
       String strRank = Integer.toString(section.getRank());
       String msg = "Invalid Rank: " + strRank + ". Must be > 0.";
@@ -415,14 +408,11 @@ public class AreaReader {
     }
     String varname = v2.getFullName();
 
-
     Index dataIndex = dataArray.getIndex();
 
     if (varname.equals("latitude") || varname.equals("longitude")) {
       double[][] pixel = new double[2][1];
       double[][] latLon;
-      double[][][] latLonValues =
-              new double[geoXRange.length()][geoYRange.length()][2];
 
       // Use Range object, which calculates requested i, j
       // values and incorporates stride
@@ -433,11 +423,9 @@ public class AreaReader {
           latLon = nav.toLatLon(pixel);
 
           if (varname.equals("lat")) {
-            dataArray.setFloat(dataIndex.set(j, i),
-                    (float) (latLon[0][0]));
+            dataArray.setFloat(dataIndex.set(j, i), (float) (latLon[0][0]));
           } else {
-            dataArray.setFloat(dataIndex.set(j, i),
-                    (float) (latLon[1][0]));
+            dataArray.setFloat(dataIndex.set(j, i), (float) (latLon[1][0]));
           }
         }
       }
@@ -445,7 +433,7 @@ public class AreaReader {
 
     if (varname.equals("image")) {
       try {
-        int[][] pixelData = new int[1][1];
+        int[][] pixelData;
         if (bandRange != null) {
           for (int k = 0; k < bandRange.length(); k++) {
             int bandIndex = bandRange.element(k) + 1;  // band numbers in McIDAS are 1 based
@@ -492,8 +480,7 @@ public class AreaReader {
       if (i == 7) {
         continue;
       }
-      v.addAttribute(new Attribute(getADDescription(i),
-              new Integer(dirBlock[i])));
+      v.addAttribute(new Attribute(getADDescription(i), dirBlock[i]));
     }
   }
 

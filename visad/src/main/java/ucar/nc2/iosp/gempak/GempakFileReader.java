@@ -230,6 +230,9 @@ public class GempakFileReader implements GempakConstants {
     return (rf == null) ? null : rf.getLocation();
   }
 
+  public String getErrorMessage() {
+    return errorMessage;
+  }
 
   /**
    * Get initial file size
