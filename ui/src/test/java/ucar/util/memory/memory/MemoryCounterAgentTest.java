@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.util.memory;
+package ucar.util.memory.memory;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;

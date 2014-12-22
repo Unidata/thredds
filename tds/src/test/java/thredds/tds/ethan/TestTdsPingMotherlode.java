@@ -188,8 +188,4 @@ public class TestTdsPingMotherlode extends TestCase
     }
   }
 
-  public void testDqcServletCatalog()
-  {
-    TestAll.openAndValidateDqcDoc( targetTomcatUrl + "/dqcServlet/latestModel.xml" );
-  }
 }

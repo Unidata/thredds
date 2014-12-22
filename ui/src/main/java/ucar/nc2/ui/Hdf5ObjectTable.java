@@ -240,14 +240,14 @@ public class Hdf5ObjectTable extends JPanel {
   public void showInfo2(Formatter f) throws IOException {
     if (iosp == null) return;
 
-    ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
-    PrintStream ps = new PrintStream(ff, false, CDM.utf8Charset.name());
+    ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/headerDetails H5header/symbolTable H5header/memTracker"));
     H5header headerEmpty = (H5header) iosp.sendIospMessage("headerEmpty");
-    headerEmpty.read(ps);
+    headerEmpty.read(pw);
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
-    ps.flush();
-    f.format("%s", ff.toString(CDM.utf8Charset.name()));
+    pw.flush();
+    f.format("%s", os.toString(CDM.utf8Charset.name()));
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }
 

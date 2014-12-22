@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.util.TableParser;
@@ -187,7 +188,7 @@ public class FslLocalTables extends NcepLocalTables {
     ClassLoader cl = getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(resourcePath)) {
       if (is == null) throw new IllegalStateException("Cant find " + resourcePath);
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
       HashMap<String, Grib2Parameter> names = new HashMap<>(200);
 
       while (true) {
