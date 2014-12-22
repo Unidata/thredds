@@ -22,12 +22,12 @@
   <!-- Dependencies -->
   <dependencies>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
     </dependency>
 

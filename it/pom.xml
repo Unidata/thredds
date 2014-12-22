@@ -34,39 +34,39 @@
   <dependencies>
     <!-- thredds dependencies are not needed jet. Cargo takes the thredds.war from the tds/target directory -->
     <!-- dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>thredds</artifactId>          
       <type>war</type>
     </dependency>
     
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>thredds</artifactId>
       <classifier>classes</classifier>
     </dependency-->
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>clcommon</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>opendap</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>visadCdm</artifactId>
     </dependency>
 
@@ -81,7 +81,7 @@
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
       <type>test-jar</type>
       <scope>test</scope>

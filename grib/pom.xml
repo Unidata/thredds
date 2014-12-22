@@ -52,7 +52,7 @@
   <dependencies>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
 
@@ -82,7 +82,7 @@
     </dependency>
 
     <dependency>
-	  <groupId>edu.ucar</groupId>
+	  <groupId>${project.groupId}</groupId>
 	  <artifactId>jj2000</artifactId>
     </dependency>
 
@@ -94,8 +94,6 @@
   </dependencies>
 
   <build>
-    <testSourceDirectory>src/test/java</testSourceDirectory>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

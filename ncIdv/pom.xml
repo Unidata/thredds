@@ -18,27 +18,27 @@
 
   <dependencies>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>bufr</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>netcdf4</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>opendap</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>visadCdm</artifactId>
     </dependency>
     <dependency>

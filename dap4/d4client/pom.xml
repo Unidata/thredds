@@ -62,7 +62,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>dap4-${dap4.version}</finalName>
+              <finalName>dap4-${project.version}</finalName>
               <artifactSet>
                 <excludes>
                   <exclude>org.apache.httpclient:httpcore</exclude>

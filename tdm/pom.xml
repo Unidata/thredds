@@ -26,22 +26,22 @@
        =========================================================== -->
   <dependencies>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>httpservices</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>tdcommon</artifactId>
     </dependency>
 

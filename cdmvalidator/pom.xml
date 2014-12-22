@@ -25,19 +25,19 @@
        =========================================================== -->
   <dependencies>
     <dependency>
-       <groupId>edu.ucar</groupId>
+       <groupId>${project.groupId}</groupId>
        <artifactId>cdm</artifactId>
      </dependency>
      <dependency>
-       <groupId>edu.ucar</groupId>
+       <groupId>${project.groupId}</groupId>
        <artifactId>bufr</artifactId>
      </dependency>
      <dependency>
-       <groupId>edu.ucar</groupId>
+       <groupId>${project.groupId}</groupId>
        <artifactId>grib</artifactId>
      </dependency>
      <dependency>
-       <groupId>edu.ucar</groupId>
+       <groupId>${project.groupId}</groupId>
        <artifactId>udunits</artifactId>
      </dependency>
     <dependency>

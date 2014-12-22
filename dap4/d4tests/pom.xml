@@ -46,7 +46,7 @@
 
   <!-- testing dependencies -->
   <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
       <type>test-jar</type>
       <scope>test</scope>

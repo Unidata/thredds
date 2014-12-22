@@ -29,7 +29,7 @@ Dependencies: Mandatory dependencies are listed first. Then
   </dependency>
 
   <dependency>
-    <groupId>edu.ucar</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>httpservices</artifactId>
   </dependency>
 
