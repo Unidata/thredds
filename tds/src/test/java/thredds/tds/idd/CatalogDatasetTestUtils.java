@@ -32,6 +32,7 @@
 
 package thredds.tds.idd;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -78,7 +79,7 @@ public class CatalogDatasetTestUtils
         if ( verbose ) System.out.println( "Crawling catalog: " + catalogUrl );
 
         ByteArrayOutputStream statusMsg = new ByteArrayOutputStream();
-        PrintStream psStatusMsg = new PrintStream( statusMsg );
+      PrintWriter psStatusMsg = new PrintWriter( new OutputStreamWriter(statusMsg, CDM.utf8Charset));
 
         final List<String> accessibleDatasetUrls = new ArrayList<String>();
 

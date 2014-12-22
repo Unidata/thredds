@@ -677,7 +677,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     public ParameterBean(Grib1Record r) {
       pds = r.getPDSsection();
-      header = new String(r.getHeader());
+      header = new String(r.getHeader(), CDM.utf8Charset);
       records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = r.getGDSsection().getGDS().hashCode();
@@ -784,7 +784,7 @@ public class Grib1CollectionPanel extends JPanel {
 
 
     public String getHeader() {
-      return new String(gr.getHeader()).trim();
+      return new String(gr.getHeader(), CDM.utf8Charset).trim();
     }
 
     public String getPeriod() {

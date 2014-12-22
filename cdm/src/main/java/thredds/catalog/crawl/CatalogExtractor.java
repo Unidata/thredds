@@ -68,7 +68,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   private InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
   private ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
   private int countDatasets, countNoAccess, countNoOpen;
-  private PrintStream out;
+  private PrintWriter out;
   private String transferDir = "C:/data/bad/";
   private String copyDir = null;
 
@@ -113,7 +113,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     }
   }
 
-  public void extractLoop(PrintStream out, String catUrl, int type, boolean skipDatasetScan, CancelTask task) throws IOException {
+  public void extractLoop(PrintWriter out, String catUrl, int type, boolean skipDatasetScan, CancelTask task) throws IOException {
     while (true) {
       extract(out, catUrl, type, skipDatasetScan, task);
       if ((task != null) && task.isCancel())
@@ -121,7 +121,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     }
   }
 
-  public void extract(PrintStream out, String catUrl, int type, boolean skipDatasetScan, CancelTask task) throws IOException {
+  public void extract(PrintWriter out, String catUrl, int type, boolean skipDatasetScan, CancelTask task) throws IOException {
     this.out = out;
 
     out.println("***read " + catUrl);
@@ -167,7 +167,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
   
 
-  public boolean openDataset(PrintStream out, InvDataset ds) {
+  public boolean openDataset(PrintWriter out, InvDataset ds) {
     InvAccess access = tdataFactory.chooseDatasetAccess(ds.getAccess());
     if (access == null) {
       countNoAccess++;
@@ -226,7 +226,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     System.out.println("  **copied to " + file.getPath() + " size=" + file.length());
   }
 
-  public boolean extractTypedDatasetInfo(PrintStream out, InvDataset ds) {
+  public boolean extractTypedDatasetInfo(PrintWriter out, InvDataset ds) {
     boolean ok = true;
 
     long start = System.currentTimeMillis();
@@ -263,7 +263,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   }
 
 
-  private void extractGridDataset(PrintStream out, GridDataset gridDs) {
+  private void extractGridDataset(PrintWriter out, GridDataset gridDs) {
 
     if (!verbose) {
       out.println("    ngrids = " + gridDs.getGrids().size());
@@ -393,12 +393,12 @@ makeGrib1Vocabulary(grids, out);   */
 
   }
 
-  private void showAtts(PrintStream out, List<Attribute> atts) {
+  private void showAtts(PrintWriter out, List<Attribute> atts) {
     for (Attribute att : atts)
       out.println("  " + att);
   }
 
-  private void makeGrib1Vocabulary(List<GridDatatype> grids, PrintStream out) {
+  private void makeGrib1Vocabulary(List<GridDatatype> grids, PrintWriter out) {
     String stdName;
     out.println("\n<variables vocabulary='GRIB-1'>");
     for (GridDatatype grid : grids) {

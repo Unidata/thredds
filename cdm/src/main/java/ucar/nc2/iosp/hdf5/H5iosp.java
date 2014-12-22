@@ -43,9 +43,7 @@ import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.*;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Formatter;
@@ -567,17 +565,18 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public String getDetailInfo() {
     Formatter f = new Formatter();
-    ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
+    ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
+
     try {
       NetcdfFile ncfile = new NetcdfFileSubclass();
       H5header detailParser = new H5header(raf, ncfile, this);
-      detailParser.read(new PrintStream(ff, false, CDM.UTF8));
-      f.format("%s",super.getDetailInfo());
-      f.format("%s",ff.toString(CDM.UTF8));
+      detailParser.read(pw);
+      f.format("%s", super.getDetailInfo());
+      f.format("%s", os.toString(CDM.UTF8));
 
     } catch (IOException e) {
       e.printStackTrace();
-      e.printStackTrace(new PrintStream(ff));
     }
 
     return f.toString();

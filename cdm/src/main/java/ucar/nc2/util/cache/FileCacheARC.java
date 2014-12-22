@@ -294,6 +294,9 @@ public class FileCacheARC implements FileCacheIF {
     */
    @Override
    public void eject(Object hashKey) {
+   }
+
+  /*
       if (disabled.get()) return;
 
       // see if its in the cache
@@ -315,7 +318,7 @@ public class FileCacheARC implements FileCacheIF {
         wantCacheElem.list.clear();
       }
      cache.remove(hashKey);
-    }
+    } */
 
 
   private void addToCache(Object hashKey, FileCacheable ncfile) {

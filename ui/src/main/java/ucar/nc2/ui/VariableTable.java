@@ -34,13 +34,8 @@
 package ucar.nc2.ui;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -55,16 +50,13 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.time.TimeSeriesCollection;
-
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
@@ -72,7 +64,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.time.CalendarTimeZone;
-import ucar.nc2.ui.StructureTable.DateRenderer;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.util.prefs.PreferencesExt;
 
@@ -306,42 +297,42 @@ public class VariableTable extends JPanel {
 		CalendarDateFormatter printForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
 		if (filename == null) return;
 		try {
-			PrintStream ps = new PrintStream(new FileOutputStream(new File(filename)));
+      PrintWriter pw = new PrintWriter( new OutputStreamWriter(new FileOutputStream(filename), CDM.utf8Charset));
 
-			ps.println("; file name : " + fds.getLocation());
+			pw.println("; file name : " + fds.getLocation());
 			
 			if (includeGlobals.isSelected()) {
 				List<Attribute> gAtts = fds.getGlobalAttributes();
 				for(Attribute a : gAtts) {
-					ps.println("; " +  a.toString(false));
+					pw.println("; " +  a.toString(false));
 				}
 			}
 			
-			ps.println("; this file written : " + new Date());
+			pw.println("; this file written : " + new Date());
 			
 			TableModel model = dataModel;
 			for (int col = 0; col < model.getColumnCount(); col++) {
-				if (col > 0) ps.print(",");
-				ps.print(model.getColumnName(col));
+				if (col > 0) pw.print(",");
+				pw.print(model.getColumnName(col));
 			}
-			ps.println();
+			pw.println();
 
 			for (int row = 0; row < model.getRowCount(); row++) {
 				for (int col = 0; col < model.getColumnCount(); col++) {
-					if (col > 0) ps.print(",");
+					if (col > 0) pw.print(",");
 					Object o = model.getValueAt(row, col);
 					if (o instanceof CalendarDate) {
 						CalendarDate d = (CalendarDate)o;
-						ps.print(printForm.toString(d));
+						pw.print(printForm.toString(d));
 					}
 					else {
-						ps.print(o.toString());
+						pw.print(o.toString());
 					}
 					
 				}
-				ps.println();
+				pw.println();
 			}
-			ps.close();
+			pw.close();
 			JOptionPane.showMessageDialog(this, "File successfully written");
 		} catch (IOException ioe) {
 			JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());

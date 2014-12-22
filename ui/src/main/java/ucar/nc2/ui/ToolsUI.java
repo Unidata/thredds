@@ -6395,73 +6395,73 @@ public class ToolsUI extends JPanel {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // spring initialization
-    ApplicationContext springContext =
-            new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml");
+    try (ClassPathXmlApplicationContext springContext =
+            new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml")) {
 
-    // look for run line arguments
-    boolean configRead = false;
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
-        String runtimeConfig = args[i + 1];
-        i++;
-        try {
-          StringBuilder errlog = new StringBuilder();
-          FileInputStream fis = new FileInputStream(runtimeConfig);
-          RuntimeConfigParser.read(fis, errlog);
-          configRead = true;
-          System.out.println(errlog);
-        } catch (IOException ioe) {
-          System.out.println("Error reading " + runtimeConfig + "=" + ioe.getMessage());
-        }
-      }
-    }
-
-    if (!configRead) {
-      String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
-      File f = new File(filename);
-      if (f.exists()) {
-        try {
-          StringBuilder errlog = new StringBuilder();
-          FileInputStream fis = new FileInputStream(filename);
-          RuntimeConfigParser.read(fis, errlog);
-          configRead = true;
-          System.out.println(errlog);
-        } catch (IOException ioe) {
-          System.out.println("Error reading " + filename + "=" + ioe.getMessage());
-        }
-      }
-    }
-
-    // prefs storage
-    try {
-      // 4.4
-      String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
-      File prefs44 = new File(prefStore);
-
-      if (!prefs44.exists()) { // if 4.4 doesnt exist, see if 4.3 exists
-        String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
-        File prefs43 = new File(prefStoreBack);
-        if (prefs43.exists()) { // make a copy of it
-          IO.copyFile(prefs43, prefs44);
+      // look for run line arguments
+      boolean configRead = false;
+      for (int i = 0; i < args.length; i++) {
+        if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
+          String runtimeConfig = args[i + 1];
+          i++;
+          try {
+            StringBuilder errlog = new StringBuilder();
+            FileInputStream fis = new FileInputStream(runtimeConfig);
+            RuntimeConfigParser.read(fis, errlog);
+            configRead = true;
+            System.out.println(errlog);
+          } catch (IOException ioe) {
+            System.out.println("Error reading " + runtimeConfig + "=" + ioe.getMessage());
+          }
         }
       }
 
-      // open 4.4 version, create it if doesnt exist
-      store = XMLStore.createFromFile(prefStore, null);
-      prefs = store.getPreferences();
+      if (!configRead) {
+        String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
+        File f = new File(filename);
+        if (f.exists()) {
+          try {
+            StringBuilder errlog = new StringBuilder();
+            FileInputStream fis = new FileInputStream(filename);
+            RuntimeConfigParser.read(fis, errlog);
+            configRead = true;
+            System.out.println(errlog);
+          } catch (IOException ioe) {
+            System.out.println("Error reading " + filename + "=" + ioe.getMessage());
+          }
+        }
+      }
 
-      Debug.setStore(prefs.node("Debug"));
-    } catch (IOException e) {
-      System.out.println("XMLStore Creation failed " + e);
-    }
+      // prefs storage
+      try {
+        // 4.4
+        String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
+        File prefs44 = new File(prefStore);
 
-    // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
-    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
+        if (!prefs44.exists()) { // if 4.4 doesnt exist, see if 4.3 exists
+          String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
+          File prefs43 = new File(prefStoreBack);
+          if (prefs43.exists()) { // make a copy of it
+            IO.copyFile(prefs43, prefs44);
+          }
+        }
 
-        // filesystem caching
-    // DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
-    //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
-    //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
+        // open 4.4 version, create it if doesnt exist
+        store = XMLStore.createFromFile(prefStore, null);
+        prefs = store.getPreferences();
+
+        Debug.setStore(prefs.node("Debug"));
+      } catch (IOException e) {
+        System.out.println("XMLStore Creation failed " + e);
+      }
+
+      // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
+      Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
+
+      // filesystem caching
+      // DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
+      //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
+      //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
 
     /* try {
       //thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
@@ -6470,20 +6470,20 @@ public class ToolsUI extends JPanel {
       log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
     } */
 
-    UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
-    HTTPSession.setGlobalCredentialsProvider(provider);
-    HTTPSession.setGlobalUserAgent("ToolsUI v4.6");
+      UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
+      HTTPSession.setGlobalCredentialsProvider(provider);
+      HTTPSession.setGlobalUserAgent("ToolsUI v4.6");
 
-    // set Authentication for accessing passsword protected services like TDS PUT
-    java.net.Authenticator.setDefault(provider);
+      // set Authentication for accessing passsword protected services like TDS PUT
+      java.net.Authenticator.setDefault(provider);
 
-    // open dap initializations
-    ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
-    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
+      // open dap initializations
+      ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
+      ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
-    // caching
-    ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
-    GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
+      // caching
+      ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
+      GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
 
     /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
@@ -6494,12 +6494,13 @@ public class ToolsUI extends JPanel {
     WmsViewer.setHttpClient(client);
     */
 
-    SwingUtilities.invokeLater(new Runnable() {
-       @Override
-       public void run() {
-         createGui();
-       }
-     });
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          createGui();
+        }
+      });
+    }
   }
 
   // run this on the event thread

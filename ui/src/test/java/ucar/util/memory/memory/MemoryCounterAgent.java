@@ -32,7 +32,7 @@
  */
 
 
-package ucar.util.memory;
+package ucar.util.memory.memory;
 
 import java.lang.instrument.Instrumentation;
 

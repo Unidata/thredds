@@ -153,7 +153,11 @@ abstract class GribPartitionBuilder  {
     logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
     try (GribCollectionMutable gc = canon.makeGribCollection(forceChildren)) {  // LOOK open/close canonical partition
-      // copy info from canon gribCollection to result partitionCollection
+      if (gc == null) {
+       logger.error(" canon.makeGribCollection failed on {} errs= {}", canon.getName(), errlog.toString());
+       return false;
+     }
+          // copy info from canon gribCollection to result partitionCollection
       result.copyInfo(gc);
       result.isPartitionOfPartitions = (gc instanceof PartitionCollectionMutable);
     }
