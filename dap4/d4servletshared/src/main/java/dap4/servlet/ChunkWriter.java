@@ -20,7 +20,7 @@ public class ChunkWriter extends OutputStream
 
     static final int MAXCHUNKSIZE = 0xFFFFFF;
 
-    static final long DEFAULTWRITELIMIT = 0x7FFFFFFFFFFFFFFFL;
+    static final long DEFAULTWRITELIMIT = 100*1000000;
 
     static final int SIZEOF_INTEGER = 4;
 
@@ -401,7 +401,7 @@ public class ChunkWriter extends OutputStream
                 avail -= towrite;
             } while(left > 0);
         }
-        writelimit += len;
+        writecount += len;
     }
 
     static public void
