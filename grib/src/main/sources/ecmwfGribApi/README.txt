@@ -1,3 +1,5 @@
+Version of GRIB-API tables used: 1.11.0 (updated by Sean - 2014-12-23)
+
 2014-01-28
 -----
 
