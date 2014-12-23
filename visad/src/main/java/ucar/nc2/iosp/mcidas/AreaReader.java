@@ -35,6 +35,7 @@
 package ucar.nc2.iosp.mcidas;
 
 
+import com.google.common.base.Objects;
 import edu.wisc.ssec.mcidas.AREAnav;
 import edu.wisc.ssec.mcidas.AreaDirectory;
 import edu.wisc.ssec.mcidas.AreaFile;
@@ -174,8 +175,7 @@ public class AreaReader {
             && CalibratorFactory.hasCalibrator(sensor)) {
       //System.out.println("can calibrate");
       try {
-        calibrator = CalibratorFactory.getCalibrator(sensor, calType,
-                af.getCal());
+        calibrator = CalibratorFactory.getCalibrator(sensor, calType, af.getCal());
       } catch (CalibratorException ce) {
         // System.out.println("can't make calibrator");
         calibrator = null;
@@ -414,6 +414,9 @@ public class AreaReader {
       double[][] pixel = new double[2][1];
       double[][] latLon;
 
+      assert geoXRange != null;
+      assert geoYRange != null;
+
       // Use Range object, which calculates requested i, j
       // values and incorporates stride
       for (int i = 0; i < geoXRange.length(); i++) {
@@ -449,6 +452,9 @@ public class AreaReader {
           }
 
         } else {
+          assert geoXRange != null;
+          assert geoYRange != null;
+
           for (int j = 0; j < geoYRange.length(); j++) {
             for (int i = 0; i < geoXRange.length(); i++) {
               pixelData = af.getData(geoYRange.element(j),
@@ -727,5 +733,16 @@ public class AreaReader {
 
   }
 
+  @Override
+  public String toString() {
+    return Objects.toStringHelper(this)
+            .add("af", af)
+            .add("nav", nav)
+            .add("ad", ad)
+            .add("calibrator", calibrator)
+            .add("calScale", calScale)
+            .add("calUnit", calUnit)
+            .toString();
+  }
 }
 

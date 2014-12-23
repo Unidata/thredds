@@ -1028,7 +1028,7 @@ class ThreddsMetadataImpl
         }
 
         public boolean isTyped() {
-            return this.type != null || this.type.length() == 0;
+            return this.type != null && this.type.length() == 0;
         }
 
         public String getType() {

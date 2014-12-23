@@ -144,7 +144,7 @@ public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
     {
       InvCrawlablePair curDsInfo = (InvCrawlablePair) it.next();
       CrawlableDataset curCrDs = curDsInfo.getCrawlableDataset();
-      if ( curCrDs.lastModified().getTime() > targetTime )
+      if ( curCrDs != null && curCrDs.lastModified() != null && curCrDs.lastModified().getTime() > targetTime )
       {
         it.remove();
       }

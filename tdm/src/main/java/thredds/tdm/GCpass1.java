@@ -79,7 +79,7 @@ public class GCpass1 {
     pass1.scanAndReport();
   }
 
-  class Accum {
+  static class Accum {
     CalendarDate last = null;
     int[] count;
 

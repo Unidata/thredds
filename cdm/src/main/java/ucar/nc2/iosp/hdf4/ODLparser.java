@@ -75,9 +75,9 @@ import ucar.nc2.util.IO;
  */
 public class ODLparser {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser.class);
+  private static boolean debug = false, showRaw = false, show = false;
 
   private Document doc;
-  private boolean debug = false, showRaw = false, show = false;
 
   void showDoc(PrintWriter out) {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());

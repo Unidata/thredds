@@ -106,7 +106,7 @@ public class NcepMnemonic {
       //| HEADR    | 362001 | TABLE D ENTRY - PROFILE COORDINATES                      |
       while (true) {
         String line = dataIS.readLine();
-        //if (line == null) break;
+        if (line == null) break;
         if (line.contains("MNEMONIC")) break;
         if (line.contains("----")) continue;
         if (line.startsWith("*")) continue;

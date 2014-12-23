@@ -44,6 +44,7 @@ import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.ma2.*;
 
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.*;
 import java.io.IOException;
@@ -149,7 +150,7 @@ public class H5header {
   private Map<Long, GlobalHeap> heapMap = new HashMap<>();
   private java.text.SimpleDateFormat hdfDateParser;
 
-  private java.io.PrintWriter debugOut = new PrintWriter(System.out);
+  private java.io.PrintWriter debugOut = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
   private MemTracker memTracker;
 
   H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) {

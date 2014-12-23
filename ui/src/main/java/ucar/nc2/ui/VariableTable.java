@@ -132,7 +132,7 @@ public class VariableTable extends JPanel {
 				Variable dimVar = file.findVariable(d.getShortName());
 				if (dimVar != null) {
 					Attribute axis = dimVar.findAttribute("axis");
-					if ((axis != null) & axis.isString() && (axis.getStringValue().compareTo("T") == 0)) {
+					if ((axis != null) && axis.isString() && (axis.getStringValue().compareTo("T") == 0)) {
 						//System.out.println("Time AXIS");
 						CoordinateAxis1DTime tm;
 						try {

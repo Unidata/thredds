@@ -94,7 +94,6 @@ public class AreaFile3 {
   private Array data;
   private AreaDirectory areaDirectory = null;
   private AREAnav areaNavigation = null;
-  private String imageSource;
 
   private boolean showBBcalc = false;
 

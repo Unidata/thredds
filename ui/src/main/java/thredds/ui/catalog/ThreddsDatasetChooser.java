@@ -143,8 +143,8 @@ public class ThreddsDatasetChooser extends JPanel {
       public void propertyChange( java.beans.PropertyChangeEvent e) {
 
         if (e.getPropertyName().equals("InvAccess")) {
-          InvAccess qcAccess = (InvAccess) e.getNewValue();
-          /* if (queryChooser != null && qcAccess.getService().getServiceType() == ServiceType.QC) { // && (ds.getDataType() != DataType.STATION)) {
+          /* InvAccess qcAccess = (InvAccess) e.getNewValue();
+          if (queryChooser != null && qcAccess.getService().getServiceType() == ServiceType.QC) { // && (ds.getDataType() != DataType.STATION)) {
             queryChooser.setDataset( qcAccess.getDataset());
             tabbedPane.setSelectedComponent(queryChooser);
             return;

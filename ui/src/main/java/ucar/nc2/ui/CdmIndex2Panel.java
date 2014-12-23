@@ -329,7 +329,7 @@ public class CdmIndex2Panel extends JPanel {
     fileTable.setFiles(dir, files);
   }
 
-  private class SortBySize implements Comparable<SortBySize> {
+  private static class SortBySize implements Comparable<SortBySize> {
     Object obj;
     int size;
 
@@ -342,6 +342,7 @@ public class CdmIndex2Panel extends JPanel {
       return Integer.compare(size, o.size);
     }
   }
+
   public void showMemoryEst(Formatter f) {
     if (gc == null) return;
 
@@ -389,8 +390,6 @@ public class CdmIndex2Panel extends JPanel {
             try {
               v.readRecords();
               SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
-              if (sa == null)
-                System.out.println("HEY");
               int ntracks  = sa.getTotalSize();
               int nrecords = sa.getContent().size();
               int memEstForSA = 276 + nrecords * 40 + ntracks * 4;

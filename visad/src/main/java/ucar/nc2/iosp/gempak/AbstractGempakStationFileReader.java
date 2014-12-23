@@ -103,7 +103,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
   /**
    * list of parameters
    */
-  private List<GempakParameter> params;
+  // private List<GempakParameter> params;
 
   /**
    * list of parameters
