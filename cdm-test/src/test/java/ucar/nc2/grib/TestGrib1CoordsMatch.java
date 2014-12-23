@@ -56,6 +56,7 @@ import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -165,7 +166,9 @@ public class TestGrib1CoordsMatch {
 
   @Test
   public void testRdavmDs083p2() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp-PofP.ncx3");
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp-PofP.ncx3";
+    File fileInCache = GribIndexCache.getExistingFileOrCache(filename);
+    TestGribCollections.Count count = read(fileInCache.getPath());
 
     // that took 63 secs total, 1.471143 msecs per record total == 4624/33718/43248
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);

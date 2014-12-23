@@ -198,10 +198,10 @@ public class TestGribIndexCreation {
 
   @Test
   public void testRdvamds083p2_PofP() throws IOException {
-    //DiskCache2 gribCache = DiskCache2.getDefault();
+    DiskCache2 gribCache = DiskCache2.getDefault();
     //gribCache.setRootDirectory("C:/dev/github/thredds46/tds/content/thredds/cache/grib/");
-    //gribCache.setAlwaysUseCache(true);
-    //GribIndexCache.setDiskCache2(gribCache);
+    gribCache.setAlwaysUseCache(true);
+    GribIndexCache.setDiskCache2(gribCache);
 
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-pofp", "test/ds083.2-pofp", FeatureCollectionType.GRIB1,
            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/**/.*grib1",
