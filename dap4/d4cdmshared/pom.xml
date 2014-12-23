@@ -41,14 +41,17 @@ Dependencies: Mandatory dependencies are listed first. Then
   </dependency>
 -->
 
-  <!-- CDM -->
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>cdm</artifactId>
-    <!-- version>${thredds.version}</version -->
-    <!-- scope>provided</scope -->
   </dependency>
 
+  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <scope>test</scope>
+  </dependency>
 </dependencies>
 
 </project>

@@ -252,12 +252,6 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>opendap</artifactId>
         <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -273,13 +267,13 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>visadCdm</artifactId>
         <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>edu.wisc.ssec</groupId> <!-- replaces visad -->
-            <artifactId>visad</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>waterml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>d4core</artifactId>
@@ -288,11 +282,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>d4shared</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>d4client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -315,58 +304,6 @@
         <artifactId>d4ts</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>d4tests</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>d4tswar</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>waterml</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <!-- logging -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
-        <version>${log4j.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <!-- "org.springframework:spring-core" and "org.apache.httpcomponents:httpclient" compile against -->
-      <!-- "commons-logging:commons-logging", but we use slf4j. We've excluded those depedencies, but we still -->
-      <!-- need to convert their jcl calls to slf4j. -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-
-      <!-- These two are only used in tdcommon. -->
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>${log4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>${log4j.version}</version>
-      </dependency>
-
 
       <!-- spring -->
       <dependency>
@@ -374,7 +311,7 @@
         <artifactId>spring-core</artifactId>
         <version>${org.springframework.version}</version>
         <exclusions>
-          <!-- Replaced with jcl-over-slf4j. -->
+          <!-- We're using "jcl-over-slf4j" to convert "commons-logging" calls to "slf4j". -->
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -405,9 +342,10 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
         <version>${org.springframework.version}</version>
+        <scope>test</scope>
       </dependency>
 
-      <!-- spring security -->
+      <!-- Spring security. These are currently only used in wmotables. -->
       <dependency>
        <groupId>org.springframework.security</groupId>
        <artifactId>spring-security-config</artifactId>
@@ -415,17 +353,7 @@
       </dependency>
       <dependency>
        <groupId>org.springframework.security</groupId>
-       <artifactId>spring-security-core</artifactId>
-       <version>${org.springframework.security.version}</version>
-      </dependency>
-      <dependency>
-       <groupId>org.springframework.security</groupId>
        <artifactId>spring-security-taglibs</artifactId>
-       <version>${org.springframework.security.version}</version>
-      </dependency>
-      <dependency>
-       <groupId>org.springframework.security</groupId>
-       <artifactId>spring-security-web</artifactId>
        <version>${org.springframework.security.version}</version>
       </dependency>
 
@@ -440,7 +368,13 @@
         <groupId>httpunit</groupId>
         <artifactId>httpunit</artifactId>
         <version>${httpunit.version}</version>
+        <scope>test</scope>
         <exclusions>
+          <!-- This is an old version of the API, v2. We're using v3. -->
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>jtidy</groupId>
             <artifactId>jtidy</artifactId>
@@ -448,12 +382,12 @@
         </exclusions>
       </dependency>
 
+      <!-- These 2 are only used in ui. -->
       <dependency>
         <groupId>org.bounce</groupId>
         <artifactId>bounce</artifactId>
         <version>${bounce.version}</version>
       </dependency>
-
       <dependency>
         <groupId>org.imgscalr</groupId>
         <artifactId>imgscalr-lib</artifactId>
@@ -568,16 +502,11 @@
         <artifactId>httpcore</artifactId>
         <version>${httpcore.version}</version>
       </dependency>
+      <!-- Only used in cdmvalidator. -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
         <version>${httpmime.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>commons-cli</groupId>
-        <artifactId>commons-cli</artifactId>
-        <version>${commons-cli.version}</version>
       </dependency>
 
       <dependency>
@@ -876,32 +805,71 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cdm</artifactId>
+        <version>${project.version}</version>
         <scope>test</scope>
         <type>test-jar</type>
-        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dap4tests</artifactId>
+        <version>${project.version}</version>
         <scope>test</scope>
         <type>test-jar</type>
-        <version>${project.version}</version>
+      </dependency>
+
+      <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${org.slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${org.slf4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!-- "org.springframework:spring-core" and "org.apache.httpcomponents:httpclient" compile against -->
+      <!-- "commons-logging:commons-logging", but we use slf4j. We've excluded those depedencies, but we still -->
+      <!-- need to convert their jcl calls to slf4j. -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${org.slf4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!-- This is only used in tdcommon. -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
+
 
   <dependencies>
     <!-- All modules use JUnit for their test. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Use Log4J for all logging during tests. -->
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
   </dependencies>
 
@@ -1098,7 +1066,6 @@
     <httpclient.version>4.2.6</httpclient.version>
     <httpcore.version>4.2.5</httpcore.version>
     <httpmime.version>4.2.6</httpmime.version>
-    <commons-cli.version>1.2</commons-cli.version>
     <commons-io.version>2.4</commons-io.version>
     <commons-compress.version>1.8.1</commons-compress.version>
     <derby.version>10.9.1.0</derby.version>

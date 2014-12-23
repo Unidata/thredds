@@ -363,11 +363,6 @@ public class BufrSplitter {
     String progName = "BufrSpitter";
 
     try {
-      if (args == null || args.length == 0) {
-        args = new String[] { "--fileSpec", "E:/data/work/manross/gdas.adpsfc.t00z.20120603.bufr.le",
-                "--dirOut", "E:/data/work/manross/split_adpsfc" };
-      }
-
       CommandLine cmdLine = new CommandLine(progName, args);
 
       if (cmdLine.help) {

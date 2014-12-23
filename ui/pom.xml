@@ -76,15 +76,6 @@
       <groupId>com.jgoodies</groupId>
       <artifactId>jgoodies-forms</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <scope>runtime</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -123,13 +114,24 @@
     </dependency>
 
     <dependency>
+      <groupId>org.n52.sensorweb</groupId>
+      <artifactId>52n-oxf-xmlbeans</artifactId>
+    </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.n52.sensorweb</groupId>
-      <artifactId>52n-oxf-xmlbeans</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
   </dependencies>
 
