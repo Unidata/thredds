@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Partitions</title>
+  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<h1>Partitions</h1>
+<p><strong>timePartition</strong> (optional): [ <em>directory</em> | <em>file</em> | <em>none</em>] : This defines the time intervals from which the collection is partitioned. This is used for very large datasets, and it has far reaching effects on how your data is processed and presented.
+The values may be: </p>
+<ol>
+  <li><strong>none:</strong> all files are scanned in, then divided into partitions based on the time period (if needed) and a collection level index is built.</li>
+  <li><strong>directory:</strong> each directory is a partition<strong>. default</strong></li>
+  <li><strong>file: </strong>each file is a partition.</li>
+</ol>
+<p>&nbsp;</p>
+<p>The CDM groups all the records for a given reference time together. IN order to handle large colelctions efficiently, it <em><strong>partitions</strong></em> the data by reference time. </p>
+<p>&nbsp;</p>
+<h3>Directory Partition</h3>
+<p>In order to use a directory partition, the directory structure must partition the data by reference time.</p>
+<p>&nbsp;</p>
+<h3>File Partition</h3>
+<p>In order to use a file partition, all of the records for a reference time must be contained in a single file. The common case is that each file contains all of the records for a single reference time.</p>
+<p>&nbsp;</p>
+<h3>Time Partition</h3>
+<p>In order to use a time partition, the filenames must contain parseable time information than can be used to partition the data. The directory layout, if any, is not used. The common case is where all  files are in a single directory, and each file has the reference date and optionally the forecast date in the name. The split-out of variables does not matter.</p>
+<p>If a collection is configured as a time partition, all of the filenames are read into memory at once. A date extractor must be specified, and is used to group the files into partitions. For example, if<strong> timePartition = &quot;year&quot;,</strong> all of the files for each calendar year are made into a collections. The overall datasets is then the collection of all of those yearly collections.</p>
+<p>&nbsp;</p>
+<h3>None Partition</h3>
+<p>If a collection is configured with<strong> timePartition=none</strong>, all of the records' metadata (excluding the data itself) must be  read into memory at once. The records are then grouped by  reference time, and a seperate collection is written for each reference time. The overall dataset is then the collection of all of those single-reftime collections.</p>
+<p>This option is reasonable for small collections. Record metadata is approximately 400 bytes / record. 1M records would then consume 400 Mb during the indexing process. Our rule of thumb is to use a different partition strategy if the collection exceeds 1M records. Even then, this option takes the longest when indexing, and other strategies are preferred especially if the collection is dynamic and must be reindexed often.</p>
+<p>&nbsp;</p>
+<h3>Collection storage strategies</h3>
+<p>Generally, managing many small files has more overhead than managing smaller numbers of large files. For today's disks,  file sizes of of 100 Mb - 10 Gb seems right. Keep the number of files in a directory small, a few hundred is best, and more than a thousand starts to make things like  directory listings hard. </p>
+<p>Partition your files by reference time, which typically is the model run time. Depending on size and number, you might group files by day, month, year, etc. </p>
+<p>When you have complete control over how the collection is stored on disk, and you want to optimize for fastest THREDDS indexing and retrieval,<strong> file partitions</strong> are recommended. Placing all of the records for a single reference time in a single file is often optimal. If there are a small number of records for each runtime (&lt;10,000 ?) you might want to put more than one refrence time in each file. Its essential that all the records for each runtime be in a single file.</p>
+<p>GRIB files are unordered collections of GRIB records. So you can concatenate GRIB files together just using the <strong>cat</strong> command. So you can easily reorganize your collection (breaking up files  requires GRIB-aware software, but is easy enough), just delete any old THREDDS indexes (.<strong>gbx9</strong> or .<strong>ncx3</strong>) and regenerate them with the TDM.</p>
+<p>&nbsp;</p>
+<h3>Homogeneity requirements</h3>
+<p>A <em>feature collection dataset</em> is a homogeneous collection of records. That means that the metadata describing the dataset is approximately the same for all of the records. Each GRIB record is self-contained, in the sense that it does not reference other records, or an overall schema. The point of making a  collection of GRIB records into a CDM dataset, is to allow the user to access the entire collection at once, using the netCDF API for multidimensionsal arrays. The user cannont, using the netCDF API, access the metaddata for individual GRIB records. Instead, we assume that the metadata is uniform in the collection, and expose it with variable and global attributes.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p></p>
+<p>&nbsp;</p>
+</body>
+</html>

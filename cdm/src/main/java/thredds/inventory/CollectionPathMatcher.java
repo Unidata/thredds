@@ -35,6 +35,7 @@ package thredds.inventory;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
+import thredds.inventory.filter.StreamFilter;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
@@ -42,9 +43,11 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
- * A collection defined by regexp: or glob: in the collection spec
+ * A collection defined by the collection spec (not directory sensitive)
+ * May have by regexp: or glob: (experimental)
  * @author caron
  * @since 12/23/2014
  */
@@ -58,8 +61,15 @@ public class CollectionPathMatcher extends CollectionAbstract {
     setRoot(specp.getRootDir());    // LOOK may be tricky to figure out top ??
     setDateExtractor(config.getDateExtractor());
 
-    assert specp.getSpec().startsWith("regexp:") || specp.getSpec().startsWith("glob:");
-    matcher = FileSystems.getDefault().getPathMatcher(specp.getSpec());
+    if (specp.getFilter() != null)
+      setStreamFilter(new StreamFilter(specp.getFilter()));
+    putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+
+    if (specp.getSpec().startsWith("regex:") || specp.getSpec().startsWith("glob:")) {
+      matcher = FileSystems.getDefault().getPathMatcher(specp.getSpec());
+    } else {
+      matcher = new BySpecp(specp);
+    }
 
     this.rootPath = Paths.get(this.root);
     this.olderThanMillis = parseOlderThanString( config.olderThan);
@@ -95,7 +105,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
         } catch (IOException e) {
           logger.error("Error closing dirStream", e);
         }
-        current = subdirs.remove();
+        current = subdirs.poll();
         return current != null && hasNext();
       }
       return true;
@@ -110,7 +120,9 @@ public class CollectionPathMatcher extends CollectionAbstract {
       throw new UnsupportedOperationException();
     }
     public void close() throws IOException {
-      current.close();
+      if (current != null)
+        current.close();
+      current = null;
     }
   }
 
@@ -154,6 +166,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
               continue;
           }
           nextMFile = new MFileOS7(nextPath, attr);
+          return true;
 
         } catch (IOException e) {
           throw new RuntimeException(e);
@@ -172,6 +185,19 @@ public class CollectionPathMatcher extends CollectionAbstract {
 
     public void close() throws IOException {
       dirStream.close();
+    }
+  }
+
+  static public class BySpecp implements java.nio.file.PathMatcher {
+    final Pattern pattern;
+    BySpecp(CollectionSpecParser specp) {
+       this.pattern = specp.getFilter();
+    }
+
+    @Override
+    public boolean matches(Path path) {
+      java.util.regex.Matcher matcher = this.pattern.matcher(path.getFileName().toString());
+      return matcher.matches();
     }
   }
 

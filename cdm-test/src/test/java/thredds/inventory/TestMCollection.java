@@ -37,6 +37,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.DirectoryCollection;
+import thredds.inventory.partition.TimePartition;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class TestMCollection {
   org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
 
   @Test
-  public void testCfrsAnalysisOnly() throws IOException {
+  public void testStreamFilterInDirPartition() throws IOException {
     // this dataset 0-6 hour forecasts  x 124 runtimes (4x31)
     // there are  2 groups, likely miscoded, the smaller group are 0 hour,  duplicates, possibly miscoded
     FeatureCollectionConfig config = new FeatureCollectionConfig("cfrsAnalysis_46", "test/testCfrsAnalysisOnly", FeatureCollectionType.GRIB2,
@@ -72,9 +73,40 @@ public class TestMCollection {
       int count = 0;
       for (MFile mfile : dcm.getFilesSorted()) {
         System.out.printf("%s%n", mfile);
+        assert mfile.getName().equals("pwat.gdas.199612.grb2");
         count++;
       }
       assert count == 1;
     }
   }
+
+  @Test
+  public void testTimePartition() throws IOException {
+
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds627.1", "test/ds627.1", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null, "#ei.mdfa.fc12hr.sfc.regn128sc.#yyyyMMddhh", null, "year", null);
+
+    Formatter errlog = new Formatter();
+    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+
+    try (TimePartition tp = new TimePartition(config, specp, logger)) {
+      tp.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+
+      int countP = 0;
+      for (MCollection mc : tp.makePartitions(CollectionUpdateType.always)) {
+        System.out.printf("%s%n", mc);
+        countP++;
+
+        int count = 0;
+        for (MFile mfile : mc.getFilesSorted()) {
+          System.out.printf("  %s%n", mfile);
+          count++;
+        }
+        assert count == 12 : count;
+      }
+      assert countP == 34 : countP;
+    }
+
+  }
+
 }

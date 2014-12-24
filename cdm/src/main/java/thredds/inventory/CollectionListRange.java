@@ -32,6 +32,8 @@
  */
 package thredds.inventory;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import org.slf4j.Logger;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
@@ -41,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Colelction defined by a list of files, wit a [start, end) date range
+ * Collection defined by a list of files, wit a [start, end) date range
  *
  * @author caron
  * @since 12/23/2014
@@ -82,4 +84,12 @@ public class CollectionListRange extends CollectionAbstract {
   @Override
   public void close() {  }
 
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("collectionName", collectionName)
+            .add("startDate", startDate)
+            .add("endDate", endDate)
+            .toString();
+  }
 }

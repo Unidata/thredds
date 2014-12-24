@@ -50,10 +50,12 @@ import java.util.List;
  */
 public class TimePartition extends CollectionPathMatcher implements PartitionManager {
   CalendarPeriod timePeriod;
+  CalendarDateFormatter cdf;
 
   public TimePartition(FeatureCollectionConfig config, CollectionSpecParser specp, org.slf4j.Logger logger) {
     super(config, specp, logger);
     timePeriod = config.timePeriod;
+    cdf = CalendarDateFormatter.factory(timePeriod);
   }
 
   public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException {
@@ -69,10 +71,12 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
       if ((curr == null) || !endDate.isAfter(cdate)) {
         startDate = cdate.truncate(timePeriod.getField()); // start on a boundary
         endDate = startDate.add( timePeriod);
-        String name = collectionName + "-"+ startDate.toString();  // LOOK maybe want to taailor to timePeriod ?
+        String name = collectionName + "-"+ cdf.toString(startDate);
         curr = new CollectionListRange(name, root, startDate, endDate, this.logger);
         result.add(curr);
+        //System.out.printf("---%s%n", curr);
       }
+      //System.out.printf("%s%n", mfile);
       curr.addFile(mfile);
     }
 
