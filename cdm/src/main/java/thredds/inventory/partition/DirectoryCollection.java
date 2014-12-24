@@ -171,6 +171,7 @@ public class DirectoryCollection extends CollectionAbstract {
           if (millisSinceModified < olderThanMillis)
             continue;
           nextMFile = new MFileOS7(nextPath, attr);
+          return true;
 
        } catch (IOException e) {
          throw new RuntimeException(e);

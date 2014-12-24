@@ -467,7 +467,6 @@ public class GribCdmIndex implements IndexReader {
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
     try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, config.olderThan, logger)) {
-      // dcm.setLeaf(true);
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (specp.getFilter() != null)
         dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
