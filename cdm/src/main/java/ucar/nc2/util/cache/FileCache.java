@@ -597,7 +597,7 @@ public class FileCache implements FileCacheIF {
       countMiss += t.miss;
       format.format("%6d  %7d : %6d %6d %s%n", seq, countAll, t.hit, t.miss, t.key);
     }
-    float r= ((float)countHits) / countAll;
+    float r = (countAll == 0) ? 0 : ((float)countHits) / countAll;
     format.format("  total=%7d : %6d %6d hit ratio=%f%n", countAll, countHits, countMiss, r);
   }
 

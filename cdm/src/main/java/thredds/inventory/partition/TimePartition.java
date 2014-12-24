@@ -65,6 +65,7 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
 
     for (MFile mfile : getFilesSorted()) {
       CalendarDate cdate = dateExtractor.getCalendarDate(mfile);
+      if (cdate == null) continue; // skip - error should be logged
       if ((curr == null) || !endDate.isAfter(cdate)) {
         startDate = cdate.truncate(timePeriod.getField()); // start on a boundary
         endDate = startDate.add( timePeriod);
