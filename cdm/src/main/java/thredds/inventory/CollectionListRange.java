@@ -32,20 +32,54 @@
  */
 package thredds.inventory;
 
+import org.slf4j.Logger;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.CloseableIterator;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Abstraction for object persistance using key/value stores.
+ * Colelction defined by a list of files, wit a [start, end) date range
  *
  * @author caron
- * @since 7/18/13
+ * @since 12/23/2014
  */
-public interface StoreKeyValue {
+public class CollectionListRange extends CollectionAbstract {
+  private final List<MFile> mfiles = new ArrayList<>();
+  private final CalendarDate startDate, endDate;
 
-  public byte[] getBytes(String key);
-  public void put(String key, byte[] value);
-  public void close();
-
-  public interface Factory {
-    public StoreKeyValue open(String name);
+  public CollectionListRange(String collectionName, String root, CalendarDate startDate, CalendarDate endDate, Logger logger) {
+    super(collectionName, logger);
+    setRoot(root);
+    this.startDate = startDate;
+    this.endDate = endDate;
   }
+
+  public CalendarDate getStartDate() {
+    return startDate;
+  }
+
+  public CalendarDate getEndDate() {
+    return endDate;
+  }
+
+  public void addFile(MFile mfile) {
+    mfiles.add(mfile);
+  }
+
+  @Override
+  public Iterable<MFile> getFilesSorted() {
+    return mfiles;
+  }
+
+  @Override
+  public CloseableIterator<MFile> getFileIterator() throws IOException {
+    return new MFileIterator(mfiles.iterator(), null);
+  }
+
+  @Override
+  public void close() {  }
 
 }

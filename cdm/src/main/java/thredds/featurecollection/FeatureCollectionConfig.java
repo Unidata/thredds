@@ -68,7 +68,7 @@ public class FeatureCollectionConfig {
   }
 
   static public enum PartitionType {
-    none, directory, file
+    none, directory, file, timePeriod
   }
 
   public static void setRegularizeDefault(boolean t) {
@@ -85,6 +85,7 @@ public class FeatureCollectionConfig {
 
   public FeatureCollectionType type;
   public PartitionType ptype = PartitionType.directory;
+  public CalendarPeriod timePeriod;
   public String name, path, spec, collectionName, dateFormatMark, olderThan;
   public UpdateConfig tdmConfig = new UpdateConfig();
   public UpdateConfig updateConfig = new UpdateConfig();
@@ -108,8 +109,14 @@ public class FeatureCollectionConfig {
     this.olderThan = olderThan;
     if (null != timePartition) {
       if (timePartition.equalsIgnoreCase("none")) ptype = PartitionType.none;
-      if (timePartition.equalsIgnoreCase("directory")) ptype = PartitionType.directory;
-      if (timePartition.equalsIgnoreCase("file")) ptype = PartitionType.file;
+      else if (timePartition.equalsIgnoreCase("directory")) ptype = PartitionType.directory;
+      else if (timePartition.equalsIgnoreCase("file")) ptype = PartitionType.file;
+      else {
+        timePeriod = CalendarPeriod.of(timePartition);
+        ptype = PartitionType.timePeriod;
+        if (timePeriod == null)
+          throw new IllegalArgumentException("Illegal timePeriod= "+timePartition);
+      }
     }
     this.innerNcml = innerNcml;
   }

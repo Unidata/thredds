@@ -30,22 +30,52 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.inventory;
+package thredds.inventory.partition;
+
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.*;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarPeriod;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Abstraction for object persistance using key/value stores.
+ * Describe
  *
  * @author caron
- * @since 7/18/13
+ * @since 12/23/2014
  */
-public interface StoreKeyValue {
+public class TimePartition extends CollectionPathMatcher implements PartitionManager {
+  CalendarPeriod timePeriod;
 
-  public byte[] getBytes(String key);
-  public void put(String key, byte[] value);
-  public void close();
+  public TimePartition(FeatureCollectionConfig config, CollectionSpecParser specp, org.slf4j.Logger logger) {
+    super(config, specp, logger);
+    timePeriod = config.timePeriod;
+  }
 
-  public interface Factory {
-    public StoreKeyValue open(String name);
+  public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException {
+
+    List<MCollection> result = new ArrayList<>();
+    CollectionListRange curr = null;
+    CalendarDate startDate = null;
+    CalendarDate endDate = null;
+
+    for (MFile mfile : getFilesSorted()) {
+      CalendarDate cdate = dateExtractor.getCalendarDate(mfile);
+      if ((curr == null) || !endDate.isAfter(cdate)) {
+        startDate = cdate.truncate(timePeriod.getField()); // start on a boundary
+        endDate = startDate.add( timePeriod);
+        String name = collectionName + "-"+ startDate.toString();  // LOOK maybe want to taailor to timePeriod ?
+        curr = new CollectionListRange(name, root, startDate, endDate, this.logger);
+        result.add(curr);
+      }
+      curr.addFile(mfile);
+    }
+
+    return result;
   }
 
 }

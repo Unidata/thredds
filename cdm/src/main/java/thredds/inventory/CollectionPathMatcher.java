@@ -30,7 +30,6 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
 package thredds.inventory;
 
 import org.slf4j.Logger;
@@ -39,28 +38,29 @@ import thredds.filesystem.MFileOS7;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
 
 /**
- * All files are read in at once.
- * timePartition=none
- *
+ * A collection defined by regexp: or glob: in the collection spec
  * @author caron
- * @since 2/7/14
+ * @since 12/23/2014
  */
-public class CollectionGeneral extends CollectionAbstract {
+public class CollectionPathMatcher extends CollectionAbstract {
   private final long olderThanMillis;
   private final Path rootPath;
+  private PathMatcher matcher;
 
-  public CollectionGeneral(FeatureCollectionConfig config, CollectionSpecParser specp, Logger logger) {
+  public CollectionPathMatcher(FeatureCollectionConfig config, CollectionSpecParser specp, Logger logger) {
     super(config.collectionName, logger);
-    this.root = specp.getRootDir();
+    setRoot(specp.getRootDir());    // LOOK may be tricky to figure out top ??
+    setDateExtractor(config.getDateExtractor());
+
+    assert specp.getSpec().startsWith("regexp:") || specp.getSpec().startsWith("glob:");
+    matcher = FileSystems.getDefault().getPathMatcher(specp.getSpec());
+
     this.rootPath = Paths.get(this.root);
     this.olderThanMillis = parseOlderThanString( config.olderThan);
   }
@@ -75,17 +75,54 @@ public class CollectionGeneral extends CollectionAbstract {
 
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return new MyFileIterator(rootPath);
+    return new AllFilesIterator();
   }
 
-  // returns everything defined by specp, checking olderThanMillis
-  private class MyFileIterator implements CloseableIterator<MFile> {
+  // could also use  Files.walkFileTree
+  // returns everything defined by specp, checking olderThanMillis, descends into subdirs as needed
+  private class AllFilesIterator implements CloseableIterator<MFile> {
+    Queue<OneDirIterator> subdirs = new LinkedList<>();
+    OneDirIterator current;
+
+    AllFilesIterator() throws IOException {
+      current = new OneDirIterator(rootPath, subdirs);
+    }
+
+    public boolean hasNext() {
+      if (!current.hasNext()) {
+        try {
+          current.close();
+        } catch (IOException e) {
+          logger.error("Error closing dirStream", e);
+        }
+        current = subdirs.remove();
+        return current != null && hasNext();
+      }
+      return true;
+    }
+
+    public MFile next() {
+      if (current == null) throw new NoSuchElementException();
+      return current.next();
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+    public void close() throws IOException {
+      current.close();
+    }
+  }
+
+  private class OneDirIterator implements CloseableIterator<MFile> {
+    Queue<OneDirIterator> subdirs;
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
     MFile nextMFile;
     long now;
 
-    MyFileIterator(Path dir) throws IOException {
+    OneDirIterator(Path dir, Queue<OneDirIterator> subdirs) throws IOException {
+      this.subdirs = subdirs;
       dirStream = Files.newDirectoryStream(dir, new MyStreamFilter());
       dirStreamIterator = dirStream.iterator();
       now = System.currentTimeMillis();
@@ -101,21 +138,28 @@ public class CollectionGeneral extends CollectionAbstract {
 
         try {
           Path nextPath = dirStreamIterator.next();
-          BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
-          if (attr.isDirectory()) continue;  // LOOK fix this
-
-          FileTime last = attr.lastModifiedTime();
-          long millisSinceModified = now - last.toMillis();
-          if (millisSinceModified < olderThanMillis)
+          if (!matcher.matches(nextPath))
             continue;
+
+          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
+          if (attr.isDirectory()) {
+            subdirs.add(new OneDirIterator(nextPath, subdirs));
+            continue;
+          }
+
+          if (olderThanMillis > 0) {
+            FileTime last = attr.lastModifiedTime();
+            long millisSinceModified = now - last.toMillis();
+            if (millisSinceModified < olderThanMillis)
+              continue;
+          }
           nextMFile = new MFileOS7(nextPath, attr);
 
-       } catch (IOException e) {
-         throw new RuntimeException(e);
-       }
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       }
     }
-
 
     public MFile next() {
       if (nextMFile == null) throw new NoSuchElementException();
@@ -126,10 +170,9 @@ public class CollectionGeneral extends CollectionAbstract {
       throw new UnsupportedOperationException();
     }
 
-    // better alternative is for caller to send in callback (Visitor pattern)
-    // then we could use the try-with-resource
     public void close() throws IOException {
       dirStream.close();
     }
   }
+
 }

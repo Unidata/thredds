@@ -244,7 +244,7 @@ public class GribCdmIndex implements IndexReader {
       }
 
     } catch (Throwable t) {
-        logger.warn("GribCdmIndex.openMutableGCFromIndex failed on "+indexFilenameInCache, t);
+        logger.warn("GribCdmIndex.openMutableGCFromIndex failed on " + indexFilenameInCache, t);
     }
 
     if (result == null) {
@@ -314,15 +314,30 @@ public class GribCdmIndex implements IndexReader {
 
     if (config.ptype == FeatureCollectionConfig.PartitionType.none) {
 
-      // LOOK how well tested is this?
-      CollectionAbstract dcm = specp.wantSubdirs() ? new CollectionGeneral(config.collectionName, rootPath, config.olderThan, logger) :
-              new DirectoryCollection(config.collectionName, rootPath, config.olderThan, logger);
+      CollectionAbstract dcm = new CollectionGeneral(config, specp, logger); // LOOK how well tested is this?
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
       if (specp.getFilter() != null)
         dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
 
       if (isGrib1) {  // existing case handles correctly - make seperate index for each runtime (OR) partition == runtime
+        Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.none, errlog);
+      } else {
+        Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+        changed = builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.none, errlog);
+      }
+
+    } else if (config.ptype == FeatureCollectionConfig.PartitionType.timePeriod) {
+
+        // LOOK how well tested is this?
+      TimePartition dcm = new TimePartition(config, specp, logger);
+      dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+
+      if (specp.getFilter() != null)
+        dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
+
+      if (isGrib1) {
         Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
         changed = builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.none, errlog);
       } else {
