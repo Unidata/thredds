@@ -93,10 +93,3 @@ public class TestDateFromString extends TestCase {
             date.getTime() == dateAsLong);
   }
 }
-/*
- * $Log: TestDateFromString.java,v $
- * Revision 1.1  2005/11/30 21:01:47  edavis
- * Add thredds.util.DateFromString to provide convenience methods for getting
- * dates from strings.
- *
- */
