@@ -52,13 +52,15 @@ import java.util.regex.Pattern;
  * @since 12/23/2014
  */
 public class CollectionPathMatcher extends CollectionAbstract {
+  protected final FeatureCollectionConfig config;
   private final long olderThanMillis;
   private final Path rootPath;
   private PathMatcher matcher;
 
   public CollectionPathMatcher(FeatureCollectionConfig config, CollectionSpecParser specp, Logger logger) {
     super(config.collectionName, logger);
-    setRoot(specp.getRootDir());    // LOOK may be tricky to figure out top ??
+    this.config = config;
+    setRoot(specp.getRootDir());
     setDateExtractor(config.getDateExtractor());
 
     if (specp.getFilter() != null)

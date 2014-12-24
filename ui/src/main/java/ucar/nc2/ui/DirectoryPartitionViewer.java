@@ -339,7 +339,7 @@ public class DirectoryPartitionViewer extends JPanel {
            for (PartitionCollectionMutable.Partition tpp : tp.getPartitions()) {
              if (tpp.isBad()) continue;
              try {
-               GribCollectionMutable gc = tpp.makeGribCollection(CollectionUpdateType.nocheck);    // use index if it exists
+               GribCollectionMutable gc = tpp.makeGribCollection();    // use index if it exists
                gclist.add(gc);
                gc.close(); // ??
 

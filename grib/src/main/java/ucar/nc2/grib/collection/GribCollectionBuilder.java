@@ -137,6 +137,7 @@ abstract class GribCollectionBuilder {
       case none: return createSingleRuntimeCollections(errlog);
       case directory: return createMultipleRuntimeCollections(errlog);
       case file: return createMultipleRuntimeCollections(errlog);
+      case timePeriod: return createMultipleRuntimeCollections(errlog);
     }
     throw new IllegalArgumentException("unknown FeatureCollectionConfig.PartitionType ="+ptype);
   }

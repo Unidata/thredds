@@ -73,6 +73,7 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
         endDate = startDate.add( timePeriod);
         String name = collectionName + "-"+ cdf.toString(startDate);
         curr = new CollectionListRange(name, root, startDate, endDate, this.logger);
+        curr.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, this.config);
         result.add(curr);
         //System.out.printf("---%s%n", curr);
       }

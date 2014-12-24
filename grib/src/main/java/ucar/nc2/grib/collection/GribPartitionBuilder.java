@@ -130,7 +130,7 @@ abstract class GribPartitionBuilder  {
   ///////////////////////////////////////////////////
   // build the index
 
-  public boolean createPartitionedIndex(CollectionUpdateType forcePartition, CollectionUpdateType forceChildren, Formatter errlog) throws IOException {
+  public boolean createPartitionedIndex(CollectionUpdateType forcePartition, Formatter errlog) throws IOException {
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 
     // create partitions from the partitionManager
@@ -152,7 +152,7 @@ abstract class GribPartitionBuilder  {
     PartitionCollectionMutable.Partition canon = result.getPartition(idx);
     logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
-    try (GribCollectionMutable gc = canon.makeGribCollection(forceChildren)) {  // LOOK open/close canonical partition
+    try (GribCollectionMutable gc = canon.makeGribCollection()) {  // LOOK open/close canonical partition
       if (gc == null) {
        logger.error(" canon.makeGribCollection failed on {} errs= {}", canon.getName(), errlog.toString());
        return false;
@@ -165,7 +165,7 @@ abstract class GribPartitionBuilder  {
     // check consistency across vert and ens coords
     // create partitioned variables
     // partition index is used - do not resort partitions
-    PartitionCollectionMutable.Dataset ds2D = makeDataset2D(forceChildren, errlog);
+    PartitionCollectionMutable.Dataset ds2D = makeDataset2D(errlog);
     if (ds2D == null) {
       errlog.format(" ERR makeDataset2D failed, index not written on %s%n", result.getName());
       logger.error(" makeDataset2D failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
@@ -212,7 +212,7 @@ abstract class GribPartitionBuilder  {
     }
   }
 
-  private PartitionCollectionMutable.Dataset makeDataset2D(CollectionUpdateType forceChildren, Formatter f) throws IOException {
+  private PartitionCollectionMutable.Dataset makeDataset2D(Formatter f) throws IOException {
     FeatureCollectionConfig config = (FeatureCollectionConfig) partitionManager.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.gribConfig.intvFilter : null;
     PartitionCollectionMutable.Dataset ds2D = result.makeDataset(GribCollectionImmutable.Type.TwoD);
@@ -226,7 +226,7 @@ abstract class GribPartitionBuilder  {
     int countPartition = 0;
     boolean allAre1D = true;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
-      try (GribCollectionMutable gc = tpp.makeGribCollection(forceChildren)) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
+      try (GribCollectionMutable gc = tpp.makeGribCollection()) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
         if (gc == null) {                                                       // note its not recursive, maybe leave open, or cache
           tpp.setBad(true);                                                     // actually we keep a pointer to the partition's group in the GroupPartitions
           logger.warn("Bad partition - skip "+tpp.getName());

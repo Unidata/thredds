@@ -310,7 +310,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     // the children must already exist
-    public GribCollectionMutable makeGribCollection(CollectionUpdateType force) throws IOException {
+    public GribCollectionMutable makeGribCollection() throws IOException {
       GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(), config, false, true, logger);
       if (result == null) {
         logger.error("Failed on openMutableGCFromIndex {}", dcm.getIndexFilename());
