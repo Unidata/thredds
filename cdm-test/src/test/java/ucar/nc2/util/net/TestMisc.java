@@ -112,7 +112,7 @@ public class TestMisc extends UnitTestCommon
        System.out.printf("status = %d%n", statusCode);
 
        try {
-           String content = m.getResponseAsString("ASC");
+           String content = m.getResponseAsString("ASCII");
            System.out.printf("cat = %s%n", content);
        }  catch (Throwable t) {
            t.printStackTrace();
