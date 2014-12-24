@@ -115,7 +115,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.16</version>
         <!--dependencies>
           <dependency>
             <groupId>org.apache.maven.surefire</groupId>
@@ -123,10 +122,6 @@
             <version>2.16</version>
           </dependency>
         </dependencies -->
-        <configuration>
-          <skip>${skipTests}</skip>
-          <argLine>-Dfile.encoding=UTF-8</argLine>
-        </configuration>
       </plugin>
 
       <plugin>

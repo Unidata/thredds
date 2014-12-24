@@ -45,7 +45,6 @@
   <dependency>
     <groupId>javax.servlet</groupId>
     <artifactId>javax.servlet-api</artifactId>
-    <scope>provided</scope>
   </dependency>
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -111,16 +110,3 @@
 </build>
 
 </project>
-<!--
-              <targetPath>WEB-INF</targetPath>
-
-        <attachClasses>true</attachClasses>
-        <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-            <manifestEntries>
-              <Built-On>${maven.build.timestamp}</Built-On>
-            </manifestEntries>
-          </archive>
--->

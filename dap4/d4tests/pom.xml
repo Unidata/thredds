@@ -44,14 +44,6 @@
     <artifactId>httpservices</artifactId>
   </dependency>
 
-  <!-- testing dependencies -->
-  <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cdm</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-  </dependency>
-
   <!-- library dependencies -->
   <dependency>
     <groupId>javax.servlet</groupId>
@@ -69,6 +61,13 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-jdk14</artifactId>
         <scope>test</scope>
+    </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cdm</artifactId>
+        <type>test-jar</type>
     </dependency>
 </dependencies>
 
@@ -90,43 +89,39 @@
     <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-surefire-plugin</artifactId>
-      <!--version>2.16</version-->
-       <configuration>
-         <skip>${skipTests}</skip>
-         <argLine>-Dfile.encoding=UTF-8</argLine>
-         <systemPropertyVariables>
-            <file.encoding>UTF-8</file.encoding>
-         </systemPropertyVariables>
-	 <includes>
-	     <include>**/TestParserDMR.java</include>
-             <include>**/TestParserCE.java</include>
-             <include>**/TestNc4Iosp.java</include>
-             <include>**/TestServlet.java</include>
-             <include>**/TestServletConstraints.java</include>
-             <include>**/TestCDMClient.java</include>
-             <include>**/TestConstraints.java</include>
-             <include>**/TestDSR.java</include>
-	 </includes>
-       </configuration>
-       <executions>
-         <execution>
-           <id>unit-test</id>
-           <phase>test</phase>
-           <goals>
-             <goal>test</goal>
-           </goals>
-           <configuration>
-             <skip>false</skip>
-	         <excludes>
-		    <exclude>src/test/java/dap4/test/TestFrontPage.java</exclude>
-	
-		    <exclude>src/test/java/dap4/test/TestHyrax.java</exclude>
-		    <exclude>src/test/java/dap4/test/TestSerial.java</exclude>
-		    <exclude>src/test/java/dap4/test/TestDap4All.java</exclude>
-	         </excludes>
-           </configuration>
-         </execution>
-       </executions>
+      <configuration>
+        <systemPropertyVariables>
+          <file.encoding>UTF-8</file.encoding>
+        </systemPropertyVariables>
+        <includes>
+          <include>**/TestParserDMR.java</include>
+          <include>**/TestParserCE.java</include>
+          <include>**/TestNc4Iosp.java</include>
+          <include>**/TestServlet.java</include>
+          <include>**/TestServletConstraints.java</include>
+          <include>**/TestCDMClient.java</include>
+          <include>**/TestConstraints.java</include>
+          <include>**/TestDSR.java</include>
+        </includes>
+      </configuration>
+      <executions>
+        <execution>
+          <id>unit-test</id>
+          <phase>test</phase>
+          <goals>
+            <goal>test</goal>
+          </goals>
+          <configuration>
+            <skip>false</skip>
+	        <excludes>
+		      <exclude>src/test/java/dap4/test/TestFrontPage.java</exclude>
+		      <exclude>src/test/java/dap4/test/TestHyrax.java</exclude>
+		      <exclude>src/test/java/dap4/test/TestSerial.java</exclude>
+		      <exclude>src/test/java/dap4/test/TestDap4All.java</exclude>
+	        </excludes>
+          </configuration>
+        </execution>
+      </executions>
     </plugin>
 
   </plugins>

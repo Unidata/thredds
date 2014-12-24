@@ -32,54 +32,80 @@
      his own pom.xml file if we want to read some formats.
  =========================================================== -->
   <dependencies>
-    <!-- thredds dependencies are not needed jet. Cargo takes the thredds.war from the tds/target directory -->
-    <!-- dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>thredds</artifactId>          
-      <type>war</type>
-    </dependency>
-    
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>thredds</artifactId>
-      <classifier>classes</classifier>
-    </dependency-->
-
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>clcommon</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>opendap</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>visadCdm</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>edu.wisc.ssec</groupId>
       <artifactId>visad</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
+      <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.restfuse</groupId>
+      <artifactId>com.eclipsesource.restfuse</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
@@ -87,37 +113,11 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom2</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.restfuse</groupId>
-      <artifactId>com.eclipsesource.restfuse</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
-      <scope>test</scope>
-    </dependency>
-
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -129,6 +129,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -165,7 +166,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>${skipTests}</skip>
           <excludes>
             <exclude>/thredds/tds/*</exclude>
           </excludes>
@@ -188,15 +188,13 @@
       </plugin>
 
       <!-- ===========================================================
-         Cargo configuration.
-        Runs in the pre-integration-test and post-integration-test phases
-        It uses a new tomcat with version ${tomcat7.version} It downloads, installs, runs and stops a new tomcat instance on every run.
-         It could also use an existing tomcat instance.
-     =========================================================== -->
+        Cargo configuration. Runs in the pre-integration-test and post-integration-test phases.
+        It downloads apache-tomcat-7.0.56 from the Unidata public website, installs it, starts it, and stops it
+        on every run. It could also use an existing tomcat instance, though it's not configured that way.
+      =========================================================== -->
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
-        <version>${cargo-plugin.version}</version>
 
         <executions>
           <execution>

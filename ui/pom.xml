@@ -102,13 +102,6 @@
     </dependency>
 
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cdm</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
@@ -132,6 +125,13 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cdm</artifactId>
+      <type>test-jar</type>
     </dependency>
   </dependencies>
 
@@ -252,12 +252,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>${skipTests}</skip>
-          <!-- includes>
-            <include>ucar.util.prefs.TestAllPrefs.java</include>
-          </includes -->
-        </configuration>
       </plugin>      
 
       <!-- plugin>

@@ -159,7 +159,6 @@
     <dependency>
       <groupId>EDS</groupId>
       <artifactId>threddsIso</artifactId>
-      <scope>runtime</scope>
     </dependency>
 
     <!-- wms -->
@@ -178,15 +177,9 @@
       <artifactId>oro</artifactId>
     </dependency>
 
-    <!-- dependency>
-      <groupId>atg.taglib.json</groupId>
-      <artifactId>json-taglib</artifactId>
-    </dependency-->
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -199,29 +192,26 @@
       <artifactId>validation-api</artifactId>
     </dependency>
 
-    <!-- test -->
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>${hamcrest.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cdm</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
     </dependency>
 
     <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>httpunit</groupId>
       <artifactId>httpunit</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cdm</artifactId>
+      <type>test-jar</type>
     </dependency>
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -318,8 +308,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <!-- Enabling tests for first unit testing -->
-          <skip>${skipTests}</skip>
           <excludes>
             <exclude>/thredds/tds/**</exclude>
           </excludes>

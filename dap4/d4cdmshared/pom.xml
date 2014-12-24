@@ -26,20 +26,11 @@ Dependencies: Mandatory dependencies are listed first. Then
     <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
   </dependency>
+
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4shared</artifactId>
   </dependency>
-
-  <!-- Servlet -->
-<!--
-  <dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <version>${javax.servlet.version}</version>
-    <scope>provided</scope>
-  </dependency>
--->
 
   <dependency>
     <groupId>${project.groupId}</groupId>

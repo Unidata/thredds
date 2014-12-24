@@ -80,7 +80,6 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jdom</groupId>
@@ -97,13 +96,6 @@
     <dependency>
       <groupId>net.jcip</groupId>
       <artifactId>jcip-annotations</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cdm</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -127,6 +119,13 @@
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cdm</artifactId>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
 
   <build>
@@ -138,8 +137,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>${skipTests}</skip>
-        	<!--failIfNoTests>true</failIfNoTests-->
           <includes>
             <include>opendap/test/Test*.java</include>
             <include>ucar/nc2/dods/Test*.java</include>
