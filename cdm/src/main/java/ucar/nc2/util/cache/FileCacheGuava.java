@@ -76,7 +76,7 @@ public class FileCacheGuava implements FileCacheIF {
   }
 
   @Override
-  public void eject(Object hashKey) throws IOException {
+  public void eject(Object hashKey) {
 
   }
 

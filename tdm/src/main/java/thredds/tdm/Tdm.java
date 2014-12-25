@@ -105,7 +105,7 @@ public class Tdm {
       this.name = name;
       this.session = session;
       System.out.printf("Server added %s%n", name);
-      log.info("Server added "+name);
+      log.info("TDS server added "+name);
     }
   }
 
@@ -237,9 +237,6 @@ public class Tdm {
      for (FeatureCollectionConfig config : fcList) {
        if (config.type != FeatureCollectionType.GRIB1 && config.type != FeatureCollectionType.GRIB2) continue;
        System.out.printf("FeatureCollection %s scheduled %n", config.collectionName);
-       /* CollectionManager dcm = fc.getDatasetCollectionManager(); // LOOK this will fail
-       if (config != null && config.gribConfig != null && config.gribConfig.gdsHash != null)
-         dcm.putAuxInfo("gdsHash", config.gribConfig.gdsHash); // sneak in extra config info  */
 
        if (forceOnStartup) // on startup, force rewrite of indexes
          config.tdmConfig.startupType = CollectionUpdateType.always;
@@ -322,9 +319,10 @@ public class Tdm {
     @Override
     public void run() {
       try {
-        log.info("updateGribCollection "+config.collectionName);
+        // log.info("Tdm call GribCdmIndex.updateGribCollection "+config.collectionName);
         if (debug) System.out.printf("---------------------%nIndexTask updateGribCollection %s%n", config.collectionName);
         boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
+        log.info("GribCdmIndex.updateGribCollection {} changed {}", config.collectionName, changed);
 
         logger.debug("{} {} changed {}", CalendarDate.present(), config.collectionName, changed);
         if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.collectionName);

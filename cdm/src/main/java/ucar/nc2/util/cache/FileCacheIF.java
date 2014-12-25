@@ -54,7 +54,7 @@ public interface FileCacheIF {
   public FileCacheable acquire(FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException;
 
   public boolean release(FileCacheable ncfile) throws IOException;
-  public void eject(Object hashKey) throws IOException;
+  public void eject(Object hashKey);
   public void clearCache(boolean force);
 
   // debugging

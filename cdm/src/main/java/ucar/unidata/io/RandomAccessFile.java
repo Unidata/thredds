@@ -226,7 +226,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       return (RandomAccessFile) cache.acquire(factory, location, location, buffer_size, null, null);
   }
 
-  static public void eject(String location) throws IOException {
+  static public void eject(String location) {
     if (cache != null) cache.eject(location);
   }
 
