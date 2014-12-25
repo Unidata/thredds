@@ -65,7 +65,7 @@ public class TestMCollection {
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
     Path rootPath = Paths.get(specp.getRootDir());
 
-    try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, rootPath, config.olderThan, logger)) {
+    try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, rootPath, true, config.olderThan, logger)) {
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (specp.getFilter() != null)
         dcm.setStreamFilter(new StreamFilter(specp.getFilter()));

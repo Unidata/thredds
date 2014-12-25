@@ -62,10 +62,10 @@ import java.util.List;
 public class DirectoryBuilder {
 
   // returns a DirectoryPartition or DirectoryCollection
-  static public MCollection factory(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
+  static public MCollection factory(FeatureCollectionConfig config, Path topDir, boolean isTop, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
     DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir.toString());
 
-    DirectoryPartition dpart = new DirectoryPartition(config, topDir, indexReader, logger);
+    DirectoryPartition dpart = new DirectoryPartition(config, topDir, isTop, indexReader, logger);
     if (!builder.isLeaf(indexReader))  { // its a partition
       return dpart;
     }
@@ -75,7 +75,7 @@ public class DirectoryBuilder {
     if (hasIndex) {
       return dpart.makeChildCollection(builder);
     } else {
-      DirectoryCollection result = new DirectoryCollection(config.collectionName, topDir, config.olderThan, logger); // no index file
+      DirectoryCollection result = new DirectoryCollection(config.collectionName, topDir, isTop, config.olderThan, logger); // no index file
       return result;
     }
   }

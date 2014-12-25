@@ -223,7 +223,7 @@ public class GCpass1 {
     Path rootPath = Paths.get(specp.getRootDir());
     boolean isGrib1 = config.type == FeatureCollectionType.GRIB1;
 
-    try (MCollection topCollection = DirectoryBuilder.factory(config, rootPath, null, logger)) {
+    try (MCollection topCollection = DirectoryBuilder.factory(config, rootPath, true, null, logger)) {
 
       if (topCollection instanceof DirectoryPartition) {
         DirectoryPartition dpart = (DirectoryPartition) topCollection;
@@ -232,7 +232,7 @@ public class GCpass1 {
 
       } else if (topCollection instanceof DirectoryCollection) {
         // otherwise its a leaf directory
-        accumAll.add(scanLeafDirectoryCollection(isGrib1, config, countersAll, logger, rootPath, indent, fm));
+        accumAll.add(scanLeafDirectoryCollection(isGrib1, config, countersAll, logger, rootPath, true, indent, fm));
       }
 
       reportAll(indent, fm);
@@ -257,7 +257,7 @@ public class GCpass1 {
           accum.add(scanDirectoryPartitionRecurse(isGrib1, (DirectoryPartition) part, config, countersPart, logger, indent, fm));
         } else {
           Path partPath = Paths.get(part.getRoot());
-          accum.add(scanLeafDirectoryCollection(isGrib1, config, countersPart, logger, partPath, indent, fm));
+          accum.add(scanLeafDirectoryCollection(isGrib1, config, countersPart, logger, partPath, false, indent, fm));
         }
       } catch (Throwable t) {
         logger.warn("Error making partition " + part.getRoot(), t);
@@ -268,21 +268,6 @@ public class GCpass1 {
     accum.last = reportOneDir(dpart.getRoot(), accum, countersPart, indent, accum.last);
     indent.decr();
     return accum;
-  }
-
-  /**
-   * Update all the grib indices in one directory, and the collection index for that directory
-   *
-   * @param config  FeatureCollectionConfig
-   * @param dirPath directory path
-   * @throws IOException
-   */
-  private Accum scanLeafCollection(boolean isGrib1, FeatureCollectionConfig config,
-                                   Counters countersParent,
-                                   Logger logger, Path dirPath, Indent indent, Formatter fm) throws IOException {
-
-    return scanLeafDirectoryCollection(isGrib1, config, countersParent, logger, dirPath, indent, fm);
-
   }
 
   /**
@@ -367,7 +352,7 @@ public class GCpass1 {
    */
   private Accum scanLeafDirectoryCollection(boolean isGrib1, FeatureCollectionConfig config,
                                             Counters parentCounters,
-                                            Logger logger, Path dirPath,
+                                            Logger logger, Path dirPath, boolean isTop,
                                             Indent indent, Formatter fm) throws IOException {
 
     if (config.ptype == FeatureCollectionConfig.PartitionType.file) {
@@ -382,7 +367,7 @@ public class GCpass1 {
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, config.olderThan, logger);
+    DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, isTop, config.olderThan, logger);
     // dcm.setUseGribFilter(false);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)

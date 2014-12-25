@@ -111,9 +111,9 @@ public class GribCdmIndex implements IndexReader {
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
     String name = StringUtil2.replace(config.collectionName, '\\', "/");
-    String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
+    // String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
 
-    return makeIndexFile(cname, new File(specp.getRootDir()));
+    return makeIndexFile(name, new File(specp.getRootDir()));
   }
 
   static File makeIndexFile(String collectionName, File directory) {
@@ -308,13 +308,13 @@ public class GribCdmIndex implements IndexReader {
       // LOOK assume wantSubdirs makes it into a Partition. Isnt there something better ??
       if (specp.wantSubdirs()) {  // its a partition
 
-        try (DirectoryPartition dpart = new DirectoryPartition(config, rootPath, new GribCdmIndex(logger), logger)) {
+        try (DirectoryPartition dpart = new DirectoryPartition(config, rootPath, true, new GribCdmIndex(logger), logger)) {
           dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
           changed = updateDirectoryCollectionRecurse(isGrib1, dpart, config, updateType, logger);
         }
 
       } else { // otherwise its a leaf directory
-        changed = updateLeafCollection(isGrib1, config, updateType, logger, rootPath);
+        changed = updateLeafCollection(isGrib1, config, updateType, true, logger, rootPath);
       }
     }
 
@@ -380,7 +380,7 @@ public class GribCdmIndex implements IndexReader {
 
     // see if index already exists
     File collectionIndexFile = GribIndexCache.getExistingFileOrCache(idxFilenameOrg);
-    if (collectionIndexFile.exists()) {
+    if (collectionIndexFile != null) {   // it exists
 
       boolean bad;
       try (RandomAccessFile raf = RandomAccessFile.acquire(collectionIndexFile.getPath())) {  // read it to verify its good
@@ -421,7 +421,7 @@ public class GribCdmIndex implements IndexReader {
             updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, updateType, logger);
           } else {
             Path partPath = Paths.get(part.getRoot());
-            updateLeafCollection(isGrib1, config, updateType, logger, partPath); // LOOK why not using part ??
+            updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // LOOK why not using part ??
           }
         } catch (Throwable t) {
           logger.warn("Error making partition " + part.getRoot(), t);
@@ -443,48 +443,34 @@ public class GribCdmIndex implements IndexReader {
   }
 
   /**
-   * Update all the grib indices in one directory, and the collection index for that directory
-   *
-   * @param config  FeatureCollectionConfig
-   * @param dirPath directory path
-   * @throws IOException
-   */
-  static private boolean updateLeafCollection(boolean isGrib1, FeatureCollectionConfig config,
-                                              CollectionUpdateType forceCollection,
-                                              Logger logger, Path dirPath) throws IOException {
-
-    if (config.ptype == FeatureCollectionConfig.PartitionType.file) {
-      return updateFilePartition(isGrib1, config, forceCollection, logger, dirPath);
-
-    } else {
-      return updateDirectoryLeafPartition(isGrib1, config, forceCollection, logger, dirPath);
-    }
-
-  }
-
-  /**
    * Update all the gbx indices in one directory, and the ncx index for that directory
    *
    * @param config  FeatureCollectionConfig
    * @param dirPath directory path
    * @throws IOException
    */
-  static private boolean updateDirectoryLeafPartition(boolean isGrib1, FeatureCollectionConfig config,
-                                                  CollectionUpdateType updateType,
-                                                  Logger logger, Path dirPath) throws IOException {
+  static private boolean updateLeafCollection(boolean isGrib1, FeatureCollectionConfig config,
+                                              CollectionUpdateType updateType, boolean isTop,
+                                              Logger logger, Path dirPath) throws IOException {
 
-    Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    if (config.ptype == FeatureCollectionConfig.PartitionType.file) {
+      return updateFilePartition(isGrib1, config, updateType, isTop, logger, dirPath);
 
-    try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, config.olderThan, logger)) {
-      dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-      if (specp.getFilter() != null)
-        dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
+    } else {
+      Formatter errlog = new Formatter();
+      CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-      boolean changed = updateGribCollection(isGrib1, dcm, updateType, FeatureCollectionConfig.PartitionType.directory, logger, errlog);
-      if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition was updated=%s on %s%n", changed, dirPath);
-      return changed;
+      try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
+        dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+        if (specp.getFilter() != null)
+          dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
+
+        boolean changed = updateGribCollection(isGrib1, dcm, updateType, FeatureCollectionConfig.PartitionType.directory, logger, errlog);
+        if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition was updated=%s on %s%n", changed, dirPath);
+        return changed;
+      }
     }
+
   }
 
 
@@ -498,13 +484,13 @@ public class GribCdmIndex implements IndexReader {
    * @throws IOException
    */
   static private boolean updateFilePartition(final boolean isGrib1, final FeatureCollectionConfig config,
-                                             final CollectionUpdateType updateType,
+                                             final CollectionUpdateType updateType, boolean isTop,
                                              final Logger logger, Path dirPath) throws IOException {
     long start = System.currentTimeMillis();
     final Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
-    try (FilePartition partition = new FilePartition(config.collectionName, dirPath, config.olderThan, logger)) {
+    try (FilePartition partition = new FilePartition(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
       partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (specp.getFilter() != null)
         partition.setStreamFilter(new StreamFilter(specp.getFilter()));

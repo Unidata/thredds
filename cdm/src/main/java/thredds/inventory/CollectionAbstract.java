@@ -85,7 +85,7 @@ public abstract class CollectionAbstract implements MCollection {
     if (collectionSpec.startsWith(CATALOG))
       return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan, errlog);
     else if (collectionSpec.startsWith(DIR))
-      return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), olderThan, null);
+      return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), true, olderThan, null);
     else if (collectionSpec.startsWith(FILE))
       return new CollectionSingleFile(MFileOS7.getExistingFile(collectionSpec.substring(FILE.length())), null);
     else if (collectionSpec.startsWith(LIST))

@@ -138,7 +138,7 @@ public class TestDcm {
     // count scanned files
     // String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger
     Logger logger = LoggerFactory.getLogger("testOlderThanInDirectoryCollection");
-    DirectoryCollection dcm = new DirectoryCollection("topCollectionName", specp.getRootDir(), config.olderThan, logger);
+    DirectoryCollection dcm = new DirectoryCollection("topCollectionName", specp.getRootDir(), true, config.olderThan, logger);
     dcm.setStreamFilter(new StreamFilter(java.util.regex.Pattern.compile(".*grib2")));
 
     List<String> fileList = dcm.getFilenames();

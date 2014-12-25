@@ -84,34 +84,35 @@ public class DirectoryCollection extends CollectionAbstract {
   ///////////////////////////////////////////////////////////////////////////////////
 
   final String topCollection;
-  final Path topDir;
+  final Path collectionDir;              //  directory for this collection
   final long olderThanMillis;
+  final boolean isTop;
 
-  public DirectoryCollection(String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger) {
-    this(topCollectionName, Paths.get(topDirS), olderThan, logger);
+  public DirectoryCollection(String topCollectionName, String topDirS, boolean isTop, String olderThan, org.slf4j.Logger logger) {
+    this(topCollectionName, Paths.get(topDirS), isTop, olderThan, logger);
   }
 
-  public DirectoryCollection(String topCollectionName, Path topDir, String olderThan, org.slf4j.Logger logger) {
-    super(topCollectionName, logger);
+  public DirectoryCollection(String topCollectionName, Path collectionDir, boolean isTop, String olderThan, org.slf4j.Logger logger) {
+    super(null, logger);
     this.topCollection = cleanName(topCollectionName);
-    this.topDir = topDir;
-    this.collectionName = makeCollectionName(collectionName, topDir);
+    this.collectionDir = collectionDir;
+    this.collectionName = isTop ? this.topCollection : makeCollectionName(topCollection, collectionDir);
+    this.isTop = isTop;
+
     this.olderThanMillis = parseOlderThanString(olderThan);
     if (debug) System.out.printf("Open DirectoryCollection %s%n", collectionName);
   }
 
-  public Path getIndexPath() {
-    return DirectoryCollection.makeCollectionIndexPath(topCollection, topDir);
-  }
-
   @Override
   public String getRoot() {
-    return topDir.toString();
+    return collectionDir.toString();
   }
 
   @Override
   public String getIndexFilename() {
-    return getIndexPath().toString();
+    if (isTop) return super.getIndexFilename();
+    Path indexPath = DirectoryCollection.makeCollectionIndexPath(topCollection, collectionDir);
+    return indexPath.toString();
   }
 
   @Override
@@ -121,7 +122,7 @@ public class DirectoryCollection extends CollectionAbstract {
 
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
-    return new MyFileIterator(topDir);
+    return new MyFileIterator(collectionDir);
   }
 
   @Override
@@ -201,9 +202,9 @@ public class DirectoryCollection extends CollectionAbstract {
   private static int debugCount = 0;
   // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure it closes. like++
   public void iterateOverMFileCollection(Visitor visit) throws IOException {
-    if (debug) System.out.printf(" iterateOverMFileCollection %s ", topDir);
+    if (debug) System.out.printf(" iterateOverMFileCollection %s ", collectionDir);
     int count = 0;
-    try (DirectoryStream<Path> ds = Files.newDirectoryStream(topDir, new MyStreamFilter())) {
+    try (DirectoryStream<Path> ds = Files.newDirectoryStream(collectionDir, new MyStreamFilter())) {
       for (Path p : ds) {
         BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
         if (!attr.isDirectory())
