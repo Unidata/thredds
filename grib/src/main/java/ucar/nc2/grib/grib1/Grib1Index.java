@@ -246,6 +246,7 @@ public class Grib1Index extends GribIndex {
       if (raf != null) raf.close();   // only close if it was opened here
 
             // now switch
+      RandomAccessFile.eject(idxFile.getPath());
       boolean deleteOk = !idxFile.exists() || idxFile.delete();
       boolean renameOk = idxFileTmp.renameTo(idxFile);
       if (!deleteOk)

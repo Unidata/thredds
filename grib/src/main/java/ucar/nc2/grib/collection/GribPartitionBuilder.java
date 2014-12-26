@@ -559,6 +559,7 @@ abstract class GribPartitionBuilder  {
   protected boolean writeIndex(PartitionCollectionMutable pc, Formatter f) throws IOException {
     File idxFile = GribIndexCache.getFileOrCache(partitionManager.getIndexFilename());
     if (idxFile.exists()) {
+      RandomAccessFile.eject(idxFile.getPath());
       if (!idxFile.delete())
         logger.error("gc2tp cant delete " + idxFile.getPath());
     }

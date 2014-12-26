@@ -272,6 +272,7 @@ public class Grib2Index extends GribIndex {
 
       // now switch; fout has been closed
       if (ok) {
+        RandomAccessFile.eject(idxFile.getPath());
         boolean deleteOk = !idxFile.exists() || idxFile.delete();
         boolean renameOk = idxFileTmp.renameTo(idxFile);
         if (!deleteOk)

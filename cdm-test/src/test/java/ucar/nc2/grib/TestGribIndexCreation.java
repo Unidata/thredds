@@ -11,7 +11,6 @@ import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
-import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;

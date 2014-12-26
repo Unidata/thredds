@@ -52,7 +52,6 @@ public class FilePartition extends DirectoryCollection implements PartitionManag
 
   public FilePartition(String topCollectionName, Path topDir, boolean isTop, String olderThan, org.slf4j.Logger logger) {
     super(topCollectionName, topDir, isTop, olderThan, logger);
-    this.collectionName = DirectoryCollection.makeCollectionName(topCollection, topDir);
   }
 
   @Override
