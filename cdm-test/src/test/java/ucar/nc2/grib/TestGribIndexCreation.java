@@ -288,7 +288,7 @@ public class TestGribIndexCreation {
   //                    dateFormatMark="#regn80#...yyyyMMddHH"
   //                    timePartition="year" />
 
-  @Test
+  // @Test
   public void testTimePartitionWithSubdirs() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds626.0", "test/ds626.0", FeatureCollectionType.GRIB1,
