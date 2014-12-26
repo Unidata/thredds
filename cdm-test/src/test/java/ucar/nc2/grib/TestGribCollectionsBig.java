@@ -132,7 +132,7 @@ public class TestGribCollectionsBig {
   @Test
   public void testTPofTP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation.ncx3");
 
     // ROBERTO (local drive only, samba fails) that took that took 2177 secs total, 0.156383 msecs per record
     // 2D only      486523/6476133

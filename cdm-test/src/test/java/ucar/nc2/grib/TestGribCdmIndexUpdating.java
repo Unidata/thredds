@@ -69,7 +69,7 @@ public class TestGribCdmIndexUpdating {
     FeatureCollectionConfig config = new FeatureCollectionConfig("TestGribCdmIndex", "changing/filePartition", FeatureCollectionType.GRIB1,
             dataDir + "GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, null, "file", null);
     // String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen
-    result.add(new Object[]{dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "TestGribCdmIndex-filePartition.ncx3", "VAR_7-0-2-52_L100", 4, 3});
+    result.add(new Object[]{dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "TestGribCdmIndex.ncx3", "VAR_7-0-2-52_L100", 4, 3});
 
     /* directory partition
     dataDir = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/";

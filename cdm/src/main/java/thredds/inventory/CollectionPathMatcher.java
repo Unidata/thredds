@@ -53,18 +53,20 @@ import java.util.regex.Pattern;
  */
 public class CollectionPathMatcher extends CollectionAbstract {
   protected final FeatureCollectionConfig config;
+  private final boolean wantSubdirs;
   private final long olderThanMillis;
   private final Path rootPath;
-  private PathMatcher matcher;
+  private final PathMatcher matcher;
 
   public CollectionPathMatcher(FeatureCollectionConfig config, CollectionSpecParser specp, Logger logger) {
     super(config.collectionName, logger);
     this.config = config;
+    this.wantSubdirs = specp.wantSubdirs();
     setRoot(specp.getRootDir());
     setDateExtractor(config.getDateExtractor());
 
-    if (specp.getFilter() != null)
-      setStreamFilter(new StreamFilter(specp.getFilter()));
+    //if (specp.getFilter() != null)
+    //  setStreamFilter(new StreamFilter(specp.getFilter()));
     putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
     if (specp.getSpec().startsWith("regex:") || specp.getSpec().startsWith("glob:")) {
@@ -137,7 +139,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
 
     OneDirIterator(Path dir, Queue<OneDirIterator> subdirs) throws IOException {
       this.subdirs = subdirs;
-      dirStream = Files.newDirectoryStream(dir, new MyStreamFilter());
+      dirStream = Files.newDirectoryStream(dir); // , new MyStreamFilter());  LOOK dont use the  DirectoryStream.Filter<Path>
       dirStreamIterator = dirStream.iterator();
       now = System.currentTimeMillis();
     }
@@ -152,14 +154,15 @@ public class CollectionPathMatcher extends CollectionAbstract {
 
         try {
           Path nextPath = dirStreamIterator.next();
-          if (!matcher.matches(nextPath))
-            continue;
-
           BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
-          if (attr.isDirectory()) {
+
+          if (wantSubdirs && attr.isDirectory()) {                                // dont filter subdirectories
             subdirs.add(new OneDirIterator(nextPath, subdirs));
             continue;
           }
+
+          if (!matcher.matches(nextPath))                                         // otherwise apply the filter specified by the specp
+             continue;
 
           if (olderThanMillis > 0) {
             FileTime last = attr.lastModifiedTime();

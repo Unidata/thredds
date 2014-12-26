@@ -41,9 +41,7 @@ The values may be: </p>
 <h3>Homogeneity requirements</h3>
 <p>A <em>feature collection dataset</em> is a homogeneous collection of records. That means that the metadata describing the dataset is approximately the same for all of the records. Each GRIB record is self-contained, in the sense that it does not reference other records, or an overall schema. The point of making a  collection of GRIB records into a CDM dataset, is to allow the user to access the entire collection at once, using the netCDF API for multidimensionsal arrays. The user cannont, using the netCDF API, access the metaddata for individual GRIB records. Instead, we assume that the metadata is uniform in the collection, and expose it with variable and global attributes.</p>
 <p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p></p>
+<p>You cannot have data files and subdires in the same dir.</p>
 <p>&nbsp;</p>
 </body>
 </html>

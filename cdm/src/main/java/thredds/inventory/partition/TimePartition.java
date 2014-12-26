@@ -43,7 +43,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Describe
+ * Partition the files by a user-defined time period.
+ * The date is extracted from the filename using the non-optional dateExtractor.
+ * All filenames must be read into memory at once, then partitioned.
  *
  * @author caron
  * @since 12/23/2014

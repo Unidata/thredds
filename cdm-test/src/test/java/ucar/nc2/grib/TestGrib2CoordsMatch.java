@@ -170,7 +170,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testDgexPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46-dgex.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx3");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     //assert count.nread == 868;
     //assert count.nmiss == 0;

@@ -125,7 +125,7 @@ public class TestGribCollectionsDense {
   @Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46-dgex.ncx3");
+    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx3");
     TestDir.checkLeaks();
     assert count.nread == 5384;
     assert count.nmiss == 0;

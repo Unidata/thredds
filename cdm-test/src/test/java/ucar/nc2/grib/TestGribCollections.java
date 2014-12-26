@@ -115,7 +115,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3");
 
     assert count.nread == 93052;  // 93052 ??
     assert count.nmiss == 0;
@@ -144,7 +144,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofP_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46-gfs_conus80.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nmiss == 1126;
@@ -157,7 +157,7 @@ public class TestGribCollections {
 
     long start = System.currentTimeMillis();
     // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
@@ -184,7 +184,7 @@ public class TestGribCollections {
 
     long start = System.currentTimeMillis();
     // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
