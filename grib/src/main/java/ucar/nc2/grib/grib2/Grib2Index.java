@@ -255,7 +255,7 @@ public class Grib2Index extends GribIndex {
           gdsMap.put(gdss.calcCRC(), index);
           rootBuilder.addGdsList(makeGdsProto(gdss));
         }
-        rootBuilder.addRecords(makeRecordProto(r, index, gdss.getGDS().scanMode));
+        rootBuilder.addRecords(makeRecordProto(r, index, r.getGDS().scanMode));
       }
 
       Grib2IndexProto.Grib2Index index = rootBuilder.build();

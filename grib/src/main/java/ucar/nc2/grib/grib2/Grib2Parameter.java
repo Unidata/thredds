@@ -50,8 +50,8 @@ import java.util.List;
  */
 @Immutable
 public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Parameter> {
-  public int discipline, category, number;
-  public String name, unit, abbrev, desc;
+  public final int discipline, category, number;
+  public final String name, unit, abbrev, desc;
 
   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc) {
     this.discipline = discipline;
@@ -61,6 +61,17 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     this.abbrev = abbrev;
     this.unit = Util.cleanUnit(unit);
     this.desc = desc;
+  }
+
+  public Grib2Parameter(Grib2Parameter from, String name, String unit) {
+    this.discipline = from.discipline;
+    this.category = from.category;
+    this.number = from.number;
+    this.desc = from.desc;
+    this.abbrev = from.abbrev;
+
+    this.name = name.trim();
+    this.unit = Util.cleanUnit(unit);
   }
 
   public String getId() {

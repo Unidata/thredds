@@ -227,7 +227,7 @@ public class FslLocalTables extends NcepLocalTables {
 
         String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
         Grib2Parameter s = new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, Description);
-        s.desc = Description;
+        // s.desc = Description;
         result.put(makeHash(disciplineNumber, categoryNumber, parameterNumber), s);
         if (f != null) f.format(" %s%n", s);
         if (categoryNumber > 191 || parameterNumber > 191) {

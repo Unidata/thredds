@@ -33,8 +33,6 @@
 package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.QuasiRegular;
@@ -43,7 +41,6 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
-import ucar.unidata.util.GaussianLatitudes;
 
 import java.util.Arrays;
 import java.util.Formatter;
@@ -198,9 +195,8 @@ public abstract class Grib2Gds {
     if (nx != grib2Gds.nx) return false;
     if (ny != grib2Gds.ny) return false;
     if (template != grib2Gds.template) return false;
-    if (!Arrays.equals(nptsInLine, grib2Gds.nptsInLine)) return false;
+    return Arrays.equals(nptsInLine, grib2Gds.nptsInLine);
 
-    return true;
   }
 
   @Override
@@ -605,7 +601,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
    73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Notes 2 and 3 of GDT 3.1)#GRIB2_6_0_1_temp.doc#G2_Gdt310n
    */
   public static class Mercator extends Grib2Gds {
-    public float la1, lo1, la2, lo2, lad, orient, dX, dY;
+    public float la1, lo1, la2, lo2, lad, dX, dY;
     public int flags;
 
     Mercator(byte[] data) {
@@ -620,7 +616,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
 
       scanMode = getOctet(60);
 
-      orient = getOctet4(61) * scale6; // LOOK not sure if should be scaled
+      // float orient = getOctet4(61) * scale6; // LOOK not sure if should be scaled
       dX = getOctet4(65) * scale6;  // km
       dY = getOctet4(69) * scale6;  // km
 
@@ -773,7 +769,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
         result = 31 * result + (lad != +0.0f ? Float.floatToIntBits(lad) : 0);
         result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
         result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
-        result = 31 * result + (int) projCenterFlag;
+        result = 31 * result + projCenterFlag;
         hashCode = result;
       }
       return hashCode;
@@ -794,7 +790,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
         scale = (1.0 + Math.sin(Math.toRadians( Math.abs( Math.abs(lad))))) / 2;
       }
 
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -940,7 +936,7 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1023,7 +1019,7 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1226,7 +1222,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
         Ry = 2 * Arcsin (106 )/Nr)/ dy
   */
   public static class SpaceViewPerspective extends Grib2Gds {
-    public float LaP, LoP, dX, dY, Xp, Yp, orient, Nr, Xo, Yo;
+    public float LaP, LoP, dX, dY, Xp, Yp, Nr, Xo, Yo;
     public int flags;
 
     SpaceViewPerspective(byte[] data) {
@@ -1244,7 +1240,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
       scanMode = getOctet(64);
 
-      orient = getOctet4(65) * scale6;  // LOOK dunno about scale
+      // float orient = getOctet4(65) * scale6;  // LOOK dunno about scale
       Nr = getOctet4(69) * scale6;
       Xo = getOctet4(73) * scale6;
       Yo = getOctet4(77) * scale6;
@@ -1285,7 +1281,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
         result = 31 * result + (Nr != +0.0f ? Float.floatToIntBits(Nr) : 0);
         result = 31 * result + (Xo != +0.0f ? Float.floatToIntBits(Xo) : 0);
         result = 31 * result + (Yo != +0.0f ? Float.floatToIntBits(Yo) : 0);
-        result = 31 * result + (int) flags;
+        result = 31 * result + flags;
         hashCode = result;
       }
       return hashCode;

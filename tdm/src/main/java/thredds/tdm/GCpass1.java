@@ -469,7 +469,7 @@ public class GCpass1 {
     counters.count("referenceDate", gr.getReferenceDate());
 
     //counters.countS("param", gr.getDiscipline() + "-" + pdss.getParameterCategory() + "-" + pdss.getParameterNumber());
-    int gdsHash = gr.getGDSsection().getGDS().hashCode();
+    int gdsHash = gr.getGDS().hashCode();
     int cdmHash = Grib2Iosp.cdmVariableHash(cust2, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
     String name = GribUtils.makeNameFromDescription(cust2.getVariableName(gr));
     counters.count("variable", new Variable(cdmHash, name));

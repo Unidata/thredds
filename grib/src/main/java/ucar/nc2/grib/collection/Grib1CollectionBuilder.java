@@ -165,7 +165,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       // true means remove
   private boolean filterOut(Grib1Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
     Grib1SectionProductDefinition pdss = gr.getPDSsection();
-    Grib1ParamTime ptime = pdss.getParamTime(cust);
+    Grib1ParamTime ptime = gr.getParamTime(cust);
     if (!ptime.isInterval()) return false;
 
     int[] intv = ptime.getInterval();
@@ -262,7 +262,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       // create dense coordinates for each variable
       for (VariableBag vb : gribvars) {
         Grib1SectionProductDefinition pdss = vb.first.getPDSsection();
-        Grib1ParamTime ptime = pdss.getParamTime(cust);
+        Grib1ParamTime ptime = vb.first.getParamTime(cust);
 
         int unit = cust.convertTimeUnit(pdss.getTimeUnit());
         vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(unit) : userTimeUnit; // so can override the code // ok for GRIB1

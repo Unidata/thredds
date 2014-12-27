@@ -504,7 +504,7 @@ public class GribCollectionMutable implements AutoCloseable {
         this.tableVersion = pds.getTableVersion();
         this.parameter = pds.getParameterNumber();
         this.levelType = pds.getLevelType();
-        Grib1ParamTime ptime = pds.getParamTime(cust);
+        Grib1ParamTime ptime = new Grib1ParamTime(cust, pds);
         if (ptime.isInterval()) {
           this.intvType = pds.getTimeRangeIndicator();
         } else {
@@ -521,12 +521,7 @@ public class GribCollectionMutable implements AutoCloseable {
 
       } else {
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
-        Grib2Pds pds;
-        try {
-          pds = pdss.getPDS();
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
+        Grib2Pds pds = pdss.getPDS();
         this.tableVersion = -1;
 
         // quantities that are stored in the pds

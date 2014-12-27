@@ -387,10 +387,10 @@ public class Grib2ReportPanel extends ReportPanel {
 
     int countGds = index.getGds().size();
     for (Grib2Record gr : index.getRecords()) {
-      int hash = gr.getGDSsection().getGDS().hashCode();
+      int hash = gr.getGDS().hashCode();
       GdsList gdsList = gdsSet.get(hash);
       if (gdsList == null) {
-        gdsList = new GdsList(gr.getGDSsection().getGDS());
+        gdsList = new GdsList(gr.getGDS());
         gdsSet.put(hash, gdsList);
       }
       FileCount fc = gdsList.contains(mf);

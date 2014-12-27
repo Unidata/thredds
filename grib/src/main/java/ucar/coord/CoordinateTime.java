@@ -226,7 +226,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Object extract(Grib1Record gr) {
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      Grib1ParamTime ptime = pds.getParamTime(cust);
+      Grib1ParamTime ptime = gr.getParamTime(cust);
 
       int offset = ptime.getForecastTime();
       int tuInRecord = pds.getTimeUnit();

@@ -819,7 +819,7 @@ public class Grib1DataTable extends JPanel {
       pds = gr.getPDSsection();
       gdss = gds.getGDS();
       plevel = cust.getParamLevel(pds);
-      ptime = pds.getParamTime(cust);
+      ptime = gr.getParamTime(cust);
 
       info = gr.getBinaryDataInfo(raf);
 

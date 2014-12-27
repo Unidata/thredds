@@ -102,7 +102,7 @@ public class Grib1Iosp extends GribIosp {
     if (useTableVersion)
       result += result * 31 + pdss.getTableVersion();
 
-    Grib1ParamTime ptime = pdss.getParamTime(cust);
+    Grib1ParamTime ptime = gr.getParamTime(cust);
     if (ptime.isInterval()) {
       if (!intvMerge) result += result * 31 + ptime.getIntervalSize();  // create new variable for each interval size
       if (ptime.getStatType() != null) result += result * 31 + ptime.getStatType().ordinal(); // create new variable for each stat type
@@ -424,7 +424,7 @@ public class Grib1Iosp extends GribIosp {
     Grib1Parameter param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
     f.format("  Parameter=%s%n", param);
     f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-    Grib1ParamTime ptime = pds.getParamTime(cust);
+    Grib1ParamTime ptime = gr.getParamTime(cust);
     f.format("  ForecastTime=%d%n", ptime.getForecastTime());
     if (ptime.isInterval()) {
       int tinv[] = ptime.getInterval();

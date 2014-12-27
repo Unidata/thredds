@@ -93,10 +93,11 @@ public class Grib2SectionProductDefinition {
     return rawData[index-1] & 0xff;
   }
 
-  private Grib2Pds pds = null;
-  public Grib2Pds getPDS() throws IOException {
-    if (pds == null)
-      pds = Grib2Pds.factory(templateNumber, rawData);
-    return pds;
+  /**
+   * Parse the raw bytes into a Grib2Pds
+   * @return Grib2Pds
+   */
+  public Grib2Pds getPDS() {
+    return Grib2Pds.factory(templateNumber, rawData);
   }
 }

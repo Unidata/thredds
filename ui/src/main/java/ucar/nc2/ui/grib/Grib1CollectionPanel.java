@@ -670,6 +670,7 @@ public class Grib1CollectionPanel extends JPanel {
     Grib1Parameter param;
     int gdsHash;
     int cdmHash;
+    Grib1ParamTime ptime;
 
     // no-arg constructor
     public ParameterBean() {
@@ -677,6 +678,8 @@ public class Grib1CollectionPanel extends JPanel {
 
     public ParameterBean(Grib1Record r) {
       pds = r.getPDSsection();
+      ptime = r.getParamTime(cust);
+
       header = new String(r.getHeader(), CDM.utf8Charset);
       records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
@@ -755,7 +758,6 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public final String getStatType() {
-      Grib1ParamTime ptime = pds.getParamTime(cust);
       GribStatType stype = ptime.getStatType();
       return (stype == null) ? null : stype.name();
     }
@@ -779,7 +781,7 @@ public class Grib1CollectionPanel extends JPanel {
       gds = gr.getGDSsection();
       pds = gr.getPDSsection();
       plevel = cust.getParamLevel(pds);
-      ptime = pds.getParamTime(cust);
+      ptime = gr.getParamTime(cust);
     }
 
 

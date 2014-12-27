@@ -532,7 +532,7 @@ public class Grib2CollectionPanel extends JPanel {
   }
 
   private MCollection getCollection(String spec, Formatter f) {
-    MCollection dc;
+    MCollection dc = null;
     try {
       dc = CollectionAbstract.open("Grib2CollectionPanel", spec, null, f);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
@@ -542,6 +542,7 @@ public class Grib2CollectionPanel extends JPanel {
       StringWriter sw = new StringWriter(10000);
       e.printStackTrace(new PrintWriter(sw));
       f.format("%s", sw.toString());
+      if (dc != null) dc.close();
       return null;
     }
   }
@@ -1079,7 +1080,7 @@ public class Grib2CollectionPanel extends JPanel {
       this.cdmHash = cdmHash;
 
       // long refTime = r.getId().getReferenceDate().getMillis();
-      pds = r.getPDSsection().getPDS();
+      pds = r.getPDS();
       id = r.getId();
       discipline = r.getDiscipline();
       records = new ArrayList<Grib2RecordBean>();
@@ -1293,7 +1294,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     Grib2SectionProductDefinition pdss = gr.getPDSsection();
     f.format("%nGrib2ProductDefinitionSection%n");
-    Grib2Pds pds = pdss.getPDS();
+    Grib2Pds pds = gr.getPDS();
     if (pds.isTimeInterval()) {
       TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
       if (intv != null) f.format(" Interval     = %s%n", intv);
@@ -1384,7 +1385,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public Grib2RecordBean(Grib2Record m) throws IOException {
       this.gr = m;
-      this.pds = gr.getPDSsection().getPDS();
+      this.pds = gr.getPDS();
     }
 
     public final String getRefDate() {

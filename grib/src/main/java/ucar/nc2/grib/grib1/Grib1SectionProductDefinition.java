@@ -320,12 +320,6 @@ public final class Grib1SectionProductDefinition {
 
   /////////////////////////////////////////////////////////////////////
 
-  private Grib1ParamTime ptime;
-  public Grib1ParamTime getParamTime(Grib1Customizer cust) {
-    if (ptime == null) ptime = new Grib1ParamTime(cust, this);
-    return ptime;
-  }
-
   private String getCalendarPeriodAsString() {
     try {
       return GribUtils.getCalendarPeriod(getTimeUnit()).toString();
@@ -355,7 +349,7 @@ public final class Grib1SectionProductDefinition {
 
     f.format("                Reference Time : %s%n", getReferenceDate());
     f.format("                    Time Units : (%d) %s%n", getTimeUnit(), getCalendarPeriodAsString());
-    Grib1ParamTime ptime = getParamTime(cust);
+    Grib1ParamTime ptime = new Grib1ParamTime(cust, this);
     f.format("          Time Range Indicator : (%d) %s%n", getTimeRangeIndicator(), ptime.getTimeTypeName());
     f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
     f.format("                   Time 2 (P2) : %d%n", getTimeValue2());

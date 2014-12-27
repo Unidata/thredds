@@ -420,17 +420,17 @@ public class TestGrib1CoordsMatch {
     int gdsHash;
     int cdmHash;
 
-    public Record1Bean(Grib1Customizer cust, Grib1Record r) {
+    public Record1Bean(Grib1Customizer cust, Grib1Record gr) {
       this.cust = cust;
-      this.gr = r;
+      this.gr = gr;
       gds = gr.getGDSsection();
       pds = gr.getPDSsection();
       plevel = cust.getParamLevel(pds);
-      ptime = pds.getParamTime(cust);
+      ptime = gr.getParamTime(cust);
 
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
-      gdsHash = r.getGDSsection().getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
-      cdmHash =  Grib1Iosp.cdmVariableHash(cust, r, gdsHash, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
+      gdsHash = gr.getGDSsection().getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
+      cdmHash =  Grib1Iosp.cdmVariableHash(cust, gr, gdsHash, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
     }
 
     @Override
@@ -496,7 +496,7 @@ public class TestGrib1CoordsMatch {
     }
 
     public final String getStatType() {
-      Grib1ParamTime ptime = pds.getParamTime(cust);
+      Grib1ParamTime ptime = gr.getParamTime(cust);
       GribStatType stype = ptime.getStatType();
       return (stype == null) ? null : stype.name();
     }

@@ -495,7 +495,7 @@ public class TestGrib2CoordsMatch {
     public Grib2RecordBean(Grib2Customizer cust, Grib2Record gr) throws IOException {
       this.cust = cust;
       this.gr = gr;
-      this.pds = gr.getPDSsection().getPDS();
+      this.pds = gr.getPDS();
       discipline = gr.getDiscipline();
     }
 

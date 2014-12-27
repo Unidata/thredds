@@ -242,7 +242,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     public Object extract(Grib1Record gr) {
 
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      Grib1ParamTime ptime = pds.getParamTime(cust);
+      Grib1ParamTime ptime = gr.getParamTime(cust);
       int tuInRecord = pds.getTimeUnit();
       int[] intv = ptime.getInterval();
       TimeCoord.Tinv  tinv = new TimeCoord.Tinv(intv[0], intv[1]);

@@ -27,6 +27,10 @@ public class Grib2Record {
   private Grib2SectionBitMap bms;
   private Grib2SectionData dataSection;
 
+  private Grib2Pds pds2 = null;
+  private Grib2Gds gds2 = null;
+
+
   private final byte[] header; // anything in between the records - eg idd header
   private int file; // for multiple files in same dataset
   private boolean bmsReplaced;
@@ -69,7 +73,7 @@ public class Grib2Record {
     this.dataSection = dataSection;
     this.bmsReplaced = bmsReplaced;
 
-    // stored in index file after 4.5 2/6/2014, otherwise equals Grib2Indec.ScanModeMissing, so get it from the GDS, which may have wrong one
+    // stored in index file after 4.5 2/6/2014, otherwise equals Grib2Index.ScanModeMissing, so get it from the GDS, which may have wrong one
     this.scanMode = scanMode;
     if (scanMode == Grib2Index.ScanModeMissing) {
       this.scanMode = gdss.getGDS().getScanMode();
@@ -140,16 +144,16 @@ public class Grib2Record {
     return id.getReferenceDate();
   }
 
-  private Grib2Pds pds2 = null; // hmmm, should we always cache ?
-
   public Grib2Pds getPDS() {
     if (pds2 == null)
-      try {
-        pds2 = pdss.getPDS();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      pds2 = pdss.getPDS();
     return pds2;
+  }
+
+  public Grib2Gds getGDS() {
+    if (gds2 == null)
+      gds2 = gdss.getGDS();
+    return gds2;
   }
 
   public int getScanMode() {
@@ -215,7 +219,7 @@ public class Grib2Record {
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public float[] readData(RandomAccessFile raf) throws IOException {
-    Grib2Gds gds = gdss.getGDS();
+    Grib2Gds gds = getGDS();
 
     Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
@@ -233,7 +237,7 @@ public class Grib2Record {
 
   // debugging - do not use
   public int[] readRawData(RandomAccessFile raf) throws IOException {
-    Grib2Gds gds = gdss.getGDS();
+    Grib2Gds gds = getGDS();
 
     Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
@@ -245,7 +249,7 @@ public class Grib2Record {
 
   // debugging - do not use
   public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
-    Grib2Gds gds = gdss.getGDS();
+    Grib2Gds gds = getGDS();
 
     Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
@@ -272,7 +276,7 @@ public class Grib2Record {
     Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
     Grib2SectionData dataSection = new Grib2SectionData(raf);
 
-    Grib2Gds gds = gdss.getGDS();
+    Grib2Gds gds = getGDS();
     Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
@@ -369,7 +373,7 @@ public class Grib2Record {
     info.msgLength = is.getMessageLength();
     info.dataLength = dataSection.getMsgLength();
     info.ndataPoints = drss.getDataPoints();
-    Grib2Gds gds = gdss.getGDS();
+    Grib2Gds gds = getGDS();
     info.nPoints = gds.getNx() * gds.getNy();
     return info;
   }

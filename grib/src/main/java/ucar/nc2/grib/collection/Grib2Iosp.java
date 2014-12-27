@@ -73,7 +73,6 @@ public class Grib2Iosp extends GribIosp {
    * @return this record's hash code, identical hash means belongs to the same variable
    */
   public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType, org.slf4j.Logger logger) {
-    Grib2SectionGridDefinition gdss = gr.getGDSsection();
     Grib2Pds pds2 = gr.getPDS();
 
     int result = 17;
@@ -83,7 +82,7 @@ public class Grib2Iosp extends GribIosp {
     if (Grib2Utils.isLayer(pds2)) result += result * 31 + 1;
 
     if (gdsHash == 0)
-      result += result * 31 + gdss.getGDS().hashCode(); // the horizontal grid
+      result += result * 31 + gr.getGDS().hashCode(); // the horizontal grid
     else
       result += result * 31 + gdsHash;
 

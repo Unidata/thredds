@@ -971,7 +971,7 @@ public class Grib2DataPanel extends JPanel {
       this.cdmHash = cdmHash;
 
       // long refTime = r.getId().getReferenceDate().getMillis();
-      pds = r.getPDSsection().getPDS();
+      pds = r.getPDS();
       id = r.getId();
       discipline = r.getDiscipline();
       records = new ArrayList<>();
@@ -1124,7 +1124,7 @@ public class Grib2DataPanel extends JPanel {
 
     public Grib2RecordBean(Grib2Record m, ucar.unidata.io.RandomAccessFile raf) throws IOException {
       this.gr = m;
-      this.pds = gr.getPDSsection().getPDS();
+      this.pds = gr.getPDS();
       Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
       this.drs = drss.getDrs(raf);
       this.drsLength = drss.getLength(raf);
