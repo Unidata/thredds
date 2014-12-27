@@ -412,6 +412,7 @@
 
   <xsd:complexType name="gribConfigType">
     <xsd:sequence>
+
       <xsd:element name="gdsHash" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="from" type="xsd:int" use="required"/>

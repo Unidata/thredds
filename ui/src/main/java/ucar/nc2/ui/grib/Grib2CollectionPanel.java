@@ -139,18 +139,20 @@ public class Grib2CollectionPanel extends JPanel {
       }
     });
 
-    /* varPopup.addAction("Run Aggregator", new AbstractAction() {
+    varPopup.addAction("Compare PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
-        if (pb != null) {
+        List list = param2BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          Grib2ParameterBean bean1 = (Grib2ParameterBean) list.get(0);
+          Grib2ParameterBean bean2 = (Grib2ParameterBean) list.get(1);
           Formatter f = new Formatter();
-          doAggegator(pb, f);
+          compare(bean1.gr.getPDSsection(), bean2.gr.getPDSsection(), f);
           infoPopup2.setText(f.toString());
-          infoPopup3.gotoTop();
-          infoWindow3.show();
+          infoPopup2.gotoTop();
+          infoWindow2.show();
         }
       }
-    }); */
+    });
 
     Class useClass = Grib2RecordBean.class;
     record2BeanTable = new BeanTable(useClass, (PreferencesExt) prefs.node(useClass.getName()), false,
@@ -1252,7 +1254,9 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("File=%d %s %n", gr.getFile(), path);
     f.format("Header=\"");
     showBytes(f, gr.getHeader(), 100);
-    f.format("\"%n%n");
+    f.format("\"%n");
+    f.format("cdmHash=%d%n", Grib2Iosp.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger));
+
     int d = gr.getDiscipline();
     f.format("Grib2IndicatorSection%n");
     f.format(" Discipline = (%d) %s%n", d, cust.getTableValue("0.0", d));

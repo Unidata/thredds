@@ -301,4 +301,19 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
+
+  // @Test
+  public void testCfsr() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test/ds093.1", FeatureCollectionType.GRIB2,
+            "B:/rdavm/ds093.1/data/.*gbx9", null, null, null, null, null);
+    config.gribConfig.unionRuntimeCoord = true;
+    config.gribConfig.addGdsHash("1450218978", "1450192070");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
 }
