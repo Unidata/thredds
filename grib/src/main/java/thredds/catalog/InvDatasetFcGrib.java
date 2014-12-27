@@ -55,14 +55,14 @@ import java.util.*;
 /**
  * Implement FeatureCollection GRIB - a collection of Grib1 or Grib2 files that are served as Grids.
  *
- * catalogs
+ * catalogs                                see makeCatalog()
  *  path/catalog.xml                       // top catalog
  *  path/partitionName/catalog.xml
  *  path/partitionName/../partitionName/catalog.xml
  *  path/latest.xml                       // latest (resolver)
  *
- * datasets
- *  path/dataset (BEST, TWOD, GC)                // top collection, single group
+ * datasets                                see findDataset()
+ *  path/dataset (dataset = BEST, TWOD, TP, "")  // top collection, single group
  *  path/dataset/groupName                       // top collection, multiple group
  *  path/partitionName/dataset                   // partition, single group
  *  path/partitionName/../partitionName/dataset
@@ -358,42 +358,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   // called by DataRootHandler.makeDynamicCatalog() when a catref is requested
-  /*
-     Possible catref paths:
-      0. path/catalog.xml                       // top catalog
-      1. path/partitionName/catalog.xml
-      2. path/partitionName/../partitionName/catalog.xml
-
-      ////
-      1. path/files/catalog.xml
-      2. path/partitionName/files/catalog.xml
-      3. path/groupName/files/catalog.xml
-
-      4. path/TWOD/catalog.xml
-      4. path/BEST/catalog.xml
-      5. path/partitionName/catalog.xml
-   */
-
-    /* possible forms of dataset path:
-
-    regular, single group:
-      1. dataset (BEST, TWOD, GC)
-
-     regular, multiple group:
-      2. dataset/groupName
-
-     partition, single group:
-      3. partitionName/dataset
-      3. partitionName/../partitionName/dataset
-
-     partition, multiple group:
-      4. partitionName/dataset/groupName
-      4. partitionName/../partitionName/dataset/groupName
-  */
+  // see top javadoc for possible URLs
   @Override
   public InvCatalogImpl makeCatalog(String match, String reqPath, URI catURI) throws IOException {
     StateGrib localState = (StateGrib) checkState();
-    if (localState == null) return null; // not ready yet I think
+    if (localState == null) return null; // not ready yet maybe
 
     try {
 
@@ -622,40 +591,20 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     });
   }
 
-  /*
-    possible forms of dataset path:
-    [partition/][partition/]dataset[/group]
-    dataset = BEST | TWOD | filename
-    if group is missing, use first one
-
-    regular, single group:
-      1. dataset (BEST, TWOD, filename)
-
-     regular, multiple group:
-      2. dataset/group
-
-     partition, single group:
-      3. partitionName/dataset
-      3. partitionName/../partitionName/dataset
-
-     partition, multiple group:
-      4. partitionName/dataset/groupName
-      4. partitionName/../partitionName/dataset/group
-  */
-
+  // see top javadoc for possible URLs
+  // returns visitor.obtain(), either a GridDataset or a NetcdfDataset
   private Object findDataset(String matchPath, GribCollectionImmutable topCollection, DatasetCreator visit) throws IOException {
-    if ((matchPath == null) || (matchPath.length() == 0)) return null;
-    String[] paths = matchPath.split("/");
-    if (paths.length < 1) return null;
-    List<String> pathList = Arrays.asList(paths);  // DO ew need to strip off a GC in case of bookmarked URLs?
+    // LOOK Do we need to strip off a GC in case of bookmarked URLs?
 
+    String[] paths = matchPath.split("/");
+    List<String> pathList = (paths.length < 1) ? new ArrayList<String>() : Arrays.asList(paths);
     DatasetAndGroup dg = findDatasetAndGroup(pathList, topCollection);
     if (dg != null)
-      return visit.obtain(topCollection, dg.ds, dg.group);  //  case 1 and 2
+      return visit.obtain(topCollection, dg.ds, dg.group);
 
     if (!(topCollection instanceof PartitionCollectionImmutable)) return null;
     PartitionCollectionImmutable pc = (PartitionCollectionImmutable) topCollection;
-    return findDatasetPartition(visit, pc, pathList);    // case 3 and 4
+    return findDatasetPartition(visit, pc, pathList);
   }
 
   private static class DatasetAndGroup {
@@ -668,8 +617,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
+  /* case 0: path/dataset (dataset = "")              // single dataset
+     case 1: path/dataset (dataset = BEST, TWOD, TP)  // single group
+     case 2: path/dataset/groupName
+     case 3: path/groupName                           // single dataset not sure this is actually used ??
+  */
   private DatasetAndGroup findDatasetAndGroup(List<String> paths, GribCollectionImmutable gc)  {
-    if (paths.size() < 1) return null;
+    if (paths.size() < 1 || paths.get(0).length() == 0)  {   // case 0: use first dataset,group in the collection
+      GribCollectionImmutable.Dataset ds = gc.getDataset(0);
+      GribCollectionImmutable.GroupGC dg = ds.getGroup(0);
+      return new DatasetAndGroup(ds, dg);
+    }
 
     GribCollectionImmutable.Dataset ds = gc.getDatasetByTypeName(paths.get(0));
     if (ds != null) {
@@ -689,6 +647,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           return null;
       }
     }
+
+    if (paths.size() == 1) {                               // case 3
+      String groupName = paths.get(0);
+      ds = gc.getDataset(0);
+      GribCollectionImmutable.GroupGC g = ds.findGroupById(groupName);
+      if (g != null)
+        return new DatasetAndGroup(ds, g);
+    }
+
     return null;
   }
 

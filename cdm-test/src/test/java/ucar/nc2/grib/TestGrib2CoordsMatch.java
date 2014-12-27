@@ -182,7 +182,7 @@ public class TestGrib2CoordsMatch {
   public void testCfsrSingleFile() throws IOException {
     // CFSR dataset: 0-6 hour forecasts  x 124 runtimes (4x31)
     // there are  2 groups, likely miscoded, the smaller group has duplicate 0 hour, probably miscoded
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/cfrsAnalysis_46-cfsr.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/cfrsAnalysis_46.ncx3");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 868;
     assert count.nmiss == 0;

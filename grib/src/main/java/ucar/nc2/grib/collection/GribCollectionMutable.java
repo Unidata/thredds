@@ -62,8 +62,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * A mutable class for building.
- * The indexRAF is left open until collection is closed. These are not cached.
+ * A mutable class for writing indices or building GribCollectionImmutable
  *
  * @author John
  * @since 12/1/13
@@ -105,7 +104,7 @@ public class GribCollectionMutable implements AutoCloseable {
   protected GribTables cust;
 
   // not stored in index
-  protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file, synchronize any access to it
+  protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
   protected String indexFilename;
   protected long lastModified;
   protected long fileSize;

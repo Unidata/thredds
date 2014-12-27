@@ -133,7 +133,7 @@ public class TestGribCollectionsDense {
 
   @Test
   public void problem() throws IOException {
-    String filename = "gribCollections/dgex/dgex_46-dgex.ncx3";
+    String filename = "gribCollections/dgex/dgex_46.ncx3";
     //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx3";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Total_precipitation_surface_6_Hour_Accumulation");

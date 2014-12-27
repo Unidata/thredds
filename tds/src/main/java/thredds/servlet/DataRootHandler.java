@@ -328,7 +328,7 @@ public final class DataRootHandler implements InitializingBean {
         return;
       }
       staticCatalogNames.add(path);
-      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("catalog {} -> {}%n", path, f.getAbsolutePath());
+      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
 
       // read it
       InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
