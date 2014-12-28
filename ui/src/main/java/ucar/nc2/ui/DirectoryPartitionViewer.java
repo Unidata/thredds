@@ -322,14 +322,14 @@ public class DirectoryPartitionViewer extends JPanel {
     // long running task in background thread
     Thread background = new Thread() {
        public void run() {
-
          Formatter out = new Formatter();
-         try {
-           GribCdmIndex indexReader = new GribCdmIndex(logger);
-           final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, true, indexReader, logger);
-           dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-           Formatter errlog = new Formatter();                          // LOOK does it really need to be mutable ??
-           PartitionCollectionMutable tp = (PartitionCollectionMutable)  GribCdmIndex.openMutableGCFromIndex(dpart.getIndexFilename(), config, false, true, logger);
+         GribCdmIndex indexReader = new GribCdmIndex(logger);
+         final DirectoryPartition dpart = new DirectoryPartition(config, node.dir, true, indexReader, logger);
+         dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+
+         try (PartitionCollectionMutable tp = (PartitionCollectionMutable)  GribCdmIndex.openMutableGCFromIndex(dpart.getIndexFilename(), config, false, true, logger)) {
+           if (tp == null) return;
+
            for (MCollection dcmp : dpart.makePartitions(null)) {
              dcmp.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
              tp.addPartition(dcmp);
@@ -338,10 +338,9 @@ public class DirectoryPartitionViewer extends JPanel {
            final List<GribCollectionMutable> gclist = new ArrayList<>();
            for (PartitionCollectionMutable.Partition tpp : tp.getPartitions()) {
              if (tpp.isBad()) continue;
-             try {
-               GribCollectionMutable gc = tpp.makeGribCollection();    // use index if it exists
-               gclist.add(gc);
-               gc.close(); // ??
+             try ( GribCollectionMutable gc = tpp.makeGribCollection()) {    // use index if it exists
+               if (gc != null)
+                 gclist.add(gc);
 
              } catch (Throwable t) {
                t.printStackTrace();

@@ -71,6 +71,7 @@ import thredds.server.admin.DebugController;
 import thredds.server.config.AllowableService;
 import thredds.server.config.TdsContext;
 import thredds.util.*;
+import thredds.util.filesource.FileSource;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil2;
@@ -89,7 +90,7 @@ import ucar.unidata.util.StringUtil2;
  * @author caron
  */
 @Component("DataRootHandler")
-@DependsOn ("CdmInit")
+@DependsOn("CdmInit")
 public final class DataRootHandler implements InitializingBean {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
@@ -143,14 +144,14 @@ public final class DataRootHandler implements InitializingBean {
   private Set<String> staticCatalogNames; // Hash of static catalogs, key = path
 
   // @GuardedBy("this")
-  private HashSet<String> idHash = new HashSet<String>(); // Hash of ids, to look for duplicates
+  private HashSet<String> idHash = new HashSet<>(); // Hash of ids, to look for duplicates
 
   //  PathMatcher is "effectively immutable"; use volatile for visibilty
   private volatile PathMatcher pathMatcher = new PathMatcher(); // collection of DataRoot objects
 
-  private List<ConfigListener> configListeners = new ArrayList<ConfigListener>();
+  private List<ConfigListener> configListeners = new ArrayList<>();
 
-  private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
+  private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<>();
 
   /**
    * Constructor.
@@ -179,8 +180,12 @@ public final class DataRootHandler implements InitializingBean {
     registerConfigListener(new RestrictedAccessConfigListener());
 
     // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
-    String contentReplacementPath = StringUtils.cleanPath(tdsContext.getPublicDocFileSource().getFile("").getPath());
-    dataRootLocationAliasExpanders.add(new PathAliasReplacementImpl("content", contentReplacementPath));
+    FileSource fileSource = tdsContext.getPublicDocFileSource();
+    if (fileSource != null) {
+      File file = fileSource.getFile("");
+      if (file != null)
+        dataRootLocationAliasExpanders.add(new PathAliasReplacementImpl("content", StringUtils.cleanPath(file.getPath())));
+    }
 
     //this.contentPath = this.tdsContext.
     this.initCatalogs();
@@ -252,7 +257,7 @@ public final class DataRootHandler implements InitializingBean {
 
     // Empty all config catalog information.
     pathMatcher = new PathMatcher();
-    idHash = new HashSet<String>();
+    idHash = new HashSet<>();
 
     DatasetHandler.reinit(); // NcML datasets
     initCatalogs();
@@ -266,7 +271,7 @@ public final class DataRootHandler implements InitializingBean {
   volatile boolean isReinit = false;
 
   void initCatalogs() {
-    ArrayList<String> catList = new ArrayList<String>();
+    ArrayList<String> catList = new ArrayList<>();
     catList.add("catalog.xml"); // always first
     catList.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
 
@@ -284,8 +289,8 @@ public final class DataRootHandler implements InitializingBean {
     staticCache = ThreddsConfig.getBoolean("Catalog.cache", true);  // user can turn off static catalog caching
     startupLog.info("DataRootHandler: staticCache= " + staticCache);
 
-    this.staticCatalogNames = new HashSet<String>();
-    this.staticCatalogHash = new HashMap<String, InvCatalogImpl>();
+    this.staticCatalogNames = new HashSet<>();
+    this.staticCatalogHash = new HashMap<>();
 
     for (String path : configCatalogRoots) {
       try {
@@ -313,80 +318,79 @@ public final class DataRootHandler implements InitializingBean {
    * @throws IOException if reading catalog fails
    */
   private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
-      path = StringUtils.cleanPath(path);
-      File f = this.tdsContext.getConfigFileSource().getFile(path);
-      System.out.printf("initCatalog %s%n", f.getPath());
+    path = StringUtils.cleanPath(path);
+    File f = this.tdsContext.getConfigFileSource().getFile(path);
+    if (f == null) {
+      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
+      return;
+    }
+    System.out.printf("initCatalog %s%n", f.getPath());
 
-      if (f == null) {
-        logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
-        return;
-      }
+    // make sure we dont already have it
+    if (staticCatalogNames.contains(path)) {
+      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
+      return;
+    }
+    staticCatalogNames.add(path);
+    if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
 
-      // make sure we dont already have it
-      if (staticCatalogNames.contains(path)) {
-        logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
-        return;
-      }
-      staticCatalogNames.add(path);
-      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
+    // read it
+    InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
+    InvCatalogImpl cat = readCatalog(factory, path, f.getPath());
+    if (cat == null) {
+      logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + f.getPath() + ">.");
+      return;
+    }
 
-      // read it
-      InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
-      InvCatalogImpl cat = readCatalog(factory, path, f.getPath());
-      if (cat == null) {
-        logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + f.getPath() + ">.");
-        return;
-      }
+    // Notify listeners of config catalog.
+    for (ConfigListener cl : configListeners)
+      cl.configCatalog(cat);
 
-      // Notify listeners of config catalog.
-      for (ConfigListener cl : configListeners)
-        cl.configCatalog(cat);
+    // look for datasetRoots
+    for (DataRootConfig p : cat.getDatasetRoots()) {
+      addRoot(p, true);
+    }
 
-      // look for datasetRoots
-      for (DataRootConfig p : cat.getDatasetRoots()) {
-        addRoot(p, true);
-      }
+    List<String> disallowedServices = AllowableService.checkCatalogServices(cat);
+    if (!disallowedServices.isEmpty()) {
+      logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
+    }
 
-      List<String> disallowedServices = AllowableService.checkCatalogServices(cat);
-      if (!disallowedServices.isEmpty()) {
-        logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
-      }
-
-      // old style - in the service elements
-      for (InvService s : cat.getServices()) {
-        for (InvProperty p : s.getDatasetRoots()) {
-          addRoot(p.getName(), p.getValue(), true);
-        }
-      }
-
-      // get the directory path, reletive to the contentPath
-      int pos = path.lastIndexOf("/");
-      String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
-
-      // look for datasetScans and NcML elements and Fmrc and featureCollections
-      boolean needsCache = initSpecialDatasets(cat.getDatasets());
-
-      // optionally add catalog to cache
-      if (staticCache || cache || needsCache) {
-        cat.setStatic(true);
-        staticCatalogHash.put(path, cat);
-        if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog to hash=" + path);
-      }
-
-      if (recurse) {
-        initFollowCatrefs(dirPath, cat.getDatasets());
+    // old style - in the service elements
+    for (InvService s : cat.getServices()) {
+      for (InvProperty p : s.getDatasetRoots()) {
+        addRoot(p.getName(), p.getValue(), true);
       }
     }
 
+    // get the directory path, reletive to the contentPath
+    int pos = path.lastIndexOf("/");
+    String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
+
+    // look for datasetScans and NcML elements and Fmrc and featureCollections
+    boolean needsCache = initSpecialDatasets(cat.getDatasets());
+
+    // optionally add catalog to cache
+    if (staticCache || cache || needsCache) {
+      cat.setStatic(true);
+      staticCatalogHash.put(path, cat);
+      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog to hash=" + path);
+    }
+
+    if (recurse) {
+      initFollowCatrefs(dirPath, cat.getDatasets());
+    }
+  }
+
   // testing only
   void initCatalog(String path, String absPath) throws IOException {
-       // read it
-      InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
-      InvCatalogImpl cat = readCatalog(factory, path, absPath);
-      if (cat == null) {
-        logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + absPath + ">.");
-        return;
-      }
+    // read it
+    InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
+    InvCatalogImpl cat = readCatalog(factory, path, absPath);
+    if (cat == null) {
+      logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + absPath + ">.");
+      return;
+    }
 
     // look for datasetRoots
     for (DataRootConfig p : cat.getDatasetRoots()) {
@@ -618,7 +622,7 @@ public final class DataRootHandler implements InitializingBean {
   }
 
   public List<InvDatasetFeatureCollection> getFeatureCollections() {
-    List<InvDatasetFeatureCollection> result = new ArrayList<InvDatasetFeatureCollection>();
+    List<InvDatasetFeatureCollection> result = new ArrayList<>();
     Iterator iter = pathMatcher.iterator();
     while (iter.hasNext()) {
       DataRoot droot = (DataRoot) iter.next();
@@ -730,9 +734,9 @@ public final class DataRootHandler implements InitializingBean {
 
   public String expandAliasForDataRoot(String location) {
     for (PathAliasReplacement par : this.dataRootLocationAliasExpanders) {
-        String result =  par.replaceIfMatch(location);
-        if (result != null)
-          return result;
+      String result = par.replaceIfMatch(location);
+      if (result != null)
+        return result;
     }
     return location;
   }
@@ -767,14 +771,14 @@ public final class DataRootHandler implements InitializingBean {
     DataRoot(InvDatasetScan scan) {
       setPath(scan.getPath());
       this.scan = scan;
-      this.dirLocation =  scan.getScanLocation();
+      this.dirLocation = scan.getScanLocation();
       this.datasetRootProxy = null;
       show();
     }
 
     DataRoot(String path, String dirLocation, boolean cache) {
       setPath(path);
-      this.dirLocation =  dirLocation;
+      this.dirLocation = dirLocation;
       this.cache = cache;
       this.scan = null;
 
@@ -854,24 +858,24 @@ public final class DataRootHandler implements InitializingBean {
     if ((path.length() > 0) && (path.charAt(0) == '/'))
       path = path.substring(1);
 
-    DataRoot dataRoot =  (DataRoot) pathMatcher.match(path);
+    DataRoot dataRoot = (DataRoot) pathMatcher.match(path);
     return (dataRoot == null) ? null : dataRoot.dirLocation;
   }
 
   /**
-    * Find the longest match for this path.
-    *
-    * @param fullpath the complete path name
-    * @return best DataRoot or null if no match.
-    */
-   private DataRoot findDataRoot(String fullpath) {
-     if ((fullpath.length() > 0) && (fullpath.charAt(0) == '/'))
-       fullpath = fullpath.substring(1);
+   * Find the longest match for this path.
+   *
+   * @param fullpath the complete path name
+   * @return best DataRoot or null if no match.
+   */
+  private DataRoot findDataRoot(String fullpath) {
+    if ((fullpath.length() > 0) && (fullpath.charAt(0) == '/'))
+      fullpath = fullpath.substring(1);
 
-     return (DataRoot) pathMatcher.match(fullpath);
-   }
+    return (DataRoot) pathMatcher.match(fullpath);
+  }
 
-   /**
+  /**
    * Extract the DataRoot from the request.
    * Use this when you need to manipulate the path based on the part that matches a DataRoot.
    *
@@ -1146,10 +1150,6 @@ public final class DataRootHandler implements InitializingBean {
    * <p/>
    * Only used is in ExampleThreddsServlet.
    *
-   * @param path
-   * @param dsp
-   * @param req
-   * @param res
    * @throws IOException
    * @deprecated DO NOT USE
    */
@@ -1189,7 +1189,7 @@ public final class DataRootHandler implements InitializingBean {
     if (dspCanHandle) {
       // Request recognized by DataServiceProvider, handle dataset request.
       dsp.handleRequestForDataset(dsReq, crDs, req, res);
-      return;
+
     } else {
       // Request not recognized by DataServiceProvider.
       if (crDs.isCollection()) {
@@ -1200,7 +1200,6 @@ public final class DataRootHandler implements InitializingBean {
 
       // Handle request for an atomic dataset.
       dsp.handleUnrecognizedRequest(crDs, req, res);
-      return;
     }
   }
 
@@ -1360,7 +1359,7 @@ public final class DataRootHandler implements InitializingBean {
     InvCatalogImpl catalog = staticCatalogHash.get(workPath);
     if (catalog != null) {  // see if its stale
       DateType expiresDateType = catalog.getExpires();
-      if ((expiresDateType != null) && expiresDateType.getDate().getTime() < System.currentTimeMillis())
+      if ((expiresDateType != null) && expiresDateType.getCalendarDate().getMillis() < System.currentTimeMillis())
         reread = true;
 
     } else if (!staticCache) {
@@ -1739,7 +1738,7 @@ public final class DataRootHandler implements InitializingBean {
         ArrayList<String> list;
         StringBuilder sbuff = new StringBuilder();
         synchronized (DataRootHandler.this) {
-          list = new ArrayList<String>(staticCatalogHash.keySet());
+          list = new ArrayList<>(staticCatalogHash.keySet());
           Collections.sort(list);
           for (String catPath : list) {
             InvCatalogImpl cat = staticCatalogHash.get(catPath);
