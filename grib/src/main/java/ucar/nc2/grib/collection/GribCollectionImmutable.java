@@ -47,6 +47,9 @@ import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.grib1.Grib1Variable;
+import ucar.nc2.grib.grib2.Grib2Variable;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
@@ -317,7 +320,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
   }
 
-  // this class should be immutable, because it escapes
   @Immutable
   public class GroupGC {
     final Dataset ds;
@@ -325,7 +327,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final List<VariableIndex> variList;
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
-    final private Map<Integer, VariableIndex> varMap;
+    final private Map<VariableIndex, VariableIndex> varMap;
 
     public GroupGC(Dataset ds, GribCollectionMutable.GroupGC gc) {
       this.ds = ds;
@@ -339,7 +341,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       for (GribCollectionMutable.VariableIndex gcVar : gcVars) {
         VariableIndex vi = makeVariableIndex(this, gcVar);
         work.add( vi);
-        varMap.put(vi.getCdmHash(), vi);
+        varMap.put(vi, vi);
       }
       this.variList = Collections.unmodifiableList( work);
     }
@@ -369,8 +371,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return horizCoordSys.getHcs();
     }
 
-    public VariableIndex findVariableByHash(int cdmHash) {
-      return varMap.get(cdmHash);
+    public VariableIndex findVariableByHash(VariableIndex vi) {
+      return varMap.get(vi);
     }
 
     public List<VariableIndex> getVariables() {
@@ -436,6 +438,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public class VariableIndex {
     final GroupGC group;     // belongs to this group
     final VariableIndex.Info info;
+    final Object gribVariable;
 
     final List<Integer> coordIndex;  // indexes into group.coords
     final long recordsPos;    // where the records array is stored in the index. 0 means no records
@@ -450,6 +453,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     protected VariableIndex(GroupGC g, GribCollectionMutable.VariableIndex gcVar) {
       this.group = g;
       this.info = new Info(gcVar);
+      this.gribVariable = gcVar.gribVariable;
+
       this.coordIndex = gcVar.coordIndex;
       this.recordsPos = gcVar.recordsPos;
       this.recordsLen = gcVar.recordsLen;
@@ -479,9 +484,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         }
        */
         GribCollectionProto.SparseArray proto = GribCollectionProto.SparseArray.parseFrom(b);
-        int cdmHash = proto.getCdmHash();
-        if (cdmHash != info.cdmHash)
-          throw new IllegalStateException("Corrupted index");
+        //int cdmHash = proto.getCdmHash();
+        //if (cdmHash != info.cdmHash)
+        //  throw new IllegalStateException("Corrupted index");
 
         int nsizes = proto.getSizeCount();
         int[] size = new int[nsizes];
@@ -564,9 +569,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return info.rawPds;
     }
 
-    public int getCdmHash() {
-      return info.cdmHash;
-    }
+    //public int getCdmHash() {
+    //  return info.cdmHash;
+    //}
 
     public int getCategory() {
       return info.category;
@@ -639,12 +644,32 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      VariableIndex that = (VariableIndex) o;
+      return gribVariable.equals(that.gribVariable);
+    }
+
+    @Override
+    public int hashCode() {
+      return gribVariable.hashCode();
+    }
+
+    public String makeVariableName() {
+      if (isGrib1)
+        return ((Grib1Variable)gribVariable).makeVariableName(config.gribConfig);
+      else
+        return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, this, false);
+    }
+
     @Immutable
     public final class Info {
       final int tableVersion;   // grib1 only : can vary by variable
       final int discipline;     // grib2 only
-      final byte[] rawPds;      // grib1 or grib2
-      final int cdmHash;
+      // final byte[] rawPds;      // grib1 or grib2
 
       // derived from pds
       final int category, parameter, levelType, intvType, ensDerivedType, probType;
@@ -656,8 +681,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       public Info(GribCollectionMutable.VariableIndex gcVar) {
         this.tableVersion = gcVar.tableVersion;
         this.discipline = gcVar.discipline;
-        this.rawPds = gcVar.rawPds;
-        this.cdmHash = gcVar.cdmHash;
+        // this.rawPds = gcVar.rawPds;
         this.category = gcVar.category;
         this.parameter = gcVar.parameter;
         this.levelType = gcVar.levelType;
@@ -670,8 +694,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         this.isEnsemble = gcVar.isEnsemble;
         this.genProcessType = gcVar.genProcessType;
       }
-
     }
+
   }
 
   @Immutable
@@ -828,9 +852,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
    }
 
   ///////////////////////
-
-    // LOOK could use this in iosp
-  public abstract String makeVariableName(VariableIndex vindex);
 
   // stuff for InvDatasetFcGrib
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,

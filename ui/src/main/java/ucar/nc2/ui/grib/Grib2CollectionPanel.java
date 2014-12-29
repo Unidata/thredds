@@ -479,7 +479,7 @@ public class Grib2CollectionPanel extends JPanel {
       return;
     }
 
-    Map<Integer, Grib2ParameterBean> pdsSet = new HashMap<>();
+    Map<Grib2Variable, Grib2ParameterBean> pdsSet = new HashMap<>();
     Map<Integer, Grib2SectionGridDefinition> gdsSet = new HashMap<>();
 
     java.util.List<Grib2ParameterBean> params = new ArrayList<>();
@@ -500,7 +500,7 @@ public class Grib2CollectionPanel extends JPanel {
   }
 
   private void processGribFile(MFile mfile, int fileno,
-                               Map<Integer, Grib2ParameterBean> pdsSet,
+                               Map<Grib2Variable, Grib2ParameterBean> pdsSet,
                                Map<Integer, Grib2SectionGridDefinition> gdsSet,
                                List<Grib2ParameterBean> params, Formatter f) throws IOException {
 
@@ -520,13 +520,12 @@ public class Grib2CollectionPanel extends JPanel {
 
       if (cust == null)
         cust = Grib2Customizer.factory(gr);
-                                                      // boolean intvMerge, boolean useGenType,
-      int id = Grib2Iosp.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger);
 
-      Grib2ParameterBean bean = pdsSet.get(id);
+      Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger);
+      Grib2ParameterBean bean = pdsSet.get(gv);
       if (bean == null) {
-        bean = new Grib2ParameterBean(gr, id);
-        pdsSet.put(id, bean);
+        bean = new Grib2ParameterBean(gr, gv);
+        pdsSet.put(gv, bean);
         params.add(bean);
       }
       bean.addRecord(gr);
@@ -1070,16 +1069,16 @@ public class Grib2CollectionPanel extends JPanel {
     Grib2Pds pds;
     List<Grib2RecordBean> records;
     int discipline;
-    int cdmHash;
+    Grib2Variable gv;
 
     // no-arg constructor
 
     public Grib2ParameterBean() {
     }
 
-    public Grib2ParameterBean(Grib2Record r, int cdmHash) throws IOException {
+    public Grib2ParameterBean(Grib2Record r, Grib2Variable gv) throws IOException {
       this.gr = r;
-      this.cdmHash = cdmHash;
+      this.gv = gv;
 
       // long refTime = r.getId().getReferenceDate().getMillis();
       pds = r.getPDS();
@@ -1151,7 +1150,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
    public String getCdmHash() {
-     return Integer.toHexString(cdmHash);
+     return Integer.toHexString(gv.hashCode());
    }
 
     public double getIntvHours() {
@@ -1255,7 +1254,9 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("Header=\"");
     showBytes(f, gr.getHeader(), 100);
     f.format("\"%n");
-    f.format("cdmHash=%d%n", Grib2Iosp.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger));
+
+    Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger);
+    f.format("cdmHash=%d%n", gv.hashCode());
 
     int d = gr.getDiscipline();
     f.format("Grib2IndicatorSection%n");

@@ -196,7 +196,6 @@ public abstract class Grib2Gds {
     if (ny != grib2Gds.ny) return false;
     if (template != grib2Gds.template) return false;
     return Arrays.equals(nptsInLine, grib2Gds.nptsInLine);
-
   }
 
   @Override

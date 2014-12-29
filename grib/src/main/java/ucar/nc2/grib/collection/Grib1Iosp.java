@@ -63,14 +63,13 @@ public class Grib1Iosp extends GribIosp {
 
     ///////////////////////////////////////////////////
 
-
    // use defaults
-  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
-    return cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
-  }
+  //public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
+  //  return cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
+  //}
 
 
-  /**
+  /*
    * A hash code to group records into a CDM variable
    * Herein lies the semantics of a variable object identity.
    * Read it and weep.
@@ -83,8 +82,6 @@ public class Grib1Iosp extends GribIosp {
    * @param useCenter        use center id when param no > 127, default is false
    *
    * @return this record's hash code, to group like records into a variable
-   */
-
   public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
     int result = 17;
 
@@ -115,7 +112,7 @@ public class Grib1Iosp extends GribIosp {
         result += result * 31 + pdss.getSubCenter();
     }
     return result;
-  }
+  }  */
 
   ///////////////////////////////////////////////////
   // create variable names

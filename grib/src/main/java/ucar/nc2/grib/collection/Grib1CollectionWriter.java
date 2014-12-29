@@ -241,7 +241,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
    */
   private GribCollectionProto.SparseArray writeSparseArray(Grib1CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
-    b.setCdmHash(vb.cdmHash);
+    b.setCdmHash(vb.gv.hashCode());
     SparseArray<Grib1Record> sa = vb.coordND.getSparseArray();
     for (int size : sa.getShape())
       b.addSize(size);
@@ -362,7 +362,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
     b.setDiscipline(0);
     b.setPds(ByteString.copyFrom(vb.first.getPDSsection().getRawBytes()));
-    b.setCdmHash(vb.cdmHash);
+    b.setCdmHash(vb.gv.hashCode());
 
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);

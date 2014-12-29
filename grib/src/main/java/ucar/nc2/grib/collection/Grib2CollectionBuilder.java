@@ -224,7 +224,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
   static class VariableBag implements Comparable<VariableBag> {
     public Grib2Record first;
-    public int cdmHash;
+    public Grib2Variable gv;
 
     public List<Grib2Record> atomList = new ArrayList<>(100); // not sorted
     public CoordinateND<Grib2Record> coordND;
@@ -234,9 +234,9 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     long pos;
     int length;
 
-    private VariableBag(Grib2Record first, int cdmHash) {
+    private VariableBag(Grib2Record first, Grib2Variable gv) {
       this.first = first;
-      this.cdmHash = cdmHash;
+      this.gv = gv;
     }
 
     @Override
@@ -260,19 +260,19 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       CalendarPeriod userTimeUnit = config.userTimeUnit;
 
       // assign each record to unique variable using cdmVariableHash()
-      Map<Integer, VariableBag> vbHash = new HashMap<>(100);
+      Map<Grib2Variable, VariableBag> vbHash = new HashMap<>(100);
       for (Grib2Record gr : records) {
-        int cdmHash;
+        Grib2Variable vh;
         try {
-          cdmHash = cdmVariableHash(gr, gdsHash);
+          vh = makeGribVariable(gr, gdsHash);
         } catch (Throwable t) {
           logger.warn("Exception on record ", t);
           continue; // keep going
         }
-        VariableBag bag = vbHash.get(cdmHash);
+        VariableBag bag = vbHash.get(vh);
         if (bag == null) {
-          bag = new VariableBag(gr, cdmHash);
-          vbHash.put(cdmHash, bag);
+          bag = new VariableBag(gr, vh);
+          vbHash.put(vh, bag);
         }
         bag.atomList.add(gr);
       }
@@ -350,7 +350,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       Counter all = new Counter();
 
       for (VariableBag vb : gribvars) {
-        f.format("Variable %s (%d)%n", tables.getVariableName(vb.first), vb.cdmHash);
+        f.format("Variable %s (%d)%n", tables.getVariableName(vb.first), vb.gv.hashCode());
         vb.coordND.showInfo(f, all);
         //f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
         //        vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);
@@ -360,8 +360,8 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
-  private int cdmVariableHash(Grib2Record gr, int gdsHash) {
-    return Grib2Iosp.cdmVariableHash(cust, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
+  private Grib2Variable makeGribVariable(Grib2Record gr, int gdsHash) {
+    return new Grib2Variable(cust, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
   }
 
 }

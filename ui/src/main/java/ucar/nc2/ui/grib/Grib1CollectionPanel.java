@@ -386,14 +386,19 @@ public class Grib1CollectionPanel extends JPanel {
 
   ///////////////////////////////////////////////////////////////////////////////////////////
 
+
+  private static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
+    return Grib1Variable.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
+  }
+
   private void compare(RecordBean bean1, RecordBean bean2, Formatter f) {
     String h1 = bean1.getHeader();
     String h2 = bean2.getHeader();
     if (!h1.equals(h2))
       f.format("WMO headers differ %s != %s %n", h1, h2);
 
-    f.format("1 cdmHash = %d%n", Grib1Iosp.cdmVariableHash(cust, bean1.gr));
-    f.format("2 cdmHash = %d%n", Grib1Iosp.cdmVariableHash(cust, bean2.gr));
+    f.format("1 cdmHash = %d%n", cdmVariableHash(cust, bean1.gr));
+    f.format("2 cdmHash = %d%n", cdmVariableHash(cust, bean2.gr));
 
     compare(bean1.gr.getPDSsection(), bean2.gr.getPDSsection(), f);
     compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
@@ -472,7 +477,7 @@ public class Grib1CollectionPanel extends JPanel {
       return;
     }
 
-    Map<Integer, ParameterBean> pdsSet = new HashMap<>();
+    Map<Grib1Variable, ParameterBean> pdsSet = new HashMap<>();
     Map<Integer, Grib1SectionGridDefinition> gdsSet = new HashMap<>();
 
     java.util.List<ParameterBean> params = new ArrayList<>();
@@ -510,7 +515,7 @@ public class Grib1CollectionPanel extends JPanel {
   }
 
   private void processGribFile(MFile mfile, int fileno,
-                               Map<Integer, ParameterBean> pdsSet,
+                               Map<Grib1Variable, ParameterBean> pdsSet,
                                Map<Integer, Grib1SectionGridDefinition> gdsSet,
                                List<ParameterBean> params, Formatter f) throws IOException {
 
@@ -532,7 +537,7 @@ public class Grib1CollectionPanel extends JPanel {
         cust = Grib1Customizer.factory(gr, null);
       }
 
-      int id = Grib1Iosp.cdmVariableHash(cust, gr);
+      Grib1Variable id = new Grib1Variable(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
       ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new ParameterBean(gr);
@@ -628,7 +633,7 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("Total length of GRIB message = %d%n", gr.getIs().getMessageLength());
     Grib1SectionProductDefinition pds = gr.getPDSsection();
     f.format("PDS len=%d%n", pds.getLength());
-    int cdmHash = Grib1Iosp.cdmVariableHash(cust, gr);
+    int cdmHash = cdmVariableHash(cust, gr);
     f.format("Variable cdmHash=%d%n", cdmHash);
     pds.showPds(cust, f);
     Grib1SectionGridDefinition gds = gr.getGDSsection();
@@ -684,7 +689,7 @@ public class Grib1CollectionPanel extends JPanel {
       records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = r.getGDSsection().getGDS().hashCode();
-      cdmHash =  Grib1Iosp.cdmVariableHash(cust, r, gdsHash, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
+      cdmHash =  Grib1Variable.cdmVariableHash(cust, r, gdsHash, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
     }
 
     void addRecord(Grib1Record r) {

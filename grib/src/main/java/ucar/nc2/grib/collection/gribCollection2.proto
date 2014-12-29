@@ -63,7 +63,7 @@ message Parameter {
 }
 
 message Gds {
-  optional bytes gds = 1;                        // raw gds
+  optional bytes gds = 1;                        // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
   optional sint32 gdsHash = 2 [default = 0];
   optional uint32 predefinedGridDefinition = 4;  // only grib1; instead of gds raw bytes
 }
@@ -112,7 +112,7 @@ message GribCollection {
   repeated Gds gds = 5;             // unique Gds, shared amongst datasets
   required Coord masterRuntime = 6;  // list of runtimes in this GC
 
-  required int32 center = 7;      // these 4 fields are to get a GribTable object
+  required int32 center = 7;      // these 4 fields are to get a GribCustomizer
   required int32 subcenter = 8;
   required int32 master = 9;
   required int32 local = 10;       // grib1 table Version

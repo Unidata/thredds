@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Common superclass for writing Grib ncx2 files
+ * Common superclass for writing Grib ncx3 files
  *
  * @author caron
  * @since 2/20/14

@@ -111,11 +111,6 @@ public class Grib2Collection extends GribCollectionImmutable {
     }
   }
 
-  @Override
-  public String makeVariableName(VariableIndex vindex) {
-    return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex, false);
-  }
-
 
   @Override
   protected void addGlobalAttributes(List<Attribute> result) {

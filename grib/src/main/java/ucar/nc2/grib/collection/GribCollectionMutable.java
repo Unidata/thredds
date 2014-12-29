@@ -42,8 +42,11 @@ import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
+import ucar.nc2.grib.grib2.Grib2Variable;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarTimeZone;
@@ -56,7 +59,6 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -97,7 +99,7 @@ public class GribCollectionMutable implements AutoCloseable {
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
   public List<Parameter> params;          // not used
-  protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key in index in original collection, GC has subset of them
+  protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
   protected List<Dataset> datasets;
   protected List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
@@ -202,7 +204,7 @@ public class GribCollectionMutable implements AutoCloseable {
   }
 
   protected void makeHorizCS() {
-    Map<Integer, GribHorizCoordSystem> gdsMap = new HashMap<>();
+    Map<Integer, GribHorizCoordSystem> gdsMap = new HashMap<>();   // WTF ?? unique ???
     for (Dataset ds : datasets) {
       for (GroupGC hcs : ds.groups)
         gdsMap.put(hcs.getGdsHash(), hcs.horizCoordSys);
@@ -322,11 +324,6 @@ public class GribCollectionMutable implements AutoCloseable {
     public List<GroupGC> getGroups() {
       return groups;
     }
-
-    public GroupGC getGroup(int idx) {
-      return groups.get(idx);
-    }
-
   }
 
   public class GroupGC implements Comparable<GroupGC> {
@@ -334,7 +331,7 @@ public class GribCollectionMutable implements AutoCloseable {
     List<VariableIndex> variList;
     List<Coordinate> coords;      // shared coordinates
     int[] filenose;               // key for GC.fileMap
-    Map<Integer, GribCollectionMutable.VariableIndex> varMap;
+    HashMap<GribCollectionMutable.VariableIndex, GribCollectionMutable.VariableIndex> varMap;
     boolean isTwoD = true;        // true except for Best (?)
 
     GroupGC() {
@@ -377,9 +374,13 @@ public class GribCollectionMutable implements AutoCloseable {
       return horizCoordSys.getDescription();
     }
 
-    public int getGdsHash() {
-      return horizCoordSys.getGdsHash();
+    public byte[] getGdsBytes() {
+      return horizCoordSys.getRawGds();
     }
+
+    public int getGdsHash() {    // LOOK ??
+       return horizCoordSys.getGdsHash();
+     }
 
     @Override
     public int compareTo(GroupGC o) {
@@ -404,13 +405,14 @@ public class GribCollectionMutable implements AutoCloseable {
       return result;
     }
 
-    public GribCollectionMutable.VariableIndex findVariableByHash(int cdmHash) {
+    // get the variable in this group that has same object equality as want
+    public GribCollectionMutable.VariableIndex findVariableByHash(GribCollectionMutable.VariableIndex want) {
       if (varMap == null) {
         varMap = new HashMap<>(variList.size() * 2);
         for (VariableIndex vi : variList)
-          varMap.put(vi.cdmHash, vi);
+          varMap.put(vi, vi);
       }
-      return varMap.get(cdmHash);
+      return varMap.get(want);
     }
 
     private CalendarDateRange dateRange = null;
@@ -440,7 +442,7 @@ public class GribCollectionMutable implements AutoCloseable {
     }
 
     public void show(Formatter f) {
-      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), getGdsHash(), isTwoD);
+      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), isTwoD);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }
@@ -455,19 +457,20 @@ public class GribCollectionMutable implements AutoCloseable {
     }
   }
 
-  public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,
+  public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,  byte[] rawIds,
                                                                byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
-    return new VariableIndex(g, discipline, customizer, rawPds, cdmHash, index, recordsPos, recordsLen);
+    return new VariableIndex(g, discipline, customizer, rawIds, rawPds, index, recordsPos, recordsLen);
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
     public final GroupGC group;     // belongs to this group
     public final int tableVersion;   // grib1 only : can vary by variable
     public final int discipline;     // grib2 only
-    public final byte[] rawPds;      // grib1 or grib2
-    public final int cdmHash;
+    //public final byte[] rawPds;      // grib1 or grib2
+    // public final int cdmHash;
     public final long recordsPos;    // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
+    public Object gribVariable;    // use this to test for object equality
 
     List<Integer> coordIndex;  // indexes into group.coords
 
@@ -484,12 +487,12 @@ public class GribCollectionMutable implements AutoCloseable {
     // temporary storage while building - do not use
     List<Coordinate> coords;
 
-    private VariableIndex(GroupGC g, int discipline, GribTables customizer, byte[] rawPds,
-                          int cdmHash, List<Integer> index, long recordsPos, int recordsLen) {
+    private VariableIndex(GroupGC g, int discipline, GribTables customizer, byte[] rawIds, byte[] rawPds,
+                          List<Integer> index, long recordsPos, int recordsLen) {
       this.group = g;
       this.discipline = discipline;
-      this.rawPds = rawPds;
-      this.cdmHash = cdmHash;
+      // this.rawPds = rawPds;
+      // this.cdmHash = cdmHash;
       this.coordIndex = index;
       this.recordsPos = recordsPos;
       this.recordsLen = recordsLen;
@@ -518,7 +521,12 @@ public class GribCollectionMutable implements AutoCloseable {
         this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
         this.isEnsemble = pds.isEnsemble();
 
+        // LOOK config vs serialized config
+        gribVariable = new Grib1Variable(cust, pds, g.getGdsBytes(), config.gribConfig.useTableVersion, config.gribConfig.intvMerge, config.gribConfig.useCenter);
+
       } else {
+        Grib2Customizer cust2 = (Grib2Customizer) customizer;
+
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
         Grib2Pds pds = pdss.getPDS();
         this.tableVersion = -1;
@@ -548,6 +556,9 @@ public class GribCollectionMutable implements AutoCloseable {
 
         this.genProcessType = pds.getGenProcessType();
         this.isEnsemble = pds.isEnsemble();
+
+        // LOOK config vs serialized config
+        gribVariable = new Grib2Variable (cust2, discipline, rawIds, g.getGdsBytes(), pds, config.gribConfig.intvMerge, config.gribConfig.useGenType);
       }
     }
 
@@ -555,8 +566,8 @@ public class GribCollectionMutable implements AutoCloseable {
       this.group = g;
       this.tableVersion = other.tableVersion;
       this.discipline = other.discipline;
-      this.rawPds = other.rawPds;
-      this.cdmHash = other.cdmHash;
+      // this.rawPds = other.rawPds;
+      this.gribVariable = other.gribVariable;
       this.coordIndex = new ArrayList<>(other.coordIndex);
       this.recordsPos = 0;
       this.recordsLen = 0;
@@ -638,7 +649,7 @@ public class GribCollectionMutable implements AutoCloseable {
       sb.append(", probabilityName='").append(probabilityName).append('\'');
       sb.append(", isLayer=").append(isLayer);
       sb.append(", genProcessType=").append(genProcessType);
-      sb.append(", cdmHash=").append(cdmHash);
+      sb.append(", cdmHash=").append(gribVariable.hashCode());
       //sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
       sb.append('}');
       return sb.toString();
@@ -658,7 +669,7 @@ public class GribCollectionMutable implements AutoCloseable {
       sb.append(", intvName='").append(intvName).append('\'');
       sb.append(", probabilityName='").append(probabilityName).append('\'');
       sb.append(", isLayer=").append(isLayer);
-      sb.append(", cdmHash=").append(cdmHash);
+      sb.append(", cdmHash=").append(gribVariable.hashCode());
       sb.append(", recordsPos=").append(recordsPos);
       sb.append(", recordsLen=").append(recordsLen);
       sb.append(", group=").append(group.getId());
@@ -680,7 +691,7 @@ public class GribCollectionMutable implements AutoCloseable {
       sb.format(", intvType=%d", intvType);
       if (intvName != null && intvName.length() > 0) sb.format(" intv=%s", intvName);
       if (probabilityName != null && probabilityName.length() > 0) sb.format(" prob=%s", probabilityName);
-      sb.format(" cdmHash=%d}", cdmHash);
+      sb.format(" cdmHash=%d}", gribVariable.hashCode());
       return sb.toString();
     }
 
@@ -705,6 +716,20 @@ public class GribCollectionMutable implements AutoCloseable {
       if (r != 0) return r;
       r = intvType - o.intvType;
       return r;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      VariableIndex that = (VariableIndex) o;
+      return gribVariable.equals(that.gribVariable);
+    }
+
+    @Override
+    public int hashCode() {
+      return gribVariable.hashCode();
     }
   }  // VariableIndex
 

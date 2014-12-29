@@ -199,7 +199,7 @@ public class CdmIndexReportPanel extends ReportPanel {
             String name = gc.makeVariableName(vi);                    // LOOK not actually right - some are partitioned by level
             int nrecords = vi.getNRecords();
             f.format("  %7d: %s%n", nrecords, name);
-            int hash = vi.getCdmHash() + g.getGdsHash(); // must be both group and var
+            int hash = vi.hashCode() + g.getGdsHash(); // must be both group and var
             VarInfo vinfo = varCount.get(hash);
             if (vinfo == null) {
               vinfo = new VarInfo(name);
@@ -234,7 +234,7 @@ public class CdmIndexReportPanel extends ReportPanel {
         if (ds.getType().equals(GribCollectionImmutable.Type.Best)) continue;
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
-            int hash = vi.getCdmHash() + g.getGdsHash();
+            int hash = vi.hashCode() + g.getGdsHash();
             VarInfo vinfo = varCount.get(hash);
             if (vinfo == null) f.format("ERROR on vi %s%n", vi);
             else{
@@ -277,7 +277,7 @@ public class CdmIndexReportPanel extends ReportPanel {
           if (ds.getType().equals(GribCollectionImmutable.Type.Best)) continue;
           for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
             for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
-              int hash = vi.getCdmHash() + g.getGdsHash();
+              int hash = vi.hashCode() + g.getGdsHash();
               VarInfo vinfo = varCount.get(hash);
               if (!vinfo.ok) {
                 vi.readRecords();

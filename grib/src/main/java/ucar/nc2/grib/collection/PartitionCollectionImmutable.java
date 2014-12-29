@@ -153,12 +153,12 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     return c;
   }
 
-  public VariableIndexPartitioned getVariable2DByHash(GribHorizCoordSystem hcs, int cdmHash) {
+  public VariableIndexPartitioned getVariable2DByHash(GribHorizCoordSystem hcs, VariableIndex vi) {
     Dataset ds2d = getDatasetCanonical();
     if (ds2d == null) return null;
     for (GroupGC groupHcs : ds2d.getGroups())
       if (groupHcs.horizCoordSys == hcs)
-        return (VariableIndexPartitioned) groupHcs.findVariableByHash(cdmHash);
+        return (VariableIndexPartitioned) groupHcs.findVariableByHash(vi);
     return null;
   }
 
@@ -492,7 +492,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       // the 2D vip for this variable
       VariableIndexPartitioned vip =  isPartitionOfPartitions ?
-        getVariable2DByHash(group.horizCoordSys, info.cdmHash) :
+        getVariable2DByHash(group.horizCoordSys, this) :
         this;
 
       if (vip == null)

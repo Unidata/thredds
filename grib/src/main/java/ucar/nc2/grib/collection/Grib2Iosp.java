@@ -59,7 +59,7 @@ import java.util.List;
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
-  /**
+  /*
    * A hash code to group records into a CDM variable
    * Herein lies the semantics of a variable object identity.
    * Read it and weep.
@@ -71,7 +71,7 @@ public class Grib2Iosp extends GribIosp {
    * @param useGenType should genProcessType be used in hash? default false
    * @param logger     optionally log errors
    * @return this record's hash code, identical hash means belongs to the same variable
-   */
+   *
   public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHash, boolean intvMerge, boolean useGenType, org.slf4j.Logger logger) {
     Grib2Pds pds2 = gr.getPDS();
 
@@ -142,12 +142,8 @@ public class Grib2Iosp extends GribIosp {
       result += result * 31 + genType;
     }
 
-    /* int addHash = cust.addVariableHash(gr);
-    if (addHash != 0)
-      result += result * 31 + addHash; */
-
     return result;
-  }
+  } */
 
   static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollectionImmutable gribCollection, 
                                                  GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {

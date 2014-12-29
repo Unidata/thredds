@@ -55,7 +55,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * superclass to build Grib1/2 PartitionCollections (version 2)
+ * superclass to build Grib1/2 PartitionCollections
  *
  * @author caron
  * @since 2/21/14
@@ -199,11 +199,11 @@ abstract class GribPartitionBuilder  {
 
     void makeVariableIndexPartitioned() {
       // find unique variables across all partitions
-      Map<Integer, GribCollectionMutable.VariableIndex> varMap = new HashMap<>(2 * resultGroup.variList.size());
+      Map<GribCollectionMutable.VariableIndex, GribCollectionMutable.VariableIndex> varMap = new HashMap<>(2 * resultGroup.variList.size());
       for (GribCollectionMutable.GroupGC group : componentGroups) {
         if (group == null) continue;
         for (GribCollectionMutable.VariableIndex vi : group.variList)
-          varMap.put(vi.cdmHash, vi); // this will use the last one found
+          varMap.put(vi, vi); // this will use the last one found
       }
       for (GribCollectionMutable.VariableIndex vi : varMap.values()) {
         // convert each VariableIndex to VariableIndexPartitioned in result. note not using canon vi, but last one found
@@ -307,7 +307,7 @@ abstract class GribPartitionBuilder  {
         for (int varIdx = 0; varIdx < group.variList.size(); varIdx++) {
           GribCollectionMutable.VariableIndex vi = group.variList.get(varIdx);
           //int flag = 0;
-          PartitionCollectionMutable.VariableIndexPartitioned vip = (PartitionCollectionMutable.VariableIndexPartitioned) resultGroup.findVariableByHash(vi.cdmHash);
+          PartitionCollectionMutable.VariableIndexPartitioned vip = (PartitionCollectionMutable.VariableIndexPartitioned) resultGroup.findVariableByHash(vi);
           vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing );
         } // loop over variable
       } // loop over partition
@@ -328,7 +328,7 @@ abstract class GribPartitionBuilder  {
         for (int partno = 0; partno < npart; partno++) {
           GribCollectionMutable.GroupGC group = gp.componentGroups[partno];
           if (group == null) continue; // tolerate missing groups
-          GribCollectionMutable.VariableIndex vi = group.findVariableByHash(viResult.cdmHash);
+          GribCollectionMutable.VariableIndex vi = group.findVariableByHash(viResult);
           if (vi == null) continue; // tolerate missing variables
           unionizer.addCoords(vi.getCoordinates());
         }  // loop over partition
@@ -774,7 +774,7 @@ abstract class GribPartitionBuilder  {
 
     b.setDiscipline(vp.discipline);
     b.setPds(ByteString.copyFrom(vp.rawPds));
-    b.setCdmHash(vp.cdmHash);
+    b.setCdmHash(vp.hashCode());
 
     b.setRecordsPos(vp.recordsPos);
     b.setRecordsLen(vp.recordsLen);

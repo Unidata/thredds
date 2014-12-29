@@ -937,7 +937,7 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getCdmHash() {
-      return v.getCdmHash();
+      return v.hashCode();
     }
 
     public String getGroupId() {

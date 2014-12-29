@@ -418,7 +418,6 @@ public class TestGrib1CoordsMatch {
     Grib1ParamTime ptime;
     Grib1Parameter param;
     int gdsHash;
-    int cdmHash;
 
     public Record1Bean(Grib1Customizer cust, Grib1Record gr) {
       this.cust = cust;
@@ -430,7 +429,6 @@ public class TestGrib1CoordsMatch {
 
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = gr.getGDSsection().getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
-      cdmHash =  Grib1Iosp.cdmVariableHash(cust, gr, gdsHash, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
     }
 
     @Override
@@ -438,7 +436,7 @@ public class TestGrib1CoordsMatch {
       final Formatter sb = new Formatter();
       sb.format("Record dataStart=%s%n", gr.getDataSection().getStartingPosition());
       sb.format(" %s%n", param);
-      sb.format(" cdmHash=%d%n", cdmHash);
+      sb.format(" cdmHash=%d%n", 0);
       sb.format(" reftime=%s%n", getReferenceDate());
       sb.format(" time=%s%n", getTimeCoord());
       sb.format(" level=%s type=%s (%d)%n", getLevel(), getLevelName(), getLevelType());
@@ -476,10 +474,6 @@ public class TestGrib1CoordsMatch {
 
     public int getGds() {
       return gdsHash;
-    }
-
-    public int getCdmHash() {
-      return cdmHash;
     }
 
     public int getGen() {

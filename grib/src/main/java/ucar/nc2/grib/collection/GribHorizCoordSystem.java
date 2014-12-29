@@ -37,15 +37,15 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GdsHorizCoordSys;
 
 /**
- * Describe
+ * Encapsolates the raw gds; shared by the GroupHcs
  *
  * @author caron
  * @since 11/10/2014
  */
 @Immutable
-public class GribHorizCoordSystem { // encapsolates the gds; shared by the GroupHcs
+public class GribHorizCoordSystem {
   private final GdsHorizCoordSys hcs;
-  private final byte[] rawGds;
+  private final byte[] rawGds;         // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
   private final int gdsHash;
   private final String id, description;
   private final int predefinedGridDefinition;
@@ -87,80 +87,3 @@ public class GribHorizCoordSystem { // encapsolates the gds; shared by the Group
   }
 
 }
-
- /*  @Immutable
-  public class HorizCoordSys { // encapsolates the gds; shared by the GroupHcs
-    private final GdsHorizCoordSys hcs;
-    private final byte[] rawGds;
-    private final int gdsHash;
-    private final String id, description;
-    private final String nameOverride;
-    private final int predefinedGridDefinition;
-
-    public HorizCoordSys(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String nameOverride, int predefinedGridDefinition) {
-      this.hcs = hcs;
-      this.rawGds = rawGds;
-      this.gdsHash = gdsHash;
-      this.nameOverride = nameOverride;
-      this.predefinedGridDefinition = predefinedGridDefinition;
-
-      this.id = makeId();
-      this.description = makeDescription();
-    }
-
-    public GdsHorizCoordSys getHcs() {
-      return hcs;
-    }
-
-    public byte[] getRawGds() {
-      return rawGds;
-    }
-
-    public int getGdsHash() {
-      return gdsHash;
-    }
-
-    // unique name for Group
-    public String getId() {
-      return id;
-    }
-
-    // human readable
-    public String getDescription() {
-      return description;
-    }
-
-    public String getNameOverride() {
-      return nameOverride;
-    }
-
-    public int getPredefinedGridDefinition() {
-      return predefinedGridDefinition;
-    }
-
-    private String makeId() {
-      if (nameOverride != null) return nameOverride;
-
-      // default id
-      String base = hcs.makeId();
-      // ensure uniqueness
-      String tryit = base;
-      int count = 1;
-      while (groupNames.contains(tryit)) {
-        count++;
-        tryit = base + "-" + count;
-      }
-      groupNames.add(tryit);
-      return tryit;
-    }
-
-    private String makeDescription() {
-      // check for user defined group names
-      String result = null;
-      if (config.gribConfig.gdsNamer != null)
-        result = config.gribConfig.gdsNamer.get(gdsHash);
-      if (result != null) return result;
-
-      return hcs.makeDescription(); // default desc
-    }
-  }  */

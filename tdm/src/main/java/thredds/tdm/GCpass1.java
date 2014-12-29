@@ -11,10 +11,7 @@ import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.collection.Grib2Iosp;
-import ucar.nc2.grib.grib1.Grib1Index;
-import ucar.nc2.grib.grib1.Grib1RecordScanner;
-import ucar.nc2.grib.grib1.Grib1SectionGridDefinition;
-import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
+import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -430,7 +427,7 @@ public class GCpass1 {
     counters.count("referenceDate", pds.getReferenceDate());
 
     int gdsHash = gdss.getGDS().hashCode();
-    int cdmHash = Grib1Iosp.cdmVariableHash(cust1, gr, gdsHash, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
+    int cdmHash = Grib1Variable.cdmVariableHash(cust1, gr, gdsHash, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
     String name =  Grib1Iosp.makeVariableName(cust1, gribConfig, pds);
     counters.count("variable", new Variable(cdmHash, name));
     counters.count("gds", gdsHash);
@@ -470,7 +467,7 @@ public class GCpass1 {
 
     //counters.countS("param", gr.getDiscipline() + "-" + pdss.getParameterCategory() + "-" + pdss.getParameterNumber());
     int gdsHash = gr.getGDS().hashCode();
-    int cdmHash = Grib2Iosp.cdmVariableHash(cust2, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
+    int cdmHash = Grib2Variable.cdmVariableHash(cust2, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
     String name = GribUtils.makeNameFromDescription(cust2.getVariableName(gr));
     counters.count("variable", new Variable(cdmHash, name));
     counters.count("gds", gdsHash);

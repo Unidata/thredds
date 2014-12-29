@@ -1061,11 +1061,11 @@ public class DirectoryPartitionViewer extends JPanel {
     void showVariableDifferences(GroupBean bean1, GroupBean bean2, Formatter f) {
       f.format("Compare %s to %s%n", bean1.getPartition(), bean2.getPartition());
       for (GribCollectionMutable.VariableIndex var1 : bean1.group.getVariables()) {
-        if (bean2.group.findVariableByHash(var1.cdmHash) == null)
+        if (bean2.group.findVariableByHash(var1) == null)
           f.format("Var1 %s missing in partition 2%n", var1.id());
       }
       for (GribCollectionMutable.VariableIndex var2 : bean2.group.getVariables()) {
-        if (bean1.group.findVariableByHash(var2.cdmHash) == null)
+        if (bean1.group.findVariableByHash(var2) == null)
           f.format("Var2 %s missing in partition 1%n", var2.id());
       }
     }
@@ -1280,7 +1280,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     public int getHash() {
-      return v.cdmHash;
+      return v.hashCode();
     }
 
     public String getGroupId() {

@@ -365,7 +365,7 @@ public class Grib1DataTable extends JPanel {
 
     // public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
 
-      int id = Grib1Iosp.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
+      int id = Grib1Variable.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
       Grib1ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib1ParameterBean(gr);
