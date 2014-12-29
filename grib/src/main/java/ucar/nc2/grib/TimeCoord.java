@@ -62,12 +62,12 @@ public class TimeCoord {
     return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
   }
 
-  private CalendarDate runDate;
-  private CalendarPeriod timeUnit;
-  protected List<Integer> coords;
-  protected List<Tinv> intervals;
+  private final CalendarDate runDate;
+  private final CalendarPeriod timeUnit;
+  protected final List<Integer> coords;
+  protected final List<Tinv> intervals;
 
-  private String units;
+  private final String units;
   private int index;
   private final int code; // GRIB1 timeRangeIndicator, GRIB2 statProcessType (4.10)
 
@@ -94,8 +94,8 @@ public class TimeCoord {
   // when writing an ncx file
   public TimeCoord(int code, CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
     this.code = code;
-    this.runDate = runDate;
     this.timeUnit = timeUnit;
+    this.units = null;
 
     Object atom = (coords == null || coords.size() == 0) ? null : coords.get(0);
 
@@ -127,7 +127,7 @@ public class TimeCoord {
         //tinvd.index = count++;
         offsets.add(tinvd.convertReferenceDate(startDate, timeUnit));
       }
-      this.runDate = startDate;
+      runDate = startDate;
       this.coords = null;
       this.intervals = offsets;
 
@@ -139,6 +139,8 @@ public class TimeCoord {
       this.coords = coords;
       this.intervals = null;
     }
+
+    this.runDate = runDate;
   }
 
   public TimeCoord setIndex(int index) {

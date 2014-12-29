@@ -235,6 +235,8 @@ class GridResponder extends GridDatasetResponder {
  		String filename = NcssRequestUtils.getFileNameForResponse(requestPathInfo, version);
  		String pathname = Integer.toString(randomInt) + "/" + filename;
  		File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
+    if(ncFile == null)
+      throw new IllegalStateException("NCSS misconfigured cache = ");
  		String cacheFilename = ncFile.getPath();
 
  		//String url = buildCacheUrl(pathname);

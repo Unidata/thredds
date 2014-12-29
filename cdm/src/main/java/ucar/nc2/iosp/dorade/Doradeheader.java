@@ -63,7 +63,7 @@ public class Doradeheader {
     return true;
   }
 
-  void read(DoradeSweep mySweep, ucar.nc2.NetcdfFile ncfile, PrintStream out) throws IOException, DoradeSweep.DoradeSweepException {
+  void read(DoradeSweep mySweep, ucar.nc2.NetcdfFile ncfile, PrintStream out) throws IOException {
 
     this.ncfile = ncfile;
     DoradePARM[] parms = mySweep.getParamList();
@@ -72,83 +72,82 @@ public class Doradeheader {
     if (debug) System.out.println(parms.length + " params in file");
 
     int numSensor = mySweep.getNSensors();
-    int [] ncells = new int[numSensor];
-    Dimension [] gateDim =new Dimension[numSensor];
-    for(int i = 0; i < numSensor; i++) {
-        try {
-            int j = i + 1;
-            ncells[i] = mySweep.getNCells(i);
-            gateDim[i] = new Dimension("gate_"+j, ncells[i]);
-            ncfile.addDimension( null, gateDim[i]);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    int[] ncells = new int[numSensor];
+    Dimension[] gateDim = new Dimension[numSensor];
+    for (int i = 0; i < numSensor; i++) {
+      try {
+        int j = i + 1;
+        ncells[i] = mySweep.getNCells(i);
+        gateDim[i] = new Dimension("gate_" + j, ncells[i]);
+        ncfile.addDimension(null, gateDim[i]);
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
     }
 
-    ArrayList []  dims =  new ArrayList[numSensor];
-    ArrayList  dims1 = new ArrayList();
-    ArrayList [] dims2 = new ArrayList[numSensor];
-    int nCells =  mySweep.getNCells(0);
+    ArrayList[] dims = new ArrayList[numSensor];
+    ArrayList dims1 = new ArrayList();
+    ArrayList[] dims2 = new ArrayList[numSensor];
+    int nCells = mySweep.getNCells(0);
 
-
-  //  Dimension sensorDim = new Dimension("sensor", numSensor, true);
-  //  ncfile.addDimension( null, sensorDim);
+    //  Dimension sensorDim = new Dimension("sensor", numSensor, true);
+    //  ncfile.addDimension( null, sensorDim);
     Dimension radialDim = new Dimension("radial", nRays);
-    ncfile.addDimension( null, radialDim);
+    ncfile.addDimension(null, radialDim);
 
 
-    for(int i = 0; i < numSensor; i++) {
-         dims[i] = new ArrayList();
-         dims2[i] = new ArrayList();
-         dims[i].add( radialDim );
-         dims[i].add( gateDim[i]);
-         dims2[i].add( gateDim[i]);
+    for (int i = 0; i < numSensor; i++) {
+      dims[i] = new ArrayList();
+      dims2[i] = new ArrayList();
+      dims[i].add(radialDim);
+      dims[i].add(gateDim[i]);
+      dims2[i].add(gateDim[i]);
     }
 
-   // dims1.add( sensorDim);
-    dims1.add( radialDim);
+    // dims1.add( sensorDim);
+    dims1.add(radialDim);
 
 
-    float [][] altitudes = new float [numSensor][];
-    float [][] latitudes = new float [numSensor][];
-    float [][] longitudes = new float [numSensor][];
+    float[][] altitudes = new float[numSensor][];
+    float[][] latitudes = new float[numSensor][];
+    float[][] longitudes = new float[numSensor][];
     lat_min = new float[numSensor];
     lat_max = new float[numSensor];
     lon_min = new float[numSensor];
     lon_max = new float[numSensor];
     hi_min = new float[numSensor];
     hi_max = new float[numSensor];
-    MAMath.MinMax [] latMinMax = new MAMath.MinMax[numSensor];
-    MAMath.MinMax [] lonMinMax = new MAMath.MinMax[numSensor];
-    MAMath.MinMax [] hiMinMax = new MAMath.MinMax[numSensor];
-    boolean [] isMoving = new boolean[numSensor];
-    for(int i = 0; i < numSensor; i++) {
-        try {
-            int nc = mySweep.getNCells(i);
-            altitudes[i] =  new float [nRays];
-            latitudes[i] =  new float [nRays];
-            longitudes[i] = new float [nRays];
-            isMoving[i]  = mySweep.sensorIsMoving(i);
-            altitudes[i] = mySweep.getAltitudes(i);
-            latitudes[i] = mySweep.getLatitudes(i);
-            longitudes[i] = mySweep.getLongitudes(i);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    MAMath.MinMax[] latMinMax = new MAMath.MinMax[numSensor];
+    MAMath.MinMax[] lonMinMax = new MAMath.MinMax[numSensor];
+    MAMath.MinMax[] hiMinMax = new MAMath.MinMax[numSensor];
+    boolean[] isMoving = new boolean[numSensor];
+    for (int i = 0; i < numSensor; i++) {
+      try {
+        int nc = mySweep.getNCells(i);
+        altitudes[i] = new float[nRays];
+        latitudes[i] = new float[nRays];
+        longitudes[i] = new float[nRays];
+        isMoving[i] = mySweep.sensorIsMoving(i);
+        altitudes[i] = mySweep.getAltitudes(i);
+        latitudes[i] = mySweep.getLatitudes(i);
+        longitudes[i] = mySweep.getLongitudes(i);
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
 
-        latMinMax[i] = getMinMaxData( latitudes[i]);
-        lonMinMax[i] = getMinMaxData( longitudes[i]);
-        hiMinMax[i] = getMinMaxData( altitudes[i]);
-        float dis = (float )((mySweep.getRangeToFirstCell(i) + (mySweep.getNCells(i)-1) * mySweep.getCellSpacing(i) ) * 1.853 / 111.26 /1000);
-        lat_min[i] = (float )(latMinMax[i].min - dis);
-        lat_max[i] = (float )(latMinMax[i].max + dis);
-        lon_min[i] = (float )(lonMinMax[i].min + dis * Math.cos(latitudes[i][0]));
-        lon_max[i] = (float )(lonMinMax[i].max - dis * Math.cos(latitudes[i][0]));
-        hi_min[i] = (float )hiMinMax[i].min;
-        hi_max[i] = (float )hiMinMax[i].max;
+      latMinMax[i] = getMinMaxData(latitudes[i]);
+      lonMinMax[i] = getMinMaxData(longitudes[i]);
+      hiMinMax[i] = getMinMaxData(altitudes[i]);
+      float dis = (float) ((mySweep.getRangeToFirstCell(i) + (mySweep.getNCells(i) - 1) * mySweep.getCellSpacing(i)) * 1.853 / 111.26 / 1000);
+      lat_min[i] = (float) (latMinMax[i].min - dis);
+      lat_max[i] = (float) (latMinMax[i].max + dis);
+      lon_min[i] = (float) (lonMinMax[i].min + dis * Math.cos(latitudes[i][0]));
+      lon_max[i] = (float) (lonMinMax[i].max - dis * Math.cos(latitudes[i][0]));
+      hi_min[i] = (float) hiMinMax[i].min;
+      hi_max[i] = (float) hiMinMax[i].max;
     }
 
-     //adding the global nc attribute
+    //adding the global nc attribute
     addNCAttributes(ncfile, mySweep);
 
 
@@ -166,37 +165,37 @@ public class Doradeheader {
 
 
     // add gate coordinate variable
-    for (int i = 0; i < numSensor; i++)  {
-        int j = i + 1;
-        vName = "distance_"+j;
-        lName = "Radial distance to the start of gate";
-        att = new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString());
-        addParameter(vName, lName, ncfile, dims2[i], att, DataType.FLOAT, "meters");
+    for (int i = 0; i < numSensor; i++) {
+      int j = i + 1;
+      vName = "distance_" + j;
+      lName = "Radial distance to the start of gate";
+      att = new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString());
+      addParameter(vName, lName, ncfile, dims2[i], att, DataType.FLOAT, "meters");
     }
 
     // add radial coordinate variable
 
-    for (int i = 0; i < numSensor; i++)  {
-        int j = i + 1;
-        vName = "latitudes_" + j;
-        lName = "Latitude of the instrument " + j;
-        att = new Attribute(_Coordinate.AxisType, AxisType.Lat.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
+    for (int i = 0; i < numSensor; i++) {
+      int j = i + 1;
+      vName = "latitudes_" + j;
+      lName = "Latitude of the instrument " + j;
+      att = new Attribute(_Coordinate.AxisType, AxisType.Lat.toString());
+      addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
 
-        vName = "longitudes_" + j;
-        lName = "Longitude of the instrument " + j;
-        att = new Attribute(_Coordinate.AxisType, AxisType.Lon.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
+      vName = "longitudes_" + j;
+      lName = "Longitude of the instrument " + j;
+      att = new Attribute(_Coordinate.AxisType, AxisType.Lon.toString());
+      addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
 
-        vName = "altitudes_" + j;
-        lName = "Altitude in meters (asl) of the instrument " + j;
-        att = new Attribute(_Coordinate.AxisType, AxisType.Height.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "meters");
+      vName = "altitudes_" + j;
+      lName = "Altitude in meters (asl) of the instrument " + j;
+      att = new Attribute(_Coordinate.AxisType, AxisType.Height.toString());
+      addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "meters");
 
-        vName = "rays_time";
-        lName = "rays time";
-        att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC");
+      vName = "rays_time";
+      lName = "rays time";
+      att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
+      addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC");
 
     }
 
@@ -250,79 +249,76 @@ public class Doradeheader {
       ncfile.addVariable(null, ct);   */
 
     try {
-          for (int p = 0; p < parms.length; p++) {
-              String pval = parms[p].getDescription();
-              nCells =  parms[p].getNCells();
-              int ii = getGateDimsIndex(nCells, gateDim, numSensor);
+      for (int p = 0; p < parms.length; p++) {
+        String pval = parms[p].getDescription();
+        nCells = parms[p].getNCells();
+        int ii = getGateDimsIndex(nCells, gateDim, numSensor);
 
-              if (debug) System.out.println("Param "+ p+ " name "+pval+" and ncel "+ nCells);
-              addVariable(ncfile, dims[ii], parms[p]);
-           }
-      } catch (Exception ex) {
-              ex.printStackTrace();
+        if (debug) System.out.println("Param " + p + " name " + pval + " and ncel " + nCells);
+        addVariable(ncfile, dims[ii], parms[p]);
       }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
 
     // finish
     ncfile.finish();
 
   }
 
-  public MAMath.MinMax getMinMaxData( float[] data) {
-      int[] shape = new int[1];
-      shape[0] = data.length;
-      Array a = Array.factory( DataType.FLOAT.getPrimitiveClassType(), shape, data);
-      return MAMath.getMinMax( a);
+  public MAMath.MinMax getMinMaxData(float[] data) {
+    int[] shape = new int[1];
+    shape[0] = data.length;
+    Array a = Array.factory(DataType.FLOAT.getPrimitiveClassType(), shape, data);
+    return MAMath.getMinMax(a);
   }
-  int getGateDimsIndex(int cell, Dimension [] dList, int numSensor)
-  {
-      int j = 0;
-      for(int i = 0; i < numSensor; i++) {
-          Dimension d = new Dimension("gate_"+i, cell);
-          if( dList[i].equals(d)) {
-              j = i;
-              break;
-          }
+
+  int getGateDimsIndex(int cell, Dimension[] dList, int numSensor) {
+    int j = 0;
+    for (int i = 0; i < numSensor; i++) {
+      Dimension d = new Dimension("gate_" + i, cell);
+      if (dList[i].equals(d)) {
+        j = i;
+        break;
       }
-      return j;
+    }
+    return j;
   }
 
 
-   private void makeCoordinateData(Variable elev, Variable azim, DoradeSweep mySweep) {
-    Object ele = (Object) mySweep.getElevations();
-    Object azi = (Object) mySweep.getAzimuths();
+  private void makeCoordinateData(Variable elev, Variable azim, DoradeSweep mySweep) {
+    Object ele =  mySweep.getElevations();
+    Object azi =  mySweep.getAzimuths();
 
-    Array elevData = Array.factory( elev.getDataType().getPrimitiveClassType(), elev.getShape(), ele);
-    Array aziData = Array.factory( azim.getDataType().getPrimitiveClassType(), azim.getShape(), azi);
+    Array elevData = Array.factory(elev.getDataType().getPrimitiveClassType(), elev.getShape(), ele);
+    Array aziData = Array.factory(azim.getDataType().getPrimitiveClassType(), azim.getShape(), azi);
 
-    elev.setCachedData( elevData, false);
-    azim.setCachedData( aziData, false);
+    elev.setCachedData(elevData, false);
+    azim.setCachedData(aziData, false);
   }
 
-  void addParameter(String pName, String longName, NetcdfFile nc, ArrayList dims, Attribute att, DataType dtype, String ut)
-  {
-      String vName = pName;
-      Variable vVar = new Variable(nc, null, null, vName);
-      vVar.setDataType(dtype);
-      if( dims != null ) vVar.setDimensions(dims);
-      else vVar.setDimensions("");
-      if(att != null ) vVar.addAttribute(att);
-      vVar.addAttribute( new Attribute(CDM.UNITS, ut));
-      vVar.addAttribute( new Attribute(CDM.LONG_NAME, longName));
-      nc.addVariable(null, vVar);
+  void addParameter(String pName, String longName, NetcdfFile nc, ArrayList dims, Attribute att, DataType dtype, String ut) {
+    Variable vVar = new Variable(nc, null, null, pName);
+    vVar.setDataType(dtype);
+    if (dims != null) vVar.setDimensions(dims);
+    else vVar.setDimensions("");
+    if (att != null) vVar.addAttribute(att);
+    vVar.addAttribute(new Attribute(CDM.UNITS, ut));
+    vVar.addAttribute(new Attribute(CDM.LONG_NAME, longName));
+    nc.addVariable(null, vVar);
   }
 
-  void addVariable(NetcdfFile nc, ArrayList dims, DoradePARM dparm)
-  {
+  void addVariable(NetcdfFile nc, ArrayList dims, DoradePARM dparm) {
 
-      Variable v = new Variable(nc, null, null, dparm.getName() );
-      v.setDataType( DataType.FLOAT );
-      v.setDimensions(dims);
-      ncfile.addVariable(null, v);
+    Variable v = new Variable(nc, null, null, dparm.getName());
+    v.setDataType(DataType.FLOAT);
+    v.setDimensions(dims);
+    ncfile.addVariable(null, v);
 
-      v.addAttribute( new Attribute(CDM.LONG_NAME, dparm.getDescription()));
-      v.addAttribute( new Attribute(CDM.UNITS, dparm.getUnits()));
-      String coordinates = "elevation azimuth distance_1 " + "latitudes_1 longitudes_1 altitudes_1";
-      v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, dparm.getDescription()));
+    v.addAttribute(new Attribute(CDM.UNITS, dparm.getUnits()));
+    String coordinates = "elevation azimuth distance_1 " + "latitudes_1 longitudes_1 altitudes_1";
+    v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
       /*
       v.addAttribute( new Attribute(CDM.MISSING_VALUE, new Float(dparm.getBadDataFlag())));
       v.addAttribute( new Attribute("_FillValue", new Float(dparm.getBadDataFlag())));
@@ -338,66 +334,65 @@ public class Doradeheader {
   }
 
 
-  void addNCAttributes(NetcdfFile nc, DoradeSweep mySweep) throws DoradeSweep.DoradeSweepException
-  {
-        nc.addAttribute(null, new Attribute("summary", "Dorade radar data " +
-          "from radar " + mySweep.getSensorName(0) + " in the project " + mySweep.getProjectName()));
-        nc.addAttribute(null, new Attribute("radar_name", mySweep.getSensorName(0)));
-        nc.addAttribute(null, new Attribute("project_name", mySweep.getProjectName()));
-        nc.addAttribute(null, new Attribute("keywords_vocabulary", "dorade"));
-        nc.addAttribute(null, new Attribute("geospatial_lat_min", new Float(lat_min[0])));
-        nc.addAttribute(null, new Attribute("geospatial_lat_max", new Float(lat_max[0])));
-        nc.addAttribute(null, new Attribute("geospatial_lon_min", new Float(lon_min[0])));
-        nc.addAttribute(null, new Attribute("geospatial_lon_max", new Float(lon_max[0])));
-        nc.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(lon_min[0])));
-        nc.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(lon_max[0])));
-        Date [] dd = mySweep.getTimes();
-        nc.addAttribute(null, new Attribute("time_coverage_start",  dd[0].toString()));
-        nc.addAttribute(null, new Attribute("time_coverage_end",  dd[dd.length-1].toString()));
-        nc.addAttribute(null, new Attribute("Content", "This file contains one scan of remotely sensed data"));
-        nc.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
-        nc.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.RADIAL.toString()));
-        nc.addAttribute(null, new Attribute("format", "Unidata/netCDF/Dorade"));
-        nc.addAttribute(null, new Attribute("Radar_Name", mySweep.getSensorName(0)));
-        nc.addAttribute(null, new Attribute("Project_name", ""+mySweep.getProjectName()));
-        nc.addAttribute(null, new Attribute("VolumeCoveragePatternName", mySweep.getScanMode(0).getName()));
-        nc.addAttribute(null, new Attribute("Volume_Number", ""+mySweep.getVolumnNumber()));
-        nc.addAttribute(null, new Attribute("Sweep_Number", ""+mySweep.getSweepNumber()));
-        nc.addAttribute(null, new Attribute("Sweep_Date",
-                mySweep.formatDate(mySweep.getTime())));
-        if(mySweep.sensorIsMoving(0) == true)
-          nc.addAttribute(null, new Attribute("IsStationary", "0"));
-        else
-          nc.addAttribute(null, new Attribute("IsStationary", "1"));
+  void addNCAttributes(NetcdfFile nc, DoradeSweep mySweep) throws DoradeSweep.DoradeSweepException {
+    nc.addAttribute(null, new Attribute("summary", "Dorade radar data " +
+            "from radar " + mySweep.getSensorName(0) + " in the project " + mySweep.getProjectName()));
+    nc.addAttribute(null, new Attribute("radar_name", mySweep.getSensorName(0)));
+    nc.addAttribute(null, new Attribute("project_name", mySweep.getProjectName()));
+    nc.addAttribute(null, new Attribute("keywords_vocabulary", "dorade"));
+    nc.addAttribute(null, new Attribute("geospatial_lat_min", lat_min[0]));
+    nc.addAttribute(null, new Attribute("geospatial_lat_max", lat_max[0]));
+    nc.addAttribute(null, new Attribute("geospatial_lon_min", lon_min[0]));
+    nc.addAttribute(null, new Attribute("geospatial_lon_max", lon_max[0]));
+    nc.addAttribute(null, new Attribute("geospatial_vertical_min", lon_min[0]));
+    nc.addAttribute(null, new Attribute("geospatial_vertical_max", lon_max[0]));
+
+    Date[] dd = mySweep.getTimes();
+    if (dd != null) {
+      nc.addAttribute(null, new Attribute("time_coverage_start", dd[0].toString()));
+      nc.addAttribute(null, new Attribute("time_coverage_end", dd[dd.length - 1].toString()));
+    }
+    nc.addAttribute(null, new Attribute("Content", "This file contains one scan of remotely sensed data"));
+    nc.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
+    nc.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.RADIAL.toString()));
+    nc.addAttribute(null, new Attribute("format", "Unidata/netCDF/Dorade"));
+    nc.addAttribute(null, new Attribute("Radar_Name", mySweep.getSensorName(0)));
+    nc.addAttribute(null, new Attribute("Project_name", "" + mySweep.getProjectName()));
+    nc.addAttribute(null, new Attribute("VolumeCoveragePatternName", mySweep.getScanMode(0).getName()));
+    nc.addAttribute(null, new Attribute("Volume_Number", "" + mySweep.getVolumnNumber()));
+    nc.addAttribute(null, new Attribute("Sweep_Number", "" + mySweep.getSweepNumber()));
+    nc.addAttribute(null, new Attribute("Sweep_Date", DoradeSweep.formatDate(mySweep.getTime())));
+    if (mySweep.sensorIsMoving(0))
+      nc.addAttribute(null, new Attribute("IsStationary", "0"));
+    else
+      nc.addAttribute(null, new Attribute("IsStationary", "1"));
   }
 
   // Return the string of entity ID for the Dorade image file
-  DataType getDataType(int format)
-  {
-      DataType p;
+  DataType getDataType(int format) {
+    DataType p;
 
-      switch(format)
-       {
-         case 1:    // 8-bit signed integer format.
-              p = DataType.SHORT;
-              break;
-         case 2:  // 16-bit signed integer format.
-              p = DataType.FLOAT;
-              break;
-         case 3:    // 32-bit signed integer format.
-              p = DataType.LONG;
-              break;
-         case 4:   // 32-bit IEEE float format.
-              p = DataType.FLOAT;
-              break;
-         case 5:   //  16-bit IEEE float format.
-              p = DataType.DOUBLE;
-              break;
-         default:
-              p = null;
-              break;
-       } //end of switch
-      return p;
+    switch (format) {
+      case 1:    // 8-bit signed integer format.
+        p = DataType.SHORT;
+        break;
+      case 2:  // 16-bit signed integer format.
+        p = DataType.FLOAT;
+        break;
+      case 3:    // 32-bit signed integer format.
+        p = DataType.LONG;
+        break;
+      case 4:   // 32-bit IEEE float format.
+        p = DataType.FLOAT;
+        break;
+      case 5:   //  16-bit IEEE float format.
+        p = DataType.DOUBLE;
+        break;
+      default:
+        p = null;
+        break;
+    } //end of switch
+    return p;
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
