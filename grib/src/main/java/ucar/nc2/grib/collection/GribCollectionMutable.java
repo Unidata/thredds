@@ -219,17 +219,17 @@ public class GribCollectionMutable implements AutoCloseable {
     return horizCS.indexOf(hcs);
   }
 
-  public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, int predefinedGridDefinition) {
+  public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHashObject, int predefinedGridDefinition) {
 
     String hcsName = makeHorizCoordSysName(hcs);
 
     // check for user defined group names
     String desc = null;
     if (config.gribConfig.gdsNamer != null)
-      desc = config.gribConfig.gdsNamer.get(gdsHash);
+      desc = config.gribConfig.gdsNamer.get(gdsHashObject.hashCode());
     if (desc == null) desc = hcs.makeDescription(); // default desc
 
-    horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHash, hcsName, desc, predefinedGridDefinition));
+    horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHashObject, hcsName, desc, predefinedGridDefinition));
   }
 
   public void setFileMap(Map<Integer, MFile> fileMap) {

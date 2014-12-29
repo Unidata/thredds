@@ -64,8 +64,7 @@ message Parameter {
 
 message Gds {
   optional bytes gds = 1;                        // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
-  optional sint32 gdsHash = 2 [default = 0];
-  optional uint32 predefinedGridDefinition = 4;  // only grib1; instead of gds raw bytes
+  optional uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes
 }
 
 message Group {

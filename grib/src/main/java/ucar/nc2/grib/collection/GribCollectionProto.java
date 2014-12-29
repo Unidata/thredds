@@ -7287,19 +7287,9 @@ public final class GribCollectionProto {
      */
     com.google.protobuf.ByteString getGds();
 
-    // optional sint32 gdsHash = 2 [default = 0];
+    // optional uint32 predefinedGridDefinition = 2;
     /**
-     * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-     */
-    boolean hasGdsHash();
-    /**
-     * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-     */
-    int getGdsHash();
-
-    // optional uint32 predefinedGridDefinition = 4;
-    /**
-     * <code>optional uint32 predefinedGridDefinition = 4;</code>
+     * <code>optional uint32 predefinedGridDefinition = 2;</code>
      *
      * <pre>
      * only grib1; instead of gds raw bytes
@@ -7307,7 +7297,7 @@ public final class GribCollectionProto {
      */
     boolean hasPredefinedGridDefinition();
     /**
-     * <code>optional uint32 predefinedGridDefinition = 4;</code>
+     * <code>optional uint32 predefinedGridDefinition = 2;</code>
      *
      * <pre>
      * only grib1; instead of gds raw bytes
@@ -7373,11 +7363,6 @@ public final class GribCollectionProto {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              gdsHash_ = input.readSInt32();
-              break;
-            }
-            case 32: {
-              bitField0_ |= 0x00000004;
               predefinedGridDefinition_ = input.readUInt32();
               break;
             }
@@ -7445,37 +7430,21 @@ public final class GribCollectionProto {
       return gds_;
     }
 
-    // optional sint32 gdsHash = 2 [default = 0];
-    public static final int GDSHASH_FIELD_NUMBER = 2;
-    private int gdsHash_;
-    /**
-     * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-     */
-    public boolean hasGdsHash() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-     */
-    public int getGdsHash() {
-      return gdsHash_;
-    }
-
-    // optional uint32 predefinedGridDefinition = 4;
-    public static final int PREDEFINEDGRIDDEFINITION_FIELD_NUMBER = 4;
+    // optional uint32 predefinedGridDefinition = 2;
+    public static final int PREDEFINEDGRIDDEFINITION_FIELD_NUMBER = 2;
     private int predefinedGridDefinition_;
     /**
-     * <code>optional uint32 predefinedGridDefinition = 4;</code>
+     * <code>optional uint32 predefinedGridDefinition = 2;</code>
      *
      * <pre>
      * only grib1; instead of gds raw bytes
      * </pre>
      */
     public boolean hasPredefinedGridDefinition() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional uint32 predefinedGridDefinition = 4;</code>
+     * <code>optional uint32 predefinedGridDefinition = 2;</code>
      *
      * <pre>
      * only grib1; instead of gds raw bytes
@@ -7487,7 +7456,6 @@ public final class GribCollectionProto {
 
     private void initFields() {
       gds_ = com.google.protobuf.ByteString.EMPTY;
-      gdsHash_ = 0;
       predefinedGridDefinition_ = 0;
     }
     private byte memoizedIsInitialized = -1;
@@ -7506,10 +7474,7 @@ public final class GribCollectionProto {
         output.writeBytes(1, gds_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeSInt32(2, gdsHash_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeUInt32(4, predefinedGridDefinition_);
+        output.writeUInt32(2, predefinedGridDefinition_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -7526,11 +7491,7 @@ public final class GribCollectionProto {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeSInt32Size(2, gdsHash_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(4, predefinedGridDefinition_);
+          .computeUInt32Size(2, predefinedGridDefinition_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7650,10 +7611,8 @@ public final class GribCollectionProto {
         super.clear();
         gds_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
-        gdsHash_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
         predefinedGridDefinition_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -7689,10 +7648,6 @@ public final class GribCollectionProto {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.gdsHash_ = gdsHash_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
         result.predefinedGridDefinition_ = predefinedGridDefinition_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -7712,9 +7667,6 @@ public final class GribCollectionProto {
         if (other == ucar.nc2.grib.collection.GribCollectionProto.Gds.getDefaultInstance()) return this;
         if (other.hasGds()) {
           setGds(other.getGds());
-        }
-        if (other.hasGdsHash()) {
-          setGdsHash(other.getGdsHash());
         }
         if (other.hasPredefinedGridDefinition()) {
           setPredefinedGridDefinition(other.getPredefinedGridDefinition());
@@ -7798,53 +7750,20 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // optional sint32 gdsHash = 2 [default = 0];
-      private int gdsHash_ ;
-      /**
-       * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-       */
-      public boolean hasGdsHash() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-       */
-      public int getGdsHash() {
-        return gdsHash_;
-      }
-      /**
-       * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-       */
-      public Builder setGdsHash(int value) {
-        bitField0_ |= 0x00000002;
-        gdsHash_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-       */
-      public Builder clearGdsHash() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        gdsHash_ = 0;
-        onChanged();
-        return this;
-      }
-
-      // optional uint32 predefinedGridDefinition = 4;
+      // optional uint32 predefinedGridDefinition = 2;
       private int predefinedGridDefinition_ ;
       /**
-       * <code>optional uint32 predefinedGridDefinition = 4;</code>
+       * <code>optional uint32 predefinedGridDefinition = 2;</code>
        *
        * <pre>
        * only grib1; instead of gds raw bytes
        * </pre>
        */
       public boolean hasPredefinedGridDefinition() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional uint32 predefinedGridDefinition = 4;</code>
+       * <code>optional uint32 predefinedGridDefinition = 2;</code>
        *
        * <pre>
        * only grib1; instead of gds raw bytes
@@ -7854,27 +7773,27 @@ public final class GribCollectionProto {
         return predefinedGridDefinition_;
       }
       /**
-       * <code>optional uint32 predefinedGridDefinition = 4;</code>
+       * <code>optional uint32 predefinedGridDefinition = 2;</code>
        *
        * <pre>
        * only grib1; instead of gds raw bytes
        * </pre>
        */
       public Builder setPredefinedGridDefinition(int value) {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000002;
         predefinedGridDefinition_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional uint32 predefinedGridDefinition = 4;</code>
+       * <code>optional uint32 predefinedGridDefinition = 2;</code>
        *
        * <pre>
        * only grib1; instead of gds raw bytes
        * </pre>
        */
       public Builder clearPredefinedGridDefinition() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         predefinedGridDefinition_ = 0;
         onChanged();
         return this;
@@ -20095,42 +20014,41 @@ public final class GribCollectionProto {
       "\005msecs\030\006 \003(\003\022\025\n\005times\030\007 \003(\0132\006.Coord\022\024\n\014i" +
       "sOrthogonal\030\010 \001(\010\022\021\n\tisRegular\030\t \001(\010\022\024\n\014" +
       "time2runtime\030\n \003(\r\"6\n\tParameter\022\014\n\004name\030" +
-      "\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"H\n\003Gd" +
-      "s\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:\0010\022 \n\030pr" +
-      "edefinedGridDefinition\030\004 \001(\r\"\222\001\n\005Group\022\020" +
-      "\n\010gdsIndex\030\001 \002(\r\022\034\n\tvariables\030\002 \003(\0132\t.Va",
-      "riable\022\026\n\006coords\030\003 \003(\0132\006.Coord\022\016\n\006fileno" +
-      "\030\004 \003(\005\022\016\n\006isTwod\030\005 \002(\010\022\032\n\006params\030\024 \003(\0132\n" +
-      ".Parameter*\005\010d\020\310\001\"\225\001\n\007Dataset\022\033\n\004type\030\001 " +
-      "\002(\0162\r.Dataset.Type\022\026\n\006groups\030\002 \003(\0132\006.Gro" +
-      "up\"U\n\004Type\022\006\n\002GC\020\000\022\007\n\003SRC\020\004\022\007\n\003MRC\020\005\022\t\n\005" +
-      "MRSTC\020\006\022\006\n\002TP\020\007\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\014\n\010A" +
-      "nalysis\020\003\"Q\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014" +
-      "lastModified\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\022\021\n\006len" +
-      "gth\030\004 \001(\004:\0010\"\330\002\n\016GribCollection\022\014\n\004name\030" +
-      "\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.",
-      "MFile\022\031\n\007dataset\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030" +
-      "\005 \003(\0132\004.Gds\022\035\n\rmasterRuntime\030\006 \002(\0132\006.Coo" +
-      "rd\022\016\n\006center\030\007 \002(\005\022\021\n\tsubcenter\030\010 \002(\005\022\016\n" +
-      "\006master\030\t \002(\005\022\r\n\005local\030\n \002(\005\022\026\n\016genProce" +
-      "ssType\030\013 \001(\005\022\024\n\014genProcessId\030\014 \001(\005\022\025\n\rba" +
-      "ckProcessId\030\r \001(\005\022\032\n\006params\030\024 \003(\0132\n.Para" +
-      "meter\022\031\n\006config\030\025 \001(\0132\t.FcConfig*\005\010d\020\310\001\"" +
-      "(\n\tStringMap\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(" +
-      "\t\"\"\n\006IntMap\022\014\n\004from\030\001 \002(\021\022\n\n\002to\030\002 \002(\021\"F\n" +
-      "\nIntvFilter\022\022\n\nintvLength\030\001 \002(\021\022\022\n\nvaria",
-      "bleId\030\002 \002(\r\022\020\n\010intvProb\030\003 \001(\021\"\355\002\n\010FcConf" +
-      "ig\022\014\n\004name\030\001 \002(\t\022\026\n\016collectionSpec\030\002 \002(\t" +
-      "\022\025\n\rpartitionType\030\003 \002(\t\022\026\n\016dateFormatMar" +
-      "k\030\004 \001(\t\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\034\n\r" +
-      "pdsUseGenType\030\014 \001(\010:\005false\022 \n\022pdsUseTabl" +
-      "eVersion\030\r \001(\010:\004true\022\032\n\014pdsIntvMerge\030\016 \001" +
-      "(\010:\004true\022\032\n\014pdsUseCenter\030\017 \001(\010:\004true\022\036\n\017" +
-      "intvExcludeZero\030\020 \001(\010:\005false\022\037\n\nintvFilt" +
-      "er\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitConvert" +
-      "\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(\tB/\n",
-      "\030ucar.nc2.grib.collectionB\023GribCollectio" +
-      "nProto"
+      "\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"4\n\003Gd" +
+      "s\022\013\n\003gds\030\001 \001(\014\022 \n\030predefinedGridDefiniti" +
+      "on\030\002 \001(\r\"\222\001\n\005Group\022\020\n\010gdsIndex\030\001 \002(\r\022\034\n\t" +
+      "variables\030\002 \003(\0132\t.Variable\022\026\n\006coords\030\003 \003",
+      "(\0132\006.Coord\022\016\n\006fileno\030\004 \003(\005\022\016\n\006isTwod\030\005 \002" +
+      "(\010\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"\225\001" +
+      "\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r.Dataset.Type\022\026" +
+      "\n\006groups\030\002 \003(\0132\006.Group\"U\n\004Type\022\006\n\002GC\020\000\022\007" +
+      "\n\003SRC\020\004\022\007\n\003MRC\020\005\022\t\n\005MRSTC\020\006\022\006\n\002TP\020\007\022\010\n\004T" +
+      "woD\020\001\022\010\n\004Best\020\002\022\014\n\010Analysis\020\003\"Q\n\005MFile\022\020" +
+      "\n\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 \002(\004\022\r" +
+      "\n\005index\030\003 \002(\r\022\021\n\006length\030\004 \001(\004:\0010\"\330\002\n\016Gri" +
+      "bCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topDir\030\002 \002(" +
+      "\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004 \003",
+      "(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\rmaste" +
+      "rRuntime\030\006 \002(\0132\006.Coord\022\016\n\006center\030\007 \002(\005\022\021" +
+      "\n\tsubcenter\030\010 \002(\005\022\016\n\006master\030\t \002(\005\022\r\n\005loc" +
+      "al\030\n \002(\005\022\026\n\016genProcessType\030\013 \001(\005\022\024\n\014genP" +
+      "rocessId\030\014 \001(\005\022\025\n\rbackProcessId\030\r \001(\005\022\032\n" +
+      "\006params\030\024 \003(\0132\n.Parameter\022\031\n\006config\030\025 \001(" +
+      "\0132\t.FcConfig*\005\010d\020\310\001\"(\n\tStringMap\022\014\n\004name" +
+      "\030\001 \002(\t\022\r\n\005value\030\002 \002(\t\"\"\n\006IntMap\022\014\n\004from\030" +
+      "\001 \002(\021\022\n\n\002to\030\002 \002(\021\"F\n\nIntvFilter\022\022\n\nintvL" +
+      "ength\030\001 \002(\021\022\022\n\nvariableId\030\002 \002(\r\022\020\n\010intvP",
+      "rob\030\003 \001(\021\"\355\002\n\010FcConfig\022\014\n\004name\030\001 \002(\t\022\026\n\016" +
+      "collectionSpec\030\002 \002(\t\022\025\n\rpartitionType\030\003 " +
+      "\002(\t\022\026\n\016dateFormatMark\030\004 \001(\t\022\033\n\ngdsConver" +
+      "t\030\013 \003(\0132\007.IntMap\022\034\n\rpdsUseGenType\030\014 \001(\010:" +
+      "\005false\022 \n\022pdsUseTableVersion\030\r \001(\010:\004true" +
+      "\022\032\n\014pdsIntvMerge\030\016 \001(\010:\004true\022\032\n\014pdsUseCe" +
+      "nter\030\017 \001(\010:\004true\022\036\n\017intvExcludeZero\030\020 \001(" +
+      "\010:\005false\022\037\n\nintvFilter\030\021 \003(\0132\013.IntvFilte" +
+      "r\022 \n\017timeUnitConvert\030\022 \003(\0132\007.IntMap\022\024\n\014u" +
+      "serTimeUnit\030\023 \001(\tB/\n\030ucar.nc2.grib.colle",
+      "ctionB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -20172,7 +20090,7 @@ public final class GribCollectionProto {
           internal_static_Gds_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Gds_descriptor,
-              new java.lang.String[] { "Gds", "GdsHash", "PredefinedGridDefinition", });
+              new java.lang.String[] { "Gds", "PredefinedGridDefinition", });
           internal_static_Group_descriptor =
             getDescriptor().getMessageTypes().get(6);
           internal_static_Group_fieldAccessorTable = new

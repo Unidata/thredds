@@ -77,6 +77,7 @@ import java.util.Formatter;
  */
 public abstract class Grib1Gds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
+  public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
 
   public static Grib1Gds factory(int template, byte[] data) {
     switch (template) {
@@ -470,8 +471,8 @@ public abstract class Grib1Gds {
       if (!super.equals(o)) return false;
 
       LatLon other = (LatLon) o;
-      if (!Misc.closeEnough(la1, other.la1)) return false;
-      if (!Misc.closeEnough(lo1, other.lo1)) return false;
+      if (!Misc.closeEnoughAbs(la1, other.la1, maxReletiveErrorPos * deltaLat)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
       if (!Misc.closeEnough(deltaLat, other.deltaLat)) return false;
       if (!Misc.closeEnough(deltaLon, other.deltaLon)) return false;
       return true;
@@ -480,11 +481,16 @@ public abstract class Grib1Gds {
     @Override
     public int hashCode() {
       if (hashCode == 0) {
+        int useLat = (int) (la1 / (maxReletiveErrorPos * deltaLat));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxReletiveErrorPos * deltaLon));
+        int useDeltaLon = (int) (deltaLon / Misc.maxReletiveError);
+        int useDeltaLat = (int) (deltaLat / Misc.maxReletiveError);
+
         int result = super.hashCode();
-        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0); // LOOK this is an exact comparision
-        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
-        result = 31 * result + (deltaLon != +0.0f ? Float.floatToIntBits(deltaLon) : 0);
-        result = 31 * result + (deltaLat != +0.0f ? Float.floatToIntBits(deltaLat) : 0);
+        result = 31 * result + useLat;
+        result = 31 * result + useLon;
+        result = 31 * result + useDeltaLon;
+        result = 31 * result + useDeltaLat;
         hashCode = result;
       }
       return hashCode;
@@ -738,11 +744,12 @@ Grid definition –   polar stereographic
 
       PolarStereographic that = (PolarStereographic) o;
 
-      if (Float.compare(that.dX, dX) != 0) return false;
-      if (Float.compare(that.dY, dY) != 0) return false;
-      if (Float.compare(that.la1, la1) != 0) return false;
-      if (Float.compare(that.lo1, lo1) != 0) return false;
-      if (Float.compare(that.lov, lov) != 0) return false;
+      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.closeEnough(lov, that.lov)) return false;
+      if (!Misc.closeEnough(dY, that.dY)) return false;
+      if (!Misc.closeEnough(dX, that.dX)) return false;
+
       if (projCenterFlag != that.projCenterFlag) return false;
 
       return true;
@@ -751,12 +758,18 @@ Grid definition –   polar stereographic
     @Override
     public int hashCode() {
       if (hashCode == 0) {
+        int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLov = (int) (lov / Misc.maxReletiveError);
+        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
+        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+
         int result = super.hashCode();
-        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
-        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
-        result = 31 * result + (lov != +0.0f ? Float.floatToIntBits(lov) : 0);
-        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
-        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
+        result = 31 * result + useLat;
+        result = 31 * result + useLon;
+        result = 31 * result + useLov;
+        result = 31 * result + useDeltaLon;
+        result = 31 * result + useDeltaLat;
         result = 31 * result + projCenterFlag;
         hashCode = result;
       }
@@ -907,79 +920,45 @@ Grid definition –   polar stereographic
 
       LambertConformal that = (LambertConformal) o;
 
-      if (Float.compare(that.dX, dX) != 0) return false;
-      if (Float.compare(that.dY, dY) != 0) return false;
-      if (Float.compare(that.la1, la1) != 0) return false;
-      if (Float.compare(that.lad, lad) != 0) return false;
-      if (Float.compare(that.latSouthPole, latSouthPole) != 0) return false;
-      if (Float.compare(that.latin1, latin1) != 0) return false;
-      if (Float.compare(that.latin2, latin2) != 0) return false;
-      if (Float.compare(that.lo1, lo1) != 0) return false;
-      if (Float.compare(that.lonSouthPole, lonSouthPole) != 0) return false;
-      if (Float.compare(that.lov, lov) != 0) return false;
-      if (projCenterFlag != that.projCenterFlag) return false;
+      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.closeEnough(lad, that.lad)) return false;
+      if (!Misc.closeEnough(lov, that.lov)) return false;
+      if (!Misc.closeEnough(dY, that.dY)) return false;
+      if (!Misc.closeEnough(dX, that.dX)) return false;
+      if (!Misc.closeEnough(latin1, that.latin1)) return false;
+      if (!Misc.closeEnough(latin2, that.latin2)) return false;
 
       return true;
     }
 
     @Override
     public int hashCode() {
-      int result = super.hashCode();
-      result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
-      result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
-      result = 31 * result + (lov != +0.0f ? Float.floatToIntBits(lov) : 0);
-      result = 31 * result + (lad != +0.0f ? Float.floatToIntBits(lad) : 0);
-      result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
-      result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
-      result = 31 * result + (latin1 != +0.0f ? Float.floatToIntBits(latin1) : 0);
-      result = 31 * result + (latin2 != +0.0f ? Float.floatToIntBits(latin2) : 0);
-      result = 31 * result + (latSouthPole != +0.0f ? Float.floatToIntBits(latSouthPole) : 0);
-      result = 31 * result + (lonSouthPole != +0.0f ? Float.floatToIntBits(lonSouthPole) : 0);
-      result = 31 * result + projCenterFlag;
-      return result;
+      if (hashCode == 0) {
+        int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLad = (int) (lad / Misc.maxReletiveError);
+        int useLov = (int) (lov / Misc.maxReletiveError);
+        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
+        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+        int useLatin1 = (int) (latin1 / Misc.maxReletiveError);
+        int useLatin2 = (int) (latin2 / Misc.maxReletiveError);
+
+        int result = super.hashCode();
+        result = 31 * result + useLat;
+        result = 31 * result + useLon;
+        result = 31 * result + useLad;
+        result = 31 * result + useLov;
+        result = 31 * result + useDeltaLon;
+        result = 31 * result + useDeltaLat;
+        result = 31 * result + useLatin1;
+        result = 31 * result + useLatin2;
+        result = 31 * result + projCenterFlag;
+
+        hashCode = result;
+      }
+      return hashCode;
     }
-
-    /*
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    LambertConformal that = (LambertConformal) o;
-
-    if (hdX != that.hdX) return false;
-    if (hdY != that.hdY) return false;
-    if (hla1 != that.hla1) return false;
-    if (hlad != that.hlad) return false;
-    if (hlatin1 != that.hlatin1) return false;
-    if (hlatin2 != that.hlatin2) return false;
-    if (hlo1 != that.hlo1) return false;
-    if (hlov != that.hlov) return false;
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    if (hashCode == 0) {
-      int result = super.hashCode();
-      result = 31 * result + hla1;
-      result = 31 * result + hlo1;
-      result = 31 * result + hlov;
-      result = 31 * result + hlad;
-      result = 31 * result + hdX;
-      result = 31 * result + hdY;
-      result = 31 * result + hlatin1;
-      result = 31 * result + hlatin2;
-      hashCode = result;
-    }
-    return hashCode;
-  }
-
-  private static int round(int a) { // NCEP rounding (!)
-    return (a + 5) / 10;
-  }  */
 
     public GdsHorizCoordSys makeHorizCoordSys() {
       ProjectionImpl proj = null;
@@ -1082,35 +1061,41 @@ Grid definition –   polar stereographic
     }
 
     @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
+     public boolean equals(Object o) {
+       if (this == o) return true;
+       if (o == null || getClass() != o.getClass()) return false;
+       if (!super.equals(o)) return false;
 
-      Mercator mercator = (Mercator) o;
+       Mercator that = (Mercator) o;
 
-      if (Float.compare(mercator.dX, dX) != 0) return false;
-      if (Float.compare(mercator.dY, dY) != 0) return false;
-      if (Float.compare(mercator.la1, la1) != 0) return false;
-      if (Float.compare(mercator.latin, latin) != 0) return false;
-      if (Float.compare(mercator.lo1, lo1) != 0) return false;
+       if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+       if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+       if (!Misc.closeEnough(latin, that.latin)) return false;
+       if (!Misc.closeEnough(dY, that.dY)) return false;
+       if (!Misc.closeEnough(dX, that.dX)) return false;
 
-      return true;
-    }
+       return true;
+     }
 
-    @Override
-    public int hashCode() {
-      if (hashCode == 0) {
-        int result = super.hashCode();
-        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
-        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
-        result = 31 * result + (latin != +0.0f ? Float.floatToIntBits(latin) : 0);
-        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
-        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
-        hashCode = result;
-      }
-      return hashCode;
-    }
+     @Override
+     public int hashCode() {
+       if (hashCode == 0) {
+         int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+         int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+         int useLad = (int) (latin / Misc.maxReletiveError);
+         int useDeltaLon = (int) (dX / Misc.maxReletiveError);
+         int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+
+         int result = super.hashCode();
+         result = 31 * result + useLat;
+         result = 31 * result + useLon;
+         result = 31 * result + useLad;
+         result = 31 * result + useDeltaLon;
+         result = 31 * result + useDeltaLat;
+         hashCode = result;
+       }
+       return hashCode;
+     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
       // put longitude origin at first point - doesnt actually matter
@@ -1229,7 +1214,7 @@ Grid definition –   polar stereographic
 
   }
 
-  /*
+  /*  LOOK not done yet
   Grid definition – spherical harmonic coefficients (including rotated, stretched or stretched and rotated)
   Octet No. Contents
   7–8   J – pentagonal resolution parameter

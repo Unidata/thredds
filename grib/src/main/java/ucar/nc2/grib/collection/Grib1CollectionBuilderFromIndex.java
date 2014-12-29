@@ -125,8 +125,7 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
       gds = gdss.getGDS();
     }
 
-    int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
-    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, predefined);
+    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gds, predefined);
   }
 
 }

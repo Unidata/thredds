@@ -233,7 +233,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
        //gds
       for (Object go : groups) {
         Group g = (Group) go;
-        indexBuilder.addGds(writeGdsProto(g.gdsHashObject.hashCode(), g.gdss.getRawBytes(), -1));
+        indexBuilder.addGds(writeGdsProto(g.gdss.getRawBytes(), -1));
       }
 
       // the GC dataset

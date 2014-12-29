@@ -188,7 +188,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
         //gds
       for (Group g : groups)
-        indexBuilder.addGds(writeGdsProto(g.gdsHashObject.hashCode(), g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
+        indexBuilder.addGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
 
       // the GC dataset
       indexBuilder.addDataset( writeDatasetProto(type, groups));
