@@ -600,17 +600,17 @@
         <scope>runtime</scope>
       </dependency>
 
-      <!-- Used only in tds. -->
+      <!-- Validation. -->
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>${javax.validation.version}</version>
       </dependency>
-      <!-- Used only in wmotables. -->
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${org.hibernate.version}</version>
+        <scope>runtime</scope>
       </dependency>
 
       <!-- Used only in "it" module. -->

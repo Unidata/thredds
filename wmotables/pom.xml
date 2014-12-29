@@ -80,9 +80,14 @@
        <artifactId>derby</artifactId>
     </dependency>
 
+    <!-- JSR 303 with Hibernate Validator -->
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
     </dependency>
 
     <dependency>
