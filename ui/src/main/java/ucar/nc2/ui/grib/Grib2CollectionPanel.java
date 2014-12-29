@@ -521,7 +521,7 @@ public class Grib2CollectionPanel extends JPanel {
       if (cust == null)
         cust = Grib2Customizer.factory(gr);
 
-      Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger);
+      Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
       Grib2ParameterBean bean = pdsSet.get(gv);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr, gv);
@@ -1255,7 +1255,7 @@ public class Grib2CollectionPanel extends JPanel {
     showBytes(f, gr.getHeader(), 100);
     f.format("\"%n");
 
-    Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger);
+    Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
     f.format("cdmHash=%d%n", gv.hashCode());
 
     int d = gr.getDiscipline();

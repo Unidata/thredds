@@ -204,7 +204,7 @@ public class GribCollectionMutable implements AutoCloseable {
   }
 
   protected void makeHorizCS() {
-    Map<Integer, GribHorizCoordSystem> gdsMap = new HashMap<>();   // WTF ?? unique ???
+    Map<Object, GribHorizCoordSystem> gdsMap = new HashMap<>();   // WTF ?? unique ???
     for (Dataset ds : datasets) {
       for (GroupGC hcs : ds.groups)
         gdsMap.put(hcs.getGdsHash(), hcs.horizCoordSys);
@@ -378,7 +378,7 @@ public class GribCollectionMutable implements AutoCloseable {
       return horizCoordSys.getRawGds();
     }
 
-    public int getGdsHash() {    // LOOK ??
+    public Object getGdsHash() {
        return horizCoordSys.getGdsHash();
      }
 
@@ -442,7 +442,7 @@ public class GribCollectionMutable implements AutoCloseable {
     }
 
     public void show(Formatter f) {
-      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), isTwoD);
+      f.format("Group %s (%d) isTwoD=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash().hashCode(), isTwoD);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }
@@ -457,17 +457,16 @@ public class GribCollectionMutable implements AutoCloseable {
     }
   }
 
-  public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, int cdmHash, int discipline, GribTables customizer,  byte[] rawIds,
-                                                               byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
-    return new VariableIndex(g, discipline, customizer, rawIds, rawPds, index, recordsPos, recordsLen);
+  public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, GribTables customizer, int discipline, int center,
+                                    int subcenter, byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
+    return new VariableIndex(g, customizer, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
     public final GroupGC group;     // belongs to this group
     public final int tableVersion;   // grib1 only : can vary by variable
-    public final int discipline;     // grib2 only
-    //public final byte[] rawPds;      // grib1 or grib2
-    // public final int cdmHash;
+    public final int discipline, center, subcenter;     // grib2 only
+    public final byte[] rawPds;      // grib1 or grib2
     public final long recordsPos;    // where the records array is stored in the index. 0 means no records
     public final int recordsLen;
     public Object gribVariable;    // use this to test for object equality
@@ -487,12 +486,13 @@ public class GribCollectionMutable implements AutoCloseable {
     // temporary storage while building - do not use
     List<Coordinate> coords;
 
-    private VariableIndex(GroupGC g, int discipline, GribTables customizer, byte[] rawIds, byte[] rawPds,
+    private VariableIndex(GroupGC g, GribTables customizer, int discipline, int center, int subcenter, byte[] rawPds,
                           List<Integer> index, long recordsPos, int recordsLen) {
       this.group = g;
       this.discipline = discipline;
-      // this.rawPds = rawPds;
-      // this.cdmHash = cdmHash;
+      this.rawPds = rawPds;
+      this.center = center;
+      this.subcenter = subcenter;
       this.coordIndex = index;
       this.recordsPos = recordsPos;
       this.recordsLen = recordsLen;
@@ -558,7 +558,7 @@ public class GribCollectionMutable implements AutoCloseable {
         this.isEnsemble = pds.isEnsemble();
 
         // LOOK config vs serialized config
-        gribVariable = new Grib2Variable (cust2, discipline, rawIds, g.getGdsBytes(), pds, config.gribConfig.intvMerge, config.gribConfig.useGenType);
+        gribVariable = new Grib2Variable (cust2, discipline, center, subcenter, g.getGdsBytes(), pds, config.gribConfig.intvMerge, config.gribConfig.useGenType);
       }
     }
 
@@ -566,7 +566,9 @@ public class GribCollectionMutable implements AutoCloseable {
       this.group = g;
       this.tableVersion = other.tableVersion;
       this.discipline = other.discipline;
-      // this.rawPds = other.rawPds;
+      this.center = other.center;
+      this.subcenter = other.subcenter;
+      this.rawPds = other.rawPds;
       this.gribVariable = other.gribVariable;
       this.coordIndex = new ArrayList<>(other.coordIndex);
       this.recordsPos = 0;
@@ -603,11 +605,6 @@ public class GribCollectionMutable implements AutoCloseable {
         if (group.coords.get(idx).getType() == want)
           return idx;
       return -1;
-    }
-
-    public Coordinate getCoordinate(int index) {
-      int grpIndex = coordIndex.get(index);
-      return group.coords.get(grpIndex);
     }
 
     public String getTimeIntvName() {
@@ -692,15 +689,6 @@ public class GribCollectionMutable implements AutoCloseable {
       if (intvName != null && intvName.length() > 0) sb.format(" intv=%s", intvName);
       if (probabilityName != null && probabilityName.length() > 0) sb.format(" prob=%s", probabilityName);
       sb.format(" cdmHash=%d}", gribVariable.hashCode());
-      return sb.toString();
-    }
-
-    public String toStringFrom() {
-      Formatter sb = new Formatter();
-      sb.format("Variable {%d-%d-%d", discipline, category, parameter);
-      sb.format(", levelType=%d", levelType);
-      sb.format(", intvType=%d", intvType);
-      sb.format(", group=%s}", group);
       return sb.toString();
     }
 

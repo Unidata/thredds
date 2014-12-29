@@ -51,8 +51,7 @@ public class Grib2Variable {
 
   ////////////////////////////////////////////////////////////////////////
   private final Grib2Customizer cust;
-  private final int discipline;
-  private final Grib2SectionIdentification id;
+  private final int discipline, center, subcenter;
   private final int gdsHash;
   private final Grib2Gds gds;
   private final Grib2Pds pds;
@@ -71,7 +70,8 @@ public class Grib2Variable {
   public Grib2Variable(Grib2Customizer cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge, boolean useGenType) {
     this.cust = cust;
     this.discipline = gr.getDiscipline();
-    this.id = gr.getId();
+    this.center = gr.getId().getCenter_id();
+    this.subcenter = gr.getId().getSubcenter_id();
     this.gds = gr.getGDS();
     this.gdsHash = gdsHashOverride != 0 ? gdsHashOverride : gr.getGDS().hashCode();
     this.pds = gr.getPDS();
@@ -82,10 +82,11 @@ public class Grib2Variable {
   /**
    * Used when building from ncx3 (full records)
    */
-  public Grib2Variable(Grib2Customizer cust, int discipline, byte[] idBytes, byte[] gdssBytes, Grib2Pds pds, boolean intvMerge, boolean useGenType) {
+  public Grib2Variable(Grib2Customizer cust, int discipline, int center, int subcenter, byte[] gdssBytes, Grib2Pds pds, boolean intvMerge, boolean useGenType) {
     this.cust = cust;
     this.discipline = discipline;
-    this.id = new Grib2SectionIdentification(idBytes);
+    this.center = center;
+    this.subcenter = subcenter;
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(gdssBytes);
     this.gds = gdss.getGDS();
     this.gdsHash = gds.hashCode;             // this requires no overridden gds hashCodes have made it into the ncx3
@@ -153,8 +154,8 @@ public class Grib2Variable {
             || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191)
             || (ensDerivedType > 191) || (probType > 191)) {
 
-      if (id.getCenter_id() != var2.id.getCenter_id()) return false;
-      if (id.getSubcenter_id() != var2.id.getSubcenter_id()) return false;
+      if (center!= var2.center) return false;
+      if (subcenter != var2.subcenter) return false;
     }
 
     return true;
@@ -210,9 +211,9 @@ public class Grib2Variable {
     if ((pds.getParameterCategory() > 191) || (pds.getParameterNumber() > 191) || (pds.getLevelType1() > 191)
             || (pds.isTimeInterval() && pds.getStatisticalProcessType() > 191)
             || (ensDerivedType > 191) || (probType > 191)) {
-      result += result * 31 + id.getCenter_id();
-      if (id.getSubcenter_id() > 0)
-        result += result * 31 + id.getSubcenter_id();
+      result += result * 31 + center;
+      if (subcenter > 0)
+        result += result * 31 + subcenter;
     }
 
     // always use the GenProcessType when "error" (6 or 7) 2/8/2012

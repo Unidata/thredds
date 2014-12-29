@@ -70,7 +70,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
 
   public static class Group implements GribCollectionBuilder.Group {
     public Grib2SectionGridDefinition gdss;
-    public int gdsHash;       // may have been modified
+    public Object gdsHashObject;       // may have been modified
     public CalendarDate runtime;
 
     public List<Grib2CollectionBuilder.VariableBag> gribVars;
@@ -79,14 +79,14 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
     public Set<Long> runtimes = new HashSet<>();
 
-    Group(Grib2SectionGridDefinition gdss, int gdsHash) {
+    Group(Grib2SectionGridDefinition gdss, Object gdsHashObject) {
       this.gdss = gdss;
-      this.gdsHash = gdsHash;
+      this.gdsHashObject = gdsHashObject;
     }
 
-    Group(Grib2SectionGridDefinition gdss, int gdsHash, CalendarDate runtime) {
+    Group(Grib2SectionGridDefinition gdss, Object gdsHashObject, CalendarDate runtime) {
       this.gdss = gdss;
-      this.gdsHash = gdsHash;
+      this.gdsHashObject = gdsHashObject;
       this.runtime = runtime;
     }
 
@@ -233,7 +233,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
        //gds
       for (Object go : groups) {
         Group g = (Group) go;
-        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), -1));
+        indexBuilder.addGds(writeGdsProto(g.gdsHashObject.hashCode(), g.gdss.getRawBytes(), -1));
       }
 
       // the GC dataset
@@ -407,7 +407,10 @@ class Grib2CollectionWriter extends GribCollectionWriter {
 
     b.setDiscipline(vb.first.getDiscipline());
     b.setPds(ByteString.copyFrom(vb.first.getPDSsection().getRawBytes()));
-    b.setCdmHash(vb.gv.hashCode());
+
+    // extra id info
+    b.addIds(vb.first.getId().getCenter_id());
+    b.addIds(vb.first.getId().getSubcenter_id());
 
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);

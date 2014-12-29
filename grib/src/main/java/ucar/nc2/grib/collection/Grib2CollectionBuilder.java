@@ -124,16 +124,16 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
           }
 
           gr.setFile(fileno); // each record tracks which file it belongs to
-          int gdsHash = gr.getGDS().hashCode();  // use GDS hash code to group records
-          gdsHash = gribConfig.convertGdsHash(gdsHash);  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
+          Grib2Gds gdsHashObject = gr.getGDS();  // use GDS to group records
+          int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
           if (0 == gdsHash) continue; // skip this group
 
           CalendarDate runtimeDate = gr.getReferenceDate();
           long runtime = singleRuntime ? runtimeDate.getMillis() : 0;  // seperate Groups for each runtime, if singleRuntime is true
-          GroupAndRuntime gar = new GroupAndRuntime(gdsHash, runtime);
+          GroupAndRuntime gar = new GroupAndRuntime(gdsHashObject, runtime);
           Grib2CollectionWriter.Group g = gdsMap.get(gar);
           if (g == null) {
-            g = new Grib2CollectionWriter.Group(gr.getGDSsection(), gdsHash, runtimeDate);
+            g = new Grib2CollectionWriter.Group(gr.getGDSsection(), gdsHashObject, runtimeDate);
             gdsMap.put(gar, g);
           }
           g.records.add(gr);
@@ -153,7 +153,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     List<Grib2CollectionWriter.Group> groups = new ArrayList<>(gdsMap.values());
     for (Grib2CollectionWriter.Group g : groups) {
       Counter stats = new Counter(); // debugging
-      Grib2Rectilyser rect = new Grib2Rectilyser(g.records, g.gdsHash);
+      Grib2Rectilyser rect = new Grib2Rectilyser(g.records, g.gdsHashObject);
       rect.make(gribConfig, stats, errlog);
       g.gribVars = rect.gribvars;
       g.coords = rect.coords;
@@ -246,14 +246,15 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   private class Grib2Rectilyser {
-    private final int gdsHash;
+    private final int gdsHashOverride;
     private final List<Grib2Record> records;
     private List<VariableBag> gribvars;
     private List<Coordinate> coords;
 
-    Grib2Rectilyser(List<Grib2Record> records, int gdsHash) {
+    Grib2Rectilyser(List<Grib2Record> records, Object gdsHashObject) {
       this.records = records;
-      this.gdsHash = gdsHash;
+      int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());
+      gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash;
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
@@ -262,17 +263,18 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       // assign each record to unique variable using cdmVariableHash()
       Map<Grib2Variable, VariableBag> vbHash = new HashMap<>(100);
       for (Grib2Record gr : records) {
-        Grib2Variable vh;
+        Grib2Variable gv;
         try {
-          vh = makeGribVariable(gr, gdsHash);
+          gv = new Grib2Variable(cust, gr, gdsHashOverride, gribConfig.intvMerge, gribConfig.useGenType);
+
         } catch (Throwable t) {
           logger.warn("Exception on record ", t);
           continue; // keep going
         }
-        VariableBag bag = vbHash.get(vh);
+        VariableBag bag = vbHash.get(gv);
         if (bag == null) {
-          bag = new VariableBag(gr, vh);
-          vbHash.put(vh, bag);
+          bag = new VariableBag(gr, gv);
+          vbHash.put(gv, bag);
         }
         bag.atomList.add(gr);
       }
@@ -358,10 +360,6 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       }
       f.format("%n all= %s", all.show());
     }
-  }
-
-  private Grib2Variable makeGribVariable(Grib2Record gr, int gdsHash) {
-    return new Grib2Variable(cust, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
   }
 
 }

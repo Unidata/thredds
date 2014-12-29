@@ -66,7 +66,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib1Customizer cust;
 
-  // LOOK prob name could be dcm.getCollectionName()
   public Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     super(true, name, dcm, logger);
 
@@ -100,7 +99,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
             index = (Grib1Index) GribIndex.open(true, mfile);
             if (index == null) continue;
           } else {
-            // LOOK here is where gbx9 files get recreated
+            // here is where gbx9 files get recreated
             index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, mfile, CollectionUpdateType.test, logger);
           }
           allFiles.add(mfile);  // add on success
@@ -123,17 +122,17 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           }
 
           gr.setFile(fileno); // each record tracks which file it belongs to
-          int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
-          gdsHash = gribConfig.convertGdsHash(gdsHash);  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
+          Grib1Gds gdsHashObject = gr.getGDSsection().getGDS();  // use GDS to group records
+          int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
           if (0 == gdsHash)
             continue; // skip this group
 
           CalendarDate runtimeDate = gr.getReferenceDate();
           long runtime = singleRuntime ? runtimeDate.getMillis() : 0;  // seperate Groups for each runtime, if singleRuntime is true
-          GroupAndRuntime gar = new GroupAndRuntime(gdsHash, runtime);
+          GroupAndRuntime gar = new GroupAndRuntime(gdsHashObject, runtime);
           Grib1CollectionWriter.Group g = gdsMap.get(gar);
           if (g == null) {
-            g = new Grib1CollectionWriter.Group(gr.getGDSsection(), gdsHash, runtimeDate);
+            g = new Grib1CollectionWriter.Group(gr.getGDSsection(), gdsHashObject, runtimeDate);
             gdsMap.put(gar, g);
           }
           g.records.add(gr);
@@ -148,7 +147,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     List<Grib1CollectionWriter.Group> groups = new ArrayList<>(gdsMap.values());
     for (Grib1CollectionWriter.Group g : groups) {
       Counter stats = new Counter(); // debugging
-      Grib1Rectilyser rect = new Grib1Rectilyser(g.records, g.gdsHash);
+      Grib1Rectilyser rect = new Grib1Rectilyser(g.records, g.gdsHashObject);
       rect.make(gribConfig, stats, errlog);
       g.gribVars = rect.gribvars;
       g.coords = rect.coords;
@@ -226,14 +225,15 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
   // for a single group, create multidimensional (rectangular) variables
   private class Grib1Rectilyser {
-    private final int gdsHash;
+    private final int gdsHashOverride;
     private final List<Grib1Record> records;
     private List<VariableBag> gribvars;
     private List<Coordinate> coords;
 
-    Grib1Rectilyser(List<Grib1Record> records, int gdsHash) {
+    Grib1Rectilyser(List<Grib1Record> records, Object gdsHashObject) {
       this.records = records;
-      this.gdsHash = gdsHash;
+      int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());
+      gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash;
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
@@ -244,7 +244,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       for (Grib1Record gr : records) {
         Grib1Variable cdmHash;
         try {
-          cdmHash =  new Grib1Variable(cust, gr, gdsHash, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
+          cdmHash =  new Grib1Variable(cust, gr, gdsHashOverride, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
         } catch (Throwable t) {
           logger.warn("Exception on record ", t);
           continue; // keep going

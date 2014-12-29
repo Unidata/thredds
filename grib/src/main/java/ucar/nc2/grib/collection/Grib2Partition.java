@@ -80,12 +80,6 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Auto
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
   }
 
-
-  @Override
-  public String makeVariableName(VariableIndex vindex) {
-    return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, vindex, config.gribConfig.useGenType);
-  }
-
   @Override
   protected void addGlobalAttributes(List<Attribute> result) {
     String val = cust.getGeneratingProcessTypeName(getGenProcessType());

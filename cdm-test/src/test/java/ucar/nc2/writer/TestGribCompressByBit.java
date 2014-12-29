@@ -300,7 +300,7 @@ public class TestGribCompressByBit {
 
   private void showData(Grib2Record gr, Bean bean, int[] rawData) throws IOException {
     Grib2Customizer cust = Grib2Customizer.factory(gr);
-    Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, null);
+    Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
     int id = gv.hashCode();
     System.out.printf("Grib2 record cdmHash=%d (0x%s) pos=%d%n", id, Integer.toHexString(id), gr.getIs().getStartPos());
 

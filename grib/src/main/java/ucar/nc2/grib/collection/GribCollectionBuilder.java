@@ -76,7 +76,6 @@ abstract class GribCollectionBuilder {
   // indexFile not in cache
   protected abstract boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
 
-  // LOOK prob name could be dcm.getCollectionName()
   public GribCollectionBuilder(boolean isGrib1, String name, MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
     this.logger = logger;
@@ -236,17 +235,17 @@ abstract class GribCollectionBuilder {
 
 
   static public interface Group {
-    CalendarDate getRuntime();             // LOOK HERE1 a single runtime
+    CalendarDate getRuntime();
     List<Coordinate> getCoordinates();
     Set<Long> getCoordinateRuntimes();
   }
 
   static protected class GroupAndRuntime {
-    int gdsHash;
+    Object gdsHashObject;
     long runtime;
 
-    GroupAndRuntime(int gdsHash, long runtime) {
-      this.gdsHash = gdsHash;
+    GroupAndRuntime(Object gdsHashObject, long runtime) {
+      this.gdsHashObject = gdsHashObject;
       this.runtime = runtime;
     }
 
@@ -257,7 +256,7 @@ abstract class GribCollectionBuilder {
 
       GroupAndRuntime that = (GroupAndRuntime) o;
 
-      if (gdsHash != that.gdsHash) return false;
+      if (gdsHashObject.equals(that.gdsHashObject)) return false;
       if (runtime != that.runtime) return false;
 
       return true;
@@ -265,7 +264,7 @@ abstract class GribCollectionBuilder {
 
     @Override
     public int hashCode() {
-      int result = gdsHash;
+      int result = gdsHashObject.hashCode();
       result = 31 * result + (int) (runtime ^ (runtime >>> 32));
       return result;
     }

@@ -33,7 +33,6 @@
 package ucar.nc2.grib.grib1;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.QuasiRegular;
@@ -758,7 +757,7 @@ Grid definition –   polar stereographic
         result = 31 * result + (lov != +0.0f ? Float.floatToIntBits(lov) : 0);
         result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
         result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
-        result = 31 * result + (int) projCenterFlag;
+        result = 31 * result + projCenterFlag;
         hashCode = result;
       }
       return hashCode;

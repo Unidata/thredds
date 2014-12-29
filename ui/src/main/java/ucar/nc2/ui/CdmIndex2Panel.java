@@ -10,8 +10,6 @@ import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.util.Misc;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
@@ -24,7 +22,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -758,7 +755,7 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getGdsHash() {
-      return group.getGdsHash();
+      return group.getGdsHash().hashCode();
     }
 
     public int getNrecords() {
@@ -907,7 +904,7 @@ public class CdmIndex2Panel extends JPanel {
     public VarBean(GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable.GroupGC group) {
       this.v = vindex;
       this.group = group;
-      this.name =  gc.makeVariableName(vindex);
+      this.name =  vindex.makeVariableName();
     }
 
     /* public int getNRecords() {

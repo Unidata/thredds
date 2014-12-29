@@ -64,8 +64,8 @@ public class TimeCoord {
 
   private final CalendarDate runDate;
   private final CalendarPeriod timeUnit;
-  protected final List<Integer> coords;
-  protected final List<Tinv> intervals;
+  protected List<Integer> coords;    // set by subclasses
+  protected List<Tinv> intervals;    // set by subclasses
 
   private final String units;
   private int index;

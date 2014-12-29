@@ -24,7 +24,7 @@ message SparseArray {
 message Variable {
    required uint32 discipline = 1;
    required bytes pds = 2;          // raw pds
-   required fixed32 cdmHash = 3;
+   repeated uint32 ids = 3;         // extra info not in pds; grib2 id section
 
    required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
    required uint32 recordsLen = 5;  // size of SparseArray message for this Variable

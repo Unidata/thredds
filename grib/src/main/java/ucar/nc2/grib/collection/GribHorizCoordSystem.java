@@ -46,11 +46,11 @@ import ucar.nc2.grib.GdsHorizCoordSys;
 public class GribHorizCoordSystem {
   private final GdsHorizCoordSys hcs;
   private final byte[] rawGds;         // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
-  private final int gdsHash;
+  private final Object gdsHash;
   private final String id, description;
-  private final int predefinedGridDefinition;
+  private final int predefinedGridDefinition;  // grib1
 
-  public GribHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash, String id, String description, int predefinedGridDefinition) {
+  public GribHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHash, String id, String description, int predefinedGridDefinition) {
     this.hcs = hcs;
     this.rawGds = rawGds;
     this.gdsHash = gdsHash;
@@ -68,7 +68,8 @@ public class GribHorizCoordSystem {
     return rawGds;
   }
 
-  public int getGdsHash() {
+  // use this object for hashmaps
+  public Object getGdsHash() {
     return gdsHash;
   }
 

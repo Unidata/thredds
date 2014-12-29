@@ -447,12 +447,16 @@ message Coord {
 
     byte[] rawPds = pv.getPds().toByteArray();
 
-    int cdmHash = pv.getCdmHash();
+        // extra id info
+    int nids = pv.getIdsCount();
+    int center = (nids > 0) ? pv.getIds(0) : 0;
+    int subcenter = (nids > 1) ? pv.getIds(1) : 0;
+
     long recordsPos = pv.getRecordsPos();
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();
 
-    GribCollectionMutable.VariableIndex result = gc.makeVariableIndex(group, cdmHash, discipline, tables, rawPds, index, recordsPos, recordsLen);
+    GribCollectionMutable.VariableIndex result = gc.makeVariableIndex(group, tables, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
     result.ndups = pv.getNdups();
     result.nrecords = pv.getNrecords();
     result.nmissing = pv.getMissing();

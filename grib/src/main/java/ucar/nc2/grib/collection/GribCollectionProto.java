@@ -2286,15 +2286,31 @@ public final class GribCollectionProto {
      */
     com.google.protobuf.ByteString getPds();
 
-    // required fixed32 cdmHash = 3;
+    // repeated uint32 ids = 3;
     /**
-     * <code>required fixed32 cdmHash = 3;</code>
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
      */
-    boolean hasCdmHash();
+    java.util.List<java.lang.Integer> getIdsList();
     /**
-     * <code>required fixed32 cdmHash = 3;</code>
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
      */
-    int getCdmHash();
+    int getIdsCount();
+    /**
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
+     */
+    int getIds(int index);
 
     // required uint64 recordsPos = 4;
     /**
@@ -2506,18 +2522,34 @@ public final class GribCollectionProto {
               pds_ = input.readBytes();
               break;
             }
-            case 29: {
-              bitField0_ |= 0x00000004;
-              cdmHash_ = input.readFixed32();
+            case 24: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                ids_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              ids_.add(input.readUInt32());
+              break;
+            }
+            case 26: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
+                ids_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                ids_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
               break;
             }
             case 32: {
-              bitField0_ |= 0x00000008;
+              bitField0_ |= 0x00000004;
               recordsPos_ = input.readUInt64();
               break;
             }
             case 40: {
-              bitField0_ |= 0x00000010;
+              bitField0_ |= 0x00000008;
               recordsLen_ = input.readUInt32();
               break;
             }
@@ -2543,17 +2575,17 @@ public final class GribCollectionProto {
               break;
             }
             case 64: {
-              bitField0_ |= 0x00000020;
+              bitField0_ |= 0x00000010;
               ndups_ = input.readUInt32();
               break;
             }
             case 72: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000020;
               nrecords_ = input.readUInt32();
               break;
             }
             case 80: {
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000040;
               missing_ = input.readUInt32();
               break;
             }
@@ -2573,6 +2605,9 @@ public final class GribCollectionProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          ids_ = java.util.Collections.unmodifiableList(ids_);
+        }
         if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
           coordIdx_ = java.util.Collections.unmodifiableList(coordIdx_);
         }
@@ -2651,20 +2686,39 @@ public final class GribCollectionProto {
       return pds_;
     }
 
-    // required fixed32 cdmHash = 3;
-    public static final int CDMHASH_FIELD_NUMBER = 3;
-    private int cdmHash_;
+    // repeated uint32 ids = 3;
+    public static final int IDS_FIELD_NUMBER = 3;
+    private java.util.List<java.lang.Integer> ids_;
     /**
-     * <code>required fixed32 cdmHash = 3;</code>
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
      */
-    public boolean hasCdmHash() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+    public java.util.List<java.lang.Integer>
+        getIdsList() {
+      return ids_;
     }
     /**
-     * <code>required fixed32 cdmHash = 3;</code>
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
      */
-    public int getCdmHash() {
-      return cdmHash_;
+    public int getIdsCount() {
+      return ids_.size();
+    }
+    /**
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
+     */
+    public int getIds(int index) {
+      return ids_.get(index);
     }
 
     // required uint64 recordsPos = 4;
@@ -2678,7 +2732,7 @@ public final class GribCollectionProto {
      * </pre>
      */
     public boolean hasRecordsPos() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
      * <code>required uint64 recordsPos = 4;</code>
@@ -2702,7 +2756,7 @@ public final class GribCollectionProto {
      * </pre>
      */
     public boolean hasRecordsLen() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
      * <code>required uint32 recordsLen = 5;</code>
@@ -2761,7 +2815,7 @@ public final class GribCollectionProto {
      * </pre>
      */
     public boolean hasNdups() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
      * <code>optional uint32 ndups = 8;</code>
@@ -2781,7 +2835,7 @@ public final class GribCollectionProto {
      * <code>optional uint32 nrecords = 9;</code>
      */
     public boolean hasNrecords() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
      * <code>optional uint32 nrecords = 9;</code>
@@ -2797,7 +2851,7 @@ public final class GribCollectionProto {
      * <code>optional uint32 missing = 10;</code>
      */
     public boolean hasMissing() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
      * <code>optional uint32 missing = 10;</code>
@@ -2865,7 +2919,7 @@ public final class GribCollectionProto {
     private void initFields() {
       discipline_ = 0;
       pds_ = com.google.protobuf.ByteString.EMPTY;
-      cdmHash_ = 0;
+      ids_ = java.util.Collections.emptyList();
       recordsPos_ = 0L;
       recordsLen_ = 0;
       coordIdx_ = java.util.Collections.emptyList();
@@ -2884,10 +2938,6 @@ public final class GribCollectionProto {
         return false;
       }
       if (!hasPds()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasCdmHash()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -2925,25 +2975,25 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, pds_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeFixed32(3, cdmHash_);
+      for (int i = 0; i < ids_.size(); i++) {
+        output.writeUInt32(3, ids_.get(i));
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeUInt64(4, recordsPos_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt32(5, recordsLen_);
       }
       for (int i = 0; i < coordIdx_.size(); i++) {
         output.writeUInt32(6, coordIdx_.get(i));
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeUInt32(8, ndups_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt32(9, nrecords_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeUInt32(10, missing_);
       }
       for (int i = 0; i < params_.size(); i++) {
@@ -2967,15 +3017,20 @@ public final class GribCollectionProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, pds_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeFixed32Size(3, cdmHash_);
+      {
+        int dataSize = 0;
+        for (int i = 0; i < ids_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(ids_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getIdsList().size();
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(4, recordsPos_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(5, recordsLen_);
       }
@@ -2988,15 +3043,15 @@ public final class GribCollectionProto {
         size += dataSize;
         size += 1 * getCoordIdxList().size();
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(8, ndups_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(9, nrecords_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(10, missing_);
       }
@@ -3130,7 +3185,7 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000001);
         pds_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000002);
-        cdmHash_ = 0;
+        ids_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000004);
         recordsPos_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000008);
@@ -3186,16 +3241,17 @@ public final class GribCollectionProto {
           to_bitField0_ |= 0x00000002;
         }
         result.pds_ = pds_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          ids_ = java.util.Collections.unmodifiableList(ids_);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
-        result.cdmHash_ = cdmHash_;
+        result.ids_ = ids_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
+          to_bitField0_ |= 0x00000004;
         }
         result.recordsPos_ = recordsPos_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
+          to_bitField0_ |= 0x00000008;
         }
         result.recordsLen_ = recordsLen_;
         if (((bitField0_ & 0x00000020) == 0x00000020)) {
@@ -3204,15 +3260,15 @@ public final class GribCollectionProto {
         }
         result.coordIdx_ = coordIdx_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000020;
+          to_bitField0_ |= 0x00000010;
         }
         result.ndups_ = ndups_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000040;
+          to_bitField0_ |= 0x00000020;
         }
         result.nrecords_ = nrecords_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
-          to_bitField0_ |= 0x00000080;
+          to_bitField0_ |= 0x00000040;
         }
         result.missing_ = missing_;
         if (paramsBuilder_ == null) {
@@ -3246,8 +3302,15 @@ public final class GribCollectionProto {
         if (other.hasPds()) {
           setPds(other.getPds());
         }
-        if (other.hasCdmHash()) {
-          setCdmHash(other.getCdmHash());
+        if (!other.ids_.isEmpty()) {
+          if (ids_.isEmpty()) {
+            ids_ = other.ids_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureIdsIsMutable();
+            ids_.addAll(other.ids_);
+          }
+          onChanged();
         }
         if (other.hasRecordsPos()) {
           setRecordsPos(other.getRecordsPos());
@@ -3311,10 +3374,6 @@ public final class GribCollectionProto {
           return false;
         }
         if (!hasPds()) {
-          
-          return false;
-        }
-        if (!hasCdmHash()) {
           
           return false;
         }
@@ -3443,35 +3502,96 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // required fixed32 cdmHash = 3;
-      private int cdmHash_ ;
-      /**
-       * <code>required fixed32 cdmHash = 3;</code>
-       */
-      public boolean hasCdmHash() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+      // repeated uint32 ids = 3;
+      private java.util.List<java.lang.Integer> ids_ = java.util.Collections.emptyList();
+      private void ensureIdsIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          ids_ = new java.util.ArrayList<java.lang.Integer>(ids_);
+          bitField0_ |= 0x00000004;
+         }
       }
       /**
-       * <code>required fixed32 cdmHash = 3;</code>
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
        */
-      public int getCdmHash() {
-        return cdmHash_;
+      public java.util.List<java.lang.Integer>
+          getIdsList() {
+        return java.util.Collections.unmodifiableList(ids_);
       }
       /**
-       * <code>required fixed32 cdmHash = 3;</code>
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
        */
-      public Builder setCdmHash(int value) {
-        bitField0_ |= 0x00000004;
-        cdmHash_ = value;
+      public int getIdsCount() {
+        return ids_.size();
+      }
+      /**
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
+       */
+      public int getIds(int index) {
+        return ids_.get(index);
+      }
+      /**
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
+       */
+      public Builder setIds(
+          int index, int value) {
+        ensureIdsIsMutable();
+        ids_.set(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>required fixed32 cdmHash = 3;</code>
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
        */
-      public Builder clearCdmHash() {
+      public Builder addIds(int value) {
+        ensureIdsIsMutable();
+        ids_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
+       */
+      public Builder addAllIds(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureIdsIsMutable();
+        super.addAll(values, ids_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
+       */
+      public Builder clearIds() {
+        ids_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000004);
-        cdmHash_ = 0;
         onChanged();
         return this;
       }
@@ -7154,7 +7274,7 @@ public final class GribCollectionProto {
      * <code>optional bytes gds = 1;</code>
      *
      * <pre>
-     * raw gds
+     * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
      * </pre>
      */
     boolean hasGds();
@@ -7162,7 +7282,7 @@ public final class GribCollectionProto {
      * <code>optional bytes gds = 1;</code>
      *
      * <pre>
-     * raw gds
+     * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
      * </pre>
      */
     com.google.protobuf.ByteString getGds();
@@ -7308,7 +7428,7 @@ public final class GribCollectionProto {
      * <code>optional bytes gds = 1;</code>
      *
      * <pre>
-     * raw gds
+     * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
      * </pre>
      */
     public boolean hasGds() {
@@ -7318,7 +7438,7 @@ public final class GribCollectionProto {
      * <code>optional bytes gds = 1;</code>
      *
      * <pre>
-     * raw gds
+     * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
      * </pre>
      */
     public com.google.protobuf.ByteString getGds() {
@@ -7632,7 +7752,7 @@ public final class GribCollectionProto {
        * <code>optional bytes gds = 1;</code>
        *
        * <pre>
-       * raw gds
+       * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
        * </pre>
        */
       public boolean hasGds() {
@@ -7642,7 +7762,7 @@ public final class GribCollectionProto {
        * <code>optional bytes gds = 1;</code>
        *
        * <pre>
-       * raw gds
+       * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
        * </pre>
        */
       public com.google.protobuf.ByteString getGds() {
@@ -7652,7 +7772,7 @@ public final class GribCollectionProto {
        * <code>optional bytes gds = 1;</code>
        *
        * <pre>
-       * raw gds
+       * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
        * </pre>
        */
       public Builder setGds(com.google.protobuf.ByteString value) {
@@ -7668,7 +7788,7 @@ public final class GribCollectionProto {
        * <code>optional bytes gds = 1;</code>
        *
        * <pre>
-       * raw gds
+       * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
        * </pre>
        */
       public Builder clearGds() {
@@ -11851,7 +11971,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * MFile filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     boolean hasTopDir();
@@ -11859,7 +11979,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * MFile filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     java.lang.String getTopDir();
@@ -11867,7 +11987,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * MFile filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -12019,7 +12139,7 @@ public final class GribCollectionProto {
      * <code>required int32 center = 7;</code>
      *
      * <pre>
-     * these 4 fields are to get a GribTable object
+     * these 4 fields are to get a GribCustomizer
      * </pre>
      */
     boolean hasCenter();
@@ -12027,7 +12147,7 @@ public final class GribCollectionProto {
      * <code>required int32 center = 7;</code>
      *
      * <pre>
-     * these 4 fields are to get a GribTable object
+     * these 4 fields are to get a GribCustomizer
      * </pre>
      */
     int getCenter();
@@ -12105,7 +12225,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter> 
@@ -12114,7 +12234,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     ucar.nc2.grib.collection.GribCollectionProto.Parameter getParams(int index);
@@ -12122,7 +12242,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     int getParamsCount();
@@ -12130,7 +12250,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder> 
@@ -12139,7 +12259,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
@@ -12427,7 +12547,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * MFile filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     public boolean hasTopDir() {
@@ -12437,7 +12557,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * MFile filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     public java.lang.String getTopDir() {
@@ -12458,7 +12578,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * MFile filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -12664,7 +12784,7 @@ public final class GribCollectionProto {
      * <code>required int32 center = 7;</code>
      *
      * <pre>
-     * these 4 fields are to get a GribTable object
+     * these 4 fields are to get a GribCustomizer
      * </pre>
      */
     public boolean hasCenter() {
@@ -12674,7 +12794,7 @@ public final class GribCollectionProto {
      * <code>required int32 center = 7;</code>
      *
      * <pre>
-     * these 4 fields are to get a GribTable object
+     * these 4 fields are to get a GribCustomizer
      * </pre>
      */
     public int getCenter() {
@@ -12792,7 +12912,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter> getParamsList() {
@@ -12802,7 +12922,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder> 
@@ -12813,7 +12933,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public int getParamsCount() {
@@ -12823,7 +12943,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public ucar.nc2.grib.collection.GribCollectionProto.Parameter getParams(int index) {
@@ -12833,7 +12953,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
@@ -13712,7 +13832,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * MFile filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public boolean hasTopDir() {
@@ -13722,7 +13842,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * MFile filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public java.lang.String getTopDir() {
@@ -13740,7 +13860,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * MFile filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -13760,7 +13880,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * MFile filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public Builder setTopDir(
@@ -13777,7 +13897,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * MFile filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public Builder clearTopDir() {
@@ -13790,7 +13910,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * MFile filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public Builder setTopDirBytes(
@@ -14827,7 +14947,7 @@ public final class GribCollectionProto {
        * <code>required int32 center = 7;</code>
        *
        * <pre>
-       * these 4 fields are to get a GribTable object
+       * these 4 fields are to get a GribCustomizer
        * </pre>
        */
       public boolean hasCenter() {
@@ -14837,7 +14957,7 @@ public final class GribCollectionProto {
        * <code>required int32 center = 7;</code>
        *
        * <pre>
-       * these 4 fields are to get a GribTable object
+       * these 4 fields are to get a GribCustomizer
        * </pre>
        */
       public int getCenter() {
@@ -14847,7 +14967,7 @@ public final class GribCollectionProto {
        * <code>required int32 center = 7;</code>
        *
        * <pre>
-       * these 4 fields are to get a GribTable object
+       * these 4 fields are to get a GribCustomizer
        * </pre>
        */
       public Builder setCenter(int value) {
@@ -14860,7 +14980,7 @@ public final class GribCollectionProto {
        * <code>required int32 center = 7;</code>
        *
        * <pre>
-       * these 4 fields are to get a GribTable object
+       * these 4 fields are to get a GribCustomizer
        * </pre>
        */
       public Builder clearCenter() {
@@ -15101,7 +15221,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter> getParamsList() {
@@ -15115,7 +15235,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public int getParamsCount() {
@@ -15129,7 +15249,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.Parameter getParams(int index) {
@@ -15143,7 +15263,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder setParams(
@@ -15164,7 +15284,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder setParams(
@@ -15182,7 +15302,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addParams(ucar.nc2.grib.collection.GribCollectionProto.Parameter value) {
@@ -15202,7 +15322,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addParams(
@@ -15223,7 +15343,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addParams(
@@ -15241,7 +15361,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addParams(
@@ -15259,7 +15379,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addAllParams(
@@ -15277,7 +15397,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder clearParams() {
@@ -15294,7 +15414,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder removeParams(int index) {
@@ -15311,7 +15431,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder getParamsBuilder(
@@ -15322,7 +15442,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
@@ -15336,7 +15456,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder> 
@@ -15351,7 +15471,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder addParamsBuilder() {
@@ -15362,7 +15482,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder addParamsBuilder(
@@ -15374,7 +15494,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder> 
@@ -19964,53 +20084,53 @@ public final class GribCollectionProto {
       "s\030\002 \002(\004\022\021\n\006bmsPos\030\003 \001(\004:\0010\022\026\n\010scanMode\030\004" +
       " \001(\r:\0049999\"d\n\013SparseArray\022\017\n\007cdmHash\030\001 \002" +
       "(\007\022\014\n\004size\030\002 \003(\r\022\r\n\005track\030\003 \003(\r\022\030\n\007recor" +
-      "ds\030\004 \003(\0132\007.Record\022\r\n\005ndups\030\005 \001(\r\"\313\001\n\010Var" +
-      "iable\022\022\n\ndiscipline\030\001 \002(\r\022\013\n\003pds\030\002 \002(\014\022\017" +
-      "\n\007cdmHash\030\003 \002(\007\022\022\n\nrecordsPos\030\004 \002(\004\022\022\n\nr" +
-      "ecordsLen\030\005 \002(\r\022\020\n\010coordIdx\030\006 \003(\r\022\r\n\005ndu" +
-      "ps\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030\n ",
-      "\001(\r\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"\265" +
-      "\001\n\005Coord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014\n\004" +
-      "unit\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 \003(" +
-      "\002\022\r\n\005msecs\030\006 \003(\003\022\025\n\005times\030\007 \003(\0132\006.Coord\022" +
-      "\024\n\014isOrthogonal\030\010 \001(\010\022\021\n\tisRegular\030\t \001(\010" +
-      "\022\024\n\014time2runtime\030\n \003(\r\"6\n\tParameter\022\014\n\004n" +
-      "ame\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"H" +
-      "\n\003Gds\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:\0010\022 " +
-      "\n\030predefinedGridDefinition\030\004 \001(\r\"\222\001\n\005Gro" +
-      "up\022\020\n\010gdsIndex\030\001 \002(\r\022\034\n\tvariables\030\002 \003(\0132",
-      "\t.Variable\022\026\n\006coords\030\003 \003(\0132\006.Coord\022\016\n\006fi" +
-      "leno\030\004 \003(\005\022\016\n\006isTwod\030\005 \002(\010\022\032\n\006params\030\024 \003" +
-      "(\0132\n.Parameter*\005\010d\020\310\001\"\225\001\n\007Dataset\022\033\n\004typ" +
-      "e\030\001 \002(\0162\r.Dataset.Type\022\026\n\006groups\030\002 \003(\0132\006" +
-      ".Group\"U\n\004Type\022\006\n\002GC\020\000\022\007\n\003SRC\020\004\022\007\n\003MRC\020\005" +
-      "\022\t\n\005MRSTC\020\006\022\006\n\002TP\020\007\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022" +
-      "\014\n\010Analysis\020\003\"Q\n\005MFile\022\020\n\010filename\030\001 \002(\t" +
-      "\022\024\n\014lastModified\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\022\021\n" +
-      "\006length\030\004 \001(\004:\0010\"\330\002\n\016GribCollection\022\014\n\004n" +
-      "ame\030\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(",
-      "\0132\006.MFile\022\031\n\007dataset\030\004 \003(\0132\010.Dataset\022\021\n\003" +
-      "gds\030\005 \003(\0132\004.Gds\022\035\n\rmasterRuntime\030\006 \002(\0132\006" +
-      ".Coord\022\016\n\006center\030\007 \002(\005\022\021\n\tsubcenter\030\010 \002(" +
-      "\005\022\016\n\006master\030\t \002(\005\022\r\n\005local\030\n \002(\005\022\026\n\016genP" +
-      "rocessType\030\013 \001(\005\022\024\n\014genProcessId\030\014 \001(\005\022\025" +
-      "\n\rbackProcessId\030\r \001(\005\022\032\n\006params\030\024 \003(\0132\n." +
-      "Parameter\022\031\n\006config\030\025 \001(\0132\t.FcConfig*\005\010d" +
-      "\020\310\001\"(\n\tStringMap\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030" +
-      "\002 \002(\t\"\"\n\006IntMap\022\014\n\004from\030\001 \002(\021\022\n\n\002to\030\002 \002(" +
-      "\021\"F\n\nIntvFilter\022\022\n\nintvLength\030\001 \002(\021\022\022\n\nv",
-      "ariableId\030\002 \002(\r\022\020\n\010intvProb\030\003 \001(\021\"\355\002\n\010Fc" +
-      "Config\022\014\n\004name\030\001 \002(\t\022\026\n\016collectionSpec\030\002" +
-      " \002(\t\022\025\n\rpartitionType\030\003 \002(\t\022\026\n\016dateForma" +
-      "tMark\030\004 \001(\t\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap" +
-      "\022\034\n\rpdsUseGenType\030\014 \001(\010:\005false\022 \n\022pdsUse" +
-      "TableVersion\030\r \001(\010:\004true\022\032\n\014pdsIntvMerge" +
-      "\030\016 \001(\010:\004true\022\032\n\014pdsUseCenter\030\017 \001(\010:\004true" +
-      "\022\036\n\017intvExcludeZero\030\020 \001(\010:\005false\022\037\n\nintv" +
-      "Filter\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitCon" +
-      "vert\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(",
-      "\tB/\n\030ucar.nc2.grib.collectionB\023GribColle" +
-      "ctionProto"
+      "ds\030\004 \003(\0132\007.Record\022\r\n\005ndups\030\005 \001(\r\"\307\001\n\010Var" +
+      "iable\022\022\n\ndiscipline\030\001 \002(\r\022\013\n\003pds\030\002 \002(\014\022\013" +
+      "\n\003ids\030\003 \003(\r\022\022\n\nrecordsPos\030\004 \002(\004\022\022\n\nrecor" +
+      "dsLen\030\005 \002(\r\022\020\n\010coordIdx\030\006 \003(\r\022\r\n\005ndups\030\010" +
+      " \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030\n \001(\r\022",
+      "\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"\265\001\n\005C" +
+      "oord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014\n\004unit" +
+      "\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 \003(\002\022\r\n" +
+      "\005msecs\030\006 \003(\003\022\025\n\005times\030\007 \003(\0132\006.Coord\022\024\n\014i" +
+      "sOrthogonal\030\010 \001(\010\022\021\n\tisRegular\030\t \001(\010\022\024\n\014" +
+      "time2runtime\030\n \003(\r\"6\n\tParameter\022\014\n\004name\030" +
+      "\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"H\n\003Gd" +
+      "s\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:\0010\022 \n\030pr" +
+      "edefinedGridDefinition\030\004 \001(\r\"\222\001\n\005Group\022\020" +
+      "\n\010gdsIndex\030\001 \002(\r\022\034\n\tvariables\030\002 \003(\0132\t.Va",
+      "riable\022\026\n\006coords\030\003 \003(\0132\006.Coord\022\016\n\006fileno" +
+      "\030\004 \003(\005\022\016\n\006isTwod\030\005 \002(\010\022\032\n\006params\030\024 \003(\0132\n" +
+      ".Parameter*\005\010d\020\310\001\"\225\001\n\007Dataset\022\033\n\004type\030\001 " +
+      "\002(\0162\r.Dataset.Type\022\026\n\006groups\030\002 \003(\0132\006.Gro" +
+      "up\"U\n\004Type\022\006\n\002GC\020\000\022\007\n\003SRC\020\004\022\007\n\003MRC\020\005\022\t\n\005" +
+      "MRSTC\020\006\022\006\n\002TP\020\007\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\014\n\010A" +
+      "nalysis\020\003\"Q\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014" +
+      "lastModified\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\022\021\n\006len" +
+      "gth\030\004 \001(\004:\0010\"\330\002\n\016GribCollection\022\014\n\004name\030" +
+      "\001 \002(\t\022\016\n\006topDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.",
+      "MFile\022\031\n\007dataset\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030" +
+      "\005 \003(\0132\004.Gds\022\035\n\rmasterRuntime\030\006 \002(\0132\006.Coo" +
+      "rd\022\016\n\006center\030\007 \002(\005\022\021\n\tsubcenter\030\010 \002(\005\022\016\n" +
+      "\006master\030\t \002(\005\022\r\n\005local\030\n \002(\005\022\026\n\016genProce" +
+      "ssType\030\013 \001(\005\022\024\n\014genProcessId\030\014 \001(\005\022\025\n\rba" +
+      "ckProcessId\030\r \001(\005\022\032\n\006params\030\024 \003(\0132\n.Para" +
+      "meter\022\031\n\006config\030\025 \001(\0132\t.FcConfig*\005\010d\020\310\001\"" +
+      "(\n\tStringMap\022\014\n\004name\030\001 \002(\t\022\r\n\005value\030\002 \002(" +
+      "\t\"\"\n\006IntMap\022\014\n\004from\030\001 \002(\021\022\n\n\002to\030\002 \002(\021\"F\n" +
+      "\nIntvFilter\022\022\n\nintvLength\030\001 \002(\021\022\022\n\nvaria",
+      "bleId\030\002 \002(\r\022\020\n\010intvProb\030\003 \001(\021\"\355\002\n\010FcConf" +
+      "ig\022\014\n\004name\030\001 \002(\t\022\026\n\016collectionSpec\030\002 \002(\t" +
+      "\022\025\n\rpartitionType\030\003 \002(\t\022\026\n\016dateFormatMar" +
+      "k\030\004 \001(\t\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\034\n\r" +
+      "pdsUseGenType\030\014 \001(\010:\005false\022 \n\022pdsUseTabl" +
+      "eVersion\030\r \001(\010:\004true\022\032\n\014pdsIntvMerge\030\016 \001" +
+      "(\010:\004true\022\032\n\014pdsUseCenter\030\017 \001(\010:\004true\022\036\n\017" +
+      "intvExcludeZero\030\020 \001(\010:\005false\022\037\n\nintvFilt" +
+      "er\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitConvert" +
+      "\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(\tB/\n",
+      "\030ucar.nc2.grib.collectionB\023GribCollectio" +
+      "nProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -20034,7 +20154,7 @@ public final class GribCollectionProto {
           internal_static_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Variable_descriptor,
-              new java.lang.String[] { "Discipline", "Pds", "CdmHash", "RecordsPos", "RecordsLen", "CoordIdx", "Ndups", "Nrecords", "Missing", "Params", });
+              new java.lang.String[] { "Discipline", "Pds", "Ids", "RecordsPos", "RecordsLen", "CoordIdx", "Ndups", "Nrecords", "Missing", "Params", });
           internal_static_Coord_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_Coord_fieldAccessorTable = new

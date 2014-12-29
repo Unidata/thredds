@@ -220,7 +220,7 @@ abstract class GribPartitionBuilder  {
 
     // make a list of unique groups across all partitions as well as component groups for each group
     List<CoordinateRuntime> masterRuntimes = new ArrayList<>();
-    Map<Integer, GroupPartitions> groupMap = new HashMap<>(40);  // gdsHash, GroupPartition
+    Map<Object, GroupPartitions> groupMap = new HashMap<>(40);  // gdsHashObject, GroupPartition
     CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2(null); // ok to use Builder2 for both grib1 and grib2 because not extracting
 
     int countPartition = 0;
@@ -774,7 +774,10 @@ abstract class GribPartitionBuilder  {
 
     b.setDiscipline(vp.discipline);
     b.setPds(ByteString.copyFrom(vp.rawPds));
-    b.setCdmHash(vp.hashCode());
+
+        // extra id info
+    b.addIds(vp.center);
+    b.addIds(vp.subcenter);
 
     b.setRecordsPos(vp.recordsPos);
     b.setRecordsLen(vp.recordsLen);

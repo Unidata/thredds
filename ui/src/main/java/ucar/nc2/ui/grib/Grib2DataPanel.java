@@ -380,7 +380,7 @@ public class Grib2DataPanel extends JPanel {
 
       gr.setFile(fileno);
 
-      Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef, logger);
+      Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
       Grib2ParameterBean bean = pdsSet.get(gv);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr, gv);

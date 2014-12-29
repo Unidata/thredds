@@ -73,8 +73,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
   static class Group implements GribCollectionBuilder.Group {
     final Grib1SectionGridDefinition gdss;
-    final int gdsHash; // may have been modified
-    final CalendarDate runtime;      // LOOK HERE1 single runtime
+    final Object gdsHashObject;       // may have been modified
+    final CalendarDate runtime;
 
     public List<Grib1CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
@@ -83,9 +83,9 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     public List<Grib1Record> records = new ArrayList<>();
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
-    Group(Grib1SectionGridDefinition gdss, int gdsHash, CalendarDate runtime) {
+    Group(Grib1SectionGridDefinition gdss, Object gdsHashObject, CalendarDate runtime) {
       this.gdss = gdss;
-      this.gdsHash = gdsHash;
+      this.gdsHashObject = gdsHashObject;
       this.runtime = runtime;
     }
 
@@ -188,7 +188,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
         //gds
       for (Group g : groups)
-        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
+        indexBuilder.addGds(writeGdsProto(g.gdsHashObject.hashCode(), g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
 
       // the GC dataset
       indexBuilder.addDataset( writeDatasetProto(type, groups));
@@ -362,7 +362,6 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
     b.setDiscipline(0);
     b.setPds(ByteString.copyFrom(vb.first.getPDSsection().getRawBytes()));
-    b.setCdmHash(vb.gv.hashCode());
 
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);

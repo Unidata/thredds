@@ -466,11 +466,10 @@ public class GCpass1 {
     counters.count("referenceDate", gr.getReferenceDate());
 
     //counters.countS("param", gr.getDiscipline() + "-" + pdss.getParameterCategory() + "-" + pdss.getParameterNumber());
-    int gdsHash = gr.getGDS().hashCode();
-    int cdmHash = Grib2Variable.cdmVariableHash(cust2, gr, gdsHash, gribConfig.intvMerge, gribConfig.useGenType, logger);
+    int cdmHash = Grib2Variable.cdmVariableHash(cust2, gr, 0, gribConfig.intvMerge, gribConfig.useGenType);
     String name = GribUtils.makeNameFromDescription(cust2.getVariableName(gr));
     counters.count("variable", new Variable(cdmHash, name));
-    counters.count("gds", gdsHash);
+    counters.count("gds", gr.getGDS().hashCode());
     counters.count("gdsTemplate", gr.getGDSsection().getGDSTemplateNumber());
   }
 

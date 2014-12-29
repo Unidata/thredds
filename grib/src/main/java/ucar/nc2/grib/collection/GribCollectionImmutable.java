@@ -354,7 +354,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return horizCoordSys.getId();
     }
 
-    public int getGdsHash() {
+    public Object getGdsHash() {
       return horizCoordSys.getGdsHash();
     }
 
@@ -428,7 +428,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public void show(Formatter f) {
-      f.format("Group %s (%d) type=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash(), ds.gctype);
+      f.format("Group %s (%d) type=%s%n", horizCoordSys.getId(), horizCoordSys.getGdsHash().hashCode(), ds.gctype);
       f.format(" nfiles %d%n", filenose == null ? 0 : filenose.length);
       f.format(" hcs = %s%n", horizCoordSys.getHcs());
     }
@@ -565,13 +565,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return info.discipline;
     }
 
-    public byte[] getRawPds() {
+    /* public byte[] getRawPds() {
       return info.rawPds;
     }
 
     //public int getCdmHash() {
     //  return info.cdmHash;
-    //}
+    //} */
 
     public int getCategory() {
       return info.category;
@@ -660,9 +660,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public String makeVariableName() {
       if (isGrib1)
-        return ((Grib1Variable)gribVariable).makeVariableName(config.gribConfig);
+        return ((Grib1Variable) gribVariable).makeVariableName(config.gribConfig);
       else
-        return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, this, this, false);
+        return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, GribCollectionImmutable.this, this, false);
     }
 
     @Immutable

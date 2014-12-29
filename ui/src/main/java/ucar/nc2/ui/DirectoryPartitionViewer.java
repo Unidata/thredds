@@ -1143,7 +1143,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     public int getGdsHash() {
-      return group.getGdsHash();
+      return group.getGdsHash().hashCode();
     }
 
     public String getNVars() {
@@ -1184,7 +1184,7 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     public int getGdsHash() {
-      return group.getGdsHash();
+      return group.getGdsHash().hashCode();
     }
 
     public int getNFiles() {

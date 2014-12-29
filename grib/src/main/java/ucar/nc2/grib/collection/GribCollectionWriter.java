@@ -60,7 +60,7 @@ import java.util.Map;
 class GribCollectionWriter {
 
   protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) throws IOException {
-    return writeGdsProto(hcs.getGdsHash(), hcs.getRawGds(), hcs.getPredefinedGridDefinition());
+    return writeGdsProto(hcs.getGdsHash().hashCode(), hcs.getRawGds(), hcs.getPredefinedGridDefinition());
   }
 
     /*
@@ -79,8 +79,6 @@ class GribCollectionWriter {
       b.setGds(ByteString.copyFrom(rawGds));
       b.setGdsHash(gdsHash);
     }
-    //if (nameOverride != null)
-    //  b.setNameOverride(nameOverride);
 
     return b.build();
   }

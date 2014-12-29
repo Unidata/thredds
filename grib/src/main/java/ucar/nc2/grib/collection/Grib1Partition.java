@@ -82,12 +82,12 @@ public class Grib1Partition extends PartitionCollectionImmutable {
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
   }
 
-  @Override
+  /* @Override
   public String makeVariableName(VariableIndex vindex) {
     Grib1Customizer cust1 = ((Grib1Customizer) cust);
     Grib1SectionProductDefinition pdss = new Grib1SectionProductDefinition(vindex.getRawPds());
     return Grib1Iosp.makeVariableName(cust1, config.gribConfig, pdss);
-  }
+  } */
 
   protected void addGlobalAttributes(List<Attribute> result) {
     String val = cust.getGeneratingProcessName(getGenProcessId());
