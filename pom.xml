@@ -618,6 +618,7 @@
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
         <version>${jaxen.version}</version>
+        <scope>runtime</scope>
         <exclusions>
           <exclusion>
             <artifactId>maven-cobertura-plugin</artifactId>

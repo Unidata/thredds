@@ -196,6 +196,12 @@
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
+    <!-- Needed for XPath operations in NcssShowDatasetInfoImpl.addElement() -->
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+    </dependency>
+
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
       <groupId>org.springframework</groupId>
