@@ -2,6 +2,7 @@ package thredds.server.cdmr;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -10,6 +11,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.util.CompareNetcdf2;
@@ -42,30 +44,30 @@ public class TestNcstreamCompareWithFiles {
    List<Object[]>  result = new ArrayList<Object[]>(500);
 
     try {
-//      addFromScan(result, contentRoot +"/netcdf3/", new SuffixFileFilter(".nc"));
-//      addFromScan(result, contentRoot + "/netcdf4/", new SuffixFileFilter(".nc"));
-//
-//      addFromScan(result, contentRoot + "/hdf5/", new FileFilter() {
-//        public boolean accept(File pathname) {
-//          return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
-//        }
-//      });
-//      addFromScan(result, contentRoot + "/hdf4/", new FileFilter() {
-//        public boolean accept(File pathname) {
-//          return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
-//        }
-//      });
-//      addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
-//        public boolean accept(File pathname) {
-//          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2") && !pathname.getPath().endsWith(".ncx3");
-//        }
-//      });
-//      addFromScan(result, contentRoot + "/grib2/", new FileFilter() {
-//        public boolean accept(File pathname) {
-//          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2")  && !pathname.getPath().endsWith(".ncx3");
-//        }
-//      });
-//      addFromScan(result, contentRoot + "/gini/", new SuffixFileFilter(".gini"));
+      addFromScan(result, contentRoot +"/netcdf3/", new SuffixFileFilter(".nc"));
+      addFromScan(result, contentRoot + "/netcdf4/", new SuffixFileFilter(".nc"));
+
+      addFromScan(result, contentRoot + "/hdf5/", new FileFilter() {
+        public boolean accept(File pathname) {
+          return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
+        }
+      });
+      addFromScan(result, contentRoot + "/hdf4/", new FileFilter() {
+        public boolean accept(File pathname) {
+          return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
+        }
+      });
+      addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
+        public boolean accept(File pathname) {
+          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2") && !pathname.getPath().endsWith(".ncx3");
+        }
+      });
+      addFromScan(result, contentRoot + "/grib2/", new FileFilter() {
+        public boolean accept(File pathname) {
+          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2")  && !pathname.getPath().endsWith(".ncx3");
+        }
+      });
+      addFromScan(result, contentRoot + "/gini/", new SuffixFileFilter(".gini"));
       addFromScan(result, contentRoot + "/gempak/", new SuffixFileFilter(".gem"));
 
     } catch (IOException e) {
@@ -101,21 +103,18 @@ public class TestNcstreamCompareWithFiles {
   }
 
   static int compareDatasets(String local, String remote) throws IOException {
-    NetcdfFile ncfile = new CdmRemote(remote);
-    System.out.println(ncfile);
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(local, null);
+         NetcdfFile  ncremote = new CdmRemote(remote)) {
 
-//    try (NetcdfFile ncfile = NetcdfDataset.openFile(local, null);
-//         NetcdfFile  ncremote = new CdmRemote(remote)) {
-//
-//      Formatter f = new Formatter();
-//      CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
-//      boolean ok = mind.compare(ncfile, ncremote, new NcstreamObjFilter(), false, false, false);
-//      if (!ok) {
-//        System.out.printf("--Compare %s to %s%n", local, remote);
-//        System.out.printf("  %s%n", f);
-//      }
-//      Assert.assertTrue(local + " != " + remote, ok);
-//    }
+      Formatter f = new Formatter();
+      CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
+      boolean ok = mind.compare(ncfile, ncremote, new NcstreamObjFilter(), false, false, false);
+      if (!ok) {
+        System.out.printf("--Compare %s to %s%n", local, remote);
+        System.out.printf("  %s%n", f);
+      }
+      Assert.assertTrue(local + " != " + remote, ok);
+    }
     return 1;
   }
 
