@@ -54,9 +54,13 @@ public final class GribNumbers {
   public static final int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
 
   /**
-   * Grib uses this internal to mean missing
+   * Grib uses this internally to mean missing
    */
   public static final int MISSING = 255;
+
+  public static boolean isUndefined(double d) {
+    return Double.compare(d, UNDEFINEDD) == 0;
+  }
 
   /**
    * Convert 2 bytes into a signed integer.
