@@ -916,7 +916,7 @@
 	<uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.4-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
     <geoapi.version>3.1-M04</geoapi.version>
     <eds.threddsIso.version>2.2.4-SNAPSHOT</eds.threddsIso.version>
-    <com.google.guava.version>17.0</com.google.guava.version>
+    <com.google.guava.version>18.0</com.google.guava.version>
     <com.google.protobuf.version>2.5.0</com.google.protobuf.version>
     <com.jgoodies.version>1.6.0</com.jgoodies.version>
     <com.sleepycat.version>4.0.92</com.sleepycat.version>
