@@ -40,7 +40,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- This is needed at runtime if an attempt to make a dods file is made. -->
+    <!-- This is needed at runtime if an attempt to read a dods file is made. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>opendap</artifactId>
@@ -56,6 +56,13 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>visadCdm</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Need this for the Gini IOSP. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>clcommon</artifactId>
       <scope>test</scope>
     </dependency>
 
