@@ -1,3 +1,7 @@
+Version of GRIB-API tables used: 1.13.0 (released 2014-12-15; updated by Sean 2014-12-23)
+
+===============
+
 2014-01-28
 -----
 
@@ -197,10 +201,9 @@ sources directory (/src/main/sources/ecmwfGribApi) and running the main method o
 
 This will generate the new table files, as well as the appropriate lookupTables.txt
 
-
 ===============
 
-8/1/2014
+2014-08-01
 john + sean
 
 grib1
@@ -210,3 +213,61 @@ instead use localConcepts/*.def
 
 grib2
 WTF ??
+
+===============
+
+2014-12-23
+Sean
+
+GRIB1 *.def files taken from grib_api-1.13.0/definitions/grib1/localConcepts/ecmf. For completeness, updated
+by copying new *.def files to grib/src/main/sources/ecmwfGribApi and running the main method of
+ucar/nc2/grib/grib1/tables/EcmwfLocalConcepts.java.
+
+Also note that there is a new def file, called stepType.def. Its contents is this:
+
+# Concept stepType for ECMWF
+# set uses the FIRST one
+# get returns the LAST match
+
+"instant" = {timeRangeIndicator=0;}
+"instant" = {timeRangeIndicator=10;}
+"instant" = {timeRangeIndicator=1;}
+"instant" = {timeRangeIndicator=14;} # Fields from DWD in MARS
+
+"avg"     = {timeRangeIndicator=3;}
+
+"avgd"    = {timeRangeIndicator=113;}
+"avgfc"   = {timeRangeIndicator=113;}
+
+"accum"   = {timeRangeIndicator=4;}
+"accum"   = {timeRangeIndicator=2;}
+
+# Since grib1 has not min/max, we had to use our own convention
+# therefore we set the centre to ECMWF (98)
+"min"     = {timeRangeIndicator=2;centre=98;}
+"min"     = {timeRangeIndicator=119;}
+"max"     = {timeRangeIndicator=2;centre=98;}
+"max"     = {timeRangeIndicator=118;}
+
+"diff"    = {timeRangeIndicator=5;}
+"rms"     = {timeRangeIndicator=120;}
+"sd"      = {timeRangeIndicator=121;}
+"cov"     = {timeRangeIndicator=122;}
+"avgua"   = {timeRangeIndicator=123;}
+"avgia"   = {timeRangeIndicator=124;}
+
+"avgas"   = {timeRangeIndicator=128;}
+"avgad"   = {timeRangeIndicator=130;}
+"avgid"   = {timeRangeIndicator=133;}
+
+not sure how to incorporate these into the grib1 tables we generate for use in TDS, so for now
+I will simply note its existence.
+
+The following tables are new with this update:
+
+grib/src/main/resources/resources/grib1/ecmwfGribApi/2.98.217.table
+grib/src/main/resources/resources/grib1/ecmwfGribApi/2.98.218.table
+grib/src/main/resources/resources/grib1/ecmwfGribApi/2.98.219.table
+grib/src/main/resources/resources/grib1/ecmwfGribApi/2.98.221.table
+
+===============

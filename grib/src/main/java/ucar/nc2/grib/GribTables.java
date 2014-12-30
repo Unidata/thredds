@@ -49,6 +49,10 @@ public interface GribTables {
 
   VertCoord.VertUnit getVertUnit(int code);
 
+  String getGeneratingProcessName(int code);
+
+  String getGeneratingProcessTypeName(int code);
+
   // int addVariableHash(Object gribRecord);
 
   public static interface Parameter {

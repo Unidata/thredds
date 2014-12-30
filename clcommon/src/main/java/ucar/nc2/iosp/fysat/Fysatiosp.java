@@ -53,7 +53,6 @@ import java.util.zip.DataFormatException;
 
 public class Fysatiosp extends AbstractIOServiceProvider {
 
-  private ucar.nc2.NetcdfFile ncfile;
   protected FysatHeader headerParser;
 
   final static int Z_DEFLATED = 8;
@@ -77,11 +76,10 @@ public class Fysatiosp extends AbstractIOServiceProvider {
   /////////////////////////////////////////////////////////////////////////////
   // reading
 
-  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile file,
+  public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
     super.open(raf, ncfile, cancelTask);
-    ncfile = file;
 
     headerParser = new FysatHeader();
     headerParser.read(raf, ncfile);

@@ -34,7 +34,7 @@
 package ucar.nc2.iosp.hdf5;
 
 import ucar.ma2.Array;
-import ucar.nc2.NCdump;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
@@ -51,12 +51,12 @@ public class TestH5problem {
   public void problemV() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = TestH5.testDir + "ssec-h5/MYD04_L2.A2006188.1830.005.2006194121515.hdf";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    Variable v = ncfile.findVariable("/U-MARF/EPS/IASI_xxx_1C/DATA/SPECT_LAT_ARRAY");
-    Array data = v.read();
-    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    NCdump.printArray(data, "primary_cloud", System.out, null);
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Variable v = ncfile.findVariable("/U-MARF/EPS/IASI_xxx_1C/DATA/SPECT_LAT_ARRAY");
+      Array data = v.read();
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+      NCdumpW.printArray(data, "primary_cloud", System.out, null);
+    }
   }
 
   // also look at

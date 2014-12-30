@@ -540,8 +540,8 @@ public class V5DStruct {
         m2 = k2;
         while (varnames[m] != 0) {m++;}
         while (varunits[m2] != 0) {m2++;}
-        var_names[i] = new String(varnames, k, m - k);
-        var_units[i] = new String(varunits, k2, m2 - k2);
+        var_names[i] = new String(varnames, k, m - k, CDM.utf8Charset);
+        var_units[i] = new String(varunits, k2, m2 - k2, CDM.utf8Charset);
       }
 
 
@@ -1861,7 +1861,7 @@ public class V5DStruct {
               break;
             }
           }
-          FileVersion = new String(b, 0, index);
+          FileVersion = new String(b, 0, index, CDM.utf8Charset);
           // Check if reading a file made by a future version of Vis5D
           if (FileVersion.compareTo(FILE_VERSION) > 0) {
             logger.warn("Warning: Trying to read a version " + FileVersion + " file, you should upgrade Vis5D.");

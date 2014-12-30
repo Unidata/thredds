@@ -39,7 +39,6 @@ import com.google.protobuf.ByteString;
 import thredds.inventory.*;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
@@ -55,7 +54,7 @@ import java.util.*;
  * @author caron
  * @since 4/6/11
  */
-public class Grib2CollectionWriter extends GribCollectionWriter {
+class Grib2CollectionWriter extends GribCollectionWriter {
 
   public static final String MAGIC_START = "Grib2Collectio2Index";  // was Grib2CollectionIndex
   // protected static final int minVersionSingle = 1;
@@ -71,23 +70,23 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
 
   public static class Group implements GribCollectionBuilder.Group {
     public Grib2SectionGridDefinition gdss;
-    public int gdsHash; // may have been modified
+    public Object gdsHashObject;       // may have been modified
     public CalendarDate runtime;
 
     public List<Grib2CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
     public List<Grib2Record> records = new ArrayList<>();
-    public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
+    public Set<Long> runtimes = new HashSet<>();
 
-    Group(Grib2SectionGridDefinition gdss, int gdsHash) {
+    Group(Grib2SectionGridDefinition gdss, Object gdsHashObject) {
       this.gdss = gdss;
-      this.gdsHash = gdsHash;
+      this.gdsHashObject = gdsHashObject;
     }
 
-    Group(Grib2SectionGridDefinition gdss, int gdsHash, CalendarDate runtime) {
+    Group(Grib2SectionGridDefinition gdss, Object gdsHashObject, CalendarDate runtime) {
       this.gdss = gdss;
-      this.gdsHash = gdsHash;
+      this.gdsHashObject = gdsHashObject;
       this.runtime = runtime;
     }
 
@@ -97,10 +96,13 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     }
 
     @Override
-    public CoordinateRuntime getCoordinateRuntime() {
-      List<CalendarDate> runtimes = new ArrayList<>(1);
-      runtimes.add(runtime);
-      return new CoordinateRuntime(runtimes, null);
+    public Set<Long> getCoordinateRuntimes() {
+      return runtimes;
+    }
+
+    @Override
+    public List<Coordinate> getCoordinates() {
+      return coords;
     }
   }
 
@@ -116,18 +118,20 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
    GribCollectionIndex (sizeIndex bytes)
    */
 
-  public boolean writeIndex(String name, File indexFileInCache, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
+  public boolean writeIndex(String name, File idxFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
+                            GribCollectionImmutable.Type type) throws IOException {
     Grib2Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
-    if (indexFileInCache.exists()) {
-      if (!indexFileInCache.delete()) {
-        logger.error("gc2 cant delete index file {}", indexFileInCache.getPath());
+    if (idxFile.exists()) {
+      RandomAccessFile.eject(idxFile.getPath());
+      if (!idxFile.delete()) {
+        logger.error("gc2 cant delete index file {}", idxFile.getPath());
       }
     }
-    logger.debug(" createIndex for {}", indexFileInCache.getPath());
+    logger.debug(" createIndex for {}", idxFile.getPath());
 
-    try (RandomAccessFile raf = new RandomAccessFile(indexFileInCache.getPath(), "rw")) {  // LOOK do we want to write to temp ??
+    try (RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "rw")) {
       //// header message
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.write(MAGIC_START.getBytes(CDM.utf8Charset));
@@ -219,6 +223,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         b.setFilename(gcmfile.getName());
         b.setLastModified(gcmfile.getLastModified());
+        b.setLength(gcmfile.getLength());
         b.setIndex(gcmfile.index);
         indexBuilder.addMfiles(b.build());
       }
@@ -228,11 +233,11 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
        //gds
       for (Object go : groups) {
         Group g = (Group) go;
-        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride, -1));
+        indexBuilder.addGds(writeGdsProto(g.gdss.getRawBytes(), -1));
       }
 
       // the GC dataset
-      indexBuilder.addDataset(writeDatasetProto(GribCollectionProto.Dataset.Type.GC, groups));
+      indexBuilder.addDataset(writeDatasetProto(type, groups));
 
       // what about just storing first ??
       Grib2SectionIdentification ids = first.getId();
@@ -254,8 +259,8 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
 
     } finally {
       // remove it on failure
-      if (deleteOnClose && !indexFileInCache.delete())
-        logger.error(" gc2 cant deleteOnClose index file {}", indexFileInCache.getPath());
+      if (deleteOnClose && !idxFile.delete())
+        logger.error(" gc2 cant deleteOnClose index file {}", idxFile.getPath());
     }
 
     return true;
@@ -278,7 +283,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
    */
   private GribCollectionProto.SparseArray writeSparseArray(Grib2CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
-    b.setCdmHash(vb.cdmHash);
+    b.setCdmHash(vb.gv.hashCode());
     SparseArray<Grib2Record> sa = vb.coordND.getSparseArray();
     for (int size : sa.getShape())
       b.addSize(size);
@@ -299,6 +304,8 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
       br.setScanMode(gr.getScanMode()); // added 2/6/2014
       b.addRecords(br);
     }
+
+    b.setNdups(sa.getNdups());
     return b.build();
   }
 
@@ -307,10 +314,11 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     required Type type = 1;
     repeated Group groups = 2;
    */
-  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionProto.Dataset.Type type, List<Group> groups) throws IOException {
+  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type, List<Group> groups) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
-    b.setType(type);
+    GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
+    b.setType(ptype);
 
     int count = 0 ;
     for (Group group : groups)
@@ -334,7 +342,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGdsIndex(groupIndex); // index into gds list
-    b.setIsTwod(true);         // LOOK
+    b.setIsTwod(true);         // LOOK not used ... can we make it optional ??
 
     for (Grib2CollectionBuilder.VariableBag vbag : g.gribVars) {
       b.addVariables(writeVariableProto(vbag));
@@ -399,7 +407,10 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
 
     b.setDiscipline(vb.first.getDiscipline());
     b.setPds(ByteString.copyFrom(vb.first.getPDSsection().getRawBytes()));
-    b.setCdmHash(vb.cdmHash);
+
+    // extra id info
+    b.addIds(vb.first.getId().getCenter_id());
+    b.addIds(vb.first.getId().getSubcenter_id());
 
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
@@ -410,8 +421,7 @@ public class Grib2CollectionWriter extends GribCollectionWriter {
     // keep stats
     SparseArray sa = vb.coordND.getSparseArray();
     if (sa != null) {
-      b.setDensity(sa.getDensity());
-      b.setNdups(sa.getNduplicates());
+      b.setNdups(sa.getNdups());
       b.setNrecords(sa.countNotMissing());
       b.setMissing(sa.countMissing());
     }

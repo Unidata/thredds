@@ -39,12 +39,13 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GribData;
-import ucar.nc2.grib.collection.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
+import ucar.nc2.grib.grib2.Grib2Variable;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.writer.Grib2NetcdfWriter;
 import ucar.nc2.util.IO;
@@ -299,7 +300,8 @@ public class TestGribCompressByBit {
 
   private void showData(Grib2Record gr, Bean bean, int[] rawData) throws IOException {
     Grib2Customizer cust = Grib2Customizer.factory(gr);
-    int id = Grib2CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false, null);
+    Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
+    int id = gv.hashCode();
     System.out.printf("Grib2 record cdmHash=%d (0x%s) pos=%d%n", id, Integer.toHexString(id), gr.getIs().getStartPos());
 
     float[] fdata = bean.readData();

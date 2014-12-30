@@ -55,31 +55,21 @@ public final class PartitionCollectionProto {
      */
     int getPartno();
 
-    // optional float density = 7;
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    boolean hasDensity();
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    float getDensity();
-
     // optional uint32 ndups = 8;
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     boolean hasNdups();
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     int getNdups();
 
@@ -178,23 +168,18 @@ public final class PartitionCollectionProto {
               partno_ = input.readUInt32();
               break;
             }
-            case 61: {
-              bitField0_ |= 0x00000010;
-              density_ = input.readFloat();
-              break;
-            }
             case 64: {
-              bitField0_ |= 0x00000020;
+              bitField0_ |= 0x00000010;
               ndups_ = input.readUInt32();
               break;
             }
             case 72: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000020;
               nrecords_ = input.readUInt32();
               break;
             }
             case 80: {
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000040;
               missing_ = input.readUInt32();
               break;
             }
@@ -302,41 +287,25 @@ public final class PartitionCollectionProto {
       return partno_;
     }
 
-    // optional float density = 7;
-    public static final int DENSITY_FIELD_NUMBER = 7;
-    private float density_;
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    public boolean hasDensity() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    public float getDensity() {
-      return density_;
-    }
-
     // optional uint32 ndups = 8;
     public static final int NDUPS_FIELD_NUMBER = 8;
     private int ndups_;
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     public boolean hasNdups() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     public int getNdups() {
       return ndups_;
@@ -349,7 +318,7 @@ public final class PartitionCollectionProto {
      * <code>optional uint32 nrecords = 9;</code>
      */
     public boolean hasNrecords() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
      * <code>optional uint32 nrecords = 9;</code>
@@ -365,7 +334,7 @@ public final class PartitionCollectionProto {
      * <code>optional uint32 missing = 10;</code>
      */
     public boolean hasMissing() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
      * <code>optional uint32 missing = 10;</code>
@@ -379,7 +348,6 @@ public final class PartitionCollectionProto {
       varno_ = 0;
       flag_ = 0;
       partno_ = 0;
-      density_ = 0F;
       ndups_ = 0;
       nrecords_ = 0;
       missing_ = 0;
@@ -425,15 +393,12 @@ public final class PartitionCollectionProto {
         output.writeUInt32(4, partno_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeFloat(7, density_);
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt32(8, ndups_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt32(9, nrecords_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeUInt32(10, missing_);
       }
       getUnknownFields().writeTo(output);
@@ -463,17 +428,13 @@ public final class PartitionCollectionProto {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(7, density_);
+          .computeUInt32Size(8, ndups_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(8, ndups_);
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(9, nrecords_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(10, missing_);
       }
@@ -605,14 +566,12 @@ public final class PartitionCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000004);
         partno_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
-        density_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000010);
         ndups_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         nrecords_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         missing_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -660,17 +619,13 @@ public final class PartitionCollectionProto {
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.density_ = density_;
+        result.ndups_ = ndups_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.ndups_ = ndups_;
+        result.nrecords_ = nrecords_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
-        }
-        result.nrecords_ = nrecords_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000080;
         }
         result.missing_ = missing_;
         result.bitField0_ = to_bitField0_;
@@ -700,9 +655,6 @@ public final class PartitionCollectionProto {
         }
         if (other.hasPartno()) {
           setPartno(other.getPartno());
-        }
-        if (other.hasDensity()) {
-          setDensity(other.getDensity());
         }
         if (other.hasNdups()) {
           setNdups(other.getNdups());
@@ -888,83 +840,50 @@ public final class PartitionCollectionProto {
         return this;
       }
 
-      // optional float density = 7;
-      private float density_ ;
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public boolean hasDensity() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public float getDensity() {
-        return density_;
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public Builder setDensity(float value) {
-        bitField0_ |= 0x00000010;
-        density_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public Builder clearDensity() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        density_ = 0F;
-        onChanged();
-        return this;
-      }
-
       // optional uint32 ndups = 8;
       private int ndups_ ;
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public boolean hasNdups() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public int getNdups() {
         return ndups_;
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public Builder setNdups(int value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000010;
         ndups_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public Builder clearNdups() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         ndups_ = 0;
         onChanged();
         return this;
@@ -976,7 +895,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public boolean hasNrecords() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
        * <code>optional uint32 nrecords = 9;</code>
@@ -988,7 +907,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public Builder setNrecords(int value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000020;
         nrecords_ = value;
         onChanged();
         return this;
@@ -997,7 +916,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public Builder clearNrecords() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         nrecords_ = 0;
         onChanged();
         return this;
@@ -1009,7 +928,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public boolean hasMissing() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
        * <code>optional uint32 missing = 10;</code>
@@ -1021,7 +940,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public Builder setMissing(int value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000040;
         missing_ = value;
         onChanged();
         return this;
@@ -1030,7 +949,7 @@ public final class PartitionCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public Builder clearMissing() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         missing_ = 0;
         onChanged();
         return this;
@@ -1082,7 +1001,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     boolean hasFilename();
@@ -1090,7 +1009,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     java.lang.String getFilename();
@@ -1098,15 +1017,15 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     com.google.protobuf.ByteString
         getFilenameBytes();
 
-    // required string directory = 3;
+    // optional string directory = 3;
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1114,7 +1033,7 @@ public final class PartitionCollectionProto {
      */
     boolean hasDirectory();
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1122,7 +1041,7 @@ public final class PartitionCollectionProto {
      */
     java.lang.String getDirectory();
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1140,6 +1059,34 @@ public final class PartitionCollectionProto {
      * <code>optional uint64 lastModified = 4;</code>
      */
     long getLastModified();
+
+    // optional int64 length = 5;
+    /**
+     * <code>optional int64 length = 5;</code>
+     */
+    boolean hasLength();
+    /**
+     * <code>optional int64 length = 5;</code>
+     */
+    long getLength();
+
+    // optional int64 partitionDate = 6;
+    /**
+     * <code>optional int64 partitionDate = 6;</code>
+     *
+     * <pre>
+     * partition date added 11/25/14
+     * </pre>
+     */
+    boolean hasPartitionDate();
+    /**
+     * <code>optional int64 partitionDate = 6;</code>
+     *
+     * <pre>
+     * partition date added 11/25/14
+     * </pre>
+     */
+    long getPartitionDate();
   }
   /**
    * Protobuf type {@code Partition}
@@ -1210,6 +1157,16 @@ public final class PartitionCollectionProto {
             case 32: {
               bitField0_ |= 0x00000008;
               lastModified_ = input.readUInt64();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              length_ = input.readInt64();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              partitionDate_ = input.readInt64();
               break;
             }
           }
@@ -1314,7 +1271,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     public boolean hasFilename() {
@@ -1324,7 +1281,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     public java.lang.String getFilename() {
@@ -1345,7 +1302,7 @@ public final class PartitionCollectionProto {
      * <code>required string filename = 2;</code>
      *
      * <pre>
-     * the gribCollection.ncx2 file
+     * the gribCollection.ncx3 file, reletive to gc.
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -1362,11 +1319,11 @@ public final class PartitionCollectionProto {
       }
     }
 
-    // required string directory = 3;
+    // optional string directory = 3;
     public static final int DIRECTORY_FIELD_NUMBER = 3;
     private java.lang.Object directory_;
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1376,7 +1333,7 @@ public final class PartitionCollectionProto {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1397,7 +1354,7 @@ public final class PartitionCollectionProto {
       }
     }
     /**
-     * <code>required string directory = 3;</code>
+     * <code>optional string directory = 3;</code>
      *
      * <pre>
      * top directory
@@ -1433,11 +1390,53 @@ public final class PartitionCollectionProto {
       return lastModified_;
     }
 
+    // optional int64 length = 5;
+    public static final int LENGTH_FIELD_NUMBER = 5;
+    private long length_;
+    /**
+     * <code>optional int64 length = 5;</code>
+     */
+    public boolean hasLength() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional int64 length = 5;</code>
+     */
+    public long getLength() {
+      return length_;
+    }
+
+    // optional int64 partitionDate = 6;
+    public static final int PARTITIONDATE_FIELD_NUMBER = 6;
+    private long partitionDate_;
+    /**
+     * <code>optional int64 partitionDate = 6;</code>
+     *
+     * <pre>
+     * partition date added 11/25/14
+     * </pre>
+     */
+    public boolean hasPartitionDate() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional int64 partitionDate = 6;</code>
+     *
+     * <pre>
+     * partition date added 11/25/14
+     * </pre>
+     */
+    public long getPartitionDate() {
+      return partitionDate_;
+    }
+
     private void initFields() {
       name_ = "";
       filename_ = "";
       directory_ = "";
       lastModified_ = 0L;
+      length_ = 0L;
+      partitionDate_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1449,10 +1448,6 @@ public final class PartitionCollectionProto {
         return false;
       }
       if (!hasFilename()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasDirectory()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -1474,6 +1469,12 @@ public final class PartitionCollectionProto {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt64(4, lastModified_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeInt64(5, length_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeInt64(6, partitionDate_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1499,6 +1500,14 @@ public final class PartitionCollectionProto {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(4, lastModified_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(5, length_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(6, partitionDate_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1624,6 +1633,10 @@ public final class PartitionCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000004);
         lastModified_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000008);
+        length_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        partitionDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -1668,6 +1681,14 @@ public final class PartitionCollectionProto {
           to_bitField0_ |= 0x00000008;
         }
         result.lastModified_ = lastModified_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.length_ = length_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.partitionDate_ = partitionDate_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1702,6 +1723,12 @@ public final class PartitionCollectionProto {
         if (other.hasLastModified()) {
           setLastModified(other.getLastModified());
         }
+        if (other.hasLength()) {
+          setLength(other.getLength());
+        }
+        if (other.hasPartitionDate()) {
+          setPartitionDate(other.getPartitionDate());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -1712,10 +1739,6 @@ public final class PartitionCollectionProto {
           return false;
         }
         if (!hasFilename()) {
-          
-          return false;
-        }
-        if (!hasDirectory()) {
           
           return false;
         }
@@ -1845,7 +1868,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public boolean hasFilename() {
@@ -1855,7 +1878,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public java.lang.String getFilename() {
@@ -1873,7 +1896,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -1893,7 +1916,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public Builder setFilename(
@@ -1910,7 +1933,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public Builder clearFilename() {
@@ -1923,7 +1946,7 @@ public final class PartitionCollectionProto {
        * <code>required string filename = 2;</code>
        *
        * <pre>
-       * the gribCollection.ncx2 file
+       * the gribCollection.ncx3 file, reletive to gc.
        * </pre>
        */
       public Builder setFilenameBytes(
@@ -1937,10 +1960,10 @@ public final class PartitionCollectionProto {
         return this;
       }
 
-      // required string directory = 3;
+      // optional string directory = 3;
       private java.lang.Object directory_ = "";
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -1950,7 +1973,7 @@ public final class PartitionCollectionProto {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -1968,7 +1991,7 @@ public final class PartitionCollectionProto {
         }
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -1988,7 +2011,7 @@ public final class PartitionCollectionProto {
         }
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -2005,7 +2028,7 @@ public final class PartitionCollectionProto {
         return this;
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -2018,7 +2041,7 @@ public final class PartitionCollectionProto {
         return this;
       }
       /**
-       * <code>required string directory = 3;</code>
+       * <code>optional string directory = 3;</code>
        *
        * <pre>
        * top directory
@@ -2064,6 +2087,88 @@ public final class PartitionCollectionProto {
       public Builder clearLastModified() {
         bitField0_ = (bitField0_ & ~0x00000008);
         lastModified_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // optional int64 length = 5;
+      private long length_ ;
+      /**
+       * <code>optional int64 length = 5;</code>
+       */
+      public boolean hasLength() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional int64 length = 5;</code>
+       */
+      public long getLength() {
+        return length_;
+      }
+      /**
+       * <code>optional int64 length = 5;</code>
+       */
+      public Builder setLength(long value) {
+        bitField0_ |= 0x00000010;
+        length_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 length = 5;</code>
+       */
+      public Builder clearLength() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        length_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // optional int64 partitionDate = 6;
+      private long partitionDate_ ;
+      /**
+       * <code>optional int64 partitionDate = 6;</code>
+       *
+       * <pre>
+       * partition date added 11/25/14
+       * </pre>
+       */
+      public boolean hasPartitionDate() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional int64 partitionDate = 6;</code>
+       *
+       * <pre>
+       * partition date added 11/25/14
+       * </pre>
+       */
+      public long getPartitionDate() {
+        return partitionDate_;
+      }
+      /**
+       * <code>optional int64 partitionDate = 6;</code>
+       *
+       * <pre>
+       * partition date added 11/25/14
+       * </pre>
+       */
+      public Builder setPartitionDate(long value) {
+        bitField0_ |= 0x00000020;
+        partitionDate_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 partitionDate = 6;</code>
+       *
+       * <pre>
+       * partition date added 11/25/14
+       * </pre>
+       */
+      public Builder clearPartitionDate() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        partitionDate_ = 0L;
         onChanged();
         return this;
       }
@@ -2144,19 +2249,19 @@ public final class PartitionCollectionProto {
     java.lang.String[] descriptorData = {
       "\n2ucar/nc2/grib/collection/partitionColl" +
       "ection.proto\032.ucar/nc2/grib/collection/g" +
-      "ribCollection2.proto\"\224\001\n\021PartitionVariab" +
+      "ribCollection2.proto\"\203\001\n\021PartitionVariab" +
       "le\022\017\n\007groupno\030\001 \002(\r\022\r\n\005varno\030\002 \002(\r\022\014\n\004fl" +
-      "ag\030\003 \002(\r\022\016\n\006partno\030\004 \002(\r\022\017\n\007density\030\007 \001(" +
-      "\002\022\r\n\005ndups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007mi" +
-      "ssing\030\n \001(\r\"T\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020" +
-      "\n\010filename\030\002 \002(\t\022\021\n\tdirectory\030\003 \002(\t\022\024\n\014l" +
-      "astModified\030\004 \001(\004:0\n\tpartition\022\t.Variabl" +
-      "e\030d \003(\0132\022.PartitionVariable:/\n\npartition",
-      "s\022\017.GribCollection\030d \003(\0132\n.Partition:0\n\027" +
-      "isPartitionOfPartitions\022\017.GribCollection" +
-      "\030e \002(\010:!\n\010run2part\022\017.GribCollection\030f \003(" +
-      "\rB4\n\030ucar.nc2.grib.collectionB\030Partition" +
-      "CollectionProto"
+      "ag\030\003 \002(\r\022\016\n\006partno\030\004 \002(\r\022\r\n\005ndups\030\010 \001(\r\022" +
+      "\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030\n \001(\r\"{\n\tPa" +
+      "rtition\022\014\n\004name\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\022" +
+      "\021\n\tdirectory\030\003 \001(\t\022\024\n\014lastModified\030\004 \001(\004" +
+      "\022\016\n\006length\030\005 \001(\003\022\025\n\rpartitionDate\030\006 \001(\003:" +
+      "0\n\tpartition\022\t.Variable\030d \003(\0132\022.Partitio",
+      "nVariable:/\n\npartitions\022\017.GribCollection" +
+      "\030d \003(\0132\n.Partition:0\n\027isPartitionOfParti" +
+      "tions\022\017.GribCollection\030e \002(\010:!\n\010run2part" +
+      "\022\017.GribCollection\030f \003(\rB4\n\030ucar.nc2.grib" +
+      ".collectionB\030PartitionCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2168,13 +2273,13 @@ public final class PartitionCollectionProto {
           internal_static_PartitionVariable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PartitionVariable_descriptor,
-              new java.lang.String[] { "Groupno", "Varno", "Flag", "Partno", "Density", "Ndups", "Nrecords", "Missing", });
+              new java.lang.String[] { "Groupno", "Varno", "Flag", "Partno", "Ndups", "Nrecords", "Missing", });
           internal_static_Partition_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_Partition_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Partition_descriptor,
-              new java.lang.String[] { "Name", "Filename", "Directory", "LastModified", });
+              new java.lang.String[] { "Name", "Filename", "Directory", "LastModified", "Length", "PartitionDate", });
           partition.internalInit(descriptor.getExtensions().get(0));
           partitions.internalInit(descriptor.getExtensions().get(1));
           isPartitionOfPartitions.internalInit(descriptor.getExtensions().get(2));

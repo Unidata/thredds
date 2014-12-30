@@ -41,7 +41,6 @@ import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -52,12 +51,28 @@ import java.io.IOException;
  * @author caron
  * @since 11/9/13
  */
-public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
+class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
-  static public GribCollection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) throws IOException {
+  static public Grib2Collection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
-    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, dataOnly, logger);
+    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
+    if (!builder.readIndex(raf))
+      return null;
+
+    if (builder.gc.getFiles().size() == 0) {
+      logger.warn("Grib2CollectionBuilderFromIndex {}: has no files, force recreate ", builder.gc.getName());
+      return null;
+    }
+
+    return new Grib2Collection(builder.gc);
+  }
+
+
+  // read in the index, index raf already open; return null on failure
+  static public GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+
+    Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
       return null;
 
@@ -69,12 +84,13 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     return builder.gc;
   }
 
+
   ////////////////////////////////////////////////////////////////
 
   protected Grib2Customizer cust; // gets created in readIndex, after center etc is read in
 
-  protected Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, boolean dataOnly, org.slf4j.Logger logger) {
-    super( new Grib2Collection(name, null, config), dataOnly, logger);  // directory will be set in readFromIndex
+  protected Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+    super( new GribCollectionMutable(name, null, config, false), logger);  // directory will be set in readFromIndex
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +101,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
   }
 
   protected GribTables makeCustomizer() {
-    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.getGenProcessId());
+    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.genProcessId);
     return this.cust;
   }
 
@@ -99,9 +115,7 @@ public class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     byte[] rawGds = p.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();
-    int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
-    String nameOverride = p.hasNameOverride() ? p.getNameOverride() : null;
-    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash, nameOverride, -1);
+    gc.addHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gds, -1);
   }
 
 }

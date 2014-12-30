@@ -170,28 +170,39 @@ public class ThreddsConfigReader {
   }
 
   public int getInt(String paramName, int defValue) {
-    String s = getParam( paramName);
-    if (s == null) return defValue;
+      String s = getParam( paramName);
+      if (s == null) return defValue;
 
-    try {
-      return Integer.parseInt(s);
-    } catch (Exception e) {
-      log.error("ThreddsConfig: param "+paramName+" not an integer " + e.getMessage());
+      try {
+        return Integer.parseInt(s);
+      } catch (Exception e) {
+        log.error("ThreddsConfig: param "+paramName+" not an integer " + e.getMessage());
+      }
+      return defValue;
     }
-    return defValue;
-  }
 
-  public int getSeconds(String paramName, int defValue) {
-    String s = getParam( paramName);
-    if (s == null) return defValue;
-
-    try {
-      TimeDuration tu = new TimeDuration(s);
-      return (int) tu.getValueInSeconds();
-    } catch (Exception e) {
-      log.error("ThreddsConfig: param "+paramName+" not udunit time " + e.getMessage());
+    public long getLong(String paramName, long defValue) {
+          String s = getParam( paramName);
+          if (s == null) return defValue;
+          try {
+            return Long.parseLong(s);
+          } catch (Exception e) {
+            log.error("ThreddsConfig: param "+paramName+" not a long " + e.getMessage());
+          }
+          return defValue;
     }
-    return defValue;
+
+    public int getSeconds(String paramName, int defValue) {
+        String s = getParam( paramName);
+        if (s == null) return defValue;
+
+        try {
+          TimeDuration tu = new TimeDuration(s);
+          return (int) tu.getValueInSeconds();
+        } catch (Exception e) {
+          log.error("ThreddsConfig: param "+paramName+" not udunit time " + e.getMessage());
+        }
+        return defValue;
   }
 
   private String getParam( String name) {

@@ -57,9 +57,6 @@ import java.nio.ByteBuffer;
 public class NmcObsLegacy extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NmcObsLegacy.class);
 
-  private NetcdfFile ncfile;
-  //private Structure reportVar;
-
   private List<Station> stations = new ArrayList<>();
   private List<Report> reports = new ArrayList<>();
   //private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
@@ -114,8 +111,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    this.raf = raf;
-    this.ncfile = ncfile;
+    super.open(raf, ncfile, cancelTask);
 
     init();
 

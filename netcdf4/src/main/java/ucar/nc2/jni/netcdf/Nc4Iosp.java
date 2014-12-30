@@ -219,7 +219,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   // Instance Variables
 
   private NetcdfFileWriter.Version version = null;  // can use c library to create these different version files
-  private NetcdfFile ncfile = null;
   private boolean fill = true;
   private int ncid = -1;        // file id
   private int format = 0;       // from nc_inq_format
@@ -281,10 +280,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
     _open(raf, ncfile, true);
   }
 
   public void openForWriting(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    this.ncfile = ncfile;
     _open(raf, ncfile, false);
   }
 
@@ -293,9 +294,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
 
-    if(raf != null)
+    if (raf != null)
         raf.close(); // not used
-    this.ncfile = ncfile;
 
     // open
     if (debug) System.out.println("open " + ncfile.getLocation());
@@ -924,7 +924,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             }
 
             log.warn("UNSUPPORTED compound fld.fldtypeid= " + fld.fldtypeid);
-            continue;
         } // switch on fld type
       } // loop over fields
     } // loop over len
@@ -1145,7 +1144,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     DataType getEnumBaseType() {
       // set the enum's basetype
       if (baseTypeid > 0 && baseTypeid <= NC_MAX_ATOMIC_TYPE) {
-        DataType cdmtype = null;
+        DataType cdmtype;
         boolean isunsigned = false;
         switch (baseTypeid) {
           case NC_CHAR:
@@ -1441,7 +1440,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     //System.out.printf(" type=%d name=%s baseType=%d baseType=%d numMembers=%d %n ",
     //    xtype, name, baseType.getValue(), baseSize.getValue().longValue(), nmembers);
-    Map<Integer, String> map = new HashMap<Integer, String>(2 * nmembers);
+    Map<Integer, String> map = new HashMap<>(2 * nmembers);
 
     for (int i = 0; i < nmembers; i++) {
       byte[] mnameb = new byte[Nc4prototypes.NC_MAX_NAME + 1];
@@ -1798,7 +1797,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           fieldarray[i] = vlenArray;
           destPos += nc_vlen_t_size;
         }
-        Array result = null;
+        Array result;
         if (prefixrank == 0) // if scalar, return just the singleton vlen array
           result = fieldarray[0];
         else if (prefixrank == 1)
@@ -1835,11 +1834,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private Array
   decodeVlen(DataType dt, int pos, ByteBuffer bbuff)
           throws IOException {
-    Array array = null;
+    Array array;
     int n = (int) bbuff.getLong(pos); // Note that this does not increment the buffer position
     long addr = getNativeAddr(pos + NativeLong.SIZE,bbuff); // LOOK: this assumes 64 bit pointers
     Pointer p = new Pointer(addr);
-    Object data = null;
+    Object data;
     switch (dt) {
       case BOOLEAN: /*byte[]*/
         data = p.getByteArray(0, n);
@@ -1944,7 +1943,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (prefixrank == 0) { // if scalar, return just the len Array
       return (Array) data[0];
     } else if (prefixrank == 1)
-      return (Array) new ArrayObject(data[0].getClass(), new int[]{len}, data);
+      return new ArrayObject(data[0].getClass(), new int[]{len}, data);
 
     // Otherwise create and fill in an n-dimensional Array Of Arrays
     int[] shape = new int[prefixrank];
@@ -2277,13 +2276,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     NC_WRITE. See discussion below.
  */
   private int createMode() {
-    int ret = nc4.NC_CLOBBER;
+    int ret = NC_CLOBBER;
     switch (version) {
       case netcdf4:
-        ret |= nc4.NC_NETCDF4;
+        ret |= NC_NETCDF4;
         break;
       case netcdf4_classic:
-        ret |= nc4.NC_NETCDF4 | nc4.NC_CLASSIC_MODEL;
+        ret |= NC_NETCDF4 | NC_CLASSIC_MODEL;
         break;
     }
 

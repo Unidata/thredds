@@ -253,7 +253,7 @@ public class TestAggExistingCoordVars extends TestCase {
       assert data.getShape()[0] == 3;
       assert data.getElementType() == String.class;
 
-      NCdump.printArray(data, "time coord", System.out, null);
+      NCdumpW.printArray(data, "time coord", System.out, null);
 
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();
@@ -299,7 +299,7 @@ public class TestAggExistingCoordVars extends TestCase {
       assert data.getShape()[0] == 3;
       assert data.getElementType() == double.class;
 
-      NCdump.printArray(data, "time coord", System.out, null);
+      NCdumpW.printArray(data, "time coord", System.out, null);
 
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();

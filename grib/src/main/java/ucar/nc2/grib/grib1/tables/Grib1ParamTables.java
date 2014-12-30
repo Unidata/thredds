@@ -131,7 +131,8 @@ public class Grib1ParamTables {
    */
   static public Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
     if (paramTablePath == null && lookupTablePath == null) return new Grib1ParamTables();
-    Grib1ParamTables result = new Grib1ParamTables();
+    Lookup lookup = null;
+    Grib1ParamTableReader override = null;
 
     Grib1ParamTableReader table;
     if (paramTablePath != null) {
@@ -139,17 +140,17 @@ public class Grib1ParamTables {
       if (table == null) {
         table = new Grib1ParamTableReader(paramTablePath);
         localTableHash.put(paramTablePath, table);
-        result.override = table;
+        override = table;
       }
     }
 
     if (lookupTablePath != null) {
-      result.lookup = new Lookup();
-      if (!result.lookup.readLookupTable(lookupTablePath))
+      lookup = new Lookup();
+      if (!lookup.readLookupTable(lookupTablePath))
         throw new FileNotFoundException("cant read lookup table=" + lookupTablePath);
     }
 
-    return result;
+    return new Grib1ParamTables(lookup, override);
   }
 
   /**
@@ -161,19 +162,22 @@ public class Grib1ParamTables {
    */
   static public Grib1ParamTables factory(org.jdom2.Element paramTableElem) throws IOException {
     if (paramTableElem == null) return new Grib1ParamTables();
-
-    Grib1ParamTables result = new Grib1ParamTables();
-    result.override = new Grib1ParamTableReader(paramTableElem);
-
-    return result;
+    return new Grib1ParamTables(null, new Grib1ParamTableReader(paramTableElem));
   }
 
   ///////////////////////////////////////////////////////////////////////////
 
-  private Lookup lookup; // if lookup table was set
-  private Grib1ParamTableReader override; // if parameter table was set
+  private final Lookup lookup; // if lookup table was set
+  private final Grib1ParamTableReader override; // if parameter table was set
 
   public Grib1ParamTables() {
+    this.lookup = null;
+    this.override = null;
+  }
+
+  public Grib1ParamTables(Lookup lookup, Grib1ParamTableReader override) {
+    this.lookup = lookup;
+    this.override = override;
   }
 
   public Grib1Parameter getParameter(Grib1Record record) {

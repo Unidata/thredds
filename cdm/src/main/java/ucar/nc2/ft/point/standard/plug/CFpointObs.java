@@ -1269,7 +1269,7 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.time = matchAxisTypeAndDimension(ds, AxisType.Time, info.parentDim);
     tableConfig.featureType = ftype;
 
-    if (info.encoding != Encoding.single) {
+    if (info.encoding != Encoding.single && info.parentDim != null) {
       tableConfig.dimName = name;
       Structure parent = info.parentStruct;
       if (parent == null) {
@@ -1304,7 +1304,7 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     tableConfig.featureType = ftype;
 
-    if (info.encoding != Encoding.single) {
+    if (info.encoding != Encoding.single && info.parentDim != null) {
       tableConfig.dimName = name;
       makeStructureInfo(tableConfig, ds, null, info.parentDim);
     }

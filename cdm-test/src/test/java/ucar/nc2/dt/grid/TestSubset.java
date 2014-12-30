@@ -40,7 +40,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.NCdump;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.CompareNetcdf2;
@@ -212,7 +211,7 @@ public class TestSubset {
 
     GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
     int[] shape = grid_section.getShape();
-    System.out.println("grid_section.getShape= " + Range.toString(Range.factory(shape)));
+    System.out.println("grid_section.getShape= " + new Section(shape));
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
     assert data.getShape()[0] == shape[0] : data.getShape()[0];
@@ -251,7 +250,7 @@ public class TestSubset {
     assert data.getShape()[2] == 65 : data.getShape()[2];
     assert data.getShape()[3] == 106 : data.getShape()[3];
 
-    NCdump.printArray(data, "grid_section", System.out, null);
+    NCdumpW.printArray(data, "grid_section", System.out, null);
     dataset.close();
   }
 
@@ -280,7 +279,7 @@ public class TestSubset {
     assert data.getShape()[2] == 32 : data.getShape()[2];
     assert data.getShape()[3] == 64 : data.getShape()[3];
 
-    NCdump.printArray(data, "grid_section", System.out, null);
+    NCdumpW.printArray(data, "grid_section", System.out, null);
 
     LatLonPoint p0 = new LatLonPointImpl(29.0, -90.0);
     LatLonRect bbox = new LatLonRect(p0, 1.0, 2.0);
@@ -548,7 +547,7 @@ public class TestSubset {
 
     GeoGrid subset = grid.subset(timeRange, new Range(bestZIndex, bestZIndex), null, null);
     Array yxData = subset.readYXData(0, 0);
-    NCdump.printArray(yxData, "xyData", System.out, null);
+    NCdumpW.printArray(yxData, "xyData", System.out, null);
 
     dataset.close();
   }

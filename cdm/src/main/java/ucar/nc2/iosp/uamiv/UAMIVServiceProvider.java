@@ -52,11 +52,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
   private long data_start;
   private int n2dvals;
   private int n3dvals;
-  private int spc_2D_block;
   private int spc_3D_block;
   private int data_block;
-  private int date_block;
-  private int nspec;
 
   /**
    * Check if this is a valid file for this IOServiceProvider.
@@ -149,7 +146,6 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     String note = raf.readString(240);
     int itzone = raf.readInt(); // Read the time zone
     int nspec = raf.readInt(); // Read number of species
-    this.nspec = nspec; // internalize nspec
     int bdate = raf.readInt(); // get file start date
     float btime = raf.readFloat(); // get file start time
     int edate = raf.readInt(); // get file end date
@@ -243,10 +239,10 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
 
     // Store 2D binary data block size: include values (nx*ny), 
     // species name (10), a dummy (1) and 2 record pads
-    this.spc_2D_block = nx * ny + 10 + 2 + 1;
+    int spc_2D_block = nx * ny + 10 + 2 + 1;
 
     // Store 3D binary data block size
-    this.spc_3D_block = this.spc_2D_block * nz;
+    this.spc_3D_block = spc_2D_block * nz;
 
     // Store whole data block size; includes date (6)
     this.data_block = this.spc_3D_block * nspec + 6;
@@ -271,8 +267,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     * simply the species name.  units is heuristically
     * determined from the name
     */
-    HashSet<String> AeroSpcs = new HashSet<String>(Arrays.asList( "PSO4", "PNO3", "PNH4", "PH2O", "SOPA", "SOPB",  "NA", "PCL", "POA", "PEC", "FPRM", "FCRS", "CPRM", "CCRS"));
-    HashSet<String> LULC = new HashSet<String>(Arrays.asList("WATER", "ICE", "LAKE", "ENEEDL", "EBROAD", "DNEEDL", "DBROAD", "TBROAD", "DDECID", "ESHRUB", "DSHRUB", "TSHRUB", "SGRASS", "LGRASS", "CROPS", "RICE", "SUGAR", "MAIZE", "COTTON", "ICROPS", "URBAN", "TUNDRA", "SWAMP", "DESERT", "MWOOD", "TFOREST"));
+    HashSet<String> AeroSpcs = new HashSet<>(Arrays.asList( "PSO4", "PNO3", "PNH4", "PH2O", "SOPA", "SOPB",  "NA", "PCL", "POA", "PEC", "FPRM", "FCRS", "CPRM", "CCRS"));
+    HashSet<String> LULC = new HashSet<>(Arrays.asList("WATER", "ICE", "LAKE", "ENEEDL", "EBROAD", "DNEEDL", "DBROAD", "TBROAD", "DDECID", "ESHRUB", "DSHRUB", "TSHRUB", "SGRASS", "LGRASS", "CROPS", "RICE", "SUGAR", "MAIZE", "COTTON", "ICROPS", "URBAN", "TUNDRA", "SWAMP", "DESERT", "MWOOD", "TFOREST"));
     
     while (count < nspec) {
       String spc = spc_names[count++];
@@ -305,18 +301,25 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       } else if (spc.lastIndexOf("_") > -1) {
         String tmpunit = spc.substring(spc.lastIndexOf("_") + 1);
         tmpunit = tmpunit.trim();
-        if (tmpunit.equals("M2pS")) {
-          tmpunit = "m**2/s";
-        } else if (tmpunit.equals("MpS")) {
-          tmpunit = "m/s";
-        } else if (tmpunit.equals("PPM")) {
-          tmpunit = "ppm";
-        } else if (tmpunit.equals("MB")) {
-          tmpunit = "millibar";
-        } else if (tmpunit.equals("GpM3")) {
-          tmpunit = "g/m**3";
-        } else if (tmpunit.equals("M")) {
-          tmpunit = "m";
+        switch (tmpunit) {
+          case "M2pS":
+            tmpunit = "m**2/s";
+            break;
+          case "MpS":
+            tmpunit = "m/s";
+            break;
+          case "PPM":
+            tmpunit = "ppm";
+            break;
+          case "MB":
+            tmpunit = "millibar";
+            break;
+          case "GpM3":
+            tmpunit = "g/m**3";
+            break;
+          case "M":
+            tmpunit = "m";
+            break;
         }
         temp.addAttribute(new Attribute(CDM.UNITS, tmpunit));
       } else {
@@ -347,17 +350,17 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     * http://www.baronams.com/products/ioapi
     */
     ncfile.addAttribute(null, new Attribute("VGLVLS", sigma_arr));
-    ncfile.addAttribute(null, new Attribute("SDATE", new Integer(bdate)));
-    ncfile.addAttribute(null, new Attribute("STIME", new Integer(btimei)));
-    ncfile.addAttribute(null, new Attribute("TSTEP", new Integer(10000)));
-    ncfile.addAttribute(null, new Attribute("NSTEPS", new Integer(ntimes)));
-    ncfile.addAttribute(null, new Attribute("NLAYS", new Integer(nz)));
-    ncfile.addAttribute(null, new Attribute("NROWS", new Integer(ny)));
-    ncfile.addAttribute(null, new Attribute("NCOLS", new Integer(nx)));
-    ncfile.addAttribute(null, new Attribute("XORIG", new Double(xorg)));
-    ncfile.addAttribute(null, new Attribute("YORIG", new Double(yorg)));
-    ncfile.addAttribute(null, new Attribute("XCELL", new Double(delx)));
-    ncfile.addAttribute(null, new Attribute("YCELL", new Double(dely)));
+    ncfile.addAttribute(null, new Attribute("SDATE", bdate));
+    ncfile.addAttribute(null, new Attribute("STIME", btimei));
+    ncfile.addAttribute(null, new Attribute("TSTEP", 10000));
+    ncfile.addAttribute(null, new Attribute("NSTEPS", ntimes));
+    ncfile.addAttribute(null, new Attribute("NLAYS", nz));
+    ncfile.addAttribute(null, new Attribute("NROWS", ny));
+    ncfile.addAttribute(null, new Attribute("NCOLS", nx));
+    ncfile.addAttribute(null, new Attribute("XORIG", (double) xorg));
+    ncfile.addAttribute(null, new Attribute("YORIG", (double) yorg));
+    ncfile.addAttribute(null, new Attribute("XCELL", (double) delx));
+    ncfile.addAttribute(null, new Attribute("YCELL", (double) dely));
 
     /*
      * IOAPI Projection parameters are provided by a colocated camxproj.txt file;
@@ -373,20 +376,20 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     Double xcent = -95.;
     Double ycent = 25.;
     if (!((iproj == 0) && (tlat1 == 0) && (tlat2 == 0) && (plon == 0) && (plat == 0))) {
-      xcent = new Double(plon);
-      ycent = new Double(plat);
+      xcent = (double) plon;
+      ycent = (double) plat;
       if (iproj == 0) {
         // Lat-Lon (iproj=0) has no additional information
         gdtyp = 1;
       } else if (iproj == 1){
         // UTM uses only iutm 
         gdtyp = 5;
-        p_alp = new Double(iutm);
+        p_alp = (double) iutm;
       } else if (iproj == 2){
         gdtyp = 2;
-        p_alp = new Double(tlat1);
-        p_bet = new Double(tlat2);
-        p_gam = new Double(plon);
+        p_alp = (double) tlat1;
+        p_bet = (double) tlat2;
+        p_gam = (double) plon;
       } else if (iproj == 3){
         gdtyp = 6;
         if (plat == 90){
@@ -394,8 +397,8 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
         } else if (plat == -90) {
           p_alp = -1.;
         }
-        p_bet = new Double(tlat1);
-        p_gam = new Double(plon);
+        p_bet = (double) tlat1;
+        p_gam = (double) plon;
       } else {
         gdtyp = 2;
         p_alp = 20.;
@@ -405,7 +408,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
         ycent = 25.;
       }
     }
-    String[] key_value = null;
+
     String thisLine;
     String projpath = raf.getLocation();
     Boolean lgdtyp = false;
@@ -421,30 +424,38 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
       projpath = projpath.substring(0, lastIndex);
     projpath = projpath + File.separator + "camxproj.txt";
     File paramFile = new File(projpath);
+
     if (paramFile.exists()) {
-      try (BufferedReader br = new BufferedReader(new FileReader(paramFile))) {
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(paramFile), CDM.UTF8))) {
         while ((thisLine = br.readLine()) != null) {
-          if ((thisLine.substring(0, 1) != "#") && (thisLine != "")) {
-            key_value = thisLine.split("=");
-            if (key_value[0].equals("GDTYP")) {
+          if (thisLine.length() == 0) continue;
+          if (thisLine.charAt(0) == '#') continue;
+          String[] key_value = thisLine.split("=");
+          switch (key_value[0]) {
+            case "GDTYP":
               gdtyp = Integer.parseInt(key_value[1]);
               lgdtyp = true;
-            } else if (key_value[0].equals("P_ALP")) {
+              break;
+            case "P_ALP":
               p_alp = Double.parseDouble(key_value[1]);
               lp_alp = true;
-            } else if (key_value[0].equals("P_BET")) {
+              break;
+            case "P_BET":
               p_bet = Double.parseDouble(key_value[1]);
               lp_bet = true;
-            } else if (key_value[0].equals("P_GAM")) {
+              break;
+            case "P_GAM":
               p_gam = Double.parseDouble(key_value[1]);
               lp_gam = true;
-            } else if (key_value[0].equals("YCENT")) {
+              break;
+            case "YCENT":
               ycent = Double.parseDouble(key_value[1]);
               lycent = true;
-            } else if (key_value[0].equals("XCENT")) {
+              break;
+            case "XCENT":
               xcent = Double.parseDouble(key_value[1]);
               lxcent = true;
-            }
+              break;
           }
         }
       }

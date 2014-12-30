@@ -17,31 +17,32 @@ public class TestCoordinateND {
 
   @Test
   public void testCoordinateND() {
-    CoordinateND prev = makeCoordinateND(2, 10);
+    CoordinateND<Short> prev = makeCoordinateND(2, 10);
     Counter counter = new Counter();
     Formatter f = new Formatter();
     prev.showInfo(f, counter);
     System.out.printf("%s%n", f);
-    System.out.printf("%s%n====================%n", counter.show());
+    System.out.printf("prev %s%n====================%n", counter.show());
 
-    CoordinateND curr = makeCoordinateND(2, 11);
+    CoordinateND<Short> curr = makeCoordinateND(2, 11);
     counter = new Counter();
     f = new Formatter();
     curr.showInfo(f, counter);
     System.out.printf("%s%n", f);
-    System.out.printf("%s%n====================%n", counter.show());
+    System.out.printf("curr %s%n====================%n", counter.show());
 
-    curr.reindex(prev);
+    CoordinateND<Short> reindexed = new CoordinateND.Builder<Short>().reindex(curr.getCoordinates(), prev);
     counter = new Counter();
     f = new Formatter();
-    curr.showInfo(f, counter);
+    reindexed.showInfo(f, counter);
     System.out.printf("%s%n", f);
-    System.out.printf("%s%n====================%n", counter.show());
+    System.out.printf("reindexed %s%n====================%n", counter.show());
 
-    assert Misc.closeEnough(curr.getSparseArray().getDensity(), .826446);
+    assert Misc.closeEnough(curr.getSparseArray().getDensity(), 1.0);
+    assert Misc.closeEnough(reindexed.getSparseArray().getDensity(), .826446);
   }
 
-  static public CoordinateND makeCoordinateND(int rank, int size) {
+  static public CoordinateND<Short> makeCoordinateND(int rank, int size) {
     List<Coordinate> coords = new ArrayList<>();
     for (int i=0; i<rank; i++)
       coords.add(new TestCoordinate(size*(i+1)));
@@ -49,22 +50,22 @@ public class TestCoordinateND {
     int[] sizeArray = new int[coords.size()];
     for (int i = 0; i < coords.size(); i++)
       sizeArray[i] = coords.get(i).getSize();
-    SparseArray<Short> sa = new SparseArray<>(sizeArray);
-    CoordinateND<Short> prev = new CoordinateND<>(coords, sa);
+    SparseArray.Builder<Short> builder = new SparseArray.Builder<>(sizeArray);
 
-    int n = sa.getTotalSize();
+    int n = builder.getTotalSize();
     int[] track = new int[n];
     for (int i=0; i<n; i++) track[i] = i+1;
-    sa.setTrack(track);
+    builder.setTrack(track);
 
     List<Short> content = new ArrayList<>(n);
     for (int i=0; i<n; i++) content.add((short) (i*10));
-    sa.setContent(content);
+    builder.setContent(content);
 
-    return prev;
+    SparseArray<Short> sa = builder.finish();
+    return new CoordinateND<>(coords, sa);
   }
 
-  static public CoordinateND makeCoordinateND(int size) {
+  static public CoordinateND<Short> makeCoordinateND(int size) {
     List<Coordinate> coords = new ArrayList<>();
     coords.add(TestCoordinate.factory(size, Coordinate.Type.runtime));
     coords.add(TestCoordinate.factory(size, Coordinate.Type.time));
@@ -73,19 +74,20 @@ public class TestCoordinateND {
     int[] sizeArray = new int[coords.size()];
     for (int i = 0; i < coords.size(); i++)
       sizeArray[i] = coords.get(i).getSize();
-    SparseArray<Short> sa = new SparseArray<>(sizeArray);
-    CoordinateND<Short> prev = new CoordinateND<>(coords, sa);
+    SparseArray.Builder<Short> builder = new SparseArray.Builder<>(sizeArray);
+ //   CoordinateND<Short> prev = new CoordinateND<>(coords, sa);
 
-    int n = sa.getTotalSize();
+    int n = builder.getTotalSize();
     int[] track = new int[n];
     for (int i=0; i<n; i++) track[i] = i+1;
-    sa.setTrack(track);
+    builder.setTrack(track);
 
     List<Short> content = new ArrayList<>(n);
     for (int i=0; i<n; i++) content.add((short) (i*10));
-    sa.setContent(content);
+    builder.setContent(content);
 
-    return prev;
+    SparseArray<Short> sa = builder.finish();
+    return new CoordinateND<>(coords, sa);
   }
 
 }

@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
- * Describe
+ * Keep opening files until we get an error
  *
  * @author caron
  * @since 11/4/2014

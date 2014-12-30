@@ -908,11 +908,30 @@ public final class GribCollectionProto {
      */
     ucar.nc2.grib.collection.GribCollectionProto.RecordOrBuilder getRecordsOrBuilder(
         int index);
+
+    // optional uint32 ndups = 5;
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     *
+     * <pre>
+     * duplicates found when creating
+     * </pre>
+     */
+    boolean hasNdups();
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     *
+     * <pre>
+     * duplicates found when creating
+     * </pre>
+     */
+    int getNdups();
   }
   /**
    * Protobuf type {@code SparseArray}
    *
    * <pre>
+   * SparseArray only at the GCs (MRC and SRC) not at the Partitions
    * dont need SparseArray unless someone wants to read from the variable
    * </pre>
    */
@@ -1017,6 +1036,11 @@ public final class GribCollectionProto {
                 mutable_bitField0_ |= 0x00000008;
               }
               records_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Record.PARSER, extensionRegistry));
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000002;
+              ndups_ = input.readUInt32();
               break;
             }
           }
@@ -1218,11 +1242,36 @@ public final class GribCollectionProto {
       return records_.get(index);
     }
 
+    // optional uint32 ndups = 5;
+    public static final int NDUPS_FIELD_NUMBER = 5;
+    private int ndups_;
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     *
+     * <pre>
+     * duplicates found when creating
+     * </pre>
+     */
+    public boolean hasNdups() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional uint32 ndups = 5;</code>
+     *
+     * <pre>
+     * duplicates found when creating
+     * </pre>
+     */
+    public int getNdups() {
+      return ndups_;
+    }
+
     private void initFields() {
       cdmHash_ = 0;
       size_ = java.util.Collections.emptyList();
       track_ = java.util.Collections.emptyList();
       records_ = java.util.Collections.emptyList();
+      ndups_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1258,6 +1307,9 @@ public final class GribCollectionProto {
       for (int i = 0; i < records_.size(); i++) {
         output.writeMessage(4, records_.get(i));
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(5, ndups_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1292,6 +1344,10 @@ public final class GribCollectionProto {
       for (int i = 0; i < records_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, records_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, ndups_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1375,6 +1431,7 @@ public final class GribCollectionProto {
      * Protobuf type {@code SparseArray}
      *
      * <pre>
+     * SparseArray only at the GCs (MRC and SRC) not at the Partitions
      * dont need SparseArray unless someone wants to read from the variable
      * </pre>
      */
@@ -1426,6 +1483,8 @@ public final class GribCollectionProto {
         } else {
           recordsBuilder_.clear();
         }
+        ndups_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -1477,6 +1536,10 @@ public final class GribCollectionProto {
         } else {
           result.records_ = recordsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.ndups_ = ndups_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1541,6 +1604,9 @@ public final class GribCollectionProto {
               recordsBuilder_.addAllMessages(other.records_);
             }
           }
+        }
+        if (other.hasNdups()) {
+          setNdups(other.getNdups());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2128,6 +2194,55 @@ public final class GribCollectionProto {
         return recordsBuilder_;
       }
 
+      // optional uint32 ndups = 5;
+      private int ndups_ ;
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       *
+       * <pre>
+       * duplicates found when creating
+       * </pre>
+       */
+      public boolean hasNdups() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       *
+       * <pre>
+       * duplicates found when creating
+       * </pre>
+       */
+      public int getNdups() {
+        return ndups_;
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       *
+       * <pre>
+       * duplicates found when creating
+       * </pre>
+       */
+      public Builder setNdups(int value) {
+        bitField0_ |= 0x00000010;
+        ndups_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 ndups = 5;</code>
+       *
+       * <pre>
+       * duplicates found when creating
+       * </pre>
+       */
+      public Builder clearNdups() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        ndups_ = 0;
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:SparseArray)
     }
 
@@ -2171,15 +2286,31 @@ public final class GribCollectionProto {
      */
     com.google.protobuf.ByteString getPds();
 
-    // required fixed32 cdmHash = 3;
+    // repeated uint32 ids = 3;
     /**
-     * <code>required fixed32 cdmHash = 3;</code>
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
      */
-    boolean hasCdmHash();
+    java.util.List<java.lang.Integer> getIdsList();
     /**
-     * <code>required fixed32 cdmHash = 3;</code>
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
      */
-    int getCdmHash();
+    int getIdsCount();
+    /**
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
+     */
+    int getIds(int index);
 
     // required uint64 recordsPos = 4;
     /**
@@ -2243,31 +2374,21 @@ public final class GribCollectionProto {
      */
     int getCoordIdx(int index);
 
-    // optional float density = 7;
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    boolean hasDensity();
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    float getDensity();
-
     // optional uint32 ndups = 8;
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     boolean hasNdups();
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     int getNdups();
 
@@ -2290,58 +2411,6 @@ public final class GribCollectionProto {
      * <code>optional uint32 missing = 10;</code>
      */
     int getMissing();
-
-    // repeated uint32 invCount = 15;
-    /**
-     * <code>repeated uint32 invCount = 15;</code>
-     *
-     * <pre>
-     * for Coordinate TwoTimer, only 2D vars
-     * </pre>
-     */
-    java.util.List<java.lang.Integer> getInvCountList();
-    /**
-     * <code>repeated uint32 invCount = 15;</code>
-     *
-     * <pre>
-     * for Coordinate TwoTimer, only 2D vars
-     * </pre>
-     */
-    int getInvCountCount();
-    /**
-     * <code>repeated uint32 invCount = 15;</code>
-     *
-     * <pre>
-     * for Coordinate TwoTimer, only 2D vars
-     * </pre>
-     */
-    int getInvCount(int index);
-
-    // repeated uint32 time2runtime = 16;
-    /**
-     * <code>repeated uint32 time2runtime = 16;</code>
-     *
-     * <pre>
-     * time index to runtime index, only 1D vars
-     * </pre>
-     */
-    java.util.List<java.lang.Integer> getTime2RuntimeList();
-    /**
-     * <code>repeated uint32 time2runtime = 16;</code>
-     *
-     * <pre>
-     * time index to runtime index, only 1D vars
-     * </pre>
-     */
-    int getTime2RuntimeCount();
-    /**
-     * <code>repeated uint32 time2runtime = 16;</code>
-     *
-     * <pre>
-     * time index to runtime index, only 1D vars
-     * </pre>
-     */
-    int getTime2Runtime(int index);
 
     // repeated .Parameter params = 20;
     /**
@@ -2453,18 +2522,34 @@ public final class GribCollectionProto {
               pds_ = input.readBytes();
               break;
             }
-            case 29: {
-              bitField0_ |= 0x00000004;
-              cdmHash_ = input.readFixed32();
+            case 24: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                ids_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              ids_.add(input.readUInt32());
+              break;
+            }
+            case 26: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
+                ids_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                ids_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
               break;
             }
             case 32: {
-              bitField0_ |= 0x00000008;
+              bitField0_ |= 0x00000004;
               recordsPos_ = input.readUInt64();
               break;
             }
             case 40: {
-              bitField0_ |= 0x00000010;
+              bitField0_ |= 0x00000008;
               recordsLen_ = input.readUInt32();
               break;
             }
@@ -2489,72 +2574,25 @@ public final class GribCollectionProto {
               input.popLimit(limit);
               break;
             }
-            case 61: {
-              bitField0_ |= 0x00000020;
-              density_ = input.readFloat();
-              break;
-            }
             case 64: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000010;
               ndups_ = input.readUInt32();
               break;
             }
             case 72: {
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000020;
               nrecords_ = input.readUInt32();
               break;
             }
             case 80: {
-              bitField0_ |= 0x00000100;
+              bitField0_ |= 0x00000040;
               missing_ = input.readUInt32();
               break;
             }
-            case 120: {
-              if (!((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
-                invCount_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000400;
-              }
-              invCount_.add(input.readUInt32());
-              break;
-            }
-            case 122: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000400) == 0x00000400) && input.getBytesUntilLimit() > 0) {
-                invCount_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000400;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                invCount_.add(input.readUInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
-            case 128: {
-              if (!((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
-                time2Runtime_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000800;
-              }
-              time2Runtime_.add(input.readUInt32());
-              break;
-            }
-            case 130: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000800) == 0x00000800) && input.getBytesUntilLimit() > 0) {
-                time2Runtime_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000800;
-              }
-              while (input.getBytesUntilLimit() > 0) {
-                time2Runtime_.add(input.readUInt32());
-              }
-              input.popLimit(limit);
-              break;
-            }
             case 162: {
-              if (!((mutable_bitField0_ & 0x00001000) == 0x00001000)) {
+              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
                 params_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Parameter>();
-                mutable_bitField0_ |= 0x00001000;
+                mutable_bitField0_ |= 0x00000200;
               }
               params_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Parameter.PARSER, extensionRegistry));
               break;
@@ -2567,16 +2605,13 @@ public final class GribCollectionProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          ids_ = java.util.Collections.unmodifiableList(ids_);
+        }
         if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
           coordIdx_ = java.util.Collections.unmodifiableList(coordIdx_);
         }
-        if (((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
-          invCount_ = java.util.Collections.unmodifiableList(invCount_);
-        }
-        if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
-          time2Runtime_ = java.util.Collections.unmodifiableList(time2Runtime_);
-        }
-        if (((mutable_bitField0_ & 0x00001000) == 0x00001000)) {
+        if (((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
           params_ = java.util.Collections.unmodifiableList(params_);
         }
         this.unknownFields = unknownFields.build();
@@ -2651,20 +2686,39 @@ public final class GribCollectionProto {
       return pds_;
     }
 
-    // required fixed32 cdmHash = 3;
-    public static final int CDMHASH_FIELD_NUMBER = 3;
-    private int cdmHash_;
+    // repeated uint32 ids = 3;
+    public static final int IDS_FIELD_NUMBER = 3;
+    private java.util.List<java.lang.Integer> ids_;
     /**
-     * <code>required fixed32 cdmHash = 3;</code>
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
      */
-    public boolean hasCdmHash() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+    public java.util.List<java.lang.Integer>
+        getIdsList() {
+      return ids_;
     }
     /**
-     * <code>required fixed32 cdmHash = 3;</code>
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
      */
-    public int getCdmHash() {
-      return cdmHash_;
+    public int getIdsCount() {
+      return ids_.size();
+    }
+    /**
+     * <code>repeated uint32 ids = 3;</code>
+     *
+     * <pre>
+     * extra info not in pds; grib2 id section
+     * </pre>
+     */
+    public int getIds(int index) {
+      return ids_.get(index);
     }
 
     // required uint64 recordsPos = 4;
@@ -2678,7 +2732,7 @@ public final class GribCollectionProto {
      * </pre>
      */
     public boolean hasRecordsPos() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
      * <code>required uint64 recordsPos = 4;</code>
@@ -2702,7 +2756,7 @@ public final class GribCollectionProto {
      * </pre>
      */
     public boolean hasRecordsLen() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
      * <code>required uint32 recordsLen = 5;</code>
@@ -2750,41 +2804,25 @@ public final class GribCollectionProto {
       return coordIdx_.get(index);
     }
 
-    // optional float density = 7;
-    public static final int DENSITY_FIELD_NUMBER = 7;
-    private float density_;
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    public boolean hasDensity() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
-    }
-    /**
-     * <code>optional float density = 7;</code>
-     *
-     * <pre>
-     * optionally keep stats
-     * </pre>
-     */
-    public float getDensity() {
-      return density_;
-    }
-
     // optional uint32 ndups = 8;
     public static final int NDUPS_FIELD_NUMBER = 8;
     private int ndups_;
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     public boolean hasNdups() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
      * <code>optional uint32 ndups = 8;</code>
+     *
+     * <pre>
+     * optionally keep stats
+     * </pre>
      */
     public int getNdups() {
       return ndups_;
@@ -2797,7 +2835,7 @@ public final class GribCollectionProto {
      * <code>optional uint32 nrecords = 9;</code>
      */
     public boolean hasNrecords() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
      * <code>optional uint32 nrecords = 9;</code>
@@ -2813,83 +2851,13 @@ public final class GribCollectionProto {
      * <code>optional uint32 missing = 10;</code>
      */
     public boolean hasMissing() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
      * <code>optional uint32 missing = 10;</code>
      */
     public int getMissing() {
       return missing_;
-    }
-
-    // repeated uint32 invCount = 15;
-    public static final int INVCOUNT_FIELD_NUMBER = 15;
-    private java.util.List<java.lang.Integer> invCount_;
-    /**
-     * <code>repeated uint32 invCount = 15;</code>
-     *
-     * <pre>
-     * for Coordinate TwoTimer, only 2D vars
-     * </pre>
-     */
-    public java.util.List<java.lang.Integer>
-        getInvCountList() {
-      return invCount_;
-    }
-    /**
-     * <code>repeated uint32 invCount = 15;</code>
-     *
-     * <pre>
-     * for Coordinate TwoTimer, only 2D vars
-     * </pre>
-     */
-    public int getInvCountCount() {
-      return invCount_.size();
-    }
-    /**
-     * <code>repeated uint32 invCount = 15;</code>
-     *
-     * <pre>
-     * for Coordinate TwoTimer, only 2D vars
-     * </pre>
-     */
-    public int getInvCount(int index) {
-      return invCount_.get(index);
-    }
-
-    // repeated uint32 time2runtime = 16;
-    public static final int TIME2RUNTIME_FIELD_NUMBER = 16;
-    private java.util.List<java.lang.Integer> time2Runtime_;
-    /**
-     * <code>repeated uint32 time2runtime = 16;</code>
-     *
-     * <pre>
-     * time index to runtime index, only 1D vars
-     * </pre>
-     */
-    public java.util.List<java.lang.Integer>
-        getTime2RuntimeList() {
-      return time2Runtime_;
-    }
-    /**
-     * <code>repeated uint32 time2runtime = 16;</code>
-     *
-     * <pre>
-     * time index to runtime index, only 1D vars
-     * </pre>
-     */
-    public int getTime2RuntimeCount() {
-      return time2Runtime_.size();
-    }
-    /**
-     * <code>repeated uint32 time2runtime = 16;</code>
-     *
-     * <pre>
-     * time index to runtime index, only 1D vars
-     * </pre>
-     */
-    public int getTime2Runtime(int index) {
-      return time2Runtime_.get(index);
     }
 
     // repeated .Parameter params = 20;
@@ -2951,16 +2919,13 @@ public final class GribCollectionProto {
     private void initFields() {
       discipline_ = 0;
       pds_ = com.google.protobuf.ByteString.EMPTY;
-      cdmHash_ = 0;
+      ids_ = java.util.Collections.emptyList();
       recordsPos_ = 0L;
       recordsLen_ = 0;
       coordIdx_ = java.util.Collections.emptyList();
-      density_ = 0F;
       ndups_ = 0;
       nrecords_ = 0;
       missing_ = 0;
-      invCount_ = java.util.Collections.emptyList();
-      time2Runtime_ = java.util.Collections.emptyList();
       params_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
@@ -2973,10 +2938,6 @@ public final class GribCollectionProto {
         return false;
       }
       if (!hasPds()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasCdmHash()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3014,35 +2975,26 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, pds_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeFixed32(3, cdmHash_);
+      for (int i = 0; i < ids_.size(); i++) {
+        output.writeUInt32(3, ids_.get(i));
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeUInt64(4, recordsPos_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt32(5, recordsLen_);
       }
       for (int i = 0; i < coordIdx_.size(); i++) {
         output.writeUInt32(6, coordIdx_.get(i));
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeFloat(7, density_);
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeUInt32(8, ndups_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt32(9, nrecords_);
       }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeUInt32(10, missing_);
-      }
-      for (int i = 0; i < invCount_.size(); i++) {
-        output.writeUInt32(15, invCount_.get(i));
-      }
-      for (int i = 0; i < time2Runtime_.size(); i++) {
-        output.writeUInt32(16, time2Runtime_.get(i));
       }
       for (int i = 0; i < params_.size(); i++) {
         output.writeMessage(20, params_.get(i));
@@ -3065,15 +3017,20 @@ public final class GribCollectionProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, pds_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeFixed32Size(3, cdmHash_);
+      {
+        int dataSize = 0;
+        for (int i = 0; i < ids_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(ids_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getIdsList().size();
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(4, recordsPos_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(5, recordsLen_);
       }
@@ -3086,39 +3043,17 @@ public final class GribCollectionProto {
         size += dataSize;
         size += 1 * getCoordIdxList().size();
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(7, density_);
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(8, ndups_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(9, nrecords_);
       }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(10, missing_);
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < invCount_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(invCount_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getInvCountList().size();
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < time2Runtime_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(time2Runtime_.get(i));
-        }
-        size += dataSize;
-        size += 2 * getTime2RuntimeList().size();
       }
       for (int i = 0; i < params_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -3250,7 +3185,7 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000001);
         pds_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000002);
-        cdmHash_ = 0;
+        ids_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000004);
         recordsPos_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000008);
@@ -3258,21 +3193,15 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         coordIdx_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000020);
-        density_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000040);
         ndups_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         nrecords_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000080);
         missing_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000200);
-        invCount_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000400);
-        time2Runtime_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00000100);
         if (paramsBuilder_ == null) {
           params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00001000);
+          bitField0_ = (bitField0_ & ~0x00000200);
         } else {
           paramsBuilder_.clear();
         }
@@ -3312,16 +3241,17 @@ public final class GribCollectionProto {
           to_bitField0_ |= 0x00000002;
         }
         result.pds_ = pds_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          ids_ = java.util.Collections.unmodifiableList(ids_);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
-        result.cdmHash_ = cdmHash_;
+        result.ids_ = ids_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
+          to_bitField0_ |= 0x00000004;
         }
         result.recordsPos_ = recordsPos_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
+          to_bitField0_ |= 0x00000008;
         }
         result.recordsLen_ = recordsLen_;
         if (((bitField0_ & 0x00000020) == 0x00000020)) {
@@ -3330,35 +3260,21 @@ public final class GribCollectionProto {
         }
         result.coordIdx_ = coordIdx_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000020;
-        }
-        result.density_ = density_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000040;
+          to_bitField0_ |= 0x00000010;
         }
         result.ndups_ = ndups_;
-        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
-          to_bitField0_ |= 0x00000080;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000020;
         }
         result.nrecords_ = nrecords_;
-        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
-          to_bitField0_ |= 0x00000100;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000040;
         }
         result.missing_ = missing_;
-        if (((bitField0_ & 0x00000400) == 0x00000400)) {
-          invCount_ = java.util.Collections.unmodifiableList(invCount_);
-          bitField0_ = (bitField0_ & ~0x00000400);
-        }
-        result.invCount_ = invCount_;
-        if (((bitField0_ & 0x00000800) == 0x00000800)) {
-          time2Runtime_ = java.util.Collections.unmodifiableList(time2Runtime_);
-          bitField0_ = (bitField0_ & ~0x00000800);
-        }
-        result.time2Runtime_ = time2Runtime_;
         if (paramsBuilder_ == null) {
-          if (((bitField0_ & 0x00001000) == 0x00001000)) {
+          if (((bitField0_ & 0x00000200) == 0x00000200)) {
             params_ = java.util.Collections.unmodifiableList(params_);
-            bitField0_ = (bitField0_ & ~0x00001000);
+            bitField0_ = (bitField0_ & ~0x00000200);
           }
           result.params_ = params_;
         } else {
@@ -3386,8 +3302,15 @@ public final class GribCollectionProto {
         if (other.hasPds()) {
           setPds(other.getPds());
         }
-        if (other.hasCdmHash()) {
-          setCdmHash(other.getCdmHash());
+        if (!other.ids_.isEmpty()) {
+          if (ids_.isEmpty()) {
+            ids_ = other.ids_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureIdsIsMutable();
+            ids_.addAll(other.ids_);
+          }
+          onChanged();
         }
         if (other.hasRecordsPos()) {
           setRecordsPos(other.getRecordsPos());
@@ -3405,9 +3328,6 @@ public final class GribCollectionProto {
           }
           onChanged();
         }
-        if (other.hasDensity()) {
-          setDensity(other.getDensity());
-        }
         if (other.hasNdups()) {
           setNdups(other.getNdups());
         }
@@ -3417,31 +3337,11 @@ public final class GribCollectionProto {
         if (other.hasMissing()) {
           setMissing(other.getMissing());
         }
-        if (!other.invCount_.isEmpty()) {
-          if (invCount_.isEmpty()) {
-            invCount_ = other.invCount_;
-            bitField0_ = (bitField0_ & ~0x00000400);
-          } else {
-            ensureInvCountIsMutable();
-            invCount_.addAll(other.invCount_);
-          }
-          onChanged();
-        }
-        if (!other.time2Runtime_.isEmpty()) {
-          if (time2Runtime_.isEmpty()) {
-            time2Runtime_ = other.time2Runtime_;
-            bitField0_ = (bitField0_ & ~0x00000800);
-          } else {
-            ensureTime2RuntimeIsMutable();
-            time2Runtime_.addAll(other.time2Runtime_);
-          }
-          onChanged();
-        }
         if (paramsBuilder_ == null) {
           if (!other.params_.isEmpty()) {
             if (params_.isEmpty()) {
               params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00001000);
+              bitField0_ = (bitField0_ & ~0x00000200);
             } else {
               ensureParamsIsMutable();
               params_.addAll(other.params_);
@@ -3454,7 +3354,7 @@ public final class GribCollectionProto {
               paramsBuilder_.dispose();
               paramsBuilder_ = null;
               params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00001000);
+              bitField0_ = (bitField0_ & ~0x00000200);
               paramsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getParamsFieldBuilder() : null;
@@ -3474,10 +3374,6 @@ public final class GribCollectionProto {
           return false;
         }
         if (!hasPds()) {
-          
-          return false;
-        }
-        if (!hasCdmHash()) {
           
           return false;
         }
@@ -3606,35 +3502,96 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // required fixed32 cdmHash = 3;
-      private int cdmHash_ ;
-      /**
-       * <code>required fixed32 cdmHash = 3;</code>
-       */
-      public boolean hasCdmHash() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+      // repeated uint32 ids = 3;
+      private java.util.List<java.lang.Integer> ids_ = java.util.Collections.emptyList();
+      private void ensureIdsIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          ids_ = new java.util.ArrayList<java.lang.Integer>(ids_);
+          bitField0_ |= 0x00000004;
+         }
       }
       /**
-       * <code>required fixed32 cdmHash = 3;</code>
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
        */
-      public int getCdmHash() {
-        return cdmHash_;
+      public java.util.List<java.lang.Integer>
+          getIdsList() {
+        return java.util.Collections.unmodifiableList(ids_);
       }
       /**
-       * <code>required fixed32 cdmHash = 3;</code>
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
        */
-      public Builder setCdmHash(int value) {
-        bitField0_ |= 0x00000004;
-        cdmHash_ = value;
+      public int getIdsCount() {
+        return ids_.size();
+      }
+      /**
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
+       */
+      public int getIds(int index) {
+        return ids_.get(index);
+      }
+      /**
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
+       */
+      public Builder setIds(
+          int index, int value) {
+        ensureIdsIsMutable();
+        ids_.set(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>required fixed32 cdmHash = 3;</code>
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
        */
-      public Builder clearCdmHash() {
+      public Builder addIds(int value) {
+        ensureIdsIsMutable();
+        ids_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
+       */
+      public Builder addAllIds(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureIdsIsMutable();
+        super.addAll(values, ids_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ids = 3;</code>
+       *
+       * <pre>
+       * extra info not in pds; grib2 id section
+       * </pre>
+       */
+      public Builder clearIds() {
+        ids_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000004);
-        cdmHash_ = 0;
         onChanged();
         return this;
       }
@@ -3831,83 +3788,50 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // optional float density = 7;
-      private float density_ ;
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public boolean hasDensity() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public float getDensity() {
-        return density_;
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public Builder setDensity(float value) {
-        bitField0_ |= 0x00000040;
-        density_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional float density = 7;</code>
-       *
-       * <pre>
-       * optionally keep stats
-       * </pre>
-       */
-      public Builder clearDensity() {
-        bitField0_ = (bitField0_ & ~0x00000040);
-        density_ = 0F;
-        onChanged();
-        return this;
-      }
-
       // optional uint32 ndups = 8;
       private int ndups_ ;
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public boolean hasNdups() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public int getNdups() {
         return ndups_;
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public Builder setNdups(int value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000040;
         ndups_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>optional uint32 ndups = 8;</code>
+       *
+       * <pre>
+       * optionally keep stats
+       * </pre>
        */
       public Builder clearNdups() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         ndups_ = 0;
         onChanged();
         return this;
@@ -3919,7 +3843,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public boolean hasNrecords() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
        * <code>optional uint32 nrecords = 9;</code>
@@ -3931,7 +3855,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public Builder setNrecords(int value) {
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000080;
         nrecords_ = value;
         onChanged();
         return this;
@@ -3940,7 +3864,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 nrecords = 9;</code>
        */
       public Builder clearNrecords() {
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000080);
         nrecords_ = 0;
         onChanged();
         return this;
@@ -3952,7 +3876,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public boolean hasMissing() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
        * <code>optional uint32 missing = 10;</code>
@@ -3964,7 +3888,7 @@ public final class GribCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public Builder setMissing(int value) {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000100;
         missing_ = value;
         onChanged();
         return this;
@@ -3973,196 +3897,8 @@ public final class GribCollectionProto {
        * <code>optional uint32 missing = 10;</code>
        */
       public Builder clearMissing() {
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000100);
         missing_ = 0;
-        onChanged();
-        return this;
-      }
-
-      // repeated uint32 invCount = 15;
-      private java.util.List<java.lang.Integer> invCount_ = java.util.Collections.emptyList();
-      private void ensureInvCountIsMutable() {
-        if (!((bitField0_ & 0x00000400) == 0x00000400)) {
-          invCount_ = new java.util.ArrayList<java.lang.Integer>(invCount_);
-          bitField0_ |= 0x00000400;
-         }
-      }
-      /**
-       * <code>repeated uint32 invCount = 15;</code>
-       *
-       * <pre>
-       * for Coordinate TwoTimer, only 2D vars
-       * </pre>
-       */
-      public java.util.List<java.lang.Integer>
-          getInvCountList() {
-        return java.util.Collections.unmodifiableList(invCount_);
-      }
-      /**
-       * <code>repeated uint32 invCount = 15;</code>
-       *
-       * <pre>
-       * for Coordinate TwoTimer, only 2D vars
-       * </pre>
-       */
-      public int getInvCountCount() {
-        return invCount_.size();
-      }
-      /**
-       * <code>repeated uint32 invCount = 15;</code>
-       *
-       * <pre>
-       * for Coordinate TwoTimer, only 2D vars
-       * </pre>
-       */
-      public int getInvCount(int index) {
-        return invCount_.get(index);
-      }
-      /**
-       * <code>repeated uint32 invCount = 15;</code>
-       *
-       * <pre>
-       * for Coordinate TwoTimer, only 2D vars
-       * </pre>
-       */
-      public Builder setInvCount(
-          int index, int value) {
-        ensureInvCountIsMutable();
-        invCount_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 invCount = 15;</code>
-       *
-       * <pre>
-       * for Coordinate TwoTimer, only 2D vars
-       * </pre>
-       */
-      public Builder addInvCount(int value) {
-        ensureInvCountIsMutable();
-        invCount_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 invCount = 15;</code>
-       *
-       * <pre>
-       * for Coordinate TwoTimer, only 2D vars
-       * </pre>
-       */
-      public Builder addAllInvCount(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureInvCountIsMutable();
-        super.addAll(values, invCount_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 invCount = 15;</code>
-       *
-       * <pre>
-       * for Coordinate TwoTimer, only 2D vars
-       * </pre>
-       */
-      public Builder clearInvCount() {
-        invCount_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000400);
-        onChanged();
-        return this;
-      }
-
-      // repeated uint32 time2runtime = 16;
-      private java.util.List<java.lang.Integer> time2Runtime_ = java.util.Collections.emptyList();
-      private void ensureTime2RuntimeIsMutable() {
-        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
-          time2Runtime_ = new java.util.ArrayList<java.lang.Integer>(time2Runtime_);
-          bitField0_ |= 0x00000800;
-         }
-      }
-      /**
-       * <code>repeated uint32 time2runtime = 16;</code>
-       *
-       * <pre>
-       * time index to runtime index, only 1D vars
-       * </pre>
-       */
-      public java.util.List<java.lang.Integer>
-          getTime2RuntimeList() {
-        return java.util.Collections.unmodifiableList(time2Runtime_);
-      }
-      /**
-       * <code>repeated uint32 time2runtime = 16;</code>
-       *
-       * <pre>
-       * time index to runtime index, only 1D vars
-       * </pre>
-       */
-      public int getTime2RuntimeCount() {
-        return time2Runtime_.size();
-      }
-      /**
-       * <code>repeated uint32 time2runtime = 16;</code>
-       *
-       * <pre>
-       * time index to runtime index, only 1D vars
-       * </pre>
-       */
-      public int getTime2Runtime(int index) {
-        return time2Runtime_.get(index);
-      }
-      /**
-       * <code>repeated uint32 time2runtime = 16;</code>
-       *
-       * <pre>
-       * time index to runtime index, only 1D vars
-       * </pre>
-       */
-      public Builder setTime2Runtime(
-          int index, int value) {
-        ensureTime2RuntimeIsMutable();
-        time2Runtime_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 time2runtime = 16;</code>
-       *
-       * <pre>
-       * time index to runtime index, only 1D vars
-       * </pre>
-       */
-      public Builder addTime2Runtime(int value) {
-        ensureTime2RuntimeIsMutable();
-        time2Runtime_.add(value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 time2runtime = 16;</code>
-       *
-       * <pre>
-       * time index to runtime index, only 1D vars
-       * </pre>
-       */
-      public Builder addAllTime2Runtime(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureTime2RuntimeIsMutable();
-        super.addAll(values, time2Runtime_);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated uint32 time2runtime = 16;</code>
-       *
-       * <pre>
-       * time index to runtime index, only 1D vars
-       * </pre>
-       */
-      public Builder clearTime2Runtime() {
-        time2Runtime_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000800);
         onChanged();
         return this;
       }
@@ -4171,9 +3907,9 @@ public final class GribCollectionProto {
       private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter> params_ =
         java.util.Collections.emptyList();
       private void ensureParamsIsMutable() {
-        if (!((bitField0_ & 0x00001000) == 0x00001000)) {
+        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
           params_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Parameter>(params_);
-          bitField0_ |= 0x00001000;
+          bitField0_ |= 0x00000200;
          }
       }
 
@@ -4366,7 +4102,7 @@ public final class GribCollectionProto {
       public Builder clearParams() {
         if (paramsBuilder_ == null) {
           params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00001000);
+          bitField0_ = (bitField0_ & ~0x00000200);
           onChanged();
         } else {
           paramsBuilder_.clear();
@@ -4471,7 +4207,7 @@ public final class GribCollectionProto {
           paramsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.collection.GribCollectionProto.Parameter, ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder, ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder>(
                   params_,
-                  ((bitField0_ & 0x00001000) == 0x00001000),
+                  ((bitField0_ & 0x00000200) == 0x00000200),
                   getParentForChildren(),
                   isClean());
           params_ = null;
@@ -4690,6 +4426,32 @@ public final class GribCollectionProto {
      * </pre>
      */
     boolean getIsRegular();
+
+    // repeated uint32 time2runtime = 10;
+    /**
+     * <code>repeated uint32 time2runtime = 10;</code>
+     *
+     * <pre>
+     * time index to runtime index, only Best Time and TimeIntv
+     * </pre>
+     */
+    java.util.List<java.lang.Integer> getTime2RuntimeList();
+    /**
+     * <code>repeated uint32 time2runtime = 10;</code>
+     *
+     * <pre>
+     * time index to runtime index, only Best Time and TimeIntv
+     * </pre>
+     */
+    int getTime2RuntimeCount();
+    /**
+     * <code>repeated uint32 time2runtime = 10;</code>
+     *
+     * <pre>
+     * time index to runtime index, only Best Time and TimeIntv
+     * </pre>
+     */
+    int getTime2Runtime(int index);
   }
   /**
    * Protobuf type {@code Coord}
@@ -4838,6 +4600,27 @@ public final class GribCollectionProto {
               isRegular_ = input.readBool();
               break;
             }
+            case 80: {
+              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
+                time2Runtime_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000200;
+              }
+              time2Runtime_.add(input.readUInt32());
+              break;
+            }
+            case 82: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200) && input.getBytesUntilLimit() > 0) {
+                time2Runtime_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000200;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                time2Runtime_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -4857,6 +4640,9 @@ public final class GribCollectionProto {
         }
         if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
           times_ = java.util.Collections.unmodifiableList(times_);
+        }
+        if (((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
+          time2Runtime_ = java.util.Collections.unmodifiableList(time2Runtime_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -5178,6 +4964,41 @@ public final class GribCollectionProto {
       return isRegular_;
     }
 
+    // repeated uint32 time2runtime = 10;
+    public static final int TIME2RUNTIME_FIELD_NUMBER = 10;
+    private java.util.List<java.lang.Integer> time2Runtime_;
+    /**
+     * <code>repeated uint32 time2runtime = 10;</code>
+     *
+     * <pre>
+     * time index to runtime index, only Best Time and TimeIntv
+     * </pre>
+     */
+    public java.util.List<java.lang.Integer>
+        getTime2RuntimeList() {
+      return time2Runtime_;
+    }
+    /**
+     * <code>repeated uint32 time2runtime = 10;</code>
+     *
+     * <pre>
+     * time index to runtime index, only Best Time and TimeIntv
+     * </pre>
+     */
+    public int getTime2RuntimeCount() {
+      return time2Runtime_.size();
+    }
+    /**
+     * <code>repeated uint32 time2runtime = 10;</code>
+     *
+     * <pre>
+     * time index to runtime index, only Best Time and TimeIntv
+     * </pre>
+     */
+    public int getTime2Runtime(int index) {
+      return time2Runtime_.get(index);
+    }
+
     private void initFields() {
       type_ = 0;
       code_ = 0;
@@ -5188,6 +5009,7 @@ public final class GribCollectionProto {
       times_ = java.util.Collections.emptyList();
       isOrthogonal_ = false;
       isRegular_ = false;
+      time2Runtime_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5242,6 +5064,9 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBool(9, isRegular_);
       }
+      for (int i = 0; i < time2Runtime_.size(); i++) {
+        output.writeUInt32(10, time2Runtime_.get(i));
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -5295,6 +5120,15 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(9, isRegular_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < time2Runtime_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(time2Runtime_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getTime2RuntimeList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5435,6 +5269,8 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000080);
         isRegular_ = false;
         bitField0_ = (bitField0_ & ~0x00000100);
+        time2Runtime_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
 
@@ -5507,6 +5343,11 @@ public final class GribCollectionProto {
           to_bitField0_ |= 0x00000010;
         }
         result.isRegular_ = isRegular_;
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+          time2Runtime_ = java.util.Collections.unmodifiableList(time2Runtime_);
+          bitField0_ = (bitField0_ & ~0x00000200);
+        }
+        result.time2Runtime_ = time2Runtime_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5595,6 +5436,16 @@ public final class GribCollectionProto {
         }
         if (other.hasIsRegular()) {
           setIsRegular(other.getIsRegular());
+        }
+        if (!other.time2Runtime_.isEmpty()) {
+          if (time2Runtime_.isEmpty()) {
+            time2Runtime_ = other.time2Runtime_;
+            bitField0_ = (bitField0_ & ~0x00000200);
+          } else {
+            ensureTime2RuntimeIsMutable();
+            time2Runtime_.addAll(other.time2Runtime_);
+          }
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -6473,6 +6324,100 @@ public final class GribCollectionProto {
         return this;
       }
 
+      // repeated uint32 time2runtime = 10;
+      private java.util.List<java.lang.Integer> time2Runtime_ = java.util.Collections.emptyList();
+      private void ensureTime2RuntimeIsMutable() {
+        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
+          time2Runtime_ = new java.util.ArrayList<java.lang.Integer>(time2Runtime_);
+          bitField0_ |= 0x00000200;
+         }
+      }
+      /**
+       * <code>repeated uint32 time2runtime = 10;</code>
+       *
+       * <pre>
+       * time index to runtime index, only Best Time and TimeIntv
+       * </pre>
+       */
+      public java.util.List<java.lang.Integer>
+          getTime2RuntimeList() {
+        return java.util.Collections.unmodifiableList(time2Runtime_);
+      }
+      /**
+       * <code>repeated uint32 time2runtime = 10;</code>
+       *
+       * <pre>
+       * time index to runtime index, only Best Time and TimeIntv
+       * </pre>
+       */
+      public int getTime2RuntimeCount() {
+        return time2Runtime_.size();
+      }
+      /**
+       * <code>repeated uint32 time2runtime = 10;</code>
+       *
+       * <pre>
+       * time index to runtime index, only Best Time and TimeIntv
+       * </pre>
+       */
+      public int getTime2Runtime(int index) {
+        return time2Runtime_.get(index);
+      }
+      /**
+       * <code>repeated uint32 time2runtime = 10;</code>
+       *
+       * <pre>
+       * time index to runtime index, only Best Time and TimeIntv
+       * </pre>
+       */
+      public Builder setTime2Runtime(
+          int index, int value) {
+        ensureTime2RuntimeIsMutable();
+        time2Runtime_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 time2runtime = 10;</code>
+       *
+       * <pre>
+       * time index to runtime index, only Best Time and TimeIntv
+       * </pre>
+       */
+      public Builder addTime2Runtime(int value) {
+        ensureTime2RuntimeIsMutable();
+        time2Runtime_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 time2runtime = 10;</code>
+       *
+       * <pre>
+       * time index to runtime index, only Best Time and TimeIntv
+       * </pre>
+       */
+      public Builder addAllTime2Runtime(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureTime2RuntimeIsMutable();
+        super.addAll(values, time2Runtime_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 time2runtime = 10;</code>
+       *
+       * <pre>
+       * time index to runtime index, only Best Time and TimeIntv
+       * </pre>
+       */
+      public Builder clearTime2Runtime() {
+        time2Runtime_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000200);
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:Coord)
     }
 
@@ -6482,743 +6427,6 @@ public final class GribCollectionProto {
     }
 
     // @@protoc_insertion_point(class_scope:Coord)
-  }
-
-  public interface MFileOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-
-    // required string filename = 1;
-    /**
-     * <code>required string filename = 1;</code>
-     *
-     * <pre>
-     * reletive to topDir
-     * </pre>
-     */
-    boolean hasFilename();
-    /**
-     * <code>required string filename = 1;</code>
-     *
-     * <pre>
-     * reletive to topDir
-     * </pre>
-     */
-    java.lang.String getFilename();
-    /**
-     * <code>required string filename = 1;</code>
-     *
-     * <pre>
-     * reletive to topDir
-     * </pre>
-     */
-    com.google.protobuf.ByteString
-        getFilenameBytes();
-
-    // required uint64 lastModified = 2;
-    /**
-     * <code>required uint64 lastModified = 2;</code>
-     */
-    boolean hasLastModified();
-    /**
-     * <code>required uint64 lastModified = 2;</code>
-     */
-    long getLastModified();
-
-    // required uint32 index = 3;
-    /**
-     * <code>required uint32 index = 3;</code>
-     *
-     * <pre>
-     * the records use this number
-     * </pre>
-     */
-    boolean hasIndex();
-    /**
-     * <code>required uint32 index = 3;</code>
-     *
-     * <pre>
-     * the records use this number
-     * </pre>
-     */
-    int getIndex();
-  }
-  /**
-   * Protobuf type {@code MFile}
-   */
-  public static final class MFile extends
-      com.google.protobuf.GeneratedMessage
-      implements MFileOrBuilder {
-    // Use MFile.newBuilder() to construct.
-    private MFile(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
-      super(builder);
-      this.unknownFields = builder.getUnknownFields();
-    }
-    private MFile(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final MFile defaultInstance;
-    public static MFile getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public MFile getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private MFile(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              filename_ = input.readBytes();
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              lastModified_ = input.readUInt64();
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000004;
-              index_ = input.readUInt32();
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              ucar.nc2.grib.collection.GribCollectionProto.MFile.class, ucar.nc2.grib.collection.GribCollectionProto.MFile.Builder.class);
-    }
-
-    public static com.google.protobuf.Parser<MFile> PARSER =
-        new com.google.protobuf.AbstractParser<MFile>() {
-      public MFile parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new MFile(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<MFile> getParserForType() {
-      return PARSER;
-    }
-
-    private int bitField0_;
-    // required string filename = 1;
-    public static final int FILENAME_FIELD_NUMBER = 1;
-    private java.lang.Object filename_;
-    /**
-     * <code>required string filename = 1;</code>
-     *
-     * <pre>
-     * reletive to topDir
-     * </pre>
-     */
-    public boolean hasFilename() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required string filename = 1;</code>
-     *
-     * <pre>
-     * reletive to topDir
-     * </pre>
-     */
-    public java.lang.String getFilename() {
-      java.lang.Object ref = filename_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          filename_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>required string filename = 1;</code>
-     *
-     * <pre>
-     * reletive to topDir
-     * </pre>
-     */
-    public com.google.protobuf.ByteString
-        getFilenameBytes() {
-      java.lang.Object ref = filename_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        filename_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // required uint64 lastModified = 2;
-    public static final int LASTMODIFIED_FIELD_NUMBER = 2;
-    private long lastModified_;
-    /**
-     * <code>required uint64 lastModified = 2;</code>
-     */
-    public boolean hasLastModified() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required uint64 lastModified = 2;</code>
-     */
-    public long getLastModified() {
-      return lastModified_;
-    }
-
-    // required uint32 index = 3;
-    public static final int INDEX_FIELD_NUMBER = 3;
-    private int index_;
-    /**
-     * <code>required uint32 index = 3;</code>
-     *
-     * <pre>
-     * the records use this number
-     * </pre>
-     */
-    public boolean hasIndex() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>required uint32 index = 3;</code>
-     *
-     * <pre>
-     * the records use this number
-     * </pre>
-     */
-    public int getIndex() {
-      return index_;
-    }
-
-    private void initFields() {
-      filename_ = "";
-      lastModified_ = 0L;
-      index_ = 0;
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-
-      if (!hasFilename()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasLastModified()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasIndex()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getFilenameBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeUInt64(2, lastModified_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeUInt32(3, index_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getFilenameBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(2, lastModified_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(3, index_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.MFile prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code MFile}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements ucar.nc2.grib.collection.GribCollectionProto.MFileOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                ucar.nc2.grib.collection.GribCollectionProto.MFile.class, ucar.nc2.grib.collection.GribCollectionProto.MFile.Builder.class);
-      }
-
-      // Construct using ucar.nc2.grib.collection.GribCollectionProto.MFile.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        filename_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        lastModified_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        index_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_descriptor;
-      }
-
-      public ucar.nc2.grib.collection.GribCollectionProto.MFile getDefaultInstanceForType() {
-        return ucar.nc2.grib.collection.GribCollectionProto.MFile.getDefaultInstance();
-      }
-
-      public ucar.nc2.grib.collection.GribCollectionProto.MFile build() {
-        ucar.nc2.grib.collection.GribCollectionProto.MFile result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public ucar.nc2.grib.collection.GribCollectionProto.MFile buildPartial() {
-        ucar.nc2.grib.collection.GribCollectionProto.MFile result = new ucar.nc2.grib.collection.GribCollectionProto.MFile(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.filename_ = filename_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.lastModified_ = lastModified_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.index_ = index_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.MFile) {
-          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.MFile)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.MFile other) {
-        if (other == ucar.nc2.grib.collection.GribCollectionProto.MFile.getDefaultInstance()) return this;
-        if (other.hasFilename()) {
-          bitField0_ |= 0x00000001;
-          filename_ = other.filename_;
-          onChanged();
-        }
-        if (other.hasLastModified()) {
-          setLastModified(other.getLastModified());
-        }
-        if (other.hasIndex()) {
-          setIndex(other.getIndex());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        if (!hasFilename()) {
-          
-          return false;
-        }
-        if (!hasLastModified()) {
-          
-          return false;
-        }
-        if (!hasIndex()) {
-          
-          return false;
-        }
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        ucar.nc2.grib.collection.GribCollectionProto.MFile parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.MFile) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      // required string filename = 1;
-      private java.lang.Object filename_ = "";
-      /**
-       * <code>required string filename = 1;</code>
-       *
-       * <pre>
-       * reletive to topDir
-       * </pre>
-       */
-      public boolean hasFilename() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required string filename = 1;</code>
-       *
-       * <pre>
-       * reletive to topDir
-       * </pre>
-       */
-      public java.lang.String getFilename() {
-        java.lang.Object ref = filename_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          filename_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>required string filename = 1;</code>
-       *
-       * <pre>
-       * reletive to topDir
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getFilenameBytes() {
-        java.lang.Object ref = filename_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          filename_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>required string filename = 1;</code>
-       *
-       * <pre>
-       * reletive to topDir
-       * </pre>
-       */
-      public Builder setFilename(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        filename_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string filename = 1;</code>
-       *
-       * <pre>
-       * reletive to topDir
-       * </pre>
-       */
-      public Builder clearFilename() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        filename_ = getDefaultInstance().getFilename();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string filename = 1;</code>
-       *
-       * <pre>
-       * reletive to topDir
-       * </pre>
-       */
-      public Builder setFilenameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        filename_ = value;
-        onChanged();
-        return this;
-      }
-
-      // required uint64 lastModified = 2;
-      private long lastModified_ ;
-      /**
-       * <code>required uint64 lastModified = 2;</code>
-       */
-      public boolean hasLastModified() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required uint64 lastModified = 2;</code>
-       */
-      public long getLastModified() {
-        return lastModified_;
-      }
-      /**
-       * <code>required uint64 lastModified = 2;</code>
-       */
-      public Builder setLastModified(long value) {
-        bitField0_ |= 0x00000002;
-        lastModified_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required uint64 lastModified = 2;</code>
-       */
-      public Builder clearLastModified() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        lastModified_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // required uint32 index = 3;
-      private int index_ ;
-      /**
-       * <code>required uint32 index = 3;</code>
-       *
-       * <pre>
-       * the records use this number
-       * </pre>
-       */
-      public boolean hasIndex() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>required uint32 index = 3;</code>
-       *
-       * <pre>
-       * the records use this number
-       * </pre>
-       */
-      public int getIndex() {
-        return index_;
-      }
-      /**
-       * <code>required uint32 index = 3;</code>
-       *
-       * <pre>
-       * the records use this number
-       * </pre>
-       */
-      public Builder setIndex(int value) {
-        bitField0_ |= 0x00000004;
-        index_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required uint32 index = 3;</code>
-       *
-       * <pre>
-       * the records use this number
-       * </pre>
-       */
-      public Builder clearIndex() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        index_ = 0;
-        onChanged();
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:MFile)
-    }
-
-    static {
-      defaultInstance = new MFile(true);
-      defaultInstance.initFields();
-    }
-
-    // @@protoc_insertion_point(class_scope:MFile)
   }
 
   public interface ParameterOrBuilder
@@ -8066,7 +7274,7 @@ public final class GribCollectionProto {
      * <code>optional bytes gds = 1;</code>
      *
      * <pre>
-     * raw gds
+     * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
      * </pre>
      */
     boolean hasGds();
@@ -8074,51 +7282,14 @@ public final class GribCollectionProto {
      * <code>optional bytes gds = 1;</code>
      *
      * <pre>
-     * raw gds
+     * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
      * </pre>
      */
     com.google.protobuf.ByteString getGds();
 
-    // optional sint32 gdsHash = 2 [default = 0];
+    // optional uint32 predefinedGridDefinition = 2;
     /**
-     * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-     */
-    boolean hasGdsHash();
-    /**
-     * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-     */
-    int getGdsHash();
-
-    // optional string nameOverride = 3;
-    /**
-     * <code>optional string nameOverride = 3;</code>
-     *
-     * <pre>
-     * only when user overrides default name
-     * </pre>
-     */
-    boolean hasNameOverride();
-    /**
-     * <code>optional string nameOverride = 3;</code>
-     *
-     * <pre>
-     * only when user overrides default name
-     * </pre>
-     */
-    java.lang.String getNameOverride();
-    /**
-     * <code>optional string nameOverride = 3;</code>
-     *
-     * <pre>
-     * only when user overrides default name
-     * </pre>
-     */
-    com.google.protobuf.ByteString
-        getNameOverrideBytes();
-
-    // optional uint32 predefinedGridDefinition = 4;
-    /**
-     * <code>optional uint32 predefinedGridDefinition = 4;</code>
+     * <code>optional uint32 predefinedGridDefinition = 2;</code>
      *
      * <pre>
      * only grib1; instead of gds raw bytes
@@ -8126,7 +7297,7 @@ public final class GribCollectionProto {
      */
     boolean hasPredefinedGridDefinition();
     /**
-     * <code>optional uint32 predefinedGridDefinition = 4;</code>
+     * <code>optional uint32 predefinedGridDefinition = 2;</code>
      *
      * <pre>
      * only grib1; instead of gds raw bytes
@@ -8192,16 +7363,6 @@ public final class GribCollectionProto {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              gdsHash_ = input.readSInt32();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              nameOverride_ = input.readBytes();
-              break;
-            }
-            case 32: {
-              bitField0_ |= 0x00000008;
               predefinedGridDefinition_ = input.readUInt32();
               break;
             }
@@ -8252,7 +7413,7 @@ public final class GribCollectionProto {
      * <code>optional bytes gds = 1;</code>
      *
      * <pre>
-     * raw gds
+     * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
      * </pre>
      */
     public boolean hasGds() {
@@ -8262,99 +7423,28 @@ public final class GribCollectionProto {
      * <code>optional bytes gds = 1;</code>
      *
      * <pre>
-     * raw gds
+     * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
      * </pre>
      */
     public com.google.protobuf.ByteString getGds() {
       return gds_;
     }
 
-    // optional sint32 gdsHash = 2 [default = 0];
-    public static final int GDSHASH_FIELD_NUMBER = 2;
-    private int gdsHash_;
-    /**
-     * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-     */
-    public boolean hasGdsHash() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-     */
-    public int getGdsHash() {
-      return gdsHash_;
-    }
-
-    // optional string nameOverride = 3;
-    public static final int NAMEOVERRIDE_FIELD_NUMBER = 3;
-    private java.lang.Object nameOverride_;
-    /**
-     * <code>optional string nameOverride = 3;</code>
-     *
-     * <pre>
-     * only when user overrides default name
-     * </pre>
-     */
-    public boolean hasNameOverride() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>optional string nameOverride = 3;</code>
-     *
-     * <pre>
-     * only when user overrides default name
-     * </pre>
-     */
-    public java.lang.String getNameOverride() {
-      java.lang.Object ref = nameOverride_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          nameOverride_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string nameOverride = 3;</code>
-     *
-     * <pre>
-     * only when user overrides default name
-     * </pre>
-     */
-    public com.google.protobuf.ByteString
-        getNameOverrideBytes() {
-      java.lang.Object ref = nameOverride_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        nameOverride_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional uint32 predefinedGridDefinition = 4;
-    public static final int PREDEFINEDGRIDDEFINITION_FIELD_NUMBER = 4;
+    // optional uint32 predefinedGridDefinition = 2;
+    public static final int PREDEFINEDGRIDDEFINITION_FIELD_NUMBER = 2;
     private int predefinedGridDefinition_;
     /**
-     * <code>optional uint32 predefinedGridDefinition = 4;</code>
+     * <code>optional uint32 predefinedGridDefinition = 2;</code>
      *
      * <pre>
      * only grib1; instead of gds raw bytes
      * </pre>
      */
     public boolean hasPredefinedGridDefinition() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional uint32 predefinedGridDefinition = 4;</code>
+     * <code>optional uint32 predefinedGridDefinition = 2;</code>
      *
      * <pre>
      * only grib1; instead of gds raw bytes
@@ -8366,8 +7456,6 @@ public final class GribCollectionProto {
 
     private void initFields() {
       gds_ = com.google.protobuf.ByteString.EMPTY;
-      gdsHash_ = 0;
-      nameOverride_ = "";
       predefinedGridDefinition_ = 0;
     }
     private byte memoizedIsInitialized = -1;
@@ -8386,13 +7474,7 @@ public final class GribCollectionProto {
         output.writeBytes(1, gds_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeSInt32(2, gdsHash_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getNameOverrideBytes());
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeUInt32(4, predefinedGridDefinition_);
+        output.writeUInt32(2, predefinedGridDefinition_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -8409,15 +7491,7 @@ public final class GribCollectionProto {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeSInt32Size(2, gdsHash_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getNameOverrideBytes());
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(4, predefinedGridDefinition_);
+          .computeUInt32Size(2, predefinedGridDefinition_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -8537,12 +7611,8 @@ public final class GribCollectionProto {
         super.clear();
         gds_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
-        gdsHash_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        nameOverride_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
         predefinedGridDefinition_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -8578,14 +7648,6 @@ public final class GribCollectionProto {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.gdsHash_ = gdsHash_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.nameOverride_ = nameOverride_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
         result.predefinedGridDefinition_ = predefinedGridDefinition_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -8605,14 +7667,6 @@ public final class GribCollectionProto {
         if (other == ucar.nc2.grib.collection.GribCollectionProto.Gds.getDefaultInstance()) return this;
         if (other.hasGds()) {
           setGds(other.getGds());
-        }
-        if (other.hasGdsHash()) {
-          setGdsHash(other.getGdsHash());
-        }
-        if (other.hasNameOverride()) {
-          bitField0_ |= 0x00000004;
-          nameOverride_ = other.nameOverride_;
-          onChanged();
         }
         if (other.hasPredefinedGridDefinition()) {
           setPredefinedGridDefinition(other.getPredefinedGridDefinition());
@@ -8650,7 +7704,7 @@ public final class GribCollectionProto {
        * <code>optional bytes gds = 1;</code>
        *
        * <pre>
-       * raw gds
+       * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
        * </pre>
        */
       public boolean hasGds() {
@@ -8660,7 +7714,7 @@ public final class GribCollectionProto {
        * <code>optional bytes gds = 1;</code>
        *
        * <pre>
-       * raw gds
+       * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
        * </pre>
        */
       public com.google.protobuf.ByteString getGds() {
@@ -8670,7 +7724,7 @@ public final class GribCollectionProto {
        * <code>optional bytes gds = 1;</code>
        *
        * <pre>
-       * raw gds
+       * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
        * </pre>
        */
       public Builder setGds(com.google.protobuf.ByteString value) {
@@ -8686,7 +7740,7 @@ public final class GribCollectionProto {
        * <code>optional bytes gds = 1;</code>
        *
        * <pre>
-       * raw gds
+       * raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
        * </pre>
        */
       public Builder clearGds() {
@@ -8696,151 +7750,20 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // optional sint32 gdsHash = 2 [default = 0];
-      private int gdsHash_ ;
-      /**
-       * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-       */
-      public boolean hasGdsHash() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-       */
-      public int getGdsHash() {
-        return gdsHash_;
-      }
-      /**
-       * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-       */
-      public Builder setGdsHash(int value) {
-        bitField0_ |= 0x00000002;
-        gdsHash_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional sint32 gdsHash = 2 [default = 0];</code>
-       */
-      public Builder clearGdsHash() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        gdsHash_ = 0;
-        onChanged();
-        return this;
-      }
-
-      // optional string nameOverride = 3;
-      private java.lang.Object nameOverride_ = "";
-      /**
-       * <code>optional string nameOverride = 3;</code>
-       *
-       * <pre>
-       * only when user overrides default name
-       * </pre>
-       */
-      public boolean hasNameOverride() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional string nameOverride = 3;</code>
-       *
-       * <pre>
-       * only when user overrides default name
-       * </pre>
-       */
-      public java.lang.String getNameOverride() {
-        java.lang.Object ref = nameOverride_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          nameOverride_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string nameOverride = 3;</code>
-       *
-       * <pre>
-       * only when user overrides default name
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getNameOverrideBytes() {
-        java.lang.Object ref = nameOverride_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          nameOverride_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string nameOverride = 3;</code>
-       *
-       * <pre>
-       * only when user overrides default name
-       * </pre>
-       */
-      public Builder setNameOverride(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        nameOverride_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string nameOverride = 3;</code>
-       *
-       * <pre>
-       * only when user overrides default name
-       * </pre>
-       */
-      public Builder clearNameOverride() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        nameOverride_ = getDefaultInstance().getNameOverride();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string nameOverride = 3;</code>
-       *
-       * <pre>
-       * only when user overrides default name
-       * </pre>
-       */
-      public Builder setNameOverrideBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        nameOverride_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional uint32 predefinedGridDefinition = 4;
+      // optional uint32 predefinedGridDefinition = 2;
       private int predefinedGridDefinition_ ;
       /**
-       * <code>optional uint32 predefinedGridDefinition = 4;</code>
+       * <code>optional uint32 predefinedGridDefinition = 2;</code>
        *
        * <pre>
        * only grib1; instead of gds raw bytes
        * </pre>
        */
       public boolean hasPredefinedGridDefinition() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional uint32 predefinedGridDefinition = 4;</code>
+       * <code>optional uint32 predefinedGridDefinition = 2;</code>
        *
        * <pre>
        * only grib1; instead of gds raw bytes
@@ -8850,27 +7773,27 @@ public final class GribCollectionProto {
         return predefinedGridDefinition_;
       }
       /**
-       * <code>optional uint32 predefinedGridDefinition = 4;</code>
+       * <code>optional uint32 predefinedGridDefinition = 2;</code>
        *
        * <pre>
        * only grib1; instead of gds raw bytes
        * </pre>
        */
       public Builder setPredefinedGridDefinition(int value) {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000002;
         predefinedGridDefinition_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional uint32 predefinedGridDefinition = 4;</code>
+       * <code>optional uint32 predefinedGridDefinition = 2;</code>
        *
        * <pre>
        * only grib1; instead of gds raw bytes
        * </pre>
        */
       public Builder clearPredefinedGridDefinition() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000002);
         predefinedGridDefinition_ = 0;
         onChanged();
         return this;
@@ -9030,7 +7953,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions
+     * has 2 time dimensions  -- NOT USED
      * </pre>
      */
     boolean hasIsTwod();
@@ -9038,7 +7961,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions
+     * has 2 time dimensions  -- NOT USED
      * </pre>
      */
     boolean getIsTwod();
@@ -9424,7 +8347,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions
+     * has 2 time dimensions  -- NOT USED
      * </pre>
      */
     public boolean hasIsTwod() {
@@ -9434,7 +8357,7 @@ public final class GribCollectionProto {
      * <code>required bool isTwod = 5;</code>
      *
      * <pre>
-     * has 2 time dimensions
+     * has 2 time dimensions  -- NOT USED
      * </pre>
      */
     public boolean getIsTwod() {
@@ -10760,7 +9683,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions
+       * has 2 time dimensions  -- NOT USED
        * </pre>
        */
       public boolean hasIsTwod() {
@@ -10770,7 +9693,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions
+       * has 2 time dimensions  -- NOT USED
        * </pre>
        */
       public boolean getIsTwod() {
@@ -10780,7 +9703,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions
+       * has 2 time dimensions  -- NOT USED
        * </pre>
        */
       public Builder setIsTwod(boolean value) {
@@ -10793,7 +9716,7 @@ public final class GribCollectionProto {
        * <code>required bool isTwod = 5;</code>
        *
        * <pre>
-       * has 2 time dimensions
+       * has 2 time dimensions  -- NOT USED
        * </pre>
        */
       public Builder clearIsTwod() {
@@ -11283,36 +10206,132 @@ public final class GribCollectionProto {
         implements com.google.protobuf.ProtocolMessageEnum {
       /**
        * <code>GC = 0;</code>
+       *
+       * <pre>
+       * leaf collection
+       * </pre>
        */
       GC(0, 0),
       /**
-       * <code>TwoD = 1;</code>
+       * <code>SRC = 4;</code>
+       *
+       * <pre>
+       * single runtime collection
+       * </pre>
        */
-      TwoD(1, 1),
+      SRC(1, 4),
+      /**
+       * <code>MRC = 5;</code>
+       *
+       * <pre>
+       * multiple runtime collection
+       * </pre>
+       */
+      MRC(2, 5),
+      /**
+       * <code>MRSTC = 6;</code>
+       *
+       * <pre>
+       * multiple runtime single time collection
+       * </pre>
+       */
+      MRSTC(3, 6),
+      /**
+       * <code>TP = 7;</code>
+       *
+       * <pre>
+       * time partition collection 1D
+       * </pre>
+       */
+      TP(4, 7),
+      /**
+       * <code>TwoD = 1;</code>
+       *
+       * <pre>
+       * time partition 2D
+       * </pre>
+       */
+      TwoD(5, 1),
       /**
        * <code>Best = 2;</code>
+       *
+       * <pre>
+       * time partition Best
+       * </pre>
        */
-      Best(2, 2),
+      Best(6, 2),
       /**
        * <code>Analysis = 3;</code>
+       *
+       * <pre>
+       * not implemented yet
+       * </pre>
        */
-      Analysis(3, 3),
+      Analysis(7, 3),
       ;
 
       /**
        * <code>GC = 0;</code>
+       *
+       * <pre>
+       * leaf collection
+       * </pre>
        */
       public static final int GC_VALUE = 0;
       /**
+       * <code>SRC = 4;</code>
+       *
+       * <pre>
+       * single runtime collection
+       * </pre>
+       */
+      public static final int SRC_VALUE = 4;
+      /**
+       * <code>MRC = 5;</code>
+       *
+       * <pre>
+       * multiple runtime collection
+       * </pre>
+       */
+      public static final int MRC_VALUE = 5;
+      /**
+       * <code>MRSTC = 6;</code>
+       *
+       * <pre>
+       * multiple runtime single time collection
+       * </pre>
+       */
+      public static final int MRSTC_VALUE = 6;
+      /**
+       * <code>TP = 7;</code>
+       *
+       * <pre>
+       * time partition collection 1D
+       * </pre>
+       */
+      public static final int TP_VALUE = 7;
+      /**
        * <code>TwoD = 1;</code>
+       *
+       * <pre>
+       * time partition 2D
+       * </pre>
        */
       public static final int TwoD_VALUE = 1;
       /**
        * <code>Best = 2;</code>
+       *
+       * <pre>
+       * time partition Best
+       * </pre>
        */
       public static final int Best_VALUE = 2;
       /**
        * <code>Analysis = 3;</code>
+       *
+       * <pre>
+       * not implemented yet
+       * </pre>
        */
       public static final int Analysis_VALUE = 3;
 
@@ -11322,6 +10341,10 @@ public final class GribCollectionProto {
       public static Type valueOf(int value) {
         switch (value) {
           case 0: return GC;
+          case 4: return SRC;
+          case 5: return MRC;
+          case 6: return MRSTC;
+          case 7: return TP;
           case 1: return TwoD;
           case 2: return Best;
           case 3: return Analysis;
@@ -12013,6 +11036,824 @@ public final class GribCollectionProto {
     // @@protoc_insertion_point(class_scope:Dataset)
   }
 
+  public interface MFileOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string filename = 1;
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to topDir
+     * </pre>
+     */
+    boolean hasFilename();
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to topDir
+     * </pre>
+     */
+    java.lang.String getFilename();
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to topDir
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getFilenameBytes();
+
+    // required uint64 lastModified = 2;
+    /**
+     * <code>required uint64 lastModified = 2;</code>
+     */
+    boolean hasLastModified();
+    /**
+     * <code>required uint64 lastModified = 2;</code>
+     */
+    long getLastModified();
+
+    // required uint32 index = 3;
+    /**
+     * <code>required uint32 index = 3;</code>
+     *
+     * <pre>
+     * the records use this number
+     * </pre>
+     */
+    boolean hasIndex();
+    /**
+     * <code>required uint32 index = 3;</code>
+     *
+     * <pre>
+     * the records use this number
+     * </pre>
+     */
+    int getIndex();
+
+    // optional uint64 length = 4 [default = 0];
+    /**
+     * <code>optional uint64 length = 4 [default = 0];</code>
+     */
+    boolean hasLength();
+    /**
+     * <code>optional uint64 length = 4 [default = 0];</code>
+     */
+    long getLength();
+  }
+  /**
+   * Protobuf type {@code MFile}
+   */
+  public static final class MFile extends
+      com.google.protobuf.GeneratedMessage
+      implements MFileOrBuilder {
+    // Use MFile.newBuilder() to construct.
+    private MFile(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private MFile(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final MFile defaultInstance;
+    public static MFile getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public MFile getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private MFile(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              filename_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              lastModified_ = input.readUInt64();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              index_ = input.readUInt32();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              length_ = input.readUInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.grib.collection.GribCollectionProto.MFile.class, ucar.nc2.grib.collection.GribCollectionProto.MFile.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<MFile> PARSER =
+        new com.google.protobuf.AbstractParser<MFile>() {
+      public MFile parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new MFile(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<MFile> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string filename = 1;
+    public static final int FILENAME_FIELD_NUMBER = 1;
+    private java.lang.Object filename_;
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to topDir
+     * </pre>
+     */
+    public boolean hasFilename() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to topDir
+     * </pre>
+     */
+    public java.lang.String getFilename() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          filename_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string filename = 1;</code>
+     *
+     * <pre>
+     * reletive to topDir
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getFilenameBytes() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        filename_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required uint64 lastModified = 2;
+    public static final int LASTMODIFIED_FIELD_NUMBER = 2;
+    private long lastModified_;
+    /**
+     * <code>required uint64 lastModified = 2;</code>
+     */
+    public boolean hasLastModified() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required uint64 lastModified = 2;</code>
+     */
+    public long getLastModified() {
+      return lastModified_;
+    }
+
+    // required uint32 index = 3;
+    public static final int INDEX_FIELD_NUMBER = 3;
+    private int index_;
+    /**
+     * <code>required uint32 index = 3;</code>
+     *
+     * <pre>
+     * the records use this number
+     * </pre>
+     */
+    public boolean hasIndex() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required uint32 index = 3;</code>
+     *
+     * <pre>
+     * the records use this number
+     * </pre>
+     */
+    public int getIndex() {
+      return index_;
+    }
+
+    // optional uint64 length = 4 [default = 0];
+    public static final int LENGTH_FIELD_NUMBER = 4;
+    private long length_;
+    /**
+     * <code>optional uint64 length = 4 [default = 0];</code>
+     */
+    public boolean hasLength() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional uint64 length = 4 [default = 0];</code>
+     */
+    public long getLength() {
+      return length_;
+    }
+
+    private void initFields() {
+      filename_ = "";
+      lastModified_ = 0L;
+      index_ = 0;
+      length_ = 0L;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasFilename()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLastModified()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasIndex()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getFilenameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt64(2, lastModified_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(3, index_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeUInt64(4, length_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getFilenameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(2, lastModified_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, index_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(4, length_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.MFile parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.MFile prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code MFile}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.grib.collection.GribCollectionProto.MFileOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.grib.collection.GribCollectionProto.MFile.class, ucar.nc2.grib.collection.GribCollectionProto.MFile.Builder.class);
+      }
+
+      // Construct using ucar.nc2.grib.collection.GribCollectionProto.MFile.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        filename_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lastModified_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        index_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        length_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_MFile_descriptor;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.MFile getDefaultInstanceForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.MFile.getDefaultInstance();
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.MFile build() {
+        ucar.nc2.grib.collection.GribCollectionProto.MFile result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.MFile buildPartial() {
+        ucar.nc2.grib.collection.GribCollectionProto.MFile result = new ucar.nc2.grib.collection.GribCollectionProto.MFile(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.filename_ = filename_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.lastModified_ = lastModified_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.index_ = index_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.length_ = length_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.MFile) {
+          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.MFile)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.MFile other) {
+        if (other == ucar.nc2.grib.collection.GribCollectionProto.MFile.getDefaultInstance()) return this;
+        if (other.hasFilename()) {
+          bitField0_ |= 0x00000001;
+          filename_ = other.filename_;
+          onChanged();
+        }
+        if (other.hasLastModified()) {
+          setLastModified(other.getLastModified());
+        }
+        if (other.hasIndex()) {
+          setIndex(other.getIndex());
+        }
+        if (other.hasLength()) {
+          setLength(other.getLength());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasFilename()) {
+          
+          return false;
+        }
+        if (!hasLastModified()) {
+          
+          return false;
+        }
+        if (!hasIndex()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.grib.collection.GribCollectionProto.MFile parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.MFile) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string filename = 1;
+      private java.lang.Object filename_ = "";
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to topDir
+       * </pre>
+       */
+      public boolean hasFilename() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to topDir
+       * </pre>
+       */
+      public java.lang.String getFilename() {
+        java.lang.Object ref = filename_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          filename_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to topDir
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getFilenameBytes() {
+        java.lang.Object ref = filename_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          filename_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to topDir
+       * </pre>
+       */
+      public Builder setFilename(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to topDir
+       * </pre>
+       */
+      public Builder clearFilename() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        filename_ = getDefaultInstance().getFilename();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string filename = 1;</code>
+       *
+       * <pre>
+       * reletive to topDir
+       * </pre>
+       */
+      public Builder setFilenameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required uint64 lastModified = 2;
+      private long lastModified_ ;
+      /**
+       * <code>required uint64 lastModified = 2;</code>
+       */
+      public boolean hasLastModified() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required uint64 lastModified = 2;</code>
+       */
+      public long getLastModified() {
+        return lastModified_;
+      }
+      /**
+       * <code>required uint64 lastModified = 2;</code>
+       */
+      public Builder setLastModified(long value) {
+        bitField0_ |= 0x00000002;
+        lastModified_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 lastModified = 2;</code>
+       */
+      public Builder clearLastModified() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        lastModified_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required uint32 index = 3;
+      private int index_ ;
+      /**
+       * <code>required uint32 index = 3;</code>
+       *
+       * <pre>
+       * the records use this number
+       * </pre>
+       */
+      public boolean hasIndex() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required uint32 index = 3;</code>
+       *
+       * <pre>
+       * the records use this number
+       * </pre>
+       */
+      public int getIndex() {
+        return index_;
+      }
+      /**
+       * <code>required uint32 index = 3;</code>
+       *
+       * <pre>
+       * the records use this number
+       * </pre>
+       */
+      public Builder setIndex(int value) {
+        bitField0_ |= 0x00000004;
+        index_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 index = 3;</code>
+       *
+       * <pre>
+       * the records use this number
+       * </pre>
+       */
+      public Builder clearIndex() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        index_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional uint64 length = 4 [default = 0];
+      private long length_ ;
+      /**
+       * <code>optional uint64 length = 4 [default = 0];</code>
+       */
+      public boolean hasLength() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional uint64 length = 4 [default = 0];</code>
+       */
+      public long getLength() {
+        return length_;
+      }
+      /**
+       * <code>optional uint64 length = 4 [default = 0];</code>
+       */
+      public Builder setLength(long value) {
+        bitField0_ |= 0x00000008;
+        length_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint64 length = 4 [default = 0];</code>
+       */
+      public Builder clearLength() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        length_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:MFile)
+    }
+
+    static {
+      defaultInstance = new MFile(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:MFile)
+  }
+
   public interface GribCollectionOrBuilder extends
       com.google.protobuf.GeneratedMessage.
           ExtendableMessageOrBuilder<GribCollection> {
@@ -12049,7 +11890,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     boolean hasTopDir();
@@ -12057,7 +11898,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     java.lang.String getTopDir();
@@ -12065,7 +11906,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -12186,9 +12027,9 @@ public final class GribCollectionProto {
     ucar.nc2.grib.collection.GribCollectionProto.GdsOrBuilder getGdsOrBuilder(
         int index);
 
-    // required .Coord masterRuntime = 21;
+    // required .Coord masterRuntime = 6;
     /**
-     * <code>required .Coord masterRuntime = 21;</code>
+     * <code>required .Coord masterRuntime = 6;</code>
      *
      * <pre>
      * list of runtimes in this GC
@@ -12196,7 +12037,7 @@ public final class GribCollectionProto {
      */
     boolean hasMasterRuntime();
     /**
-     * <code>required .Coord masterRuntime = 21;</code>
+     * <code>required .Coord masterRuntime = 6;</code>
      *
      * <pre>
      * list of runtimes in this GC
@@ -12204,7 +12045,7 @@ public final class GribCollectionProto {
      */
     ucar.nc2.grib.collection.GribCollectionProto.Coord getMasterRuntime();
     /**
-     * <code>required .Coord masterRuntime = 21;</code>
+     * <code>required .Coord masterRuntime = 6;</code>
      *
      * <pre>
      * list of runtimes in this GC
@@ -12212,47 +12053,47 @@ public final class GribCollectionProto {
      */
     ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder getMasterRuntimeOrBuilder();
 
-    // required int32 center = 6;
+    // required int32 center = 7;
     /**
-     * <code>required int32 center = 6;</code>
+     * <code>required int32 center = 7;</code>
      *
      * <pre>
-     * these 4 fields are to get a GribTable object
+     * these 4 fields are to get a GribCustomizer
      * </pre>
      */
     boolean hasCenter();
     /**
-     * <code>required int32 center = 6;</code>
+     * <code>required int32 center = 7;</code>
      *
      * <pre>
-     * these 4 fields are to get a GribTable object
+     * these 4 fields are to get a GribCustomizer
      * </pre>
      */
     int getCenter();
 
-    // required int32 subcenter = 7;
+    // required int32 subcenter = 8;
     /**
-     * <code>required int32 subcenter = 7;</code>
+     * <code>required int32 subcenter = 8;</code>
      */
     boolean hasSubcenter();
     /**
-     * <code>required int32 subcenter = 7;</code>
+     * <code>required int32 subcenter = 8;</code>
      */
     int getSubcenter();
 
-    // required int32 master = 8;
+    // required int32 master = 9;
     /**
-     * <code>required int32 master = 8;</code>
+     * <code>required int32 master = 9;</code>
      */
     boolean hasMaster();
     /**
-     * <code>required int32 master = 8;</code>
+     * <code>required int32 master = 9;</code>
      */
     int getMaster();
 
-    // required int32 local = 9;
+    // required int32 local = 10;
     /**
-     * <code>required int32 local = 9;</code>
+     * <code>required int32 local = 10;</code>
      *
      * <pre>
      * grib1 table Version
@@ -12260,7 +12101,7 @@ public final class GribCollectionProto {
      */
     boolean hasLocal();
     /**
-     * <code>required int32 local = 9;</code>
+     * <code>required int32 local = 10;</code>
      *
      * <pre>
      * grib1 table Version
@@ -12268,33 +12109,33 @@ public final class GribCollectionProto {
      */
     int getLocal();
 
-    // optional int32 genProcessType = 10;
+    // optional int32 genProcessType = 11;
     /**
-     * <code>optional int32 genProcessType = 10;</code>
+     * <code>optional int32 genProcessType = 11;</code>
      */
     boolean hasGenProcessType();
     /**
-     * <code>optional int32 genProcessType = 10;</code>
+     * <code>optional int32 genProcessType = 11;</code>
      */
     int getGenProcessType();
 
-    // optional int32 genProcessId = 11;
+    // optional int32 genProcessId = 12;
     /**
-     * <code>optional int32 genProcessId = 11;</code>
+     * <code>optional int32 genProcessId = 12;</code>
      */
     boolean hasGenProcessId();
     /**
-     * <code>optional int32 genProcessId = 11;</code>
+     * <code>optional int32 genProcessId = 12;</code>
      */
     int getGenProcessId();
 
-    // optional int32 backProcessId = 12;
+    // optional int32 backProcessId = 13;
     /**
-     * <code>optional int32 backProcessId = 12;</code>
+     * <code>optional int32 backProcessId = 13;</code>
      */
     boolean hasBackProcessId();
     /**
-     * <code>optional int32 backProcessId = 12;</code>
+     * <code>optional int32 backProcessId = 13;</code>
      */
     int getBackProcessId();
 
@@ -12303,7 +12144,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter> 
@@ -12312,7 +12153,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     ucar.nc2.grib.collection.GribCollectionProto.Parameter getParams(int index);
@@ -12320,7 +12161,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     int getParamsCount();
@@ -12328,7 +12169,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder> 
@@ -12337,11 +12178,25 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
         int index);
+
+    // optional .FcConfig config = 21;
+    /**
+     * <code>optional .FcConfig config = 21;</code>
+     */
+    boolean hasConfig();
+    /**
+     * <code>optional .FcConfig config = 21;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.FcConfig getConfig();
+    /**
+     * <code>optional .FcConfig config = 21;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.FcConfigOrBuilder getConfigOrBuilder();
   }
   /**
    * Protobuf type {@code GribCollection}
@@ -12428,37 +12283,50 @@ public final class GribCollectionProto {
               gds_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Gds.PARSER, extensionRegistry));
               break;
             }
-            case 48: {
+            case 50: {
+              ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                subBuilder = masterRuntime_.toBuilder();
+              }
+              masterRuntime_ = input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Coord.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(masterRuntime_);
+                masterRuntime_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000004;
+              break;
+            }
+            case 56: {
               bitField0_ |= 0x00000008;
               center_ = input.readInt32();
               break;
             }
-            case 56: {
+            case 64: {
               bitField0_ |= 0x00000010;
               subcenter_ = input.readInt32();
               break;
             }
-            case 64: {
+            case 72: {
               bitField0_ |= 0x00000020;
               master_ = input.readInt32();
               break;
             }
-            case 72: {
+            case 80: {
               bitField0_ |= 0x00000040;
               local_ = input.readInt32();
               break;
             }
-            case 80: {
+            case 88: {
               bitField0_ |= 0x00000080;
               genProcessType_ = input.readInt32();
               break;
             }
-            case 88: {
+            case 96: {
               bitField0_ |= 0x00000100;
               genProcessId_ = input.readInt32();
               break;
             }
-            case 96: {
+            case 104: {
               bitField0_ |= 0x00000200;
               backProcessId_ = input.readInt32();
               break;
@@ -12472,16 +12340,16 @@ public final class GribCollectionProto {
               break;
             }
             case 170: {
-              ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000004) == 0x00000004)) {
-                subBuilder = masterRuntime_.toBuilder();
+              ucar.nc2.grib.collection.GribCollectionProto.FcConfig.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000400) == 0x00000400)) {
+                subBuilder = config_.toBuilder();
               }
-              masterRuntime_ = input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Coord.PARSER, extensionRegistry);
+              config_ = input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.FcConfig.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(masterRuntime_);
-                masterRuntime_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(config_);
+                config_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000004;
+              bitField0_ |= 0x00000400;
               break;
             }
           }
@@ -12598,7 +12466,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     public boolean hasTopDir() {
@@ -12608,7 +12476,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     public java.lang.String getTopDir() {
@@ -12629,7 +12497,7 @@ public final class GribCollectionProto {
      * <code>required string topDir = 2;</code>
      *
      * <pre>
-     * filenames are reletive to this
+     * MFile, Partition filenames are reletive to this
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -12794,11 +12662,11 @@ public final class GribCollectionProto {
       return gds_.get(index);
     }
 
-    // required .Coord masterRuntime = 21;
-    public static final int MASTERRUNTIME_FIELD_NUMBER = 21;
+    // required .Coord masterRuntime = 6;
+    public static final int MASTERRUNTIME_FIELD_NUMBER = 6;
     private ucar.nc2.grib.collection.GribCollectionProto.Coord masterRuntime_;
     /**
-     * <code>required .Coord masterRuntime = 21;</code>
+     * <code>required .Coord masterRuntime = 6;</code>
      *
      * <pre>
      * list of runtimes in this GC
@@ -12808,7 +12676,7 @@ public final class GribCollectionProto {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>required .Coord masterRuntime = 21;</code>
+     * <code>required .Coord masterRuntime = 6;</code>
      *
      * <pre>
      * list of runtimes in this GC
@@ -12818,7 +12686,7 @@ public final class GribCollectionProto {
       return masterRuntime_;
     }
     /**
-     * <code>required .Coord masterRuntime = 21;</code>
+     * <code>required .Coord masterRuntime = 6;</code>
      *
      * <pre>
      * list of runtimes in this GC
@@ -12828,67 +12696,67 @@ public final class GribCollectionProto {
       return masterRuntime_;
     }
 
-    // required int32 center = 6;
-    public static final int CENTER_FIELD_NUMBER = 6;
+    // required int32 center = 7;
+    public static final int CENTER_FIELD_NUMBER = 7;
     private int center_;
     /**
-     * <code>required int32 center = 6;</code>
+     * <code>required int32 center = 7;</code>
      *
      * <pre>
-     * these 4 fields are to get a GribTable object
+     * these 4 fields are to get a GribCustomizer
      * </pre>
      */
     public boolean hasCenter() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>required int32 center = 6;</code>
+     * <code>required int32 center = 7;</code>
      *
      * <pre>
-     * these 4 fields are to get a GribTable object
+     * these 4 fields are to get a GribCustomizer
      * </pre>
      */
     public int getCenter() {
       return center_;
     }
 
-    // required int32 subcenter = 7;
-    public static final int SUBCENTER_FIELD_NUMBER = 7;
+    // required int32 subcenter = 8;
+    public static final int SUBCENTER_FIELD_NUMBER = 8;
     private int subcenter_;
     /**
-     * <code>required int32 subcenter = 7;</code>
+     * <code>required int32 subcenter = 8;</code>
      */
     public boolean hasSubcenter() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>required int32 subcenter = 7;</code>
+     * <code>required int32 subcenter = 8;</code>
      */
     public int getSubcenter() {
       return subcenter_;
     }
 
-    // required int32 master = 8;
-    public static final int MASTER_FIELD_NUMBER = 8;
+    // required int32 master = 9;
+    public static final int MASTER_FIELD_NUMBER = 9;
     private int master_;
     /**
-     * <code>required int32 master = 8;</code>
+     * <code>required int32 master = 9;</code>
      */
     public boolean hasMaster() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>required int32 master = 8;</code>
+     * <code>required int32 master = 9;</code>
      */
     public int getMaster() {
       return master_;
     }
 
-    // required int32 local = 9;
-    public static final int LOCAL_FIELD_NUMBER = 9;
+    // required int32 local = 10;
+    public static final int LOCAL_FIELD_NUMBER = 10;
     private int local_;
     /**
-     * <code>required int32 local = 9;</code>
+     * <code>required int32 local = 10;</code>
      *
      * <pre>
      * grib1 table Version
@@ -12898,7 +12766,7 @@ public final class GribCollectionProto {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>required int32 local = 9;</code>
+     * <code>required int32 local = 10;</code>
      *
      * <pre>
      * grib1 table Version
@@ -12908,49 +12776,49 @@ public final class GribCollectionProto {
       return local_;
     }
 
-    // optional int32 genProcessType = 10;
-    public static final int GENPROCESSTYPE_FIELD_NUMBER = 10;
+    // optional int32 genProcessType = 11;
+    public static final int GENPROCESSTYPE_FIELD_NUMBER = 11;
     private int genProcessType_;
     /**
-     * <code>optional int32 genProcessType = 10;</code>
+     * <code>optional int32 genProcessType = 11;</code>
      */
     public boolean hasGenProcessType() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
-     * <code>optional int32 genProcessType = 10;</code>
+     * <code>optional int32 genProcessType = 11;</code>
      */
     public int getGenProcessType() {
       return genProcessType_;
     }
 
-    // optional int32 genProcessId = 11;
-    public static final int GENPROCESSID_FIELD_NUMBER = 11;
+    // optional int32 genProcessId = 12;
+    public static final int GENPROCESSID_FIELD_NUMBER = 12;
     private int genProcessId_;
     /**
-     * <code>optional int32 genProcessId = 11;</code>
+     * <code>optional int32 genProcessId = 12;</code>
      */
     public boolean hasGenProcessId() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>optional int32 genProcessId = 11;</code>
+     * <code>optional int32 genProcessId = 12;</code>
      */
     public int getGenProcessId() {
       return genProcessId_;
     }
 
-    // optional int32 backProcessId = 12;
-    public static final int BACKPROCESSID_FIELD_NUMBER = 12;
+    // optional int32 backProcessId = 13;
+    public static final int BACKPROCESSID_FIELD_NUMBER = 13;
     private int backProcessId_;
     /**
-     * <code>optional int32 backProcessId = 12;</code>
+     * <code>optional int32 backProcessId = 13;</code>
      */
     public boolean hasBackProcessId() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
-     * <code>optional int32 backProcessId = 12;</code>
+     * <code>optional int32 backProcessId = 13;</code>
      */
     public int getBackProcessId() {
       return backProcessId_;
@@ -12963,7 +12831,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter> getParamsList() {
@@ -12973,7 +12841,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder> 
@@ -12984,7 +12852,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public int getParamsCount() {
@@ -12994,7 +12862,7 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public ucar.nc2.grib.collection.GribCollectionProto.Parameter getParams(int index) {
@@ -13004,12 +12872,34 @@ public final class GribCollectionProto {
      * <code>repeated .Parameter params = 20;</code>
      *
      * <pre>
-     * not used yet
+     * not used
      * </pre>
      */
     public ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
         int index) {
       return params_.get(index);
+    }
+
+    // optional .FcConfig config = 21;
+    public static final int CONFIG_FIELD_NUMBER = 21;
+    private ucar.nc2.grib.collection.GribCollectionProto.FcConfig config_;
+    /**
+     * <code>optional .FcConfig config = 21;</code>
+     */
+    public boolean hasConfig() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    /**
+     * <code>optional .FcConfig config = 21;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.FcConfig getConfig() {
+      return config_;
+    }
+    /**
+     * <code>optional .FcConfig config = 21;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.FcConfigOrBuilder getConfigOrBuilder() {
+      return config_;
     }
 
     private void initFields() {
@@ -13027,6 +12917,7 @@ public final class GribCollectionProto {
       genProcessId_ = 0;
       backProcessId_ = 0;
       params_ = java.util.Collections.emptyList();
+      config_ = ucar.nc2.grib.collection.GribCollectionProto.FcConfig.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -13083,6 +12974,12 @@ public final class GribCollectionProto {
           return false;
         }
       }
+      if (hasConfig()) {
+        if (!getConfig().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       if (!extensionsAreInitialized()) {
         memoizedIsInitialized = 0;
         return false;
@@ -13112,32 +13009,35 @@ public final class GribCollectionProto {
       for (int i = 0; i < gds_.size(); i++) {
         output.writeMessage(5, gds_.get(i));
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(6, masterRuntime_);
+      }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt32(6, center_);
+        output.writeInt32(7, center_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeInt32(7, subcenter_);
+        output.writeInt32(8, subcenter_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeInt32(8, master_);
+        output.writeInt32(9, master_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt32(9, local_);
+        output.writeInt32(10, local_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeInt32(10, genProcessType_);
+        output.writeInt32(11, genProcessType_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeInt32(11, genProcessId_);
+        output.writeInt32(12, genProcessId_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeInt32(12, backProcessId_);
+        output.writeInt32(13, backProcessId_);
       }
       for (int i = 0; i < params_.size(); i++) {
         output.writeMessage(20, params_.get(i));
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeMessage(21, masterRuntime_);
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeMessage(21, config_);
       }
       extensionWriter.writeUntil(200, output);
       getUnknownFields().writeTo(output);
@@ -13169,41 +13069,45 @@ public final class GribCollectionProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, gds_.get(i));
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, masterRuntime_);
+      }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(6, center_);
+          .computeInt32Size(7, center_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, subcenter_);
+          .computeInt32Size(8, subcenter_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(8, master_);
+          .computeInt32Size(9, master_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(9, local_);
+          .computeInt32Size(10, local_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(10, genProcessType_);
+          .computeInt32Size(11, genProcessType_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(11, genProcessId_);
+          .computeInt32Size(12, genProcessId_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(12, backProcessId_);
+          .computeInt32Size(13, backProcessId_);
       }
       for (int i = 0; i < params_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(20, params_.get(i));
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(21, masterRuntime_);
+          .computeMessageSize(21, config_);
       }
       size += extensionsSerializedSize();
       size += getUnknownFields().getSerializedSize();
@@ -13319,6 +13223,7 @@ public final class GribCollectionProto {
           getGdsFieldBuilder();
           getMasterRuntimeFieldBuilder();
           getParamsFieldBuilder();
+          getConfigFieldBuilder();
         }
       }
       private static Builder create() {
@@ -13375,6 +13280,12 @@ public final class GribCollectionProto {
         } else {
           paramsBuilder_.clear();
         }
+        if (configBuilder_ == null) {
+          config_ = ucar.nc2.grib.collection.GribCollectionProto.FcConfig.getDefaultInstance();
+        } else {
+          configBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
 
@@ -13482,6 +13393,14 @@ public final class GribCollectionProto {
           result.params_ = params_;
         } else {
           result.params_ = paramsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        if (configBuilder_ == null) {
+          result.config_ = config_;
+        } else {
+          result.config_ = configBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -13637,6 +13556,9 @@ public final class GribCollectionProto {
             }
           }
         }
+        if (other.hasConfig()) {
+          mergeConfig(other.getConfig());
+        }
         this.mergeExtensionFields(other);
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -13689,6 +13611,12 @@ public final class GribCollectionProto {
         }
         for (int i = 0; i < getParamsCount(); i++) {
           if (!getParams(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasConfig()) {
+          if (!getConfig().isInitialized()) {
             
             return false;
           }
@@ -13823,7 +13751,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public boolean hasTopDir() {
@@ -13833,7 +13761,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public java.lang.String getTopDir() {
@@ -13851,7 +13779,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -13871,7 +13799,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public Builder setTopDir(
@@ -13888,7 +13816,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public Builder clearTopDir() {
@@ -13901,7 +13829,7 @@ public final class GribCollectionProto {
        * <code>required string topDir = 2;</code>
        *
        * <pre>
-       * filenames are reletive to this
+       * MFile, Partition filenames are reletive to this
        * </pre>
        */
       public Builder setTopDirBytes(
@@ -14779,12 +14707,12 @@ public final class GribCollectionProto {
         return gdsBuilder_;
       }
 
-      // required .Coord masterRuntime = 21;
+      // required .Coord masterRuntime = 6;
       private ucar.nc2.grib.collection.GribCollectionProto.Coord masterRuntime_ = ucar.nc2.grib.collection.GribCollectionProto.Coord.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           ucar.nc2.grib.collection.GribCollectionProto.Coord, ucar.nc2.grib.collection.GribCollectionProto.Coord.Builder, ucar.nc2.grib.collection.GribCollectionProto.CoordOrBuilder> masterRuntimeBuilder_;
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14794,7 +14722,7 @@ public final class GribCollectionProto {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14808,7 +14736,7 @@ public final class GribCollectionProto {
         }
       }
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14828,7 +14756,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14846,7 +14774,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14869,7 +14797,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14886,7 +14814,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14898,7 +14826,7 @@ public final class GribCollectionProto {
         return getMasterRuntimeFieldBuilder().getBuilder();
       }
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14912,7 +14840,7 @@ public final class GribCollectionProto {
         }
       }
       /**
-       * <code>required .Coord masterRuntime = 21;</code>
+       * <code>required .Coord masterRuntime = 6;</code>
        *
        * <pre>
        * list of runtimes in this GC
@@ -14932,33 +14860,33 @@ public final class GribCollectionProto {
         return masterRuntimeBuilder_;
       }
 
-      // required int32 center = 6;
+      // required int32 center = 7;
       private int center_ ;
       /**
-       * <code>required int32 center = 6;</code>
+       * <code>required int32 center = 7;</code>
        *
        * <pre>
-       * these 4 fields are to get a GribTable object
+       * these 4 fields are to get a GribCustomizer
        * </pre>
        */
       public boolean hasCenter() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>required int32 center = 6;</code>
+       * <code>required int32 center = 7;</code>
        *
        * <pre>
-       * these 4 fields are to get a GribTable object
+       * these 4 fields are to get a GribCustomizer
        * </pre>
        */
       public int getCenter() {
         return center_;
       }
       /**
-       * <code>required int32 center = 6;</code>
+       * <code>required int32 center = 7;</code>
        *
        * <pre>
-       * these 4 fields are to get a GribTable object
+       * these 4 fields are to get a GribCustomizer
        * </pre>
        */
       public Builder setCenter(int value) {
@@ -14968,10 +14896,10 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required int32 center = 6;</code>
+       * <code>required int32 center = 7;</code>
        *
        * <pre>
-       * these 4 fields are to get a GribTable object
+       * these 4 fields are to get a GribCustomizer
        * </pre>
        */
       public Builder clearCenter() {
@@ -14981,22 +14909,22 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // required int32 subcenter = 7;
+      // required int32 subcenter = 8;
       private int subcenter_ ;
       /**
-       * <code>required int32 subcenter = 7;</code>
+       * <code>required int32 subcenter = 8;</code>
        */
       public boolean hasSubcenter() {
         return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>required int32 subcenter = 7;</code>
+       * <code>required int32 subcenter = 8;</code>
        */
       public int getSubcenter() {
         return subcenter_;
       }
       /**
-       * <code>required int32 subcenter = 7;</code>
+       * <code>required int32 subcenter = 8;</code>
        */
       public Builder setSubcenter(int value) {
         bitField0_ |= 0x00000080;
@@ -15005,7 +14933,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required int32 subcenter = 7;</code>
+       * <code>required int32 subcenter = 8;</code>
        */
       public Builder clearSubcenter() {
         bitField0_ = (bitField0_ & ~0x00000080);
@@ -15014,22 +14942,22 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // required int32 master = 8;
+      // required int32 master = 9;
       private int master_ ;
       /**
-       * <code>required int32 master = 8;</code>
+       * <code>required int32 master = 9;</code>
        */
       public boolean hasMaster() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>required int32 master = 8;</code>
+       * <code>required int32 master = 9;</code>
        */
       public int getMaster() {
         return master_;
       }
       /**
-       * <code>required int32 master = 8;</code>
+       * <code>required int32 master = 9;</code>
        */
       public Builder setMaster(int value) {
         bitField0_ |= 0x00000100;
@@ -15038,7 +14966,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required int32 master = 8;</code>
+       * <code>required int32 master = 9;</code>
        */
       public Builder clearMaster() {
         bitField0_ = (bitField0_ & ~0x00000100);
@@ -15047,10 +14975,10 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // required int32 local = 9;
+      // required int32 local = 10;
       private int local_ ;
       /**
-       * <code>required int32 local = 9;</code>
+       * <code>required int32 local = 10;</code>
        *
        * <pre>
        * grib1 table Version
@@ -15060,7 +14988,7 @@ public final class GribCollectionProto {
         return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
-       * <code>required int32 local = 9;</code>
+       * <code>required int32 local = 10;</code>
        *
        * <pre>
        * grib1 table Version
@@ -15070,7 +14998,7 @@ public final class GribCollectionProto {
         return local_;
       }
       /**
-       * <code>required int32 local = 9;</code>
+       * <code>required int32 local = 10;</code>
        *
        * <pre>
        * grib1 table Version
@@ -15083,7 +15011,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>required int32 local = 9;</code>
+       * <code>required int32 local = 10;</code>
        *
        * <pre>
        * grib1 table Version
@@ -15096,22 +15024,22 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // optional int32 genProcessType = 10;
+      // optional int32 genProcessType = 11;
       private int genProcessType_ ;
       /**
-       * <code>optional int32 genProcessType = 10;</code>
+       * <code>optional int32 genProcessType = 11;</code>
        */
       public boolean hasGenProcessType() {
         return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
-       * <code>optional int32 genProcessType = 10;</code>
+       * <code>optional int32 genProcessType = 11;</code>
        */
       public int getGenProcessType() {
         return genProcessType_;
       }
       /**
-       * <code>optional int32 genProcessType = 10;</code>
+       * <code>optional int32 genProcessType = 11;</code>
        */
       public Builder setGenProcessType(int value) {
         bitField0_ |= 0x00000400;
@@ -15120,7 +15048,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>optional int32 genProcessType = 10;</code>
+       * <code>optional int32 genProcessType = 11;</code>
        */
       public Builder clearGenProcessType() {
         bitField0_ = (bitField0_ & ~0x00000400);
@@ -15129,22 +15057,22 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // optional int32 genProcessId = 11;
+      // optional int32 genProcessId = 12;
       private int genProcessId_ ;
       /**
-       * <code>optional int32 genProcessId = 11;</code>
+       * <code>optional int32 genProcessId = 12;</code>
        */
       public boolean hasGenProcessId() {
         return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
-       * <code>optional int32 genProcessId = 11;</code>
+       * <code>optional int32 genProcessId = 12;</code>
        */
       public int getGenProcessId() {
         return genProcessId_;
       }
       /**
-       * <code>optional int32 genProcessId = 11;</code>
+       * <code>optional int32 genProcessId = 12;</code>
        */
       public Builder setGenProcessId(int value) {
         bitField0_ |= 0x00000800;
@@ -15153,7 +15081,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>optional int32 genProcessId = 11;</code>
+       * <code>optional int32 genProcessId = 12;</code>
        */
       public Builder clearGenProcessId() {
         bitField0_ = (bitField0_ & ~0x00000800);
@@ -15162,22 +15090,22 @@ public final class GribCollectionProto {
         return this;
       }
 
-      // optional int32 backProcessId = 12;
+      // optional int32 backProcessId = 13;
       private int backProcessId_ ;
       /**
-       * <code>optional int32 backProcessId = 12;</code>
+       * <code>optional int32 backProcessId = 13;</code>
        */
       public boolean hasBackProcessId() {
         return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
-       * <code>optional int32 backProcessId = 12;</code>
+       * <code>optional int32 backProcessId = 13;</code>
        */
       public int getBackProcessId() {
         return backProcessId_;
       }
       /**
-       * <code>optional int32 backProcessId = 12;</code>
+       * <code>optional int32 backProcessId = 13;</code>
        */
       public Builder setBackProcessId(int value) {
         bitField0_ |= 0x00001000;
@@ -15186,7 +15114,7 @@ public final class GribCollectionProto {
         return this;
       }
       /**
-       * <code>optional int32 backProcessId = 12;</code>
+       * <code>optional int32 backProcessId = 13;</code>
        */
       public Builder clearBackProcessId() {
         bitField0_ = (bitField0_ & ~0x00001000);
@@ -15212,7 +15140,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter> getParamsList() {
@@ -15226,7 +15154,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public int getParamsCount() {
@@ -15240,7 +15168,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.Parameter getParams(int index) {
@@ -15254,7 +15182,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder setParams(
@@ -15275,7 +15203,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder setParams(
@@ -15293,7 +15221,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addParams(ucar.nc2.grib.collection.GribCollectionProto.Parameter value) {
@@ -15313,7 +15241,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addParams(
@@ -15334,7 +15262,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addParams(
@@ -15352,7 +15280,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addParams(
@@ -15370,7 +15298,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder addAllParams(
@@ -15388,7 +15316,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder clearParams() {
@@ -15405,7 +15333,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public Builder removeParams(int index) {
@@ -15422,7 +15350,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder getParamsBuilder(
@@ -15433,7 +15361,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
@@ -15447,7 +15375,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.ParameterOrBuilder> 
@@ -15462,7 +15390,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder addParamsBuilder() {
@@ -15473,7 +15401,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder addParamsBuilder(
@@ -15485,7 +15413,7 @@ public final class GribCollectionProto {
        * <code>repeated .Parameter params = 20;</code>
        *
        * <pre>
-       * not used yet
+       * not used
        * </pre>
        */
       public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Parameter.Builder> 
@@ -15507,6 +15435,123 @@ public final class GribCollectionProto {
         return paramsBuilder_;
       }
 
+      // optional .FcConfig config = 21;
+      private ucar.nc2.grib.collection.GribCollectionProto.FcConfig config_ = ucar.nc2.grib.collection.GribCollectionProto.FcConfig.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.FcConfig, ucar.nc2.grib.collection.GribCollectionProto.FcConfig.Builder, ucar.nc2.grib.collection.GribCollectionProto.FcConfigOrBuilder> configBuilder_;
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      public boolean hasConfig() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.FcConfig getConfig() {
+        if (configBuilder_ == null) {
+          return config_;
+        } else {
+          return configBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      public Builder setConfig(ucar.nc2.grib.collection.GribCollectionProto.FcConfig value) {
+        if (configBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          config_ = value;
+          onChanged();
+        } else {
+          configBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      public Builder setConfig(
+          ucar.nc2.grib.collection.GribCollectionProto.FcConfig.Builder builderForValue) {
+        if (configBuilder_ == null) {
+          config_ = builderForValue.build();
+          onChanged();
+        } else {
+          configBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      public Builder mergeConfig(ucar.nc2.grib.collection.GribCollectionProto.FcConfig value) {
+        if (configBuilder_ == null) {
+          if (((bitField0_ & 0x00004000) == 0x00004000) &&
+              config_ != ucar.nc2.grib.collection.GribCollectionProto.FcConfig.getDefaultInstance()) {
+            config_ =
+              ucar.nc2.grib.collection.GribCollectionProto.FcConfig.newBuilder(config_).mergeFrom(value).buildPartial();
+          } else {
+            config_ = value;
+          }
+          onChanged();
+        } else {
+          configBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      public Builder clearConfig() {
+        if (configBuilder_ == null) {
+          config_ = ucar.nc2.grib.collection.GribCollectionProto.FcConfig.getDefaultInstance();
+          onChanged();
+        } else {
+          configBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00004000);
+        return this;
+      }
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.FcConfig.Builder getConfigBuilder() {
+        bitField0_ |= 0x00004000;
+        onChanged();
+        return getConfigFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.FcConfigOrBuilder getConfigOrBuilder() {
+        if (configBuilder_ != null) {
+          return configBuilder_.getMessageOrBuilder();
+        } else {
+          return config_;
+        }
+      }
+      /**
+       * <code>optional .FcConfig config = 21;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.FcConfig, ucar.nc2.grib.collection.GribCollectionProto.FcConfig.Builder, ucar.nc2.grib.collection.GribCollectionProto.FcConfigOrBuilder> 
+          getConfigFieldBuilder() {
+        if (configBuilder_ == null) {
+          configBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              ucar.nc2.grib.collection.GribCollectionProto.FcConfig, ucar.nc2.grib.collection.GribCollectionProto.FcConfig.Builder, ucar.nc2.grib.collection.GribCollectionProto.FcConfigOrBuilder>(
+                  config_,
+                  getParentForChildren(),
+                  isClean());
+          config_ = null;
+        }
+        return configBuilder_;
+      }
+
       // @@protoc_insertion_point(builder_scope:GribCollection)
     }
 
@@ -15516,6 +15561,4362 @@ public final class GribCollectionProto {
     }
 
     // @@protoc_insertion_point(class_scope:GribCollection)
+  }
+
+  public interface StringMapOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string name = 1;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    boolean hasName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    // required string value = 2;
+    /**
+     * <code>required string value = 2;</code>
+     */
+    boolean hasValue();
+    /**
+     * <code>required string value = 2;</code>
+     */
+    java.lang.String getValue();
+    /**
+     * <code>required string value = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getValueBytes();
+  }
+  /**
+   * Protobuf type {@code StringMap}
+   */
+  public static final class StringMap extends
+      com.google.protobuf.GeneratedMessage
+      implements StringMapOrBuilder {
+    // Use StringMap.newBuilder() to construct.
+    private StringMap(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private StringMap(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final StringMap defaultInstance;
+    public static StringMap getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public StringMap getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private StringMap(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              name_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              value_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_StringMap_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_StringMap_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.grib.collection.GribCollectionProto.StringMap.class, ucar.nc2.grib.collection.GribCollectionProto.StringMap.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<StringMap> PARSER =
+        new com.google.protobuf.AbstractParser<StringMap>() {
+      public StringMap parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StringMap(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StringMap> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string name = 1;
+    public static final int NAME_FIELD_NUMBER = 1;
+    private java.lang.Object name_;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string value = 2;
+    public static final int VALUE_FIELD_NUMBER = 2;
+    private java.lang.Object value_;
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public boolean hasValue() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public java.lang.String getValue() {
+      java.lang.Object ref = value_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          value_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string value = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getValueBytes() {
+      java.lang.Object ref = value_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        value_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      name_ = "";
+      value_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasValue()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getValueBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getValueBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.StringMap parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.StringMap prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code StringMap}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.grib.collection.GribCollectionProto.StringMapOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_StringMap_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_StringMap_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.grib.collection.GribCollectionProto.StringMap.class, ucar.nc2.grib.collection.GribCollectionProto.StringMap.Builder.class);
+      }
+
+      // Construct using ucar.nc2.grib.collection.GribCollectionProto.StringMap.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        value_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_StringMap_descriptor;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.StringMap getDefaultInstanceForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.StringMap.getDefaultInstance();
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.StringMap build() {
+        ucar.nc2.grib.collection.GribCollectionProto.StringMap result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.StringMap buildPartial() {
+        ucar.nc2.grib.collection.GribCollectionProto.StringMap result = new ucar.nc2.grib.collection.GribCollectionProto.StringMap(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.value_ = value_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.StringMap) {
+          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.StringMap)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.StringMap other) {
+        if (other == ucar.nc2.grib.collection.GribCollectionProto.StringMap.getDefaultInstance()) return this;
+        if (other.hasName()) {
+          bitField0_ |= 0x00000001;
+          name_ = other.name_;
+          onChanged();
+        }
+        if (other.hasValue()) {
+          bitField0_ |= 0x00000002;
+          value_ = other.value_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasName()) {
+          
+          return false;
+        }
+        if (!hasValue()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.grib.collection.GribCollectionProto.StringMap parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.StringMap) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string name = 1;
+      private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder clearName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required string value = 2;
+      private java.lang.Object value_ = "";
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public boolean hasValue() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public java.lang.String getValue() {
+        java.lang.Object ref = value_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          value_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getValueBytes() {
+        java.lang.Object ref = value_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          value_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder setValue(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder clearValue() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        value_ = getDefaultInstance().getValue();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string value = 2;</code>
+       */
+      public Builder setValueBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:StringMap)
+    }
+
+    static {
+      defaultInstance = new StringMap(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:StringMap)
+  }
+
+  public interface IntMapOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required sint32 from = 1;
+    /**
+     * <code>required sint32 from = 1;</code>
+     */
+    boolean hasFrom();
+    /**
+     * <code>required sint32 from = 1;</code>
+     */
+    int getFrom();
+
+    // required sint32 to = 2;
+    /**
+     * <code>required sint32 to = 2;</code>
+     */
+    boolean hasTo();
+    /**
+     * <code>required sint32 to = 2;</code>
+     */
+    int getTo();
+  }
+  /**
+   * Protobuf type {@code IntMap}
+   */
+  public static final class IntMap extends
+      com.google.protobuf.GeneratedMessage
+      implements IntMapOrBuilder {
+    // Use IntMap.newBuilder() to construct.
+    private IntMap(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private IntMap(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final IntMap defaultInstance;
+    public static IntMap getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public IntMap getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private IntMap(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              from_ = input.readSInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              to_ = input.readSInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntMap_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntMap_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.grib.collection.GribCollectionProto.IntMap.class, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<IntMap> PARSER =
+        new com.google.protobuf.AbstractParser<IntMap>() {
+      public IntMap parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new IntMap(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<IntMap> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required sint32 from = 1;
+    public static final int FROM_FIELD_NUMBER = 1;
+    private int from_;
+    /**
+     * <code>required sint32 from = 1;</code>
+     */
+    public boolean hasFrom() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required sint32 from = 1;</code>
+     */
+    public int getFrom() {
+      return from_;
+    }
+
+    // required sint32 to = 2;
+    public static final int TO_FIELD_NUMBER = 2;
+    private int to_;
+    /**
+     * <code>required sint32 to = 2;</code>
+     */
+    public boolean hasTo() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required sint32 to = 2;</code>
+     */
+    public int getTo() {
+      return to_;
+    }
+
+    private void initFields() {
+      from_ = 0;
+      to_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasFrom()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTo()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeSInt32(1, from_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeSInt32(2, to_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSInt32Size(1, from_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSInt32Size(2, to_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntMap parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.IntMap prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code IntMap}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntMap_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntMap_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.grib.collection.GribCollectionProto.IntMap.class, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder.class);
+      }
+
+      // Construct using ucar.nc2.grib.collection.GribCollectionProto.IntMap.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        from_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        to_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntMap_descriptor;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap getDefaultInstanceForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.IntMap.getDefaultInstance();
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap build() {
+        ucar.nc2.grib.collection.GribCollectionProto.IntMap result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap buildPartial() {
+        ucar.nc2.grib.collection.GribCollectionProto.IntMap result = new ucar.nc2.grib.collection.GribCollectionProto.IntMap(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.from_ = from_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.to_ = to_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.IntMap) {
+          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.IntMap)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.IntMap other) {
+        if (other == ucar.nc2.grib.collection.GribCollectionProto.IntMap.getDefaultInstance()) return this;
+        if (other.hasFrom()) {
+          setFrom(other.getFrom());
+        }
+        if (other.hasTo()) {
+          setTo(other.getTo());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasFrom()) {
+          
+          return false;
+        }
+        if (!hasTo()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.grib.collection.GribCollectionProto.IntMap parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.IntMap) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required sint32 from = 1;
+      private int from_ ;
+      /**
+       * <code>required sint32 from = 1;</code>
+       */
+      public boolean hasFrom() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required sint32 from = 1;</code>
+       */
+      public int getFrom() {
+        return from_;
+      }
+      /**
+       * <code>required sint32 from = 1;</code>
+       */
+      public Builder setFrom(int value) {
+        bitField0_ |= 0x00000001;
+        from_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required sint32 from = 1;</code>
+       */
+      public Builder clearFrom() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        from_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required sint32 to = 2;
+      private int to_ ;
+      /**
+       * <code>required sint32 to = 2;</code>
+       */
+      public boolean hasTo() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required sint32 to = 2;</code>
+       */
+      public int getTo() {
+        return to_;
+      }
+      /**
+       * <code>required sint32 to = 2;</code>
+       */
+      public Builder setTo(int value) {
+        bitField0_ |= 0x00000002;
+        to_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required sint32 to = 2;</code>
+       */
+      public Builder clearTo() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        to_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:IntMap)
+    }
+
+    static {
+      defaultInstance = new IntMap(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:IntMap)
+  }
+
+  public interface IntvFilterOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required sint32 intvLength = 1;
+    /**
+     * <code>required sint32 intvLength = 1;</code>
+     */
+    boolean hasIntvLength();
+    /**
+     * <code>required sint32 intvLength = 1;</code>
+     */
+    int getIntvLength();
+
+    // required uint32 variableId = 2;
+    /**
+     * <code>required uint32 variableId = 2;</code>
+     */
+    boolean hasVariableId();
+    /**
+     * <code>required uint32 variableId = 2;</code>
+     */
+    int getVariableId();
+
+    // optional sint32 intvProb = 3;
+    /**
+     * <code>optional sint32 intvProb = 3;</code>
+     */
+    boolean hasIntvProb();
+    /**
+     * <code>optional sint32 intvProb = 3;</code>
+     */
+    int getIntvProb();
+  }
+  /**
+   * Protobuf type {@code IntvFilter}
+   */
+  public static final class IntvFilter extends
+      com.google.protobuf.GeneratedMessage
+      implements IntvFilterOrBuilder {
+    // Use IntvFilter.newBuilder() to construct.
+    private IntvFilter(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private IntvFilter(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final IntvFilter defaultInstance;
+    public static IntvFilter getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public IntvFilter getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private IntvFilter(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              intvLength_ = input.readSInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              variableId_ = input.readUInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              intvProb_ = input.readSInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntvFilter_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntvFilter_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.class, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<IntvFilter> PARSER =
+        new com.google.protobuf.AbstractParser<IntvFilter>() {
+      public IntvFilter parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new IntvFilter(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<IntvFilter> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required sint32 intvLength = 1;
+    public static final int INTVLENGTH_FIELD_NUMBER = 1;
+    private int intvLength_;
+    /**
+     * <code>required sint32 intvLength = 1;</code>
+     */
+    public boolean hasIntvLength() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required sint32 intvLength = 1;</code>
+     */
+    public int getIntvLength() {
+      return intvLength_;
+    }
+
+    // required uint32 variableId = 2;
+    public static final int VARIABLEID_FIELD_NUMBER = 2;
+    private int variableId_;
+    /**
+     * <code>required uint32 variableId = 2;</code>
+     */
+    public boolean hasVariableId() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required uint32 variableId = 2;</code>
+     */
+    public int getVariableId() {
+      return variableId_;
+    }
+
+    // optional sint32 intvProb = 3;
+    public static final int INTVPROB_FIELD_NUMBER = 3;
+    private int intvProb_;
+    /**
+     * <code>optional sint32 intvProb = 3;</code>
+     */
+    public boolean hasIntvProb() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional sint32 intvProb = 3;</code>
+     */
+    public int getIntvProb() {
+      return intvProb_;
+    }
+
+    private void initFields() {
+      intvLength_ = 0;
+      variableId_ = 0;
+      intvProb_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasIntvLength()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasVariableId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeSInt32(1, intvLength_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, variableId_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeSInt32(3, intvProb_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSInt32Size(1, intvLength_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, variableId_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSInt32Size(3, intvProb_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.IntvFilter prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code IntvFilter}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntvFilter_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntvFilter_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.class, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder.class);
+      }
+
+      // Construct using ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        intvLength_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        variableId_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        intvProb_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_IntvFilter_descriptor;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.IntvFilter getDefaultInstanceForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.getDefaultInstance();
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.IntvFilter build() {
+        ucar.nc2.grib.collection.GribCollectionProto.IntvFilter result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.IntvFilter buildPartial() {
+        ucar.nc2.grib.collection.GribCollectionProto.IntvFilter result = new ucar.nc2.grib.collection.GribCollectionProto.IntvFilter(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.intvLength_ = intvLength_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.variableId_ = variableId_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.intvProb_ = intvProb_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.IntvFilter) {
+          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.IntvFilter)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.IntvFilter other) {
+        if (other == ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.getDefaultInstance()) return this;
+        if (other.hasIntvLength()) {
+          setIntvLength(other.getIntvLength());
+        }
+        if (other.hasVariableId()) {
+          setVariableId(other.getVariableId());
+        }
+        if (other.hasIntvProb()) {
+          setIntvProb(other.getIntvProb());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasIntvLength()) {
+          
+          return false;
+        }
+        if (!hasVariableId()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.grib.collection.GribCollectionProto.IntvFilter parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.IntvFilter) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required sint32 intvLength = 1;
+      private int intvLength_ ;
+      /**
+       * <code>required sint32 intvLength = 1;</code>
+       */
+      public boolean hasIntvLength() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required sint32 intvLength = 1;</code>
+       */
+      public int getIntvLength() {
+        return intvLength_;
+      }
+      /**
+       * <code>required sint32 intvLength = 1;</code>
+       */
+      public Builder setIntvLength(int value) {
+        bitField0_ |= 0x00000001;
+        intvLength_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required sint32 intvLength = 1;</code>
+       */
+      public Builder clearIntvLength() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        intvLength_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required uint32 variableId = 2;
+      private int variableId_ ;
+      /**
+       * <code>required uint32 variableId = 2;</code>
+       */
+      public boolean hasVariableId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required uint32 variableId = 2;</code>
+       */
+      public int getVariableId() {
+        return variableId_;
+      }
+      /**
+       * <code>required uint32 variableId = 2;</code>
+       */
+      public Builder setVariableId(int value) {
+        bitField0_ |= 0x00000002;
+        variableId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 variableId = 2;</code>
+       */
+      public Builder clearVariableId() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        variableId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional sint32 intvProb = 3;
+      private int intvProb_ ;
+      /**
+       * <code>optional sint32 intvProb = 3;</code>
+       */
+      public boolean hasIntvProb() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional sint32 intvProb = 3;</code>
+       */
+      public int getIntvProb() {
+        return intvProb_;
+      }
+      /**
+       * <code>optional sint32 intvProb = 3;</code>
+       */
+      public Builder setIntvProb(int value) {
+        bitField0_ |= 0x00000004;
+        intvProb_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional sint32 intvProb = 3;</code>
+       */
+      public Builder clearIntvProb() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        intvProb_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:IntvFilter)
+    }
+
+    static {
+      defaultInstance = new IntvFilter(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:IntvFilter)
+  }
+
+  public interface FcConfigOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string name = 1;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    boolean hasName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    // required string collectionSpec = 2;
+    /**
+     * <code>required string collectionSpec = 2;</code>
+     */
+    boolean hasCollectionSpec();
+    /**
+     * <code>required string collectionSpec = 2;</code>
+     */
+    java.lang.String getCollectionSpec();
+    /**
+     * <code>required string collectionSpec = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getCollectionSpecBytes();
+
+    // required string partitionType = 3;
+    /**
+     * <code>required string partitionType = 3;</code>
+     */
+    boolean hasPartitionType();
+    /**
+     * <code>required string partitionType = 3;</code>
+     */
+    java.lang.String getPartitionType();
+    /**
+     * <code>required string partitionType = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getPartitionTypeBytes();
+
+    // optional string dateFormatMark = 4;
+    /**
+     * <code>optional string dateFormatMark = 4;</code>
+     */
+    boolean hasDateFormatMark();
+    /**
+     * <code>optional string dateFormatMark = 4;</code>
+     */
+    java.lang.String getDateFormatMark();
+    /**
+     * <code>optional string dateFormatMark = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getDateFormatMarkBytes();
+
+    // repeated .IntMap gdsConvert = 11;
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> 
+        getGdsConvertList();
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.IntMap getGdsConvert(int index);
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    int getGdsConvertCount();
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> 
+        getGdsConvertOrBuilderList();
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder getGdsConvertOrBuilder(
+        int index);
+
+    // optional bool pdsUseGenType = 12 [default = false];
+    /**
+     * <code>optional bool pdsUseGenType = 12 [default = false];</code>
+     */
+    boolean hasPdsUseGenType();
+    /**
+     * <code>optional bool pdsUseGenType = 12 [default = false];</code>
+     */
+    boolean getPdsUseGenType();
+
+    // optional bool pdsUseTableVersion = 13 [default = true];
+    /**
+     * <code>optional bool pdsUseTableVersion = 13 [default = true];</code>
+     */
+    boolean hasPdsUseTableVersion();
+    /**
+     * <code>optional bool pdsUseTableVersion = 13 [default = true];</code>
+     */
+    boolean getPdsUseTableVersion();
+
+    // optional bool pdsIntvMerge = 14 [default = true];
+    /**
+     * <code>optional bool pdsIntvMerge = 14 [default = true];</code>
+     */
+    boolean hasPdsIntvMerge();
+    /**
+     * <code>optional bool pdsIntvMerge = 14 [default = true];</code>
+     */
+    boolean getPdsIntvMerge();
+
+    // optional bool pdsUseCenter = 15 [default = true];
+    /**
+     * <code>optional bool pdsUseCenter = 15 [default = true];</code>
+     */
+    boolean hasPdsUseCenter();
+    /**
+     * <code>optional bool pdsUseCenter = 15 [default = true];</code>
+     */
+    boolean getPdsUseCenter();
+
+    // optional bool intvExcludeZero = 16 [default = false];
+    /**
+     * <code>optional bool intvExcludeZero = 16 [default = false];</code>
+     */
+    boolean hasIntvExcludeZero();
+    /**
+     * <code>optional bool intvExcludeZero = 16 [default = false];</code>
+     */
+    boolean getIntvExcludeZero();
+
+    // repeated .IntvFilter intvFilter = 17;
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntvFilter> 
+        getIntvFilterList();
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.IntvFilter getIntvFilter(int index);
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    int getIntvFilterCount();
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder> 
+        getIntvFilterOrBuilderList();
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder getIntvFilterOrBuilder(
+        int index);
+
+    // repeated .IntMap timeUnitConvert = 18;
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> 
+        getTimeUnitConvertList();
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.IntMap getTimeUnitConvert(int index);
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    int getTimeUnitConvertCount();
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> 
+        getTimeUnitConvertOrBuilderList();
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder getTimeUnitConvertOrBuilder(
+        int index);
+
+    // optional string userTimeUnit = 19;
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    boolean hasUserTimeUnit();
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    java.lang.String getUserTimeUnit();
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    com.google.protobuf.ByteString
+        getUserTimeUnitBytes();
+  }
+  /**
+   * Protobuf type {@code FcConfig}
+   */
+  public static final class FcConfig extends
+      com.google.protobuf.GeneratedMessage
+      implements FcConfigOrBuilder {
+    // Use FcConfig.newBuilder() to construct.
+    private FcConfig(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private FcConfig(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final FcConfig defaultInstance;
+    public static FcConfig getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public FcConfig getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private FcConfig(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              name_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              collectionSpec_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              partitionType_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              dateFormatMark_ = input.readBytes();
+              break;
+            }
+            case 90: {
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                gdsConvert_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.IntMap>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              gdsConvert_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.IntMap.PARSER, extensionRegistry));
+              break;
+            }
+            case 96: {
+              bitField0_ |= 0x00000010;
+              pdsUseGenType_ = input.readBool();
+              break;
+            }
+            case 104: {
+              bitField0_ |= 0x00000020;
+              pdsUseTableVersion_ = input.readBool();
+              break;
+            }
+            case 112: {
+              bitField0_ |= 0x00000040;
+              pdsIntvMerge_ = input.readBool();
+              break;
+            }
+            case 120: {
+              bitField0_ |= 0x00000080;
+              pdsUseCenter_ = input.readBool();
+              break;
+            }
+            case 128: {
+              bitField0_ |= 0x00000100;
+              intvExcludeZero_ = input.readBool();
+              break;
+            }
+            case 138: {
+              if (!((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+                intvFilter_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.IntvFilter>();
+                mutable_bitField0_ |= 0x00000400;
+              }
+              intvFilter_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.PARSER, extensionRegistry));
+              break;
+            }
+            case 146: {
+              if (!((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+                timeUnitConvert_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.IntMap>();
+                mutable_bitField0_ |= 0x00000800;
+              }
+              timeUnitConvert_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.IntMap.PARSER, extensionRegistry));
+              break;
+            }
+            case 154: {
+              bitField0_ |= 0x00000200;
+              userTimeUnit_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          gdsConvert_ = java.util.Collections.unmodifiableList(gdsConvert_);
+        }
+        if (((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+          intvFilter_ = java.util.Collections.unmodifiableList(intvFilter_);
+        }
+        if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+          timeUnitConvert_ = java.util.Collections.unmodifiableList(timeUnitConvert_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_FcConfig_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.grib.collection.GribCollectionProto.internal_static_FcConfig_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              ucar.nc2.grib.collection.GribCollectionProto.FcConfig.class, ucar.nc2.grib.collection.GribCollectionProto.FcConfig.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<FcConfig> PARSER =
+        new com.google.protobuf.AbstractParser<FcConfig>() {
+      public FcConfig parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new FcConfig(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<FcConfig> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string name = 1;
+    public static final int NAME_FIELD_NUMBER = 1;
+    private java.lang.Object name_;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string collectionSpec = 2;
+    public static final int COLLECTIONSPEC_FIELD_NUMBER = 2;
+    private java.lang.Object collectionSpec_;
+    /**
+     * <code>required string collectionSpec = 2;</code>
+     */
+    public boolean hasCollectionSpec() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string collectionSpec = 2;</code>
+     */
+    public java.lang.String getCollectionSpec() {
+      java.lang.Object ref = collectionSpec_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          collectionSpec_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string collectionSpec = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCollectionSpecBytes() {
+      java.lang.Object ref = collectionSpec_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        collectionSpec_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string partitionType = 3;
+    public static final int PARTITIONTYPE_FIELD_NUMBER = 3;
+    private java.lang.Object partitionType_;
+    /**
+     * <code>required string partitionType = 3;</code>
+     */
+    public boolean hasPartitionType() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required string partitionType = 3;</code>
+     */
+    public java.lang.String getPartitionType() {
+      java.lang.Object ref = partitionType_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          partitionType_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string partitionType = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPartitionTypeBytes() {
+      java.lang.Object ref = partitionType_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        partitionType_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string dateFormatMark = 4;
+    public static final int DATEFORMATMARK_FIELD_NUMBER = 4;
+    private java.lang.Object dateFormatMark_;
+    /**
+     * <code>optional string dateFormatMark = 4;</code>
+     */
+    public boolean hasDateFormatMark() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional string dateFormatMark = 4;</code>
+     */
+    public java.lang.String getDateFormatMark() {
+      java.lang.Object ref = dateFormatMark_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          dateFormatMark_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string dateFormatMark = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDateFormatMarkBytes() {
+      java.lang.Object ref = dateFormatMark_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        dateFormatMark_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // repeated .IntMap gdsConvert = 11;
+    public static final int GDSCONVERT_FIELD_NUMBER = 11;
+    private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> gdsConvert_;
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> getGdsConvertList() {
+      return gdsConvert_;
+    }
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> 
+        getGdsConvertOrBuilderList() {
+      return gdsConvert_;
+    }
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    public int getGdsConvertCount() {
+      return gdsConvert_.size();
+    }
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.IntMap getGdsConvert(int index) {
+      return gdsConvert_.get(index);
+    }
+    /**
+     * <code>repeated .IntMap gdsConvert = 11;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder getGdsConvertOrBuilder(
+        int index) {
+      return gdsConvert_.get(index);
+    }
+
+    // optional bool pdsUseGenType = 12 [default = false];
+    public static final int PDSUSEGENTYPE_FIELD_NUMBER = 12;
+    private boolean pdsUseGenType_;
+    /**
+     * <code>optional bool pdsUseGenType = 12 [default = false];</code>
+     */
+    public boolean hasPdsUseGenType() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional bool pdsUseGenType = 12 [default = false];</code>
+     */
+    public boolean getPdsUseGenType() {
+      return pdsUseGenType_;
+    }
+
+    // optional bool pdsUseTableVersion = 13 [default = true];
+    public static final int PDSUSETABLEVERSION_FIELD_NUMBER = 13;
+    private boolean pdsUseTableVersion_;
+    /**
+     * <code>optional bool pdsUseTableVersion = 13 [default = true];</code>
+     */
+    public boolean hasPdsUseTableVersion() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional bool pdsUseTableVersion = 13 [default = true];</code>
+     */
+    public boolean getPdsUseTableVersion() {
+      return pdsUseTableVersion_;
+    }
+
+    // optional bool pdsIntvMerge = 14 [default = true];
+    public static final int PDSINTVMERGE_FIELD_NUMBER = 14;
+    private boolean pdsIntvMerge_;
+    /**
+     * <code>optional bool pdsIntvMerge = 14 [default = true];</code>
+     */
+    public boolean hasPdsIntvMerge() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional bool pdsIntvMerge = 14 [default = true];</code>
+     */
+    public boolean getPdsIntvMerge() {
+      return pdsIntvMerge_;
+    }
+
+    // optional bool pdsUseCenter = 15 [default = true];
+    public static final int PDSUSECENTER_FIELD_NUMBER = 15;
+    private boolean pdsUseCenter_;
+    /**
+     * <code>optional bool pdsUseCenter = 15 [default = true];</code>
+     */
+    public boolean hasPdsUseCenter() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional bool pdsUseCenter = 15 [default = true];</code>
+     */
+    public boolean getPdsUseCenter() {
+      return pdsUseCenter_;
+    }
+
+    // optional bool intvExcludeZero = 16 [default = false];
+    public static final int INTVEXCLUDEZERO_FIELD_NUMBER = 16;
+    private boolean intvExcludeZero_;
+    /**
+     * <code>optional bool intvExcludeZero = 16 [default = false];</code>
+     */
+    public boolean hasIntvExcludeZero() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>optional bool intvExcludeZero = 16 [default = false];</code>
+     */
+    public boolean getIntvExcludeZero() {
+      return intvExcludeZero_;
+    }
+
+    // repeated .IntvFilter intvFilter = 17;
+    public static final int INTVFILTER_FIELD_NUMBER = 17;
+    private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntvFilter> intvFilter_;
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntvFilter> getIntvFilterList() {
+      return intvFilter_;
+    }
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder> 
+        getIntvFilterOrBuilderList() {
+      return intvFilter_;
+    }
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    public int getIntvFilterCount() {
+      return intvFilter_.size();
+    }
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.IntvFilter getIntvFilter(int index) {
+      return intvFilter_.get(index);
+    }
+    /**
+     * <code>repeated .IntvFilter intvFilter = 17;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder getIntvFilterOrBuilder(
+        int index) {
+      return intvFilter_.get(index);
+    }
+
+    // repeated .IntMap timeUnitConvert = 18;
+    public static final int TIMEUNITCONVERT_FIELD_NUMBER = 18;
+    private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> timeUnitConvert_;
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> getTimeUnitConvertList() {
+      return timeUnitConvert_;
+    }
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> 
+        getTimeUnitConvertOrBuilderList() {
+      return timeUnitConvert_;
+    }
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    public int getTimeUnitConvertCount() {
+      return timeUnitConvert_.size();
+    }
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.IntMap getTimeUnitConvert(int index) {
+      return timeUnitConvert_.get(index);
+    }
+    /**
+     * <code>repeated .IntMap timeUnitConvert = 18;</code>
+     */
+    public ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder getTimeUnitConvertOrBuilder(
+        int index) {
+      return timeUnitConvert_.get(index);
+    }
+
+    // optional string userTimeUnit = 19;
+    public static final int USERTIMEUNIT_FIELD_NUMBER = 19;
+    private java.lang.Object userTimeUnit_;
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    public boolean hasUserTimeUnit() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    public java.lang.String getUserTimeUnit() {
+      java.lang.Object ref = userTimeUnit_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          userTimeUnit_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string userTimeUnit = 19;</code>
+     */
+    public com.google.protobuf.ByteString
+        getUserTimeUnitBytes() {
+      java.lang.Object ref = userTimeUnit_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        userTimeUnit_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      name_ = "";
+      collectionSpec_ = "";
+      partitionType_ = "";
+      dateFormatMark_ = "";
+      gdsConvert_ = java.util.Collections.emptyList();
+      pdsUseGenType_ = false;
+      pdsUseTableVersion_ = true;
+      pdsIntvMerge_ = true;
+      pdsUseCenter_ = true;
+      intvExcludeZero_ = false;
+      intvFilter_ = java.util.Collections.emptyList();
+      timeUnitConvert_ = java.util.Collections.emptyList();
+      userTimeUnit_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasCollectionSpec()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPartitionType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getGdsConvertCount(); i++) {
+        if (!getGdsConvert(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getIntvFilterCount(); i++) {
+        if (!getIntvFilter(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getTimeUnitConvertCount(); i++) {
+        if (!getTimeUnitConvert(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getCollectionSpecBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getPartitionTypeBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getDateFormatMarkBytes());
+      }
+      for (int i = 0; i < gdsConvert_.size(); i++) {
+        output.writeMessage(11, gdsConvert_.get(i));
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBool(12, pdsUseGenType_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBool(13, pdsUseTableVersion_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBool(14, pdsIntvMerge_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBool(15, pdsUseCenter_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBool(16, intvExcludeZero_);
+      }
+      for (int i = 0; i < intvFilter_.size(); i++) {
+        output.writeMessage(17, intvFilter_.get(i));
+      }
+      for (int i = 0; i < timeUnitConvert_.size(); i++) {
+        output.writeMessage(18, timeUnitConvert_.get(i));
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeBytes(19, getUserTimeUnitBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getCollectionSpecBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getPartitionTypeBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getDateFormatMarkBytes());
+      }
+      for (int i = 0; i < gdsConvert_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, gdsConvert_.get(i));
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(12, pdsUseGenType_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(13, pdsUseTableVersion_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(14, pdsIntvMerge_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(15, pdsUseCenter_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(16, intvExcludeZero_);
+      }
+      for (int i = 0; i < intvFilter_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(17, intvFilter_.get(i));
+      }
+      for (int i = 0; i < timeUnitConvert_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(18, timeUnitConvert_.get(i));
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(19, getUserTimeUnitBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static ucar.nc2.grib.collection.GribCollectionProto.FcConfig parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.grib.collection.GribCollectionProto.FcConfig prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code FcConfig}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements ucar.nc2.grib.collection.GribCollectionProto.FcConfigOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_FcConfig_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_FcConfig_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                ucar.nc2.grib.collection.GribCollectionProto.FcConfig.class, ucar.nc2.grib.collection.GribCollectionProto.FcConfig.Builder.class);
+      }
+
+      // Construct using ucar.nc2.grib.collection.GribCollectionProto.FcConfig.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getGdsConvertFieldBuilder();
+          getIntvFilterFieldBuilder();
+          getTimeUnitConvertFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        collectionSpec_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        partitionType_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        dateFormatMark_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        if (gdsConvertBuilder_ == null) {
+          gdsConvert_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          gdsConvertBuilder_.clear();
+        }
+        pdsUseGenType_ = false;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        pdsUseTableVersion_ = true;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        pdsIntvMerge_ = true;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        pdsUseCenter_ = true;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        intvExcludeZero_ = false;
+        bitField0_ = (bitField0_ & ~0x00000200);
+        if (intvFilterBuilder_ == null) {
+          intvFilter_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000400);
+        } else {
+          intvFilterBuilder_.clear();
+        }
+        if (timeUnitConvertBuilder_ == null) {
+          timeUnitConvert_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000800);
+        } else {
+          timeUnitConvertBuilder_.clear();
+        }
+        userTimeUnit_ = "";
+        bitField0_ = (bitField0_ & ~0x00001000);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.internal_static_FcConfig_descriptor;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.FcConfig getDefaultInstanceForType() {
+        return ucar.nc2.grib.collection.GribCollectionProto.FcConfig.getDefaultInstance();
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.FcConfig build() {
+        ucar.nc2.grib.collection.GribCollectionProto.FcConfig result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public ucar.nc2.grib.collection.GribCollectionProto.FcConfig buildPartial() {
+        ucar.nc2.grib.collection.GribCollectionProto.FcConfig result = new ucar.nc2.grib.collection.GribCollectionProto.FcConfig(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.collectionSpec_ = collectionSpec_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.partitionType_ = partitionType_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.dateFormatMark_ = dateFormatMark_;
+        if (gdsConvertBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            gdsConvert_ = java.util.Collections.unmodifiableList(gdsConvert_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.gdsConvert_ = gdsConvert_;
+        } else {
+          result.gdsConvert_ = gdsConvertBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.pdsUseGenType_ = pdsUseGenType_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.pdsUseTableVersion_ = pdsUseTableVersion_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.pdsIntvMerge_ = pdsIntvMerge_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.pdsUseCenter_ = pdsUseCenter_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.intvExcludeZero_ = intvExcludeZero_;
+        if (intvFilterBuilder_ == null) {
+          if (((bitField0_ & 0x00000400) == 0x00000400)) {
+            intvFilter_ = java.util.Collections.unmodifiableList(intvFilter_);
+            bitField0_ = (bitField0_ & ~0x00000400);
+          }
+          result.intvFilter_ = intvFilter_;
+        } else {
+          result.intvFilter_ = intvFilterBuilder_.build();
+        }
+        if (timeUnitConvertBuilder_ == null) {
+          if (((bitField0_ & 0x00000800) == 0x00000800)) {
+            timeUnitConvert_ = java.util.Collections.unmodifiableList(timeUnitConvert_);
+            bitField0_ = (bitField0_ & ~0x00000800);
+          }
+          result.timeUnitConvert_ = timeUnitConvert_;
+        } else {
+          result.timeUnitConvert_ = timeUnitConvertBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.userTimeUnit_ = userTimeUnit_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.grib.collection.GribCollectionProto.FcConfig) {
+          return mergeFrom((ucar.nc2.grib.collection.GribCollectionProto.FcConfig)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(ucar.nc2.grib.collection.GribCollectionProto.FcConfig other) {
+        if (other == ucar.nc2.grib.collection.GribCollectionProto.FcConfig.getDefaultInstance()) return this;
+        if (other.hasName()) {
+          bitField0_ |= 0x00000001;
+          name_ = other.name_;
+          onChanged();
+        }
+        if (other.hasCollectionSpec()) {
+          bitField0_ |= 0x00000002;
+          collectionSpec_ = other.collectionSpec_;
+          onChanged();
+        }
+        if (other.hasPartitionType()) {
+          bitField0_ |= 0x00000004;
+          partitionType_ = other.partitionType_;
+          onChanged();
+        }
+        if (other.hasDateFormatMark()) {
+          bitField0_ |= 0x00000008;
+          dateFormatMark_ = other.dateFormatMark_;
+          onChanged();
+        }
+        if (gdsConvertBuilder_ == null) {
+          if (!other.gdsConvert_.isEmpty()) {
+            if (gdsConvert_.isEmpty()) {
+              gdsConvert_ = other.gdsConvert_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureGdsConvertIsMutable();
+              gdsConvert_.addAll(other.gdsConvert_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.gdsConvert_.isEmpty()) {
+            if (gdsConvertBuilder_.isEmpty()) {
+              gdsConvertBuilder_.dispose();
+              gdsConvertBuilder_ = null;
+              gdsConvert_ = other.gdsConvert_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              gdsConvertBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getGdsConvertFieldBuilder() : null;
+            } else {
+              gdsConvertBuilder_.addAllMessages(other.gdsConvert_);
+            }
+          }
+        }
+        if (other.hasPdsUseGenType()) {
+          setPdsUseGenType(other.getPdsUseGenType());
+        }
+        if (other.hasPdsUseTableVersion()) {
+          setPdsUseTableVersion(other.getPdsUseTableVersion());
+        }
+        if (other.hasPdsIntvMerge()) {
+          setPdsIntvMerge(other.getPdsIntvMerge());
+        }
+        if (other.hasPdsUseCenter()) {
+          setPdsUseCenter(other.getPdsUseCenter());
+        }
+        if (other.hasIntvExcludeZero()) {
+          setIntvExcludeZero(other.getIntvExcludeZero());
+        }
+        if (intvFilterBuilder_ == null) {
+          if (!other.intvFilter_.isEmpty()) {
+            if (intvFilter_.isEmpty()) {
+              intvFilter_ = other.intvFilter_;
+              bitField0_ = (bitField0_ & ~0x00000400);
+            } else {
+              ensureIntvFilterIsMutable();
+              intvFilter_.addAll(other.intvFilter_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.intvFilter_.isEmpty()) {
+            if (intvFilterBuilder_.isEmpty()) {
+              intvFilterBuilder_.dispose();
+              intvFilterBuilder_ = null;
+              intvFilter_ = other.intvFilter_;
+              bitField0_ = (bitField0_ & ~0x00000400);
+              intvFilterBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getIntvFilterFieldBuilder() : null;
+            } else {
+              intvFilterBuilder_.addAllMessages(other.intvFilter_);
+            }
+          }
+        }
+        if (timeUnitConvertBuilder_ == null) {
+          if (!other.timeUnitConvert_.isEmpty()) {
+            if (timeUnitConvert_.isEmpty()) {
+              timeUnitConvert_ = other.timeUnitConvert_;
+              bitField0_ = (bitField0_ & ~0x00000800);
+            } else {
+              ensureTimeUnitConvertIsMutable();
+              timeUnitConvert_.addAll(other.timeUnitConvert_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.timeUnitConvert_.isEmpty()) {
+            if (timeUnitConvertBuilder_.isEmpty()) {
+              timeUnitConvertBuilder_.dispose();
+              timeUnitConvertBuilder_ = null;
+              timeUnitConvert_ = other.timeUnitConvert_;
+              bitField0_ = (bitField0_ & ~0x00000800);
+              timeUnitConvertBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getTimeUnitConvertFieldBuilder() : null;
+            } else {
+              timeUnitConvertBuilder_.addAllMessages(other.timeUnitConvert_);
+            }
+          }
+        }
+        if (other.hasUserTimeUnit()) {
+          bitField0_ |= 0x00001000;
+          userTimeUnit_ = other.userTimeUnit_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasName()) {
+          
+          return false;
+        }
+        if (!hasCollectionSpec()) {
+          
+          return false;
+        }
+        if (!hasPartitionType()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getGdsConvertCount(); i++) {
+          if (!getGdsConvert(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getIntvFilterCount(); i++) {
+          if (!getIntvFilter(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getTimeUnitConvertCount(); i++) {
+          if (!getTimeUnitConvert(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        ucar.nc2.grib.collection.GribCollectionProto.FcConfig parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (ucar.nc2.grib.collection.GribCollectionProto.FcConfig) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string name = 1;
+      private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder clearName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required string collectionSpec = 2;
+      private java.lang.Object collectionSpec_ = "";
+      /**
+       * <code>required string collectionSpec = 2;</code>
+       */
+      public boolean hasCollectionSpec() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string collectionSpec = 2;</code>
+       */
+      public java.lang.String getCollectionSpec() {
+        java.lang.Object ref = collectionSpec_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          collectionSpec_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string collectionSpec = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCollectionSpecBytes() {
+        java.lang.Object ref = collectionSpec_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          collectionSpec_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string collectionSpec = 2;</code>
+       */
+      public Builder setCollectionSpec(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        collectionSpec_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string collectionSpec = 2;</code>
+       */
+      public Builder clearCollectionSpec() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        collectionSpec_ = getDefaultInstance().getCollectionSpec();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string collectionSpec = 2;</code>
+       */
+      public Builder setCollectionSpecBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        collectionSpec_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required string partitionType = 3;
+      private java.lang.Object partitionType_ = "";
+      /**
+       * <code>required string partitionType = 3;</code>
+       */
+      public boolean hasPartitionType() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required string partitionType = 3;</code>
+       */
+      public java.lang.String getPartitionType() {
+        java.lang.Object ref = partitionType_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          partitionType_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string partitionType = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPartitionTypeBytes() {
+        java.lang.Object ref = partitionType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          partitionType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string partitionType = 3;</code>
+       */
+      public Builder setPartitionType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        partitionType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string partitionType = 3;</code>
+       */
+      public Builder clearPartitionType() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        partitionType_ = getDefaultInstance().getPartitionType();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string partitionType = 3;</code>
+       */
+      public Builder setPartitionTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        partitionType_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string dateFormatMark = 4;
+      private java.lang.Object dateFormatMark_ = "";
+      /**
+       * <code>optional string dateFormatMark = 4;</code>
+       */
+      public boolean hasDateFormatMark() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string dateFormatMark = 4;</code>
+       */
+      public java.lang.String getDateFormatMark() {
+        java.lang.Object ref = dateFormatMark_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          dateFormatMark_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string dateFormatMark = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDateFormatMarkBytes() {
+        java.lang.Object ref = dateFormatMark_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          dateFormatMark_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string dateFormatMark = 4;</code>
+       */
+      public Builder setDateFormatMark(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        dateFormatMark_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string dateFormatMark = 4;</code>
+       */
+      public Builder clearDateFormatMark() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        dateFormatMark_ = getDefaultInstance().getDateFormatMark();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string dateFormatMark = 4;</code>
+       */
+      public Builder setDateFormatMarkBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        dateFormatMark_ = value;
+        onChanged();
+        return this;
+      }
+
+      // repeated .IntMap gdsConvert = 11;
+      private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> gdsConvert_ =
+        java.util.Collections.emptyList();
+      private void ensureGdsConvertIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          gdsConvert_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.IntMap>(gdsConvert_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.IntMap, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> gdsConvertBuilder_;
+
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> getGdsConvertList() {
+        if (gdsConvertBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(gdsConvert_);
+        } else {
+          return gdsConvertBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public int getGdsConvertCount() {
+        if (gdsConvertBuilder_ == null) {
+          return gdsConvert_.size();
+        } else {
+          return gdsConvertBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap getGdsConvert(int index) {
+        if (gdsConvertBuilder_ == null) {
+          return gdsConvert_.get(index);
+        } else {
+          return gdsConvertBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder setGdsConvert(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntMap value) {
+        if (gdsConvertBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureGdsConvertIsMutable();
+          gdsConvert_.set(index, value);
+          onChanged();
+        } else {
+          gdsConvertBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder setGdsConvert(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder builderForValue) {
+        if (gdsConvertBuilder_ == null) {
+          ensureGdsConvertIsMutable();
+          gdsConvert_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          gdsConvertBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder addGdsConvert(ucar.nc2.grib.collection.GribCollectionProto.IntMap value) {
+        if (gdsConvertBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureGdsConvertIsMutable();
+          gdsConvert_.add(value);
+          onChanged();
+        } else {
+          gdsConvertBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder addGdsConvert(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntMap value) {
+        if (gdsConvertBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureGdsConvertIsMutable();
+          gdsConvert_.add(index, value);
+          onChanged();
+        } else {
+          gdsConvertBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder addGdsConvert(
+          ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder builderForValue) {
+        if (gdsConvertBuilder_ == null) {
+          ensureGdsConvertIsMutable();
+          gdsConvert_.add(builderForValue.build());
+          onChanged();
+        } else {
+          gdsConvertBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder addGdsConvert(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder builderForValue) {
+        if (gdsConvertBuilder_ == null) {
+          ensureGdsConvertIsMutable();
+          gdsConvert_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          gdsConvertBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder addAllGdsConvert(
+          java.lang.Iterable<? extends ucar.nc2.grib.collection.GribCollectionProto.IntMap> values) {
+        if (gdsConvertBuilder_ == null) {
+          ensureGdsConvertIsMutable();
+          super.addAll(values, gdsConvert_);
+          onChanged();
+        } else {
+          gdsConvertBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder clearGdsConvert() {
+        if (gdsConvertBuilder_ == null) {
+          gdsConvert_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          gdsConvertBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public Builder removeGdsConvert(int index) {
+        if (gdsConvertBuilder_ == null) {
+          ensureGdsConvertIsMutable();
+          gdsConvert_.remove(index);
+          onChanged();
+        } else {
+          gdsConvertBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder getGdsConvertBuilder(
+          int index) {
+        return getGdsConvertFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder getGdsConvertOrBuilder(
+          int index) {
+        if (gdsConvertBuilder_ == null) {
+          return gdsConvert_.get(index);  } else {
+          return gdsConvertBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> 
+           getGdsConvertOrBuilderList() {
+        if (gdsConvertBuilder_ != null) {
+          return gdsConvertBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(gdsConvert_);
+        }
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder addGdsConvertBuilder() {
+        return getGdsConvertFieldBuilder().addBuilder(
+            ucar.nc2.grib.collection.GribCollectionProto.IntMap.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder addGdsConvertBuilder(
+          int index) {
+        return getGdsConvertFieldBuilder().addBuilder(
+            index, ucar.nc2.grib.collection.GribCollectionProto.IntMap.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .IntMap gdsConvert = 11;</code>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder> 
+           getGdsConvertBuilderList() {
+        return getGdsConvertFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.IntMap, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> 
+          getGdsConvertFieldBuilder() {
+        if (gdsConvertBuilder_ == null) {
+          gdsConvertBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              ucar.nc2.grib.collection.GribCollectionProto.IntMap, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder>(
+                  gdsConvert_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          gdsConvert_ = null;
+        }
+        return gdsConvertBuilder_;
+      }
+
+      // optional bool pdsUseGenType = 12 [default = false];
+      private boolean pdsUseGenType_ ;
+      /**
+       * <code>optional bool pdsUseGenType = 12 [default = false];</code>
+       */
+      public boolean hasPdsUseGenType() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional bool pdsUseGenType = 12 [default = false];</code>
+       */
+      public boolean getPdsUseGenType() {
+        return pdsUseGenType_;
+      }
+      /**
+       * <code>optional bool pdsUseGenType = 12 [default = false];</code>
+       */
+      public Builder setPdsUseGenType(boolean value) {
+        bitField0_ |= 0x00000020;
+        pdsUseGenType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool pdsUseGenType = 12 [default = false];</code>
+       */
+      public Builder clearPdsUseGenType() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        pdsUseGenType_ = false;
+        onChanged();
+        return this;
+      }
+
+      // optional bool pdsUseTableVersion = 13 [default = true];
+      private boolean pdsUseTableVersion_ = true;
+      /**
+       * <code>optional bool pdsUseTableVersion = 13 [default = true];</code>
+       */
+      public boolean hasPdsUseTableVersion() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional bool pdsUseTableVersion = 13 [default = true];</code>
+       */
+      public boolean getPdsUseTableVersion() {
+        return pdsUseTableVersion_;
+      }
+      /**
+       * <code>optional bool pdsUseTableVersion = 13 [default = true];</code>
+       */
+      public Builder setPdsUseTableVersion(boolean value) {
+        bitField0_ |= 0x00000040;
+        pdsUseTableVersion_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool pdsUseTableVersion = 13 [default = true];</code>
+       */
+      public Builder clearPdsUseTableVersion() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        pdsUseTableVersion_ = true;
+        onChanged();
+        return this;
+      }
+
+      // optional bool pdsIntvMerge = 14 [default = true];
+      private boolean pdsIntvMerge_ = true;
+      /**
+       * <code>optional bool pdsIntvMerge = 14 [default = true];</code>
+       */
+      public boolean hasPdsIntvMerge() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional bool pdsIntvMerge = 14 [default = true];</code>
+       */
+      public boolean getPdsIntvMerge() {
+        return pdsIntvMerge_;
+      }
+      /**
+       * <code>optional bool pdsIntvMerge = 14 [default = true];</code>
+       */
+      public Builder setPdsIntvMerge(boolean value) {
+        bitField0_ |= 0x00000080;
+        pdsIntvMerge_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool pdsIntvMerge = 14 [default = true];</code>
+       */
+      public Builder clearPdsIntvMerge() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        pdsIntvMerge_ = true;
+        onChanged();
+        return this;
+      }
+
+      // optional bool pdsUseCenter = 15 [default = true];
+      private boolean pdsUseCenter_ = true;
+      /**
+       * <code>optional bool pdsUseCenter = 15 [default = true];</code>
+       */
+      public boolean hasPdsUseCenter() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional bool pdsUseCenter = 15 [default = true];</code>
+       */
+      public boolean getPdsUseCenter() {
+        return pdsUseCenter_;
+      }
+      /**
+       * <code>optional bool pdsUseCenter = 15 [default = true];</code>
+       */
+      public Builder setPdsUseCenter(boolean value) {
+        bitField0_ |= 0x00000100;
+        pdsUseCenter_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool pdsUseCenter = 15 [default = true];</code>
+       */
+      public Builder clearPdsUseCenter() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        pdsUseCenter_ = true;
+        onChanged();
+        return this;
+      }
+
+      // optional bool intvExcludeZero = 16 [default = false];
+      private boolean intvExcludeZero_ ;
+      /**
+       * <code>optional bool intvExcludeZero = 16 [default = false];</code>
+       */
+      public boolean hasIntvExcludeZero() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional bool intvExcludeZero = 16 [default = false];</code>
+       */
+      public boolean getIntvExcludeZero() {
+        return intvExcludeZero_;
+      }
+      /**
+       * <code>optional bool intvExcludeZero = 16 [default = false];</code>
+       */
+      public Builder setIntvExcludeZero(boolean value) {
+        bitField0_ |= 0x00000200;
+        intvExcludeZero_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool intvExcludeZero = 16 [default = false];</code>
+       */
+      public Builder clearIntvExcludeZero() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        intvExcludeZero_ = false;
+        onChanged();
+        return this;
+      }
+
+      // repeated .IntvFilter intvFilter = 17;
+      private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntvFilter> intvFilter_ =
+        java.util.Collections.emptyList();
+      private void ensureIntvFilterIsMutable() {
+        if (!((bitField0_ & 0x00000400) == 0x00000400)) {
+          intvFilter_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.IntvFilter>(intvFilter_);
+          bitField0_ |= 0x00000400;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.IntvFilter, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder> intvFilterBuilder_;
+
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntvFilter> getIntvFilterList() {
+        if (intvFilterBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(intvFilter_);
+        } else {
+          return intvFilterBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public int getIntvFilterCount() {
+        if (intvFilterBuilder_ == null) {
+          return intvFilter_.size();
+        } else {
+          return intvFilterBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntvFilter getIntvFilter(int index) {
+        if (intvFilterBuilder_ == null) {
+          return intvFilter_.get(index);
+        } else {
+          return intvFilterBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder setIntvFilter(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter value) {
+        if (intvFilterBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureIntvFilterIsMutable();
+          intvFilter_.set(index, value);
+          onChanged();
+        } else {
+          intvFilterBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder setIntvFilter(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder builderForValue) {
+        if (intvFilterBuilder_ == null) {
+          ensureIntvFilterIsMutable();
+          intvFilter_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          intvFilterBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder addIntvFilter(ucar.nc2.grib.collection.GribCollectionProto.IntvFilter value) {
+        if (intvFilterBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureIntvFilterIsMutable();
+          intvFilter_.add(value);
+          onChanged();
+        } else {
+          intvFilterBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder addIntvFilter(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter value) {
+        if (intvFilterBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureIntvFilterIsMutable();
+          intvFilter_.add(index, value);
+          onChanged();
+        } else {
+          intvFilterBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder addIntvFilter(
+          ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder builderForValue) {
+        if (intvFilterBuilder_ == null) {
+          ensureIntvFilterIsMutable();
+          intvFilter_.add(builderForValue.build());
+          onChanged();
+        } else {
+          intvFilterBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder addIntvFilter(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder builderForValue) {
+        if (intvFilterBuilder_ == null) {
+          ensureIntvFilterIsMutable();
+          intvFilter_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          intvFilterBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder addAllIntvFilter(
+          java.lang.Iterable<? extends ucar.nc2.grib.collection.GribCollectionProto.IntvFilter> values) {
+        if (intvFilterBuilder_ == null) {
+          ensureIntvFilterIsMutable();
+          super.addAll(values, intvFilter_);
+          onChanged();
+        } else {
+          intvFilterBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder clearIntvFilter() {
+        if (intvFilterBuilder_ == null) {
+          intvFilter_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000400);
+          onChanged();
+        } else {
+          intvFilterBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public Builder removeIntvFilter(int index) {
+        if (intvFilterBuilder_ == null) {
+          ensureIntvFilterIsMutable();
+          intvFilter_.remove(index);
+          onChanged();
+        } else {
+          intvFilterBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder getIntvFilterBuilder(
+          int index) {
+        return getIntvFilterFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder getIntvFilterOrBuilder(
+          int index) {
+        if (intvFilterBuilder_ == null) {
+          return intvFilter_.get(index);  } else {
+          return intvFilterBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder> 
+           getIntvFilterOrBuilderList() {
+        if (intvFilterBuilder_ != null) {
+          return intvFilterBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(intvFilter_);
+        }
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder addIntvFilterBuilder() {
+        return getIntvFilterFieldBuilder().addBuilder(
+            ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder addIntvFilterBuilder(
+          int index) {
+        return getIntvFilterFieldBuilder().addBuilder(
+            index, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .IntvFilter intvFilter = 17;</code>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder> 
+           getIntvFilterBuilderList() {
+        return getIntvFilterFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.IntvFilter, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder> 
+          getIntvFilterFieldBuilder() {
+        if (intvFilterBuilder_ == null) {
+          intvFilterBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              ucar.nc2.grib.collection.GribCollectionProto.IntvFilter, ucar.nc2.grib.collection.GribCollectionProto.IntvFilter.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntvFilterOrBuilder>(
+                  intvFilter_,
+                  ((bitField0_ & 0x00000400) == 0x00000400),
+                  getParentForChildren(),
+                  isClean());
+          intvFilter_ = null;
+        }
+        return intvFilterBuilder_;
+      }
+
+      // repeated .IntMap timeUnitConvert = 18;
+      private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> timeUnitConvert_ =
+        java.util.Collections.emptyList();
+      private void ensureTimeUnitConvertIsMutable() {
+        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
+          timeUnitConvert_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.IntMap>(timeUnitConvert_);
+          bitField0_ |= 0x00000800;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.IntMap, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> timeUnitConvertBuilder_;
+
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap> getTimeUnitConvertList() {
+        if (timeUnitConvertBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(timeUnitConvert_);
+        } else {
+          return timeUnitConvertBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public int getTimeUnitConvertCount() {
+        if (timeUnitConvertBuilder_ == null) {
+          return timeUnitConvert_.size();
+        } else {
+          return timeUnitConvertBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap getTimeUnitConvert(int index) {
+        if (timeUnitConvertBuilder_ == null) {
+          return timeUnitConvert_.get(index);
+        } else {
+          return timeUnitConvertBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder setTimeUnitConvert(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntMap value) {
+        if (timeUnitConvertBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTimeUnitConvertIsMutable();
+          timeUnitConvert_.set(index, value);
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder setTimeUnitConvert(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder builderForValue) {
+        if (timeUnitConvertBuilder_ == null) {
+          ensureTimeUnitConvertIsMutable();
+          timeUnitConvert_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder addTimeUnitConvert(ucar.nc2.grib.collection.GribCollectionProto.IntMap value) {
+        if (timeUnitConvertBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTimeUnitConvertIsMutable();
+          timeUnitConvert_.add(value);
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder addTimeUnitConvert(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntMap value) {
+        if (timeUnitConvertBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTimeUnitConvertIsMutable();
+          timeUnitConvert_.add(index, value);
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder addTimeUnitConvert(
+          ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder builderForValue) {
+        if (timeUnitConvertBuilder_ == null) {
+          ensureTimeUnitConvertIsMutable();
+          timeUnitConvert_.add(builderForValue.build());
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder addTimeUnitConvert(
+          int index, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder builderForValue) {
+        if (timeUnitConvertBuilder_ == null) {
+          ensureTimeUnitConvertIsMutable();
+          timeUnitConvert_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder addAllTimeUnitConvert(
+          java.lang.Iterable<? extends ucar.nc2.grib.collection.GribCollectionProto.IntMap> values) {
+        if (timeUnitConvertBuilder_ == null) {
+          ensureTimeUnitConvertIsMutable();
+          super.addAll(values, timeUnitConvert_);
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder clearTimeUnitConvert() {
+        if (timeUnitConvertBuilder_ == null) {
+          timeUnitConvert_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000800);
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public Builder removeTimeUnitConvert(int index) {
+        if (timeUnitConvertBuilder_ == null) {
+          ensureTimeUnitConvertIsMutable();
+          timeUnitConvert_.remove(index);
+          onChanged();
+        } else {
+          timeUnitConvertBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder getTimeUnitConvertBuilder(
+          int index) {
+        return getTimeUnitConvertFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder getTimeUnitConvertOrBuilder(
+          int index) {
+        if (timeUnitConvertBuilder_ == null) {
+          return timeUnitConvert_.get(index);  } else {
+          return timeUnitConvertBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public java.util.List<? extends ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> 
+           getTimeUnitConvertOrBuilderList() {
+        if (timeUnitConvertBuilder_ != null) {
+          return timeUnitConvertBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(timeUnitConvert_);
+        }
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder addTimeUnitConvertBuilder() {
+        return getTimeUnitConvertFieldBuilder().addBuilder(
+            ucar.nc2.grib.collection.GribCollectionProto.IntMap.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder addTimeUnitConvertBuilder(
+          int index) {
+        return getTimeUnitConvertFieldBuilder().addBuilder(
+            index, ucar.nc2.grib.collection.GribCollectionProto.IntMap.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .IntMap timeUnitConvert = 18;</code>
+       */
+      public java.util.List<ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder> 
+           getTimeUnitConvertBuilderList() {
+        return getTimeUnitConvertFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.grib.collection.GribCollectionProto.IntMap, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder> 
+          getTimeUnitConvertFieldBuilder() {
+        if (timeUnitConvertBuilder_ == null) {
+          timeUnitConvertBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              ucar.nc2.grib.collection.GribCollectionProto.IntMap, ucar.nc2.grib.collection.GribCollectionProto.IntMap.Builder, ucar.nc2.grib.collection.GribCollectionProto.IntMapOrBuilder>(
+                  timeUnitConvert_,
+                  ((bitField0_ & 0x00000800) == 0x00000800),
+                  getParentForChildren(),
+                  isClean());
+          timeUnitConvert_ = null;
+        }
+        return timeUnitConvertBuilder_;
+      }
+
+      // optional string userTimeUnit = 19;
+      private java.lang.Object userTimeUnit_ = "";
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public boolean hasUserTimeUnit() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public java.lang.String getUserTimeUnit() {
+        java.lang.Object ref = userTimeUnit_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          userTimeUnit_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public com.google.protobuf.ByteString
+          getUserTimeUnitBytes() {
+        java.lang.Object ref = userTimeUnit_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          userTimeUnit_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public Builder setUserTimeUnit(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        userTimeUnit_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public Builder clearUserTimeUnit() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        userTimeUnit_ = getDefaultInstance().getUserTimeUnit();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string userTimeUnit = 19;</code>
+       */
+      public Builder setUserTimeUnitBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        userTimeUnit_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:FcConfig)
+    }
+
+    static {
+      defaultInstance = new FcConfig(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:FcConfig)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
@@ -15539,11 +19940,6 @@ public final class GribCollectionProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Coord_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_MFile_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_MFile_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_Parameter_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -15564,10 +19960,35 @@ public final class GribCollectionProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Dataset_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_MFile_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_MFile_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_GribCollection_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_GribCollection_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_StringMap_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_StringMap_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_IntMap_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_IntMap_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_IntvFilter_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_IntvFilter_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_FcConfig_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_FcConfig_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -15580,41 +20001,54 @@ public final class GribCollectionProto {
       "\n.ucar/nc2/grib/collection/gribCollectio" +
       "n2.proto\"P\n\006Record\022\016\n\006fileno\030\001 \002(\r\022\013\n\003po" +
       "s\030\002 \002(\004\022\021\n\006bmsPos\030\003 \001(\004:\0010\022\026\n\010scanMode\030\004" +
-      " \001(\r:\0049999\"U\n\013SparseArray\022\017\n\007cdmHash\030\001 \002" +
+      " \001(\r:\0049999\"d\n\013SparseArray\022\017\n\007cdmHash\030\001 \002" +
       "(\007\022\014\n\004size\030\002 \003(\r\022\r\n\005track\030\003 \003(\r\022\030\n\007recor" +
-      "ds\030\004 \003(\0132\007.Record\"\204\002\n\010Variable\022\022\n\ndiscip" +
-      "line\030\001 \002(\r\022\013\n\003pds\030\002 \002(\014\022\017\n\007cdmHash\030\003 \002(\007" +
-      "\022\022\n\nrecordsPos\030\004 \002(\004\022\022\n\nrecordsLen\030\005 \002(\r" +
-      "\022\020\n\010coordIdx\030\006 \003(\r\022\017\n\007density\030\007 \001(\002\022\r\n\005n" +
-      "dups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030",
-      "\n \001(\r\022\020\n\010invCount\030\017 \003(\r\022\024\n\014time2runtime\030" +
-      "\020 \003(\r\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001" +
-      "\"\237\001\n\005Coord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014" +
-      "\n\004unit\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 " +
-      "\003(\002\022\r\n\005msecs\030\006 \003(\003\022\025\n\005times\030\007 \003(\0132\006.Coor" +
-      "d\022\024\n\014isOrthogonal\030\010 \001(\010\022\021\n\tisRegular\030\t \001" +
-      "(\010\">\n\005MFile\022\020\n\010filename\030\001 \002(\t\022\024\n\014lastMod" +
-      "ified\030\002 \002(\004\022\r\n\005index\030\003 \002(\r\"6\n\tParameter\022" +
-      "\014\n\004name\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001" +
-      "(\t\"^\n\003Gds\022\013\n\003gds\030\001 \001(\014\022\022\n\007gdsHash\030\002 \001(\021:",
-      "\0010\022\024\n\014nameOverride\030\003 \001(\t\022 \n\030predefinedGr" +
-      "idDefinition\030\004 \001(\r\"\222\001\n\005Group\022\020\n\010gdsIndex" +
-      "\030\001 \002(\r\022\034\n\tvariables\030\002 \003(\0132\t.Variable\022\026\n\006" +
-      "coords\030\003 \003(\0132\006.Coord\022\016\n\006fileno\030\004 \003(\005\022\016\n\006" +
-      "isTwod\030\005 \002(\010\022\032\n\006params\030\024 \003(\0132\n.Parameter" +
-      "*\005\010d\020\310\001\"p\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r.Datas" +
-      "et.Type\022\026\n\006groups\030\002 \003(\0132\006.Group\"0\n\004Type\022" +
-      "\006\n\002GC\020\000\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\014\n\010Analysis\020" +
-      "\003\"\275\002\n\016GribCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006to" +
-      "pDir\030\002 \002(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007da",
-      "taset\030\004 \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds" +
-      "\022\035\n\rmasterRuntime\030\025 \002(\0132\006.Coord\022\016\n\006cente" +
-      "r\030\006 \002(\005\022\021\n\tsubcenter\030\007 \002(\005\022\016\n\006master\030\010 \002" +
-      "(\005\022\r\n\005local\030\t \002(\005\022\026\n\016genProcessType\030\n \001(" +
-      "\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProcessId" +
-      "\030\014 \001(\005\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310" +
-      "\001B/\n\030ucar.nc2.grib.collectionB\023GribColle" +
-      "ctionProto"
+      "ds\030\004 \003(\0132\007.Record\022\r\n\005ndups\030\005 \001(\r\"\307\001\n\010Var" +
+      "iable\022\022\n\ndiscipline\030\001 \002(\r\022\013\n\003pds\030\002 \002(\014\022\013" +
+      "\n\003ids\030\003 \003(\r\022\022\n\nrecordsPos\030\004 \002(\004\022\022\n\nrecor" +
+      "dsLen\030\005 \002(\r\022\020\n\010coordIdx\030\006 \003(\r\022\r\n\005ndups\030\010" +
+      " \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030\n \001(\r\022",
+      "\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"\265\001\n\005C" +
+      "oord\022\014\n\004type\030\001 \002(\005\022\014\n\004code\030\002 \002(\005\022\014\n\004unit" +
+      "\030\003 \001(\t\022\016\n\006values\030\004 \003(\002\022\r\n\005bound\030\005 \003(\002\022\r\n" +
+      "\005msecs\030\006 \003(\003\022\025\n\005times\030\007 \003(\0132\006.Coord\022\024\n\014i" +
+      "sOrthogonal\030\010 \001(\010\022\021\n\tisRegular\030\t \001(\010\022\024\n\014" +
+      "time2runtime\030\n \003(\r\"6\n\tParameter\022\014\n\004name\030" +
+      "\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"4\n\003Gd" +
+      "s\022\013\n\003gds\030\001 \001(\014\022 \n\030predefinedGridDefiniti" +
+      "on\030\002 \001(\r\"\222\001\n\005Group\022\020\n\010gdsIndex\030\001 \002(\r\022\034\n\t" +
+      "variables\030\002 \003(\0132\t.Variable\022\026\n\006coords\030\003 \003",
+      "(\0132\006.Coord\022\016\n\006fileno\030\004 \003(\005\022\016\n\006isTwod\030\005 \002" +
+      "(\010\022\032\n\006params\030\024 \003(\0132\n.Parameter*\005\010d\020\310\001\"\225\001" +
+      "\n\007Dataset\022\033\n\004type\030\001 \002(\0162\r.Dataset.Type\022\026" +
+      "\n\006groups\030\002 \003(\0132\006.Group\"U\n\004Type\022\006\n\002GC\020\000\022\007" +
+      "\n\003SRC\020\004\022\007\n\003MRC\020\005\022\t\n\005MRSTC\020\006\022\006\n\002TP\020\007\022\010\n\004T" +
+      "woD\020\001\022\010\n\004Best\020\002\022\014\n\010Analysis\020\003\"Q\n\005MFile\022\020" +
+      "\n\010filename\030\001 \002(\t\022\024\n\014lastModified\030\002 \002(\004\022\r" +
+      "\n\005index\030\003 \002(\r\022\021\n\006length\030\004 \001(\004:\0010\"\330\002\n\016Gri" +
+      "bCollection\022\014\n\004name\030\001 \002(\t\022\016\n\006topDir\030\002 \002(" +
+      "\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004 \003",
+      "(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\rmaste" +
+      "rRuntime\030\006 \002(\0132\006.Coord\022\016\n\006center\030\007 \002(\005\022\021" +
+      "\n\tsubcenter\030\010 \002(\005\022\016\n\006master\030\t \002(\005\022\r\n\005loc" +
+      "al\030\n \002(\005\022\026\n\016genProcessType\030\013 \001(\005\022\024\n\014genP" +
+      "rocessId\030\014 \001(\005\022\025\n\rbackProcessId\030\r \001(\005\022\032\n" +
+      "\006params\030\024 \003(\0132\n.Parameter\022\031\n\006config\030\025 \001(" +
+      "\0132\t.FcConfig*\005\010d\020\310\001\"(\n\tStringMap\022\014\n\004name" +
+      "\030\001 \002(\t\022\r\n\005value\030\002 \002(\t\"\"\n\006IntMap\022\014\n\004from\030" +
+      "\001 \002(\021\022\n\n\002to\030\002 \002(\021\"F\n\nIntvFilter\022\022\n\nintvL" +
+      "ength\030\001 \002(\021\022\022\n\nvariableId\030\002 \002(\r\022\020\n\010intvP",
+      "rob\030\003 \001(\021\"\355\002\n\010FcConfig\022\014\n\004name\030\001 \002(\t\022\026\n\016" +
+      "collectionSpec\030\002 \002(\t\022\025\n\rpartitionType\030\003 " +
+      "\002(\t\022\026\n\016dateFormatMark\030\004 \001(\t\022\033\n\ngdsConver" +
+      "t\030\013 \003(\0132\007.IntMap\022\034\n\rpdsUseGenType\030\014 \001(\010:" +
+      "\005false\022 \n\022pdsUseTableVersion\030\r \001(\010:\004true" +
+      "\022\032\n\014pdsIntvMerge\030\016 \001(\010:\004true\022\032\n\014pdsUseCe" +
+      "nter\030\017 \001(\010:\004true\022\036\n\017intvExcludeZero\030\020 \001(" +
+      "\010:\005false\022\037\n\nintvFilter\030\021 \003(\0132\013.IntvFilte" +
+      "r\022 \n\017timeUnitConvert\030\022 \003(\0132\007.IntMap\022\024\n\014u" +
+      "serTimeUnit\030\023 \001(\tB/\n\030ucar.nc2.grib.colle",
+      "ctionB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -15632,55 +20066,79 @@ public final class GribCollectionProto {
           internal_static_SparseArray_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SparseArray_descriptor,
-              new java.lang.String[] { "CdmHash", "Size", "Track", "Records", });
+              new java.lang.String[] { "CdmHash", "Size", "Track", "Records", "Ndups", });
           internal_static_Variable_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Variable_descriptor,
-              new java.lang.String[] { "Discipline", "Pds", "CdmHash", "RecordsPos", "RecordsLen", "CoordIdx", "Density", "Ndups", "Nrecords", "Missing", "InvCount", "Time2Runtime", "Params", });
+              new java.lang.String[] { "Discipline", "Pds", "Ids", "RecordsPos", "RecordsLen", "CoordIdx", "Ndups", "Nrecords", "Missing", "Params", });
           internal_static_Coord_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_Coord_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Coord_descriptor,
-              new java.lang.String[] { "Type", "Code", "Unit", "Values", "Bound", "Msecs", "Times", "IsOrthogonal", "IsRegular", });
-          internal_static_MFile_descriptor =
-            getDescriptor().getMessageTypes().get(4);
-          internal_static_MFile_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_MFile_descriptor,
-              new java.lang.String[] { "Filename", "LastModified", "Index", });
+              new java.lang.String[] { "Type", "Code", "Unit", "Values", "Bound", "Msecs", "Times", "IsOrthogonal", "IsRegular", "Time2Runtime", });
           internal_static_Parameter_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_Parameter_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Parameter_descriptor,
               new java.lang.String[] { "Name", "Data", "Sdata", });
           internal_static_Gds_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(5);
           internal_static_Gds_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Gds_descriptor,
-              new java.lang.String[] { "Gds", "GdsHash", "NameOverride", "PredefinedGridDefinition", });
+              new java.lang.String[] { "Gds", "PredefinedGridDefinition", });
           internal_static_Group_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Group_descriptor,
               new java.lang.String[] { "GdsIndex", "Variables", "Coords", "Fileno", "IsTwod", "Params", });
           internal_static_Dataset_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_Dataset_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Dataset_descriptor,
               new java.lang.String[] { "Type", "Groups", });
+          internal_static_MFile_descriptor =
+            getDescriptor().getMessageTypes().get(8);
+          internal_static_MFile_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_MFile_descriptor,
+              new java.lang.String[] { "Filename", "LastModified", "Index", "Length", });
           internal_static_GribCollection_descriptor =
             getDescriptor().getMessageTypes().get(9);
           internal_static_GribCollection_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_GribCollection_descriptor,
-              new java.lang.String[] { "Name", "TopDir", "Mfiles", "Dataset", "Gds", "MasterRuntime", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Params", });
+              new java.lang.String[] { "Name", "TopDir", "Mfiles", "Dataset", "Gds", "MasterRuntime", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Params", "Config", });
+          internal_static_StringMap_descriptor =
+            getDescriptor().getMessageTypes().get(10);
+          internal_static_StringMap_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_StringMap_descriptor,
+              new java.lang.String[] { "Name", "Value", });
+          internal_static_IntMap_descriptor =
+            getDescriptor().getMessageTypes().get(11);
+          internal_static_IntMap_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_IntMap_descriptor,
+              new java.lang.String[] { "From", "To", });
+          internal_static_IntvFilter_descriptor =
+            getDescriptor().getMessageTypes().get(12);
+          internal_static_IntvFilter_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_IntvFilter_descriptor,
+              new java.lang.String[] { "IntvLength", "VariableId", "IntvProb", });
+          internal_static_FcConfig_descriptor =
+            getDescriptor().getMessageTypes().get(13);
+          internal_static_FcConfig_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_FcConfig_descriptor,
+              new java.lang.String[] { "Name", "CollectionSpec", "PartitionType", "DateFormatMark", "GdsConvert", "PdsUseGenType", "PdsUseTableVersion", "PdsIntvMerge", "PdsUseCenter", "IntvExcludeZero", "IntvFilter", "TimeUnitConvert", "UserTimeUnit", });
           return null;
         }
       };

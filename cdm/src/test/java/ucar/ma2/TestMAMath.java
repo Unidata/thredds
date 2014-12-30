@@ -36,10 +36,6 @@ import junit.framework.*;
 import java.util.List;
 import java.io.PrintWriter;
 import java.io.IOException;
-import java.io.PrintStream;
-
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.NCdump;
 import ucar.nc2.NCdumpW;
 
 /** Test ma2 section methods in the JUnit framework. */

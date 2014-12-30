@@ -30,16 +30,17 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.iosp.grib;
+package ucar.nc2.grib;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -61,67 +62,79 @@ import java.util.Formatter;
 public class TestGribCollectionsDense {
 
   @BeforeClass
-   static public void before() {
-     RandomAccessFile.setDebugLeaks(true);
-     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     PartitionCollection.initPartitionCache(50, 700, -1, -1);
-     GribCollection.initDataRafCache(11, 100, -1);
-   }
+  static public void before() {
+    GribIosp.debugIndexOnlyCount = 0;
+    GribCollectionImmutable.countGC = 0;
+    PartitionCollectionImmutable.countPC = 0;
+    RandomAccessFile.enableDefaultGlobalFileCache();
+    RandomAccessFile.setDebugLeaks(true);
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
+    GribCdmIndex.gribCollectionCache.resetTracking();
+  }
 
-   @AfterClass
-   static public void after() {
-     GribIosp.setDebugFlags(new DebugFlagsImpl());
-     FileCacheIF cache = PartitionCollection.getPartitionCache();
-     if (cache == null) return;
+  @AfterClass
+  static public void after() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Formatter out = new Formatter(System.out);
 
-     Formatter out = new Formatter(System.out);
-     cache.showCache(out);
-     cache.showTracking(out);
-     cache.clearCache(false);
-     GribCollection.getDataRafCache().showCache(out);
-     TestDir.checkLeaks();
+    FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+    if (cache != null) {
+      cache.showTracking(out);
+      cache.showCache(out);
+      cache.clearCache(false);
+    }
 
-     System.out.printf("countGC=%d%n", GribCollection.countGC);
-     System.out.printf("countPC=%d%n", PartitionCollection.countPC);
+    FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
+    if (rafCache != null) {
+      rafCache.showCache(out);
+    }
 
-     FileCache.shutdown();
-     RandomAccessFile.setDebugLeaks(false);
-   }
+    System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
+    System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
+    System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
+    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
-  //@Test
+    FileCache.shutdown();
+    RandomAccessFile.setGlobalFileCache(null);
+    TestDir.checkLeaks();
+    RandomAccessFile.setDebugLeaks(false);
+  }
+
+  @Test
   public void testLeaf() throws IOException {
     TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2");
     assert count.nread == 1009;
     assert count.nmiss == 0;
   }
 
-  //@Test
+  @Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX-test-20141011-20141011-060000.ncx2");
+    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_1800.grib2.ncx3");
     assert count.nread == 1009;
     assert count.nmiss == 0;
   }
 
-  //@Test
+  @Test
   public void testPofG() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX-test-20141011.ncx2");
+    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx3");
     assert count.nread == 3140;
     assert count.nmiss == 0;
   }
 
-  //@Test
+  @Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/DGEX-test-dgex.ncx2");
+    TestGribCollections.Count count = TestGribCollections.read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx3");
     TestDir.checkLeaks();
     assert count.nread == 5384;
     assert count.nmiss == 0;
   }
 
-  // @Test
+  @Test
   public void problem() throws IOException {
-    String filename = "/gribCollections/dgex/DGEX-test-dgex.ncx2";
-    //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx2";
+    String filename = "gribCollections/dgex/dgex_46.ncx3";
+    //String filename = "/gribCollections/dgex/20141011/DGEX-test-20141011.ncx3";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Total_precipitation_surface_6_Hour_Accumulation");
       assert gdt != null;

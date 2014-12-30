@@ -279,6 +279,8 @@ public class DiskCache2 {
     File f = new File(fileLocation);
     if (f.exists()) return f;
 
+    if (neverUseCache) return null;
+
     File fc = new File(makeCachePath(fileLocation));
     if (fc.exists()) return fc;
 
@@ -413,6 +415,10 @@ public class DiskCache2 {
       File file = new File(root + cachePath);
       File parent = file.getParentFile();
       if (!parent.exists()) {
+        if (root == null) { // LOOK shouldnt happen, remove soon
+          System.out.printf("mkdir4 %s%n", parent.getPath());
+          new Throwable().printStackTrace();
+        }
         boolean ret = parent.mkdirs();
         if (!ret) cacheLog.warn("Error creating parent: " + parent);
       }

@@ -35,7 +35,8 @@
 package ucar.util.prefs;
 
 import junit.framework.*;
-import java.io.*;
+import org.junit.Assert;
+
 import java.util.prefs.*;
 
 public class TestEvents extends TestCase {
@@ -50,16 +51,19 @@ public class TestEvents extends TestCase {
   }
 
   public void testNodeChange() {
-    System.out.println("***TestEvent");
     try {
       Preferences userRoot = Preferences.userRoot();
 
       userRoot.addNodeChangeListener( new NodeChangeListener () {
         public void childAdded(NodeChangeEvent evt) {
-          System.out.println("childAdded = "+evt.getParent().name()+" "+evt.getChild().name());
+          if (debug)
+            System.out.println("childAdded = "+evt.getParent().name()+" "+
+                    evt.getChild().name());
         }
         public void childRemoved(NodeChangeEvent evt) {
-          System.out.println("childRemoved = "+evt.getParent().name()+" "+evt.getChild().name());
+          if (debug)
+            System.out.println("childRemoved = "+evt.getParent().name()+" " +
+                   evt.getChild().name());
         }
       });
 
@@ -79,11 +83,14 @@ public class TestEvents extends TestCase {
 
       node.addPreferenceChangeListener(new PreferenceChangeListener () {
         public void preferenceChange(PreferenceChangeEvent evt) {
-          System.out.println(" node "+ evt.getNode().name()+" key = <"+evt.getKey()+"> val= <"+evt.getNewValue()+">");
           if (evt.getKey().equals("love"))
-            assert evt.getNewValue().equals("ok") : evt.getNewValue();
+            Assert.assertEquals(" node "+ evt.getNode().name()+" key = <" +
+                    evt.getKey()+"> val= <"+evt.getNewValue()+">", "ok",
+                    evt.getNewValue());
           else if (evt.getKey().equals("love2"))
-            assert evt.getNewValue().equals("not ok") : evt.getNewValue();
+              Assert.assertEquals(" node "+ evt.getNode().name()+" key = <" +
+                              evt.getKey()+"> val= <"+evt.getNewValue()+">",
+                      "not ok", evt.getNewValue());
         }
       });
 

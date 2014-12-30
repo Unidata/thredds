@@ -197,7 +197,7 @@ public class TestTdsNcml {
     }
 
     data = v.read("1:10:2,1,0");
-    NCdump.printArray(data, null, System.out, null);
+    NCdumpW.printArray(data, null, System.out, null);
     assert data.getSize() == 5;
 
     count = 0;

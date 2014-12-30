@@ -121,6 +121,16 @@ public class CalendarDateFormatter {
 	  return df_units.print(date.getTime());
   }
 
+  static public CalendarDateFormatter factory(CalendarPeriod period) {
+    switch (period.getField()) {
+      case Year: return new CalendarDateFormatter("yyyy");
+      case Month: return new CalendarDateFormatter("yyyy-MM");
+      case Day: return new CalendarDateFormatter("yyyy-MM-dd");
+      case Hour: return new CalendarDateFormatter("yyyy-MM-ddTHH");
+      default: return new CalendarDateFormatter("yyyy-MM-ddTHH:mm:ss");
+    }
+  }
+
 
   /////////////////////////////////////////////////////////////////////////////
   // reading an ISO formatted date

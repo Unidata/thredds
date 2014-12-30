@@ -34,7 +34,6 @@
 package thredds.ui.catalog;
 
 import thredds.catalog.*;
-import thredds.ui.catalog.query.QueryChooser;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
@@ -98,7 +97,7 @@ public class ThreddsDatasetChooser extends JPanel {
   private final static String FRAME_SIZE = "FrameSize";
 
   private CatalogChooser catalogChooser;
-  private QueryChooser queryChooser;
+  //private QueryChooser queryChooser;
   private JTabbedPane tabbedPane;
 
   private boolean doResolve = false;  // shoul we resolve Resolver datasets?
@@ -144,12 +143,12 @@ public class ThreddsDatasetChooser extends JPanel {
       public void propertyChange( java.beans.PropertyChangeEvent e) {
 
         if (e.getPropertyName().equals("InvAccess")) {
-          InvAccess qcAccess = (InvAccess) e.getNewValue();
-          if (queryChooser != null && qcAccess.getService().getServiceType() == ServiceType.QC) { // LOOK && (ds.getDataType() != DataType.STATION)) {
+          /* InvAccess qcAccess = (InvAccess) e.getNewValue();
+          if (queryChooser != null && qcAccess.getService().getServiceType() == ServiceType.QC) { // && (ds.getDataType() != DataType.STATION)) {
             queryChooser.setDataset( qcAccess.getDataset());
             tabbedPane.setSelectedComponent(queryChooser);
             return;
-          }
+          } */
 
           firePropertyChangeEvent( e);
           return;
@@ -159,13 +158,13 @@ public class ThreddsDatasetChooser extends JPanel {
         if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
           InvDataset ds = (thredds.catalog.InvDataset) e.getNewValue();
           InvAccess qcAccess = ds.getAccess( ServiceType.QC);
-          if (queryChooser != null && (qcAccess != null)) { // LOOK && (ds.getDataType() != DataType.STATION)) {
+          /* if (queryChooser != null && (qcAccess != null)) { // && (ds.getDataType() != DataType.STATION)) {
 
             // non station data DQC
             queryChooser.setDataset( ds);
             tabbedPane.setSelectedComponent(queryChooser);
             return;
-          }
+          } */
 
           // do we need to resolve it? LOOK what about QC events?
           qcAccess = ds.getAccess( ServiceType.RESOLVER);
@@ -184,7 +183,7 @@ public class ThreddsDatasetChooser extends JPanel {
     tabbedPane = (tabs == null) ? new JTabbedPane(JTabbedPane.TOP) : tabs;
     tabbedPane.addTab("Catalog Chooser", catalogChooser);
 
-     if (addDqc) {
+     /* if (addDqc) {
       node = (prefs == null) ? null : (PreferencesExt) prefs.node("dqc");
       queryChooser = new QueryChooser(node, true);
       queryChooser.addPropertyChangeListener( new PropertyChangeListener() {
@@ -193,7 +192,7 @@ public class ThreddsDatasetChooser extends JPanel {
         }
       });
        tabbedPane.addTab("DQC Chooser", queryChooser);
-    }
+    } */
 
     tabbedPane.setSelectedComponent(catalogChooser);
 
@@ -219,16 +218,12 @@ public class ThreddsDatasetChooser extends JPanel {
     this.doResolve = doResolve;
   }
 
-  /** Get the component QueryChooser */
-  public QueryChooser getQueryChooser() { return queryChooser; }
-
   /** Get the component CatalogChooser */
   public CatalogChooser getCatalogChooser() { return catalogChooser; }
 
   /** save the state */
   public void save() {
     catalogChooser.save();
-    if (queryChooser != null) queryChooser.save();
   }
 
   /**

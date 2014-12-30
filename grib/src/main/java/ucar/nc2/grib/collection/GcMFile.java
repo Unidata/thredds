@@ -35,10 +35,12 @@
 
 package ucar.nc2.grib.collection;
 
+import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,7 +66,7 @@ public class GcMFile implements thredds.inventory.MFile {
         if (filename.startsWith("/")) filename = filename.substring(1);
       } else
         filename = file.getPath();  // when does this happen ??
-      result.add( new GcMFile(directory, filename, file.getLastModified(), index));
+      result.add( new GcMFile(directory, filename, file.getLastModified(), file.getLength(), index));
     }
     return result;
   }
@@ -72,14 +74,15 @@ public class GcMFile implements thredds.inventory.MFile {
   ////////////////////////////////////////////////////////////////////////////////////////
   public final File directory;
   public final String name;
-  public final long lastModified;
+  public final long lastModified, length;
   public final int index;
 
-  public GcMFile(File directory, String name, long lastModified, int index) {
+  public GcMFile(File directory, String name, long lastModified, long length, int index) {
     this.directory = directory;
     this.name = name;
     this.lastModified = lastModified;
     this.index = index;
+    this.length = length;
   }
 
   @Override
@@ -89,7 +92,7 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public long getLength() {
-    return 0;
+    return length;
   }
 
   @Override
@@ -107,6 +110,11 @@ public class GcMFile implements thredds.inventory.MFile {
   public String getName() {
     return name;
   }
+
+  @Override
+   public MFile getParent() throws IOException {
+     return new MFileOS(directory);
+   }
 
   @Override
   public int compareTo(thredds.inventory.MFile o) {
@@ -134,6 +142,7 @@ public class GcMFile implements thredds.inventory.MFile {
     sb.append("{directory=").append(directory);
     sb.append(", name='").append(name).append('\'');
     sb.append(", lastModified=").append( new Date(lastModified));
+    sb.append(", size=").append( length);
     sb.append('}');
     return sb.toString();
   }

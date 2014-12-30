@@ -34,22 +34,10 @@ package thredds.tds;
 
 import junit.framework.*;
 
-import thredds.catalog.*;
-import ucar.nc2.Attribute;
-import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.dataset.*;
-import ucar.nc2.Variable;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NCdump;
 import ucar.nc2.util.IO;
-import ucar.nc2.constants.FeatureType;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
 import java.io.File;
-import java.util.Formatter;
 
 public class TestTdsWxs extends TestCase {
 

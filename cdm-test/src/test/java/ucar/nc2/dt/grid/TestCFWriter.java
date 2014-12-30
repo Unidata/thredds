@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Use NetcdfCFWriter to write a netcdf-3 file
+ * Use CFGridWriter to write a netcdf-3 file
  *
  * @author caron
  * @since May 28, 2009
@@ -61,7 +61,7 @@ public class TestCFWriter {
     String varName = "Temperature";
 
     ucar.nc2.dt.grid.GridDataset gds = GridDataset.open(fileIn);
-    List<String> gridList = new ArrayList<String>();
+    List<String> gridList = new ArrayList<>();
     gridList.add(varName);
 
     CFGridWriter writer = new CFGridWriter();

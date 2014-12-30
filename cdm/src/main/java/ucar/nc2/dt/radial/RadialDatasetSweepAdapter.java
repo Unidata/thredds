@@ -234,14 +234,24 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   @Override
   public synchronized void close() throws java.io.IOException {
     if (fileCache != null) {
-      fileCache.release(this);
-    } else {
-      try {
-        if (ncfile != null) ncfile.close();
-      } finally {
-        ncfile = null;
-      }
+      if (fileCache.release(this)) return;
     }
+
+    try {
+      if (netcdfDataset != null) netcdfDataset.close();
+    } finally {
+      netcdfDataset = null;
+    }
+  }
+
+      // release any resources like file handles
+  public void release() throws IOException {
+    if (netcdfDataset != null) netcdfDataset.release();
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    if (netcdfDataset != null) netcdfDataset.reacquire();
   }
 
   /* @Override
@@ -251,7 +261,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
 
   @Override
   public long getLastModified() {
-    return (ncfile != null) ? ncfile.getLastModified() : 0;
+    return (netcdfDataset != null) ? netcdfDataset.getLastModified() : 0;
   }
 
   @Override

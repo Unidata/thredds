@@ -81,7 +81,7 @@ public class DateFromString {
    *   dateString =        wrfout_d01_2006-07-06_080000.nc
    *   dateFormatString = wrfout_d01_#yyyy-MM-dd_HHmm
    * </pre>
-   * This simple counts over "wrfout_d01_" number of chars in dateString, then applies the remaining dateFormatString.
+   * This simply counts over "wrfout_d01_" number of chars in dateString, then applies the remaining dateFormatString.
    *
    * @param dateString the String to be parsed
    * @param dateFormatString the date format String
@@ -93,7 +93,7 @@ public class DateFromString {
     // the position of the demark char is where to start parsing the dateString
     int pos1 = dateFormatString.indexOf( demark);
 
-    // the rest of the dateFormatString is the SimpleDateFOrmat
+    // the rest of the dateFormatString is the SimpleDateFormat
     dateFormatString = dateFormatString.substring( pos1+1);
 
     return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, pos1 );
@@ -125,7 +125,7 @@ public class DateFromString {
     int pos1 = dateFormatString.indexOf( demark);
     int pos2 = dateFormatString.indexOf( demark, pos1+1);
     if ((pos1 < 0) || (pos2 < 0)) {
-      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = "+ dateFormatString);
+      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = '"+ dateFormatString+"'", new Throwable());
       return null;
     }
     String match = dateFormatString.substring(pos1+1, pos2);
@@ -133,10 +133,49 @@ public class DateFromString {
     int pos3 = dateString.indexOf(match);
     if (pos3 < 0) return null;
 
-    if (pos1 > 0) {
+    if (pos1 > 0) {  // pos1 > 0, date is before the match: "yyyyMMddHH#/wrfout_d01_#"
       dateFormatString = dateFormatString.substring(0, pos1);
       dateString = dateString.substring(pos3-dateFormatString.length(), pos3);
-    }  else {
+
+    }  else {        // pos1 == 0, date is after the match: "#wrfout_d01_#yyyy-MM-dd_HHmm"
+      dateFormatString = dateFormatString.substring(pos2+1);
+      dateString = dateString.substring(pos3+match.length());
+    }
+
+    // any leading or trailing "." in the dateFormatString means trim
+    int posDot1 = 0;
+    while (dateFormatString.charAt(posDot1) == '.')
+      posDot1++;
+    int posDot2 = dateFormatString.length();
+    while (dateFormatString.charAt(posDot2-1) == '.')
+      posDot2--;
+    if (posDot1 != 0 || posDot2 != dateFormatString.length()) {
+      dateFormatString = dateFormatString.substring(posDot1, posDot2);
+      dateString = dateString.substring(posDot1, posDot2);
+    }
+
+    return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, 0 );
+  }
+
+  public static Date getDateUsingDemarkatedMatchOld( String dateString, String dateFormatString, char demark )
+  {
+    // extract the match string
+    int pos1 = dateFormatString.indexOf( demark);
+    int pos2 = dateFormatString.indexOf( demark, pos1+1);
+    if ((pos1 < 0) || (pos2 < 0)) {
+      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = '"+ dateFormatString+"'", new Throwable());
+      return null;
+    }
+    String match = dateFormatString.substring(pos1+1, pos2);
+
+    int pos3 = dateString.indexOf(match);
+    if (pos3 < 0) return null;
+
+    if (pos1 > 0) {  // pos1 > 0, date is before the match: "yyyyMMddHH#/wrfout_d01_#"
+      dateFormatString = dateFormatString.substring(0, pos1);
+      dateString = dateString.substring(pos3-dateFormatString.length(), pos3);
+
+    }  else {        // pos1 == 0, date is after the match: "#wrfout_d01_#yyyy-MM-dd_HHmm"
       dateFormatString = dateFormatString.substring(pos2+1);
       dateString = dateString.substring(pos3+match.length());
     }
@@ -198,7 +237,7 @@ public class DateFromString {
       dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
 
       // We have to cut off the dateString, so that it doesnt grab extra characters.
-      // ie  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
+      // eg  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
       String s;
       if (startIndex + dateFormatString.length() <= dateString.length())
         s = dateString.substring( startIndex, startIndex + dateFormatString.length());

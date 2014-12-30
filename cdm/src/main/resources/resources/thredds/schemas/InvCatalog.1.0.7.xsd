@@ -412,6 +412,7 @@
 
   <xsd:complexType name="gribConfigType">
     <xsd:sequence>
+
       <xsd:element name="gdsHash" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="from" type="xsd:int" use="required"/>
@@ -425,8 +426,6 @@
           <xsd:attribute name="groupName" type="xsd:string"/>
         </xsd:complexType>
       </xsd:element>
-
-      <xsd:element name="groupNamer" minOccurs="0" maxOccurs="1"/>
 
       <xsd:element name="pdsHash" minOccurs="0" maxOccurs="unbounded">
         <xsd:complexType>
@@ -473,7 +472,7 @@
         </xsd:complexType>
       </xsd:element>
 
-      <xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="option" minOccurs="0" maxOccurs="unbounded">
          <xsd:complexType>
            <xsd:attribute name="name" type="xsd:string" use="required"/>
            <xsd:attribute name="value" type="xsd:string" use="required"/>
@@ -501,6 +500,8 @@
               </xsd:complexType>
             </xsd:element>
           </xsd:choice>
+          <xsd:attribute name="orderBy" type="xsd:string" use="optional"/>
+          <xsd:attribute name="increasing" type="xsd:boolean" use="optional"/>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
@@ -513,9 +514,12 @@
     <xsd:union memberTypes="xsd:token">
       <xsd:simpleType>
         <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="TwoD"/>
           <xsd:enumeration value="Best"/>
+          <xsd:enumeration value="Analysis"/>
           <xsd:enumeration value="Files"/>
-          <xsd:enumeration value="LatestFile"/>
+          <xsd:enumeration value="Latest"/>
+          <xsd:enumeration value="LatestFile"/>    <!-- alias for Latest -->
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:union>

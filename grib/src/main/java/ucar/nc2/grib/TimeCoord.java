@@ -62,12 +62,12 @@ public class TimeCoord {
     return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
   }
 
-  private CalendarDate runDate;
-  private CalendarPeriod timeUnit;
-  protected List<Integer> coords;
-  protected List<Tinv> intervals;
+  private final CalendarDate runDate;
+  private final CalendarPeriod timeUnit;
+  protected List<Integer> coords;    // set by subclasses
+  protected List<Tinv> intervals;    // set by subclasses
 
-  private String units;
+  private final String units;
   private int index;
   private final int code; // GRIB1 timeRangeIndicator, GRIB2 statProcessType (4.10)
 
@@ -94,13 +94,13 @@ public class TimeCoord {
   // when writing an ncx file
   public TimeCoord(int code, CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
     this.code = code;
-    this.runDate = runDate;
     this.timeUnit = timeUnit;
+    this.units = null;
 
     Object atom = (coords == null || coords.size() == 0) ? null : coords.get(0);
 
     if (atom instanceof CalendarDate) {
-      List<Integer> offsets = new ArrayList<Integer>(coords.size());
+      List<Integer> offsets = new ArrayList<>(coords.size());
       double duration = timeUnit.getValueInMillisecs();
       for (Object coord : coords) {
         CalendarDate cd = (CalendarDate) coord;
@@ -120,14 +120,14 @@ public class TimeCoord {
         if (startDate == null) startDate = tinvd.start;
         else if (startDate.isAfter(tinvd.start)) startDate = tinvd.start;
       }
-      int count = 0;
-      List<Tinv> offsets = new ArrayList<Tinv>(coords.size());
+      //int count = 0;
+      List<Tinv> offsets = new ArrayList<>(coords.size());
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
-        tinvd.index = count++;
+        //tinvd.index = count++;
         offsets.add(tinvd.convertReferenceDate(startDate, timeUnit));
       }
-      this.runDate = startDate;
+      runDate = startDate;
       this.coords = null;
       this.intervals = offsets;
 
@@ -139,6 +139,8 @@ public class TimeCoord {
       this.coords = coords;
       this.intervals = null;
     }
+
+    this.runDate = runDate;
   }
 
   public TimeCoord setIndex(int index) {
@@ -215,7 +217,7 @@ public class TimeCoord {
     int firstValue = -1;
     boolean same = true;
     for (Tinv tinv : intervals) {
-      int value = (int) (tinv.b2 - tinv.b1);
+      int value = (tinv.b2 - tinv.b1);
       if (firstValue < 0) firstValue = value;
       else if (value != firstValue) same = false;
     }
@@ -383,7 +385,7 @@ public class TimeCoord {
   public static class TinvDate implements Comparable<TinvDate>  {
     private final CalendarDate start, end;
     //private final CalendarPeriod period;
-    public int index = -1; // LOOK
+    // public int index = -1; //
 
     public TinvDate(CalendarPeriod period, CalendarDate end) {
       //super(0, period.getValue()); // kludge

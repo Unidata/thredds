@@ -41,7 +41,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
 
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
@@ -254,7 +253,7 @@ public class HdfEos {
 
   private FeatureType amendSwath(NetcdfFile ncfile, Element swathElem, Group parent) {
     FeatureType featureType = FeatureType.SWATH;
-    List<Dimension> unknownDims = new ArrayList<Dimension>();
+    List<Dimension> unknownDims = new ArrayList<>();
 
     // Dimensions
     Element d = swathElem.getChild("Dimension");
@@ -422,7 +421,7 @@ public class HdfEos {
 
 
   private FeatureType amendGrid(Element gridElem, NetcdfFile ncfile, Group parent, String location) {
-    List<Dimension> unknownDims = new ArrayList<Dimension>();
+    List<Dimension> unknownDims = new ArrayList<>();
 
     // always has x and y dimension
     String xdimSizeS = gridElem.getChild("XDim").getText().trim();
@@ -472,7 +471,7 @@ public class HdfEos {
           if (parent.addDimensionIfNotExists(dim) && showWork)
             System.out.printf(" Add dimension %s %n", dim);
         } else {
-          log.warn("Dimension {} has size {} {} ", new Object[] {sizeS, name, location});
+          log.warn("Dimension {} has size {} {} ", sizeS, name, location);
           Dimension udim = new Dimension(name, 1);
           udim.setGroup(parent);
           unknownDims.add( udim);
@@ -550,7 +549,7 @@ public class HdfEos {
     if (child == null) return;
     if (isDoubleArray) {
       List<Element> vElems = child.getChildren();
-      List<Double> values = new ArrayList<Double>();
+      List<Double> values = new ArrayList<>();
       for (Element ve : vElems) {
         String valueS = ve.getText().trim();
         try {
@@ -587,7 +586,7 @@ public class HdfEos {
       return;
     }
 
-    List<Dimension> newDims = new ArrayList<Dimension>();
+    List<Dimension> newDims = new ArrayList<>();
     Group group = v.getParentGroup();
 
     for (int i=0; i<values.size(); i++) {
@@ -601,7 +600,7 @@ public class HdfEos {
         dim = checkUnknownDims(dimName, unknownDims, oldDim, location);
 
       if (dim == null) {
-        log.error("Unknown Dimension= {} for variable = {} {} ", new Object[] {dimName, v.getFullName(), location});
+        log.error("Unknown Dimension= {} for variable = {} {} ", dimName, v.getFullName(), location);
         return;
       }
       if (dim.getLength() != oldDim.getLength()) {
@@ -626,7 +625,7 @@ public class HdfEos {
         Group parent = dim.getGroup();
         parent.addDimensionIfNotExists(dim);  // add to the parent
         unknownDims.remove(dim); // remove from list LOOK is this ok?
-        log.warn("unknownDim {} length set to {}{}", new Object[] {wantDim, oldDim.getLength(), location});
+        log.warn("unknownDim {} length set to {}{}", wantDim, oldDim.getLength(), location);
         return dim;
       }
     }

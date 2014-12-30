@@ -122,7 +122,7 @@ public class Dimension extends CDMNode implements Comparable {
           int len = Integer.parseInt(dimName);
           d = new Dimension(null, len, false, false, false);
         } catch (Exception e) {
-          throw new IllegalArgumentException("Dimension " + dimName + " does not exist = '");
+          throw new IllegalArgumentException("Dimension " + dimName + " does not exist");
         }
       }
       newDimensions.add(d);

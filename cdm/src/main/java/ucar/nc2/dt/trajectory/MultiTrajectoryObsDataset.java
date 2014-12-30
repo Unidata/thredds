@@ -151,12 +151,12 @@ public class MultiTrajectoryObsDataset
       throw new IllegalArgumentException( "Exception on getMetersConversionFactor() for the units of elev var <" + elevVarUnitsString + ">." );
     }
 
-    if ( this.ncfile.hasUnlimitedDimension() && this.ncfile.getUnlimitedDimension().equals( timeDim))
+    if ( this.netcdfDataset.hasUnlimitedDimension() && this.netcdfDataset.getUnlimitedDimension().equals( timeDim))
     {
-      this.ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-      this.recordVar = (Structure) this.ncfile.getRootGroup().findVariable( "record");
+      this.netcdfDataset.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      this.recordVar = (Structure) this.netcdfDataset.getRootGroup().findVariable( "record");
     } else {
-      this.recordVar = new StructurePseudo( this.ncfile, null, "record", timeDim);
+      this.recordVar = new StructurePseudo( this.netcdfDataset, null, "record", timeDim);
     }
 
     // @todo HACK, HACK, HACK - remove once addRecordStructure() deals with ncd attribute changes.
@@ -174,7 +174,7 @@ public class MultiTrajectoryObsDataset
       elevVarInRecVar.addAttribute( new Attribute( "units", elevVarUnitsString ) );
 
     trajectoryVarsMap = new HashMap();
-    for ( Iterator it = this.ncfile.getRootGroup().getVariables().iterator(); it.hasNext(); )
+    for ( Iterator it = this.netcdfDataset.getRootGroup().getVariables().iterator(); it.hasNext(); )
     {
       Variable curVar = (Variable) it.next();
       if ( curVar.getRank() >= 2 &&
@@ -680,7 +680,7 @@ public class MultiTrajectoryObsDataset
 
     public Array getData( Range range, String parameterName ) throws IOException, InvalidRangeException
     {
-      Variable variable = ncfile.getRootGroup().findVariable( parameterName );
+      Variable variable = netcdfDataset.getRootGroup().findVariable( parameterName );
       int varRank = variable.getRank();
       int [] varShape = variable.getShape();
       List section = new ArrayList( varRank);

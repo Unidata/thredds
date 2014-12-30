@@ -163,7 +163,7 @@ public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatase
   }
 
   public String getRadarID() {
-    Attribute ga = ds.findGlobalAttribute("Station");
+    Attribute ga = ds.findGlobalAttribute("instrument_name");
     if(ga != null)
         return ga.getStringValue();
     else
@@ -171,7 +171,7 @@ public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatase
   }
 
   public String getRadarName() {
-    Attribute ga = ds.findGlobalAttribute("StationName");
+    Attribute ga = ds.findGlobalAttribute("site_name");
     if(ga != null)
         return ga.getStringValue();
     else

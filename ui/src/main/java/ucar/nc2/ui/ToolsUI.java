@@ -55,7 +55,8 @@ import ucar.nc2.ft.grid.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribData;
-import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.GribIndexCache;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
@@ -703,16 +704,30 @@ public class ToolsUI extends JPanel {
     AbstractAction showCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        f.format("NetcdfFileCache contents%n");
-        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-        if (null != cache)
-          cache.showCache(f);
-        viewerPanel.detailTA.setText(f.toString());
+        f.format("RandomAccessFileCache contents%n");
+        ucar.nc2.util.cache.FileCacheIF rafCache = ucar.unidata.io.RandomAccessFile.getGlobalFileCache();
+        if (null != rafCache)
+          rafCache.showCache(f);
+        f.format("%nNetcdfFileCache contents%n");
+         ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+         if (null != cache)
+           cache.showCache(f);
+         viewerPanel.detailTA.setText(f.toString());
         viewerPanel.detailWindow.show();
       }
     };
     BAMutil.setActionProperties(showCacheAction, null, "Show Caches", false, 'S', -1);
     BAMutil.addActionToMenu(sysMenu, showCacheAction);
+
+    AbstractAction clearRafCacheAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ucar.nc2.util.cache.FileCacheIF rafCache = ucar.unidata.io.RandomAccessFile.getGlobalFileCache();
+        if (rafCache != null)
+          rafCache.clearCache(true);
+      }
+    };
+    BAMutil.setActionProperties(clearRafCacheAction, null, "Clear RandomAccessFileCache", false, 'C', -1);
+    BAMutil.addActionToMenu(sysMenu, clearRafCacheAction);
 
     AbstractAction clearCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -1014,6 +1029,44 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionPropertiesToggle(a, null, "Use Cubic Interpolation on Thin Grids", useCubic, 'I', -1);
     BAMutil.addActionToMenu(subMenu, a);
 
+    //static public boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureCollectionConfig.useGenTypeDef = (Boolean) getValue(BAMutil.STATE);
+      }
+    };
+    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useGenTypeDef);
+    BAMutil.setActionPropertiesToggle(a, null, "useGenType", FeatureCollectionConfig.useGenTypeDef, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureCollectionConfig.useTableVersionDef = (Boolean) getValue(BAMutil.STATE);
+      }
+    };
+    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useTableVersionDef);
+    BAMutil.setActionPropertiesToggle(a, null, "useTableVersion", FeatureCollectionConfig.useTableVersionDef, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureCollectionConfig.intvMergeDef = (Boolean) getValue(BAMutil.STATE);
+      }
+    };
+    a.putValue(BAMutil.STATE, FeatureCollectionConfig.intvMergeDef);
+    BAMutil.setActionPropertiesToggle(a, null, "intvMerge", FeatureCollectionConfig.intvMergeDef, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureCollectionConfig.useCenterDef = (Boolean) getValue(BAMutil.STATE);
+      }
+    };
+    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useCenterDef);
+    BAMutil.setActionPropertiesToggle(a, null, "useCenter", FeatureCollectionConfig.useCenterDef, 'S', -1);
+    BAMutil.addActionToMenu(subMenu, a);
+
     /////////////////////////////////////
     subMenu = new JMenu("FMRC");
     modeMenu.add(subMenu);
@@ -1046,7 +1099,7 @@ public class ToolsUI extends JPanel {
   DiskCache2Form diskCache2Form = null;
   private void setGribDiskCache() {
     if (diskCache2Form == null) {
-      diskCache2Form = new DiskCache2Form(parentFrame, GribCollection.getDiskCache2());
+      diskCache2Form = new DiskCache2Form(parentFrame, GribIndexCache.getDiskCache2());
     }
     diskCache2Form.setVisible(true);
   }
@@ -6185,7 +6238,7 @@ public class ToolsUI extends JPanel {
 
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
-      if (is == null) return "4.5.0";
+      if (is == null) return "4.6";
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
@@ -6336,80 +6389,79 @@ public class ToolsUI extends JPanel {
       for (String arg : args) {
         System.out.println(" " + arg);
       }
-
-        HTTPSession.debugHeaders(true);
+      HTTPSession.debugHeaders(true);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // spring initialization
-    ApplicationContext springContext =
-            new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml");
+    try (ClassPathXmlApplicationContext springContext =
+            new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml")) {
 
-    // look for run line arguments
-    boolean configRead = false;
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
-        String runtimeConfig = args[i + 1];
-        i++;
-        try {
-          StringBuilder errlog = new StringBuilder();
-          FileInputStream fis = new FileInputStream(runtimeConfig);
-          RuntimeConfigParser.read(fis, errlog);
-          configRead = true;
-          System.out.println(errlog);
-        } catch (IOException ioe) {
-          System.out.println("Error reading " + runtimeConfig + "=" + ioe.getMessage());
-        }
-      }
-    }
-
-    if (!configRead) {
-      String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
-      File f = new File(filename);
-      if (f.exists()) {
-        try {
-          StringBuilder errlog = new StringBuilder();
-          FileInputStream fis = new FileInputStream(filename);
-          RuntimeConfigParser.read(fis, errlog);
-          configRead = true;
-          System.out.println(errlog);
-        } catch (IOException ioe) {
-          System.out.println("Error reading " + filename + "=" + ioe.getMessage());
-        }
-      }
-    }
-
-    // prefs storage
-    try {
-      // 4.4
-      String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
-      File prefs44 = new File(prefStore);
-
-      if (!prefs44.exists()) { // if 4.4 doesnt exist, see if 4.3 exists
-        String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
-        File prefs43 = new File(prefStoreBack);
-        if (prefs43.exists()) { // make a copy of it
-          IO.copyFile(prefs43, prefs44);
+      // look for run line arguments
+      boolean configRead = false;
+      for (int i = 0; i < args.length; i++) {
+        if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
+          String runtimeConfig = args[i + 1];
+          i++;
+          try {
+            StringBuilder errlog = new StringBuilder();
+            FileInputStream fis = new FileInputStream(runtimeConfig);
+            RuntimeConfigParser.read(fis, errlog);
+            configRead = true;
+            System.out.println(errlog);
+          } catch (IOException ioe) {
+            System.out.println("Error reading " + runtimeConfig + "=" + ioe.getMessage());
+          }
         }
       }
 
-      // open 4.4 version, create it if doesnt exist
-      store = XMLStore.createFromFile(prefStore, null);
-      prefs = store.getPreferences();
+      if (!configRead) {
+        String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
+        File f = new File(filename);
+        if (f.exists()) {
+          try {
+            StringBuilder errlog = new StringBuilder();
+            FileInputStream fis = new FileInputStream(filename);
+            RuntimeConfigParser.read(fis, errlog);
+            configRead = true;
+            System.out.println(errlog);
+          } catch (IOException ioe) {
+            System.out.println("Error reading " + filename + "=" + ioe.getMessage());
+          }
+        }
+      }
 
-      Debug.setStore(prefs.node("Debug"));
-    } catch (IOException e) {
-      System.out.println("XMLStore Creation failed " + e);
-    }
+      // prefs storage
+      try {
+        // 4.4
+        String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
+        File prefs44 = new File(prefStore);
 
-    // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
-    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
+        if (!prefs44.exists()) { // if 4.4 doesnt exist, see if 4.3 exists
+          String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
+          File prefs43 = new File(prefStoreBack);
+          if (prefs43.exists()) { // make a copy of it
+            IO.copyFile(prefs43, prefs44);
+          }
+        }
 
-        // filesystem caching
-    // DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
-    //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
-    //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
+        // open 4.4 version, create it if doesnt exist
+        store = XMLStore.createFromFile(prefStore, null);
+        prefs = store.getPreferences();
+
+        Debug.setStore(prefs.node("Debug"));
+      } catch (IOException e) {
+        System.out.println("XMLStore Creation failed " + e);
+      }
+
+      // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
+      Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
+
+      // filesystem caching
+      // DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
+      //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
+      //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
 
     /* try {
       //thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
@@ -6418,18 +6470,20 @@ public class ToolsUI extends JPanel {
       log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
     } */
 
-    UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
-    HTTPSession.setGlobalCredentialsProvider(provider);
-    HTTPSession.setGlobalUserAgent("ToolsUI v4.5");
+      UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
+      HTTPSession.setGlobalCredentialsProvider(provider);
+      HTTPSession.setGlobalUserAgent("ToolsUI v4.6");
 
-    // set Authentication for accessing passsword protected services like TDS PUT
-    java.net.Authenticator.setDefault(provider);
+      // set Authentication for accessing passsword protected services like TDS PUT
+      java.net.Authenticator.setDefault(provider);
 
-    // open dap initializations
-    ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
-    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
+      // open dap initializations
+      ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
+      ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
-    GribCollection.initDataRafCache(100, 200, -1);
+      // caching
+      ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
+      GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
 
     /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
@@ -6440,12 +6494,13 @@ public class ToolsUI extends JPanel {
     WmsViewer.setHttpClient(client);
     */
 
-    SwingUtilities.invokeLater(new Runnable() {
-       @Override
-       public void run() {
-         createGui();
-       }
-     });
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          createGui();
+        }
+      });
+    }
   }
 
   // run this on the event thread
@@ -6473,7 +6528,7 @@ public class ToolsUI extends JPanel {
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (4.5) Tools");
+    frame = new JFrame("NetCDF (4.6) Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));

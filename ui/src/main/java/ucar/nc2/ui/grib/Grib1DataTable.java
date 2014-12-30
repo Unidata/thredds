@@ -33,12 +33,12 @@
 
 package ucar.nc2.ui.grib;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribData;
-import ucar.nc2.grib.collection.Grib1CollectionBuilder;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -312,6 +312,7 @@ public class Grib1DataTable extends JPanel {
   private MCollection dcm;
   private List<MFile> fileList;
   private Grib1Customizer cust;
+  private FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
 
   public void setCollection(String spec) throws IOException {
     this.spec = spec;
@@ -364,7 +365,7 @@ public class Grib1DataTable extends JPanel {
 
     // public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
 
-      int id = Grib1CollectionBuilder.cdmVariableHash(cust, gr, 0, false, false, false);
+      int id = Grib1Variable.cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
       Grib1ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib1ParameterBean(gr);
@@ -701,7 +702,7 @@ public class Grib1DataTable extends JPanel {
 
     public String getName() {
       if (param == null) return null;
-      return Grib1Iosp.makeVariableName(cust, pds);
+      return Grib1Iosp.makeVariableName(cust, config.gribConfig, pds);
     }
 
     public String getUnit() {
@@ -818,7 +819,7 @@ public class Grib1DataTable extends JPanel {
       pds = gr.getPDSsection();
       gdss = gds.getGDS();
       plevel = cust.getParamLevel(pds);
-      ptime = pds.getParamTime(cust);
+      ptime = gr.getParamTime(cust);
 
       info = gr.getBinaryDataInfo(raf);
 

@@ -1,0 +1,10 @@
+<settings>
+  <mirrors>
+    <mirror>
+      <id>unidata</id>
+      <name>Unidata Nexus</name>
+      <url>https://artifacts.unidata.ucar.edu/content/groups/unidata</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>

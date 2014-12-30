@@ -675,8 +675,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
     File tmpFile = new File(location+".tmp");
     if (tmpFile.exists()) tmpFile.delete();
     if (!prevFile.renameTo(tmpFile)) {
-      System.out.println(prevFile.getPath()+ " prevFile.exists "+prevFile.exists()+" canRead = "+ prevFile.canRead());
-      System.out.println(tmpFile.getPath()+" tmpFile.exists "+tmpFile.exists()+" canWrite "+ tmpFile.canWrite());
+      System.out.printf("%50s prevFile.exists=%s canRead=%s canWrite=%s%n", prevFile.getPath(), prevFile.exists(), prevFile.canRead(), prevFile.canWrite());
+      System.out.printf("%50s  tmpFile.exists=%s canRead=%s canWrite=%s%n", tmpFile.getPath(), tmpFile.exists(), tmpFile.canRead(), tmpFile.canWrite());
       throw new RuntimeException("Cant rename "+prevFile.getAbsolutePath()+" to "+ tmpFile.getAbsolutePath());
     }
 

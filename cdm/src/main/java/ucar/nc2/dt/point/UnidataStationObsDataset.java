@@ -210,7 +210,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       numChildrenArray = numChildrenVar.read();
 
     // how many are valid stations ?
-    Dimension stationDim = UnidataObsDatasetHelper.findDimension(ncfile, "station");
+    Dimension stationDim = UnidataObsDatasetHelper.findDimension(netcdfDataset, "station");
     int n = 0;
     if (numStationsVar != null)
       n = numStationsVar.readScalarInt();
@@ -274,7 +274,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
   }
 
   public int getDataCount() {
-    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
+    Dimension unlimitedDim = netcdfDataset.getUnlimitedDimension();
     return unlimitedDim.getLength();
   }
 
@@ -349,7 +349,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
           // deal with files that are updating
           if (recno > getDataCount()) {
             int n = getDataCount();
-            ncfile.syncExtend();  // LOOK kludge?
+            netcdfDataset.syncExtend();  // LOOK kludge?
             log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
           }
           StructureData sdata = recordVar.readStructure(recno);
@@ -446,7 +446,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       // deal with files that are updating
       if (recno > getDataCount()) {
         int n = getDataCount();
-        ncfile.syncExtend();  // LOOK kludge?
+        netcdfDataset.syncExtend();  // LOOK kludge?
         log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
       }
 

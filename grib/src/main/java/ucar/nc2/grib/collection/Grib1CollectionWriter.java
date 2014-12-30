@@ -58,7 +58,7 @@ import java.util.Set;
  * @author caron
  * @since 2/20/14
  */
-public class Grib1CollectionWriter extends GribCollectionWriter {
+class Grib1CollectionWriter extends GribCollectionWriter {
 
   public static final String MAGIC_START = "Grib1Collectio2Index";  // was Grib1CollectionIndex
   protected static final int version = 1;
@@ -73,19 +73,19 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
 
   static class Group implements GribCollectionBuilder.Group {
     final Grib1SectionGridDefinition gdss;
-    final int gdsHash; // may have been modified
+    final Object gdsHashObject;       // may have been modified
     final CalendarDate runtime;
 
     public List<Grib1CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
 
-    public List<Grib1Record> records = new ArrayList<Grib1Record>();
-    public String nameOverride;
+    public Set<Long> runtimes = new HashSet<>();
+    public List<Grib1Record> records = new ArrayList<>();
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
-    Group(Grib1SectionGridDefinition gdss, int gdsHash, CalendarDate runtime) {
+    Group(Grib1SectionGridDefinition gdss, Object gdsHashObject, CalendarDate runtime) {
       this.gdss = gdss;
-      this.gdsHash = gdsHash;
+      this.gdsHashObject = gdsHashObject;
       this.runtime = runtime;
     }
 
@@ -95,10 +95,13 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
     }
 
     @Override
-    public CoordinateRuntime getCoordinateRuntime() {
-      List<CalendarDate> runtimes = new ArrayList<>(1);
-      runtimes.add(runtime);
-      return new CoordinateRuntime(runtimes, null);
+    public List<Coordinate> getCoordinates() {
+      return coords;
+    }
+
+    @Override
+    public Set<Long> getCoordinateRuntimes() {
+      return runtimes;
     }
   }
 
@@ -112,17 +115,19 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
    */
 
   // indexFile is in the cache
-  boolean writeIndex(String name, File indexFileInCache, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files) throws IOException {
+  boolean writeIndex(String name, File idxFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
+                     GribCollectionImmutable.Type type) throws IOException {
     Grib1Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
-    if (indexFileInCache.exists()) {
-      if (!indexFileInCache.delete())
-        logger.warn(" gc1 cant delete index file {}", indexFileInCache.getPath());
+    if (idxFile.exists()) {
+      RandomAccessFile.eject(idxFile.getPath());
+      if (!idxFile.delete())
+        logger.warn(" gc1 cant delete index file {}", idxFile.getPath());
     }
-    logger.debug(" createIndex for {}", indexFileInCache.getPath());
+    logger.debug(" createIndex for {}", idxFile.getPath());
 
-    try (RandomAccessFile raf = new RandomAccessFile(indexFileInCache.getPath(), "rw")) {
+    try (RandomAccessFile raf = new RandomAccessFile(idxFile.getPath(), "rw")) {
       raf.order(RandomAccessFile.BIG_ENDIAN);
 
       //// header message
@@ -174,6 +179,7 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
         GribCollectionProto.MFile.Builder b = GribCollectionProto.MFile.newBuilder();
         b.setFilename(gcmfile.getName());
         b.setLastModified(gcmfile.getLastModified());
+        b.setLength(gcmfile.getLength());
         b.setIndex(gcmfile.index);
         indexBuilder.addMfiles(b.build());
       }
@@ -182,10 +188,10 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
 
         //gds
       for (Group g : groups)
-        indexBuilder.addGds(writeGdsProto(g.gdsHash, g.gdss.getRawBytes(), g.nameOverride, g.gdss.getPredefinedGridDefinition()));
+        indexBuilder.addGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
 
       // the GC dataset
-      indexBuilder.addDataset( writeDatasetProto(GribCollectionProto.Dataset.Type.GC, groups));
+      indexBuilder.addDataset( writeDatasetProto(type, groups));
 
       /* int count = 0;
       for (DatasetCollectionManager dcm : collections) {
@@ -213,8 +219,8 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
     } finally {
 
       // remove it on failure
-      if (deleteOnClose && !indexFileInCache.delete())
-        logger.error(" gc1 cant deleteOnClose index file {}", indexFileInCache.getPath());
+      if (deleteOnClose && !idxFile.delete())
+        logger.error(" gc1 cant deleteOnClose index file {}", idxFile.getPath());
     }
   }
 
@@ -235,7 +241,7 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
    */
   private GribCollectionProto.SparseArray writeSparseArray(Grib1CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
-    b.setCdmHash(vb.cdmHash);
+    b.setCdmHash(vb.gv.hashCode());
     SparseArray<Grib1Record> sa = vb.coordND.getSparseArray();
     for (int size : sa.getShape())
       b.addSize(size);
@@ -250,9 +256,11 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
       Grib1SectionIndicator is = gr.getIs();
       br.setPos(is.getStartPos()); // start of entire message
 
-      // br.setScanMode(gr.getScanMode()); // added 2/6/2014  LOOK
+      // br.setScanMode(gr.getScanMode()); // added 2/6/2014  LOOK dont need scan for GRIB1 I think ??
       b.addRecords(br);
     }
+
+    b.setNdups(sa.getNdups());
     return b.build();
   }
 
@@ -261,10 +269,11 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
     required Type type = 1;
     repeated Group groups = 2;
    */
-  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionProto.Dataset.Type type, List<Group> groups) throws IOException {
+  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type, List<Group> groups) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
-    b.setType(type);
+    GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
+    b.setType(ptype);
 
     int count = 0 ;
     for (Group group : groups)
@@ -353,7 +362,6 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
 
     b.setDiscipline(0);
     b.setPds(ByteString.copyFrom(vb.first.getPDSsection().getRawBytes()));
-    b.setCdmHash(vb.cdmHash);
 
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
@@ -364,8 +372,7 @@ public class Grib1CollectionWriter extends GribCollectionWriter {
     // keep stats
     SparseArray sa = vb.coordND.getSparseArray();
     if (sa != null) {
-      b.setDensity(sa.getDensity());
-      b.setNdups(sa.getNduplicates());
+      b.setNdups(sa.getNdups());
       b.setNrecords(sa.countNotMissing());
       b.setMissing(sa.countMissing());
     }

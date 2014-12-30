@@ -382,7 +382,7 @@ public class GribFilesPanel extends JPanel {
           if (tables == null) {
             tables = Grib2Customizer.factory(gr);
           }
-          Grib2Pds pds = gr.getPDSsection().getPDS();
+          Grib2Pds pds = gr.getPDS();
           if ((pds.getParameterCategory() > 191) || (pds.getParameterNumber() > 191))
             localCount++;
         }

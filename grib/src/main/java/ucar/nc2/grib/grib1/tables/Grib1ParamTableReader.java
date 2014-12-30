@@ -37,6 +37,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.ncml.NcMLReader;
@@ -161,8 +162,7 @@ public class Grib1ParamTableReader {
     if (parameters == null)
       readParameterTable();
 
-    Grib1Parameter p = parameters.get(id);
-    return p;
+    return parameters.get(id);
   }
 
   /**
@@ -239,10 +239,9 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) return false;
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
 
       // Ignore header
-      int count = 0;
       while (true) {
         String line = br.readLine();
         if (line == null) break; // done with the file
@@ -254,7 +253,6 @@ TBLE2 cptec_254_params[] = {
           subcenter_id = extract(line, "Subcenter:");
         else if (line.contains("version:"))
           version = extract(line, "version:");
-        count++;
       }
 
       while (true) {
@@ -344,8 +342,12 @@ TBLE2 cptec_254_params[] = {
         return false;
       }
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       String line = br.readLine();
+      if (line == null) {
+        logger.error("File is empty " + path);
+        return false;
+      }
       if (!line.startsWith("...")) name = line; // maybe ??
       while (!line.startsWith("..."))
         line = br.readLine(); // skip
@@ -369,7 +371,6 @@ TBLE2 cptec_254_params[] = {
         // optional notes
         line = br.readLine();
         String notes = (line == null || line.startsWith("...")) ? null : line.trim();
-
         if (desc != null && desc.equalsIgnoreCase("undefined")) continue; // skip
 
         int p1;
@@ -381,7 +382,7 @@ TBLE2 cptec_254_params[] = {
         }
         Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units1);
         result.put(parameter.getNumber(), parameter);
-        if (debug) System.out.printf(" %s%n", parameter);
+        if (debug) System.out.printf(" %s (%s)%n", parameter, notes);
       }
 
       parameters =  Collections.unmodifiableMap(result);  // all at once - thread safe
@@ -425,9 +426,12 @@ TBLE2 cptec_254_params[] = {
         return false;
       }
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       String line = br.readLine();
-
+      if (line == null) {
+        logger.error("File is empty " + path);
+        return false;
+      }
       // create table name from file name
       String[] splitPath = path.split("/");
       String tableNum = splitPath[splitPath.length - 1].replace(".table", "");
@@ -605,7 +609,7 @@ TBLE2 cptec_254_params[] = {
 
       if (is == null) return false;
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
 
       // rdg - added the 0 line length check to cover the case of blank lines at
       //       the end of the parameter table file.
@@ -646,7 +650,7 @@ TBLE2 cptec_254_params[] = {
         logger.error("Grib1ParamTable: error getInputStream on " + this);
         return false;
       }
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
       br.readLine(); // skip a line
 
       HashMap<Integer, Grib1Parameter> params = new HashMap<>(); // thread safe - local var
@@ -685,18 +689,5 @@ TBLE2 cptec_254_params[] = {
       return false;
     }
 
-  }
-
-  static public void main(String[] args) throws IOException {
-    String dirS = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncl";
-    File dir = new File(dirS);
-    if (dir.listFiles() == null) return;
-    for (File f : dir.listFiles()) {
-      if (!f.getName().endsWith(".h")) continue;
-      Grib1ParamTableReader table = new Grib1ParamTableReader(f.getPath());
-
-      //  60:	 1:		180:	WMO_GRIB1.60-1.180.xml
-      System.out.printf("%5d: %5d: %5d: %s%n", table.getCenter_id(), table.getSubcenter_id(), table.getVersion(), table.getName());
-    }
   }
 }

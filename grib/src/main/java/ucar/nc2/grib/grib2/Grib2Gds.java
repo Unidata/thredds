@@ -33,8 +33,6 @@
 package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.QuasiRegular;
@@ -43,7 +41,6 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
-import ucar.unidata.util.GaussianLatitudes;
 
 import java.util.Arrays;
 import java.util.Formatter;
@@ -56,6 +53,7 @@ import java.util.Formatter;
  */
 public abstract class Grib2Gds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
+  public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
 
   public static Grib2Gds factory(int template, byte[] data) {
     Grib2Gds result;
@@ -198,9 +196,7 @@ public abstract class Grib2Gds {
     if (nx != grib2Gds.nx) return false;
     if (ny != grib2Gds.ny) return false;
     if (template != grib2Gds.template) return false;
-    if (!Arrays.equals(nptsInLine, grib2Gds.nptsInLine)) return false;
-
-    return true;
+    return Arrays.equals(nptsInLine, grib2Gds.nptsInLine);
   }
 
   @Override
@@ -426,8 +422,8 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       if (!super.equals(o)) return false;
 
       LatLon other = (LatLon) o;
-      if (!Misc.closeEnough(la1, other.la1)) return false;
-      if (!Misc.closeEnough(lo1, other.lo1)) return false;
+      if (!Misc.closeEnoughAbs(la1, other.la1, maxReletiveErrorPos * deltaLat)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
       if (!Misc.closeEnough(deltaLat, other.deltaLat)) return false;
       if (!Misc.closeEnough(deltaLon, other.deltaLon)) return false;
       return true;
@@ -436,11 +432,16 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
     @Override
     public int hashCode() {
       if (hashCode == 0) {
+        int useLat1 = (int) (la1 / (maxReletiveErrorPos * deltaLat));  //  Two equal objects must have the same hashCode() value
+        int useLon1 = (int) (lo1 / (maxReletiveErrorPos * deltaLon));
+        int useDeltaLon = (int) (deltaLon / Misc.maxReletiveError);
+        int useDeltaLat = (int) (deltaLat / Misc.maxReletiveError);
+
         int result = super.hashCode();
-        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0); // LOOK this is an exact comparision
-        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
-        result = 31 * result + (deltaLon != +0.0f ? Float.floatToIntBits(deltaLon) : 0);
-        result = 31 * result + (deltaLat != +0.0f ? Float.floatToIntBits(deltaLat) : 0);
+        result = 31 * result + useLat1;
+        result = 31 * result + useLon1;
+        result = 31 * result + useDeltaLon;
+        result = 31 * result + useDeltaLat;
         hashCode = result;
       }
       return hashCode;
@@ -605,7 +606,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
    73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Notes 2 and 3 of GDT 3.1)#GRIB2_6_0_1_temp.doc#G2_Gdt310n
    */
   public static class Mercator extends Grib2Gds {
-    public float la1, lo1, la2, lo2, lad, orient, dX, dY;
+    public float la1, lo1, la2, lo2, lad, dX, dY;
     public int flags;
 
     Mercator(byte[] data) {
@@ -620,7 +621,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
 
       scanMode = getOctet(60);
 
-      orient = getOctet4(61) * scale6; // LOOK not sure if should be scaled
+      // float orient = getOctet4(61) * scale6; // LOOK not sure if should be scaled
       dX = getOctet4(65) * scale6;  // km
       dY = getOctet4(69) * scale6;  // km
 
@@ -633,13 +634,13 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
 
-      Mercator mercator = (Mercator) o;
+      Mercator that = (Mercator) o;
 
-      if (Float.compare(mercator.dX, dX) != 0) return false;
-      if (Float.compare(mercator.dY, dY) != 0) return false;
-      if (Float.compare(mercator.la1, la1) != 0) return false;
-      if (Float.compare(mercator.lad, lad) != 0) return false;
-      if (Float.compare(mercator.lo1, lo1) != 0) return false;
+      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.closeEnough(lad, that.lad)) return false;
+      if (!Misc.closeEnough(dY, that.dY)) return false;
+      if (!Misc.closeEnough(dX, that.dX)) return false;
 
       return true;
     }
@@ -647,12 +648,18 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
     @Override
     public int hashCode() {
       if (hashCode == 0) {
+        int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLad = (int) (lad / Misc.maxReletiveError);
+        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
+        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+
         int result = super.hashCode();
-        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
-        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
-        result = 31 * result + (lad != +0.0f ? Float.floatToIntBits(lad) : 0);
-        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
-        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
+        result = 31 * result + useLat;
+        result = 31 * result + useLon;
+        result = 31 * result + useLad;
+        result = 31 * result + useDeltaLon;
+        result = 31 * result + useDeltaLat;
         hashCode = result;
       }
       return hashCode;
@@ -752,12 +759,13 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
 
       PolarStereographic that = (PolarStereographic) o;
 
-      if (Float.compare(that.dX, dX) != 0) return false;
-      if (Float.compare(that.dY, dY) != 0) return false;
-      if (Float.compare(that.la1, la1) != 0) return false;
-      if (Float.compare(that.lad, lad) != 0) return false;
-      if (Float.compare(that.lo1, lo1) != 0) return false;
-      if (Float.compare(that.lov, lov) != 0) return false;
+      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.closeEnough(lad, that.lad)) return false;
+      if (!Misc.closeEnough(lov, that.lov)) return false;
+      if (!Misc.closeEnough(dY, that.dY)) return false;
+      if (!Misc.closeEnough(dX, that.dX)) return false;
+
       if (projCenterFlag != that.projCenterFlag) return false;
 
       return true;
@@ -766,14 +774,21 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
     @Override
     public int hashCode() {
       if (hashCode == 0) {
+        int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLad = (int) (lad / Misc.maxReletiveError);
+        int useLov = (int) (lov / Misc.maxReletiveError);
+        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
+        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+
         int result = super.hashCode();
-        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
-        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
-        result = 31 * result + (lov != +0.0f ? Float.floatToIntBits(lov) : 0);
-        result = 31 * result + (lad != +0.0f ? Float.floatToIntBits(lad) : 0);
-        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
-        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
-        result = 31 * result + (int) projCenterFlag;
+        result = 31 * result + useLat;
+        result = 31 * result + useLon;
+        result = 31 * result + useLad;
+        result = 31 * result + useLov;
+        result = 31 * result + useDeltaLon;
+        result = 31 * result + useDeltaLat;
+        result = 31 * result + projCenterFlag;
         hashCode = result;
       }
       return hashCode;
@@ -794,7 +809,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
         scale = (1.0 + Math.sin(Math.toRadians( Math.abs( Math.abs(lad))))) / 2;
       }
 
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -864,20 +879,8 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
     public float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
     public int flags, projCenterFlag;
 
-    protected int hla1, hlo1, hlov, hlad, hdX, hdY, hlatin1, hlatin2; // hasheesh
-
     LambertConformal(byte[] data, int template) {
       super(data, template);
-
-      // hashing codes - allow slop in last digit in these values
-      hla1 = round(getOctet4(39));
-      hlo1 = round(getOctet4(43));
-      hlad = round(getOctet4(48));
-      hlov = round(getOctet4(52));
-      hdX = round(getOctet4(56));
-      hdY = round(getOctet4(60));
-      hlatin1 = round(getOctet4(66));
-      hlatin2 = round(getOctet4(70));
 
       // floating point values
       la1 = getOctet4(39) * scale6;
@@ -906,14 +909,14 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
 
       LambertConformal that = (LambertConformal) o;
 
-      if (hdX != that.hdX) return false;
-      if (hdY != that.hdY) return false;
-      if (hla1 != that.hla1) return false;
-      if (hlad != that.hlad) return false;
-      if (hlatin1 != that.hlatin1) return false;
-      if (hlatin2 != that.hlatin2) return false;
-      if (hlo1 != that.hlo1) return false;
-      if (hlov != that.hlov) return false;
+      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.closeEnough(lad, that.lad)) return false;
+      if (!Misc.closeEnough(lov, that.lov)) return false;
+      if (!Misc.closeEnough(dY, that.dY)) return false;
+      if (!Misc.closeEnough(dX, that.dX)) return false;
+      if (!Misc.closeEnough(latin1, that.latin1)) return false;
+      if (!Misc.closeEnough(latin2, that.latin2)) return false;
 
       return true;
     }
@@ -921,26 +924,33 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
     @Override
     public int hashCode() {
       if (hashCode == 0) {
+        int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
+        int useLad = (int) (lad / Misc.maxReletiveError);
+        int useLov = (int) (lov / Misc.maxReletiveError);
+        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
+        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+        int useLatin1 = (int) (latin1 / Misc.maxReletiveError);
+        int useLatin2 = (int) (latin2 / Misc.maxReletiveError);
+
         int result = super.hashCode();
-        result = 31 * result + hla1;
-        result = 31 * result + hlo1;
-        result = 31 * result + hlov;
-        result = 31 * result + hlad;
-        result = 31 * result + hdX;
-        result = 31 * result + hdY;
-        result = 31 * result + hlatin1;
-        result = 31 * result + hlatin2;
+        result = 31 * result + useLat;
+        result = 31 * result + useLon;
+        result = 31 * result + useLad;
+        result = 31 * result + useLov;
+        result = 31 * result + useDeltaLon;
+        result = 31 * result + useDeltaLat;
+        result = 31 * result + useLatin1;
+        result = 31 * result + useLatin2;
+        result = 31 * result + projCenterFlag;
+
         hashCode = result;
       }
       return hashCode;
     }
 
-    private static int round(int a) { // NCEP rounding (!)
-      return (a+5) / 10;
-    }
-
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1023,7 +1033,7 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1128,7 +1138,7 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
 
     public GdsHorizCoordSys makeHorizCoordSys() {
 
-      int nlats = 2 * Nparellels;
+      /* int nlats = 2 * Nparellels;
       GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
 
       int bestStartIndex = 0, bestEndIndex = 0;
@@ -1168,12 +1178,11 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
         } else {
           useIndex--;
         }
-      }
+      }  */
 
       GdsHorizCoordSys coordSys = new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, new LatLonProjection(), lo1, deltaLon, 0, 0,
               getNxRaw(), getNyRaw(), getNptsInLine());
-      coordSys.gaussLats = Array.factory(DataType.FLOAT, new int[]{useNy}, data);
-      coordSys.gaussw = Array.factory(DataType.FLOAT, new int[]{useNy}, gaussw);
+      coordSys.setGaussianLats(Nparellels, la1, la2);
 
       return coordSys;
     }
@@ -1227,7 +1236,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
         Ry = 2 * Arcsin (106 )/Nr)/ dy
   */
   public static class SpaceViewPerspective extends Grib2Gds {
-    public float LaP, LoP, dX, dY, Xp, Yp, orient, Nr, Xo, Yo;
+    public float LaP, LoP, dX, dY, Xp, Yp, Nr, Xo, Yo;
     public int flags;
 
     SpaceViewPerspective(byte[] data) {
@@ -1245,7 +1254,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
       scanMode = getOctet(64);
 
-      orient = getOctet4(65) * scale6;  // LOOK dunno about scale
+      // float orient = getOctet4(65) * scale6;  // LOOK dunno about scale
       Nr = getOctet4(69) * scale6;
       Xo = getOctet4(73) * scale6;
       Yo = getOctet4(77) * scale6;
@@ -1286,7 +1295,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
         result = 31 * result + (Nr != +0.0f ? Float.floatToIntBits(Nr) : 0);
         result = 31 * result + (Xo != +0.0f ? Float.floatToIntBits(Xo) : 0);
         result = 31 * result + (Yo != +0.0f ? Float.floatToIntBits(Yo) : 0);
-        result = 31 * result + (int) flags;
+        result = 31 * result + flags;
         hashCode = result;
       }
       return hashCode;
@@ -1469,22 +1478,5 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
     }
 
   }
-
-  /*
-  ///////////////////////////////////////////////
-  static void check(int a, int b) {
-    System.out.printf("%d, %d : ", a, b);
-    a = (a+5)/10;
-    b= (b+5)/10;
-    System.out.printf("%d, %d = %s%n", a, b, (a == b));
-  }
-  public static void main(String[] args) {
-    double lad = 60;
-    double ladr =  Math.toRadians(lad);
-    double lads = Math.sin(ladr);
-    double scale = (1.0 + Math.sin(Math.toRadians(lad))) / 2;
-    double scale2 = (1.0 + lads) / 2;
-    System.out.println("HEY");
-  }  */
 
 }

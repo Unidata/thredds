@@ -50,6 +50,7 @@ import java.util.regex.Pattern;
  * Can open all data by opening "igra-stations.txt", with data files in subdir "igra-por".
  * Can open single station data by opening <stationId>.dat with igra-stations.txt in same or parent directory.
  *  -	IGRA - Integrated Global Radiosonde Archive
+ *  LOOK probably file leaks
  * @author caron
  * @see "http://www.ncdc.noaa.gov/oa/climate/igra/"
  * @see "ftp://ftp.ncdc.noaa.gov/pub/data/igra"
@@ -167,7 +168,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   @Override
   public void open(RandomAccessFile raff, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    String location = raff.getLocation();
+    super.open(raff, ncfile, cancelTask);
     int pos = location.lastIndexOf(".");
     String ext = location.substring(pos);
 
@@ -177,10 +178,10 @@ public class IgraPor extends AbstractIOServiceProvider {
       throw new FileNotFoundException("Station File does not exist="+location);
 
     if (ext.equals(IDX_EXT)) {
-      stnRaf = new RandomAccessFile(stnFile.getPath(), "r");
+      stnRaf = RandomAccessFile.acquire(stnFile.getPath());
 
     } else if (ext.equals(DAT_EXT)) {
-      stnRaf = new RandomAccessFile(stnFile.getPath(), "r");
+      stnRaf = RandomAccessFile.acquire(stnFile.getPath());
       dataRaf = raff;
 
       //extract the station id
@@ -440,7 +441,7 @@ public class IgraPor extends AbstractIOServiceProvider {
         if (dataRaf != null)
           this.timeSeriesRaf = dataRaf; // single station case - data file already open
         else
-          this.timeSeriesRaf = new RandomAccessFile(file.getPath(), "r");
+          this.timeSeriesRaf = RandomAccessFile.acquire(file.getPath());
 
         totalBytes = timeSeriesRaf.length();
         timeSeriesRaf.seek(0);

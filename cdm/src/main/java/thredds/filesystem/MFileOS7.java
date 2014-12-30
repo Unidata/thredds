@@ -52,7 +52,6 @@ import java.nio.file.attribute.BasicFileAttributes;
  * @since 11/16/13
  */
 
-
 @ThreadSafe
 public class MFileOS7 implements MFile {
 
@@ -112,6 +111,11 @@ public class MFileOS7 implements MFile {
   public String getName() {
     return path.getFileName().toString();
   }
+
+  @Override
+   public MFile getParent() throws IOException {
+     return new MFileOS7(path.getParent());
+   }
 
   @Override
   public int compareTo(MFile o) {

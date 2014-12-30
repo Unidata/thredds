@@ -34,18 +34,14 @@ package thredds.tds.ethan;
 
 import junit.framework.*;
 
+import java.io.*;
 import java.util.*;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
-import thredds.catalog.query.DqcFactory;
-import thredds.catalog.query.QueryCapability;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateType;
@@ -272,37 +268,6 @@ public class TestAll extends TestCase
     }
   }
 
-
-  public static QueryCapability openAndValidateDqcDoc( String dqcUrl )
-  {
-    DqcFactory fac = new DqcFactory( true );
-    QueryCapability dqc = null;
-    try
-    {
-      dqc = fac.readXML( dqcUrl );
-    }
-    catch ( IOException e )
-    {
-      fail( "I/O error reading DQC doc <" + dqcUrl + ">: " + e.getMessage() );
-      return null;
-    }
-
-    if ( dqc.hasFatalError() )
-    {
-      fail( "Fatal error with DQC doc <" + dqcUrl + ">: " + dqc.getErrorMessages() );
-      return null;
-    }
-
-    String errMsg = dqc.getErrorMessages();
-    if ( errMsg != null && errMsg.length() > 0)
-    {
-      fail( "Error message reading DQC doc <" + dqcUrl + ">:\n" + errMsg );
-      return null;
-    }
-
-    return dqc;
-  }
-
   public void utestMyFile()
   {
     File f = new File( "z:/tmp/catalog.xml");
@@ -439,7 +404,7 @@ public class TestAll extends TestCase
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, listener );
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    PrintStream out = new PrintStream( os );
+    PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
     crawler.crawl( catalogUrl, null, out, null );
     out.close();
     String crawlMsg = os.toString();
@@ -592,7 +557,7 @@ public class TestAll extends TestCase
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    PrintStream out = new PrintStream( os );
+    PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
     int numDs = crawler.crawl( catalogUrl, null, out, null );
     out.close();
     String crawlMsg = os.toString();
@@ -800,7 +765,7 @@ public class TestAll extends TestCase
       gcsMsg.append( "********************\n<h4>" ).append( curCat ).append( "</h4>\n\n<pre>\n" );
       curCat = "http://thredds.ucar.edu/thredds/catalog/" + curCat + "/files/catalog.xml";
       ByteArrayOutputStream os = new ByteArrayOutputStream();
-      PrintStream out = new PrintStream( os );
+      PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
       int numDs = 0;
       try
       {

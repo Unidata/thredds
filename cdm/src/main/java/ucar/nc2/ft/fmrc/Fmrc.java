@@ -96,7 +96,7 @@ public class Fmrc {
 
   public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
-      String name = config.name != null ? config.name : config.spec;
+      String name = config.collectionName != null ? config.collectionName : config.spec;
       CollectionManagerCatalog manager = new CollectionManagerCatalog(name, config.spec, null, errlog);
       return new Fmrc(manager, config);
     }

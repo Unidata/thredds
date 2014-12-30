@@ -117,7 +117,7 @@ public class TestFmrc {
 
   @Test
   public void testProblem() throws Exception {
-    doOne(TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 17, 6, "Pressure_tropopause", 3, 9, 9);
+    doOne(TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml", 41, 6, 10, 4, "u", 15, 11, 39);     //*/
   }
 
 

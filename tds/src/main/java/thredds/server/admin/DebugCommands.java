@@ -42,8 +42,7 @@ import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ucar.nc2.grib.collection.GribCollection;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -78,30 +77,24 @@ public class DebugCommands {
     act = new DebugController.Action("showCaches", "Show All File Object Caches") {
       public void doAction(DebugController.Event e) {
         Formatter f = new Formatter(e.pw);
+        FileCacheIF fc;
 
-        FileCacheIF fc = NetcdfDataset.getNetcdfFileCache();
+        fc = RandomAccessFile.getGlobalFileCache();
+        if (fc == null) f.format("%nRandomAccessFile : turned off%n");
+        else {
+          f.format("%n%n");
+          fc.showCache(f);
+        }
+
+        fc = NetcdfDataset.getNetcdfFileCache();
         if (fc == null) f.format("NetcdfDatasetFileCache : turned off%n");
         else {
           f.format("%n%n");
           fc.showCache(f);
         }
 
-        fc = GribCollection.getDataRafCache();
-        if (fc == null) f.format("%nGribCollectionDataRafCache : turned off%n");
-        else {
-          f.format("%n%n");
-          fc.showCache(f);
-        }
-
-        fc = PartitionCollection.getPartitionCache();
+        fc = GribCdmIndex.gribCollectionCache;
         if (fc == null) f.format("%nTimePartitionCache : turned off%n");
-        else {
-          f.format("%n%n");
-          fc.showCache(f);
-        }
-
-        fc = ServletUtil.getFileCache();
-        if (fc == null) f.format("%nHTTPFileCache : turned off%n");
         else {
           f.format("%n%n");
           fc.showCache(f);
@@ -115,13 +108,30 @@ public class DebugCommands {
     act = new DebugController.Action("clearCaches", "Clear All File Object Caches") {
        public void doAction(DebugController.Event e) {
          NetcdfDataset.getNetcdfFileCache().clearCache(false);
-         GribCollection.getDataRafCache().clearCache(false);
-         PartitionCollection.getDataRafCache().clearCache(false);
-         ServletUtil.getFileCache().clearCache(false);
+         RandomAccessFile.getGlobalFileCache().clearCache(false);
+         FileCacheIF fc = GribCdmIndex.gribCollectionCache;
+         if (fc != null) fc.clearCache(false);
          e.pw.println("  ClearCache ok");
        }
      };
      debugHandler.addAction(act);
+
+    act = new DebugController.Action("disableRAFCache", "Disable RandomAccessFile Cache") {
+       public void doAction(DebugController.Event e) {
+         RandomAccessFile.getGlobalFileCache().disable();
+         e.pw.println("  Disable RandomAccessFile Cache ok");
+       }
+     };
+     debugHandler.addAction(act);
+
+    act = new DebugController.Action("forceRAFCache", "Force clear RandomAccessFile Cache") {
+      public void doAction(DebugController.Event e) {
+        RandomAccessFile.getGlobalFileCache().clearCache(true);
+        e.pw.println("  RandomAccessFile force clearCache done");
+      }
+    };
+    debugHandler.addAction(act);
+
 
     act = new DebugController.Action("disableNetcdfCache", "Disable NetcdfDatasetFile Cache") {
        public void doAction(DebugController.Event e) {
@@ -139,65 +149,22 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("disableGribCollectionCache", "Disable GribCollectionDataRaf Cache") {
-       public void doAction(DebugController.Event e) {
-         GribCollection.disableDataRafCache();
-         e.pw.println("  Disable GribCollectionDataRaf Cache ok");
-       }
-     };
-     debugHandler.addAction(act);
-
-    act = new DebugController.Action("forceGCCache", "Force clear GribCollectionDataRaf Cache") {
-      public void doAction(DebugController.Event e) {
-        GribCollection.getDataRafCache().clearCache(true);
-        e.pw.println("  GribCollectionDataRaf force clearCache done");
-      }
-    };
-    debugHandler.addAction(act);
-
     act = new DebugController.Action("disableTimePartitionCache", "Disable TimePartition Cache") {
        public void doAction(DebugController.Event e) {
-         PartitionCollection.disablePartitionCache();
-         e.pw.println("  Disable TimePartition Cache ok");
+         GribCdmIndex.disableGribCollectionCache();
+         e.pw.println("  Disable gribCollectionCache ok");
        }
      };
      debugHandler.addAction(act);
 
     act = new DebugController.Action("forceGCCache", "Force clear TimePartition Cache") {
       public void doAction(DebugController.Event e) {
-        PartitionCollection.getPartitionCache().clearCache(true);
-        e.pw.println("  TimePartition force clearCache done");
+        FileCacheIF fc = GribCdmIndex.gribCollectionCache;
+        if (fc != null) fc.clearCache(true);
+        e.pw.println("  gribCollectionCache force clearCache done");
       }
     };
     debugHandler.addAction(act);
-
-    act = new DebugController.Action("disableHttpCache", "Disable HTTP Cache") {
-       public void doAction(DebugController.Event e) {
-         FileCacheIF fc = ServletUtil.getFileCache();
-         if (fc != null) fc.disable();
-         ServletUtil.setFileCache(null);
-         e.pw.println("  Disable HTTP Cache ok");
-       }
-     };
-     debugHandler.addAction(act);
-
-    act = new DebugController.Action("forceRAFCache", "Force clear HTTP File Cache") {
-      public void doAction(DebugController.Event e) {
-        FileCacheIF fc = ServletUtil.getFileCache();
-         if (fc != null) fc.clearCache(true);
-        e.pw.println("  RAF FileCache force clearCache done ");
-      }
-    };
-    debugHandler.addAction(act);
-
-    /* act = new DebugHandler.Action("showMFileCache", "Show MFile Directory Cache") {
-      public void doAction(DebugHandler.Event e) {
-        Formatter f = new Formatter(e.pw);
-        f.format("MFile Directory Cache %n %s %n", CacheManager.show("directories"));
-        e.pw.flush();
-      }
-    };
-    debugHandler.addAction(act); */
 
   }
 

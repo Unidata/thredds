@@ -32,11 +32,8 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
-import org.junit.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.*;
 
 import java.io.*;
 
@@ -160,7 +157,7 @@ public class TestDODSnestedSequence {
     assert a.getRank() == 1;
     assert a.getSize() == 25 : a.getSize();
 
-    NCdump.printArray(a, "stuff",System.out,null);
+    NCdumpW.printArray(a, "stuff", System.out, null);
 
     int count = 0;
     IndexIterator iter = a.getIndexIterator();

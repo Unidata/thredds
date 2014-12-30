@@ -337,9 +337,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     config.spec = expandAliasForCollectionSpec(config.spec);
 
     try {
-      InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory(parent, config.name, config.path, config.type, config);
+      InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory(parent, config);
       if (ds == null) {
-        logger.error("featureCollection " + config.name + " has fatal error ");
+        logger.error("featureCollection " + config.collectionName + " has fatal error ");
         return null;
       }
       // regular dataset elements
@@ -347,7 +347,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return ds;
 
     } catch (Exception e) {
-      logger.error("featureCollection " + config.name + " has fatal error, skipping ", e);
+      logger.error("featureCollection " + config.collectionName + " has fatal error, skipping ", e);
       return null;
     }
 

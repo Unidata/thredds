@@ -52,7 +52,6 @@ public class TestXMLStore {
   @Before
   @Test
   public void testMake() {
-    System.out.println("***TestXMLStore");
     try {
       XMLStore store = XMLStore.createFromFile(storeFile, null);
       PreferencesExt prefs = store.getPreferences();

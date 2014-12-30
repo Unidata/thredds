@@ -56,7 +56,6 @@ public class TestDebug extends TestCase {
   }
 
   public void testDebug() {
-    System.out.println("***TestDebug");
     Debug.set("testit", true);
     assert( Debug.isSet("testit"));
 

@@ -63,7 +63,7 @@ import java.util.jar.JarFile;
  */
 public class NcepLocalTables extends LocalTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  static private final String oldResourcePath = "resources/grib2/ncep/";       // not sure what version this is, assume 13 overrides all
+  //static private final String oldResourcePath = "resources/grib2/ncep/";       // not sure what version this is, assume 13 overrides all
   static private final String defaultResourcePath = "resources/grib2/ncep/v13.0.0/";
   private static NcepLocalTables single;
 
@@ -158,7 +158,8 @@ public class NcepLocalTables extends LocalTables {
         if (!f.getName().endsWith(".xml")) continue;
         try {
           NcepLocalParams.Table table = params.factory(grib2Table.getPath() + f.getPath());
-          allParams.addAll(table.getParameters());
+          if (table != null)
+            allParams.addAll(table.getParameters());
         } catch (Exception e) {
           System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
         }
@@ -297,8 +298,7 @@ public class NcepLocalTables extends LocalTables {
 
       // allow local table to override all but name, units
       if (pwmo != null) {
-        plocal.name = pwmo.getName();
-        plocal.unit = pwmo.getUnit();
+        return new Grib2Parameter(plocal, pwmo.getName(), pwmo.getUnit());
       }
     }
 
@@ -644,20 +644,6 @@ Updated again on 3/26/2008
     codeMap.put("4.10.207", "Average of forecast averages");
 
     return codeMap;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  private static class CompTable {
-    int key;
-    GribTables.Parameter local;
-    GribTables.Parameter org;
-
-    private CompTable(int key, Parameter local, Parameter org) {
-      this.key = key;
-      this.local = local;
-      this.org = org;
-    }
   }
 
 }

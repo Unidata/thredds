@@ -177,7 +177,8 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
     if (key == null)
       throw new IllegalStateException("File does not have key="+GempakStation.SLAT);
     String latType = key.type;
-    if (!(findKey(DATE).type.equals(latType))) {
+    Key dateKey = findKey(DATE);
+    if (dateKey != null && !dateKey.type.equals(latType)) {
       if (latType.equals(ROW)) {
         subType = CLIMATE;
       } else {

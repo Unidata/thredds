@@ -39,8 +39,8 @@ import thredds.catalog.InvDataset;
 import thredds.catalog.InvCatalogRef;
 import ucar.nc2.constants.FeatureType;
 
-import java.io.PrintStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -55,9 +55,9 @@ public class TimeTDSfixed {
   ThreddsDataFactory tdf = new ThreddsDataFactory();
   long start, count, testTime;
   CancelTaskImpl cancel;
-  PrintStream out;
+  PrintWriter out;
 
-  TimeTDSfixed(String catUrl, int secs, PrintStream ps) {
+  TimeTDSfixed(String catUrl, int secs, PrintWriter ps) {
     testTime = 1000 * secs;
     this.out = ps;
 
@@ -90,7 +90,7 @@ public class TimeTDSfixed {
   }
 
   // breadth first
-  void extractDatasetInfo(InvDataset dd, PrintStream out) {
+  void extractDatasetInfo(InvDataset dd, PrintWriter out) {
     if (out != null) out.println(" -dataset= " + dd.getName());
 
     ThreddsDataFactory.Result tdata = null;

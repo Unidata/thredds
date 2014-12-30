@@ -67,11 +67,7 @@ import ucar.nc2.util.EscapeStrings;
  * @since Apr 27, 2009 (branched)
  */
 public class OpendapServlet extends AbstractServlet {
-  static final String DEFAULTCONTEXTPATH = "/thredds";
-  static final String GDATASET = "guarded_dataset";
-
-  static public org.slf4j.Logger log
-             = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
+  static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 
   private boolean allowSessions = false;
   private boolean allowDeflate = false; // handled by Tomcat
@@ -138,7 +134,7 @@ public class OpendapServlet extends AbstractServlet {
     else
       return -1;
 
-    // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox behviour?
+    // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox behaviour?
 
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
     if ((file != null) && file.exists())
@@ -244,7 +240,7 @@ public class OpendapServlet extends AbstractServlet {
 
       // plain ol' 404
     } catch (FileNotFoundException e) {
-      //e.printStackTrace();
+      // e.printStackTrace();
       sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
       // DAP2Exception bad url
@@ -812,7 +808,7 @@ public class OpendapServlet extends AbstractServlet {
         othersize += fieldsize;
       }
       if (debugSize) {
-        System.out.printf("computeSize %s fieldsize=%d projectsize=%d othersize=%d %n", field.getLongName(), fieldsize, projectsize, othersize);
+        System.out.printf("  computeSize field %s isProject %s fieldsize=%d%n", field.getLongName(), field.isProject(), fieldsize);
       }
     }
     // Cases to consider:
@@ -822,14 +818,20 @@ public class OpendapServlet extends AbstractServlet {
     //    then return othersize
     // 3. otherwise, at least one field, but not all, is projected,
     //    => return projectsize;
+    long result;
     if (projectedcount == fieldcount)
-      return projectsize;
+      result = projectsize;
     else if (projectedcount == 0)
-      return othersize;
+      result =  othersize;
     else {
       assert (projectedcount > 0 && projectedcount < fieldcount);
-      return projectsize;
+      result =  projectsize;
     }
+
+    if (debugSize) {
+      System.out.printf("  computeSize return=%d (%d, %d) %n", result, projectedcount, fieldcount);
+    }
+    return result;
   }
 
   long computeFieldSize(BaseType bt, boolean isAscii)
@@ -875,11 +877,11 @@ public class OpendapServlet extends AbstractServlet {
     int n = da.numDimensions();
     List<Range> ranges = new ArrayList<>(n);
     long size = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
       ranges.add(new Range(da.getStart(i), da.getStop(i), da.getStride(i)));
-      Section s = new Section(ranges);
-      size += s.computeSize() * elemSize;
-    }
+    Section s = new Section(ranges);
+    size += s.computeSize() * elemSize;
+
     return size;
   }
 

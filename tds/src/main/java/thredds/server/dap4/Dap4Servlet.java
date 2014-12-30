@@ -14,6 +14,7 @@ import dap4.servlet.*;
 import org.xml.sax.SAXException;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.DatasetHandler;
+import thredds.servlet.ThreddsConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -99,6 +100,15 @@ public class Dap4Servlet extends DapServlet
             datasetpath = datasetpath.substring(1);
         datasetpath = DatasetHandler.getNetcdfFilePath(drq.getRequest(), datasetpath);
         return datasetpath;
+    }
+
+    @Override
+    protected long
+    getBinaryWriteLimit()
+    {
+        int mblimit = ThreddsConfig.getInt("Dap4.binaryLimit",
+                (int) (DapServlet.DEFAULTBINARYWRITELIMIT / 1000000));
+        return mblimit * 1000000;
     }
 
 }

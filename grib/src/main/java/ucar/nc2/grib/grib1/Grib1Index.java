@@ -36,7 +36,7 @@ import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndex;
-import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -111,8 +111,11 @@ public class Grib1Index extends GribIndex {
   }
 
   public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) throws IOException {
-    File idxFile = GribCollection.getFileInCache(filename + GBX9_IDX);
-    if (!idxFile.exists()) return false;
+    String idxPath = filename;
+    if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+    File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
+    if (idxFile == null) return false;
+
     long idxModified = idxFile.lastModified();
     if ((force != CollectionUpdateType.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
@@ -141,8 +144,7 @@ public class Grib1Index extends GribIndex {
       NcStream.readFully(fin, m);
 
       Grib1IndexProto.Grib1Index proto = Grib1IndexProto.Grib1Index.parseFrom(m);
-      String fname = proto.getFilename();
-      if (debug) System.out.printf("%s for %s%n", fname, filename);
+      if (debug) System.out.printf("%s for %s%n",  proto.getFilename(), filename);
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib1IndexProto.Grib1GdsSection pgds : proto.getGdsListList()) {
@@ -191,16 +193,18 @@ public class Grib1Index extends GribIndex {
 
   // LOOK what about extending an index ??
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
-    File idxFile = GribCollection.getFileInCache(filename + GBX9_IDX);
-    File idxFileTmp = GribCollection.getFileInCache(filename + GBX9_IDX+".tmp");
-    RandomAccessFile raf = null;
+    String idxPath = filename;
+    if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+    File idxFile = GribIndexCache.getFileOrCache(idxPath);
+    File idxFileTmp = GribIndexCache.getFileOrCache(idxPath + ".tmp");
 
+    RandomAccessFile raf = null;
     try (FileOutputStream fout = new FileOutputStream(idxFileTmp)) {
       //// header message
       fout.write(MAGIC_START.getBytes(CDM.utf8Charset));
       NcStream.writeVInt(fout, version);
 
-      Map<Long, Integer> gdsMap = new HashMap<Long, Integer>();
+      Map<Long, Integer> gdsMap = new HashMap<>();
       gdsList = new ArrayList<>();
       records = new ArrayList<>(200);
 
@@ -208,7 +212,7 @@ public class Grib1Index extends GribIndex {
       rootBuilder.setFilename(filename);
 
       if (dataRaf == null)  { // open if dataRaf not already open
-        raf = new RandomAccessFile(filename, "r");
+        raf = RandomAccessFile.acquire(filename);
         dataRaf = raf;
       }
 
@@ -242,6 +246,7 @@ public class Grib1Index extends GribIndex {
       if (raf != null) raf.close();   // only close if it was opened here
 
             // now switch
+      RandomAccessFile.eject(idxFile.getPath());
       boolean deleteOk = !idxFile.exists() || idxFile.delete();
       boolean renameOk = idxFileTmp.renameTo(idxFile);
       if (!deleteOk)

@@ -100,6 +100,11 @@ public class MFileOS implements MFile {
   }
 
   @Override
+  public MFile getParent() {
+    return new MFileOS(file.getParentFile());
+  }
+
+  @Override
   public int compareTo(MFile o) {
     return getPath().compareTo( o.getPath());
   }

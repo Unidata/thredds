@@ -37,12 +37,10 @@ import ucar.ma2.*;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
@@ -74,10 +72,15 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
    * should use this (instead of their own private variable).
    */
   protected ucar.unidata.io.RandomAccessFile raf;
+  protected String location;
+  protected int rafOrder = RandomAccessFile.BIG_ENDIAN;
+  protected NetcdfFile ncfile;
 
   @Override
   public void open( RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask ) throws IOException {
     this.raf = raf;
+    this.location = (raf != null) ? raf.getLocation() : null;
+    this.ncfile = ncfile;
   }
 
   @Override
@@ -85,6 +88,19 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     if (raf != null)
       raf.close();
     raf = null;
+  }
+
+  // release any resources like file handles
+  public void release() throws IOException {
+    if (raf != null)
+      raf.close();
+    raf = null;
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    raf = RandomAccessFile.acquire(location);
+    this.raf.order(rafOrder);
   }
 
   // default implementation, reads into an Array, then writes to WritableByteChannel
@@ -165,7 +181,6 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
       return e.getMessage();
     }
   }
-
 
   @Override
   public String getFileTypeVersion() {

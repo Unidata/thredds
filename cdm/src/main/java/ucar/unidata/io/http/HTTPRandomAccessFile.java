@@ -122,11 +122,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   public void close() throws IOException {
-    if (fileCache != null) {
-      fileCache.release(this);
-      return;
-    }
-
     if (debugLeaks)
       openFiles.remove(location);
 

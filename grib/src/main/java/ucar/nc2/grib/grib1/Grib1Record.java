@@ -36,6 +36,7 @@ package ucar.nc2.grib.grib1;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -142,6 +143,12 @@ public class Grib1Record {
 
   public void setFile(int file) {
     this.file = file;
+  }
+
+  private Grib1ParamTime ptime;
+  public Grib1ParamTime getParamTime(Grib1Customizer cust) {
+    if (ptime == null) ptime = new Grib1ParamTime(cust, pdss);
+    return ptime;
   }
 
   /////////////// reading data

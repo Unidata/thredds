@@ -87,7 +87,6 @@ public class FileCache implements FileCacheIF {
   static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
-  static boolean trackAll = false;
   static boolean debug = false;
   static boolean debugPrint = false;
   static boolean debugCleanup = false;
@@ -118,6 +117,7 @@ public class FileCache implements FileCacheIF {
   protected final AtomicInteger hits = new AtomicInteger();
   protected final AtomicInteger miss = new AtomicInteger();
   protected ConcurrentHashMap<Object, Tracker> track;
+  protected boolean trackAll = false;
 
   /**
    * Constructor.
@@ -198,7 +198,7 @@ public class FileCache implements FileCacheIF {
 
   /**
    * Acquire a FileCacheable, and lock it so no one else can use it.
-   * call FileCacheable.close() when done.
+   * call FileCacheable.close when done.
    *
    * @param factory    use this factory to open the file; may not be null
    * @param location   file location, also used as the cache name, will be passed to the NetcdfFileFactory
@@ -219,7 +219,7 @@ public class FileCache implements FileCacheIF {
    * Acquire a FileCacheable from the cache, and lock it so no one else can use it.
    * If not already in cache, open it the FileFactory, and put in cache.
    * <p/>
-   * App should  call FileCacheable.close() when done, and the file is then released instead of closed.
+   * App should  call FileCacheable.close when done, and the file is then released instead of closed.
    * <p/>
    * If cache size goes over maxElement, then immediately (actually in 100 msec) schedule a cleanup in a background thread.
    * This means that the cache should never get much larger than maxElement, unless you have them all locked.
@@ -264,7 +264,7 @@ public class FileCache implements FileCacheIF {
 
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {
-      if (ncfile != null) ncfile.close();
+      if (ncfile != null) ncfile.close();       // LOOK ??
       return null;
     }
 
@@ -342,21 +342,6 @@ public class FileCache implements FileCacheIF {
     }
     if (want == null) return null; // no unlocked file in cache
 
-    /* DISABLED 2/26/2013 JCARON use getLastModified()
-     sync the file when you want to use it again : needed for grib growing index, netcdf-3 record growing, etc
-    if (want != null) {
-      try {
-        boolean changed = ncfile.sync();
-        if (cacheLog.isDebugEnabled())
-          cacheLog.debug("FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation() + " changed = " + changed);
-        if (debugPrint)
-          System.out.println("  FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation() + " changed = " + changed);
-      } catch (IOException e) {
-        log.error("FileCache " + name + " synch failed on " + ncfile.getLocation() + " " + e.getMessage());
-        return null;
-      }
-    } */
-
     // check if modified, remove if so
     if (want.ncfile != null) {
       long lastModified = want.ncfile.getLastModified();
@@ -364,26 +349,41 @@ public class FileCache implements FileCacheIF {
       if (cacheLog.isDebugEnabled() && changed)
         cacheLog.debug("FileCache " + name + ": acquire from cache " + hashKey + " " + want.ncfile.getLocation() + " was changed; discard");
       if (changed) {
-        want.remove();
-        files.remove(want.ncfile);
-        want.ncfile.setFileCache(null);
-        try {
-          want.ncfile.close();
-        } catch (IOException e) {
-          log.error("close failed on "+want.ncfile.getLocation(), e);
-        }
-        want.ncfile = null;
+        remove(want);
       }
     }
 
+    if (want.ncfile != null) {
+      try {
+        want.ncfile.reacquire(); // rehydrate
+      } catch (IOException ioe) {
+        remove(want);           // failed
+      }
+    }
+
+    if (debugPrint) System.out.printf("  FileCache %s found in cache %s (countLocks %d)%n", name, hashKey, countLocked());
     return want.ncfile;
+  }
+
+  // LOOK should you remove the entire CacheElement ?
+  private void remove(CacheElement.CacheFile want) {
+     want.remove();
+     files.remove(want.ncfile);
+     try {
+       want.ncfile.setFileCache(null); // unhook the caching
+       want.ncfile.close();
+     } catch (IOException e) {
+       log.error("close failed on "+want.ncfile.getLocation(), e);
+     }
+     want.ncfile = null;
   }
 
   /**
    * Remove all instances of object from the cache
    * @param hashKey the object
    */
-  public void remove(Object hashKey) {
+  @Override
+  public void eject(Object hashKey) {
      if (disabled.get()) return;
 
      // see if its in the cache
@@ -392,15 +392,17 @@ public class FileCache implements FileCacheIF {
 
      synchronized (wantCacheElem) { // synch in order to traverse the list
        for (CacheElement.CacheFile want : wantCacheElem.list) {
+          // LOOK can we use remove(want);  ??
           files.remove(want.ncfile);
-          want.ncfile.setFileCache(null); // unhook the caching
           try {
+            want.ncfile.setFileCache(null); // unhook the caching
             want.ncfile.close();  // really close the file
             log.debug("close "+want.ncfile.getLocation());
           } catch (IOException e) {
             log.error("close failed on "+want.ncfile.getLocation(), e);
           }
           want.ncfile = null;
+         if (debugPrint) System.out.println("  FileCache " + name + " eject " + hashKey);
        }
        wantCacheElem.list.clear();
      }
@@ -410,18 +412,19 @@ public class FileCache implements FileCacheIF {
   /**
    * Release the file. This unlocks it, updates its lastAccessed date.
    * Normally applications need not call this, just close the file as usual.
+   * The FileCacheable has to do tricky stuff.
    *
    * @param ncfile release this file.
-   * @throws IOException if file not in cache.
+   * @return true if file was in cache, false if it was not
    */
   @Override
-  public void release(FileCacheable ncfile) throws IOException {
-    if (ncfile == null) return;
+  public boolean release(FileCacheable ncfile) throws IOException {
+    if (ncfile == null) return false;
 
     if (disabled.get()) {
       ncfile.setFileCache(null); // prevent infinite loops
       ncfile.close();
-      return;
+      return false;
     }
 
     // find it in the file cache
@@ -434,42 +437,22 @@ public class FileCache implements FileCacheIF {
       file.lastAccessed = System.currentTimeMillis();
       file.countAccessed++;
       file.isLocked.set(false);
+      file.ncfile.release();
+
       if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation()+"; hash= "+ncfile.hashCode());
-      if (debugPrint) System.out.println("  FileCache " + name + " release " + ncfile.getLocation());
-      return;
+      if (debugPrint) System.out.printf("  FileCache %s release %s lock=%s count=%d%n", name, ncfile.getLocation(), file.isLocked.get(), countLocked());
+      return true;
     }
-    throw new IOException("FileCache " + name + " release does not have file in cache = " + ncfile.getLocation());
+    return false;
+    // throw new IOException("FileCache " + name + " release does not have file in cache = " + ncfile.getLocation());
   }
 
-  /*
-   * Remove all copies of the file from the cache.
-   *
-   * @param ncfile remove this file.
-   * @throws IOException if file not in cache.
-   *
-  public void remove(FileCacheable ncfile) throws IOException {
-    if (ncfile == null) return;
-
-    if (disabled.get()) {
-      ncfile.setFileCache(null); // prevent infinite loops
-      ncfile.close();
-      return;
-    }
-
-    // find it in the file cache
-    CacheElement.CacheFile file = files.get(ncfile); // using hashCode of the FileCacheable
-    if (file != null) {
-      if (!file.isLocked.get())
-        cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked");
-      file.lastAccessed = System.currentTimeMillis();
-      file.countAccessed++;
-      file.isLocked.set(false);
-      if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation());
-      if (debugPrint) System.out.println("  FileCache " + name + " release " + ncfile.getLocation());
-      return;
-    }
-    throw new IOException("FileCache " + name + " release does not have file in cache = " + ncfile.getLocation());
-  } */
+  private int countLocked() {
+    int count = 0;
+    for (CacheElement.CacheFile file : files.values())
+      if (file.isLocked.get()) count++;
+    return count;
+  }
 
   // debug
   public String getInfo(FileCacheable ncfile) throws IOException {
@@ -614,7 +597,7 @@ public class FileCache implements FileCacheIF {
       countMiss += t.miss;
       format.format("%6d  %7d : %6d %6d %s%n", seq, countAll, t.hit, t.miss, t.key);
     }
-    float r= ((float)countHits) / countAll;
+    float r = (countAll == 0) ? 0 : ((float)countHits) / countAll;
     format.format("  total=%7d : %6d %6d hit ratio=%f%n", countAll, countHits, countMiss, r);
   }
 
@@ -719,7 +702,9 @@ public class FileCache implements FileCacheIF {
       long start = System.currentTimeMillis();
       for (CacheElement.CacheFile file : deleteList) {
         //counter.decrementAndGet();
-        files.remove(file.ncfile);
+        if (null == files.remove(file.ncfile)) {
+          if (cacheLog.isDebugEnabled()) cacheLog.debug(" FileCache {} cleanup failed to remove {}%n", name, file.ncfile.getLocation());
+        }
         try {
           file.ncfile.setFileCache(null);
           file.ncfile.close();
@@ -790,7 +775,7 @@ public class FileCache implements FileCacheIF {
         ncfile.setFileCache(FileCache.this);
 
         if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " add to cache " + hashKey);
-        if (debugPrint) System.out.println("  FileCache " + name + " add to cache " + hashKey);
+        if (debugPrint) System.out.printf("  FileCache %s add to cache %s (hash %d)%n", name, hashKey, this.hashCode());
       }
 
       String getCacheName() {
@@ -803,7 +788,7 @@ public class FileCache implements FileCacheIF {
             cacheLog.warn("FileCache " + name + " could not remove " + ncfile.getLocation());
         }
         if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " remove " + ncfile.getLocation());
-        if (debugPrint) System.out.println("  FileCache " + name + " remove " + ncfile.getLocation());
+        if (debugPrint) System.out.printf("  FileCache %s remove %s%n", name, ncfile.getLocation());
       }
 
       public String toString() {
@@ -811,7 +796,7 @@ public class FileCache implements FileCacheIF {
       }
 
       public int compareTo(CacheFile o) {
-        return (int) (lastAccessed - o.lastAccessed);
+        return Long.compare(lastAccessed, o.lastAccessed);
       }
     }
   }

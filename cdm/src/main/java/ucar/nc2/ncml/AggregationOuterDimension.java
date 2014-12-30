@@ -647,9 +647,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
      */
     public int getNcoords(CancelTask cancelTask) throws IOException {
       if (ncoord <= 0) {
-        NetcdfFile ncd = null;
-        try {
-          ncd = acquireFile(cancelTask);
+        try (NetcdfFile ncd=acquireFile(cancelTask)) {
           if ((cancelTask != null) && cancelTask.isCancel()) return 0;
 
           Dimension d = ncd.findDimension(dimName); // long name of dimension
@@ -657,9 +655,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
             ncoord = d.getLength();
           else
             throw new IllegalArgumentException("Dimension not found= " + dimName);
-
-        } finally {
-          close(ncd);
         }
       }
       return ncoord;

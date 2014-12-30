@@ -37,16 +37,15 @@
 package ucar.nc2.iosp.gempak;
 
 
+import ucar.nc2.constants.CDM;
+
 import java.io.*;
 
-// When ucar.unidata.util is in common, revert to using this
-//import ucar.unidata.util.IOUtil;
 import java.net.URL;
 import java.net.URLConnection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -101,12 +100,11 @@ ID# NAME                             UNITS                GNAM         SCALE   M
    * @throws IOException problem reading table.
    */
   public void addParameters(String tbl) throws IOException {
-    //String content = IOUtil.readContents(tbl, GempakParameterTable.class);
     try (InputStream is = getInputStream(tbl)) {
       if (is == null) {
         throw new IOException("Unable to open " + tbl);
       }
-      String content = readContents(is);
+      String content = readContents(is);   // LOOK this is silly - should just read one line at a time
       // List           lines   = StringUtil.split(content, "\n", false);
       String[] lines = content.split("\n");
       List<String[]> result = new ArrayList<>();
@@ -136,8 +134,8 @@ ID# NAME                             UNITS                GNAM         SCALE   M
         }
         result.add(words);
       }
-      for (int i = 0; i < result.size(); i++) {
-        GempakParameter p = makeParameter( result.get(i));
+      for (String[] aResult : result) {
+        GempakParameter p = makeParameter(aResult);
         if (p != null) {
           if (p.getName().contains("(")) {
             templateParamMap.put(p.getName(), p);
@@ -191,7 +189,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
         unit = "";
       }
     }
-    int decimalScale = 0;
+    int decimalScale;
     try {
       decimalScale = Integer.parseInt(words[4].trim());
     } catch (NumberFormatException ne) {
@@ -263,7 +261,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
    * @throws IOException problem reading contents
    */
   private String readContents(InputStream is) throws IOException {
-    return new String(readBytes(is));
+    return new String(readBytes(is), CDM.utf8Charset);
   }
 
   /**
@@ -308,7 +306,7 @@ ID# NAME                             UNITS                GNAM         SCALE   M
    *                     java resource, etc.
    * @return The input stream to the resource
    */
-  private InputStream getInputStream(String resourceName) {
+  private InputStream getInputStream(String resourceName) throws IOException {
 
     // Try class loader to get resource
     ClassLoader cl = GempakParameterTable.class.getClassLoader();
@@ -320,26 +318,18 @@ ID# NAME                             UNITS                GNAM         SCALE   M
     //Try the file system
     File f = new File(resourceName);
     if (f.exists()) {
-      try {
         s = new FileInputStream(f);
-      } catch (Exception e) {
-      }
     }
     if (s != null) {
       return s;
     }
 
     //Try it as a url
-    try {
-      Matcher m = Pattern.compile(" ").matcher(resourceName);
-      String encodedUrl = m.replaceAll("%20");
-      URL dataUrl = new URL(encodedUrl);
-      URLConnection connection = dataUrl.openConnection();
-      s = connection.getInputStream();
-    } catch (Exception exc) {
-    }
-
-    return s;
+    Matcher m = Pattern.compile(" ").matcher(resourceName);
+    String encodedUrl = m.replaceAll("%20");
+    URL dataUrl = new URL(encodedUrl);
+    URLConnection connection = dataUrl.openConnection();
+    return connection.getInputStream();
   }
 
 

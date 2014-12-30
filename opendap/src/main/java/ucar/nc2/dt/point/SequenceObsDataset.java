@@ -215,7 +215,7 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
   }
 
   public int getDataCount() {
-    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
+    Dimension unlimitedDim = netcdfDataset.getUnlimitedDimension();
     return unlimitedDim.getLength();
   }
 

@@ -66,7 +66,7 @@ public class TestGeoGrid extends TestCase {
     assert gcs_section.getTimeAxis().equals( gcs.getTimeAxis());
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    NCdump.printArray( data, "grid_section", System.out,  null);
+    NCdumpW.printArray( data, "grid_section", System.out,  null);
 
     dataset.close();
   }

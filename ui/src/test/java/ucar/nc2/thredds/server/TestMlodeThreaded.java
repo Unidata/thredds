@@ -51,7 +51,7 @@ public class TestMlodeThreaded implements Runnable {
   private CatalogExtractor ce;
   private StopButton stopButton;
   private JLabel label;
-  private PrintStream out;
+  private PrintWriter out;
 
   TestMlodeThreaded(String name, String catURL, int type) throws IOException {
     this.catUrl = catURL;
@@ -69,8 +69,8 @@ public class TestMlodeThreaded implements Runnable {
 
     ce = new CatalogExtractor( false);
 
-    FileOutputStream fout = new FileOutputStream(name+".txt");
-    out = System.out; // new PrintStream( new BufferedOutputStream( fout));
+    // FileOutputStream fout = new FileOutputStream(name+".txt");
+    this.out = new PrintWriter( System.out);
   }
 
 

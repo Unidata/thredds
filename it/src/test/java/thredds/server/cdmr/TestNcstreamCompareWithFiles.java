@@ -59,12 +59,12 @@ public class TestNcstreamCompareWithFiles {
       });
       addFromScan(result, contentRoot + "/grib1/", new FileFilter() {
         public boolean accept(File pathname) {
-          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2") && !pathname.getPath().endsWith(".ncx3");
+          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2")&& !pathname.getPath().endsWith(".ncx3");
         }
       });
       addFromScan(result, contentRoot + "/grib2/", new FileFilter() {
         public boolean accept(File pathname) {
-          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2")  && !pathname.getPath().endsWith(".ncx3");
+          return !pathname.getPath().endsWith(".gbx9") && !pathname.getPath().endsWith(".ncx") && !pathname.getPath().endsWith(".ncx2")&& !pathname.getPath().endsWith(".ncx3");
         }
       });
       addFromScan(result, contentRoot + "/gini/", new SuffixFileFilter(".gini"));

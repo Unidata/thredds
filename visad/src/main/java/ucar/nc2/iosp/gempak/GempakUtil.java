@@ -36,6 +36,7 @@
 
 package ucar.nc2.iosp.gempak;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 
 
@@ -224,7 +225,7 @@ public final class GempakUtil {
 
         //  Check for leap year.
 
-        int ndays = TI_DAYM(iyear, imonth);
+        //int ndays = TI_DAYM(iyear, imonth);
         iyear = iyear % 100;
 
         //  Check that each of these values is valid.
@@ -316,7 +317,7 @@ public final class GempakUtil {
         bval[1] = (byte) ((value & 0x00ff0000) >>> 16);
         bval[2] = (byte) ((value & 0x0000ff00) >>> 8);
         bval[3] = (byte) ((value & 0x000000ff));
-        return new String(bval);
+        return new String(bval, CDM.utf8Charset);
     }
 
     /**

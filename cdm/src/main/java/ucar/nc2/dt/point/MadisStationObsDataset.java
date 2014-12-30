@@ -127,7 +127,7 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
         stnDescVName = "stationName";
       if (debug) System.out.println("filetype 2 (mesonet)");
     }
-    if (debug) System.out.println("title= "+ncfile.findAttValueIgnoreCase(null, "title", null));
+    if (debug) System.out.println("title= "+ netcdfDataset.findAttValueIgnoreCase(null, "title", null));
 
     recordHelper = new RecordDatasetHelper(ds, obsTimeVName, nomTimeVName, dataVariables, parseInfo);
     recordHelper.setStationInfo(stnIdVName, stnDescVName);
@@ -244,7 +244,7 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
   }
 
   public int getDataCount() {
-    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
+    Dimension unlimitedDim = netcdfDataset.getUnlimitedDimension();
     return unlimitedDim.getLength();
   }
 

@@ -46,7 +46,6 @@ import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -56,21 +55,19 @@ import java.util.*;
  * @author caron
  * @since 2/20/14
  */
-public abstract class GribCollectionBuilderFromIndex {
+abstract class GribCollectionBuilderFromIndex {
+  static protected final boolean debug = false;
 
-  protected final boolean dataOnly; // dont need the extra metadata like twot
-  protected GribCollection gc;
+  protected GribCollectionMutable gc;
   protected final org.slf4j.Logger logger;
-  protected boolean debug = false;
   protected GribTables tables;
 
   protected abstract void readGds(GribCollectionProto.Gds p);
   protected abstract GribTables makeCustomizer() throws IOException;
   protected abstract String getLevelNameShort(int levelCode);
 
-  protected GribCollectionBuilderFromIndex(GribCollection gc, boolean dataOnly, org.slf4j.Logger logger) {
+  protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, org.slf4j.Logger logger) {
     this.logger = logger;
-    this.dataOnly = dataOnly;
     this.gc = gc;
   }
 
@@ -78,7 +75,7 @@ public abstract class GribCollectionBuilderFromIndex {
 
   protected boolean readIndex(RandomAccessFile raf) throws IOException {
 
-    gc.setIndexRaf(raf); // LOOK leaving the raf open in the GribCollection
+    gc.setIndexRaf(raf);
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
@@ -162,15 +159,14 @@ public abstract class GribCollectionBuilderFromIndex {
       }
 
       // directory always taken from proto, since ncx2 file may be moved, or in cache, etc  LOOK
-      File protoDir = new File(proto.getTopDir());
-      gc.setDirectory(protoDir);
+      gc.directory = gc.setOrgDirectory(proto.getTopDir());
 
       int fsize = 0;
       int n = proto.getMfilesCount();
       Map<Integer, MFile> fileMap = new HashMap<>(2 * n);
       for (int i = 0; i < n; i++) {
         ucar.nc2.grib.collection.GribCollectionProto.MFile mf = proto.getMfiles(i);
-        fileMap.put(mf.getIndex(), new GcMFile(protoDir, mf.getFilename(), mf.getLastModified(), mf.getIndex()));
+        fileMap.put(mf.getIndex(), new GcMFile(gc.directory, mf.getFilename(), mf.getLastModified(), mf.getLength(), mf.getIndex()));
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);
@@ -200,7 +196,7 @@ public abstract class GribCollectionBuilderFromIndex {
     return true;
   }
 
-  protected GribCollection.VariableIndex readVariableExtensions(GribCollection.GroupGC group, GribCollectionProto.Variable pv, GribCollection.VariableIndex vi) {
+  protected GribCollectionMutable.VariableIndex readVariableExtensions(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable pv, GribCollectionMutable.VariableIndex vi) {
     group.addVariable(vi);
     return vi;
   }
@@ -217,11 +213,11 @@ message Dataset {
   repeated Group groups = 2;      // separate group for each GDS
 }
  */
-  private PartitionCollection.Dataset readDataset(GribCollectionProto.Dataset p) {
-    GribCollection.Type type = GribCollection.Type.valueOf(p.getType().toString());
-    GribCollection.Dataset ds = gc.makeDataset(type);
+  private PartitionCollectionMutable.Dataset readDataset(GribCollectionProto.Dataset p) {
+    GribCollectionImmutable.Type type = GribCollectionImmutable.Type.valueOf(p.getType().toString());
+    GribCollectionMutable.Dataset ds = gc.makeDataset(type);
 
-    List<GribCollection.GroupGC> groups = new ArrayList<>(p.getGroupsCount());
+    List<GribCollectionMutable.GroupGC> groups = new ArrayList<>(p.getGroupsCount());
     for (int i = 0; i < p.getGroupsCount(); i++)
       groups.add(readGroup(p.getGroups(i)));
     ds.groups = Collections.unmodifiableList(groups);
@@ -240,12 +236,12 @@ message Group {
   extensions 100 to 199;
 }
  */
-  protected GribCollection.GroupGC readGroup(GribCollectionProto.Group p) {
-    GribCollection.GroupGC group = gc.makeGroup();
+  protected GribCollectionMutable.GroupGC readGroup(GribCollectionProto.Group p) {
+    GribCollectionMutable.GroupGC group = gc.makeGroup();
 
     int gdsIndex = p.getGdsIndex();
     group.horizCoordSys = gc.getHorizCS(gdsIndex);
-    group.isTwod = p.getIsTwod();
+    group.isTwoD = p.getIsTwod();
 
     // read coords before variables
     group.coords = new ArrayList<>();
@@ -308,7 +304,7 @@ message Group {
       }
     }
     assignVertNames(vertCoords);
-    assignRuntimeNames(runtimes, time2DCoords, group.getId() + "-" + (group.isTwod ? "TwoD" : "Best"));
+    assignRuntimeNames(runtimes, time2DCoords, group.getId() + "-" + (group.isTwoD ? "TwoD" : "Best"));
 
     return group;
   }
@@ -366,13 +362,10 @@ message Coord {
 
     switch (type) {
       case runtime:
-        List<CalendarDate> dates = new ArrayList<>(pc.getMsecsCount());
-        for (Long msec : pc.getMsecsList())
-          dates.add(CalendarDate.of(msec));
         if (unit == null)
           throw new IllegalStateException("Null units");
         CalendarDateUnit cdUnit = CalendarDateUnit.of(null, unit);
-        return new CoordinateRuntime(dates, cdUnit.getTimeUnit());
+        return new CoordinateRuntime(pc.getMsecsList(), cdUnit.getTimeUnit());
 
       case time:
         List<Integer> offs = new ArrayList<>(pc.getValuesCount());
@@ -382,7 +375,7 @@ message Coord {
         if (unit == null)
            throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit = CalendarPeriod.of(unit);
-        return new CoordinateTime(code, timeUnit, refDate, offs);
+        return new CoordinateTime(code, timeUnit, refDate, offs, readTime2Runtime(pc));
 
       case timeIntv:
         List<TimeCoord.Tinv> tinvs = new ArrayList<>(pc.getValuesCount());
@@ -395,16 +388,13 @@ message Coord {
         if (unit == null)
            throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit2 = CalendarPeriod.of(unit);
-        return new CoordinateTimeIntv(code, timeUnit2, refDate, tinvs);
+        return new CoordinateTimeIntv(code, timeUnit2, refDate, tinvs, readTime2Runtime(pc));
 
       case time2D:
-        dates = new ArrayList<>(pc.getMsecsCount());
-        for (Long msec : pc.getMsecsList())
-          dates.add(CalendarDate.of(msec));
         if (unit == null)
            throw new IllegalStateException("Null units");
         CalendarPeriod timeUnit3 = CalendarPeriod.of(unit);
-        CoordinateRuntime runtime = new CoordinateRuntime(dates, timeUnit3);
+        CoordinateRuntime runtime = new CoordinateRuntime(pc.getMsecsList(), timeUnit3);
 
         List<Coordinate> times = new ArrayList<>(pc.getTimesCount());
         for (GribCollectionProto.Coord coordp : pc.getTimesList())
@@ -412,9 +402,9 @@ message Coord {
         boolean isOrthogonal = pc.hasIsOrthogonal() && pc.getIsOrthogonal();
         boolean isRegular = pc.hasIsRegular() && pc.getIsRegular();
         if (isOrthogonal)
-          return new CoordinateTime2D(code, timeUnit3, runtime, (CoordinateTimeAbstract) times.get(0), null);
+          return new CoordinateTime2D(code, timeUnit3, null, runtime, (CoordinateTimeAbstract) times.get(0), null);
         else if (isRegular)
-          return new CoordinateTime2D(code, timeUnit3, runtime, times, null);
+          return new CoordinateTime2D(code, timeUnit3, null, runtime, times, null);
         else
           return new CoordinateTime2D(code, timeUnit3, null, runtime, times);
 
@@ -442,49 +432,34 @@ message Coord {
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }
 
-  protected GribCollection.VariableIndex readVariable(GribCollection.GroupGC group, GribCollectionProto.Variable pv) {
+  private int[] readTime2Runtime(GribCollectionProto.Coord pc) {
+    if (pc.getTime2RuntimeCount() > 0) {
+      int[] time2runtime = new int[pc.getTime2RuntimeCount()];
+      for (int i=0; i<pc.getTime2RuntimeCount(); i++)
+        time2runtime[i] = pc.getTime2Runtime(i);
+      return time2runtime;
+    }
+    return null;
+  }
+
+  protected GribCollectionMutable.VariableIndex readVariable(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable pv) {
     int discipline = pv.getDiscipline();
 
     byte[] rawPds = pv.getPds().toByteArray();
 
-    int cdmHash = pv.getCdmHash();
+        // extra id info
+    int nids = pv.getIdsCount();
+    int center = (nids > 0) ? pv.getIds(0) : 0;
+    int subcenter = (nids > 1) ? pv.getIds(1) : 0;
+
     long recordsPos = pv.getRecordsPos();
     int recordsLen = pv.getRecordsLen();
     List<Integer> index = pv.getCoordIdxList();
 
-    GribCollection.VariableIndex result = gc.makeVariableIndex(group, cdmHash, discipline, tables, rawPds, index, recordsPos, recordsLen);
-    result.density = pv.getDensity();
+    GribCollectionMutable.VariableIndex result = gc.makeVariableIndex(group, tables, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
     result.ndups = pv.getNdups();
     result.nrecords = pv.getNrecords();
-    result.missing = pv.getMissing();
-
-    Coordinate runtime = result.getCoordinate(Coordinate.Type.runtime);
-    Coordinate time = result.getCoordinate(Coordinate.Type.time);
-    if (time == null) time = result.getCoordinate(Coordinate.Type.timeIntv);
-    int ntimes;
-    if (time == null) {
-      time = result.getCoordinate(Coordinate.Type.time2D);
-      ntimes = ((CoordinateTime2D) time).getNtimes();
-    } else {
-      ntimes = time.getSize();
-    }
-
-    // 2d only  LOOK this is the big memory hog - but not needed except when building or for debug. can we make optional ??
-    if (!dataOnly) {
-      List<Integer> invCountList = pv.getInvCountList();
-      if (invCountList.size() > 0) {
-        result.twot = new TwoDTimeInventory(invCountList);
-        result.twot.setSize(runtime.getSize(), ntimes);
-      }
-    }
-
-    // 1d only
-    List<Integer> time2runList = pv.getTime2RuntimeList();
-    if (time2runList.size() > 0) {
-      result.time2runtime = new int[time2runList.size()];
-      int count = 0;
-      for (int idx : time2runList) result.time2runtime[count++] = idx;
-    }
+    result.nmissing = pv.getMissing();
 
     return readVariableExtensions(group, pv, result);
   }

@@ -421,4 +421,9 @@ public class CoordinateAxis extends VariableDS {
     return ucar.nc2.time.Calendar.get(s);
   }
 
+  @Override
+  public boolean isCoordinateVariable() {
+    return true;
+  }
+
 }

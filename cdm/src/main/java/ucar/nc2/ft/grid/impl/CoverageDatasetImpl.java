@@ -215,14 +215,22 @@ public class CoverageDatasetImpl implements CoverageDataset {
     ds.close();
   }
 
-  /* @Override
-  public boolean sync() throws IOException {
-    return false;
-  } */
+  ////////////////////////////////////////
+  // FileCacheable
+
+      // release any resources like file handles
+  public void release() throws IOException {
+    ds.release();
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    ds.reacquire();
+  }
 
   @Override
   public long getLastModified() {
-    return (ds != null) ? ds.getLastModified() : 0;
+    return ds.getLastModified();
   }
 
   @Override
@@ -237,7 +245,7 @@ public class CoverageDatasetImpl implements CoverageDataset {
 
   @Override
   public String getImplementationName() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;
   }
 
   @Override

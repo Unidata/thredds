@@ -1280,59 +1280,27 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (cache != null) {
       //unlocked = true;
-      cache.release(this);
-
-    } else {
-      if (agg != null) agg.close();
-      agg = null;
-      if (orgFile != null) orgFile.close();
-      orgFile = null;
+      if (cache.release(this)) return;
     }
 
+    if (agg != null) agg.close();
+    agg = null;
+    if (orgFile != null) orgFile.close();
+    orgFile = null;
   }
 
-  /* @Override
-  public Object sendIospMessage(Object message) {
+   // optionally release any resources like file handles
+  public void release() throws IOException {
     if (orgFile != null)
-      return orgFile.sendIospMessage(message);
-    return false;
-  } */
+      orgFile.release();
+  }
 
-  /*
-   * Check if file has changed, and reread metadata if needed.
-   * All previous object references (variables, dimensions, etc) may become invalid - you must re-obtain.
-   *
-   * @return true if file was changed.
-   * @throws IOException
-   *
-  public boolean sync() throws IOException {
-    unlocked = false;
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    if (orgFile != null)
+      orgFile.reacquire();
+  }
 
-    if (agg != null)
-      return agg.sync();
-
-    if (orgFile != null) {
-      if (orgFile.sync()) {
-        // start over again
-        this.location = orgFile.getLocation();
-        this.id = orgFile.getId();
-        this.title = orgFile.getTitle();
-
-        // build global lists
-        empty();
-        convertGroup(getRootGroup(), orgFile.getRootGroup());
-        finish();
-
-        // redo enhance
-        EnumSet<Enhance> saveMode = this.enhanceMode;
-        this.enhanceMode = EnumSet.noneOf(Enhance.class);
-        enhance(this, saveMode, null);
-        return true;
-      }
-    }
-
-    return false;
-  } */
 
   @Override
   public long getLastModified() {

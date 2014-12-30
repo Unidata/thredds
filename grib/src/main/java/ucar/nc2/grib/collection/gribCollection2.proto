@@ -2,18 +2,20 @@ option java_package = "ucar.nc2.grib.collection";
 option java_outer_classname = "GribCollectionProto";
 
 message Record {
-  required uint32 fileno = 1;  // which GRIB file ? key into GC.fileMap
-  required uint64 pos = 2;     // offset in Grib file of the start of drs (grib2) or entire message (grib1)
+  required uint32 fileno = 1;               // which GRIB file ? key into GC.fileMap
+  required uint64 pos = 2;                  // offset in Grib file of the start of drs (grib2) or entire message (grib1)
   optional uint64 bmsPos = 3 [default = 0]; // use alternate bms
   optional uint32 scanMode = 4 [default = 9999];  // scanMode from each record's gds added 2/6/2014
 }
 
+// SparseArray only at the GCs (MRC and SRC) not at the Partitions
 // dont need SparseArray unless someone wants to read from the variable
 message SparseArray {
   required fixed32 cdmHash = 1; // which variable
   repeated uint32 size = 2;     // multidim sizes
   repeated uint32 track = 3;    // 1-based index into record list, 0 == missing
   repeated Record records = 4;  // List<Record>
+  optional uint32 ndups = 5;    // duplicates found when creating
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -22,7 +24,7 @@ message SparseArray {
 message Variable {
    required uint32 discipline = 1;
    required bytes pds = 2;          // raw pds
-   required fixed32 cdmHash = 3;
+   repeated uint32 ids = 3;         // extra info not in pds; grib2 id section
 
    required uint64 recordsPos = 4;  // offset of SparseArray message for this Variable
    required uint32 recordsLen = 5;  // size of SparseArray message for this Variable
@@ -30,13 +32,9 @@ message Variable {
    repeated uint32 coordIdx = 6;    // indexes into Group.coords
 
    // optionally keep stats
-   optional float density = 7;
    optional uint32 ndups = 8;
    optional uint32 nrecords = 9;
    optional uint32 missing = 10;
-
-   repeated uint32 invCount = 15;      // for Coordinate TwoTimer, only 2D vars
-   repeated uint32 time2runtime = 16;  // time index to runtime index, only 1D vars
 
    repeated Parameter params = 20;    // not used yet
 
@@ -54,12 +52,8 @@ message Coord {
   repeated Coord times = 7; // time2D only
   optional bool isOrthogonal = 8; // time2D only
   optional bool isRegular = 9; // time2D only
-}
 
-message MFile {
-  required string filename = 1;   // reletive to topDir
-  required uint64 lastModified = 2;
-  required uint32 index = 3;         // the records use this number
+  repeated uint32 time2runtime = 10;  // time index to runtime index, only Best Time and TimeIntv
 }
 
 message Parameter {
@@ -69,10 +63,8 @@ message Parameter {
 }
 
 message Gds {
-  optional bytes gds = 1;            // raw gds
-  optional sint32 gdsHash = 2 [default = 0];
-  optional string nameOverride = 3;  // only when user overrides default name
-  optional uint32 predefinedGridDefinition = 4;  // only grib1; instead of gds raw bytes
+  optional bytes gds = 1;                        // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
+  optional uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes
 }
 
 message Group {
@@ -80,7 +72,7 @@ message Group {
   repeated Variable variables = 2;    // list of variables
   repeated Coord coords = 3;          // list of coordinates
   repeated int32 fileno = 4;          // the component files that are in this group, key into gc.mfiles
-  required bool isTwod = 5;           // has 2 time dimensions
+  required bool isTwod = 5;           // has 2 time dimensions  -- NOT USED
 
   repeated Parameter params = 20;      // not used yet
   extensions 100 to 199;
@@ -88,36 +80,85 @@ message Group {
 
 message Dataset {
   enum Type {
-    GC = 0;
-    TwoD = 1;
-    Best = 2;
-    Analysis = 3;
+    GC = 0;         // leaf collection
+    SRC = 4;        // single runtime collection
+    MRC = 5;        // multiple runtime collection
+    MRSTC = 6;      // multiple runtime single time collection
+
+    TP = 7;         // time partition collection 1D
+    TwoD = 1;       // time partition 2D
+    Best = 2;       // time partition Best
+    Analysis = 3;   // not implemented yet
   }
 
   required Type type = 1;
   repeated Group groups = 2;
 }
 
+
+message MFile {
+  required string filename = 1;           // reletive to topDir
+  required uint64 lastModified = 2;
+  required uint32 index = 3;             // the records use this number
+  optional uint64 length = 4 [default = 0];
+}
+
 message GribCollection {
   required string name = 1;         // must be unique - index filename is name.ncx
-  required string topDir = 2;       // filenames are reletive to this
+  required string topDir = 2;       // MFile, Partition filenames are reletive to this
   repeated MFile mfiles = 3;        // list of grib MFiles
   repeated Dataset dataset = 4;
   repeated Gds gds = 5;             // unique Gds, shared amongst datasets
-  required Coord masterRuntime = 21;  // list of runtimes in this GC
+  required Coord masterRuntime = 6;  // list of runtimes in this GC
 
-  required int32 center = 6;      // these 4 fields are to get a GribTable object
-  required int32 subcenter = 7;
-  required int32 master = 8;
-  required int32 local = 9;       // grib1 table Version
+  required int32 center = 7;      // these 4 fields are to get a GribCustomizer
+  required int32 subcenter = 8;
+  required int32 master = 9;
+  required int32 local = 10;       // grib1 table Version
 
-  optional int32 genProcessType = 10;
-  optional int32 genProcessId = 11;
-  optional int32 backProcessId = 12;
+  optional int32 genProcessType = 11;
+  optional int32 genProcessId = 12;
+  optional int32 backProcessId = 13;
 
-  repeated Parameter params = 20;      // not used yet
+  repeated Parameter params = 20;      // not used
+  optional FcConfig config = 21;
 
   extensions 100 to 199;
+}
+
+//////////////////////////
+
+message StringMap {
+  required string name = 1;
+  required string value = 2;
+}
+
+message IntMap {
+  required sint32 from = 1;
+  required sint32 to = 2;
+}
+
+message IntvFilter {
+  required sint32 intvLength = 1;
+  required uint32 variableId = 2;
+  optional sint32 intvProb = 3;
+}
+
+message FcConfig {
+  required string name = 1;
+  required string collectionSpec = 2;
+  required string partitionType = 3;
+  optional string dateFormatMark = 4;
+
+  repeated IntMap gdsConvert = 11;
+  optional bool pdsUseGenType = 12 [default = false];
+  optional bool pdsUseTableVersion = 13 [default = true];
+  optional bool pdsIntvMerge = 14 [default = true];
+  optional bool pdsUseCenter = 15 [default = true];
+  optional bool intvExcludeZero = 16 [default = false];
+  repeated IntvFilter intvFilter = 17;
+  repeated IntMap timeUnitConvert = 18;
+  optional string userTimeUnit = 19;
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java

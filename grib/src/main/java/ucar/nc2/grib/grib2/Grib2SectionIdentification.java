@@ -46,7 +46,7 @@ public class Grib2SectionIdentification {
     // Center  octet 6-7
     center_id = GribNumbers.int2(raf);
 
-    // Center  octet 8-9
+    // subCenter  octet 8-9
     subcenter_id = GribNumbers.int2(raf);
 
     // master table octet 10 (code table 1.0)
@@ -73,7 +73,9 @@ public class Grib2SectionIdentification {
     raf.seek(sectionEnd);
   }
 
-  public Grib2SectionIdentification(int center_id, int subcenter_id, int master_table_version, int local_table_version, int significanceOfRT, int year, int month, int day, int hour, int minute, int second, int productionStatus, int processedDataType) {
+  public Grib2SectionIdentification(int center_id, int subcenter_id, int master_table_version, int local_table_version,
+                                    int significanceOfRT, int year, int month, int day, int hour, int minute, int second,
+                                    int productionStatus, int processedDataType) {
     this.center_id = center_id;
     this.subcenter_id = subcenter_id;
     this.master_table_version = master_table_version;
@@ -87,8 +89,6 @@ public class Grib2SectionIdentification {
     this.second = second;
     this.productionStatus = productionStatus;
     this.processedDataType = processedDataType;
-
-    //this.refTime = CalendarDate.of(null, year, month, day, hour, minute, second);
   }
 
   /**

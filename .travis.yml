@@ -1,4 +1,5 @@
 language: java
+sudo: false
 
 jdk:
   - oraclejdk7
@@ -7,13 +8,10 @@ jdk:
 
 env:
   global:
-    - MAVEN_OPTS="-Djna.library.path=/usr/lib -DskipTests=false -DfailIfNoTests=false"
+    - MAVEN_OPTS="-Djna.library.path=${TRAVIS_BUILD_DIR}/travis -DskipTests=false -DfailIfNoTests=false"
 
 before_install:
-  - sudo apt-get install libhdf5-serial-dev
-  - sudo dpkg -i ${TRAVIS_BUILD_DIR}/travis/netCDF-*-Linux.deb
-  - wget http://www.unidata.ucar.edu/staff/rmay/maven-repo.tar.gz
-  - tar -C $HOME/.m2 -xf maven-repo.tar.gz
+  - cp ${TRAVIS_BUILD_DIR}/travis/settings.xml ${HOME}/.m2
 
 install:
   - mvn install -DskipTests=true
