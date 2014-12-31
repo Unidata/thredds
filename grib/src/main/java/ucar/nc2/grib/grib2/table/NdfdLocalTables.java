@@ -105,7 +105,7 @@ public class NdfdLocalTables extends LocalTables {
   }
 
   private void add(int discipline, int category, int number, String abbrev, String name, String unit) {
-    local.put(makeHash(discipline, category, number), new Grib2Parameter(discipline, category, number, name, unit, abbrev, null));
+    local.put(makeParamId(discipline, category, number), new Grib2Parameter(discipline, category, number, name, unit, abbrev, null));
   }
 
 }

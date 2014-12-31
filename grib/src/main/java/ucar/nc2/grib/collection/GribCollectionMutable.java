@@ -409,10 +409,20 @@ public class GribCollectionMutable implements AutoCloseable {
     public GribCollectionMutable.VariableIndex findVariableByHash(GribCollectionMutable.VariableIndex want) {
       if (varMap == null) {
         varMap = new HashMap<>(variList.size() * 2);
-        for (VariableIndex vi : variList)
+        for (VariableIndex vi : variList) {
           varMap.put(vi, vi);
+          //System.out.printf("%s%n", vi.hashCode());
+        }
       }
-      return varMap.get(want);
+      GribCollectionMutable.VariableIndex result = varMap.get(want);
+      /* if (result == null) {
+        System.out.printf("%s%n", want.hashCode());
+        for (VariableIndex vi : variList) {
+          System.out.printf("%s%n", vi.hashCode());
+          System.out.printf("%s%n", vi.equals(want));
+        }
+      } */
+      return result;
     }
 
     private CalendarDateRange dateRange = null;
@@ -709,7 +719,7 @@ public class GribCollectionMutable implements AutoCloseable {
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (o == null || !(o instanceof VariableIndex)) return false;
 
       VariableIndex that = (VariableIndex) o;
       return gribVariable.equals(that.gribVariable);
@@ -719,6 +729,7 @@ public class GribCollectionMutable implements AutoCloseable {
     public int hashCode() {
       return gribVariable.hashCode();
     }
+
   }  // VariableIndex
 
   @Immutable

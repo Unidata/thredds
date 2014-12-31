@@ -99,7 +99,7 @@ public class FslLocalTables extends NcepLocalTables {
 
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-    return local.get(makeHash(discipline, category, number));
+    return local.get(makeParamId(discipline, category, number));
    }
 
   // LOOK  maybe combine grib1, grib2 and bufr ??
@@ -228,7 +228,7 @@ public class FslLocalTables extends NcepLocalTables {
         String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
         Grib2Parameter s = new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, Description);
         // s.desc = Description;
-        result.put(makeHash(disciplineNumber, categoryNumber, parameterNumber), s);
+        result.put(makeParamId(disciplineNumber, categoryNumber, parameterNumber), s);
         if (f != null) f.format(" %s%n", s);
         if (categoryNumber > 191 || parameterNumber > 191) {
           Grib2Parameter dup = names.get(s.getName());
@@ -288,7 +288,7 @@ ozone mixing ratio - b                                      154   109           
         if (f != null) f.format("%50s == %3d, %3d, %-20s, %-20s%n", desc, param, ztype, abbrev, units);
 
         Grib2Parameter gp = new Grib2Parameter(0, 0, param, abbrev, units, null, desc);
-        result.put(makeHash(0, 0, param), gp);
+        result.put(makeParamId(0, 0, param), gp);
       }
 
     } catch (IOException ioe) {

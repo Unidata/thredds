@@ -91,7 +91,7 @@ public abstract class LocalTables extends Grib2Customizer {
 
   @Override
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
-    Grib2Parameter plocal = local.get(makeHash(discipline, category, number));
+    Grib2Parameter plocal = local.get(makeParamId(discipline, category, number));
 
     if ((category <= 191) && (number <= 191))  {
       GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
@@ -107,7 +107,7 @@ public abstract class LocalTables extends Grib2Customizer {
 
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-    return local.get(makeHash(discipline, category, number));
+    return local.get(makeParamId(discipline, category, number));
    }
 
  }

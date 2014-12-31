@@ -159,10 +159,6 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       g.coords = rect.coords;
 
       statsAll.add(stats);
-
-      // look for group name overrides
-      //if (config.gribConfig.gdsNamer != null)
-      //  g.nameOverride = config.gribConfig.gdsNamer.get(g.gdsHash);
     }
 
     // debugging and validation
@@ -307,9 +303,9 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         if (vb.first.getPDS().isEnsemble())
           coordNBuilder.addBuilder(new CoordinateEns.Builder2(0));
 
-        VertCoord.VertUnit vertUnit = Grib2Utils.getLevelUnit(pdsFirst.getLevelType1());
+        VertCoord.VertUnit vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
         if (vertUnit.isVerticalCoordinate())
-          coordNBuilder.addBuilder(new CoordinateVert.Builder2(pdsFirst.getLevelType1()));
+          coordNBuilder.addBuilder(new CoordinateVert.Builder2(pdsFirst.getLevelType1(), cust.getVertUnit(pdsFirst.getLevelType1())));
 
         // populate the coordinates with the inventory of data
         for (Grib2Record gr : vb.atomList)

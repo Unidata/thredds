@@ -26,7 +26,7 @@ import java.util.Formatter;
  * @since 11/14/2014
  */
 public class TestGribIndexCreation {
-  private static CollectionUpdateType updateMode = CollectionUpdateType.test;
+  private static CollectionUpdateType updateMode = CollectionUpdateType.always;
 
   @BeforeClass
   static public void before() {
@@ -302,18 +302,31 @@ public class TestGribIndexCreation {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Test
+  @Test
   public void testCfsr() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test/ds093.1", FeatureCollectionType.GRIB2,
             "B:/rdavm/ds093.1/data/.*gbx9", null, null, null, null, null);
     config.gribConfig.unionRuntimeCoord = true;
-    config.gribConfig.addGdsHash("1450218978", "1450192070");
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
+
+  @Test
+  public void testWW3() throws IOException {
+    // String name, String path, FeatureCollectionType fcType,
+    // String spec, String collectionName,
+    // String dateFormatMark, String olderThan, String timePartition, Element innerNcml)
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test/ds093.1", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "tds/ncep/WW3_Coastal_Alaska_20140804_0000.grib2", null,
+            null, null, "file", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
   }
 
 }

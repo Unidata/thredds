@@ -255,10 +255,8 @@ abstract class GribCollectionBuilder {
       if (o == null || getClass() != o.getClass()) return false;
 
       GroupAndRuntime that = (GroupAndRuntime) o;
-
-      if (gdsHashObject.equals(that.gdsHashObject)) return false;
+      if (!gdsHashObject.equals(that.gdsHashObject)) return false;
       if (runtime != that.runtime) return false;
-
       return true;
     }
 

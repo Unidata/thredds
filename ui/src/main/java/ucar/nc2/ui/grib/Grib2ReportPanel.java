@@ -605,7 +605,7 @@ public class Grib2ReportPanel extends ReportPanel {
       counters.count("genProcessId", pds.getGenProcessId());
 
       if (pds.getLevelScale1() > 127) {
-        if (Grib2Utils.isLevelUsed(pds.getLevelType1())) {
+        if (cust.isLevelUsed(pds.getLevelType1())) {
           f.format(" LevelScale > 127: %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale1());
           counters.count("levelScale", pds.getLevelScale1());
         }

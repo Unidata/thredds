@@ -109,7 +109,7 @@ public class DssLocalTables extends LocalTables {
         String unit = b.toString().trim();
 
         Grib2Parameter s = new Grib2Parameter(p1, p2, p3, name, unit, abbrev, null);
-        local.put(makeHash(p1, p2, p3), s);
+        local.put(makeParamId(p1, p2, p3), s);
         if (debug) System.out.printf(" %s%n", s);
       }
 

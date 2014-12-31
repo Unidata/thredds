@@ -32,13 +32,17 @@
 
 package ucar.nc2.ui.grib;
 
+import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionAbstract;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.Grib2Iosp;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
@@ -164,12 +168,13 @@ public class Grib2CollectionPanel extends JPanel {
 
     varPopup.addAction("Show GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Gds2Bean bean = (Gds2Bean) gds2Table.getSelectedBean();
-        if (bean == null) return;
         Formatter f = new Formatter();
-        Grib2Gds ggds = bean.gdss.getGDS();
-        f.format("GDS hash=%d crc=%d%n", ggds.hashCode(), bean.gdss.calcCRC());
-        showGdsTemplate(bean.gdss, f, cust);
+        for (Object o : gds2Table.getSelectedBeans()) {
+          Gds2Bean bean = (Gds2Bean) o;
+          Grib2Gds ggds = bean.gdss.getGDS();
+          f.format("GDS hash=%d crc=%d%n", ggds.hashCode(), bean.gdss.calcCRC());
+          showGdsTemplate(bean.gdss, f, cust);
+        }
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.show();
@@ -184,9 +189,9 @@ public class Grib2CollectionPanel extends JPanel {
           Gds2Bean bean2 = (Gds2Bean) list.get(1);
           Formatter f = new Formatter();
           compare(bean1.gdss, bean2.gdss, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
+          infoPopup3.setText(f.toString());
+          infoPopup3.gotoTop();
+          infoWindow3.show();
         }
       }
     });
@@ -550,24 +555,35 @@ public class Grib2CollectionPanel extends JPanel {
 
   public boolean writeIndex(Formatter f) throws IOException {
     return false;
-
-    /* MCollection dcm = getCollection(spec, f);
-
-    if (fileChooser == null)
+    /* if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+
+    MCollection dcm = getCollection(spec, f);
     String name = dcm.getCollectionName();
     int pos = name.lastIndexOf('/');
     if (pos < 0) pos = name.lastIndexOf('\\');
     if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + GribCollection.NCX_IDX);
+    File def = new File(dcm.getRoot(), name + CollectionAbstract.NCX_SUFFIX);
+
     String filename = fileChooser.chooseFilename(def);
     if (filename == null) return false;
-    if (!filename.endsWith(GribCollection.NCX_IDX))
-      filename += GribCollection.NCX_IDX;
+    if (!filename.endsWith(CollectionAbstract.NCX_SUFFIX))
+      filename += CollectionAbstract.NCX_SUFFIX;
     File idxFile = new File(filename);
 
-    Grib2CollectionBuilder.makeIndex(dcm, new Formatter(), logger);
-    return true;  */
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test", FeatureCollectionType.GRIB2,
+            this.spec, null, null, null, null, null);
+    config.gribConfig.unionRuntimeCoord = true;
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+
+    boolean ok = GribCdmIndex.updateGribCollection(false, dcm, CollectionUpdateType.always, FeatureCollectionConfig.PartitionType.directory,
+       logger, f);
+
+
+    return ok;  */
   }
 
   public void showCollection(Formatter f) {
@@ -1460,7 +1476,7 @@ public class Grib2CollectionPanel extends JPanel {
       else
         f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
 
-      VertCoord.VertUnit levelUnit = Grib2Utils.getLevelUnit(pds.getLevelType1());
+      VertCoord.VertUnit levelUnit = cust.getVertUnit(pds.getLevelType1());
       f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
 
       String intvName = "none";

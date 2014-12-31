@@ -133,7 +133,7 @@ public class GempakLocalTables extends LocalTables {
         if (f != null) f.format("%s == %-20s, %-20s, %-20s%n", ids, name, units, gname);
 
         Grib2Parameter gp = new Grib2Parameter(disc, cat, id, gname, units, null, name);
-        result.put(Grib2Customizer.makeHash(disc, cat, id), gp);
+        result.put(Grib2Customizer.makeParamId(disc, cat, id), gp);
       }
 
     } catch (IOException ioe) {

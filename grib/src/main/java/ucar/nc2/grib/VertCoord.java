@@ -33,7 +33,6 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.Immutable;
-import ucar.nc2.grib.grib2.Grib2Utils;
 
 import java.util.*;
 
@@ -47,7 +46,7 @@ import java.util.*;
 public class VertCoord { // implements Comparable<VertCoord> {
 
   static public void assignVertNames(List<VertCoord> vertCoords, GribTables tables) {
-    List<VertCoord> temp = new ArrayList<VertCoord>(vertCoords); // dont change order of original !!!!!
+    List<VertCoord> temp = new ArrayList<>(vertCoords); // dont change order of original !!!!!
 
     // assign name
     for (VertCoord vc : temp) {
@@ -84,11 +83,11 @@ public class VertCoord { // implements Comparable<VertCoord> {
   private final VertUnit unit;
   private final boolean isLayer;
 
-  public VertCoord(int code, List<VertCoord.Level> coords, boolean isLayer) {
+  /* public VertCoord(int code, List<VertCoord.Level> coords, boolean isLayer) {
     this.coords = coords;
     this.isLayer = isLayer;
     this.unit = Grib2Utils.getLevelUnit(code);
-  }
+  }  */
 
   public VertCoord(List<VertCoord.Level> coords, VertUnit unit, boolean isLayer) {
     this.coords = coords;

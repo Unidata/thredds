@@ -10,6 +10,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
@@ -148,9 +149,11 @@ public class CoordinateVert implements Coordinate {
 
   static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
+    VertCoord.VertUnit vunit;
 
-    public Builder2(int code) {
+    public Builder2(int code, VertCoord.VertUnit vunit) {
       this.code = code;
+      this.vunit = vunit;
     }
 
     @Override
@@ -167,7 +170,7 @@ public class CoordinateVert implements Coordinate {
       List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
       for (Object val : values) levelSorted.add( (VertCoord.Level) val);
       Collections.sort(levelSorted);
-      return new CoordinateVert(code, Grib2Utils.getLevelUnit(code), levelSorted);
+      return new CoordinateVert(code, vunit, levelSorted);
     }
   }
 
