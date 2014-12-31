@@ -302,7 +302,7 @@ public class TestGribIndexCreation {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Test
+  // @Test
   public void testCfsr() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test/ds093.1", FeatureCollectionType.GRIB2,

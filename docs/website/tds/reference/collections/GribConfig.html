@@ -66,7 +66,7 @@
    &lt;useGenType&gt;true&lt;/useGenType&gt;
  &lt;/pdsHash&gt;
 </pre>
-  <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version (octet 4) is used in the CDM hashcode. If true, records with different table versions will create different variables. Default is false.   Set this to true if, in the same dataset, you have records with the same parameter but with different table versions that should be made into diffeerent variables. By default, different table versions will be ignored.</p>
+  <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version (octet 4) is used in the CDM hashcode. If true, records with different table versions will create different variables. Default is false.   Set this to true if, in the same dataset, you have records with the same parameter number but with different table versions that should be made into different variables. By default, different table versions will be ignored.</p>
   <pre> &lt;pdsHash&gt;
    &lt;<strong>useTableVersion</strong>&gt;false&lt;/<strong>useTableVersion</strong>&gt;
  &lt;/pdsHash&gt;</pre>
