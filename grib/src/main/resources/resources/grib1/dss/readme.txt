@@ -33,4 +33,10 @@ DSS GRIB1 table notes
   - WMO_GRIB1.xml param 39 and 40 both have name "Vertical velocity" with different units.
     Change 39 to "Pressure vertical velocity"
 
+ 12/31/2014
+  -  http://dss.ucar.edu/ -> http://rda.ucar.edu/
+  -  download new tables from http://rda.ucar.edu/metadata/ParameterTables/, add to version 4.6.0
+       WMO_GRIB1.34-241.200.xml
+  - add to resources/grib1/dss/lookupTables.txt
+
 
