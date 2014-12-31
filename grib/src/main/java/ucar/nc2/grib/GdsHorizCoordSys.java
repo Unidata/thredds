@@ -140,6 +140,7 @@ public class GdsHorizCoordSys {
   // set gaussian weights based on nparellels
   // some wierd adjustment for la1 and la2.
   public void setGaussianLats(int nparellels, float la1, float la2) {
+    if (this.gaussLats != null) throw new RuntimeException("Cant modify GdsHorizCoordSys");
 
     int nlats = (2 * nparellels);
     GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);

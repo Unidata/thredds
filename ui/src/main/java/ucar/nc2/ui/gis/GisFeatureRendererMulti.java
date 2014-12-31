@@ -231,9 +231,9 @@ feats:while (featList.hasNext()) {
       this.project = project;
       shapeList = makeShapes( featureList.iterator());
 
-      if (project.isLatLon()) {   // why?
+      /* if (project.isLatLon()) {   // why?
         LatLonProjection llproj = (LatLonProjection) project;
-      }
+      } */
     }
 
     Iterator getShapes() { return shapeList.iterator(); }

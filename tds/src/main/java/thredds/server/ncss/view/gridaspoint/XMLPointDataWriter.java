@@ -232,7 +232,7 @@ class XMLPointDataWriter implements PointDataWriter {
 							writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.z).toString());
 							attributes.clear();
 							
-							if(actualLevel != -9999.9){
+							if (Double.compare(actualLevel, -9999.9) != 0) {  // LOOK WTF ??
 								
 								attributes.put("name", "vertCoord");
 								attributes.put("units", grid.getCoordinateSystem().getVerticalTransform().getUnitString() );

@@ -163,7 +163,6 @@ public abstract class CFPointWriter implements AutoCloseable {
       }
 
       pointWriter.finish();
-      pointWriter.close();
       return count;
     }
   }
@@ -171,192 +170,192 @@ public abstract class CFPointWriter implements AutoCloseable {
   private static int writeStationFeatureCollection(FeatureDatasetPoint dataset, StationTimeSeriesFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
-            fc.getTimeUnit(), fc.getAltUnits(), config);
-    ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, (CalendarDateRange) null); // LOOK
+    try (WriterCFStationCollection cfWriter = new WriterCFStationCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+      ucar.nc2.ft.PointFeatureCollection pfc = fc.flatten(null, (CalendarDateRange) null); // LOOK
 
-    int count = 0;
-    while (pfc.hasNext()) {
-      PointFeature pf = pfc.next();
-      StationPointFeature spf = (StationPointFeature) pf;
-      if (count == 0)
-        cfWriter.writeHeader(fc.getStationFeatures(), spf);
+      int count = 0;
+      while (pfc.hasNext()) {
+        PointFeature pf = pfc.next();
+        StationPointFeature spf = (StationPointFeature) pf;
+        if (count == 0)
+          cfWriter.writeHeader(fc.getStationFeatures(), spf);
 
-      cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
-      count++;
-      if (debug && count % 100 == 0) System.out.printf("%d ", count);
-      if (debug && count % 1000 == 0) System.out.printf("%n ");
+        cfWriter.writeRecord(spf.getStation(), pf, pf.getFeatureData());
+        count++;
+        if (debug && count % 100 == 0) System.out.printf("%d ", count);
+        if (debug && count % 1000 == 0) System.out.printf("%n ");
+      }
+
+      cfWriter.finish();
+      return count;
     }
-
-    cfWriter.finish();
-    cfWriter.close();
-    return count;
   }
 
   private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
-            pds.getTimeUnit(), pds.getAltUnits(), config);
+    try (WriterCFProfileCollection cfWriter = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
+            pds.getTimeUnit(), pds.getAltUnits(), config)) {
 
-    // LOOK not always needed
-    int count = 0;
-    int name_strlen = 0;
-    int nprofiles = pds.size();
-    if (nprofiles < 0) {
+      // LOOK not always needed
+      int count = 0;
+      int name_strlen = 0;
+      int nprofiles = pds.size();
+      if (nprofiles < 0) {
+        pds.resetIteration();
+        while (pds.hasNext()) {
+          ProfileFeature pf = pds.next();
+          name_strlen = Math.max(name_strlen, pf.getName().length());
+          count++;
+        }
+        nprofiles = count;
+      }
+      cfWriter.setFeatureAuxInfo(nprofiles, name_strlen);
+
+      count = 0;
       pds.resetIteration();
       while (pds.hasNext()) {
-        ProfileFeature pf = pds.next();
-        name_strlen = Math.max(name_strlen, pf.getName().length());
-        count++;
+        ucar.nc2.ft.ProfileFeature profile = pds.next();
+        count += cfWriter.writeProfile(profile);
+        if (debug && count % 10 == 0) System.out.printf("%d ", count);
+        if (debug && count % 100 == 0) System.out.printf("%n ");
       }
-      nprofiles = count;
-    }
-    cfWriter.setFeatureAuxInfo(nprofiles, name_strlen);
 
-    count = 0;
-    pds.resetIteration();
-    while (pds.hasNext()) {
-      ucar.nc2.ft.ProfileFeature profile = pds.next();
-      count += cfWriter.writeProfile(profile);
-      if (debug && count % 10 == 0) System.out.printf("%d ", count);
-      if (debug && count % 100 == 0) System.out.printf("%n ");
+      cfWriter.finish();
+      return count;
     }
-
-    cfWriter.finish();
-    cfWriter.close();
-    return count;
   }
 
   private static int writeTrajectoryFeatureCollection(FeatureDatasetPoint fdpoint, TrajectoryFeatureCollection pds, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
-            pds.getTimeUnit(), pds.getAltUnits(), config);
+    try (WriterCFTrajectoryCollection cfWriter = new WriterCFTrajectoryCollection(fileOut, fdpoint.getGlobalAttributes(), fdpoint.getDataVariables(), pds.getExtraVariables(),
+            pds.getTimeUnit(), pds.getAltUnits(), config)) {
 
-    // LOOK not always needed
-    int count = 0;
-    int name_strlen = 0;
-    int ntrajs = pds.size();
-    if (ntrajs < 0) {
+      // LOOK not always needed
+      int count = 0;
+      int name_strlen = 0;
+      int ntrajs = pds.size();
+      if (ntrajs < 0) {
+        pds.resetIteration();
+        while (pds.hasNext()) {
+          TrajectoryFeature feature = pds.next();
+          name_strlen = Math.max(name_strlen, feature.getName().length());
+          count++;
+        }
+        ntrajs = count;
+      }
+      cfWriter.setFeatureAuxInfo(ntrajs, name_strlen);
+
+      count = 0;
       pds.resetIteration();
       while (pds.hasNext()) {
         TrajectoryFeature feature = pds.next();
-        name_strlen = Math.max(name_strlen, feature.getName().length());
-        count++;
+        count += cfWriter.writeTrajectory(feature);
+        if (debug && count % 10 == 0) System.out.printf("%d ", count);
+        if (debug && count % 100 == 0) System.out.printf("%n ");
       }
-      ntrajs = count;
-    }
-    cfWriter.setFeatureAuxInfo(ntrajs, name_strlen);
 
-    count = 0;
-    pds.resetIteration();
-    while (pds.hasNext()) {
-      TrajectoryFeature feature = pds.next();
-      count += cfWriter.writeTrajectory(feature);
-      if (debug && count % 10 == 0) System.out.printf("%d ", count);
-      if (debug && count % 100 == 0) System.out.printf("%n ");
+      cfWriter.finish();
+      return count;
     }
-
-    cfWriter.finish();
-    cfWriter.close();
-    return count;
   }
 
   private static int writeStationProfileFeatureCollection(FeatureDatasetPoint dataset, StationProfileFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
-            fc.getTimeUnit(), fc.getAltUnits(), config);
-    cfWriter.setStations(fc.getStationFeatures());
+    try (WriterCFStationProfileCollection cfWriter = new WriterCFStationProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+            fc.getTimeUnit(), fc.getAltUnits(), config)) {
+      cfWriter.setStations(fc.getStationFeatures());
 
-    int name_strlen = 0;
-    int countProfiles = 0;
-    fc.resetIteration();
-    while (fc.hasNext()) {
-      StationProfileFeature spf = fc.next();
-      name_strlen = Math.max(name_strlen, spf.getName().length());
-      if (spf.size() >= 0)
-        countProfiles += spf.size();
-      else {
-        while (spf.hasNext()) {
-          spf.next();
-          countProfiles++;
+      int name_strlen = 0;
+      int countProfiles = 0;
+      fc.resetIteration();
+      while (fc.hasNext()) {
+        StationProfileFeature spf = fc.next();
+        name_strlen = Math.max(name_strlen, spf.getName().length());
+        if (spf.size() >= 0)
+          countProfiles += spf.size();
+        else {
+          while (spf.hasNext()) {
+            spf.next();
+            countProfiles++;
+          }
         }
       }
-    }
-    cfWriter.setFeatureAuxInfo(countProfiles, name_strlen);
+      cfWriter.setFeatureAuxInfo(countProfiles, name_strlen);
 
-    int count = 0;
-    fc.resetIteration();
-    while (fc.hasNext()) {
-      StationProfileFeature spf = fc.next();
+      int count = 0;
+      fc.resetIteration();
+      while (fc.hasNext()) {
+        StationProfileFeature spf = fc.next();
 
-      spf.resetIteration();
-      while (spf.hasNext()) {
-        ProfileFeature pf = spf.next();
-        if (pf.getTime() == null)
-          continue;  // assume this means its a "incomplete multidimensional"
+        spf.resetIteration();
+        while (spf.hasNext()) {
+          ProfileFeature pf = spf.next();
+          if (pf.getTime() == null)
+            continue;  // assume this means its a "incomplete multidimensional"
 
-        count += cfWriter.writeProfile(spf, pf);
-        if (debug && count % 100 == 0) System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0) System.out.printf("%n ");
+          count += cfWriter.writeProfile(spf, pf);
+          if (debug && count % 100 == 0) System.out.printf("%d ", count);
+          if (debug && count % 1000 == 0) System.out.printf("%n ");
+        }
       }
-    }
 
-    cfWriter.finish();
-    cfWriter.close();
-    return count;
+      cfWriter.finish();
+      return count;
+    }
   }
 
   private static int writeTrajectoryProfileFeatureCollection(FeatureDatasetPoint dataset, SectionFeatureCollection fc, String fileOut,
                                                    CFPointWriterConfig config) throws IOException {
 
-    WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
-            fc.getTimeUnit(), fc.getAltUnits(), config);
+    try (WriterCFTrajectoryProfileCollection cfWriter = new WriterCFTrajectoryProfileCollection(fileOut, dataset.getGlobalAttributes(), dataset.getDataVariables(), fc.getExtraVariables(),
+            fc.getTimeUnit(), fc.getAltUnits(), config)) {
 
-    int traj_strlen = 0;
-    int prof_strlen = 0;
-    int countTrajectories = 0;
-    int countProfiles = 0;
-    fc.resetIteration();
-    while (fc.hasNext()) {
-      SectionFeature spf = fc.next();
-      countTrajectories++;
-      traj_strlen = Math.max(traj_strlen, spf.getName().length());
-      if (spf.size() >= 0)
-        countProfiles += spf.size();
-      else {
-        while (spf.hasNext()) {
-          ProfileFeature profile = spf.next();
-          prof_strlen = Math.max(prof_strlen, profile.getName().length());
-          countProfiles++;
+      int traj_strlen = 0;
+      int prof_strlen = 0;
+      int countTrajectories = 0;
+      int countProfiles = 0;
+      fc.resetIteration();
+      while (fc.hasNext()) {
+        SectionFeature spf = fc.next();
+        countTrajectories++;
+        traj_strlen = Math.max(traj_strlen, spf.getName().length());
+        if (spf.size() >= 0)
+          countProfiles += spf.size();
+        else {
+          while (spf.hasNext()) {
+            ProfileFeature profile = spf.next();
+            prof_strlen = Math.max(prof_strlen, profile.getName().length());
+            countProfiles++;
+          }
         }
       }
-    }
-    cfWriter.setFeatureAuxInfo(countProfiles, prof_strlen);
-    cfWriter.setFeatureAuxInfo2(countTrajectories, traj_strlen);
+      cfWriter.setFeatureAuxInfo(countProfiles, prof_strlen);
+      cfWriter.setFeatureAuxInfo2(countTrajectories, traj_strlen);
 
-    int count = 0;
-    fc.resetIteration();     // LOOK should flatten
-    while (fc.hasNext()) {
-      SectionFeature spf = fc.next();
+      int count = 0;
+      fc.resetIteration();     // LOOK should flatten
+      while (fc.hasNext()) {
+        SectionFeature spf = fc.next();
 
-      spf.resetIteration();
-      while (spf.hasNext()) {
-        ProfileFeature pf = spf.next();
-        if (pf.getTime() == null)
-          continue;  // assume this means its a "incomplete multidimensional"
+        spf.resetIteration();
+        while (spf.hasNext()) {
+          ProfileFeature pf = spf.next();
+          if (pf.getTime() == null)
+            continue;  // assume this means its a "incomplete multidimensional"
 
-        count += cfWriter.writeProfile(spf, pf);
-        if (debug && count % 100 == 0) System.out.printf("%d ", count);
-        if (debug && count % 1000 == 0) System.out.printf("%n ");
+          count += cfWriter.writeProfile(spf, pf);
+          if (debug && count % 100 == 0) System.out.printf("%d ", count);
+          if (debug && count % 1000 == 0) System.out.printf("%n ");
+        }
       }
-    }
 
-    cfWriter.finish();
-    cfWriter.close();
-    return count;
+      cfWriter.finish();
+      return count;
+    }
   }
 
 

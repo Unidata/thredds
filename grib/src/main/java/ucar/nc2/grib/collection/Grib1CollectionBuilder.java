@@ -331,7 +331,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       Counter all = new Counter();
 
       for (VariableBag vb : gribvars) {
-        f.format("Variable %s (%d)%n", Grib1Iosp.makeVariableName(cust, gribConfig, vb.first.getPDSsection()), vb.gv);
+        f.format("Variable %s (%d)%n", Grib1Iosp.makeVariableName(cust, gribConfig, vb.first.getPDSsection()), vb.hashCode());
         vb.coordND.showInfo(f, all);
         //f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
         //        vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);

@@ -50,7 +50,7 @@ class Grib2PartitionBuilder extends GribPartitionBuilder {
   public static final String MAGIC_START = "Grib2Partition2Index";  // was Grib2Partition0Index
 
   public Grib2PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
-    super(name, directory, tpc, logger);
+    super(name, tpc, logger);
 
     FeatureCollectionConfig config = null;
     if (tpc != null)

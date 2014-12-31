@@ -223,7 +223,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
     int totalMisplaced = 0;
 
-    File parent = indexFile.getParentFile();
+    //File parent = indexFile.getParentFile();
     try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(indexFile.getPath(), config, false, logger)) {
       if (gc == null)
         throw new IOException(indexFile+ " not a grib collection index file");

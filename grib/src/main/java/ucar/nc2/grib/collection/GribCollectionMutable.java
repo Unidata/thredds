@@ -539,6 +539,7 @@ public class GribCollectionMutable implements AutoCloseable {
 
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
         Grib2Pds pds = pdss.getPDS();
+        assert pds != null;
         this.tableVersion = -1;
 
         // quantities that are stored in the pds

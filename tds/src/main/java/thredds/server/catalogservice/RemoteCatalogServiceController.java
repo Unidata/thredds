@@ -184,7 +184,7 @@ public class RemoteCatalogServiceController {
 
       // Check catalog validity.
       StringBuilder validateMess = new StringBuilder();
-      boolean verbose = catalogServiceRequest.isVerbose();
+      // boolean verbose = catalogServiceRequest.isVerbose();
       catalog.check(validateMess, false);
       if (catalog.hasFatalError()) {
         // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
