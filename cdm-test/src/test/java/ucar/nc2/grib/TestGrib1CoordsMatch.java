@@ -428,7 +428,7 @@ public class TestGrib1CoordsMatch {
       ptime = gr.getParamTime(cust);
 
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
-      gdsHash = gr.getGDSsection().getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
+      gdsHash = gr.getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
     }
 
     @Override

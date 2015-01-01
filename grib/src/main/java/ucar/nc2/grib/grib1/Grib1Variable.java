@@ -75,8 +75,8 @@ public class Grib1Variable {
   public Grib1Variable(Grib1Customizer cust, Grib1Record gr, int gdsHashOverride, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
     this.cust = cust;
     this.pds = gr.getPDSsection();
-    this.gds = gr.getGDSsection().getGDS();
-    this.gdsHash = gdsHashOverride != 0 ? gdsHashOverride : gr.getGDSsection().getGDS().hashCode();
+    this.gds = gr.getGDS();
+    this.gdsHash = gdsHashOverride != 0 ? gdsHashOverride : gr.getGDS().hashCode();
     this.useTableVersion = useTableVersion;
     this.intvMerge = intvMerge;
     this.useCenter = useCenter;

@@ -349,7 +349,8 @@ TBLE2 cptec_254_params[] = {
         return false;
       }
       if (!line.startsWith("...")) name = line; // maybe ??
-      while (!line.startsWith("..."))
+
+      while (line != null && !line.startsWith("..."))
         line = br.readLine(); // skip
 
       while (true) {
@@ -438,7 +439,7 @@ TBLE2 cptec_254_params[] = {
       name = "ECMWF GRIB API TABLE " + tableNum;
 
       // skip header
-      while (!line.startsWith("#"))
+      while (line != null && !line.startsWith("#"))
         line = br.readLine(); // skip
 
       // keep going until the end of the file is reached (line == null)

@@ -69,7 +69,7 @@ public abstract class Grib2Pds {
   }
 
   /////////////////////////////////////////////////
-  protected byte[] input;
+  protected final byte[] input;
   protected final int template; // product definition template
 
   /**

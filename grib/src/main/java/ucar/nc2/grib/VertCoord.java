@@ -197,20 +197,18 @@ public class VertCoord { // implements Comparable<VertCoord> {
     final double value1;
     final double value2;
     final double mid;
-    boolean isLayer;
+    final boolean isLayer;
 
-    // LOOK - you might need to track isLayer
-    public Level(double value1, double value2) {
+    /* public Level(double value1, double value2) {
       this.value1 = value1;
       this.value2 = value2;
       this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
-    }
+    } */
 
-    // LOOK - you might need to track isLayer
     public Level(double value1, double value2, boolean isLayer) {
       this.value1 = value1;
       this.value2 = value2;
-      this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
+      this.mid = (Double.compare(value2, 0.0) == 0 || GribNumbers.isUndefined(value2)) ? value1 : (value1 + value2) / 2;
       this.isLayer = isLayer;
     }
 

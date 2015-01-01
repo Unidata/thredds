@@ -361,27 +361,29 @@ public class MessageCompressedDataReader {
           out.f.format("%s read %d %s (%s) bitWidth=%d defValue=%s dataWidth=%d n=%d bitOffset=%d %n",
                   out.indent(), out.fldno++, dkey.name, dkey.getFxyName(), dkey.bitWidth, new String(minValue, CDM.utf8Charset), dataWidth, ndatasets, bitOffset);
 
-        for (int dataset = 0; dataset < ndatasets; dataset++) {
-          if (dataWidth == 0) { // use the min value
-            if (req.wantRow(dataset))
-              for (int i = 0; i < nc; i++)
-                iter.setCharNext((char) minValue[i]); // ??
+        if (iter != null) {
+          for (int dataset = 0; dataset < ndatasets; dataset++) {
+            if (dataWidth == 0) { // use the min value
+              if (req.wantRow(dataset))
+                for (int i = 0; i < nc; i++)
+                  iter.setCharNext((char) minValue[i]); // ??
 
-          } else { // read the incremental value
-            int nt = Math.min(nc, dataWidth);
-            byte[] incValue = new byte[nc];
-            for (int i = 0; i < nt; i++)
-              incValue[i] = (byte) reader.bits2UInt(8);
-            for (int i = nt; i < nc; i++) // can dataWidth < n ?
-              incValue[i] = 0;
+            } else { // read the incremental value
+              int nt = Math.min(nc, dataWidth);
+              byte[] incValue = new byte[nc];
+              for (int i = 0; i < nt; i++)
+                incValue[i] = (byte) reader.bits2UInt(8);
+              for (int i = nt; i < nc; i++) // can dataWidth < n ?
+                incValue[i] = 0;
 
-            if (req.wantRow(dataset))
-              for (int i = 0; i < nc; i++) {
-                int cval = incValue[i];
-                if (cval < 32 || cval > 126) cval = 0; // printable ascii KLUDGE!
-                iter.setCharNext((char) cval); // ??
-              }
-            if (out != null) out.f.format(" %s,", new String(incValue, CDM.utf8Charset));
+              if (req.wantRow(dataset))
+                for (int i = 0; i < nc; i++) {
+                  int cval = incValue[i];
+                  if (cval < 32 || cval > 126) cval = 0; // printable ascii KLUDGE!
+                  iter.setCharNext((char) cval); // ??
+                }
+              if (out != null) out.f.format(" %s,", new String(incValue, CDM.utf8Charset));
+            }
           }
         }
         if (out != null) out.f.format("%n");

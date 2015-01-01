@@ -91,15 +91,14 @@ public class NcepMnemonic {
     HashMap<String, String> mnseq = new HashMap<>();
 
     try {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-              CDM.utf8Charset));
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.utf8Charset));
 
       // read  mnemonic table
       Matcher m;
       // read header info and disregard
       while (true) {
         String line = dataIS.readLine();
-        //if (line == null) break;
+        if (line == null) throw new RuntimeException("Bad NCEP mnemonic BUFR table ");
         if (line.contains("MNEMONIC")) break;
       }
       // read mnemonic, number, and description

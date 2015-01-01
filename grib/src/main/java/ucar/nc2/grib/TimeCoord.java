@@ -68,7 +68,7 @@ public class TimeCoord {
   protected List<Tinv> intervals;    // set by subclasses
 
   private final String units;
-  private int index;
+  // private int index;
   private final int code; // GRIB1 timeRangeIndicator, GRIB2 statProcessType (4.10)
 
   // from reading ncx
@@ -143,10 +143,10 @@ public class TimeCoord {
     this.runDate = runDate;
   }
 
-  public TimeCoord setIndex(int index) {
+  /* public TimeCoord setIndex(int index) {
     this.index = index;
     return this;
-  }
+  }  */
 
   public CalendarDate getRunDate() {
     return runDate;
@@ -199,7 +199,7 @@ public class TimeCoord {
   }
 
   public String getName() {
-    return (index == 0) ? "time": "time"+index;
+    return "time";
   }
 
   public String getType() {

@@ -49,12 +49,11 @@ import java.io.IOException;
  * @since 8/4/2014
  */
 public class Grib2NetcdfWriter implements AutoCloseable {
-  String fileIn, fileOut;
+  String fileIn;
   NetcdfFileWriter writer;
 
   public Grib2NetcdfWriter(String fileIn, String fileOut) throws IOException {
     this.fileIn = fileIn;
-    this.fileOut = fileOut;
 
     Nc4Chunking chunker = Nc4ChunkingStrategy.factory(Nc4ChunkingStrategy.Strategy.grib, 9, true);
     writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fileOut, chunker);

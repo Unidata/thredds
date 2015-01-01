@@ -121,6 +121,13 @@ public class Grib1Record {
     return gdss;
   }
 
+  private Grib1Gds gds = null;
+  public Grib1Gds getGDS() {
+    if (gds == null)
+      gds = gdss.getGDS();
+    return gds;
+  }
+
   public Grib1SectionProductDefinition getPDSsection() {
     return pdss;
   }
@@ -165,7 +172,7 @@ public class Grib1Record {
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   private  float[] readData(RandomAccessFile raf, GribData.InterpolationMethod method) throws IOException {
-    Grib1Gds gds = gdss.getGDS();
+    Grib1Gds gds = getGDS();
     Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     float[] data = reader.getData(raf, bm);
@@ -179,7 +186,7 @@ public class Grib1Record {
   }
 
  public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
-    Grib1Gds gds = gdss.getGDS();
+    Grib1Gds gds = getGDS();
     f.format(" decimal scale = %d%n", pdss.getDecimalScale());
     f.format("     scan mode = %d%n", gds.getScanMode());
     f.format("            nx = %d%n", gds.getNx());
@@ -246,7 +253,7 @@ public class Grib1Record {
     GribData.Info info = dataSection.getBinaryDataInfo(raf);
     info.decimalScaleFactor = pdss.getDecimalScale();
     info.bitmapLength = (bitmap == null) ? 0 : bitmap.getLength(raf);
-    info.nPoints = gdss.getGDS().getNpts();
+    info.nPoints = getGDS().getNpts();
     info.msgLength = is.getMessageLength();
 
     if (bitmap == null) {
@@ -266,7 +273,7 @@ public class Grib1Record {
 
     // debugging - do not use
   public int[] readRawData(RandomAccessFile raf) throws IOException {
-    Grib1Gds gds = gdss.getGDS();
+    Grib1Gds gds = getGDS();
     Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     return reader.getDataRaw(raf, bm);

@@ -85,14 +85,10 @@ public class Grib2SectionGridDefinition {
    * @return CRC  of the entire byte array
    */
   public long calcCRC() {
-    if (crc == 0) {
-      CRC32 crc32 = new CRC32();
-      crc32.update(rawData);
-      crc = crc32.getValue();
-    }
-    return crc;
+    CRC32 crc32 = new CRC32();
+    crc32.update(rawData);
+    return crc32.getValue();
   }
-  private long crc = 0;
 
   public int getLength() {
     return rawData.length;
