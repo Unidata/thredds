@@ -35,13 +35,16 @@ The values may be: </p>
 <h3>Collection storage strategies</h3>
 <p>Generally, managing many small files has more overhead than managing smaller numbers of large files. For today's disks,  file sizes of of 100 Mb - 10 Gb seems right. Keep the number of files in a directory small, a few hundred is best, and more than a thousand starts to make things like  directory listings hard. </p>
 <p>Partition your files by reference time, which typically is the model run time. Depending on size and number, you might group files by day, month, year, etc. </p>
-<p>When you have complete control over how the collection is stored on disk, and you want to optimize for fastest THREDDS indexing and retrieval,<strong> file partitions</strong> are recommended. Placing all of the records for a single reference time in a single file is often optimal. If there are a small number of records for each runtime (&lt;10,000 ?) you might want to put more than one refrence time in each file. Its essential that all the records for each runtime be in a single file.</p>
+<p>When you have complete control over how the collection is stored on disk, and you want to optimize for fastest THREDDS indexing and retrieval,<strong> file partitions</strong> are recommended. Placing all of the records for a single reference time in a single file is often optimal. If there are a small number of records for each runtime (&lt;10,000 ?) you might want to put more than one reference time in each file. Its essential that all the records for each runtime be in a single file.</p>
 <p>GRIB files are unordered collections of GRIB records. So you can concatenate GRIB files together just using the <strong>cat</strong> command. So you can easily reorganize your collection (breaking up files  requires GRIB-aware software, but is easy enough), just delete any old THREDDS indexes (.<strong>gbx9</strong> or .<strong>ncx3</strong>) and regenerate them with the TDM.</p>
 <p>&nbsp;</p>
 <h3>Homogeneity requirements</h3>
 <p>A <em>feature collection dataset</em> is a homogeneous collection of records. That means that the metadata describing the dataset is approximately the same for all of the records. Each GRIB record is self-contained, in the sense that it does not reference other records, or an overall schema. The point of making a  collection of GRIB records into a CDM dataset, is to allow the user to access the entire collection at once, using the netCDF API for multidimensionsal arrays. The user cannont, using the netCDF API, access the metaddata for individual GRIB records. Instead, we assume that the metadata is uniform in the collection, and expose it with variable and global attributes.</p>
 <p>&nbsp;</p>
-<p>You cannot have data files and subdires in the same dir.</p>
+<p>You cannot have data files and subdires in the same dir. - not true</p>
+<p>&nbsp;</p>
+<p>Sizing</p>
+<p>GRIB2 approx 500 bytes / record. </p>
 <p>&nbsp;</p>
 </body>
 </html>

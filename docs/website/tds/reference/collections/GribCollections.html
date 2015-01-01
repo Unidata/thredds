@@ -41,6 +41,17 @@
   <li>For large collections, especially if they change, the THREDDS Data Manager (TDM) must be run as a seperate process to update the index files. Generally it is strongly recommended to run the TDM, and configure the TDS to only read and never write the indexes.</li>
   <li>Collections in the millions of records are now feasible. Java 7 NIO2 package is used to efficiently scan directories. </li>
 </ul>
+<h3>Version 4.6</h3>
+<p>The GRIB Collections framework has been  rewritten in CDM version 4.6, in order to handle large collections efficiently. Oh wait we already did that in 4.5. Sorry, it wasnt  good enough.</p>
+<ul>
+  <li>Collection index files now use the suffix <strong>ncx3</strong>. These will be rewritten first time you access the files. The gbx9 files do NOT need to be rewritten, which is good because those are the slow ones.</li>
+  <li>TimePartition can now be set to <strong>directory</strong> (default), <strong>file</strong> or <strong>timePeriod</strong>. Details <a href="Partitions.html">here</a>.</li>
+  <li>Multiple reference times are handled more efficiently, eg only one index files typically needs to be written.</li>
+  <li>How do you set the disk cache for grib collections in 4.6?</li>
+  <pre> // caching
+ ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
+ GribCdmIndex.initDefaultCollectionCache(100, 200, -1);</pre>
+</ul>
 <p>For background, please read:</p>
 <ul>
   <li><a href="FeatureCollections.html">Feature Collection</a> overview</li>
