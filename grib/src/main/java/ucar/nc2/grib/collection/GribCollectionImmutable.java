@@ -773,6 +773,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public void showStatus(Formatter f, boolean summaryOnly) {
     if (summaryOnly) {
       Dataset ds = getDatasetCanonical();
+      if (ds == null) return;
       for (GroupGC g : ds.groups) {
         int nrecords = 0, ndups = 0, nmissing = 0;
         for (VariableIndex v : g.variList) {

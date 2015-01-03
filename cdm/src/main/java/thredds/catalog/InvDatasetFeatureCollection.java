@@ -232,9 +232,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       checkState();
       _showStatus(f, false);
 
-    } catch (IOException ioe) {
+    } catch (Throwable t) {
       StringWriter sw = new StringWriter(5000);
-      ioe.printStackTrace(new PrintWriter(sw));
+      t.printStackTrace(new PrintWriter(sw));
       f.format(sw.toString());
     }
   }
@@ -245,9 +245,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       checkState();
       _showStatus(f, true);
 
-    } catch (IOException ioe) {
+    } catch (Throwable t) {
       StringWriter sw = new StringWriter(5000);
-      ioe.printStackTrace(new PrintWriter(sw));
+      t.printStackTrace(new PrintWriter(sw));
       f.format(sw.toString());
     }
 

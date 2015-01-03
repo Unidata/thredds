@@ -173,6 +173,7 @@ public class CollectionController  {
 
   @RequestMapping(value={"/collection/showStatus"})
   protected ModelAndView handleCollectionStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    res.setContentType(ContentType.html.getContentHeader());
     PrintWriter pw = res.getWriter();
 
    // get sorted list of collections
@@ -187,7 +188,7 @@ public class CollectionController  {
       String ename = StringUtil2.quoteHtmlContent(fc.getCollectionName());
       String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + ename;
       pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
-      pw.printf("<p/>%s<p/>%n", fc.showStatusShort());
+      pw.printf("<pre>%s</pre>%n", fc.showStatusShort());
     }
     return null;
   }

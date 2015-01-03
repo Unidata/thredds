@@ -48,7 +48,10 @@
   <li>TimePartition can now be set to <strong>directory</strong> (default), <strong>file</strong> or <strong>timePeriod</strong>. Details <a href="Partitions.html">here</a>.</li>
   <li>Multiple reference times are handled more efficiently, eg only one index files typically needs to be written.</li>
   <li>How do you set the disk cache for grib collections in 4.6?</li>
-  <pre> // caching
+  <pre> // place cdm indices somewhere other than default
+ GribIndexCache.setDiskCache2(DiskCache2 dc); 
+
+ // optional object caching for performance
  ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
  GribCdmIndex.initDefaultCollectionCache(100, 200, -1);</pre>
 </ul>

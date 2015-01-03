@@ -719,18 +719,11 @@ public class CdmIndex2Panel extends JPanel {
       this.group = g;
       this.type = type;
 
-      /* int nvars = 0;
-      int total = 0;
-      avgDensity = 0;
       for (GribCollectionImmutable.VariableIndex vi : group.getVariables()) {
-       // vi.calcTotalSize();
-       // total += vi.totalSize;
-       // nrecords += vi.nrecords;
-       // avgDensity += vi.density;
-        nvars++;
+         nrecords += vi.getNrecords();
+         ndups += vi.getNdups();
+         nmissing += vi.getNmissing();
       }
-      if (nvars != 0) avgDensity /= nvars;
-      density = (total == 0) ? 0 : ((float) nrecords) / total;  */
     }
 
     void clear() {
