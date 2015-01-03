@@ -75,7 +75,6 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     fmrc.update();       // so when is work done?
   }
 
-  @Override
   public void updateProto() {
     fmrc.updateProto();
   }

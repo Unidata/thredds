@@ -33,7 +33,6 @@
 
 package thredds.server.admin;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -51,13 +50,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
-import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -73,14 +72,14 @@ public class CollectionController  {
 
   private static final String PATH = "/admin/collection";
   private static final String COLLECTION = "collection";
+  private static final String SHOW = "showStatus";
   private static final String TRIGGER = "trigger";
-  // private static final String NOCHECK = "nocheck";
-  
+
   @Autowired
   private TdsContext tdsContext;
 
   @PostConstruct
-  public void afterPropertiesSet(){
+  public void afterPropertiesSet() {
     //this.tdsContext = _tdsContext;
 
     DebugController.Category debugHandler = DebugController.find("Collections");
@@ -97,10 +96,16 @@ public class CollectionController  {
         });
 
         for (InvDatasetFeatureCollection fc : fcList) {
-          String ename = StringUtil2.escape(fc.getName(), "");
+          String ename = StringUtil2.quoteHtmlContent(fc.getCollectionName());  // LOOK maybe need quoteQueryParam() ??
           String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + ename;
           e.pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
+          FeatureCollectionConfig config = fc.getConfig();
+          if (config != null)
+            e.pw.printf("%s%n",config.spec);
         }
+
+        String url = tdsContext.getContextPath() + PATH + "/" + SHOW;
+        e.pw.printf("<p/><a href='%s'>Show All Collection Status</a>%n", url);
       }
     };
     debugHandler.addAction(act);
@@ -148,7 +153,7 @@ public class CollectionController  {
         String statUrl = tdsContext.getContextPath() + PATH + "/"+STATISTICS;
         e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
         for (String name : monitor.getCachedCollections()) {
-          String ename = StringUtil2.escape(name, "");
+          String ename = StringUtil2.quoteHtmlContent(name);
           String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ename;
           e.pw.println("<p/> <a href='" + url + "'>" + name + "</a>");
         }
@@ -166,36 +171,57 @@ public class CollectionController  {
 
   }
 
+  @RequestMapping(value={"/collection/showStatus"})
+  protected ModelAndView handleCollectionStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    PrintWriter pw = res.getWriter();
+
+   // get sorted list of collections
+    List<InvDatasetFeatureCollection> fcList = DataRootHandler.getInstance().getFeatureCollections();
+    Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
+      public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+
+    for (InvDatasetFeatureCollection fc : fcList) {
+      String ename = StringUtil2.quoteHtmlContent(fc.getCollectionName());
+      String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + ename;
+      pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
+      pw.printf("<p/>%s<p/>%n", fc.showStatusShort());
+    }
+    return null;
+  }
+
   @RequestMapping(value={"/collection", "/collection/trigger"})
   protected ModelAndView handleCollectionTriggers(HttpServletRequest req, HttpServletResponse res) throws Exception {
     //String path = req.getPathInfo();
     String path = req.getServletPath();
     if (path == null) path = "";
     
-    if(path.startsWith("/admin") )
+    if (path.startsWith("/admin") )
     	path = path.substring("/admin".length(), path.length());
 
     res.setContentType(ContentType.html.getContentHeader());
     PrintWriter pw = res.getWriter();
 
-    // find the collection
-    CollectionUpdateType type = null;
+    // deal with a trigger
+    CollectionUpdateType triggerType = null;
     if (path.equals("/"+COLLECTION+"/"+TRIGGER)) {
-      String triggerType = req.getParameter(TRIGGER);
+      String triggerTypeS = req.getParameter(TRIGGER);
       try {
-        type = CollectionUpdateType.valueOf(triggerType);
+        triggerType = CollectionUpdateType.valueOf(triggerTypeS);
       } catch (Throwable t) {
         ;  // noop
       }
-      if (type == null) {
+      if (triggerType == null) {
         res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        pw.printf(" TRIGGER Type %s not legal%n", Escape.html(triggerType));
+        pw.printf(" TRIGGER Type %s not legal%n", Escape.html(triggerTypeS));
         pw.flush();
         return null;
       }
     }
 
-    String collectName = req.getParameter(COLLECTION);
+    String collectName = StringUtil2.unquoteHtmlContent( req.getParameter(COLLECTION)); // this is the collection name
     InvDatasetFeatureCollection fc = DataRootHandler.getInstance().findFcByCollectionName(collectName);
     if (fc == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -204,9 +230,9 @@ public class CollectionController  {
       return null;
     }
 
-    pw.printf("<h3>Collection Name %s</h3>%n", Escape.html(collectName));
+    pw.printf("<h3>Collection %s</h3>%n", Escape.html(collectName));
 
-    if (type != null) {
+    if (triggerType != null) {
       if (!fc.getConfig().isTrigggerOk()) {
         res.setStatus(HttpServletResponse.SC_FORBIDDEN);
         pw.printf(" TRIGGER NOT ENABLED%n");
@@ -214,43 +240,32 @@ public class CollectionController  {
         return null;
       }
 
-      CollectionUpdater.INSTANCE.triggerUpdate(collectName, type);
+      CollectionUpdater.INSTANCE.triggerUpdate(collectName, triggerType);
       pw.printf(" TRIGGER SENT%n");
 
     } else {
-      MCollection dcm = fc.getDatasetCollectionManager();
-      if (dcm != null)
-        showFiles(pw, dcm);
-      String ename = StringUtil2.escape(fc.getName(), "");
-      String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + ename;
-      pw.printf("<p/><a href='%s'>Trigger rescan for %s</a>%n", url, fc.getName());
+      showFeatureCollection(pw, fc);
+
+      String ename = StringUtil2.quoteHtmlContent(fc.getCollectionName());
+      String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + ename + "&" + TRIGGER + "=" + CollectionUpdateType.nocheck;
+      pw.printf("<p/><a href='%s'>Send trigger to %s</a>%n", url, Escape.html(fc.getName()));
     }
 
     pw.flush();
     return null;
   }
 
-  private void showFiles(PrintWriter pw, MCollection dcm) {
-    if (dcm instanceof CollectionManager) {
-      CollectionManager cm = (CollectionManager) dcm;
-      boolean unscanned = cm.getLastScanned() == 0;
-      if (unscanned) {
-        pw.printf("%n<pre>Not Yet Scanned%n");
-        return;
-      }
-
-      pw.printf("%n<pre>Last Scanned %-20s%n", CalendarDateFormatter.toDateTimeString(new Date(cm.getLastScanned())));
+  private void showFeatureCollection(PrintWriter pw, InvDatasetFeatureCollection fc) {
+    FeatureCollectionConfig config = fc.getConfig(); // LOOK
+    if (config != null) {
+      Formatter f = new Formatter();
+      config.show(f);
+      pw.printf("%n<pre>%s%n</pre>", f.toString());
     }
 
-    pw.printf("%n%-100s %-20s %9.3s %s%n", "Path", "Last Modified", "MB", "Aux");
-    try {
-      for (MFile mfile : dcm.getFilesSorted())
-        pw.printf("%-100s %-20s %9.3f %s%n", mfile.getPath(), CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified())),
-                (double) mfile.getLength() / (1000 * 1000), mfile.getAuxInfo());
-    } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-    pw.printf("</pre>%n");
+    Formatter f = new Formatter();
+    fc.showStatus(f);
+    pw.printf("%n<pre>%s%n</pre>", f.toString());
   }
 
   /////////////////////////////////////////////////////////////
@@ -298,7 +313,7 @@ public class CollectionController  {
 
     // list the collection
     if (collectName != null) {
-      String ecollectName = StringUtil2.escape(collectName, "");
+      String ecollectName = StringUtil2.quoteHtmlContent(collectName); // this is the collection name
       String url = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ecollectName;
       res.setContentType(ContentType.html.getContentHeader());
       PrintWriter pw = res.getWriter();
@@ -311,8 +326,8 @@ public class CollectionController  {
 
       pw.println("<ol>");
       for (String filename : monitor.getFilesInCollection(collectName)) {
-        String efileName = StringUtil2.escape(filename, "");
-        pw.println("<li> <a href='" + url + "&"+FILE+"="+efileName + "'>" + filename + "</a>");
+        String efileName = Escape.html(filename);
+        pw.println("<li> <a href='" + url + "&"+FILE+"="+efileName + "'>" + efileName + "</a>");
       }
      pw.println("</ol>");
     }

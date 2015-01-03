@@ -34,6 +34,8 @@
  */
 package ucar.nc2.ui;
 
+import com.google.common.base.*;
+import com.google.common.base.Objects;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
@@ -46,10 +48,11 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
- * Run through ncx2 indices and make reports
+ * Run through ncx indices and make reports
  *
  * @author caron
  * @since 5/15/2014
@@ -58,6 +61,7 @@ public class CdmIndexReportPanel extends ReportPanel {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public static enum Report {
+    dupAndMissing,
     misplacedFlds             // find misplaced records for NCDC
   }
 
@@ -72,17 +76,106 @@ public class CdmIndexReportPanel extends ReportPanel {
 
   @Override
   protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+      switch ((Report) option) {
+        case dupAndMissing:
+          doDupAndMissing(f, dcm, eachFile, extra);
+          break;
+
+        case misplacedFlds:
+          doMisplacedFields(f, dcm, useIndex, eachFile, extra);
+          break;
+      }
+
+  }
+
+  ///////////////////////////////////////////////
+
+  private class Accum {
+    int nrecords, ndups, nmissing;
+
+    Accum add(GribCollectionImmutable.VariableIndex v) {
+      this.nrecords += v.getNrecords();
+      this.ndups += v.getNdups();
+      this.nmissing += v.getNmissing();
+      return this;
+    }
+
+    @Override
+    public String toString() {
+      return Objects.toStringHelper(this)
+              .add("nrecords", nrecords)
+              .add("ndups", ndups)
+              .add("nmissing", nmissing)
+              .toString();
+    }
+  }
+
+  protected void doDupAndMissing(Formatter f, MCollection dcm, boolean eachFile, boolean extra) throws IOException {
+    Accum total = new Accum();
+
+      try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
+        while (iter.hasNext()) {
+          doDupAndMissingEach(f, iter.next(), eachFile, extra, total);
+        }
+      }
+
+    f.format("total %s%n", total);
+  }
+
+    // seperate report for each file in collection
+  private void doDupAndMissingEach(Formatter f, MFile mfile, boolean each, boolean extra, Accum accum) throws IOException {
+
+    if (each) f.format("%nFile %s%n", mfile.getPath());
+    FeatureCollectionConfig config = new FeatureCollectionConfig();
+
+    GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(mfile.getPath(), config, false, logger);
+    if (gc == null) {
+      f.format("Not a grib collection index file=%s%n" + mfile.getPath());
+      return;
+    }
+
+    for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
+      if (each) f.format("%nDataset %s%n", ds.getType());
+      for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
+        Accum groupAccum = new Accum();
+        if (each) f.format(" Group %s%n", g.getDescription());
+        for (GribCollectionImmutable.VariableIndex v : g.getVariables()) {
+          if (each && extra) f.format("  %s%n", v.toStringFrom());
+          else showIfNonZero(f, v, mfile.getPath());
+
+          groupAccum.add(v);
+          accum.add(v);
+        }
+        if (each) {
+          f.format("total %s%n", groupAccum);
+        }
+      }
+    }
+
+  }
+
+  String lastFilename = null;
+  void showIfNonZero(Formatter f, GribCollectionImmutable.VariableIndex v, String filename) {
+    if ((v.getNdups() != 0) || (v.getNmissing() != 0)) {
+      if (!filename.equals(lastFilename))
+        f.format(" %s%n  %s%n", filename, v.toStringFrom());
+      else
+        f.format("  %s%n", v.toStringFrom());
+      lastFilename = filename;
+    }
+  }
+
+  ///////////////////////////////////////////////////
+  private static final int MIN_COUNT = 400;
+
+  protected void doMisplacedFields(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
 
     if (eachFile) {
 
       Set<String> filenames = new HashSet<>();
       try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
         while (iter.hasNext()) {
-          switch ((Report) option) {
-            case misplacedFlds:
               doMisplacedFieldsEach(f, iter.next(), filenames, extra);
-              break;
-          }
         }
       }
 
@@ -92,17 +185,10 @@ public class CdmIndexReportPanel extends ReportPanel {
 
 
     } else {  // eachFile false
-
-      switch ((Report) option) {
-        case misplacedFlds:
-          doMisplacedFields(f, dcm, useIndex, extra);
-          break;
-      }
+          doMisplacedFields(f, dcm, extra);
 
     }
   }
-
-  private static final int MIN_COUNT = 400;
 
   // seperate report for each file in collection
   private void doMisplacedFieldsEach(Formatter f2, MFile mfile, Set<String> filenames, boolean extra) throws IOException {
@@ -133,7 +219,7 @@ public class CdmIndexReportPanel extends ReportPanel {
   }
 
    //  report over all files in collection
-  private void doMisplacedFields(Formatter f, MCollection dcm, boolean useIndex, boolean extra) throws IOException {
+  private void doMisplacedFields(Formatter f, MCollection dcm, boolean extra) throws IOException {
      f.format("Check Misplaced Fields, records count < %d%n", MIN_COUNT);
      Map<Integer, VarInfo> varCount = new HashMap<>();
 

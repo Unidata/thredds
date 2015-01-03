@@ -160,6 +160,7 @@ abstract class GribCollectionBuilderFromIndex {
 
       // directory always taken from proto, since ncx2 file may be moved, or in cache, etc  LOOK
       gc.directory = gc.setOrgDirectory(proto.getTopDir());
+      gc.indexVersion = proto.getVersion();
 
       int fsize = 0;
       int n = proto.getMfilesCount();

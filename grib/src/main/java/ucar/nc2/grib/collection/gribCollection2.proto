@@ -119,6 +119,7 @@ message GribCollection {
   optional int32 genProcessType = 11;
   optional int32 genProcessId = 12;
   optional int32 backProcessId = 13;
+  optional int32 version = 14 [default = 0];
 
   repeated Parameter params = 20;      // not used
   optional FcConfig config = 21;

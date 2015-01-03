@@ -60,6 +60,10 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
@@ -621,6 +625,11 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return ndups;
     }
 
+
+    public int getNmissing() {
+      return nmissing;
+    }
+
     public int getNrecords() {
       return nrecords;
     }
@@ -640,7 +649,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       sb.format("Variable {%d-%d-%d", info.discipline, info.category, info.parameter);
       sb.format(", levelType=%d", info.levelType);
       sb.format(", intvType=%d", info.intvType);
-      sb.format(", group=%s}", group);
+      sb.format(", nrecords=%d", nrecords);
+      sb.format(", ndups=%d", ndups);
+      sb.format(", nmiss=%d}", nmissing);
       return sb.toString();
     }
 
@@ -759,7 +770,73 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   ///////////////
 
+  public void showStatus(Formatter f, boolean summaryOnly) {
+    if (summaryOnly) {
+      Dataset ds = getDatasetCanonical();
+      for (GroupGC g : ds.groups) {
+        int nrecords = 0, ndups = 0, nmissing = 0;
+        for (VariableIndex v : g.variList) {
+          nrecords += v.nrecords;
+          ndups += v.ndups;
+          nmissing += v.nmissing;
+        }
+        f.format(" Group %s total nrecords=%d", g.getDescription(), nrecords);
+        if (nrecords == 0) nrecords = 1;
+        f.format(", ndups=%d (%f)", ndups, ((float)ndups/nrecords));
+        f.format(", nmiss=%d (%f)%n", nmissing, ((float)nmissing/nrecords));
+      }
+      return;
+    }
+
+    showIndexFile(f);
+    f.format("Class (%s)%n", getClass().getName());
+    f.format("%s%n%n", info.toString());
+
+    f.format("masterRuntime: size=%d%n", masterRuntime.getSize());
+    if (masterRuntime.getSize() < 20)
+      masterRuntime.showCoords(f);
+
+    for (Dataset ds : datasets) {
+      f.format("%nDataset %s%n", ds.getType());
+      for (GroupGC g : ds.groups) {
+        int nrecords = 0, ndups = 0, nmissing = 0;
+        f.format(" Group %s%n", g.horizCoordSys.getId());
+        for (VariableIndex v : g.variList) {
+          f.format("  %s%n", v.toStringFrom());
+          nrecords += v.nrecords;
+          ndups += v.ndups;
+          nmissing += v.nmissing;
+        }
+        f.format(" Group total nrecords=%d", nrecords);
+        f.format(", ndups=%d", ndups);
+        f.format(", nmiss=%d%n", nmissing);
+      }
+    }
+    if (fileMap == null) {
+      f.format("Files empty%n");
+    } else {
+      f.format("Files count = %d%n", fileMap.size());
+      for (int index : fileMap.keySet())
+        f.format("  %d: %s%n", index, fileMap.get(index));
+      f.format("%n");
+    }
+  }
+
+  public void showIndexFile(Formatter f) {
+    if (indexFilename == null) return;
+    f.format("indexFile=%s%n", indexFilename);
+    try {
+      Path indexFile = Paths.get(indexFilename);
+      BasicFileAttributes attr = Files.readAttributes(indexFile, BasicFileAttributes.class);
+      f.format("  size=%d lastModifiedTime=%s lastAccessTime=%s creationTime=%s%n", attr.size(), attr.lastModifiedTime(), attr.lastAccessTime(), attr.creationTime());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    f.format("%n");
+  }
+
   public void showIndex(Formatter f) {
+    showIndexFile(f);
     f.format("Class (%s)%n", getClass().getName());
     f.format("%s%n%n", toString());
     f.format("%s%n%n", info.toString());
@@ -777,6 +854,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         }
       }
     }
+
+    f.format("%n");
     if (fileMap == null) {
       f.format("Files empty%n");
     } else {
@@ -785,7 +864,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         f.format("  %d: %s%n", index, fileMap.get(index));
       f.format("%n");  */
     }
-
   }
 
   @Override

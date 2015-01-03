@@ -146,7 +146,7 @@
         </dependencies -->
         <configuration>
           <skip>${skipTests}</skip>
-          <argLine>-Dfile.encoding=UTF-8</argLine>
+          <argLine>-Xmx2g -Dfile.encoding=UTF-8</argLine>
         </configuration>
       </plugin>
 

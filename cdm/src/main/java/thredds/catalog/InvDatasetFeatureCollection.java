@@ -51,6 +51,8 @@ import ucar.nc2.util.log.LoggerFactoryImpl;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -215,29 +217,45 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return config.collectionName;
   }
 
+  // CollectionUpdater sends this message asynchronously
   @Override
-  // DatasetCollectionManager was changed asynchronously
   public void sendEvent(CollectionUpdateType type) {
     try {
       update(type);
     } catch (IOException e) {
       logger.error("Error processing event", e);
     }
-
-/*     if (event == CollectionUpdateListener.TriggerType.updateNocheck)
-
-    else if (event == CollectionUpdateListener.TriggerType.update)
-      update(CollectionManager.Force.always);
-
-    else if (event == CollectionUpdateListener.TriggerType.resetProto)
-      updateProto();  */
   }
 
-  /**
-   * update the proto dataset being used.
-   * called by CollectionUpdater via handleCollectionEvent, so in a quartz scheduler thread
-   */
-  abstract protected void updateProto();
+  public void showStatus(Formatter f) {
+    try {
+      checkState();
+      _showStatus(f, false);
+
+    } catch (IOException ioe) {
+      StringWriter sw = new StringWriter(5000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
+    }
+  }
+
+  public String showStatusShort() {
+    Formatter f = new Formatter();
+    try {
+      checkState();
+      _showStatus(f, true);
+
+    } catch (IOException ioe) {
+      StringWriter sw = new StringWriter(5000);
+      ioe.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
+    }
+
+    return f.toString();
+  }
+
+  protected void _showStatus(Formatter f, boolean summaryOnly) throws IOException {
+  }
 
   // localState is synched, may be directly changed
   abstract protected void updateCollection(State localState, CollectionUpdateType force);

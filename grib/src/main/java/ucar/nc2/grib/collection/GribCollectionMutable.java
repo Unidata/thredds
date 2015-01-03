@@ -40,19 +40,17 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MFile;
 import ucar.coord.*;
+import ucar.nc2.grib.grib1.Grib1Gds;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
-import ucar.nc2.grib.grib2.Grib2Variable;
+import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarTimeZone;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2Pds;
-import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -104,6 +102,7 @@ public class GribCollectionMutable implements AutoCloseable {
   protected List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
   protected GribTables cust;
+  protected int indexVersion;
 
   // not stored in index
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
@@ -532,7 +531,7 @@ public class GribCollectionMutable implements AutoCloseable {
         this.isEnsemble = pds.isEnsemble();
 
         // LOOK config vs serialized config
-        gribVariable = new Grib1Variable(cust, pds, g.getGdsBytes(), config.gribConfig.useTableVersion, config.gribConfig.intvMerge, config.gribConfig.useCenter);
+        gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), config.gribConfig.useTableVersion, config.gribConfig.intvMerge, config.gribConfig.useCenter);
 
       } else {
         Grib2Customizer cust2 = (Grib2Customizer) customizer;
@@ -569,7 +568,7 @@ public class GribCollectionMutable implements AutoCloseable {
         this.isEnsemble = pds.isEnsemble();
 
         // LOOK config vs serialized config
-        gribVariable = new Grib2Variable (cust2, discipline, center, subcenter, g.getGdsBytes(), pds, config.gribConfig.intvMerge, config.gribConfig.useGenType);
+        gribVariable = new Grib2Variable (cust2, discipline, center, subcenter, (Grib2Gds) g.getGdsHash(), pds, config.gribConfig.intvMerge, config.gribConfig.useGenType);
       }
     }
 

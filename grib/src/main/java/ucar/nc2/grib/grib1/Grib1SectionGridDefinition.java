@@ -118,19 +118,16 @@ public class Grib1SectionGridDefinition {
    * @return CRC  of the entire byte array
    */
   public long calcCRC() {
-    if (crc == 0) {
-      if (rawData == null)
-        crc = hashCode();
-      else {
-        CRC32 crc32 = new CRC32();
-        crc32.update(rawData);
-        crc = crc32.getValue();
-      }
+    long crc;
+    if (rawData == null)
+      crc = predefinedGridDefinitionCenter << 16 + predefinedGridDefinition;
+    else {
+      CRC32 crc32 = new CRC32();
+      crc32.update(rawData);
+      crc = crc32.getValue();
     }
     return crc;
   }
-
-  private long crc = 0;
 
   public int getLength() {
     return (rawData == null) ? 0 : rawData.length;
@@ -158,7 +155,8 @@ public class Grib1SectionGridDefinition {
   }
 
   private int getOctet(int index) {
-    if (rawData == null) return 255;   // predefined
+    if (rawData == null)
+      return 255;   // predefined
     if (index > rawData.length) return GribNumbers.UNDEFINED;
     return rawData[index - 1] & 0xff;
   }

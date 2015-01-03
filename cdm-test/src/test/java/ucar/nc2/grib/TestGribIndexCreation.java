@@ -95,31 +95,19 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
   }
 
-  // @Test
-  public void testNamAlaska45() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("alaska45conduit", "test/www", FeatureCollectionType.GRIB2,
- //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
-            "B:/lead/.*gbx9",  null,
-            null, null, "file", null);
-    // config.gribConfig.addGdsHash("-804803647", "-804803709");
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
-    System.out.printf("changed = %s%n", changed);
-  }
-
-
-  // @Test
+  @Test
   public void testWwwCoastalAlaska() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("www_46", "test/www", FeatureCollectionType.GRIB2,
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("Coastal_Alaska", "test/Coastal_Alaska", FeatureCollectionType.GRIB2,
  //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
-            "B:/idd/WWW/Coastal_Alaska/.*grib2",
+            "B:/idd/WWW/Coastal_Alaska/.*gbx9",
             null, null, null, "file", null);
-    config.gribConfig.addGdsHash("-804803647", "-804803709");
+    // config.gribConfig.addGdsHash("-804803647", "-804803709");
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
   }
 
   /////////////////////////////////////////////////////////////
@@ -327,7 +315,6 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
-
 
   @Test
   public void testWW3() throws IOException {

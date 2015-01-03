@@ -82,13 +82,12 @@ public class Grib2Variable {
   /**
    * Used when building from ncx3 (full records)
    */
-  public Grib2Variable(Grib2Customizer cust, int discipline, int center, int subcenter, byte[] gdssBytes, Grib2Pds pds, boolean intvMerge, boolean useGenType) {
+  public Grib2Variable(Grib2Customizer cust, int discipline, int center, int subcenter, Grib2Gds gds, Grib2Pds pds, boolean intvMerge, boolean useGenType) {
     this.cust = cust;
     this.discipline = discipline;
     this.center = center;
     this.subcenter = subcenter;
-    Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(gdssBytes);
-    this.gds = gdss.getGDS();
+    this.gds = gds;
     this.gdsHash = gds.hashCode;             // this requires no overridden gds hashCodes have made it into the ncx3
     this.pds = pds;
     this.intvMerge = intvMerge;

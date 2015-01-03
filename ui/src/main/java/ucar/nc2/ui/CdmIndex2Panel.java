@@ -294,17 +294,6 @@ public class CdmIndex2Panel extends JPanel {
   }
 
   public void showInfo(Formatter f) {
-    if (indexFile == null) return;
-    f.format("indexFile=%s%n", indexFile);
-    BasicFileAttributes attr = null;
-    try {
-      attr = Files.readAttributes(indexFile, BasicFileAttributes.class);
-      f.format("  size=%d lastModifiedTime=%s lastAccessTime=%s creationTime=%s%n", attr.size(), attr.lastModifiedTime(), attr.lastAccessTime(), attr.creationTime());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    f.format("%n");
-
     if (gc == null) return;
     gc.showIndex(f);
     f.format("%n");

@@ -124,10 +124,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public void updateProto() {
-    // needsProto.set(true);
-    // no actual work, wait until next call to updateCollection (??)
-    // not sure proto is used in GribFc
+  protected void _showStatus(Formatter f, boolean summaryOnly) throws IOException {
+    StateGrib localState = (StateGrib) state;
+    if (localState.gribCollection != null)
+      localState.gribCollection.showStatus(f, summaryOnly);
   }
 
   @Override
