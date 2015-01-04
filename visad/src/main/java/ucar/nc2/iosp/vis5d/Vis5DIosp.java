@@ -44,7 +44,6 @@ import ucar.nc2.constants._Coordinate;
 
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.grid.*;
 
 import ucar.nc2.util.CancelTask;
@@ -176,7 +175,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     if (got.equals(V5D)) {
       return true;
     } else {  // more rigorous test
-      V5DStruct vv = null;
+      V5DStruct vv;
       try {
         vv = V5DStruct.v5dOpenFile(raf);
       } catch (BadFormException bfe) {
@@ -230,9 +229,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
    * @param cancelTask the cancel task
    * @throws IOException problem reading the file
    */
-  private void makeFile(RandomAccessFile raf, NetcdfFile ncfile,
-                        CancelTask cancelTask)
-          throws IOException {
+  private void makeFile(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
 
 
     ncfile.empty();
@@ -246,7 +243,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     double[] times = new double[MAXTIMES];
     float[] projargs = new float[MAXPROJARGS];
 
-    V5DStruct vv = null;
     try {
       v5dstruct = V5DStruct.v5d_open(raf, sizes, n_levels, varnames,
               varunits, map_proj, projargs,
@@ -316,15 +312,14 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     ncfile.addVariable(null, colVar);
 
     // sanity check on levels
-    Hashtable<Integer, Object> var_table = new Hashtable<Integer,
-            Object>();
+    Hashtable<Integer, Object> var_table = new Hashtable<>();
     boolean have3D = false;
     for (int i = 0; i < nvars; i++) {
       int nlevs = n_levels[i];
       if (!have3D && (nlevs > 1)) {
         have3D = true;
       }
-      var_table.put(new Integer(nlevs), new Object());
+      var_table.put(nlevs, new Object());
     }
     int n_var_groups = var_table.size();
     if (n_var_groups > 2) {
@@ -343,7 +338,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         ncfile.addVariable(null, vert);
       }
     }
-    varTable = new Hashtable<Variable, Integer>();
+    varTable = new Hashtable<>();
     String dim3D = TIME + " " + LEVEL + " " + COLUMN + " " + ROW;
     String dim2D = TIME + " " + COLUMN + " " + ROW;
     //String coords3D = TIME + " " + vert.getName() + " " + LAT + " " + LON;
@@ -374,7 +369,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       // TODO: do two vars with the same name have different values?
       // check agaist duplicat variable names
       if (varTable.get(v) == null) {
-        varTable.put(v, new Integer(i));
+        varTable.put(v, i);
         ncfile.addVariable(null, v);
       }
     }
@@ -382,8 +377,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             projargs
     });
     addLatLonVariables(map_proj[0], proj_args[0], nr, nc);
-    Vis5DGridDefRecord gridDef = new Vis5DGridDefRecord(map_proj[0],
-            proj_args[0], nr, nc);
+    // Vis5DGridDefRecord gridDef = new Vis5DGridDefRecord(map_proj[0], proj_args[0], nr, nc);
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
     ncfile.finish();
   }
@@ -399,7 +393,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
    */
   public Array readData(Variable v2, Section section)
           throws IOException, InvalidRangeException {
-    long startTime = System.currentTimeMillis();
+    // long startTime = System.currentTimeMillis();
     Integer varIdx = varTable.get(v2);
     if (varIdx == null) {
       throw new IOException("unable to find variable index");
@@ -434,7 +428,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       float[] data = new float[grid_size];
       float[] ranges = new float[2];
       try {
-        v5dstruct.v5d_read(timeIdx, varIdx.intValue(), ranges, data);
+        v5dstruct.v5d_read(timeIdx, varIdx, ranges, data);
       } catch (BadFormException bfe) {
         throw new IOException("Vis5DIosp.readData: "
                 + bfe.getMessage());
@@ -495,7 +489,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       }
     }
 
-    long end = System.currentTimeMillis() - startTime;
+    // long end = System.currentTimeMillis() - startTime;
     return dataArray;
   }
 
@@ -516,7 +510,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
    * units in the file.
    */
   private static void initUnitTable() {
-    unitTable = new Hashtable<String, String>();
+    unitTable = new Hashtable<>();
     // temperatures
     unitTable.put("t", "K");
     unitTable.put("td", "K");
@@ -639,10 +633,8 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                                   int nc)
           throws IOException {
     //Vis5DGridDefRecord.printProjArgs(map_proj, proj_args);
-    Vis5DGridDefRecord vgd = new Vis5DGridDefRecord(map_proj, proj_args,
-            nr, nc);
-    GridHorizCoordSys ghc = new GridHorizCoordSys(vgd, new Vis5DLookup(),
-            null);
+    Vis5DGridDefRecord vgd = new Vis5DGridDefRecord(map_proj, proj_args, nr, nc);
+    GridHorizCoordSys ghc = new GridHorizCoordSys(vgd, new Vis5DLookup(), null);
 
     Vis5DCoordinateSystem coord_sys;
     try {
@@ -655,8 +647,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       lat.addAttribute(new Attribute("long_name", "latitude"));
       lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       lat.addAttribute(new Attribute(CF.STANDARD_NAME, "latitude"));
-      lat.addAttribute(new Attribute(_Coordinate.AxisType,
-              AxisType.Lat.toString()));
+      lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
       ncfile.addVariable(null, lat);
 
       Variable lon = new Variable(ncfile, null, null, LON);
@@ -665,8 +656,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
       lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       lon.addAttribute(new Attribute("long_name", "longitude"));
       lon.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
-      lon.addAttribute(new Attribute(_Coordinate.AxisType,
-              AxisType.Lon.toString()));
+      lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       ncfile.addVariable(null, lon);
 
       int[] shape = new int[]{nc, nr};
@@ -718,21 +708,12 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     public Vis5DLookup() {
     }
 
-    /**
-     * .
-     *
-     * @param gds
-     * @return ShapeName.
-     */
     public String getShapeName(GridDefRecord gds) {
       return "Spherical";
     }
 
     /**
      * gets the grid type.
-     *
-     * @param gds
-     * @return GridName
      */
     public final String getGridName(GridDefRecord gds) {
       return gds.toString();
@@ -751,9 +732,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
 
     /**
      * gets the DisciplineName.
-     *
-     * @param gr
-     * @return DisciplineName
      */
     public final String getDisciplineName(GridRecord gr) {
       // all disciplines are the same in Vis5D
@@ -762,9 +740,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
 
     /**
      * gets the CategoryName.
-     *
-     * @param gr
-     * @return CategoryName
      */
     public final String getCategoryName(GridRecord gr) {
       // no categories in Vis5D
@@ -773,9 +748,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
 
     /**
      * gets the LevelName.
-     *
-     * @param gr
-     * @return LevelName
      */
     public final String getLevelName(GridRecord gr) {
       // not needed for this implementation
@@ -784,9 +756,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
 
     /**
      * gets the LevelDescription.
-     *
-     * @param gr
-     * @return LevelDescription
      */
     public final String getLevelDescription(GridRecord gr) {
       // not needed for this implementation
@@ -795,9 +764,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
 
     /**
      * gets the LevelUnit.
-     *
-     * @param gr
-     * @return LevelUnit
      */
     public final String getLevelUnit(GridRecord gr) {
       // not needed for this implementation
@@ -819,9 +785,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
 
     /**
      * is this a LatLon grid.
-     *
-     * @param gds
-     * @return isLatLon
      */
     public final boolean isLatLon(GridDefRecord gds) {
       return getProjectionName(gds).equals("GENERIC")
@@ -832,26 +795,21 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
 
     /**
      * gets the ProjectionType.
-     *
-     * @param gds
-     * @return ProjectionType
      */
     public final int getProjectionType(GridDefRecord gds) {
       String name = getProjectionName(gds).trim();
-      if (name.equals("LAMBERT")) {
-        return LambertConformal;
-      } else if (name.equals("STEREO")) {
-        return PolarStereographic;
-      } else {
-        return -1;
+      switch (name) {
+        case "LAMBERT":
+          return LambertConformal;
+        case "STEREO":
+          return PolarStereographic;
+        default:
+          return -1;
       }
     }
 
     /**
      * is this a VerticalCoordinate.
-     *
-     * @param gr
-     * @return isVerticalCoordinate
      */
     public final boolean isVerticalCoordinate(GridRecord gr) {
       // not needed for this implementation
@@ -860,9 +818,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
 
     /**
      * is this a PositiveUp VerticalCoordinate.
-     *
-     * @param gr
-     * @return isPositiveUp
      */
     public final boolean isPositiveUp(GridRecord gr) {
       // not needed for this implementation
@@ -895,7 +850,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
      * @return the name or null if not set
      */
     private String getProjectionName(GridDefRecord gds) {
-      return gds.getParam(gds.PROJ);
+      return gds.getParam(GridDefRecord.PROJ);
     }
 
     // CF Conventions Global Attributes

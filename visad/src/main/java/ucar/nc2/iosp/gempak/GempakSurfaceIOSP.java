@@ -1,36 +1,34 @@
 /*
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
- *  *
- *  *  Portions of this software were developed by the Unidata Program at the
- *  *  University Corporation for Atmospheric Research.
- *  *
- *  *  Access and use of this software shall impose the following obligations
- *  *  and understandings on the user. The user is granted the right, without
- *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  *  this software, and any derivative works thereof, and its supporting
- *  *  documentation for any purpose whatsoever, provided that this entire
- *  *  notice appears in all copies of the software, derivative works and
- *  *  supporting documentation.  Further, UCAR requests that the user credit
- *  *  UCAR/Unidata in any publications that result from the use of this
- *  *  software or in any product that includes this software. The names UCAR
- *  *  and/or Unidata, however, may not be used in any advertising or publicity
- *  *  to endorse or promote any products or commercial entity unless specific
- *  *  written permission is obtained from UCAR/Unidata. The user also
- *  *  understands that UCAR/Unidata is not obligated to provide the user with
- *  *  any support, consulting, training or assistance of any kind with regard
- *  *  to the use, operation and performance of this software nor to provide
- *  *  the user with any updates, revisions, new versions or "bug fixes."
- *  *
- *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -42,9 +40,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
 
@@ -195,7 +190,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       }
 
 
-      int num = 0;
+      //int num = 0;
       Range stationRange = section.getRange(0);
       Range timeRange = section.getRange(1);
       int size = stationRange.length() * timeRange.length();
@@ -262,7 +257,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
       StructureMembers members = pdata.makeStructureMembers();
       List<StructureMembers.Member> mbers = members.getMembers();
       int ssize = 0;
-      int stnVarNum = 0;
+      //int stnVarNum = 0;
       List<String> stnKeyNames = gemreader.getStationKeyNames();
       for (StructureMembers.Member member : mbers) {
         if (stnKeyNames.contains(member.getName())) {
@@ -310,7 +305,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
           }
         }
       }
-      boolean hasTime = (members.findMember(TIME_VAR) != null);
+      //boolean hasTime = (members.findMember(TIME_VAR) != null);
 
       //Trace.call1("GEMPAKSIOSP: readShipData", section.toString());
       // fill out the station information
@@ -322,28 +317,40 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
             continue;
           }
           String temp = null;
-          if (varname.equals(GempakStation.STID)) {
-            temp = StringUtil2.padRight(stn.getName(), 8);
-          } else if (varname.equals(GempakStation.STNM)) {
-            buf.putInt((int) (stn.getSTNM()));
-          } else if (varname.equals(GempakStation.SLAT)) {
-            buf.putFloat((float) stn.getLatitude());
-          } else if (varname.equals(GempakStation.SLON)) {
-            buf.putFloat((float) stn.getLongitude());
-          } else if (varname.equals(GempakStation.SELV)) {
-            buf.putFloat((float) stn.getAltitude());
-          } else if (varname.equals(GempakStation.STAT)) {
-            temp = StringUtil2.padRight(stn.getSTAT(), 2);
-          } else if (varname.equals(GempakStation.COUN)) {
-            temp = StringUtil2.padRight(stn.getCOUN(), 2);
-          } else if (varname.equals(GempakStation.STD2)) {
-            temp = StringUtil2.padRight(stn.getSTD2(), 4);
-          } else if (varname.equals(GempakStation.SPRI)) {
-            buf.putInt(stn.getSPRI());
-          } else if (varname.equals(GempakStation.SWFO)) {
-            temp = StringUtil2.padRight(stn.getSWFO(), 4);
-          } else if (varname.equals(GempakStation.WFO2)) {
-            temp = StringUtil2.padRight(stn.getWFO2(), 4);
+          switch (varname) {
+            case GempakStation.STID:
+              temp = StringUtil2.padRight(stn.getName(), 8);
+              break;
+            case GempakStation.STNM:
+              buf.putInt(stn.getSTNM());
+              break;
+            case GempakStation.SLAT:
+              buf.putFloat((float) stn.getLatitude());
+              break;
+            case GempakStation.SLON:
+              buf.putFloat((float) stn.getLongitude());
+              break;
+            case GempakStation.SELV:
+              buf.putFloat((float) stn.getAltitude());
+              break;
+            case GempakStation.STAT:
+              temp = StringUtil2.padRight(stn.getSTAT(), 2);
+              break;
+            case GempakStation.COUN:
+              temp = StringUtil2.padRight(stn.getCOUN(), 2);
+              break;
+            case GempakStation.STD2:
+              temp = StringUtil2.padRight(stn.getSTD2(), 4);
+              break;
+            case GempakStation.SPRI:
+              buf.putInt(stn.getSPRI());
+              break;
+            case GempakStation.SWFO:
+              temp = StringUtil2.padRight(stn.getSWFO(), 4);
+              break;
+            case GempakStation.WFO2:
+              temp = StringUtil2.padRight(stn.getWFO2(), 4);
+              break;
           }
           if (temp != null) {
             buf.put(temp.getBytes(CDM.utf8Charset));
@@ -392,12 +399,16 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
    */
   protected void fillNCFile() throws IOException {
     String fileType = gemreader.getFileSubType();
-    if (fileType.equals(GempakSurfaceFileReader.STANDARD)) {
-      buildStandardFile();
-    } else if (fileType.equals(GempakSurfaceFileReader.SHIP)) {
-      buildShipFile();
-    } else {
-      buildClimateFile();
+    switch (fileType) {
+      case GempakSurfaceFileReader.STANDARD:
+        buildStandardFile();
+        break;
+      case GempakSurfaceFileReader.SHIP:
+        buildShipFile();
+        break;
+      default:
+        buildClimateFile();
+        break;
     }
   }
 
@@ -426,11 +437,9 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     int numTimes = timeList.size();
     Dimension times = new Dimension(TIME_VAR, numTimes, true);
     ncfile.addDimension(null, times);
-    Array varArray = null;
-    Variable timeVar = new Variable(ncfile, null, null, TIME_VAR,
-            DataType.DOUBLE, TIME_VAR);
-    timeVar.addAttribute(
-            new Attribute(CDM.UNITS, "seconds since 1970-01-01 00:00:00"));
+    Array varArray;
+    Variable timeVar = new Variable(ncfile, null, null, TIME_VAR, DataType.DOUBLE, TIME_VAR);
+    timeVar.addAttribute(new Attribute(CDM.UNITS, "seconds since 1970-01-01 00:00:00"));
     timeVar.addAttribute(new Attribute("long_name", TIME_VAR));
     varArray = new ArrayDouble.D1(numTimes);
     int i = 0;
@@ -442,7 +451,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     ncfile.addVariable(null, timeVar);
 
 
-    List<Dimension> stationTime = new ArrayList<Dimension>();
+    List<Dimension> stationTime = new ArrayList<>();
     stationTime.add(station);
     stationTime.add(times);
     // TODO: handle other parts
@@ -473,7 +482,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
     Dimension record = new Dimension("record", numObs, true,
             (numObs == 0), false);
     ncfile.addDimension(null, record);
-    List<Dimension> records = new ArrayList(1);
+    List<Dimension> records = new ArrayList<>(1);
     records.add(record);
 
     // time

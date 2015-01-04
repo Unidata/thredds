@@ -1,36 +1,34 @@
 /*
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
- *  *
- *  *  Portions of this software were developed by the Unidata Program at the
- *  *  University Corporation for Atmospheric Research.
- *  *
- *  *  Access and use of this software shall impose the following obligations
- *  *  and understandings on the user. The user is granted the right, without
- *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  *  this software, and any derivative works thereof, and its supporting
- *  *  documentation for any purpose whatsoever, provided that this entire
- *  *  notice appears in all copies of the software, derivative works and
- *  *  supporting documentation.  Further, UCAR requests that the user credit
- *  *  UCAR/Unidata in any publications that result from the use of this
- *  *  software or in any product that includes this software. The names UCAR
- *  *  and/or Unidata, however, may not be used in any advertising or publicity
- *  *  to endorse or promote any products or commercial entity unless specific
- *  *  written permission is obtained from UCAR/Unidata. The user also
- *  *  understands that UCAR/Unidata is not obligated to provide the user with
- *  *  any support, consulting, training or assistance of any kind with regard
- *  *  to the use, operation and performance of this software nor to provide
- *  *  the user with any updates, revisions, new versions or "bug fixes."
- *  *
- *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -188,12 +186,12 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     return ff.toString();
   }
 
-  /**
+  /*
    * Sync the file
    *
    * @return true if needed to sync
    * @throws IOException problem synching the file
-   */
+   *
   public boolean sync() throws IOException {
     //printStack("***************************** sync ************************", 100);
     //System.out.printf("check sync on %s (%s) %n", raf.getLocation(), Calendar.getInstance().getTime());
@@ -210,7 +208,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
       return true;
     }
     return false;
-  }
+  } */
 
 
   /**
@@ -375,28 +373,40 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         String varname = v.getFullName();
         for (GempakStation stn : stations) {
           String test = "";
-          if (varname.equals(GempakStation.STID)) {
-            test = stn.getName();
-          } else if (varname.equals(GempakStation.STNM)) {
-            ((ArrayInt.D1) varArray).set(index, stn.getSTNM());
-          } else if (varname.equals(GempakStation.SLAT)) {
-            ((ArrayFloat.D1) varArray).set(index, (float) stn.getLatitude());
-          } else if (varname.equals(GempakStation.SLON)) {
-            ((ArrayFloat.D1) varArray).set(index, (float) stn.getLongitude());
-          } else if (varname.equals(GempakStation.SELV)) {
-            ((ArrayFloat.D1) varArray).set(index, (float) stn.getAltitude());
-          } else if (varname.equals(GempakStation.STAT)) {
-            test = stn.getSTAT();
-          } else if (varname.equals(GempakStation.COUN)) {
-            test = stn.getCOUN();
-          } else if (varname.equals(GempakStation.STD2)) {
-            test = stn.getSTD2();
-          } else if (varname.equals(GempakStation.SPRI)) {
-            ((ArrayInt.D1) varArray).set(index, stn.getSPRI());
-          } else if (varname.equals(GempakStation.SWFO)) {
-            test = stn.getSWFO();
-          } else if (varname.equals(GempakStation.WFO2)) {
-            test = stn.getWFO2();
+          switch (varname) {
+            case GempakStation.STID:
+              test = stn.getName();
+              break;
+            case GempakStation.STNM:
+              ((ArrayInt.D1) varArray).set(index, stn.getSTNM());
+              break;
+            case GempakStation.SLAT:
+              ((ArrayFloat.D1) varArray).set(index, (float) stn.getLatitude());
+              break;
+            case GempakStation.SLON:
+              ((ArrayFloat.D1) varArray).set(index, (float) stn.getLongitude());
+              break;
+            case GempakStation.SELV:
+              ((ArrayFloat.D1) varArray).set(index, (float) stn.getAltitude());
+              break;
+            case GempakStation.STAT:
+              test = stn.getSTAT();
+              break;
+            case GempakStation.COUN:
+              test = stn.getCOUN();
+              break;
+            case GempakStation.STD2:
+              test = stn.getSTD2();
+              break;
+            case GempakStation.SPRI:
+              ((ArrayInt.D1) varArray).set(index, stn.getSPRI());
+              break;
+            case GempakStation.SWFO:
+              test = stn.getSWFO();
+              break;
+            case GempakStation.WFO2:
+              test = stn.getWFO2();
+              break;
           }
           if (!test.equals("")) {
             ((ArrayChar.D2) varArray).setString(index, test);
@@ -446,46 +456,58 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
       dims.add(firstDim);
     }
 
-    if (varname.equals(GempakStation.STID)) {
-      longName = "Station identifier";
-      dims.add(DIM_LEN8);
-    } else if (varname.equals(GempakStation.STNM)) {
-      longName = "WMO station id";
-      type = DataType.INT;
-    } else if (varname.equals(GempakStation.SLAT)) {
-      longName = "latitude";
-      unit = CDM.LAT_UNITS;
-      type = DataType.FLOAT;
-      attrs.add(new Attribute(CF.STANDARD_NAME, "latitude"));
-    } else if (varname.equals(GempakStation.SLON)) {
-      longName = "longitude";
-      unit = CDM.LON_UNITS;
-      type = DataType.FLOAT;
-      attrs.add(new Attribute(CF.STANDARD_NAME, "longitude"));
-    } else if (varname.equals(GempakStation.SELV)) {
-      longName = "altitude";
-      unit = "meter";
-      type = DataType.FLOAT;
-      attrs.add(new Attribute(CF.POSITIVE, CF.POSITIVE_UP));
-      attrs.add(new Attribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE));
-    } else if (varname.equals(GempakStation.STAT)) {
-      longName = "state or province";
-      dims.add(DIM_LEN2);
-    } else if (varname.equals(GempakStation.COUN)) {
-      longName = "country code";
-      dims.add(DIM_LEN2);
-    } else if (varname.equals(GempakStation.STD2)) {
-      longName = "Extended station id";
-      dims.add(DIM_LEN4);
-    } else if (varname.equals(GempakStation.SPRI)) {
-      longName = "Station priority";
-      type = DataType.INT;
-    } else if (varname.equals(GempakStation.SWFO)) {
-      longName = "WFO code";
-      dims.add(DIM_LEN4);
-    } else if (varname.equals(GempakStation.WFO2)) {
-      longName = "Second WFO code";
-      dims.add(DIM_LEN4);
+    switch (varname) {
+      case GempakStation.STID:
+        longName = "Station identifier";
+        dims.add(DIM_LEN8);
+        break;
+      case GempakStation.STNM:
+        longName = "WMO station id";
+        type = DataType.INT;
+        break;
+      case GempakStation.SLAT:
+        longName = "latitude";
+        unit = CDM.LAT_UNITS;
+        type = DataType.FLOAT;
+        attrs.add(new Attribute(CF.STANDARD_NAME, "latitude"));
+        break;
+      case GempakStation.SLON:
+        longName = "longitude";
+        unit = CDM.LON_UNITS;
+        type = DataType.FLOAT;
+        attrs.add(new Attribute(CF.STANDARD_NAME, "longitude"));
+        break;
+      case GempakStation.SELV:
+        longName = "altitude";
+        unit = "meter";
+        type = DataType.FLOAT;
+        attrs.add(new Attribute(CF.POSITIVE, CF.POSITIVE_UP));
+        attrs.add(new Attribute(CF.STANDARD_NAME, CF.STATION_ALTITUDE));
+        break;
+      case GempakStation.STAT:
+        longName = "state or province";
+        dims.add(DIM_LEN2);
+        break;
+      case GempakStation.COUN:
+        longName = "country code";
+        dims.add(DIM_LEN2);
+        break;
+      case GempakStation.STD2:
+        longName = "Extended station id";
+        dims.add(DIM_LEN4);
+        break;
+      case GempakStation.SPRI:
+        longName = "Station priority";
+        type = DataType.INT;
+        break;
+      case GempakStation.SWFO:
+        longName = "WFO code";
+        dims.add(DIM_LEN4);
+        break;
+      case GempakStation.WFO2:
+        longName = "Second WFO code";
+        dims.add(DIM_LEN4);
+        break;
     }
     Variable v = new Variable(ncfile, null, null, varname);
     v.setDataType(type);

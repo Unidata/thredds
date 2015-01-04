@@ -75,7 +75,7 @@ public class Grib2Record {
 
     // stored in index file after 4.5 2/6/2014, otherwise equals Grib2Index.ScanModeMissing, so get it from the GDS, which may have wrong one
     this.scanMode = scanMode;
-    if (scanMode == Grib2Index.ScanModeMissing) {
+    if (scanMode == Grib2Index.ScanModeMissing && gdss != null) {
       this.scanMode = gdss.getGDS().getScanMode();
     }
   }
