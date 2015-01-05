@@ -78,10 +78,12 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static protected final String VARIABLES = "?metadata=variableMap";
   static protected final String FILES = "files";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
+  static protected final String Default_Services = "DefaultServices";
 
   static private String catalogServletName = "/catalog";            // LOOK
   static protected String context = "/thredds";                     // LOOK
   static private String cdmrFeatureServiceUrlPath = "/cdmrFeature"; // LOOK
+
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
   static private org.slf4j.Logger initLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class.getName() + ".catalogInit");
 
@@ -286,7 +288,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected void firstInit() {
     this.orgService = getServiceDefault();
     if (this.orgService == null) {
-      this.orgService = makeServiceDefault();
+      this.orgService = makeDefaultService();
     }
     this.virtualService = makeServiceVirtual(this.orgService);
     this.cdmrService = makeCdmrFeatureService(); // WTF ??
@@ -389,10 +391,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
-  protected InvService makeServiceDefault() {
+  protected InvService makeDefaultService() {
 
     // LOOK need (thredds.server.config.AllowableService)
-    InvService result = new InvService("Default", ServiceType.COMPOUND.toString(), null, null, null);
+    InvService result = new InvService(Default_Services, ServiceType.COMPOUND.toString(), null, null, null);
     result.addService(InvService.opendap);
     result.addService(InvService.fileServer);
     result.addService(InvService.wms);
