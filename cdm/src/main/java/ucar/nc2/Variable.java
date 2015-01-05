@@ -1134,19 +1134,19 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   @Override
   public int hashCode() {
-      if (hashCode == 0) {
-        int result = 17;
-        result = 37 * result + getShortName().hashCode();
-        if (isScalar()) result++;
-        result = 37 * result + getDataType().hashCode();
-        result = 37 * result + getParentGroup().hashCode();
-        if (getParentStructure() != null)
-          result = 37 * result + getParentStructure().hashCode();
-        if (isVariableLength) result++;
-        result = 37 * result + dimensions.hashCode();
-        hashCode = result;
-      }
-      return hashCode;
+    if (hashCode == 0) {
+      int result = 17;
+      result = 37 * result + getShortName().hashCode();
+      if (isScalar()) result++;
+      result = 37 * result + getDataType().hashCode();
+      result = 37 * result + getParentGroup().hashCode();
+      if (getParentStructure() != null)
+        result = 37 * result + getParentStructure().hashCode();
+      if (isVariableLength) result++;
+      result = 37 * result + dimensions.hashCode();
+      hashCode = result;
+    }
+    return hashCode;
   }
 
   public void hashCodeShow(Indent indent) {

@@ -125,7 +125,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   protected void _showStatus(Formatter f, boolean summaryOnly) throws IOException {
-    StateGrib localState = (StateGrib) state;
+    StateGrib localState;
+    synchronized (lock) {
+      localState = (StateGrib) state;
+    }
     if (localState.gribCollection != null)
       localState.gribCollection.showStatus(f, summaryOnly);
   }

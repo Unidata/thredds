@@ -80,24 +80,13 @@ class DbaseFieldDesc {
   }
 
   private int read_dbase3(DataInputStream in) {
-    double ver;
-    try {
-      String os = System.getProperty("java.version");
-      ver = Double.valueOf(os);
-    } catch (NumberFormatException e) {
-      ver = 1.02;
-    }
+
     Header = new byte[32];
     try {
       in.readFully(Header, 0, 32);
     } catch (java.io.IOException e) {
       return -1;
     }
-    /*
-      catch(java.io.EOFException e){
-      return -1;
-      }
-    */
 
     /* requires 1.1 compiler or higher */
     Name = new String(Header, 0, 11, CDM.utf8Charset);

@@ -58,7 +58,7 @@ import java.util.Map;
  * @since 2/20/14
  */
 class GribCollectionWriter {
-  public final int currentVersion = 1;
+  static public final int currentVersion = 1;
   protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) throws IOException {
     return writeGdsProto(hcs.getRawGds(), hcs.getPredefinedGridDefinition());
   }

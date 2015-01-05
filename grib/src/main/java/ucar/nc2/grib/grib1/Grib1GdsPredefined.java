@@ -148,7 +148,7 @@ public class Grib1GdsPredefined {
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
 
-      NcepLatLon that = (NcepLatLon) o;
+      NcepPS that = (NcepPS) o;
       if (gridNumber != that.gridNumber) return false;
       return true;
     }

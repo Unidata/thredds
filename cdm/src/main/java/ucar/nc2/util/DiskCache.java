@@ -90,6 +90,7 @@ import java.util.*;
  * @author jcaron
  */
 public class DiskCache {
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private String root = null;
   static private boolean standardPolicy = false;
   static private boolean checkExist = false;
@@ -224,12 +225,15 @@ public class DiskCache {
    */
   static public File getCacheFile(String fileLocation) {
     File f = new File(makeCachePath(fileLocation));
-    if (f.exists())
-      f.setLastModified(System.currentTimeMillis());
+    if (f.exists()) {
+      if (!f.setLastModified(System.currentTimeMillis()))
+        logger.warn("Failed to setLastModified on "+f.getPath());
+    }
 
     if (!checkExist) {
       File dir = f.getParentFile();
-      dir.mkdirs();
+      if (!dir.exists() && !dir.mkdirs())
+          logger.warn("Failed to mkdirs on "+dir.getPath());
       checkExist = true;
     }
     return f;
@@ -248,7 +252,7 @@ public class DiskCache {
       fileLocation = fileLocation.replace('\\', '/');  // LOOK - use better normalization code  eg Spring StringUtils
       cachePath = java.net.URLEncoder.encode(fileLocation, "UTF8");
     } catch (UnsupportedEncodingException e) {
-      cachePath = java.net.URLEncoder.encode(fileLocation); // shouldn't happen
+      throw new IllegalStateException(); // cant happen
     }
 
     //String cachePath = StringUtil.replace(fileLocation, '\\', "/");
@@ -261,14 +265,10 @@ public class DiskCache {
     pw.println("Cache files");
     pw.println("Size   LastModified       Filename");
     File dir = new File(root);
-    for (File file : dir.listFiles()) {
+    File[] children = dir.listFiles();
+    if (children == null) return;
+    for (File file : children) {
       String org = EscapeStrings.urlDecode(file.getName());
-      /*try {
-        org = URLDecoder.decode(file.getName(), "UTF8");
-      } catch (UnsupportedEncodingException e) {
-        e.printStackTrace();
-      }*/
-
       pw.println(" " + file.length() + " " + new Date(file.lastModified()) + " " + org);
     }
   }
@@ -282,7 +282,9 @@ public class DiskCache {
   static public void cleanCache(Date cutoff, StringBuilder sbuff) {
     if (sbuff != null) sbuff.append("CleanCache files before ").append(cutoff).append("\n");
     File dir = new File(root);
-    for (File file : dir.listFiles()) {
+    File[] children = dir.listFiles();
+    if (children == null) return;
+    for (File file : children) {
       Date lastMod = new Date(file.lastModified());
       if (lastMod.before(cutoff)) {
         boolean ret =file.delete();

@@ -90,7 +90,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private class Accum {
+  private static class Accum {
     int nrecords, ndups, nmissing;
 
     Accum add(GribCollectionImmutable.VariableIndex v) {

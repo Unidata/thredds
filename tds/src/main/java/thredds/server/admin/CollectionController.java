@@ -96,8 +96,8 @@ public class CollectionController  {
         });
 
         for (InvDatasetFeatureCollection fc : fcList) {
-          String ename = StringUtil2.quoteHtmlContent(fc.getCollectionName());  // LOOK maybe need quoteQueryParam() ??
-          String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + ename;
+          String uriParam = Escape.uriParam(fc.getCollectionName());
+          String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + uriParam;
           e.pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
           FeatureCollectionConfig config = fc.getConfig();
           if (config != null)
@@ -185,8 +185,8 @@ public class CollectionController  {
     });
 
     for (InvDatasetFeatureCollection fc : fcList) {
-      String ename = StringUtil2.quoteHtmlContent(fc.getCollectionName());
-      String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + ename;
+      String uriParam = Escape.uriParam(fc.getCollectionName());
+      String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + uriParam;
       pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
       pw.printf("<pre>%s</pre>%n", fc.showStatusShort());
     }
@@ -222,7 +222,7 @@ public class CollectionController  {
       }
     }
 
-    String collectName = StringUtil2.unquoteHtmlContent( req.getParameter(COLLECTION)); // this is the collection name
+    String collectName = StringUtil2.unescape( req.getParameter(COLLECTION)); // this is the collection name
     InvDatasetFeatureCollection fc = DataRootHandler.getInstance().findFcByCollectionName(collectName);
     if (fc == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -247,8 +247,8 @@ public class CollectionController  {
     } else {
       showFeatureCollection(pw, fc);
 
-      String ename = StringUtil2.quoteHtmlContent(fc.getCollectionName());
-      String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + ename + "&" + TRIGGER + "=" + CollectionUpdateType.nocheck;
+      String uriParam = Escape.uriParam(fc.getCollectionName());
+      String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + uriParam + "&" + TRIGGER + "=" + CollectionUpdateType.nocheck;
       pw.printf("<p/><a href='%s'>Send trigger to %s</a>%n", url, Escape.html(fc.getName()));
     }
 
@@ -292,7 +292,7 @@ public class CollectionController  {
       return null;
     }
 
-    String collectName = req.getParameter(COLLECTION);
+    String collectName = StringUtil2.unescape( req.getParameter(COLLECTION)); // this is the collection name
     String fileName = req.getParameter(FILE);
     String cmd = req.getParameter(CMD);
 
@@ -314,7 +314,7 @@ public class CollectionController  {
 
     // list the collection
     if (collectName != null) {
-      String ecollectName = StringUtil2.quoteHtmlContent(collectName); // this is the collection name
+      String ecollectName = Escape.uriParam(collectName);
       String url = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ecollectName;
       res.setContentType(ContentType.html.getContentHeader());
       PrintWriter pw = res.getWriter();

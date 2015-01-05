@@ -386,18 +386,13 @@ public class CoordinateAxis extends VariableDS {
    * Override Object.hashCode() to implement equals.
    */
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = super.hashCode();
-      if (getAxisType() != null)
-        result = 37 * result + getAxisType().hashCode();
-      if (getPositive() != null)
-        result = 37 * result + getPositive().hashCode();
-      hashCode = result;
-    }
-    return hashCode;
+    int result = super.hashCode();
+    if (getAxisType() != null)
+      result = 37 * result + getAxisType().hashCode();
+    if (getPositive() != null)
+      result = 37 * result + getPositive().hashCode();
+    return result;
   }
-
-  private int hashCode = 0;
 
   /////////////////////////////////////
 

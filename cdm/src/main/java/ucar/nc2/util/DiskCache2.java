@@ -64,6 +64,8 @@ public class DiskCache2 {
     NestedDirectory,
     NestedTruncate }
 
+  private static org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+
   private CachePathPolicy cachePathPolicy = CachePathPolicy.NestedDirectory;
   private boolean alwaysUseCache = false;
   private boolean neverUseCache = false;
@@ -72,7 +74,6 @@ public class DiskCache2 {
   private String root;
   private int persistMinutes, scourEveryMinutes;
   private Timer timer;
-  private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private boolean fail = false;
 
   /**

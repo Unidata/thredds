@@ -566,7 +566,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     // Find species name/id associated with this variable
     int spcid = -1;
     String spc = "";
-    while (spc != v2.getShortName()) {
+    while (!spc.equals(v2.getShortName())) {
       spc = this.species_names[++spcid];
     }
 
