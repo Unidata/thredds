@@ -9,7 +9,7 @@
 <h1>THREDDS Configuration Catalogs</h1>
 
 <div id="section">
-  <h2><a name="ConfigLayout">TDS Configuration Directory</a></h2>
+  <h2><a name="ConfigLayout">TDS Content Directory</a></h2>
 
   <div id="note" class="info">
     <h4>Location of the TDS Configuration Directory</h4>
@@ -20,14 +20,14 @@
 
   <h3>Location</h3>
 
-  <p>All TDS configuration information is stored in the TDS configuration directory. The location of the directory is
+  <p>All TDS configuration information is stored under the TDS<em> content directory</em>. The location of the directory is
   controlled by the <code>tds.content.root.path</code> Java system property. The default location is
   <code>${tomcat_home}/content/</code>, however we strongly recommend that you explicitly set this value in your Tomcat
   startup script.</p>
 
   <h3>Layout</h3>
 
-  <p>The configuration directory is created and populated with default files the first time the TDS is deployed. It is
+  <p>The content directory is created and populated with default files the first time the TDS is deployed. It is
     persistent even when a TDS installation is upgraded or re-deployed. All your configuration, modifications, and
     additions should be made in this directory. Do not place files containing passwords or anything else with
     security issues in this directory. Typically you will only be adding and modifying catalogs and configuration files.
@@ -148,7 +148,7 @@
 <div id="section">
   <h2><a name="ConfigCatalogs">TDS Configuration Catalogs</a></h2>
 
-  <p>TDS configuration catalogs are like THREDDS Client catalogs with a few extensions. They contain information detailing the datasets the TDS will serve and
+  <p>TDS configuration catalogs are like THREDDS <a href="CatalogPrimer.html">Client catalogs</a> with  extensions. They contain information detailing the datasets the TDS will serve and
     what services will be available for each dataset:</p>
   <ul>
     <li>The <code>datasetRoot</code> and <code>datasetScan</code> elements are extensions that:
