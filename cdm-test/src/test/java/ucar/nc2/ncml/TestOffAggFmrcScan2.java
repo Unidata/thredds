@@ -50,7 +50,7 @@ import java.io.IOException;
 public class TestOffAggFmrcScan2 {
 
   // Disable for now - Variable name (time1_bounds) must be unique within Group
-  // @Test
+  @Test
   public void testOpen() throws Exception {
     String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/rtmodels/";
     String ncml =

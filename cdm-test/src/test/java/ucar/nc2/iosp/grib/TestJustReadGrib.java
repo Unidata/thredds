@@ -56,12 +56,12 @@ public class TestJustReadGrib  {
   }
 
   @Test
-  public void readMotherloadNcepFiles() throws Exception {
+  public void readNcepFiles() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "tds/ncep", null, true);
   }
 
   @Test
-  public void readMotherloadFnmocFiles() throws Exception {
+  public void readFnmocFiles() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "tds/fnmoc", null, true);
   }
 
