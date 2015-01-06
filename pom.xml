@@ -618,16 +618,6 @@
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
         <version>${jaxen.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>maven-cobertura-plugin</artifactId>
-            <groupId>maven-plugins</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>maven-findbugs-plugin</artifactId>
-            <groupId>maven-plugins</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <!-- Used only in tds. -->

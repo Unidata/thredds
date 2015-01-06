@@ -32,7 +32,7 @@ subprojects {
         atgTaglibJsonVersion = '0.4.1'
         casVersion = '3.1.10'
         cglibVersion = '2.2'
-        guavaVersion = '17.0'
+        guavaVersion = '18.0'
         protobufVersion = '2.5.0'
         comJgoodiesVersion = '1.6.0'
         comSleepycatVersion = '4.0.92'
