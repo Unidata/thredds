@@ -81,7 +81,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static protected String context = "/thredds";                     // LOOK
   static private String cdmrFeatureServiceUrlPath = "/cdmrFeature"; // LOOK
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
-  static private org.slf4j.Logger classLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
+  static private org.slf4j.Logger initLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class.getName() + ".catalogInit");
 
   static public void setContext(String c) {
     context = c;
@@ -107,32 +107,28 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return new InvService("cdmrFeature", "cdmrFeature", context + cdmrFeatureServiceUrlPath, null, null);
   }
 
-  static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
+  static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, FeatureCollectionConfig config) {
     InvDatasetFeatureCollection result;
-    if (fcType == FeatureCollectionType.FMRC)
-      result = new InvDatasetFcFmrc(parent, name, path, fcType, config);
+    if (config.type == FeatureCollectionType.FMRC)
+      result = new InvDatasetFcFmrc(parent, config);
 
-    else if (fcType == FeatureCollectionType.GRIB1 || fcType == FeatureCollectionType.GRIB2) {
+    else if (config.type == FeatureCollectionType.GRIB1 || config.type == FeatureCollectionType.GRIB2) {
       // use reflection to decouple from grib.jar
       try {
         Class c = InvDatasetFeatureCollection.class.getClassLoader().loadClass("thredds.catalog.InvDatasetFcGrib");
-        // public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
-        Constructor ctor = c.getConstructor(InvDatasetImpl.class, String.class, String.class, FeatureCollectionType.class, FeatureCollectionConfig.class);
-        result = (InvDatasetFeatureCollection) ctor.newInstance(parent, name, path, fcType, config);
+        Constructor ctor = c.getConstructor(InvDatasetImpl.class, FeatureCollectionConfig.class);
+        result = (InvDatasetFeatureCollection) ctor.newInstance(parent, config);
 
       } catch (Throwable e) {
-        classLogger.error("Failed to open " + name + " path=" + path, e);
+        initLogger.error("Failed to open " + config.collectionName + " path=" + config.path, e);
         return null;
       }
 
     } else {
-      result = new InvDatasetFcPoint(parent, name, path, fcType, config);
+      result = new InvDatasetFcPoint(parent, config);
     }
 
-    if (result != null) {
-      result.finishConstruction(); // stuff that shouldnt be done in a constructor
-    }
-
+    result.finishConstruction(); // stuff that shouldnt be done in a constructor
     return result;
   }
 
@@ -172,12 +168,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected org.slf4j.Logger logger;
 
   // from the config catalog
-  protected final String path;
+  protected final String configPath;
   protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
   protected String topDirectory;
-  protected MCollection datasetCollection; // defines the collection of datasets in this feature collection, actually final
-  protected String collectionName;
+  protected MCollection datasetCollection; // defines the collection of datasets in this feature collection, actually final NOT USED BY GRIB
 
   @GuardedBy("lock")
   protected State state;
@@ -185,18 +180,14 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected boolean first = true;
   protected final Object lock = new Object();
 
-  protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
-    super(parent, name, buildCatalogServiceHref(path));
-    this.path = path;
-    this.fcType = fcType;
+  protected InvDatasetFeatureCollection(InvDatasetImpl parent, FeatureCollectionConfig config) {
+    super(parent, config.name, buildCatalogServiceHref(config.path));
+    this.configPath = config.path;
+    this.fcType = config.type;
     this.config = config;
 
     this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
-
-    this.collectionName = CollectionAbstract.cleanName(config.name != null ? config.name : name);
-    config.name = collectionName;
-    this.logger = loggerFactory.getLogger("fc." + collectionName); // seperate log file for each feature collection (!!)
-
+    this.logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection
     this.logger.info("FeatureCollection added = {}", getConfig());
   }
 
@@ -204,7 +195,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     Formatter errlog = new Formatter();
     if (config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
-      datasetCollection = new CollectionManagerCatalog(config.name, config.spec, null, errlog);
+      datasetCollection = new CollectionManagerCatalog(config.collectionName, config.spec, null, errlog);
     } else {
       datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
     }
@@ -221,13 +212,17 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   public String getCollectionName() {
-    return collectionName;
+    return config.collectionName;
   }
 
   @Override
   // DatasetCollectionManager was changed asynchronously
   public void sendEvent(CollectionUpdateType type) {
-    update(type);
+    try {
+      update(type);
+    } catch (IOException e) {
+      logger.error("Error processing event", e);
+    }
 
 /*     if (event == CollectionUpdateListener.TriggerType.updateNocheck)
 
@@ -247,7 +242,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // localState is synched, may be directly changed
   abstract protected void updateCollection(State localState, CollectionUpdateType force);
 
-  abstract protected void makeDatasetTop(State localState);
+  abstract protected void makeDatasetTop(State localState) throws IOException;
 
   // this allows us to put warnings into the catalogInit.log
   @Override
@@ -266,7 +261,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   protected String getCatalogHref(String what) {
-    return buildCatalogServiceHref(path + "/" + what);
+    return buildCatalogServiceHref(configPath + "/" + what);
   }
 
   // call this first time a request comes in
@@ -285,7 +280,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    *
    * @return a copy of the State
    */
-  protected State checkState() {
+  protected State checkState() throws IOException {
     State localState;
 
     synchronized (lock) {
@@ -305,9 +300,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * Collection was changed, update internal objects.
    * called by CollectionUpdater, trigger via handleCollectionEvent, so in a quartz scheduler thread
    *
-   * @param force test : update index if anything changed or nocheck - use index if it exists
+   * @param force update type
    */
-  protected void update(CollectionUpdateType force) {  // this may be called from a background thread
+  protected void update(CollectionUpdateType force) throws IOException {  // this may be called from a background thread, or from checkState() request thread
     State localState;
 
     synchronized (lock) {
@@ -334,7 +329,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public String getPath() {
-    return path;
+    return configPath;
   }
 
   public String getLatestFileName() {
@@ -413,7 +408,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @param catURI  the base URI for the catalog to be made, used to resolve relative URLs.
    * @return containing catalog
    */
-  abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI);
+  abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI) throws IOException;
 
   /**
    * Make the containing catalog of this feature collection
@@ -541,9 +536,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     String fname = mpath.substring(topDirectory.length() + 1);
 
     String path = FILES + "/" + fname;
-    top.setUrlPath(this.path + "/" + path);
-    top.setID(this.path + "/" + path);
-    top.tmi.addVariableMapLink(makeMetadataLink(this.path + "/" + path, VARIABLES));
+    top.setUrlPath(this.configPath + "/" + path);
+    top.setID(this.configPath + "/" + path);
+    top.tmi.addVariableMapLink(makeMetadataLink(this.configPath + "/" + path, VARIABLES));
     top.tm.setDataSize(mfile.getLength());
 
     result.finish();

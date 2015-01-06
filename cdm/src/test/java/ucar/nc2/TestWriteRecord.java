@@ -327,10 +327,6 @@ public class TestWriteRecord extends TestCase  {
       System.err.println("ERROR writing file");
       assert(false);
     }
-
-
-    System.out.println( "**** TestWriteRecord done");
-
   }
 
   // make an example writing records
@@ -418,8 +414,6 @@ public class TestWriteRecord extends TestCase  {
     } catch (IOException e) {
       System.err.println("ERROR writing file");
     }
-
-    System.out.println( "**** TestWriteRecord done");
   }
 
 

@@ -956,8 +956,9 @@ public class Section {
 
 
   /**
-   * Iterate over a section, returning the index in an equivilant 1D array of shape[]
-   * So this is a section in a larger array of shape
+   * Iterate over a section, returning the index in an equivalent 1D array of shape[], and optionally the corresponding index[n]
+   * So this is a section in a (possibly) larger array described by shape[].
+   * The index is in the "source" array.
    *
    * @param shape total array shape
    * @return iterator over this section
@@ -992,10 +993,10 @@ public class Section {
     }
 
     /**
-     * Get the position in the equivilant 1D array of shape[]
+     * Get the position in the equivalant 1D array of shape[]
      *
      * @param index if not null, return the current nD index
-     * @return the position in a 1D array
+     * @return the current position in a 1D array
      */
     public int next(int[] index) {
       int next = currentElement();

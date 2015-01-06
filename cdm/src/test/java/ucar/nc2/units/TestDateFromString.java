@@ -37,7 +37,7 @@ import junit.framework.*;
 import java.util.Date;
 
 /**
- * _more_
+ * Test DateFromString
  *
  * @author edavis
  * @since Nov 29, 2005 6:14:37 PM
@@ -54,20 +54,13 @@ public class TestDateFromString extends TestCase {
     super(name);
   }
 
-  protected void setUp() {
-  }
 
-  /**
-   * Test ...
-   */
   public void testGetDateUsingSimpleDateFormat() {
     String dateFormatString = "yyyyMMdd_HHmm";
     Date date = DateFromString.getDateUsingSimpleDateFormat(fileName, dateFormatString);
     assertTrue("Calculated date <" + date.toString() + " [" + date.getTime() + "]> not as expected <" + dateAsISOString + "[" + dateAsLong + "]>." +
             "\nUsing fileName <" + fileName + "> and dateFormatString <" + dateFormatString + ">",
             date.getTime() == dateAsLong);
-
-
   }
 
   public void testGetDateUsingCompleteDateFormat() {
@@ -100,10 +93,3 @@ public class TestDateFromString extends TestCase {
             date.getTime() == dateAsLong);
   }
 }
-/*
- * $Log: TestDateFromString.java,v $
- * Revision 1.1  2005/11/30 21:01:47  edavis
- * Add thredds.util.DateFromString to provide convenience methods for getting
- * dates from strings.
- *
- */

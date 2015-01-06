@@ -105,7 +105,7 @@ public class TestGribMisc {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
     System.out.printf("testJPEG2K %s%n", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
-      Variable v = ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1");
+      Variable v = ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1"); // Land_cover_0__sea_1__land_surface
       int[] origin = {0, 38, 281};
       int[] shape = {1, 1, 2};
       Array vals = v.read(origin, shape);

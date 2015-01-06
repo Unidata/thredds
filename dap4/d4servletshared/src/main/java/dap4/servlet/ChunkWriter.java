@@ -20,6 +20,8 @@ public class ChunkWriter extends OutputStream
 
     static final int MAXCHUNKSIZE = 0xFFFFFF;
 
+    static final long DEFAULTWRITELIMIT = 100*1000000;
+
     static final int SIZEOF_INTEGER = 4;
 
     static public final byte[] CRLF8 = DapUtil.extract(DapUtil.UTF8.encode(DapUtil.CRLF));
@@ -43,6 +45,8 @@ public class ChunkWriter extends OutputStream
     protected State state = State.INITIAL;
 
     protected int maxbuffersize = MAXCHUNKSIZE;
+    protected long writelimit = DEFAULTWRITELIMIT; // Max amount we will accept
+    protected long writecount = 0; // actual amount written so far
     protected ByteBuffer chunk = null; // give caller a chance to set the max buffersize
     protected ByteBuffer header = null;
     protected ByteOrder order = null;
@@ -53,7 +57,7 @@ public class ChunkWriter extends OutputStream
     // Constructor(s)
 
     public ChunkWriter(OutputStream output, RequestMode mode, ByteOrder order)
-        throws IOException
+            throws IOException
     {
         this.output = output;
         setOrder(order);
@@ -91,6 +95,12 @@ public class ChunkWriter extends OutputStream
         this.order = order;
     }
 
+    public void setWriteLimit(long limit)
+    {
+        writelimit = limit;
+    }
+
+
     //////////////////////////////////////////////////
 
     /**
@@ -102,7 +112,7 @@ public class ChunkWriter extends OutputStream
 
     public void
     writeDSR(String dsr)
-        throws IOException
+            throws IOException
     {
         if(state != State.INITIAL)
             throw new DapException("Attempt to write DSR twice");
@@ -139,7 +149,7 @@ public class ChunkWriter extends OutputStream
 
     public void
     writeDMR(String dmr)
-        throws IOException
+            throws IOException
     {
         if(state != State.INITIAL)
             throw new DapException("Attempt to write DMR twice");
@@ -173,7 +183,7 @@ public class ChunkWriter extends OutputStream
 
     void
     sendDXR(byte[] dxr8)
-        throws IOException
+            throws IOException
     {
         if(dxr8 == null || dxr8.length == 0)
             return; // do nothing
@@ -183,8 +193,8 @@ public class ChunkWriter extends OutputStream
         } else {//mode == DATA
             // Prefix with chunk header
             int flags = DapUtil.CHUNK_DATA;
-	    if(order == ByteOrder.LITTLE_ENDIAN)
-		flags |= DapUtil.CHUNK_LITTLE_ENDIAN;
+            if(order == ByteOrder.LITTLE_ENDIAN)
+                flags |= DapUtil.CHUNK_LITTLE_ENDIAN;
             chunkheader(dxr8.length, flags, header);
             // write the header
             output.write(DapUtil.extract(header));
@@ -212,7 +222,7 @@ public class ChunkWriter extends OutputStream
                String msg,
                String cxt,
                String other)
-        throws IOException
+            throws IOException
     {
         dmr8 = null;
         ErrorResponse response = new ErrorResponse(httpcode, msg, cxt, other);
@@ -225,7 +235,7 @@ public class ChunkWriter extends OutputStream
             // clear any partial chunk
             chunk.clear();
             // create an error header
-	    int flags = DapUtil.CHUNK_ERROR | DapUtil.CHUNK_END;
+            int flags = DapUtil.CHUNK_ERROR | DapUtil.CHUNK_END;
             chunkheader(errbody8.length, flags, header);
             output.write(DapUtil.extract(header));
             output.write(errbody8);
@@ -245,7 +255,7 @@ public class ChunkWriter extends OutputStream
      */
 
     public void flush()
-        throws IOException
+            throws IOException
     {
         // Flush currently does nothing
         // Actual flushing occurs inline
@@ -261,7 +271,7 @@ public class ChunkWriter extends OutputStream
      */
 
     public void close()
-        throws IOException
+            throws IOException
     {
         if(dmr8 != null) {
             sendDXR(dmr8);
@@ -298,7 +308,7 @@ public class ChunkWriter extends OutputStream
      * @throws IOException on IO related errors
      */
     void writeChunk(int flags)
-        throws IOException
+            throws IOException
     {
         // If flags indicate CHUNK_END
         // and amount to write is zero,
@@ -308,12 +318,12 @@ public class ChunkWriter extends OutputStream
         int buffersize = chunk.position();
         chunkheader(buffersize, flags, header);
         // output the header followed by the data (if any)
-	    // Zero size chunk is ok.
+        // Zero size chunk is ok.
         output.write(DapUtil.extract(header));
         if(buffersize > 0)
             output.write(chunk.array(), 0, buffersize);
         if(DEBUG)
-            DapDump.dumpbytestream(chunk,getOrder(),"ChunkWriter.writechunk");
+            DapDump.dumpbytestream(chunk, getOrder(), "ChunkWriter.writechunk");
         chunk.clear();// reset
     }
 
@@ -340,7 +350,7 @@ public class ChunkWriter extends OutputStream
 
     @Override
     public void write(int b)
-        throws IOException
+            throws IOException
     {
         byte[] buf = new byte[1];
         buf[0] = (byte) (b & 0xff);
@@ -363,9 +373,11 @@ public class ChunkWriter extends OutputStream
 
     @Override
     public void write(byte[] b, int off, int len)
-        throws IOException
+            throws IOException
     {
         verifystate();
+        if(writecount + len >= writelimit)
+            throw new DapException("Attempt to write too much data: limit=%d");
         if(chunk == null) chunk = ByteBuffer.allocate(maxbuffersize).order(getOrder());
         if(state == State.DMR) {
             chunk.clear(); // reset
@@ -389,12 +401,12 @@ public class ChunkWriter extends OutputStream
                 avail -= towrite;
             } while(left > 0);
         }
-
+        writecount += len;
     }
 
     static public void
     chunkheader(int length, int flags, ByteBuffer hdrbuf)
-        throws DapException
+            throws DapException
     {
         if(length > MAXCHUNKSIZE || length < 0)
             throw new DapException("Illegal chunk size: " + length);
@@ -404,7 +416,7 @@ public class ChunkWriter extends OutputStream
     }
 
     void verifystate()
-        throws DapException
+            throws DapException
     {
         // Verify that we are in a proper state to write data
         switch (state) {

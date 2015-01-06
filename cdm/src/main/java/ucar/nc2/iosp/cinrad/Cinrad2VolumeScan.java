@@ -100,7 +100,7 @@ public class Cinrad2VolumeScan {
 
     raf.seek(0);
     raf.order(RandomAccessFile.LITTLE_ENDIAN); //.BIG_ENDIAN);
-     // try to get it from the filename LOOK
+    // try to get it from the filename LOOK
     String loc = raf.getLocation();
     stationId = getStationID(loc);
     // volume scan header
@@ -119,20 +119,20 @@ public class Cinrad2VolumeScan {
 
     // try to find the station
     if (stationId != null) {
-      station = NexradStationDB.get("K"+ stationId);
+      station = NexradStationDB.get("K" + stationId);
       dataFormat = "CINRAD-SA";
     }
 
-   //   if(station == null) {
-  //        station = new NexradStationDB.Station();
- //     stationId = "CHGZ";
-  //    station.id = "CHGZ";
-  //    station.name = "CHINA, GuanZhou";
-  //    station.lat = parseDegree("23:0:14");
-  //    station.lon = parseDegree("113:21:18");
-   //   station.elev = Double.parseDouble("180.3");
-  //    dataFormat = "CINRAD-SA";
-  //    }
+    //   if(station == null) {
+    //        station = new NexradStationDB.Station();
+    //     stationId = "CHGZ";
+    //    station.id = "CHGZ";
+    //    station.name = "CHINA, GuanZhou";
+    //    station.lat = parseDegree("23:0:14");
+    //    station.lon = parseDegree("113:21:18");
+    //   station.elev = Double.parseDouble("180.3");
+    //    dataFormat = "CINRAD-SA";
+    //    }
 
     //see if we have to uncompress
     if (dataFormat.equals(AR2V0001)) {
@@ -142,15 +142,15 @@ public class Cinrad2VolumeScan {
         RandomAccessFile uraf = null;
         File uncompressedFile = DiskCache.getFileStandardPolicy(raf.getLocation() + ".uncompress");
         if (uncompressedFile.exists()) {
-          uraf = new ucar.unidata.io.RandomAccessFile(uncompressedFile.getPath(), "r");
+          uraf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFile.getPath());
         } else {
           // nope, gotta uncompress it
-          uraf = uncompress(raf, uncompressedFile.getPath(), debug);
           try {
-              uraf.flush();
+            uraf = uncompress(raf, uncompressedFile.getPath(), debug);
+            uraf.flush();
           } catch (IOException e) {
-              uraf.close();
-              throw e;
+            if (uraf != null) uraf.close();
+            throw e;
           }
 
           if (debug) log.debug("flushed uncompressed file= " + uncompressedFile.getPath());
@@ -208,34 +208,36 @@ public class Cinrad2VolumeScan {
     reflectivityGroups = sortScans("reflect", reflectivity);
     dopplerGroups = sortScans("doppler", doppler);
   }
-    public String getStationID( String location) {
-       String stationID;
-       // posFirst: last '/' if it exists
-       int posFirst = location.lastIndexOf('/') + 1;
-       if (posFirst < 0) posFirst = 0;
-       stationID = location.substring(posFirst,posFirst+4);
-       return  stationID;
-     }
 
-    private static double parseDegree( String s) {
-      StringTokenizer stoke = new StringTokenizer(s, ":");
-      String degS = stoke.nextToken();
-      String minS = stoke.nextToken();
-      String secS = stoke.nextToken();
+  public String getStationID(String location) {
+    String stationID;
+    // posFirst: last '/' if it exists
+    int posFirst = location.lastIndexOf('/') + 1;
+    if (posFirst < 0) posFirst = 0;
+    stationID = location.substring(posFirst, posFirst + 4);
+    return stationID;
+  }
 
-      try {
-        double deg = Double.parseDouble( degS);
-        double min = Double.parseDouble( minS);
-        double sec = Double.parseDouble( secS);
-        if (deg < 0)
-          return deg - min/60 - sec/3600;
-        else
-          return deg + min/60 + sec/3600;
-      } catch (NumberFormatException e) {
-        e.printStackTrace();
-      }
-      return 0.0;
+  private static double parseDegree(String s) {
+    StringTokenizer stoke = new StringTokenizer(s, ":");
+    String degS = stoke.nextToken();
+    String minS = stoke.nextToken();
+    String secS = stoke.nextToken();
+
+    try {
+      double deg = Double.parseDouble(degS);
+      double min = Double.parseDouble(minS);
+      double sec = Double.parseDouble(secS);
+      if (deg < 0)
+        return deg - min / 60 - sec / 3600;
+      else
+        return deg + min / 60 + sec / 3600;
+    } catch (NumberFormatException e) {
+      e.printStackTrace();
     }
+    return 0.0;
+  }
+
   private ArrayList sortScans(String name, List scans) {
 
     // now group by elevation_num
@@ -397,8 +399,7 @@ public class Cinrad2VolumeScan {
       List scan = (List) scans.get(i);
       Cinrad2Record record = (Cinrad2Record) scan.get(0);
 
-      if ((datatype == Cinrad2Record.VELOCITY_HI) && (record.resolution != firstRecord.resolution))
-      { // do all velocity resolutions match ??
+      if ((datatype == Cinrad2Record.VELOCITY_HI) && (record.resolution != firstRecord.resolution)) { // do all velocity resolutions match ??
         log.warn(name + " scan " + i + " diff resolutions = " + record.resolution + ", " + firstRecord.resolution +
                 " elev= " + record.elevation_num + " " + record.getElevation());
         ok = false;
@@ -540,10 +541,9 @@ public class Cinrad2VolumeScan {
     raf2.seek(0);
     byte[] header = new byte[Cinrad2Record.FILE_HEADER_SIZE];
     int bytesRead = raf2.read(header);
-    if (bytesRead != header.length)
-    {
-        throw new IOException("Error reading CINRAD header -- got " +
-                bytesRead + " rather than" + header.length);
+    if (bytesRead != header.length) {
+      throw new IOException("Error reading CINRAD header -- got " +
+              bytesRead + " rather than" + header.length);
     }
     RandomAccessFile dout2 = new RandomAccessFile(ufilename, "rw");
 
@@ -634,7 +634,7 @@ public class Cinrad2VolumeScan {
       raf.seek(0);
       String test = raf.readString(8);
       if (test.equals(Cinrad2VolumeScan.ARCHIVE2) || test.equals
-             (Cinrad2VolumeScan.AR2V0001)) {
+              (Cinrad2VolumeScan.AR2V0001)) {
         System.out.println("--Good header= " + test);
         raf.seek(24);
       } else {

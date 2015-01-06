@@ -326,7 +326,7 @@ public class NcepHtmlScraper  {
 
   public static void main(String[] args) throws IOException {
     File dir = new File(dirOut);
-    dir.mkdirs();
+    boolean result = dir.mkdirs();
     NcepHtmlScraper scraper = new NcepHtmlScraper();
     scraper.parseTopDoc();
   }

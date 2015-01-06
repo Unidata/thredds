@@ -45,7 +45,7 @@ import java.util.StringTokenizer;
  * @since Jul 18, 2007
  */
 public class TagEnum {
-  private static java.util.Map<Short, TagEnum> hash = new java.util.HashMap<Short, TagEnum>(100);
+  private static java.util.Map<Short, TagEnum> hash = new java.util.HashMap<>(100);
 
   public static int SPECIAL_LINKED = 1;    /* Fixed-size Linked blocks */
   public static int SPECIAL_EXT = 2;       /* External */

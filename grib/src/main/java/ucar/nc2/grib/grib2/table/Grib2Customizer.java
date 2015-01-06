@@ -59,8 +59,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   static public Grib2Customizer factory(Grib2Record gr) throws IOException {
     Grib2SectionIdentification ids = gr.getId();
-    Grib2SectionProductDefinition pdss = gr.getPDSsection();
-    Grib2Pds pds = pdss.getPDS();
+    Grib2Pds pds = gr.getPDS();
     return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version(), pds.getGenProcessId());
   }
 

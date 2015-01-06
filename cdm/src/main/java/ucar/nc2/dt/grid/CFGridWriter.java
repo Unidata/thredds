@@ -453,8 +453,8 @@ public class CFGridWriter {
     //NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, null);
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, chunking);
     writer.setLargeFile(isLargeFile);
-
-    writeGlobalAttributes(writer, gds, resultBB);
+    if (resultBB != null)
+      writeGlobalAttributes(writer, gds, resultBB);
 
     // use fileWriter to copy the variables
     FileWriter2 fileWriter = new FileWriter2(writer);

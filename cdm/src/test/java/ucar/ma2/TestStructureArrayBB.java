@@ -32,6 +32,7 @@
  */
 package ucar.ma2;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.util.Indent;
@@ -92,14 +93,28 @@ public class TestStructureArrayBB {
     nested2.setStructureMembers(nested2_members);
 
     ArrayStructureBB.setOffsets(members);
-    Formatter f = new Formatter(System.out);
-    Indent indent = new Indent(2);
-    ArrayStructureBB.showOffsets(members, indent, f);
+    int[] offs = {0, 4, 40};
+    for (int i = 0; i < offs.length; ++i) {
+      StructureMembers.Member m = members.getMember(i);
+      Assert.assertEquals("Bad offset for " + m.getName(), offs[i],
+              m.getDataParam());
+    }
+
+    int[] offs2 = {0, 4, 12, 60};
+    for (int i = 0; i < offs2.length; ++i) {
+        StructureMembers.Member m = nested1_members.getMember(i);
+        Assert.assertEquals("Bad offset for " + m.getName(), offs2[i],
+                m.getDataParam());
+    }
+
+//    Formatter f = new Formatter(System.out);
+//    Indent indent = new Indent(2);
+//    ArrayStructureBB.showOffsets(members, indent, f);
 
     ArrayStructureBB bb = new ArrayStructureBB(members, new int[]{4});
     fillStructureArray(bb);
 
-    System.out.println( NCdumpW.toString(bb, "test arrayBB", null));
+//    System.out.println( NCdumpW.toString(bb, "test arrayBB", null));
 
     new TestStructureArray().testArrayStructure(bb);
 

@@ -229,12 +229,12 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
     Variable lonVar = ncd.getRootGroup().findVariable( lonVarName );
     lonVar.addAttribute( new Attribute( "units", "degrees_east" ) );
 
-    this.setTrajectoryInfo( ncfile.getRootGroup().findDimension( trajDimName ),
-                            ncfile.getRootGroup().findVariable( trajVarName ),
-                            ncfile.getRootGroup().findDimension( timeDimName ),
-                            ncfile.getRootGroup().findVariable( timeVarName ),
-                            ncfile.getRootGroup().findVariable( latVarName ),
-                            ncfile.getRootGroup().findVariable( lonVarName ),
-                            ncfile.getRootGroup().findVariable( elevVarName ) );
+    this.setTrajectoryInfo( netcdfDataset.getRootGroup().findDimension( trajDimName ),
+                            netcdfDataset.getRootGroup().findVariable( trajVarName ),
+                            netcdfDataset.getRootGroup().findDimension( timeDimName ),
+                            netcdfDataset.getRootGroup().findVariable( timeVarName ),
+                            netcdfDataset.getRootGroup().findVariable( latVarName ),
+                            netcdfDataset.getRootGroup().findVariable( lonVarName ),
+                            netcdfDataset.getRootGroup().findVariable( elevVarName ) );
   }
 }

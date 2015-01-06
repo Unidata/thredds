@@ -233,7 +233,9 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       } else { // not a string
         missingValue = getValueAsDouble(att);
         missType = att.getDataType();
-        hasMissingValue = true;
+        for (double mv : missingValue)
+          if (!Double.isNaN(mv))
+            hasMissingValue = true;   // dont need to do anything if its already a NaN
       }
       if (hasScaleOffset) forVar.remove(att);
     }

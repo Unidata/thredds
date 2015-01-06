@@ -2,7 +2,6 @@ package thredds.catalog;
 
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Attribute;
 import ucar.nc2.ft.FeatureDataset;
@@ -44,8 +43,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   private final FeatureDatasetPoint fd;  // LOOK this stays open
   private final Set<FeatureCollectionConfig.PointDatasetType> wantDatasets;
 
-  InvDatasetFcPoint(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
-    super(parent, name, path, fcType, config);
+  InvDatasetFcPoint(InvDatasetImpl parent, FeatureCollectionConfig config) {
+    super(parent, config);
     makeCollection();
 
     Formatter errlog = new Formatter();
@@ -177,7 +176,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }   */
 
   @Override
-  public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI)  {
+  public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI) throws IOException {
     logger.debug("FcPoint make catalog for " + match + " " + catURI);
     State localState = checkState();
 
@@ -194,7 +193,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       }
 
     } catch (Exception e) {
-      logger.error("Error making catalog for " + path, e);
+      logger.error("Error making catalog for " + configPath, e);
     }
 
     return null;
@@ -220,7 +219,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       InvDatasetImpl ds = new InvDatasetImpl(this, "Feature Collection");
       String name = getName() + "_" + FC;
       name = StringUtil2.replace(name, ' ', "_");
-      ds.setUrlPath(this.path + "/" + name);
+      ds.setUrlPath(this.configPath + "/" + name);
       ds.setID(id + "/" + name);
       ThreddsMetadata tm = ds.getLocalMetadata();
       ds.getLocalMetadataInheritable().setServiceName(collectionService.getName());

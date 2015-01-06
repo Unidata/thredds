@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.mcidas;
 
 
+import edu.wisc.ssec.mcidas.AreaFile;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -89,15 +90,20 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException problem reading file
    */
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
+
     if (areaReader == null)
       areaReader = new AreaReader();
 
     try {
-      areaReader.init(raf, ncfile);
+      areaReader.init(raf.getLocation(), ncfile);
 
-    } catch (Exception e) {
+    } catch (Throwable e) {
       close();              // try not to leak files
       throw new IOException(e);
+
+    } finally {
+      raf.close(); // avoid leaks
     }
 
   }
@@ -120,6 +126,21 @@ public class AreaServiceProvider extends AbstractIOServiceProvider {
       if (areaReader.af != null)
         areaReader.af.close();
       areaReader = null;
+    }
+  }
+
+  // release any resources like file handles
+  public void release() throws IOException {
+    if (areaReader.af != null)
+      areaReader.af.close();
+  }
+
+  // reacquire any resources like file handles
+  public void reacquire() throws IOException {
+    try {
+      areaReader.af = new AreaFile(location);
+    } catch (Throwable e) {
+      throw new IOException(e);
     }
   }
 

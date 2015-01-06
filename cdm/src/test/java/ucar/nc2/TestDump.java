@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
@@ -60,13 +61,15 @@ public class TestDump extends TestCase  {
   }
   protected void tearDown() throws Exception {
     out.close();
-    tempFile.delete();
+    if (!tempFile.delete())
+      System.out.printf("delete failed on %s%n",tempFile);
   }
 
   public void testNCdump() {
     try {
-      NCdump.print( TestDir.cdmLocalTestDataDir +"testWrite.nc", out, false, true, false, false, null, null);
-      NCdump.printNcML( TestDir.cdmLocalTestDataDir +"testWriteRecord.nc", out);
+      PrintWriter pw = new PrintWriter( new OutputStreamWriter(out, CDM.utf8Charset));
+      NCdumpW.print( TestDir.cdmLocalTestDataDir +"testWrite.nc", pw, false, true, false, false, null, null);
+      NCdumpW.printNcML( TestDir.cdmLocalTestDataDir +"testWriteRecord.nc", pw);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       assert (false);

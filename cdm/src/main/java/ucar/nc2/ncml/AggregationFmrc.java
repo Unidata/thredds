@@ -57,7 +57,6 @@ import java.io.*;
 public class AggregationFmrc extends AggregationOuterDimension {
   static protected Set<NetcdfDataset.Enhance> fmrcEnhanceMode = NetcdfDataset.getDefaultEnhanceMode();
 
-  private boolean debug = false;
   private Fmrc fmrc;
   private String runMatcher; // , forecastMatcher, offsetMatcher; // scanFmrc
 
@@ -124,38 +123,5 @@ public class AggregationFmrc extends AggregationOuterDimension {
     // ncDataset.empty();
     // fmrc.getDataset2D(false, true, ncDataset);
   }
-
-  /**
-   * testing
-   */
-  public static void main(String arg[]) throws IOException {
-    String defaultFilename = "C:/data/rap/fmrc.xml";
-    String filename = (arg.length > 0) ? arg[0] : defaultFilename;
-
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(filename);
-    GridDatatype gg = gds.findGridDatatype("T");
-    GridCoordSystem gsys = gg.getCoordinateSystem();
-
-    // gsys.getTimeAxisForRun(1);  // generate error
-
-    CoordinateAxis1DTime rtaxis = gsys.getRunTimeAxis();
-    CoordinateAxis taxis2D = gsys.getTimeAxis();
-    Array data = taxis2D.read();
-    NCdump.printArray(data, "2D time array", System.out, null);
-
-    System.out.println("Run Time, Valid Times");
-    List<CalendarDate> runtimes = rtaxis.getCalendarDates();
-    for (int i = 0; i < runtimes.size(); i++) {
-      System.out.println("\n" + runtimes.get(i));
-
-      CoordinateAxis1DTime taxis = gsys.getTimeAxisForRun(i);
-      List<CalendarDate> times = taxis.getCalendarDates();
-      for (int j = 0; j < times.size(); j++) {
-        System.out.println("   " + times.get(j));
-      }
-    }
-
-  }
-
 
 }

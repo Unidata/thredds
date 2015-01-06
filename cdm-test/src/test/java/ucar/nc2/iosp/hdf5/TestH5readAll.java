@@ -39,12 +39,6 @@ import java.util.Collection;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.NCdump;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Array;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.test.util.TestDir;
 

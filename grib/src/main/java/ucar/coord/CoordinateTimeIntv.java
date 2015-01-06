@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -14,6 +15,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.Misc;
 
 import java.util.*;
 
@@ -23,16 +25,17 @@ import java.util.*;
  * @author John
  * @since 11/28/13
  */
+@Immutable
 public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordinate {
   private final List<TimeCoord.Tinv> timeIntervals;
 
-  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<TimeCoord.Tinv> timeIntervals) {
-    super(code, timeUnit, refDate);
+  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<TimeCoord.Tinv> timeIntervals, int[] time2runtime) {
+    super(code, timeUnit, refDate, time2runtime);
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
   }
 
   CoordinateTimeIntv(CoordinateTimeIntv org, CalendarDate refDate) {
-    super(org.code, org.timeUnit, refDate);
+    super(org.code, org.timeUnit, refDate, null);
     this.timeIntervals = org.getTimeIntervals();
   }
 
@@ -55,8 +58,14 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return Collections.binarySearch(timeIntervals, (TimeCoord.Tinv) val);
   }
 
+  @Override
   public int getSize() {
     return timeIntervals.size();
+  }
+
+  @Override
+  public int estMemorySize() {
+    return 616 + getSize() * (24);  // LOOK wrong
   }
 
   @Override
@@ -97,9 +106,11 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
-     for (TimeCoord.Tinv cd : timeIntervals)
-       info.format(" %s,", cd);
+    for (TimeCoord.Tinv cd : timeIntervals)
+      info.format(" %s,", cd);
     info.format(" (%d) %n", timeIntervals.size());
+    if (time2runtime != null)
+      info.format("%stime2runtime: %s", indent, Misc.showInts(time2runtime));
   }
 
   @Override
@@ -131,7 +142,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   ////////////////////////////////////////
 
-    // make the union of all the offsets from base date
+  /* make the union of all the offsets from base date
   public CoordinateTimeIntv makeBestTimeCoordinate(List<Double> runOffsets) {
     Set<TimeCoord.Tinv> values = new HashSet<>();
     for (double runOffset : runOffsets) {
@@ -168,7 +179,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       runIdx++;
     }
     return result;
-  }
+  }  */
 
   ///////////////////////////////////////////////////////////
 
@@ -210,7 +221,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
       Collections.sort(offsetSorted);
 
-      return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted);
+      return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted, null);
     }
   }
 
@@ -231,7 +242,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     public Object extract(Grib1Record gr) {
 
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      Grib1ParamTime ptime = pds.getParamTime(cust);
+      Grib1ParamTime ptime = gr.getParamTime(cust);
       int tuInRecord = pds.getTimeUnit();
       int[] intv = ptime.getInterval();
       TimeCoord.Tinv  tinv = new TimeCoord.Tinv(intv[0], intv[1]);
@@ -250,7 +261,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
       Collections.sort(offsetSorted);
 
-      return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted);
+      return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted, null);
     }
   }
 

@@ -127,7 +127,7 @@ public class CatalogCrawler {
    * @param context caller can pass this object in (used for thread safety)
    * @return number of catalog references opened and crawled
    */
-  public int crawl(String catUrl, CancelTask task, PrintStream out, Object context) {
+  public int crawl(String catUrl, CancelTask task, PrintWriter out, Object context) {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     InvCatalogImpl cat = catFactory.readXML(catUrl);
     StringBuilder buff = new StringBuilder();
@@ -152,7 +152,7 @@ public class CatalogCrawler {
    * @param context caller can pass this object in (used for thread safety)
    * @return number of catalog references opened and crawled
    */
-  public int crawl(InvCatalogImpl cat, CancelTask task, PrintStream out, Object context) {
+  public int crawl(InvCatalogImpl cat, CancelTask task, PrintWriter out, Object context) {
 
     if (out != null)
       out.println("***CATALOG " + cat.getCreateFrom());
@@ -177,7 +177,7 @@ public class CatalogCrawler {
    * @param out  send status messages to here (may be null)
    * @param context caller can pass this object in (used for thread safety)
    */
-  public void crawlDataset(InvDataset ds, CancelTask task, PrintStream out, Object context, boolean release) {
+  public void crawlDataset(InvDataset ds, CancelTask task, PrintWriter out, Object context, boolean release) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
     if (filter != null && filter.skipAll(ds)) {
       if (isCatRef && release) ((InvCatalogRef) ds).release();
@@ -231,7 +231,7 @@ public class CatalogCrawler {
    * @param out  send status messages to here (may be null)
    * @param context caller can pass this object in (used for thread safety)
    */
-  public void crawlDirectDatasets(InvDataset ds, CancelTask task, PrintStream out, Object context, boolean release) {
+  public void crawlDirectDatasets(InvDataset ds, CancelTask task, PrintWriter out, Object context, boolean release) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
     if (filter != null && filter.skipAll(ds)) {
       if (isCatRef && release) ((InvCatalogRef) ds).release();

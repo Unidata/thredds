@@ -316,14 +316,20 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     }
 
     @Override
-    public int hashCode() {
-      return 17 * coord.hashCode() + interval;
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      TimeCoordWithInterval that = (TimeCoordWithInterval) o;
+      if (interval != that.interval) return false;
+      if (!coord.equals(that.coord)) return false;
+      return true;
     }
 
     @Override
-    public boolean equals(Object obj) {
-      TimeCoordWithInterval o = (TimeCoordWithInterval) obj;
-      return coord.equals(o.coord) && (interval == o.interval);
+    public int hashCode() {
+      int result = coord.hashCode();
+      result = 31 * result + interval;
+      return result;
     }
 
     @Override

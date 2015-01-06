@@ -142,11 +142,8 @@ public class Grib2SectionGridDefinition {
     return rawData[index-1] & 0xff;
   }
 
-  private Grib2Gds gds = null;
   public Grib2Gds getGDS() {
-    if (gds == null)
-      gds = Grib2Gds.factory(templateNumber, rawData);
-    return gds;
+    return Grib2Gds.factory(templateNumber, rawData);
   }
 
 }

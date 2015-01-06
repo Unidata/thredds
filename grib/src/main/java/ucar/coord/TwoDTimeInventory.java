@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +13,12 @@ import java.util.List;
  * @author John
  * @since 12/27/13
  */
+@Immutable
 public class TwoDTimeInventory {
   static private final Logger logger = LoggerFactory.getLogger(TwoDTimeInventory.class);
 
-  private int nruns, ntimes;
-  private int[] count;        // count number of recirds for each (run,time). more than one for vert, ens, etc.
+  private final int nruns, ntimes;
+  private final int[] count;        // count number of records for each (run,time). > 1 when theres for vert, ens, etc.
 
   public TwoDTimeInventory(int nruns, int ntimes) {
     this.nruns = nruns;
@@ -63,13 +65,11 @@ public class TwoDTimeInventory {
 
   ////////////////////////
   // read from ncx2
-  public TwoDTimeInventory(List<Integer> count) {
+  public TwoDTimeInventory(List<Integer> count, int nruns, int ntimes) {
     this.count = new int[count.size()];
     int idx = 0;
     for (int n : count) this.count[idx++] = n;
-  }
 
-  public void setSize(int nruns, int ntimes) {
     this.nruns = nruns;
     this.ntimes = ntimes;
   }

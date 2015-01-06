@@ -40,8 +40,7 @@ import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.*;
-
-/**
+/*
  * Static methods to read resource files.
  *
  * @author caron 07/28/14

@@ -77,7 +77,7 @@ public class DodsURLExtractor {
 
     baseURL = new URL(url);
     InputStream in = baseURL.openStream();
-    InputStreamReader r = new InputStreamReader(filterTag(in));
+    InputStreamReader r = new InputStreamReader(filterTag(in), CDM.UTF8);
     HTMLEditorKit.ParserCallback callback = new CallerBacker();
 
     urlList = new ArrayList();
@@ -96,7 +96,7 @@ public class DodsURLExtractor {
 
     baseURL = new URL(url);
     InputStream in = baseURL.openStream();
-    InputStreamReader r = new InputStreamReader(filterTag(in));
+    InputStreamReader r = new InputStreamReader(filterTag(in), CDM.UTF8);
     HTMLEditorKit.ParserCallback callback = new CallerBacker();
 
     textBuffer = new StringBuffer(3000);
@@ -110,7 +110,7 @@ public class DodsURLExtractor {
 
   // workaround for HTMLEditorKit.Parser, cant deal with "content-encoding"
   private InputStream filterTag(InputStream in) throws IOException {
-    BufferedReader buffIn = new BufferedReader(new InputStreamReader(in));
+    BufferedReader buffIn = new BufferedReader(new InputStreamReader(in, CDM.UTF8));
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
 
     String line = buffIn.readLine();

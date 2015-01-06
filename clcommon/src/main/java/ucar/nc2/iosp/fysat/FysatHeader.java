@@ -319,7 +319,6 @@ public final class FysatHeader {
         dims.add(dimY);
         dims.add(dimX);
 
-
         var.setDimensions(dims);
 
         // data type

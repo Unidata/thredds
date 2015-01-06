@@ -174,14 +174,15 @@ public class AggTable extends JPanel {
         DatasetBean dbean = (DatasetBean) bean;
         Aggregation.Dataset ads = dbean.ds;
 
-        NetcdfFile aggFile = ads.acquireFile(null);
-        f.format("   Component file %s%n", aggFile.getLocation());
-        Variable aggCoordp = aggFile.findVariable(aggDimName);
-        if (aggCoordp == null) {
-          f.format("   doesnt have coordinate variable%n");
-        } else {
-          data = aggCoordp.read();
-          f.format(NCdumpW.toString(data, aggCoordp.getNameAndDimensions() +" ("+aggCoordp.getUnitsString()+")", null));
+        try (NetcdfFile aggFile = ads.acquireFile(null)) {
+          f.format("   Component file %s%n", aggFile.getLocation());
+          Variable aggCoordp = aggFile.findVariable(aggDimName);
+          if (aggCoordp == null) {
+            f.format("   doesnt have coordinate variable%n");
+          } else {
+            data = aggCoordp.read();
+            f.format(NCdumpW.toString(data, aggCoordp.getNameAndDimensions() + " (" + aggCoordp.getUnitsString() + ")", null));
+          }
         }
       }
     } catch (Throwable t) {

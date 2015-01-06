@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
@@ -10,15 +11,18 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.Misc;
 
 import java.util.*;
 
 /**
  * Vertical GRIB coordinates
+ * Effectively immutable; setName() can only be called once.
  *
  * @author caron
  * @since 11/27/13
  */
+@Immutable
 public class CoordinateVert implements Coordinate {
 
   private final List<VertCoord.Level> levelSorted;
@@ -50,15 +54,24 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public Object getValue(int idx) {
+    if (idx >= levelSorted.size())
+      return null;
     return levelSorted.get(idx);
   }
 
+  @Override
   public int getSize() {
     return levelSorted.size();
   }
 
+  @Override
   public Type getType() {
     return Type.vert;
+  }
+
+  @Override
+  public int estMemorySize() {
+    return 160 + getSize() * ( 40 + Misc.referenceSize);
   }
 
   @Override
@@ -88,6 +101,7 @@ public class CoordinateVert implements Coordinate {
   }
 
   public void setName(String name) {
+    if (this.name != null) throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 

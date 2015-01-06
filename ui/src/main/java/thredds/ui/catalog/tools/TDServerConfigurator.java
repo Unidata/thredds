@@ -48,10 +48,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -161,9 +158,9 @@ public class TDServerConfigurator extends JPanel {
 
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream(60 * 1000);
-            PrintStream out = new PrintStream(os, false, CDM.utf8Charset.name());
+          PrintWriter pw = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
 
-            extractor.extractTypedDatasetInfo(out, ds);
+            extractor.extractTypedDatasetInfo(pw, ds);
             extractPane.setText(os.toString(CDM.utf8Charset.name()));
         } catch (UnsupportedEncodingException ex) {
             ex.printStackTrace();

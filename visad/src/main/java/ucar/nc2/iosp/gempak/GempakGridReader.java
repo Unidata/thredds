@@ -45,7 +45,6 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -100,11 +99,6 @@ public class GempakGridReader extends GempakFileReader {
           "GPM2", "GPM3"
   };
 
-  /**
-   * grid header len
-   */
-  private int khdrln = 0;
-
   private final String filename;
 
   /**
@@ -157,14 +151,13 @@ public class GempakGridReader extends GempakFileReader {
       logError("Grid part header too long");
       return false;
     }
-    khdrln = lenhdr - 2;
+    // int khdrln = lenhdr - 2;
 
     // check that the column names are correct
     for (int i = 0; i < keys.kkcol.size(); i++) {
       Key colkey = keys.kkcol.get(i);
       if (!colkey.name.equals(kcolnm[i])) {
-        logError("Column name " + colkey + " doesn't match "
-                + kcolnm[i]);
+        logError("Column name " + colkey + " doesn't match " + kcolnm[i]);
         return false;
       }
     }
@@ -192,7 +185,7 @@ public class GempakGridReader extends GempakFileReader {
     // Make the grid headers
     // TODO: move this up into GempakFileReader using DM_RHDA
     // and account for the flipping there.
-    List<GempakGridRecord> tmpList = new ArrayList<GempakGridRecord>();
+    List<GempakGridRecord> tmpList = new ArrayList<>();
     int[] header = new int[dmLabel.kckeys];
     if ((headers == null) || (headers.colHeaders == null)) {
       return false;
@@ -224,8 +217,7 @@ public class GempakGridReader extends GempakFileReader {
     //List gridList = gridIndex.getGridRecords();
     //if ( !gridList.isEmpty()) {
     if (!tmpList.isEmpty()) {
-      for (int i = 0; i < tmpList.size(); i++) {
-        GempakGridRecord gh = (GempakGridRecord) tmpList.get(i);
+      for (GempakGridRecord gh : tmpList) {
         gh.packingType = getGridPackingType(gh.gridNumber);
         if ((gh.packingType == MDGGRB) || (gh.packingType == MDGRB2)
                 || (gh.packingType == MDGNON)) {
@@ -235,6 +227,7 @@ public class GempakGridReader extends GempakFileReader {
     } else {
       return false;
     }
+
     // check to see if there are any grids that we can handle
     if (gridIndex.getGridRecords().isEmpty()) {
       return false;
@@ -259,10 +252,8 @@ public class GempakGridReader extends GempakFileReader {
     }
 
     try {
-      GempakGridParameterTable.addParameters(
-              "resources/nj22/tables/gempak/wmogrib3.tbl");
-      GempakGridParameterTable.addParameters(
-              "resources/nj22/tables/gempak/ncepgrib2.tbl");
+      GempakGridParameterTable.addParameters("resources/nj22/tables/gempak/wmogrib3.tbl");
+      GempakGridParameterTable.addParameters("resources/nj22/tables/gempak/ncepgrib2.tbl");
     } catch (Exception e) {
       System.out.println("unable to init param tables");
     }
@@ -537,7 +528,7 @@ public class GempakGridReader extends GempakFileReader {
   /**
    * flag for using DP_UGRB or not
    */
-  public static boolean useDP = true;
+  public boolean useDP = true;  // removed static - not thread safe jcaron 12/21/14
 
   /**
    * Unpack grib data packed into ints
@@ -766,7 +757,7 @@ public class GempakGridReader extends GempakFileReader {
    * </pre>
    */
   public void printNavBlock() {
-    StringBuffer buf = new StringBuffer("GRID NAVIGATION:");
+    StringBuilder buf = new StringBuilder("GRID NAVIGATION:");
     if (navBlock != null) {
       buf.append(navBlock.toString());
     } else {
@@ -779,7 +770,7 @@ public class GempakGridReader extends GempakFileReader {
    * Print out the analysis block so it looks something like this:
    */
   public void printAnalBlock() {
-    StringBuffer buf = new StringBuffer("GRID ANALYSIS BLOCK:");
+    StringBuilder buf = new StringBuilder("GRID ANALYSIS BLOCK:");
     if (analBlock != null) {
       buf.append(analBlock.toString());
     } else {
@@ -801,14 +792,13 @@ public class GempakGridReader extends GempakFileReader {
    * Print out the grids.
    */
   public void printGrids() {
-    List gridList = gridIndex.getGridRecords();
-    if (gridList == null) {
+    List<GridRecord> gridList = gridIndex.getGridRecords();
+    if (gridList == null)
       return;
-    }
-    System.out.println(
-            "  NUM       TIME1              TIME2           LEVL1 LEVL2  VCORD PARM");
-    for (Iterator iter = gridList.iterator(); iter.hasNext(); ) {
-      System.out.println(iter.next());
+
+    System.out.println("  NUM       TIME1              TIME2           LEVL1 LEVL2  VCORD PARM");
+    for (GridRecord aGridList : gridList) {
+      System.out.println(aGridList);
     }
   }
 
@@ -824,8 +814,7 @@ public class GempakGridReader extends GempakFileReader {
     System.out.println("");
     printAnalBlock();
     System.out.println("\nNumber of grids in file:  " + gridList.size());
-    System.out.println("\nMaximum number of grids in file:  "
-            + dmLabel.kcol);
+    System.out.println("\nMaximum number of grids in file:  " + dmLabel.kcol);
     System.out.println("");
     if (printGrids) {
       printGrids();

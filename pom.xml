@@ -13,7 +13,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.5.4-SNAPSHOT</version>
+  <version>4.6.0-SNAPSHOT</version>
   <name>Parent THREDDS and CDM modules</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
@@ -600,17 +600,17 @@
         <scope>runtime</scope>
       </dependency>
 
-      <!-- Used only in tds. -->
+      <!-- Validation. -->
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>${javax.validation.version}</version>
       </dependency>
-      <!-- Used only in wmotables. -->
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${org.hibernate.version}</version>
+        <scope>runtime</scope>
       </dependency>
 
       <!-- Used only in "it" module. -->
@@ -903,7 +903,7 @@
 	<uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.4-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
     <geoapi.version>3.1-M04</geoapi.version>
     <eds.threddsIso.version>2.2.4-SNAPSHOT</eds.threddsIso.version>
-    <com.google.guava.version>17.0</com.google.guava.version>
+    <com.google.guava.version>18.0</com.google.guava.version>
     <com.google.protobuf.version>2.5.0</com.google.protobuf.version>
     <com.jgoodies.version>1.6.0</com.jgoodies.version>
     <com.sleepycat.version>4.0.92</com.sleepycat.version>

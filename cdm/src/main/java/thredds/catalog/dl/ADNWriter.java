@@ -81,9 +81,9 @@ public class ADNWriter {
     };
 
     ByteArrayOutputStream bis = new ByteArrayOutputStream();
-    PrintStream ps = new PrintStream( bis);
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(bis, CDM.utf8Charset));
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL, true, listener);
-    crawler.crawl(cat, null, ps, null);
+    crawler.crawl(cat, null, pw, null);
     mess.append("\n*********************\n");
     mess.append(new String(bis.toByteArray(), CDM.utf8Charset));
   }

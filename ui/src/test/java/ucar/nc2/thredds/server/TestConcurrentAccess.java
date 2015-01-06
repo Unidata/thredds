@@ -35,7 +35,7 @@ package ucar.nc2.thredds.server;
 import ucar.nc2.ui.widget.StopButton;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
-import ucar.nc2.NCdump;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.util.IO;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -109,7 +109,7 @@ public class TestConcurrentAccess {
         shape[i] = 1;
       }
       Array data = v.read(origin, shape);
-      NCdump.printArray(data, who + " " + v.getFullName(), System.out, null);
+      NCdumpW.printArray(data, who + " " + v.getFullName(), System.out, null);
     }
   }
 

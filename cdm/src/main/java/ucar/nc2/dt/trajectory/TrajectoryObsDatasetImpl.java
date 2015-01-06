@@ -176,20 +176,20 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
                 + elevVarUnitsString + ">.");
         }
 
-        if (this.ncfile.hasUnlimitedDimension()
-                && this.ncfile.getUnlimitedDimension().equals(trajectoryDim)) {
-            Object result = this.ncfile.sendIospMessage(
+        if (this.netcdfDataset.hasUnlimitedDimension()
+                && this.netcdfDataset.getUnlimitedDimension().equals(trajectoryDim)) {
+            Object result = this.netcdfDataset.sendIospMessage(
                                 NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
             if ((result != null) && (Boolean) result) {
                 this.recordVar =
-                    (Structure) this.ncfile.getRootGroup().findVariable(
+                    (Structure) this.netcdfDataset.getRootGroup().findVariable(
                         "record");
             } else {
-                this.recordVar = new StructurePseudo(this.ncfile, null,
+                this.recordVar = new StructurePseudo(this.netcdfDataset, null,
                         "record", trajectoryDim);
             }
         } else {
-            this.recordVar = new StructurePseudo(this.ncfile, null, "record",
+            this.recordVar = new StructurePseudo(this.netcdfDataset, null, "record",
                     trajectoryDim);
         }
 
@@ -205,7 +205,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
         trajectoryVarsMap = new HashMap();
         //for ( Iterator it = this.recordVar.getVariables().iterator(); it.hasNext(); )
         for (Iterator it =
-                this.ncfile.getRootGroup().getVariables().iterator();
+                this.netcdfDataset.getRootGroup().getVariables().iterator();
                 it.hasNext(); ) {
             Variable curVar = (Variable) it.next();
             if ((curVar.getRank() > 0) && !curVar.equals(this.dimVar)
@@ -330,11 +330,11 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
      * @return _more_
      */
     public boolean syncExtend() {
-        if ( !this.ncfile.hasUnlimitedDimension()) {
+        if ( !this.netcdfDataset.hasUnlimitedDimension()) {
             return false;
         }
         try {
-            if ( !this.ncfile.syncExtend()) {
+            if ( !this.netcdfDataset.syncExtend()) {
                 return false;
             }
         } catch (IOException e) {
@@ -1136,7 +1136,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
                              String parameterName) throws IOException,
                                  InvalidRangeException {
             Variable variable =
-                ncfile.getRootGroup().findVariable(parameterName);
+                netcdfDataset.getRootGroup().findVariable(parameterName);
             int   varRank  = variable.getRank();
             int[] varShape = variable.getShape();
             List  section  = new ArrayList(varRank);

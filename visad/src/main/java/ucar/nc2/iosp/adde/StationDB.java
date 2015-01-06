@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.adde;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 
 import java.io.*;
@@ -56,7 +57,7 @@ public class StationDB {
   public StationDB(String urlString) throws IOException {
     long start = System.currentTimeMillis();
 
-    InputStream ios = null;
+    InputStream ios;
     if (urlString.startsWith("http:")) {
       URL url = new URL(urlString);
       ios = url.openStream();
@@ -71,11 +72,11 @@ public class StationDB {
     }
 
     // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
-    try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios))) {
+    try (BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, CDM.UTF8))) {
 
       dataIS.readLine();
       dataIS.readLine();
-      int count = 0;
+      //int count = 0;
       while (true) {
         String line = dataIS.readLine();
         if (line == null) break;
@@ -94,7 +95,7 @@ public class StationDB {
         stations.add(s);
 
         if (debugParse) System.out.println(s);
-        count++;
+        //count++;
         // if (count > 1) break;
       }
 
@@ -256,7 +257,7 @@ public class StationDB {
 
   static String testName = "C:/data/station/adde/STNDB.TXT";
   //static String testName = "M:/temp/STNDB.TXT";
-  static String testName2 = "http://localhost:8080/test/STNDB.TXT";
+  //static String testName2 = "http://localhost:8080/test/STNDB.TXT";
 
   static public void main(String[] args) throws IOException {
     long start = System.currentTimeMillis();

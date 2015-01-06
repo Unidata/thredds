@@ -428,8 +428,13 @@ public class NCdumpW {
     out.flush();
   }
 
+  // for backwards compatibility with NCDump
+  static public void printArray(Array array, String name, PrintStream out, CancelTask ct) {
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(out, CDM.utf8Charset));
+    printArray(array, name, null, pw, new Indent(2), ct, true);
+  }
+
   /**
-   *
    * @deprecated use toString()
    */
   static public String printArray(Array array, String name, CancelTask ct) {

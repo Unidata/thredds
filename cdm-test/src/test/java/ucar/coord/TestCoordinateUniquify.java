@@ -12,7 +12,7 @@ import java.util.List;
  * @author caron
  * @since 12/10/13
  */
-public class TestCoordinateUnionizer {
+public class TestCoordinateUniquify {
 
   @Test
   public void testCoordinateUnionizer() {
@@ -24,24 +24,19 @@ public class TestCoordinateUnionizer {
 
     CoordinateUniquify unionizer = new CoordinateUniquify();
     for (CoordinateND coordND : coordNDs) {
-      unionizer.addCoords(coordND.getCoordinates());
+      unionizer.addCoordinates(coordND.getCoordinates());
     }
-    unionizer.finish();
-    List<Coordinate> shared = unionizer.getUnionCoords();
+    List<Coordinate> shared =  unionizer.finish();
 
+    Formatter f = new Formatter();
+    f.format("Original%n");
     for (CoordinateND coordND : coordNDs) {
-      Formatter f = new Formatter();
-      f.format("Original%n");
       coordND.showInfo(f, null);
-
-      List<Integer> coordIndex = new ArrayList<>();
-      CoordinateND coordNDr = unionizer.reindex(coordND, coordIndex);
-      Counter counter = new Counter();
-      f.format("Unionized%n");
-      coordNDr.showInfo(f, counter);
-      System.out.printf("%s%n", f);
-      System.out.printf("%s%n====================%n", counter.show());
     }
 
+    f.format("Uniqueified%n");
+    for (Coordinate coord : shared) {
+      coord.showInfo(f, null);
+    }
   }
 }

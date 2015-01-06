@@ -57,6 +57,7 @@ public class Grib1WmoTimeType {
       case 113:
       case 115:
       case 117:
+      case 120:
       case 123:
         return GribStatType.Average;
       case 4:
@@ -197,6 +198,15 @@ public class Grib1WmoTimeType {
         follow at intervals of P2 */
       case 119:
         timeRange = "Standard Deviation of N forecasts, timeCoord = (refTime + P1 + i * P2)";
+        break;
+
+      // ECMWF "Average of N Forecast" added 11/21/2014. pretend its WMO standard. maybe should move to ecmwf ??
+      // see "http://emoslib.sourcearchive.com/documentation/000370.dfsg.2/grchk1_8F-source.html"
+      // C     Add Time range indicator = 120 Average of N Forecast. Each product
+      // C             is an accumulation from forecast lenght P1 to forecast
+      // C              lenght P2, with reference times at intervals P2-P1
+      case 120:
+        timeRange = "Average of N Forecasts (ECMWF), accumulation from forecast P1 to P2, with reference times at intervals P2-P1";
         break;
 
       // Average of N uninitialized analyses, starting at the reference time, at intervals of P2

@@ -1,3 +1,35 @@
+/*
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
+ *
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
+ *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -16,25 +48,25 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * A Builder of Directory Partitions and Collections
- * Each DirectoryBuilder is associated with one directory, and one ncx2 index.
- * This may contain collections of files, or subdirectories.
- * If there are subdirectories, these are children DirectoryBuilders.
+ * A Builder of DirectoryPartitions and DirectoryCollections.
+ * Each DirectoryBuilder is associated with one directory, and one ncx index.
+ * This may contain collections of files (MFiles in a DirectoryCollection), or subdirectories (MCollections in a DirectoryPartition).
  *
  * @author caron
  * @since 11/10/13
  */
 public class DirectoryBuilder {
 
-  static public MCollection factory(FeatureCollectionConfig config, Path topDir, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
-    DirectoryBuilder builder = new DirectoryBuilder(config.name, topDir.toString());
+  // returns a DirectoryPartition or DirectoryCollection
+  static public MCollection factory(FeatureCollectionConfig config, Path topDir, boolean isTop, IndexReader indexReader, org.slf4j.Logger logger) throws IOException {
+    DirectoryBuilder builder = new DirectoryBuilder(config.collectionName, topDir.toString());
 
-    DirectoryPartition dpart = new DirectoryPartition(config, topDir, indexReader, logger);
+    DirectoryPartition dpart = new DirectoryPartition(config, topDir, isTop, indexReader, logger);
     if (!builder.isLeaf(indexReader))  { // its a partition
-      dpart.setLeaf(false);
       return dpart;
     }
 
@@ -43,8 +75,7 @@ public class DirectoryBuilder {
     if (hasIndex) {
       return dpart.makeChildCollection(builder);
     } else {
-      DirectoryCollection result = new DirectoryCollection(config.name, topDir, config.olderThan, logger); // no index file
-      result.setLeaf(true);
+      DirectoryCollection result = new DirectoryCollection(config.collectionName, topDir, isTop, config.olderThan, logger); // no index file
       return result;
     }
   }
@@ -92,9 +123,7 @@ public class DirectoryBuilder {
     findIndex();
   }
 
-  public void setChildrenConstructed(boolean childrenConstructed) {
-    this.childrenConstructed = childrenConstructed;
-  }
+  //public void setChildrenConstructed(boolean childrenConstructed) { this.childrenConstructed = childrenConstructed; }
 
   /**
    * Find the index file, using its canonical name
@@ -114,22 +143,25 @@ public class DirectoryBuilder {
   }
 
   /**
-   * Read the index file to find out if a partition or collection of files
+   * Scans first 100 files to decide if its a leaf. If so, it becomes a DirectoryCollection, else a PartitionCollection.
    * @param indexReader reads the index
    * @return true if partition, false if file collection
    * @throws IOException on IO error
    */
-  public boolean isLeaf(IndexReader indexReader) throws IOException {
+  private boolean isLeaf(IndexReader indexReader) throws IOException {
     if (partitionStatus == PartitionStatus.unknown) {
-      /* if (index != null) {
-        boolean isPartition = indexReader.isPartition(index);
-        partitionStatus = isPartition ? PartitionStatus.isPartition : PartitionStatus.isLeaf;
 
-      } else { // no index file  */
-        // temporary - just to scan 100 files in the directory
-        DirectoryCollection dc = new DirectoryCollection(partitionName, dir, null, null);
-        partitionStatus = dc.isLeafDirectory() ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
-      // }
+        int countDir=0, countFile=0, count =0;
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)) {
+          Iterator<Path> iterator = dirStream.iterator();
+          while (iterator.hasNext() && count++ < 100) {
+            Path p = iterator.next();
+            BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
+            if (attr.isDirectory()) countDir++;
+            else countFile++;
+          }
+        }
+      partitionStatus = (countFile > countDir) ? PartitionStatus.isLeaf : PartitionStatus.isDirectoryPartition;
     }
 
     return partitionStatus == PartitionStatus.isLeaf;
@@ -138,6 +170,7 @@ public class DirectoryBuilder {
   /**
    * Find all children directories. Does not recurse.
    * We separate this from the constructor so it can be done on demand
+   * Public for debugging.
    *
    * Look for children by:
    * <ol>
@@ -192,8 +225,7 @@ public class DirectoryBuilder {
       Path indexPath = Paths.get(dirName, indexFilename);
       if (substituteParentDir) {
         Path parent = index.getParent();
-        Path indexPath2 = parent.resolve( indexFilename);
-        indexPath = indexPath2;
+        indexPath = parent.resolve( indexFilename);
       }
       DirectoryBuilder child = new DirectoryBuilder(topCollectionName, indexPath, lastModified);
       children.add(child);
@@ -221,7 +253,7 @@ public class DirectoryBuilder {
    * Scan for subdirectories, make each into a DirectoryBuilder and add as a child
    */
   private void scanForChildren() {
-    if (debug) System.out.printf(" DirectoryBuilder.scanForChildren %s ", dir);
+    if (debug) System.out.printf("DirectoryBuilder.scanForChildren on %s ", dir);
 
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir)) {
@@ -229,9 +261,8 @@ public class DirectoryBuilder {
         BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
         if (attr.isDirectory()) {
           children.add(new DirectoryBuilder(topCollectionName, p, attr));
+          if (debug && (++count % 10 == 0)) System.out.printf("%d ", count);
         }
-        if (debug && (count % 100 == 0)) System.out.printf("%d ", count);
-        count++;
       }
     } catch (IOException e) {
       e.printStackTrace();

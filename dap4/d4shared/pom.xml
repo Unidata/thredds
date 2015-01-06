@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>edu.ucar</groupId>
-        <artifactId>thredds-parent</artifactId>
-        <version>4.5.4-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
+<parent>
+  <groupId>edu.ucar</groupId>
+  <artifactId>thredds-parent</artifactId>
+  <version>4.6.0-SNAPSHOT</version>
+  <relativePath>../../pom.xml</relativePath>
+</parent>
 
     <artifactId>d4shared</artifactId>
     <packaging>jar</packaging>

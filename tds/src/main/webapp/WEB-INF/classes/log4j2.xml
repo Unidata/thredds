@@ -75,6 +75,10 @@
       <appender-ref ref="catalogInit"/>
     </logger>
 
+    <logger name="thredds.catalog.InvDatasetFeatureCollection.catalogInit" level="info" additivity="false">
+      <appender-ref ref="catalogInit"/>
+    </logger>
+
 
     <logger name="cacheLogger" level="info" additivity="false">
       <appender-ref ref="cacheLog"/>

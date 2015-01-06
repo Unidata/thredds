@@ -196,7 +196,7 @@ public class CollectionController  {
     }
 
     String collectName = req.getParameter(COLLECTION);
-    InvDatasetFeatureCollection fc = DataRootHandler.getInstance().getFeatureCollection(collectName);
+    InvDatasetFeatureCollection fc = DataRootHandler.getInstance().findFcByCollectionName(collectName);
     if (fc == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
       pw.append("NOT FOUND");

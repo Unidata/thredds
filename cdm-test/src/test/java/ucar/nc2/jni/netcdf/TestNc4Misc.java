@@ -47,7 +47,7 @@ public class TestNc4Misc {
     System.out.printf("write to file = %s%n", new File(location).getAbsolutePath());
 
     Dimension timeDim = writer.addUnlimitedDimension("time");
-    List<Dimension> dims = new ArrayList<Dimension>();
+    List<Dimension> dims = new ArrayList<>();
     dims.add(timeDim);
     Variable time = writer.addVariable(null, "time", DataType.DOUBLE, dims);
 

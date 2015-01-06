@@ -287,7 +287,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
       if (lock == null) return;
 
-      PrintWriter out = new PrintWriter(fos);
+      PrintWriter out = new PrintWriter( new OutputStreamWriter(fos, CDM.utf8Charset));
       out.print("<?xml version='1.0' encoding='UTF-8'?>\n");
       out.print("<aggregation xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' version='3' ");
       out.print("type='" + type + "' ");

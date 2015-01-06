@@ -1,5 +1,6 @@
 package ucar.coord;
 
+import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
@@ -12,68 +13,50 @@ import java.util.*;
  * @author caron
  * @since 11/24/13
  */
+@Immutable
 public class SparseArray<T> {
   static private final Logger logger = LoggerFactory.getLogger(SparseArray.class);
 
-  private int[] size;    // multidim sizes
-  private int[] stride;  // for index calculation
-  private int totalSize; // product of sizes
+  private final int[] shape;    // multidim sizes
+  private final int[] stride;  // for index calculation
+  private final int totalSize; // product of sizes
 
-  private int[] track; // index into content, size totalSize. LOOK use byte, short to save memory ??
-  private List<T> content; // keep the things in an ArrayList.
+  private final int[] track; // index into content, size totalSize. LOOK use byte, short to save memory ??
+  private final List<T> content; // keep the things in a List.
+  private final int ndups;
 
-  private int ndups = 0; // number of duplicates
-
-  // create from Rectilyser or reindexer
-  public SparseArray( int... size) {
-    this.size = size;
-    calcStrides();
-
-    track = new int[totalSize];
-    this.content = new ArrayList<>(totalSize);  // LOOK could only allocate part of this.
-  }
-
-  // read back in from index
-  public SparseArray( int[] size, int[] track, List<T> content) {
-    this.size = size;
-    calcStrides();
+  public SparseArray( int[] shape, int[] track, List<T> content, int ndups) {
+    this.shape = shape;
+    this.totalSize = calcTotalSize(shape);
+    this.stride = calcStrides(shape);
 
     this.track = track;
-    this.content = content;
+    this.content = Collections.unmodifiableList(content);
+    this.ndups = ndups;
 
     if (track.length != totalSize)
       throw new IllegalStateException("track len "+track.length+" != totalSize "+totalSize);
   }
 
-  private void calcStrides() {
-    totalSize = 1;
-    for (int aSize : size) totalSize *= aSize;
-
-    // strides
-    stride = new int[size.length];
-    int product = 1;
-    for (int ii = size.length - 1; ii >= 0; ii--) {
-      int thisDim = size[ii];
-      stride[ii] = product;
-      product *= thisDim;
-    }
+  static int calcTotalSize(int[] shape) {
+    int total = 1;
+    for (int aSize : shape) total *= aSize;
+    return total;
   }
 
-  public void add(T thing, Formatter info, int... index) {
-    content.add(thing);            // add the thing at end of list, idx = size-1
-    int where = calcIndex(index);
-    if (where < 0 || where >= track.length) {
-      logger.error("BAD index add="+ Misc.showInts(index), new Throwable());
+  private static int[] calcStrides(int[] shape) {
+    int[] strides = new int[shape.length];
+    int product = 1;
+    for (int ii = shape.length - 1; ii >= 0; ii--) {
+      int thisDim = shape[ii];
+      strides[ii] = product;
+      product *= thisDim;
     }
-    if (track[where] > 0) {
-      ndups++;  // LOOK here is where we need to decide how to handle duplicates
-      if (info != null) info.format(" duplicate %s%n     with %s%n%n", thing, content.get(track[where]-1));
-    }
-    track[where] = content.size();  // 1-based so that 0 = missing, so content at where = content.get(track[where]-1)
+    return strides;
   }
 
   public int calcIndex(int... index) {
-    assert index.length == size.length;
+    assert index.length == shape.length;
     int result = 0;
     for (int ii = 0; ii < index.length; ii++)
       result += index[ii] * stride[ii];
@@ -95,19 +78,15 @@ public class SparseArray<T> {
   }
 
   public int[] getShape() {
-    return size;
+    return shape.clone();
   }
 
   public int getRank() {
-    return size.length;
+    return shape.length;
   }
 
   public int getTotalSize() {
     return totalSize;
-  }
-
-  public void setSize(int[] size) {
-    this.size = size;
   }
 
   public int[] getTrack() {
@@ -118,20 +97,8 @@ public class SparseArray<T> {
     return track[idx];
   }
 
-  public void setTrack(int[] track) {
-    this.track = track;
-  }
-
   public List<T> getContent() {
     return content;
-  }
-
-  public void setContent(List<T> content) {
-    this.content = content;
-  }
-
-  public int getNduplicates() {
-    return ndups;
   }
 
   public int countNotMissing() { // LOOK could use content.size()
@@ -152,8 +119,13 @@ public class SparseArray<T> {
     return (float) countNotMissing() / totalSize;
   }
 
+  public int getNdups() {
+    return ndups;
+  }
+
   public void showInfo(Formatter info, Counter all) {
-    info.format("ndups=%d total=%d/%d density= %f%n", ndups, countNotMissing(), totalSize, getDensity());
+    info.format("SparseArray shape=[%s] ", Misc.showInts(shape));
+    info.format("ndups=%d, missing/total=%d/%d, density=%f%n", ndups, countMissing(), totalSize, getDensity());
 
     if (all != null) {
       all.dups += ndups;
@@ -162,18 +134,16 @@ public class SparseArray<T> {
       all.vars++;
     }
 
-    info.format("sizes=");
     List<Integer> sizes = new ArrayList<>();
-    for (int s : size) {
-      info.format("%d,", s);
+    for (int s : shape) {
       if (s == 1) continue; // skip dimension len 1
       sizes.add(s);
     }
-    info.format("%n%n");
-    showRecurse(0, sizes, info);
+    info.format("%n");
+    showMissingRecurse(0, sizes, info);
   }
 
-  int showRecurse(int offset, List<Integer> sizes, Formatter f) {
+  int showMissingRecurse(int offset, List<Integer> sizes, Formatter f) {
     if (sizes.size() == 0) return 0;
     if (sizes.size() == 1) {
       int len = sizes.get(0);
@@ -188,7 +158,7 @@ public class SparseArray<T> {
       int total = 0;
       int len = sizes.get(0);
       for (int i=0; i<len; i++) {
-        int count = showRecurse(offset, sizes.subList(1,sizes.size()), f);
+        int count = showMissingRecurse(offset, sizes.subList(1,sizes.size()), f);
         offset += count;
         total += count;
       }
@@ -203,6 +173,63 @@ public class SparseArray<T> {
     f.format("Content%n");
     for (T record : content)
       f.format(" %d %s %n", count++, record);
+  }
+
+  // separate out the mutable part
+  public static class Builder<T> {
+    private int[] shape;    // multidim sizes
+    private int[] stride;  // for index calculation
+    private int totalSize; // product of sizes
+    private int ndups = 0; // number of duplicates
+
+    private int[] track; // index into content, size totalSize. LOOK use byte, short to save memory ??
+    private List<T> content; // keep the things in a List.
+
+    public Builder( int... shape) {
+      this.shape = shape;
+      this.totalSize = calcTotalSize(shape);
+      this.stride = calcStrides(shape);
+
+      track = new int[totalSize];
+      this.content = new ArrayList<>(totalSize);  // LOOK could only allocate part of this
+    }
+
+    public void add(T thing, Formatter info, int... index) {
+      content.add(thing);            // add the thing at end of list, idx = size-1
+      int where = calcIndex(index);
+      if (where < 0 || where >= track.length) {
+        logger.error("BAD index add=" + Misc.showInts(index), new Throwable());
+      }
+      if (track[where] > 0) {
+        ndups++;
+        if (info != null) info.format(" duplicate %s%n     with %s%n%n", thing, content.get(track[where] - 1));
+      }
+      track[where] = content.size();  // 1-based so that 0 = missing, so content at where = content.get(track[where]-1)
+    }
+
+    public int calcIndex(int... index) {
+      assert index.length == shape.length;
+      int result = 0;
+      for (int ii = 0; ii < index.length; ii++)
+        result += index[ii] * stride[ii];
+      return result;
+    }
+
+    public void setTrack(int[] track) {
+      this.track = track;
+    }
+
+    public void setContent(List<T> content) {
+      this.content = content;
+    }
+
+    public int getTotalSize() {
+      return totalSize;
+    }
+
+    SparseArray<T> finish() {
+       return new SparseArray<>( shape, track, content, ndups);
+    }
   }
 
 

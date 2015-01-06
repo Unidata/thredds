@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.iosp.grib;
+package ucar.nc2.grib;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -39,9 +39,10 @@ import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.collection.GribCollection;
+import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -55,8 +56,8 @@ import java.util.List;
 
 /**
  * Look for missing data in Grib Collections.
- *
- * Indicates that coordinates are not matching, because DGEX_CONUS is dense (hass data for each coordinate).
+ * <p/>
+ * Indicates that coordinates are not matching, because DGEX_CONUS is dense (has data for each coordinate).
  * Note that not all grib collections will be dense.
  *
  * @author John
@@ -65,92 +66,98 @@ import java.util.List;
 public class TestGribCollections {
 
   @BeforeClass
-   static public void before() {
-     GribIosp.debugIndexOnlyCount = 0;
-     GribCollection.countGC = 0;
-     PartitionCollection.countPC = 0;
-     RandomAccessFile.setDebugLeaks(true);
-     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-     PartitionCollection.initPartitionCache(50, 700, -1, -1);
-     GribCollection.initDataRafCache(11, 100, -1);
-     PartitionCollection.getPartitionCache().resetTracking();
-   }
+  static public void before() {
+    GribIosp.debugIndexOnlyCount = 0;
+    GribCollectionImmutable.countGC = 0;
+    PartitionCollectionImmutable.countPC = 0;
+    RandomAccessFile.enableDefaultGlobalFileCache();
+    RandomAccessFile.setDebugLeaks(true);
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
+    GribCdmIndex.gribCollectionCache.resetTracking();
+  }
 
-   @AfterClass
-   static public void after() {
-     GribIosp.setDebugFlags(new DebugFlagsImpl());
-     FileCacheIF cache = PartitionCollection.getPartitionCache();
-     if (cache == null) return;
+  @AfterClass
+  static public void after() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Formatter out = new Formatter(System.out);
 
-     Formatter out = new Formatter(System.out);
-     cache.showTracking(out);
-     cache.showCache(out);
+    FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+    if (cache != null) {
+      cache.showTracking(out);
+      cache.showCache(out);
+      cache.clearCache(false);
+    }
 
-     cache.clearCache(false);
-     GribCollection.getDataRafCache().showCache(out);
-     TestDir.checkLeaks();
+    FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
+    if (rafCache != null) {
+      rafCache.showCache(out);
+    }
 
-     System.out.printf("            countGC=%7d%n", GribCollection.countGC);
-     System.out.printf("            countPC=%7d%n", PartitionCollection.countPC);
-     System.out.printf("debugIndexOnlyCount=%7d%n", GribIosp.debugIndexOnlyCount);
-     System.out.printf(" total files needed=%7d%n", GribCollection.countGC+PartitionCollection.countPC+GribIosp.debugIndexOnlyCount);
+    System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
+    System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
+    System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
+    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
 
-     FileCache.shutdown();
-     RandomAccessFile.setDebugLeaks(false);
-   }
+    FileCache.shutdown();
+    RandomAccessFile.setGlobalFileCache(null);
+    TestDir.checkLeaks();
+    RandomAccessFile.setDebugLeaks(false);
+  }
 
-  //@Test
+  @Test
   public void testGC_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx2");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3");
 
-    // total == 1560/23229
-    assert count.nread == 23229;
+    assert count.nread == 22909; // 23229
     assert count.nmiss == 0;
   }
 
-  //@Test
+  @Test
   public void testPofG_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3");
 
-     // total == 6391/94352
-    assert count.nread == 94352;
+    assert count.nread == 93052;  // 93052 ??
     assert count.nmiss == 0;
   }
 
-  //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2 has lots of missing records
-  //@Test
+  //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx3 has lots of missing records
+  @Test
   public void testGC_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
-
-    assert count.nread == 7116;
-    assert count.nmiss == 200;
-  }
-
-  //@Test
-  public void testPofG_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
-
-    assert count.nread == 74015;
-    assert count.nmiss == 1646;
-  }
-
-  //@Test
-  public void testPofP_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_0000.grib1.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 51838;
-    assert count.nmiss == 1126;
+    assert count.nmiss == 153;
+    assert count.nread == 7122;
     assert count.nerrs == 0;
   }
 
-  //@Test
-  // RandomAccessFile gets opened 1441 times (!) for PofGC
+  @Test
+  public void testPofG_Grib1() throws IOException {
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
+
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nmiss == 816;
+    assert count.nread == 37188;
+    assert count.nerrs == 0;
+  }
+
+  @Test
+  public void testPofP_Grib1() throws IOException {
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx3");
+
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nmiss == 1126;
+    assert count.nread == 51838;
+    assert count.nerrs == 0;
+  }
+
+  @Test
   public void problem() throws IOException {
 
     long start = System.currentTimeMillis();
-    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
-    String filename = TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/GFS_Global_onedeg-Global_onedeg.ncx2";
+    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
@@ -171,20 +178,21 @@ public class TestGribCollections {
   }
 
 
-  //@Test
+  @Test
   // RandomAccessFile gets opened 1441 times (!) for PofGC
   public void openFileProblem() throws IOException {
 
     long start = System.currentTimeMillis();
-    String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2";
+    // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
-      GridDatatype gdt = gds.findGridByName("Best/Land_cover_land1_sea0_surface");
+      GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
 
-      int n = 1000;
-      int first = 5500;
+      int n = 5;
+      int first = 17;
       double sum = 0;
-      for (int time=first; time < first+n; time++) {
+      for (int time = first; time < first + n; time++) {
         Array data = gdt.readDataSlice(0, -0, time, 0, -1, -1);
         sum += MAMath.sumDouble(data);
       }
@@ -196,17 +204,6 @@ public class TestGribCollections {
     }
   }
 
-    // @Test
-  public void testPofPofP() throws IOException {
-    RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read("B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx2");
-    TestDir.checkLeaks();
-
-    // that took 1312 secs total, 0.784602 msecs per record (total == 0/1672528) (cache size 500)
-    assert count.nread == 1672528;
-    assert count.nmiss == 0;
-  }
-
   ///////////////////////////////////////////////////////////////
 
   public static Count read(String filename) {
@@ -214,7 +211,7 @@ public class TestGribCollections {
     System.out.println("\n\nReading File " + filename);
     Count allCount = new Count();
     try (GridDataset gds = GridDataset.open(filename)) {
-      for (GridDatatype gdt: gds.getGrids()) {
+      for (GridDatatype gdt : gds.getGrids()) {
         Count count = read(gdt);
         System.out.printf("%80s == %d/%d%n", gdt.getFullName(), count.nmiss, count.nread);
         allCount.add(count);
@@ -222,12 +219,12 @@ public class TestGribCollections {
       long took = System.currentTimeMillis() - start;
       float r = ((float) took) / allCount.nread;
       System.out.printf("%n%80s == %d/%d%n", "total", allCount.nmiss, allCount.nread);
-      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took/1000, r);
+      System.out.printf("%n   that took %d secs total, %f msecs per record%n", took / 1000, r);
 
     } catch (IOException ioe) {
-      System.out.printf("%s%n", ioe);
+      ioe.printStackTrace();
       Formatter out = new Formatter(System.out);
-      PartitionCollection.getPartitionCache().showCache(out);
+      GribCdmIndex.gribCollectionCache.showCache(out);
     }
 
     return allCount;
@@ -240,7 +237,7 @@ public class TestGribCollections {
 
     Count count = new Count();
     if (rtDim != null) {
-      for (int rt=0; rt<rtDim.getLength(); rt++)
+      for (int rt = 0; rt < rtDim.getLength(); rt++)
         read(gdt, count, rt, tDim, zDim);
     } else {
       read(gdt, count, -1, tDim, zDim);
@@ -250,7 +247,7 @@ public class TestGribCollections {
 
   private static void read(GridDatatype gdt, Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
     if (timeDim != null) {
-      for (int t=0; t<timeDim.getLength(); t++)
+      for (int t = 0; t < timeDim.getLength(); t++)
         read(gdt, count, rtIndex, t, zDim);
     } else {
       read(gdt, count, rtIndex, -1, zDim);
@@ -260,7 +257,7 @@ public class TestGribCollections {
 
   private static void read(GridDatatype gdt, Count count, int rtIndex, int tIndex, Dimension zDim) throws IOException {
     if (zDim != null) {
-      for (int z=0; z<zDim.getLength(); z++)
+      for (int z = 0; z < zDim.getLength(); z++)
         read(gdt, count, rtIndex, tIndex, z);
     } else {
       read(gdt, count, rtIndex, tIndex, -1);
@@ -283,8 +280,8 @@ public class TestGribCollections {
       int rank = ranges.size();
       assert rank >= 2;
       List<Range> subset = new ArrayList<>(rank);
-      for (int i=0; i<rank; i++) {
-        if (i<rank-2)
+      for (int i = 0; i < rank; i++) {
+        if (i < rank - 2)
           subset.add(ranges.get(i));
         else {
           Range r = ranges.get(i);
@@ -304,8 +301,8 @@ public class TestGribCollections {
     boolean isMissing = true;
     while (dataSubset.hasNext()) {
       float val = dataSubset.nextFloat();
-       if (!Float.isNaN(val))
-         isMissing = false;
+      if (!Float.isNaN(val))
+        isMissing = false;
     }
     if (isMissing)
       count.nmiss++;

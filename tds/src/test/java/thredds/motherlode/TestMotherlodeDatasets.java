@@ -75,7 +75,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
   private ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
 
-  private PrintStream out;
+  private PrintWriter out;
   private int countDatasets, countNoAccess, countNoOpen;
   private boolean verbose = true;
   private boolean compareCdm = false;
@@ -92,7 +92,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     this.catUrl = TestMotherlodePing.server + catURL;
     this.type = type;
     this.skipDatasetScan = skipDatasetScan;
-    this.out = System.out; // new PrintStream( new BufferedOutputStream( fout));
+    this.out = new PrintWriter( System.out);
   }
 
   private class FilterDataset implements CatalogCrawler.Filter {

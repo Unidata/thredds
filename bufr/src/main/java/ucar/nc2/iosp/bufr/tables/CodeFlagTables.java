@@ -329,7 +329,7 @@ public class CodeFlagTables {
   public short getId() { return fxy; }
 
   public String fxy() {
-    int f = fxy >> 16;
+    int f = fxy >> 14;
     int x = (fxy & 0xff00) >> 8;
     int y = (fxy & 0xff);
 

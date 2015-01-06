@@ -36,13 +36,9 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Date;
 
 /**
  * Test promoting an attribute to a variable.
@@ -50,7 +46,7 @@ import java.util.Date;
 
 public class TestAggExistingPromote extends TestCase {
 
-  public void testWithDateFormatMark() throws Exception, InvalidRangeException {
+  public void testWithDateFormatMark() throws Exception {
     String filename = "file:" + TestNcML.topDir + "aggExistingPromote.ncml";
 
     String aggExistingPromote =
@@ -83,7 +79,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getShape()[0] == 3;
     assert datap.getElementType() == String.class;
 
-    NCdump.printArray(datap, "time_coverage_end", System.out, null);
+    NCdumpW.printArray(datap, "time_coverage_end", System.out, null);
 
     String[] resultp = new String[]{"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
     int count = 0;
@@ -118,7 +114,7 @@ public class TestAggExistingPromote extends TestCase {
       assert data.getShape()[0] == 3;
       assert data.getElementType() == String.class;
 
-      NCdump.printArray(data, "time coord", System.out, null);
+      NCdumpW.printArray(data, "time coord", System.out, null);
 
       count = 0;
       dataI = data.getIndexIterator();
@@ -142,7 +138,7 @@ public class TestAggExistingPromote extends TestCase {
     assert data.getShape()[0] == 3;
     assert data.getElementType() == String.class;
 
-    NCdump.printArray(data, "time coord", System.out, null);
+    NCdumpW.printArray(data, "time coord", System.out, null);
 
     count = 0;
     dataI = data.getIndexIterator();
@@ -207,7 +203,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getSize() == dim.getLength();
     assert datap.getElementType() == String.class;
 
-    NCdump.printArray(datap, "title", System.out, null);
+    NCdumpW.printArray(datap, "title", System.out, null);
 
     while (datap.hasNext())
       assert datap.next().equals("Example Data");
@@ -228,7 +224,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getSize() == dim.getLength();
     assert datap.getElementType() == String.class;
 
-    NCdump.printArray(datap, "title", System.out, null);
+    NCdumpW.printArray(datap, "title", System.out, null);
 
     int count = 0;
     while (datap.hasNext()) {

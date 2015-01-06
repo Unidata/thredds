@@ -36,7 +36,6 @@ package ucar.nc2.grib;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
@@ -58,26 +57,31 @@ import java.util.List;
  * @author caron
  * @since 10/15/2014
  */
-//@RunWith(Parameterized.class)
-public class TestGribCdmIndex {
+@RunWith(Parameterized.class)
+public class TestGribCdmIndexUpdating {
 
-  //@Parameterized.Parameters
+  @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
     // file partition
-    String dataDir = TestDir.cdmUnitTestDir + "ncss/GFS/Global_onedeg/";
-    FeatureCollectionConfig config = new FeatureCollectionConfig("TestGribCdmIndex", "GFS_Global_onedeg/TestGribCdmIndex", FeatureCollectionType.GRIB2,
-            dataDir + "GFS_Global_onedeg_#yyyyMMdd_HHmm#.grib2", null, null, "file", null, null);
+    String dataDir = TestDir.cdmUnitTestDir + "gribCollections/changing/filePartition/";
+    FeatureCollectionConfig config = new FeatureCollectionConfig("TestGribCdmIndex", "changing/filePartition", FeatureCollectionType.GRIB1,
+            dataDir + "GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, null, "file", null);
     // String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen
-    result.add(new Object[]{dataDir, "GFS_Global_onedeg_20120911_0000.grib2", config, "TestGribCdmIndex-Global_onedeg.ncx2", "VAR_0-1-1_L104", 3, 2});
+    result.add(new Object[]{dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "TestGribCdmIndex.ncx3", "VAR_7-0-2-52_L100", 4, 3});
 
-    // not a partition
+    /* directory partition
     dataDir = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/";
     config = new FeatureCollectionConfig("TestGribCdmIndex", "GFS_CONUS_80km/TestGribCdmIndex", FeatureCollectionType.GRIB1,
-            dataDir + "GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, null, null, null);
+            dataDir + "GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, null, null, null);   rm
     result.add(new Object[]{dataDir, "GFS_CONUS_80km_20120227_0000.grib1", config, "TestGribCdmIndex-CONUS_80km.ncx2", "VAR_7-0-2-52_L100", 10, 9});  // */
 
+    // directory partition
+    //String dataDir2 = "B:/motherlode/rfc/";
+    //FeatureCollectionConfig config2 = new FeatureCollectionConfig("RFC", "grib/NPVU/RFC", FeatureCollectionType.GRIB1,
+    //        "B:/motherlode/rfc/**/.*grib1$", "yyyyMMdd#.grib1#", null, "directory", null, null);
+    //result.add(new Object[]{dataDir2, "kalr/NPVU_RFC_KALR_NWS_152_20141003.grib1", config2, "RFC-rfc.ncx2", "VAR_9-161-128-237_L1_I1_Hour_S4", 336, 310});
 
     return result;
   }
@@ -92,7 +96,7 @@ public class TestGribCdmIndex {
   String varIdValue;
   int orgLen, remLen;
 
-  public TestGribCdmIndex(String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen, int remLen) {
+  public TestGribCdmIndexUpdating(String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen, int remLen) {
     this.dataDir = dataDir;
     this.newModel = newModel;
     this.config = config;
@@ -102,17 +106,17 @@ public class TestGribCdmIndex {
     this.remLen = remLen;
   }
 
-  //@Test
+  @Test
   public void testRemoveFileFromCollectionAlways() throws IOException {
     testRemoveFileFromCollection(CollectionUpdateType.always, orgLen, remLen);
   }
 
-  //@Test
+  @Test
   public void testRemoveFileFromCollectionTest() throws IOException {
     testRemoveFileFromCollection(CollectionUpdateType.test, orgLen, remLen);
   }
 
-  //@Test
+  @Test
   public void testRemoveFileFromCollectionTestOnly() throws IOException {
     testRemoveFileFromCollection(CollectionUpdateType.testIndexOnly, orgLen, orgLen);
   }
@@ -126,53 +130,58 @@ public class TestGribCdmIndex {
     String newModelSave = dataDir + newModel + ".save";
     File newModelFileSave = new File(newModelSave);
 
-    // remove one of the files from the scan
-    if (newModelFile.exists() && !newModelFileSave.exists()) {
-      boolean ok = newModelFile.renameTo(newModelFileSave);
-      if (!ok) throw new IOException("cant rename file "+newModelFile);
-    } else if (!newModelFile.exists() && newModelFileSave.exists()) {
-      System.out.println("already renamed");
-    } else if (!newModelFile.exists() && !newModelFileSave.exists()) {
-      throw new IOException("missing "+newModelFile.getPath());
-    } else if (newModelFile.exists() && newModelFileSave.exists()) {
-      boolean ok = newModelFile.delete();
-      if (!ok) throw new IOException("cant delete file "+newModelFile.getPath());
-    }
+    try {
+      // remove one of the files from the scan
+      if (newModelFile.exists() && !newModelFileSave.exists()) {
+        boolean ok = newModelFile.renameTo(newModelFileSave);
+        if (!ok) throw new IOException("cant rename file " + newModelFile);
+      } else if (!newModelFile.exists() && newModelFileSave.exists()) {
+        System.out.println("already renamed");
+      } else if (!newModelFile.exists() && !newModelFileSave.exists()) {
+        throw new IOException("missing " + newModelFile.getPath());
+      } else if (newModelFile.exists() && newModelFileSave.exists()) {
+        boolean ok = newModelFile.delete();
+        if (!ok) throw new IOException("cant delete file " + newModelFile.getPath());
+      }
 
-    // index this
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
-    System.out.printf("changed = %s%n", changed);
+      // index this
+      org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+      boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
+      System.out.printf("changed = %s%n", changed);
 
-    // open the resulting index
-    try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
-      System.out.printf("opened = %s%n", ncfile.getLocation());
-      Group g = ncfile.findGroup("TwoD");
-      Variable v = ncfile.findVariableByAttribute(g, "Grib_Variable_Id", varIdValue);
-      assert v != null;
+      // open the resulting index
+      try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
+        System.out.printf("opened = %s%n", ncfile.getLocation());
+        Group g = ncfile.findGroup("TwoD");
+        Variable v = ncfile.findVariableByAttribute(g, "Grib_Variable_Id", varIdValue);
+        assert v != null;
+        System.out.printf("  Variable=%s%n", v.getFullName());
+        Dimension dim0 = v.getDimension(0);
+        assert dim0.getLength() == remLen : dim0.getLength() + " should be " + remLen;
+      }
 
-      Dimension dim0 = v.getDimension(0);
-      assert dim0.getLength() == remLen : dim0.getLength();
-    }
+      // new file arrives
+      boolean ok = newModelFileSave.renameTo(newModelFile);
+      if (!ok)
+        throw new IOException("cant rename file");
 
-    // new file arrives
-    boolean ok = newModelFileSave.renameTo(newModelFile);
-    if (!ok)
-      throw new IOException("cant rename file");
+      // redo the index
+      boolean changed2 = GribCdmIndex.updateGribCollection(config, updateType, logger);
+      System.out.printf("changed2 = %s%n", changed2);
 
-    // redo the index
-    boolean changed2 = GribCdmIndex.updateGribCollection(config, updateType, logger);
-    System.out.printf("changed2 = %s%n", changed2);
+      // open the resulting index
+      try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
+        System.out.printf("opened = %s%n", ncfile.getLocation());
+        Group g = ncfile.findGroup("TwoD");
+        Variable v = ncfile.findVariableByAttribute(g, "Grib_Variable_Id", varIdValue);
+        assert v != null;
 
-    // open the resulting index
-    try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
-      System.out.printf("opened = %s%n", ncfile.getLocation());
-      Group g = ncfile.findGroup("TwoD");
-      Variable v = ncfile.findVariableByAttribute(g, "Grib_Variable_Id", varIdValue);
-      assert v != null;
+        Dimension dim0 = v.getDimension(0);
+        assert dim0.getLength() == orgLen : dim0.getLength() + " should be " + orgLen;
+      }
 
-      Dimension dim0 = v.getDimension(0);
-      assert dim0.getLength() == orgLen : dim0.getLength();
+    } finally {  // leave it it the way we found it
+        boolean ok = newModelFileSave.renameTo(newModelFile);
     }
 
   }

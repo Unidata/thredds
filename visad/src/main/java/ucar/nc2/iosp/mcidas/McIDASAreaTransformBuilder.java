@@ -31,10 +31,7 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
-
 package ucar.nc2.iosp.mcidas;
-
 
 import ucar.ma2.Array;
 
@@ -47,7 +44,6 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 
-
 /**
  * Projection based on Mcidas Area files.
  *
@@ -55,65 +51,61 @@ import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
  */
 public class McIDASAreaTransformBuilder extends AbstractCoordTransBuilder {
 
-    /**
-     * Get the transform name
-     *
-     * @return the transform name
-     */
-    public String getTransformName() {
-        return McIDASAreaProjection.GRID_MAPPING_NAME;
+  /**
+   * Get the transform name
+   *
+   * @return the transform name
+   */
+  public String getTransformName() {
+    return McIDASAreaProjection.GRID_MAPPING_NAME;
+  }
+
+  /**
+   * Get the Transform Type
+   *
+   * @return TransformType.Projection
+   */
+  public TransformType getTransformType() {
+    return TransformType.Projection;
+  }
+
+  /**
+   * Make the coordinate transform
+   *
+   * @param ds  the dataset
+   * @param ctv the coordinate transform variable
+   * @return the coordinate transform
+   */
+  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+
+    int[] area = getIntArray(ctv, McIDASAreaProjection.ATTR_AREADIR);
+    int[] nav = getIntArray(ctv, McIDASAreaProjection.ATTR_NAVBLOCK);
+    int[] aux = null;
+    if (ctv.findAttributeIgnoreCase(McIDASAreaProjection.ATTR_AUXBLOCK) != null) {
+      aux = getIntArray(ctv, McIDASAreaProjection.ATTR_AUXBLOCK);
     }
 
-    /**
-     * Get the Transform Type
-     *
-     * @return TransformType.Projection
-     */
-    public TransformType getTransformType() {
-        return TransformType.Projection;
+    McIDASAreaProjection proj = new McIDASAreaProjection(area, nav, aux);
+    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+  }
+
+  /**
+   * get the int array from the variable attribute
+   *
+   * @param ctv     coordinate transform variable
+   * @param attName the attribute name
+   * @return the int array
+   */
+  private int[] getIntArray(Variable ctv, String attName) {
+    Attribute att = ctv.findAttribute(attName);
+    if (att == null) {
+      throw new IllegalArgumentException(
+              "McIDASArea coordTransformVariable " + ctv.getFullName()
+                      + " must have " + attName + " attribute");
     }
 
-    /**
-     * Make the coordinate transform
-     *
-     * @param ds  the dataset
-     * @param ctv the coordinate transform variable
-     *
-     * @return  the coordinate transform
-     */
-    public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds,
-            Variable ctv) {
-
-        int[] area = getIntArray(ctv, McIDASAreaProjection.ATTR_AREADIR);
-        int[] nav  = getIntArray(ctv, McIDASAreaProjection.ATTR_NAVBLOCK);
-        int[] aux  = null;
-        if (ctv.findAttributeIgnoreCase(McIDASAreaProjection.ATTR_AUXBLOCK)
-                != null) {
-            aux = getIntArray(ctv, McIDASAreaProjection.ATTR_AUXBLOCK);
-        }
-
-        McIDASAreaProjection proj = new McIDASAreaProjection(area, nav, aux);
-        return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
-    }
-
-    /**
-     * get the int array from the variable attribute
-     *
-     * @param ctv   coordinate transform variable
-     * @param attName  the attribute name
-     *
-     * @return the int array
-     */
-    private int[] getIntArray(Variable ctv, String attName) {
-        Attribute att = ctv.findAttribute(attName);
-        if (att == null) {
-            throw new IllegalArgumentException(
-                "McIDASArea coordTransformVariable " + ctv.getFullName()
-                + " must have " + attName + " attribute");
-        }
-
-        Array arr = att.getValues();
-        return (int[]) arr.get1DJavaArray(int.class);
-    }
+    Array arr = att.getValues();
+    return (int[]) arr.get1DJavaArray(int.class);
+  }
 }
 

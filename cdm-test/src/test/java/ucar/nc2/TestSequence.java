@@ -32,10 +32,7 @@
 
 package ucar.nc2;
 
-import junit.framework.TestCase;
-
 import java.io.PrintWriter;
-import java.util.List;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -131,7 +128,7 @@ public class TestSequence {
 
       showArraySequence(as);
 
-      PrintWriter pw = new PrintWriter(System.out);
+      // PrintWriter pw = new PrintWriter(System.out);
       int count = 0;
       StructureDataIterator iter = as.getStructureDataIterator();
       try {
@@ -146,7 +143,7 @@ public class TestSequence {
             while (nestedIter.hasNext()) {
               StructureData nestedData = nestedIter.next();
               // NCdumpW.printStructureData(pw, nestedData);
-              System.out.printf("%n");
+              assert nestedData != null;
             }
           } finally {
             nestedIter.finish();

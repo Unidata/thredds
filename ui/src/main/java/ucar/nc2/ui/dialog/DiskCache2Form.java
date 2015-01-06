@@ -40,7 +40,6 @@
 package ucar.nc2.ui.dialog;
 
 import java.awt.event.*;
-import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.util.DiskCache2;
 
 import java.awt.*;

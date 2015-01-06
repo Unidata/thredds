@@ -79,7 +79,7 @@ public class Grib1SectionBitMap {
     int length = GribNumbers.uint3(raf);
 
     // octet 4 unused bits
-    int unused = raf.read();
+    raf.read();   // unused
 
     // octets 5-6
     int bm = raf.readShort();

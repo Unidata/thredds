@@ -33,10 +33,8 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
-import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
-import ucar.nc2.grib.collection.GribCollection;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.unidata.io.RandomAccessFile;
@@ -48,52 +46,66 @@ import java.io.IOException;
  * Abstract superclass for Grib1Index and Grib2Index.
  * Handles gbx9 index for grib.
  * <p/>
- * Static methods for creating gbx9 and ncx indices for a single file.
+ * Static methods for creating gbx9 indices for a single file.
  *
  * @author John
  * @since 9/5/11
  */
 public abstract class GribIndex {
-  //static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribIndex.class);
   public static final String GBX9_IDX = ".gbx9";
   public static final boolean debug = false;
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      File idxFile = GribCollection.getFileInCache(file.getPath() + GBX9_IDX);
-      if (!idxFile.exists()) return true;
+      String idxPath = file.getPath();
+      if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+      File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
+      if (idxFile == null) return true;
+
       long idxLastModified =  idxFile.lastModified();
       if (idxLastModified < file.getLastModified()) return true;
       if (0 < when && when < idxLastModified) return true;
       return false;
     }
     public boolean hasntChangedSince(MFile file, long when) {
-      File idxFile = GribCollection.getFileInCache(file.getPath() + GBX9_IDX);
-      if (!idxFile.exists()) return true;
+      String idxPath = file.getPath();
+      if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
+      File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
+      if (idxFile == null) return true;
+
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && idxFile.lastModified() < when) return true;
       return false;
     }
   };
+  /////////////////////////////////////////////////////////////////////////
 
-  static public CollectionManager.ChangeChecker getChangeChecker() {
+  public static CollectionManager.ChangeChecker getChangeChecker() {
     return gribCC;
   }
 
+  public static GribIndex open(boolean isGrib1, MFile mfile) throws IOException {
+
+    GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
+
+    if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), CollectionUpdateType.never)) {
+      return null;
+    }
+
+    return index;
+  }
+
   /**
-   * Create a gbx9 and ncx index from a single grib1 or grib2 file.
-   * Use the existing index is it already exists.
+   * Create a gbx9 index from a single grib1 or grib2 file.
+   * Use the existing index if it already exists.
    *
    * @param isGrib1 true if grib1
-   * @param createCollectionIndex true is you also want the ncx file to be created
    * @param mfile the grib file
-   * @param config  special configuration
    * @param force  force writing index
    * @return the resulting GribIndex
    * @throws IOException on io error
    */
-  public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, boolean createCollectionIndex,
-         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
+  public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, MFile mfile, CollectionUpdateType force, org.slf4j.Logger logger) throws IOException {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
 
@@ -104,18 +116,10 @@ public abstract class GribIndex {
       logger.debug("  Index read: {} == {} records", mfile.getName() + GBX9_IDX, index.getNRecords());
     }
 
-    if (!createCollectionIndex) return index;
-
-     /* heres where the ncx file date is checked against the data file
-    GribCollection gc;
-    if (isGrib1)
-      gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
-    else
-      gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, logger);
-    gc.close(); // dont need this right now */
-
     return index;
   }
+
+  //////////////////////////////////////////
 
   /**
    * Read the gbx9 index file.

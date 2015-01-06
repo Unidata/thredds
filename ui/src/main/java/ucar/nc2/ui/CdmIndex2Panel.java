@@ -10,7 +10,6 @@ import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
@@ -23,7 +22,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -74,11 +72,11 @@ public class CdmIndex2Panel extends JPanel {
       });
       buttPanel.add(filesButton);
 
-      AbstractButton rawButton = BAMutil.makeButtcon("Information", "Show Raw Info", false);
+      AbstractButton rawButton = BAMutil.makeButtcon("Information", "Estimate memory use", false);
       rawButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
-          //showRawInfo(f);
+          showMemoryEst(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
@@ -92,12 +90,12 @@ public class CdmIndex2Panel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group", "GribCollection.GroupHcs", null);
+    groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group", "GribCollectionImmutable.GroupHcs", null);
     groupTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GroupBean bean = (GroupBean) groupTable.getSelectedBean();
         if (bean != null)
-          setGroup(bean.group);
+          setGroup(bean);
       }
     });
 
@@ -123,7 +121,7 @@ public class CdmIndex2Panel extends JPanel {
        }
      });
 
-    varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollection.VariableIndex", null);
+    varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group", "GribCollectionImmutable.VariableIndex", null);
 
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Variable(s)", new AbstractAction() {
@@ -131,7 +129,7 @@ public class CdmIndex2Panel extends JPanel {
         List<VarBean> beans = varTable.getSelectedBeans();
         infoTA.clear();
         for (VarBean bean : beans)
-          infoTA.appendLine(bean.v.toStringComplete());
+          infoTA.appendLine(bean.v.toStringFrom());
         infoTA.gotoTop();
         infoWindow.show();
       }
@@ -282,10 +280,12 @@ public class CdmIndex2Panel extends JPanel {
   }
 
   public void clear() {
-    if (gc != null) try {
-      gc.close();
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (gc != null) {
+      try {
+        gc.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
     gc = null;
     groupTable.clearBeans();
@@ -309,6 +309,7 @@ public class CdmIndex2Panel extends JPanel {
     gc.showIndex(f);
     f.format("%n");
 
+    f.format("Groups%n");
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
       f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
@@ -317,6 +318,94 @@ public class CdmIndex2Panel extends JPanel {
 
     f.format("%n");
     // showFiles(f);
+  }
+
+  private void showFileTable(GribCollectionImmutable gc, GribCollectionImmutable.GroupGC group) {
+    File dir = gc.getDirectory();
+    Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
+    fileTable.setFiles(dir, files);
+  }
+
+  private static class SortBySize implements Comparable<SortBySize> {
+    Object obj;
+    int size;
+
+    private SortBySize(Object obj, int size) {
+      this.obj = obj;
+      this.size = size;
+    }
+
+    public int compareTo(SortBySize o) {
+      return Integer.compare(size, o.size);
+    }
+  }
+
+  public void showMemoryEst(Formatter f) {
+    if (gc == null) return;
+
+    for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
+      f.format("Dataset %s%n", ds.getType());
+      int bytesTotal = 0;
+      int bytesSATotal = 0;
+      int coordsAllTotal = 0;
+
+      for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
+        f.format(" Group %s%n", g.getDescription());
+
+        List<SortBySize> sortList = new ArrayList<>(g.getCoordinates().size());
+        for (Coordinate vc : g.getCoordinates())
+           sortList.add(new SortBySize(vc, vc.estMemorySize()));
+        Collections.sort(sortList);
+
+        int coordsTotal = 0;
+        f.format("  totalKB  type Coordinate%n");
+        for (SortBySize ss : sortList) {
+          Coordinate vc = (Coordinate) ss.obj;
+          f.format("  %6d %-8s %-40s%n", vc.estMemorySize()/1000, vc.getType(), vc.getName());
+          bytesTotal += vc.estMemorySize();
+          coordsTotal += vc.estMemorySize();
+        }
+        f.format(" %7d KBytes%n", coordsTotal/1000);
+        f.format("%n");
+        coordsAllTotal += coordsTotal;
+
+        int count = 0;
+        for (GribCollectionImmutable.VariableIndex v : g.getVariables()) {
+          VarBean bean = new VarBean(v, g);
+
+          if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
+            if (count == 0) f.format(" total   VariablePartitioned%n");
+
+            PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;
+             int nparts = vip.getNparts();
+             int memEstBytes = 368 + nparts * 4;  // very rough
+             bytesTotal += memEstBytes;
+             f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
+
+          } else {
+            if (count == 0) f.format(" total   SA  Variable%n");
+            try {
+              v.readRecords();
+              SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
+              int ntracks  = sa.getTotalSize();
+              int nrecords = sa.getContent().size();
+              int memEstForSA = 276 + nrecords * 40 + ntracks * 4;
+              int memEstBytes = 280 + memEstForSA;
+              f.format("%6d %6d %-50s nrecords=%6d%n", memEstBytes, memEstForSA, bean.getName(), nrecords);
+              bytesTotal += memEstBytes;
+              bytesSATotal += memEstForSA;
+
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+          count++;
+        }
+      }
+      int noSA =  bytesTotal - bytesSATotal;
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal/1000, bytesSATotal/1000, noSA/1000, coordsAllTotal/1000);
+      f.format("%n");
+    }
   }
 
   private void compareCoords(Formatter f, Coordinate coord1, Coordinate coord2) {
@@ -476,7 +565,7 @@ public class CdmIndex2Panel extends JPanel {
   }
 
 
-  private void compareFiles(Formatter f) throws IOException {
+  /* private void compareFiles(Formatter f) throws IOException {
     if (gc == null) return;
     List<String> canon = new ArrayList<>(gc.getFilenames());
     Collections.sort(canon);
@@ -497,7 +586,7 @@ public class CdmIndex2Panel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, false, logger);
+      GribCollectionImmutable cgc = Grib2CollectionBuilderFromIndex.readFromIndex(file.getName(), raf, null, false, logger);
       List<String> cfiles = new ArrayList<>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -507,7 +596,7 @@ public class CdmIndex2Panel extends JPanel {
       total += cfiles.size();
     }
     f.format("Total files = %d%n%n", total);
-  }
+  } */
 
   private void compareSortedList(Formatter f, Iterator<String> i1, Iterator<String> i2) {
     String s1 = null, s2 = null;
@@ -545,7 +634,7 @@ public class CdmIndex2Panel extends JPanel {
 
   ///////////////////////////////////////////////
   Path indexFile;
-  GribCollection gc;
+  GribCollectionImmutable gc;
   Collection<MFile> gcFiles;
   FeatureCollectionConfig config = new FeatureCollectionConfig();
 
@@ -560,26 +649,37 @@ public class CdmIndex2Panel extends JPanel {
 
     List<GroupBean> groups = new ArrayList<>();
 
-    for (PartitionCollection.Dataset ds : gc.getDatasets())
-      for (GribCollection.GroupGC g : ds.getGroups())
+    for (GribCollectionImmutable.Dataset ds : gc.getDatasets())
+      for (GribCollectionImmutable.GroupGC g : ds.getGroups())
         groups.add(new GroupBean(g, ds.getType().toString()));
+
+    if (groups.size() > 0)
+      setGroup(groups.get(0));
+    else {
+      varTable.clearBeans();
+      coordTable.clearBeans();
+    }
 
     groupTable.setBeans(groups);
     groupTable.setHeader(indexFile.toString());
     gcFiles = gc.getFiles();
-    varTable.clearBeans();
-    coordTable.clearBeans();
   }
 
-  private void setGroup(GribCollection.GroupGC group) {
+  private void setGroup(GroupBean bean) {
+    bean.clear();
     List<VarBean> vars = new ArrayList<>();
-    for (GribCollection.VariableIndex v : group.getVariables())
-      vars.add(new VarBean(v, group));
+    for (GribCollectionImmutable.VariableIndex v : bean.group.getVariables()) {
+      VarBean vbean = new VarBean(v, bean.group);
+      vars.add(vbean);
+      bean.nrecords += vbean.getNrecords();
+      bean.ndups += vbean.getNdups();
+      bean.nmissing += vbean.getNmissing();
+    }
     varTable.setBeans(vars);
 
     int count = 0;
     List<CoordBean> coords = new ArrayList<>();
-    for (Coordinate vc : group.getCoordinates())
+    for (Coordinate vc : bean.group.getCoordinates())
       coords.add(new CoordBean(vc, count++));
     coordTable.setBeans(coords);
   }
@@ -616,39 +716,38 @@ public class CdmIndex2Panel extends JPanel {
     f.format("============%n%s%n", gc);
   }  */
 
-  private void showFileTable(GribCollection gc, GribCollection.GroupGC group) {
-    File dir = gc.getDirectory();
-    Collection<MFile> files = (group == null) ? gc.getFiles() : group.getFiles();
-    fileTable.setFiles(dir, files);
-  }
-
   ////////////////////////////////////////////////////////////////////////////
 
   public class GroupBean {
-    GribCollection.GroupGC group;
+    GribCollectionImmutable.GroupGC group;
     String type;
-    float density, avgDensity;
-    int nrecords = 0;
+    int nrecords, nmissing, ndups;
 
     public GroupBean() {
     }
 
-    public GroupBean(GribCollection.GroupGC g, String type) {
+    public GroupBean(GribCollectionImmutable.GroupGC g, String type) {
       this.group = g;
       this.type = type;
 
-      int nvars = 0;
+      /* int nvars = 0;
       int total = 0;
       avgDensity = 0;
-      for (GribCollection.VariableIndex vi : group.getVariables()) {
-        vi.calcTotalSize();
-        total += vi.totalSize;
-        nrecords += vi.nrecords;
-        avgDensity += vi.density;
+      for (GribCollectionImmutable.VariableIndex vi : group.getVariables()) {
+       // vi.calcTotalSize();
+       // total += vi.totalSize;
+       // nrecords += vi.nrecords;
+       // avgDensity += vi.density;
         nvars++;
       }
       if (nvars != 0) avgDensity /= nvars;
-      density = (total == 0) ? 0 : ((float) nrecords) / total;
+      density = (total == 0) ? 0 : ((float) nrecords) / total;  */
+    }
+
+    void clear() {
+      nmissing = 0;
+      ndups = 0;
+      nrecords = 0;
     }
 
     public String getGroupId() {
@@ -656,7 +755,7 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getGdsHash() {
-      return group.getGdsHash();
+      return group.getGdsHash().hashCode();
     }
 
     public int getNrecords() {
@@ -668,29 +767,37 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public int getNFiles() {
-      return group.getNFiles();
+      int n = group.getNFiles();
+      if (n == 0) {
+        if (gc instanceof PartitionCollectionImmutable)
+          n = ((PartitionCollectionImmutable) gc).getPartitionSize();
+      }
+      return n;
+    }
+
+    public int getNruntimes() {
+      return group.getNruntimes();
     }
 
     public int getNCoords() {
-      return group.getNCoords();
+      return group.getCoordinates().size();
     }
 
     public int getNVariables() {
-      return group.getNVariables();
-    }
-
-    public float getAvgDensity() {
-      return avgDensity;
-    }
-
-    public float getDensity() {
-      return density;
+      return group.getVariables().size();
     }
 
    public String getDescription() {
       return group.getDescription();
     }
 
+    public int getNmissing() {
+      return nmissing;
+    }
+
+    public int getNdups() {
+      return ndups;
+    }
   }
 
 
@@ -722,9 +829,18 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public String getValues() {
-      if (coord.getValues() == null) return "";
       Formatter f = new Formatter();
-      for (Object val : coord.getValues()) f.format("%s,", val);
+      if (coord instanceof CoordinateRuntime) {
+        CoordinateRuntime runtime = (CoordinateRuntime) coord;
+        f.format("%s-%s", runtime.getFirstDate(), runtime.getLastDate());
+      } else if (coord instanceof CoordinateTime2D) {
+        CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+        CoordinateRuntime runtime = coord2D.getRuntimeCoordinate();
+        f.format("%s-%s", runtime.getFirstDate(), runtime.getLastDate());
+      } else {
+        if (coord.getValues() == null) return "";
+        for (Object val : coord.getValues()) f.format("%s,", val);
+      }
       return f.toString();
     }
 
@@ -778,20 +894,20 @@ public class CdmIndex2Panel extends JPanel {
   ////////////////////////////////////////////////////////////////////////////////////
 
   public class VarBean {
-    GribCollection.VariableIndex v;
-    GribCollection.GroupGC group;
+    GribCollectionImmutable.VariableIndex v;
+    GribCollectionImmutable.GroupGC group;
     String name;
 
     public VarBean() {
     }
 
-    public VarBean(GribCollection.VariableIndex vindex, GribCollection.GroupGC group) {
+    public VarBean(GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable.GroupGC group) {
       this.v = vindex;
       this.group = group;
-      this.name =  gc.makeVariableName(vindex);
+      this.name =  vindex.makeVariableName();
     }
 
-    public int getNRecords() {
+    /* public int getNRecords() {
       return v.nrecords;
     }
 
@@ -805,7 +921,7 @@ public class CdmIndex2Panel extends JPanel {
 
     public float getDensity() {
       return v.density;
-    }
+    }  */
 
     public String getIndexes() {
       Formatter f = new Formatter();
@@ -814,11 +930,11 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public String getIntvName() {
-      return v.getTimeIntvName();
+      return v.getIntvName();
     }
 
-    public int getHash() {
-      return v.cdmHash;
+    public int getCdmHash() {
+      return v.hashCode();
     }
 
     public String getGroupId() {
@@ -826,11 +942,28 @@ public class CdmIndex2Panel extends JPanel {
     }
 
     public String getVariableId() {
-      return v.discipline + "-" + v.category + "-" + v.parameter;
+      return v.getDiscipline() + "-" + v.getCategory() + "-" + v.getParameter();
     }
 
     public String getName() {
       return name;
+    }
+
+    public int getNdups() {
+      return v.getNdups();
+    }
+
+    public int getNrecords() {
+      return v.getNrecords();
+    }
+
+    public int getNmissing() {
+      int n = v.getSize();
+      return n - v.getNrecords();
+    }
+
+    public int getSize() {
+      return v.getSize();
     }
 
     public void makeGribConfig(Formatter f) {
@@ -839,16 +972,16 @@ public class CdmIndex2Panel extends JPanel {
 
     private void showSparseArray(Formatter f) {
 
-      int count = 0;
+      /* int count = 0;
       Indent indent = new Indent(2);
       for (Coordinate coord : v.getCoordinates()) {
         f.format("%d: ", count++);
         coord.showInfo(f, indent);
       }
-      f.format("%n");
+      f.format("%n");  */
 
-      if (v instanceof PartitionCollection.VariableIndexPartitioned) {
-        PartitionCollection.VariableIndexPartitioned vip = (PartitionCollection.VariableIndexPartitioned) v;
+      if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
+        PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;
         vip.show(f);
 
       } else {
@@ -859,7 +992,7 @@ public class CdmIndex2Panel extends JPanel {
           return;
         }
         if (v.getSparseArray() != null) {
-          SparseArray<GribCollection.Record> sa = v.getSparseArray();
+          SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
           sa.showInfo(f, null);
           f.format("%n");
           sa.showContent(f);
@@ -870,7 +1003,7 @@ public class CdmIndex2Panel extends JPanel {
     /* private void showRecords(Formatter f) {
 
        try {
-         GribCollection.Record[] records = v.getRecords();
+         GribCollectionImmutable.Record[] records = v.getRecords();
          if (records.length == 0) {
            f.format("this index has no records%n");
            return;
@@ -896,13 +1029,13 @@ public class CdmIndex2Panel extends JPanel {
        }
      }
 
-     private void showRecords(Formatter f, List<Integer> values, GribCollection.Record[] records) throws IOException {
+     private void showRecords(Formatter f, List<Integer> values, GribCollectionImmutable.Record[] records) throws IOException {
        f.format(" time (down)%n");
 
        for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
          f.format("%10s = ", values.get(timeIdx));
-         int idx = GribCollection.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
-         GribCollection.Record r = records[idx];
+         int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
+         GribCollectionImmutable.Record r = records[idx];
          if (r == null) f.format("null");
          else f.format("(%d,%8d) ", r.fileno, r.pos);
          f.format("%n");
@@ -910,7 +1043,7 @@ public class CdmIndex2Panel extends JPanel {
 
        f.format("%n Show records in order%n");
        int count = 0;
-       for (GribCollection.Record r : records) {
+       for (GribCollectionImmutable.Record r : records) {
          if (r == null) f.format("null%n");
          else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
          count++;
@@ -919,7 +1052,7 @@ public class CdmIndex2Panel extends JPanel {
 
      }
 
-     private void showRecords(Formatter f, VertCoord vcoord, List<Integer> values, GribCollection.Record[] records) throws IOException {
+     private void showRecords(Formatter f, VertCoord vcoord, List<Integer> values, GribCollectionImmutable.Record[] records) throws IOException {
        f.format(" time (down) vertLevel (across) %n");
 
        f.format("%12s ", " ");
@@ -932,8 +1065,8 @@ public class CdmIndex2Panel extends JPanel {
        for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
          f.format("%10s = ", values.get(timeIdx));
          for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
-           int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
-           GribCollection.Record r = records[idx];
+           int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
+           GribCollectionImmutable.Record r = records[idx];
            if (r == null) f.format("null");
            else f.format("(%d,%8d) ", r.fileno, r.pos);
          }
@@ -942,7 +1075,7 @@ public class CdmIndex2Panel extends JPanel {
 
        f.format("%n Show records in order%n");
        int count = 0;
-       for (GribCollection.Record r : records) {
+       for (GribCollectionImmutable.Record r : records) {
          if (r == null) f.format("null%n");
          else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
          count++;
@@ -951,7 +1084,7 @@ public class CdmIndex2Panel extends JPanel {
 
      }
 
-     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoord.Tinv> tinvs, GribCollection.Record[] records) throws IOException {
+     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoord.Tinv> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
        f.format(" timeIntv (down) vertLevel (across) %n");
 
        f.format("%12s ", " ");
@@ -965,8 +1098,8 @@ public class CdmIndex2Panel extends JPanel {
          f.format("%10s = ", tinvs.get(timeIdx));
          Formatter filenames = new Formatter();
          for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
-           int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
-           GribCollection.Record r = records[idx];
+           int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
+           GribCollectionImmutable.Record r = records[idx];
            //f.format("%3d %10d ", r.fileno, r.drsPos);
            if (r == null || r.pos == 0)
              f.format("(%4d,%6d) ", -1, -1);
@@ -985,13 +1118,13 @@ public class CdmIndex2Panel extends JPanel {
       return wantFile.getPath();
     }
 
-     void showRecords2Dintv(Formatter f, List<TimeCoord.Tinv> tinvs, GribCollection.Record[] records) throws IOException {
+     void showRecords2Dintv(Formatter f, List<TimeCoord.Tinv> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
        f.format(" timeIntv (down) %n");
 
        for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
          f.format("%10s = ", tinvs.get(timeIdx));
-         int idx = GribCollection.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
-         GribCollection.Record r = records[idx];
+         int idx = GribCollectionImmutable.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
+         GribCollectionImmutable.Record r = records[idx];
          //f.format("%3d %10d ", r.fileno, r.drsPos);
          f.format("%6d ", (r == null ? -1 : r.fileno));
          f.format("%n");
@@ -1001,7 +1134,7 @@ public class CdmIndex2Panel extends JPanel {
     void sendFilesToGrib2Collection() {
       try {
         Set<Integer> filenos = new HashSet<>();
-        for (GribCollection.Record r : v.getRecords()) {
+        for (GribCollectionImmutable.Record r : v.getRecords()) {
           if (r != null && r.pos > 0)
             filenos.add(r.fileno);
         }
@@ -1049,7 +1182,7 @@ public class CdmIndex2Panel extends JPanel {
 
        TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
        int partno = val.getPartition();
-       GribCollection.VariableIndex vindex = vP.getVindex(partno); // the variable in this partition
+       GribCollectionImmutable.VariableIndex vindex = vP.getVindex(partno); // the variable in this partition
        f.format("time = %d val = %s partition = %d%n", timeIdx, val, partno);
 
        for (int ensIdx = 0; ensIdx < nens; ensIdx++) {
@@ -1059,17 +1192,17 @@ public class CdmIndex2Panel extends JPanel {
            if (nverts > 1) f.format("  vert = %d%n", levelIdx);
 
            // where does this record go in the result ??
-           int resultIndex = GribCollection.calcIndex(timeIdx, ensIdx, levelIdx, nens, nverts);
+           int resultIndex = GribCollectionImmutable.calcIndex(timeIdx, ensIdx, levelIdx, nens, nverts);
 
            // where does this record come from ??
            int recordIndex = -1;
 
            int flag = vP.flag[partno]; // see if theres a mismatch with vert or ens coordinates
            if (flag == 0) { // no problem
-             recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
+             recordIndex = GribCollectionImmutable.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
 
            } else {  // problem - must match coordinates
-             recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(), vindex.getVertCoord(),
+             recordIndex = GribCollectionImmutable.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(), vindex.getVertCoord(),
                      vP.getEnsCoord(), vP.getVertCoord());
            }
 

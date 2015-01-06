@@ -35,7 +35,6 @@ package ucar.nc2.ui;
 import thredds.catalog.*;
 import thredds.ui.catalog.CatalogChooser;
 import thredds.ui.catalog.ThreddsDatasetChooser;
-import thredds.ui.catalog.query.QueryChooser;
 import thredds.ui.catalog.tools.CatalogCopier;
 import thredds.ui.catalog.tools.CatalogEnhancer;
 import thredds.ui.catalog.tools.DLCrawler;
@@ -218,34 +217,6 @@ public class ThreddsUI extends JPanel {
       }
     });
     datasetChooser.getCatalogChooser().addButton(catSource);
-
-    QueryChooser queryChooser = datasetChooser.getQueryChooser();
-    if (queryChooser != null) {
-      // add a show source button to dqc chooser
-      JButton dcqSource = new JButton("Source");
-      dcqSource.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          String catURL = datasetChooser.getQueryChooser().getCurrentURL();
-          sourcePane.setURL(catURL);
-          sourcePane.gotoTop();
-          sourceWindow.show();
-        }
-      });
-      queryChooser.addButton(dcqSource);
-
-      // add a show source button to dqc catalog chooser
-      JButton dqcCatSource = new JButton("Source");
-      dqcCatSource.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          String catURL = datasetChooser.getQueryChooser().getCatalogChooser().getCurrentURL();
-          System.out.println("DQC Catalog Source: url = " + catURL);
-          sourcePane.setURL(catURL);
-          sourcePane.gotoTop();
-          sourceWindow.show();
-        }
-      });
-      queryChooser.getCatalogChooser().addButton(dqcCatSource);
-    }
 
     return datasetChooser;
   }

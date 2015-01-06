@@ -158,8 +158,8 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
   }
 
   private void readStationTable() throws IOException {
-    Dimension stationDim = ncfile.findDimension("station");
-    StructurePseudo stationTable = new StructurePseudo( ncfile, null, "stationTable", stationDim);
+    Dimension stationDim = netcdfDataset.findDimension("station");
+    StructurePseudo stationTable = new StructurePseudo(netcdfDataset, null, "stationTable", stationDim);
     ArrayStructure stationData = (ArrayStructure) stationTable.read();
 
     // how many are valid stations ?
@@ -190,8 +190,8 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     Array stationIndexArray = stationIndexVar.read();
 
 
-    Dimension stationDim = ncfile.findDimension("station");
-    StructurePseudo stationTable = new StructurePseudo( ncfile, null, "stationTable", stationDim);
+    Dimension stationDim = netcdfDataset.findDimension("station");
+    StructurePseudo stationTable = new StructurePseudo(netcdfDataset, null, "stationTable", stationDim);
     ArrayStructure stationData = (ArrayStructure) stationTable.read();
 
     // how many are valid stations ?
@@ -319,7 +319,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
   }
 
   public int getDataCount() {
-    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
+    Dimension unlimitedDim = netcdfDataset.getUnlimitedDimension();
     return unlimitedDim.getLength();
   }
 
@@ -344,7 +344,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
           // deal with files that are updating
           if (recno > getDataCount()) {
             int n = getDataCount();
-            ncfile.syncExtend();  // LOOK kludge?
+            netcdfDataset.syncExtend();  // LOOK kludge?
             log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
           }
           StructureData sdata = recordVar.readStructure(recno);
@@ -441,7 +441,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       // deal with files that are updating
       if (recno > getDataCount()) {
         int n = getDataCount();
-        ncfile.syncExtend();  // LOOK kludge?
+        netcdfDataset.syncExtend();  // LOOK kludge?
         log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
       }
 

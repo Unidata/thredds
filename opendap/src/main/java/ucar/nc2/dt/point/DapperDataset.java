@@ -200,7 +200,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       fatal = true;
     }
 
-    Attribute time_range = ncfile.findGlobalAttribute("time_range");
+    Attribute time_range = netcdfDataset.findGlobalAttribute("time_range");
     double time_start = time_range.getNumericValue(0).doubleValue();
     double time_end = time_range.getNumericValue(1).doubleValue();
 
@@ -216,11 +216,11 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   protected void setEndDate() {}
 
   protected void setBoundingBox() {
-    Attribute lon_range = ncfile.findGlobalAttribute("lon_range");
+    Attribute lon_range = netcdfDataset.findGlobalAttribute("lon_range");
     double lon_start = lon_range.getNumericValue(0).doubleValue();
     double lon_end = lon_range.getNumericValue(1).doubleValue();
 
-    Attribute lat_range = ncfile.findGlobalAttribute("lat_range");
+    Attribute lat_range = netcdfDataset.findGlobalAttribute("lat_range");
     double lat_start = lat_range.getNumericValue(0).doubleValue();
     double lat_end = lat_range.getNumericValue(1).doubleValue();
 

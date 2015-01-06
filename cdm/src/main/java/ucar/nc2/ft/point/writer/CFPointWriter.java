@@ -163,6 +163,7 @@ public abstract class CFPointWriter implements AutoCloseable {
       }
 
       pointWriter.finish();
+      pointWriter.close();
       return count;
     }
   }
@@ -188,6 +189,7 @@ public abstract class CFPointWriter implements AutoCloseable {
     }
 
     cfWriter.finish();
+    cfWriter.close();
     return count;
   }
 
@@ -222,6 +224,7 @@ public abstract class CFPointWriter implements AutoCloseable {
     }
 
     cfWriter.finish();
+    cfWriter.close();
     return count;
   }
 
@@ -256,6 +259,7 @@ public abstract class CFPointWriter implements AutoCloseable {
     }
 
     cfWriter.finish();
+    cfWriter.close();
     return count;
   }
 
@@ -301,6 +305,7 @@ public abstract class CFPointWriter implements AutoCloseable {
     }
 
     cfWriter.finish();
+    cfWriter.close();
     return count;
   }
 
@@ -350,6 +355,7 @@ public abstract class CFPointWriter implements AutoCloseable {
     }
 
     cfWriter.finish();
+    cfWriter.close();
     return count;
   }
 

@@ -11,7 +11,7 @@ import java.util.*;
  */
 public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
   protected Set<Object> valSet = new HashSet<>(100);
-  protected Map<Object, Integer> valMap;
+  protected Map<Object, Integer> valMap;    // map of values to index in Coordinate
   protected Coordinate coord;
 
   @Override
@@ -44,12 +44,16 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
     valSet = null;
 
     List<Object> values = (List<Object>) coord.getValues();
-    valMap = new HashMap<>(coord.getSize()*2);
-    for (int i=0; i< coord.getSize(); i++)
-      valMap.put(values.get(i), i);
+    if (values != null) {
+      valMap = new HashMap<>(coord.getSize() * 2);
+      for (int i = 0; i < values.size(); i++)
+        valMap.put(values.get(i), i);
+    }
     return coord;
   }
 
+  // used by CoordinateND.makeSparseArray
+  // not used by CoordinateTime2D
   @Override
   public int getIndex(T gr) {
     Integer result =  valMap.get( extract(gr));

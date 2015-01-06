@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
@@ -55,21 +56,24 @@ public class TestLongOffset extends TestCase  {
   }
   protected void tearDown() throws Exception {
     out.close();
-    tempFile.delete();
+    if (!tempFile.delete())
+      System.out.printf("delete failed on %s%n",tempFile);
   }
 
   public void testReadLongOffset() throws IOException {
     NetcdfFile ncfile = TestDir.openFileLocal("longOffset.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(out, CDM.utf8Charset));
 
-    NCdump.print(ncfile, "-vall", out, null);
+    NCdumpW.print(ncfile, "-vall", pw, null);
     ncfile.close();
   }
 
   public void testReadLongOffsetV3mode() throws IOException {
     NetcdfFile ncfile = TestDir.openFileLocal( "longOffset.nc");
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(out, CDM.utf8Charset));
 
-    NCdump.print(ncfile, "-vall", out, null);
+    NCdumpW.print(ncfile, "-vall", pw, null);
     ncfile.close();
   }
 

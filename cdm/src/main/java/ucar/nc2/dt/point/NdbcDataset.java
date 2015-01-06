@@ -131,7 +131,7 @@ public class NdbcDataset extends StationObsDatasetImpl  implements TypedDatasetF
   }
 
   public int getDataCount() {
-    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
+    Dimension unlimitedDim = netcdfDataset.getUnlimitedDimension();
     return unlimitedDim.getLength();
   }
 

@@ -62,7 +62,6 @@ import java.text.ParseException;
  * @since 2004-08-13T13:21:19 MDT
  */
 public class DMSPiosp extends AbstractIOServiceProvider {
-  private NetcdfFile ncfile;
 
   DMSPHeader header = null;
 
@@ -99,8 +98,6 @@ public class DMSPiosp extends AbstractIOServiceProvider {
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    this.ncfile = ncfile;
-
     this.raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN); // DMSP files are XDR
 
     this.header = new DMSPHeader();

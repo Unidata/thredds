@@ -41,6 +41,7 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.grib.GribIndex;
+import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Utils;
@@ -62,41 +63,22 @@ import java.util.*;
 public class Grib1CollectionBuilder extends GribCollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
 
-  private final boolean intvMerge;
-  private final boolean useGenType;
-  private final boolean useTableVersion;
-  private final boolean useCenter;
-
   private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib1Customizer cust;
 
-  // LOOK prob name could be dcm.getCollectionName()
   public Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     super(true, name, dcm, logger);
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     gribConfig = config.gribConfig;
-    Map<String, Boolean> pdsConfig = config.gribConfig.pdsHash;
-    useTableVersion = assignValue(pdsConfig, "useTableVersion", true);
-    intvMerge = assignValue(pdsConfig, "intvMerge", true);
-    useCenter = assignValue(pdsConfig, "useCenter", true);
-    useGenType = assignValue(pdsConfig, "useGenType", false);
-  }
-
-  private boolean assignValue(Map<String, Boolean> pdsHash, String key, boolean value) {
-    if (pdsHash != null) {
-      Boolean b = pdsHash.get(key);
-      if (b != null) value = b;
-    }
-    return value;
   }
 
   // read all records in all files,
-  // divide into groups based on GDS hash
+  // divide into groups based on GDS hash and optionally the runtime
   // each group has an arraylist of all records that belong to it.
-  // for each group, run rectlizer to derive the coordinates and variables
+  // for each group, call rectlizer to derive the coordinates and variables
   @Override
-  public List<Grib1CollectionWriter.Group> makeGroups(List<MFile> allFiles, Formatter errlog) throws IOException {
+  public List<Grib1CollectionWriter.Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException {
     Map<GroupAndRuntime, Grib1CollectionWriter.Group> gdsMap = new HashMap<>();
 
     logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
@@ -104,10 +86,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     Counter statsAll = new Counter(); // debugging
 
     logger.debug(" dcm={}", dcm);
-    FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
-    //Map<Integer, Integer> gdsConvert = config.gribConfig.gdsHash;
-    Map<String, Boolean> pdsConvert = config.gribConfig.pdsHash;
-    FeatureCollectionConfig.GribIntvFilter intvMap = config.gribConfig.intvFilter;
+    FeatureCollectionConfig.GribIntvFilter intvMap = gribConfig.intvFilter;
 
     // place each record into its group
     int totalRecords = 0;
@@ -115,8 +94,14 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       while (iter.hasNext()) {
         MFile mfile = iter.next();
         Grib1Index index;
-        try {                  // LOOK here is where gbx9 files get recreated; do not make collection index
-          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, false, mfile, config.gribConfig, CollectionUpdateType.test, logger);
+        try {
+          if (GribIosp.debugGbxIndexOnly) {
+            index = (Grib1Index) GribIndex.open(true, mfile);
+            if (index == null) continue;
+          } else {
+            // here is where gbx9 files get recreated
+            index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, mfile, CollectionUpdateType.test, logger);
+          }
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {
@@ -126,10 +111,10 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         int n = index.getNRecords();
         totalRecords += n;
 
-        for (Grib1Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
+        for (Grib1Record gr : index.getRecords()) { // we are using entire Grib1Record - likely this is the memory bottleneck for how big a collection can handle
           if (this.cust == null) {
             cust = Grib1Customizer.factory(gr, null);
-            cust.setTimeUnitConverter(config.gribConfig.getTimeUnitConverter());
+            cust.setTimeUnitConverter(gribConfig.getTimeUnitConverter());
           }
           if (intvMap != null && filterOut(gr, intvMap)) {
             statsAll.filter++;
@@ -137,19 +122,21 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           }
 
           gr.setFile(fileno); // each record tracks which file it belongs to
-          int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
-          gdsHash = gribConfig.convertGdsHash(gdsHash);  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
+          Grib1Gds gdsHashObject = gr.getGDSsection().getGDS();  // use GDS to group records
+          int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());  // allow external config to muck with gdsHash. Why? because of error in encoding and we need exact hash matching
           if (0 == gdsHash)
             continue; // skip this group
 
-          CalendarDate runtime = gr.getReferenceDate();
-          GroupAndRuntime gar = new GroupAndRuntime(gdsHash, runtime.getMillis());
+          CalendarDate runtimeDate = gr.getReferenceDate();
+          long runtime = singleRuntime ? runtimeDate.getMillis() : 0;  // seperate Groups for each runtime, if singleRuntime is true
+          GroupAndRuntime gar = new GroupAndRuntime(gdsHashObject, runtime);
           Grib1CollectionWriter.Group g = gdsMap.get(gar);
           if (g == null) {
-            g = new Grib1CollectionWriter.Group(gr.getGDSsection(), gdsHash, runtime);
+            g = new Grib1CollectionWriter.Group(gr.getGDSsection(), gdsHashObject, runtimeDate);
             gdsMap.put(gar, g);
           }
           g.records.add(gr);
+          g.runtimes.add(runtimeDate.getMillis());
         }
         fileno++;
         statsAll.recordsTotal += index.getRecords().size();
@@ -160,16 +147,12 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     List<Grib1CollectionWriter.Group> groups = new ArrayList<>(gdsMap.values());
     for (Grib1CollectionWriter.Group g : groups) {
       Counter stats = new Counter(); // debugging
-      Grib1Rectilyser rect = new Grib1Rectilyser(g.records, g.gdsHash, pdsConvert);
-      rect.make(config.gribConfig, stats, errlog);
+      Grib1Rectilyser rect = new Grib1Rectilyser(g.records, g.gdsHashObject);
+      rect.make(gribConfig, stats, errlog);
       g.gribVars = rect.gribvars;
       g.coords = rect.coords;
 
       statsAll.add(stats);
-
-      // look for group name overrides
-      if (config.gribConfig.gdsNamer != null)
-        g.nameOverride = config.gribConfig.gdsNamer.get(g.gdsHash);
     }
 
     // debugging and validation
@@ -181,7 +164,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       // true means remove
   private boolean filterOut(Grib1Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
     Grib1SectionProductDefinition pdss = gr.getPDSsection();
-    Grib1ParamTime ptime = pdss.getParamTime(cust);
+    Grib1ParamTime ptime = gr.getParamTime(cust);
     if (!ptime.isInterval()) return false;
 
     int[] intv = ptime.getInterval();
@@ -212,26 +195,26 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends GribCollectionBuilder.Group> groups, List<MFile> files) throws IOException {
     Grib1CollectionWriter writer = new Grib1CollectionWriter(dcm, logger);
     List<Grib1CollectionWriter.Group> groups2 = new ArrayList<>();
-    for (Object g : groups) groups2.add((Grib1CollectionWriter.Group) g);
-    File indexFileInCache = GribCollection.getFileInCache(indexFilepath);
-    return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files);
+    for (Object g : groups) groups2.add((Grib1CollectionWriter.Group) g);  // why copy ?
+    File indexFileInCache = GribIndexCache.getFileOrCache(indexFilepath);
+    return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type);
   }
 
   public static class VariableBag implements Comparable<VariableBag> {
     Grib1Record first;
-    int cdmHash;
+    Grib1Variable gv;
 
     public List<Grib1Record> atomList = new ArrayList<>(100); // not sorted
     public CoordinateND<Grib1Record> coordND;
     CalendarPeriod timeUnit;
 
-    public List<Integer> coordIndex;
+    public List<Integer> coordIndex; // index into List<Coordinate>
     long pos;
     int length;
 
-    private VariableBag(Grib1Record first, int cdmHash) {
+    private VariableBag(Grib1Record first, Grib1Variable gv) {
       this.first = first;
-      this.cdmHash = cdmHash;
+      this.gv = gv;
     }
 
     @Override
@@ -240,26 +223,32 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
   }
 
+  // for a single group, create multidimensional (rectangular) variables
   private class Grib1Rectilyser {
-
-    private final int gdsHash;
+    private final int gdsHashOverride;
     private final List<Grib1Record> records;
     private List<VariableBag> gribvars;
     private List<Coordinate> coords;
 
-    Grib1Rectilyser(List<Grib1Record> records, int gdsHash, Map<String, Boolean> pdsConfig) {
+    Grib1Rectilyser(List<Grib1Record> records, Object gdsHashObject) {
       this.records = records;
-      this.gdsHash = gdsHash;
+      int gdsHash = gribConfig.convertGdsHash(gdsHashObject.hashCode());
+      gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash;
     }
 
     public void make(FeatureCollectionConfig.GribConfig config, Counter counter, Formatter info) throws IOException {
-      boolean isDense = "dense".equals(config.getParameter("CoordSys"));
-      CalendarPeriod userTimeUnit = config.getUserTimeUnit();
+      CalendarPeriod userTimeUnit = config.userTimeUnit;
 
       // assign each record to unique variable using cdmVariableHash()
-      Map<Integer, VariableBag> vbHash = new HashMap<>(100);
+      Map<Grib1Variable, VariableBag> vbHash = new HashMap<>(100);
       for (Grib1Record gr : records) {
-        int cdmHash = cdmVariableHash(gr, gdsHash);
+        Grib1Variable cdmHash;
+        try {
+          cdmHash =  new Grib1Variable(cust, gr, gdsHashOverride, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
+        } catch (Throwable t) {
+          logger.warn("Exception on record ", t);
+          continue; // keep going
+        }
         VariableBag bag = vbHash.get(cdmHash);
         if (bag == null) {
           bag = new VariableBag(gr, cdmHash);
@@ -270,44 +259,45 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       gribvars = new ArrayList<>(vbHash.values());
       Collections.sort(gribvars); // make it deterministic by sorting
 
-      // create coordinates for each variable
+      // create dense coordinates for each variable
       for (VariableBag vb : gribvars) {
         Grib1SectionProductDefinition pdss = vb.first.getPDSsection();
-        Grib1ParamTime ptime = pdss.getParamTime(cust);
+        Grib1ParamTime ptime = vb.first.getParamTime(cust);
 
         int unit = cust.convertTimeUnit(pdss.getTimeUnit());
         vb.timeUnit = userTimeUnit == null ? Grib2Utils.getCalendarPeriod(unit) : userTimeUnit; // so can override the code // ok for GRIB1
-        vb.coordND = new CoordinateND<>();
+        CoordinateND.Builder<Grib1Record> coordNBuilder = new CoordinateND.Builder<>();
 
         boolean isTimeInterval = ptime.isInterval();
-        if (isDense) { // time is runtime X time coord  LOOK isDense not implemented
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder1(vb.timeUnit));
+        /* if (isDense) { // time is runtime X time coord
+          coordNBuilder.addBuilder(new CoordinateRuntime.Builder1(vb.timeUnit));
           if (isTimeInterval)
-            vb.coordND.addBuilder(new CoordinateTimeIntv.Builder1(cust, unit, vb.timeUnit, null)); // LOOK null refdate not ok
+            coordNBuilder.addBuilder(new CoordinateTimeIntv.Builder1(cust, unit, vb.timeUnit, null)); // null refdate not ok
           else
-            vb.coordND.addBuilder(new CoordinateTime.Builder1(cust, pdss.getTimeUnit(), vb.timeUnit, null)); // LOOK null refdate not ok
+            coordNBuilder.addBuilder(new CoordinateTime.Builder1(cust, pdss.getTimeUnit(), vb.timeUnit, null)); // null refdate not ok
 
-        } else {  // time is kept as 2D coordinate, separate list of times for each runtime
-          vb.coordND.addBuilder(new CoordinateRuntime.Builder1(vb.timeUnit));
-          vb.coordND.addBuilder(new CoordinateTime2D.Builder1(isTimeInterval, cust, vb.timeUnit, unit));
-        }
+        } else {  */
+          // time is kept as 2D coordinate, separate list of times for each runtime
+        CoordinateTime2D.Builder1 builder2D = new CoordinateTime2D.Builder1(isTimeInterval, cust, vb.timeUnit, unit);
+        coordNBuilder.addBuilder(builder2D);
+        //}
 
         if (vb.first.getPDSsection().isEnsemble())
-          vb.coordND.addBuilder(new CoordinateEns.Builder1(cust, 0));
+          coordNBuilder.addBuilder(new CoordinateEns.Builder1(cust, 0));
 
         if (cust.isVerticalCoordinate(pdss.getLevelType()))
-          vb.coordND.addBuilder(new CoordinateVert.Builder1(cust, pdss.getLevelType()));
+          coordNBuilder.addBuilder(new CoordinateVert.Builder1(cust, pdss.getLevelType()));
 
         // populate the coordinates with the inventory of data
         for (Grib1Record gr : vb.atomList)
-          vb.coordND.addRecord(gr);
+          coordNBuilder.addRecord(gr);
 
         // done, build coordinates and sparse array indicating which records to use
-        vb.coordND.finish(vb.atomList, info);
+        vb.coordND = coordNBuilder.finish(vb.atomList, info);
       }
 
       // make shared coordinates across variables
-      CoordinateSharer<Grib1Record> sharify = new CoordinateSharer<>(isDense);
+      CoordinateSharer<Grib1Record> sharify = new CoordinateSharer<>(config.unionRuntimeCoord);
       for (VariableBag vb : gribvars) {
         sharify.addCoords(vb.coordND.getCoordinates());
       }
@@ -320,26 +310,28 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
       // redo the variables against the shared coordinates
       for (VariableBag vb : gribvars) {
-        vb.coordND = sharify.reindex(vb.coordND);
+        vb.coordND = sharify.reindexCoordND(vb.coordND);
         vb.coordIndex = sharify.reindex2shared(vb.coordND.getCoordinates());
         tot_used += vb.coordND.getSparseArray().countNotMissing();
-        tot_dups += vb.coordND.getSparseArray().getNduplicates();
+        tot_dups += vb.coordND.getSparseArray().getNdups();
         total += vb.coordND.getSparseArray().getTotalSize();
        }
 
+      // track stats
       counter.recordsUnique += tot_used;
       counter.dups += tot_dups;
       counter.vars += gribvars.size();
       counter.recordsTotal += total;
     }
 
-    public void showInfo(Formatter f, Grib1Customizer tables) {
+    // debugging only
+    public void showInfo(Formatter f, Grib1Customizer cust1) {
       //f.format("%nVariables%n");
       //f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
       Counter all = new Counter();
 
       for (VariableBag vb : gribvars) {
-        f.format("Variable %s (%d)%n", Grib1Iosp.makeVariableName(cust, vb.first.getPDSsection()), vb.cdmHash);
+        f.format("Variable %s (%d)%n", Grib1Iosp.makeVariableName(cust, gribConfig, vb.first.getPDSsection()), vb.gv);
         vb.coordND.showInfo(f, all);
         //f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
         //        vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);
@@ -347,57 +339,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       }
       f.format("%n all= %s", all.show());
     }
-  }
-
-  private int cdmVariableHash(Grib1Record gr, int gdsHash) {
-    return cdmVariableHash(cust, gr, gdsHash, useTableVersion, intvMerge, useCenter);
-  }
-
-  // use defaults
-  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
-    return cdmVariableHash(cust, gr, 0, true, true, true);
-  }
-
-
-  /**
-   * A hash code to group records into a CDM variable
-   * Herein lies the semantics of a variable object identity.
-   * Read it and weep.
-   *
-   * @param gdsHash can override the gdsHash
-   * @return this records hash code, to group like records into a variable
-   */
-  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
-    int result = 17;
-
-    Grib1SectionGridDefinition gdss = gr.getGDSsection();
-    if (gdsHash == 0)
-      result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
-    else
-      result += result * 37 + gdsHash;
-
-    Grib1SectionProductDefinition pdss = gr.getPDSsection();
-    result += result * 37 + pdss.getLevelType();
-    if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
-
-    result += result * 37 + pdss.getParameterNumber();
-    if (useTableVersion)  // LOOK must make a different variable name
-      result += result * 37 + pdss.getTableVersion();
-
-    Grib1ParamTime ptime = pdss.getParamTime(cust);
-    if (ptime.isInterval()) {
-      if (!intvMerge) result += result * 37 + ptime.getIntervalSize();  // create new variable for each interval size
-      if (ptime.getStatType() != null) result += result * 37 + ptime.getStatType().ordinal(); // create new variable for each stat type
-    }
-
-    // LOOK maybe we should always add ??
-    // if this uses any local tables, then we have to add the center id, and subcenter if present
-    if (useCenter && pdss.getParameterNumber() > 127) {
-      result += result * 37 + pdss.getCenter();
-      if (pdss.getSubCenter() > 0)
-        result += result * 37 + pdss.getSubCenter();
-    }
-    return result;
   }
 
 }

@@ -48,7 +48,6 @@ import java.util.*;
  */
 public class KmaLocalTables extends LocalTables {
   private static final String tablePath = "resources/grib2/local/kma-ver5.txt";
-  private static boolean debug = false;
   private static KmaLocalTables single;
 
   public static KmaLocalTables getCust(Grib2Table table) {
@@ -78,7 +77,6 @@ public class KmaLocalTables extends LocalTables {
 
         Grib2Parameter s = new Grib2Parameter(disc,cat,param,name,unit,null,null);
         local.put(makeHash(disc,cat,param), s);
-        if (debug) System.out.printf(" %s%n", s);
       }
 
     } catch (IOException ioe) {
@@ -101,8 +99,5 @@ U_COMPNT_OF_WIND_AFTER_TIMESTEP                   56           0          65    
 
 */
 
-  public static void main(String arg[]) {
-    KmaLocalTables t = new KmaLocalTables( new Grib2Table("KMA",40,-1,-1,-1,-1, null, Grib2Table.Type.kma));
-  }
 
 }

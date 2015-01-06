@@ -211,13 +211,13 @@ public class UnidataTrajectoryObsDataset2
     {
       this.backingTraj = new MultiTrajectoryObsDataset( ncd );
 
-      ( (MultiTrajectoryObsDataset) this.backingTraj).setTrajectoryInfo( ncfile.getRootGroup().findDimension( trajDimName ),
-                              ncfile.getRootGroup().findVariable( trajVarName ),
-                              ncfile.getRootGroup().findDimension( timeDimName ),
-                              ncfile.getRootGroup().findVariable( timeVarName ),
-                              ncfile.getRootGroup().findVariable( latVarName ),
-                              ncfile.getRootGroup().findVariable( lonVarName ),
-                              ncfile.getRootGroup().findVariable( elevVarName ) );
+      ( (MultiTrajectoryObsDataset) this.backingTraj).setTrajectoryInfo( netcdfDataset.getRootGroup().findDimension( trajDimName ),
+                              netcdfDataset.getRootGroup().findVariable( trajVarName ),
+                              netcdfDataset.getRootGroup().findDimension( timeDimName ),
+                              netcdfDataset.getRootGroup().findVariable( timeVarName ),
+                              netcdfDataset.getRootGroup().findVariable( latVarName ),
+                              netcdfDataset.getRootGroup().findVariable( lonVarName ),
+                              netcdfDataset.getRootGroup().findVariable( elevVarName ) );
 
     }
 

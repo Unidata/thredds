@@ -43,7 +43,7 @@ class MemTracker {
     f.format("%n");
   }
 
-  static class Mem implements Comparable {
+  static class Mem implements Comparable<Mem> {
     public String name;
     public long start, end;
 
@@ -53,9 +53,8 @@ class MemTracker {
       this.end = end;
     }
 
-    public int compareTo(Object o1) {
-      Mem m = (Mem) o1;
-      return (int) (start - m.start);
+    public int compareTo(Mem m) {
+      return Long.compare(start, m.start);
     }
 
   }

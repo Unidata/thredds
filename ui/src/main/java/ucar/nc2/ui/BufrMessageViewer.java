@@ -396,7 +396,7 @@ public class BufrMessageViewer extends JPanel {
 
           NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
           new Bufr2Xml(m, ncd, out, true);
-          infoTA.setText(out.toString());
+          infoTA.setText(out.toString(CDM.UTF8));
 
         } catch (Exception ex) {
           StringWriter sw = new StringWriter();

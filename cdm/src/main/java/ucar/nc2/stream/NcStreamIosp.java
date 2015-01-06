@@ -82,6 +82,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   private int version;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    super.open(raf, ncfile, cancelTask);
     openDebug(raf, ncfile, null);
   }
 
@@ -267,7 +268,6 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   // optionally read in all messages, return as List<NcMess>
 
   public void openDebug(RandomAccessFile raf, NetcdfFile ncfile, List<NcsMess> ncm) throws IOException {
-    this.raf = raf;
     raf.seek(0);
     long pos = raf.getFilePointer();
 

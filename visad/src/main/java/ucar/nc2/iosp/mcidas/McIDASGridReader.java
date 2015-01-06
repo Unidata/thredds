@@ -97,7 +97,7 @@ public class McIDASGridReader {
    * @throws IOException problem reading file
    */
   public McIDASGridReader(String filename) throws IOException {
-    this(new RandomAccessFile(filename, "r", 2048));
+    this(RandomAccessFile.acquire(filename));
   }
 
   /**

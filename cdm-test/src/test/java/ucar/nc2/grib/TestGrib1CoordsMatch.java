@@ -31,9 +31,12 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.iosp.grib;
+package ucar.nc2.grib;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.nc2.Dimension;
@@ -42,18 +45,18 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.grib.GribStatType;
-import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.collection.Grib1CollectionBuilder;
-import ucar.nc2.grib.collection.Grib1Iosp;
-import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollection;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheIF;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -64,12 +67,51 @@ import java.util.Formatter;
  * @since 11/5/2014
  */
 public class TestGrib1CoordsMatch {
+  private static FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
+
+  @BeforeClass
+  static public void before() {
+    GribIosp.debugIndexOnlyCount = 0;
+    GribCollectionImmutable.countGC = 0;
+    PartitionCollectionImmutable.countPC = 0;
+    RandomAccessFile.enableDefaultGlobalFileCache();
+    RandomAccessFile.setDebugLeaks(true);
+    GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
+    GribCdmIndex.gribCollectionCache.resetTracking();
+  }
+
+  @AfterClass
+  static public void after() {
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Formatter out = new Formatter(System.out);
+
+    FileCacheIF cache = GribCdmIndex.gribCollectionCache;
+    if (cache != null) {
+      cache.showTracking(out);
+      cache.showCache(out);
+      cache.clearCache(false);
+    }
+
+    FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
+    if (rafCache != null) {
+      rafCache.showCache(out);
+    }
+
+    System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
+    System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
+    System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
+    System.out.printf(" total files needed=%7d%n", GribCollectionImmutable.countGC + PartitionCollectionImmutable.countPC + GribIosp.debugIndexOnlyCount);
+
+    FileCache.shutdown();
+    RandomAccessFile.setGlobalFileCache(null);
+    TestDir.checkLeaks();
+    RandomAccessFile.setDebugLeaks(false);
+  }
 
   //@Test
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
-    // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
-    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2";
+    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx3";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
@@ -93,28 +135,28 @@ public class TestGrib1CoordsMatch {
 
   //@Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_1200.grib1.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_1200.grib1.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 7116;
-    assert count.nmiss == 200;
+    assert count.nread == 7122;
+    assert count.nmiss == 153;
     assert count.nerrs == 0;
   }
 
   //@Test
   public void testPofG() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 81340;
-    assert count.nmiss == 1801;
+    assert count.nread == 37188;   // 1801/81340 ??
+    assert count.nmiss == 816;
     assert count.nerrs == 0;
   }
 
 
   //@Test
   public void testPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfs_conus80-gfs_conus80.ncx2");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 51838;
@@ -122,15 +164,32 @@ public class TestGrib1CoordsMatch {
     assert count.nerrs == 0;
   }
 
-  // @Test
-  public void testRdavmDS083() throws IOException {
-    TestGribCollections.Count count = read("B:/rdavm/ds083.2/sampleMonth/rda_ds083.2-sampleMonth.ncx2");
+  @Test
+  public void testRdavmDs083p2() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp.ncx3";
+    File fileInCache = GribIndexCache.getExistingFileOrCache(filename);
+    TestGribCollections.Count count = read(fileInCache.getPath());
+
+    // that took 63 secs total, 1.471143 msecs per record total == 4624/33718/43248
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 43248;
+    assert count.nmiss == 33718;
+    assert count.nerrs == 4624;
+  }
+
+  /*
+  Currently doesnt work with gbx9 files
+  @Test
+  public void testRdavmDs627p1() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    TestGribCollections.Count count = read("B:/rdavm/ds627.1/GCpass1-union-ds627.1.ncx2");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 34320;
-   // assert count.nmiss == 1126;
+    assert count.nread == 14280;
+    assert count.nmiss == 14280;
     assert count.nerrs == 0;
-  }
+    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+  }  */
 
   ///////////////////////////////////////////////////////////////
   private GribIosp iospGrib;
@@ -159,7 +218,7 @@ public class TestGrib1CoordsMatch {
     } catch (IOException ioe) {
       System.out.printf("%s%n", ioe);
       Formatter out = new Formatter(System.out);
-      PartitionCollection.getPartitionCache().showCache(out);
+      GribCdmIndex.gribCollectionCache.showCache(out);
     }
 
     return allCount;
@@ -359,19 +418,17 @@ public class TestGrib1CoordsMatch {
     Grib1ParamTime ptime;
     Grib1Parameter param;
     int gdsHash;
-    int cdmHash;
 
-    public Record1Bean(Grib1Customizer cust, Grib1Record r) {
+    public Record1Bean(Grib1Customizer cust, Grib1Record gr) {
       this.cust = cust;
-      this.gr = r;
+      this.gr = gr;
       gds = gr.getGDSsection();
       pds = gr.getPDSsection();
       plevel = cust.getParamLevel(pds);
-      ptime = pds.getParamTime(cust);
+      ptime = gr.getParamTime(cust);
 
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
-      gdsHash = r.getGDSsection().getGDS().hashCode();
-      cdmHash =  Grib1CollectionBuilder.cdmVariableHash(cust, r, gdsHash, true, true, true);
+      gdsHash = gr.getGDSsection().getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
     }
 
     @Override
@@ -379,7 +436,7 @@ public class TestGrib1CoordsMatch {
       final Formatter sb = new Formatter();
       sb.format("Record dataStart=%s%n", gr.getDataSection().getStartingPosition());
       sb.format(" %s%n", param);
-      sb.format(" cdmHash=%d%n", cdmHash);
+      sb.format(" cdmHash=%d%n", 0);
       sb.format(" reftime=%s%n", getReferenceDate());
       sb.format(" time=%s%n", getTimeCoord());
       sb.format(" level=%s type=%s (%d)%n", getLevel(), getLevelName(), getLevelType());
@@ -408,7 +465,7 @@ public class TestGrib1CoordsMatch {
 
     public String getName() {
       if (param == null) return null;
-      return Grib1Iosp.makeVariableName(cust, pds);
+      return Grib1Iosp.makeVariableName(cust, config.gribConfig, pds);
     }
 
     public String getUnit() {
@@ -417,10 +474,6 @@ public class TestGrib1CoordsMatch {
 
     public int getGds() {
       return gdsHash;
-    }
-
-    public int getCdmHash() {
-      return cdmHash;
     }
 
     public int getGen() {
@@ -437,7 +490,7 @@ public class TestGrib1CoordsMatch {
     }
 
     public final String getStatType() {
-      Grib1ParamTime ptime = pds.getParamTime(cust);
+      Grib1ParamTime ptime = gr.getParamTime(cust);
       GribStatType stype = ptime.getStatType();
       return (stype == null) ? null : stype.name();
     }

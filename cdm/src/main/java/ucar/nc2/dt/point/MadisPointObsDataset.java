@@ -38,13 +38,10 @@ import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.util.*;
-
-import thredds.catalog.*;
 
 /**
  * Class Description.
@@ -121,7 +118,7 @@ public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedD
         stnDescVName = "stationName";
       if (debug) System.out.println("filetype 2 (mesonet)");
     }
-    if (debug) System.out.println("title= "+ncfile.findAttValueIgnoreCase(null, "title", null));
+    if (debug) System.out.println("title= "+ netcdfDataset.findAttValueIgnoreCase(null, "title", null));
 
     recordHelper = new RecordDatasetHelper(ds, obsTimeVName, nomTimeVName, dataVariables, parseInfo);
     removeDataVariable("prevRecord");
@@ -208,7 +205,7 @@ public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedD
   }
 
   public int getDataCount() {
-    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
+    Dimension unlimitedDim = netcdfDataset.getUnlimitedDimension();
     return unlimitedDim.getLength();
   }
 

@@ -31,13 +31,16 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.util.memory;
+package ucar.util.memory.memory;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MemoryCounterAgentTest {
 
@@ -56,7 +59,7 @@ public class MemoryCounterAgentTest {
   }
 
   public static void main(String[] args) throws IOException {
-    /* measureSize(new Object());
+    measureSize(new Object());
     measureSize(new HashMap());
     measureSize(new LinkedHashMap());
     measureSize(new ReentrantReadWriteLock());
@@ -69,7 +72,7 @@ public class MemoryCounterAgentTest {
     measureSize(1000);
     measureSize(new Parent());
     measureSize(new Kid());
-    measureSize(Thread.State.TERMINATED);  // */
+    measureSize(Thread.State.TERMINATED);  //
 
     System.out.println("======================");
     //testGrib1();

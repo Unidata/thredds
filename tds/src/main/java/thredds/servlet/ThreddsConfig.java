@@ -107,7 +107,11 @@ public final class ThreddsConfig {
   }
 
   static public int getInt(String paramName, int defValue) {
-    return reader.getInt(paramName, defValue);
+        return reader.getInt(paramName, defValue);
+  }
+
+  static public long getLong(String paramName, long defValue) {
+            return reader.getLong(paramName, defValue);
   }
 
   static public int getSeconds(String paramName, int defValue) {

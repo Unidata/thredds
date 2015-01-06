@@ -139,20 +139,6 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    *
    * @param dir is the AREA file directory block
    * @param nav is the AREA file navigation block
-   */
-  public McIDASAreaProjection(int[] dir, int[] nav) {
-    this(dir, nav, null);
-  }
-
-  /**
-   * Create a AREA coordinate system from the Area file's
-   * directory and navigation blocks.
-   * <p/>
-   * This routine uses a flipped Y axis (first line of
-   * the image file is number 0)
-   *
-   * @param dir is the AREA file directory block
-   * @param nav is the AREA file navigation block
    * @param aux is the AREA file auxillary block
    */
   public McIDASAreaProjection(int[] dir, int[] nav, int[] aux) {
@@ -400,7 +386,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
             && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
   }
 
-  /**
+  /*
    * Determines whether or not the <code>Object</code> in question is
    * the same as this <code>McIDASAreaProjection</code>.  The specified
    * <code>Object</code> is equal to this <CODE>McIDASAreaProjection</CODE>
@@ -409,7 +395,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
    *
    * @param obj the Object in question
    * @return true if they are equal
-   */
+   *
   public boolean equals(Object obj) {
     if (!(obj instanceof McIDASAreaProjection)) {
       return false;
@@ -421,6 +407,28 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     return (this == that)
             || (anav.equals(that.anav) && (this.lines == that.lines)
             && (this.elements == that.elements));
+  }  */
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    McIDASAreaProjection that = (McIDASAreaProjection) o;
+
+    if (elements != that.elements) return false;
+    if (lines != that.lines) return false;
+    if (!anav.equals(that.anav)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = anav.hashCode();
+    result = 31 * result + lines;
+    result = 31 * result + elements;
+    return result;
   }
 
   /**

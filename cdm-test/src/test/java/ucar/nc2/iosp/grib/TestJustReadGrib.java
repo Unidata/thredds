@@ -103,9 +103,9 @@ public class TestJustReadGrib  {
     @Override
     public int doAct(String filename) throws IOException {
       System.out.println("read file= "+filename);
-      NetcdfFile ncfile = NetcdfDataset.openFile( filename, null);
-      ncfile.close();
-      return 1;
+      try (NetcdfFile ncfile = NetcdfDataset.openFile( filename, null)) {
+        return 1;
+      }
     }
   }
 }

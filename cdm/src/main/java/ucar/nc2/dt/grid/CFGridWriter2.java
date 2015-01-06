@@ -225,7 +225,8 @@ public class CFGridWriter2 {
     // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
     writer.setLargeFile(isLargeFile);
-    addGlobalAttributes(writer, gds, resultBB);
+    if (resultBB != null)
+      addGlobalAttributes(writer, gds, resultBB);
 
     // use fileWriter to copy the variables
     FileWriter2 fileWriter = new FileWriter2(writer);

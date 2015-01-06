@@ -453,14 +453,17 @@ public class GridIndexToNC {
     }
 
     @Override
-    public int hashCode() {
-      return vc.hashCode();
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      VertCollection that = (VertCollection) o;
+      if (!vc.equals(that.vc)) return false;
+      return true;
     }
 
     @Override
-    public boolean equals(Object obj) {
-      VertCollection oc = (VertCollection) obj;
-      return vc.equals(oc.vc);
+    public int hashCode() {
+      return vc.hashCode();
     }
 
     @Override
@@ -525,33 +528,6 @@ public class GridIndexToNC {
       return gv1.getVertName().compareToIgnoreCase(gv2.getVertName());
     }
   }
-
-  static private class CompareGridVariableByNumberVertLevels implements Comparator {
-
-    /**
-     * Compare the two lists of names
-     *
-     * @param o1 first list
-     * @param o2 second list
-     * @return comparison
-     */
-    public int compare(Object o1, Object o2) {
-      GridVariable gv1 = (GridVariable) o1;
-      GridVariable gv2 = (GridVariable) o2;
-
-      int n1 = gv1.getVertCoord().getNLevels();
-      int n2 = gv2.getVertCoord().getNLevels();
-
-      if (n1 == n2) {  // break ties for consistency
-        return gv1.getVertCoord().getLevelName().compareTo(
-            gv2.getVertCoord().getLevelName());
-      } else {
-        return n2 - n1;  // highest number first
-      }
-    }
-  }
-
-
 }
 
 /*
@@ -779,5 +755,27 @@ public class GridIndexToNC {
     return paramName;
   }
 
+  static private class CompareGridVariableByNumberVertLevels implements Comparator {
 
+     * Compare the two lists of names
+     *
+     * @param o1 first list
+     * @param o2 second list
+     * @return comparison
+     *
+    public int compare(Object o1, Object o2) {
+      GridVariable gv1 = (GridVariable) o1;
+      GridVariable gv2 = (GridVariable) o2;
+
+      int n1 = gv1.getVertCoord().getNLevels();
+      int n2 = gv2.getVertCoord().getNLevels();
+
+      if (n1 == n2) {  // break ties for consistency
+        return gv1.getVertCoord().getLevelName().compareTo(
+            gv2.getVertCoord().getLevelName());
+      } else {
+        return n2 - n1;  // highest number first
+      }
+    }
+  }
  */

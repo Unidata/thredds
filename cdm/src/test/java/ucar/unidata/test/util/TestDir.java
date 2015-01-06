@@ -179,7 +179,7 @@ public class TestDir {
 
   public static NetcdfFile open( String filename) {
     try {
-      System.out.println("**** Open "+filename);
+      if (dumpFile) System.out.println("**** Open "+filename);
       NetcdfFile ncfile = NetcdfFile.open(filename, null);
       if (dumpFile) System.out.println("open "+ncfile);
       return ncfile;
@@ -207,7 +207,7 @@ public class TestDir {
 
   static public void checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
-      System.out.printf("RandomAccessFile still open:%n");
+      System.out.printf("%nRandomAccessFile still open:%n");
       for (String filename : RandomAccessFile.getOpenFiles()) {
         System.out.printf(" open= %s%n", filename);
       }
@@ -335,9 +335,7 @@ public class TestDir {
     @Override
     public int doAct(String filename) throws IOException {
       System.out.println("\n------Reading filename "+filename);
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = NetcdfFile.open(filename);
+      try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
 
         for (Variable v : ncfile.getVariables()) {
           if (v.getSize() > max_size) {
@@ -353,10 +351,6 @@ public class TestDir {
         e.printStackTrace();
         //assert false;
 
-      } finally {
-        if (ncfile != null)
-          try { ncfile.close(); }
-          catch (IOException e) { }
       }
 
       return 1;

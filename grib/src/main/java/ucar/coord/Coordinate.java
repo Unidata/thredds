@@ -15,7 +15,7 @@ public interface Coordinate {
   /**
    * Enumerated list of coordinate types
    */
-  public enum Type {runtime, time, timeIntv, vert, time2D, ens}
+  public enum Type {runtime, time, timeIntv, vert, time2D, ens }  // cant change order, protobuf uses the ordinal
 
   void showInfo(Formatter info, Indent indent);
   void showCoords(Formatter info);
@@ -24,6 +24,7 @@ public interface Coordinate {
   Object getValue(int idx);  // get the ith value
   int getIndex(Object val);  // LOOK assumes the values are unique;
   int getSize();             // how many values ??
+  int estMemorySize();       // estimated memory size in bytes (debugging)
 
   int getCode();
   Type getType();

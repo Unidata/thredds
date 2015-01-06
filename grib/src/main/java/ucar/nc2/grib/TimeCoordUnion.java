@@ -45,7 +45,7 @@ import java.util.*;
  * @author caron
  * @since 6/16/11
  */
-public class TimeCoordUnion  extends TimeCoord {
+public class TimeCoordUnion extends TimeCoord {
   private final List<Val> values;
 
   /*

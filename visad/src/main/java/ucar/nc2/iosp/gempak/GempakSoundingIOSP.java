@@ -45,9 +45,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.util.CancelTask;
-
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -452,7 +449,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
 
 
     // build the data structure
-    List<Dimension> stationTime = new ArrayList<Dimension>();
+    List<Dimension> stationTime = new ArrayList<>();
     stationTime.add(station);
     stationTime.add(times);
     String structName = (isMerged) ? GempakSoundingFileReader.MERGED : GempakSoundingFileReader.UNMERGED;
@@ -462,7 +459,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     sVar.addAttribute(new Attribute(CF.COORDINATES, "time SLAT SLON SELV"));
     List<String> sequenceNames;
     if (isMerged) {
-      sequenceNames = new ArrayList<String>();
+      sequenceNames = new ArrayList<>();
       sequenceNames.add(GempakSoundingFileReader.SNDT);
     } else {
       sequenceNames = ((GempakSoundingFileReader) gemreader).getUnmergedParts();
@@ -601,7 +598,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
     /**
      * the number of records
      */
-    private int count;
+    // private int count;
 
     /**
      * the backing structure
@@ -620,7 +617,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
      * @param abb   the backing store
      */
     SequenceIterator(int count, ArrayStructure abb) {
-      this.count = count;
+      // this.count = count;
       this.abb = abb;
     }
 

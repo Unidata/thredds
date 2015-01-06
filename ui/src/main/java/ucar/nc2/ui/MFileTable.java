@@ -143,7 +143,6 @@ public class MFileTable extends JPanel {
 
 
   public class FileBean {
-    File path;
     MFile mfile;
     int count;
 
@@ -151,7 +150,6 @@ public class MFileTable extends JPanel {
     }
 
     public FileBean(File dir, MFile mfile, int count) {
-      this.path = (dir == null) ? new File(mfile.getPath()) : new File(dir, mfile.getPath());
       this.mfile = mfile;
       this.count = count;
     }
@@ -165,7 +163,7 @@ public class MFileTable extends JPanel {
     }
 
     public String getPath() {
-      return path.getPath();
+      return mfile.getPath();
     }
 
     public long getSize() {

@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.5.4-SNAPSHOT</version>
+    <version>4.6.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>cdm-test</artifactId>
@@ -40,6 +40,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- This is needed at runtime if an attempt to read a dods file is made. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>opendap</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>httpservices</artifactId>
@@ -49,6 +56,13 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>visadCdm</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Need this for the Gini IOSP. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>clcommon</artifactId>
       <scope>test</scope>
     </dependency>
 

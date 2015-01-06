@@ -33,6 +33,8 @@
 
 package ucar.nc2.util;
 
+import com.google.common.primitives.Floats;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,61 +46,48 @@ import java.util.*;
  * @author caron
  */
 public class Misc {
+  public static final int referenceSize = 4;   // estimates pointer size, in principle JVM dependent
+  public static final int objectSize = 16;   // estimates pointer size, in principle JVM dependent
 
   //private static double maxAbsoluteError = 1.0e-6;
   public static final double maxReletiveError = 1.0e-6;
-
-  /*  http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
-  public static boolean closeEnough( double v1, double v2) {
-    double d1 = Math.abs(v1-v2);
-    if (d1 < maxAbsoluteError) return true;
-
-    double diff = (Math.abs(v2) > Math.abs(v1)) ? Math.abs((v1-v2)/v2) :  Math.abs((v1-v2)/v1);
-    return diff < maxReletiveError;
-  } */
-
-  /* from testAll
-  static public boolean closeEnough( double d1, double d2) {
-    if (Math.abs(d1) < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
-  }
-
-  static public boolean closeEnough( double d1, double d2, double tol) {
-    if (Math.abs(d1) < tol) return Math.abs(d1-d2) < tol;
-    double pd = (d1-d2)/d1;
-    return Math.abs(pd) < tol;
-  }
-
-  static public boolean closeEnough( float d1, float d2) {
-    if (Math.abs(d1) < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
-  } */
 
   static public double howClose(double d1, double d2) {
     double pd = (d1 - d2) / d1;
     return Math.abs(pd);
   }
 
-  private static final boolean show = false;  // debug
+
+  /* http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+  bool AlmostEqualRelative(float A, float B, float maxRelDiff)
+  {
+      // Calculate the difference.
+      float diff = fabs(A - B);
+      A = fabs(A);
+      B = fabs(B);
+      // Find the largest
+      float largest = (B > A) ? B : A;
+
+      if (diff <= largest * maxRelDiff)
+          return true;
+      return false;
+  } */
 
   /**
-   * Check if numbers are equal with tolerance
+   * Check if numbers are equal with given reletive tolerance
    *
    * @param v1  first floating point number
    * @param v2  second floating point number
-   * @param tol reletive tolerence
+   * @param maxRelDiff maximum reletive difference
    * @return true if within tolerance
    */
-  public static boolean closeEnough(double v1, double v2, double tol) {
-    if (show) {
-      double d1 = Math.abs(v1 - v2);
-      double d3 = Math.abs(v1 / v2);
-      double d2 = Math.abs((v1 / v2) - 1);
-      System.out.println("v1= " + v1 + " v2=" + v2 + " diff=" + d1 + " abs(v1/v2)=" + d3 + " abs(v1/v2-1)=" + d2);
-    }
+  public static boolean closeEnough(double v1, double v2, double maxRelDiff) {
+    if (Double.isNaN(v1) && Double.isNaN(v2)) return true;
+    if (Double.isNaN(v1) || Double.isNaN(v2)) return false;   // prob not needed
 
-    double diff = (v2 == 0.0) ? Math.abs(v1 - v2) : Math.abs(v1 / v2 - 1);
-    return diff < tol;
+    double diff = Math.abs(v1-v2);
+    double largest = Math.max(Math.abs(v1), Math.abs(v2));
+    return diff <= largest * maxRelDiff;
   }
 
   /**
@@ -109,10 +98,16 @@ public class Misc {
    * @return true if within tolerance
    */
   public static boolean closeEnough(double v1, double v2) {
-    if (v1 == v2) return true;
-    if (Double.isNaN(v1) && Double.isNaN(v2)) return true;
-    double diff = (v2 == 0.0) ? Math.abs(v1 - v2) : Math.abs(v1 / v2 - 1);
-    return diff < maxReletiveError;
+    return closeEnough(v1, v2, maxReletiveError);
+  }
+
+  public static boolean closeEnough(float v1, float v2, float maxRelDiff) {
+    if (Float.isNaN(v1) && Float.isNaN(v2)) return true;
+    if (Float.isNaN(v1) || Float.isNaN(v2)) return false;   // prob not needed
+
+    float diff = Math.abs(v1-v2);
+    float largest = Math.max(Math.abs(v1), Math.abs(v2));
+    return diff <= largest * maxRelDiff;
   }
 
   /**
@@ -123,39 +118,36 @@ public class Misc {
    * @return true if within tolerance
    */
   public static boolean closeEnough(float v1, float v2) {
-    if (v1 == v2) return true;
-    if (Float.isNaN(v1) && Float.isNaN(v2)) return true;
-    double diff = (v2 == 0.0) ? Math.abs(v1) : Math.abs(v1 / v2 - 1);
-    return diff < maxReletiveError;
+    return closeEnough(v1, v2, maxReletiveError);
   }
 
-  /* private void printBytes(int n, Formatter fout) throws IOException {
-    long savePos = raf.getFilePointer();
-    long pos;
-    for (pos = savePos; pos < savePos + n - 9; pos += 10) {
-      fout.format("%d: ", pos);
-      _printBytes(10, fout);
-    }
-    if (pos < savePos + n) {
-      fout.format("%d: ", pos);
-      _printBytes((int) (savePos + n - pos), fout);
-    }
-    raf.seek(savePos);
+  /**
+   * Check if numbers are equal with given absolute tolerance
+   *
+   * @param v1  first floating point number
+   * @param v2  second floating point number
+   * @param maxAbsDiff maximum absolute difference
+   * @return true if within tolerance
+   */
+  public static boolean closeEnoughAbs(double v1, double v2, double maxAbsDiff) {
+    return Math.abs(v1-v2) <=  Math.abs(maxAbsDiff);
   }
 
-  private void _printBytes(int n, Formatter fout) throws IOException {
-    for (int i = 0; i < n; i++) {
-      byte b = (byte) raf.read();
-      int ub = (b < 0) ? b + 256 : b;
-      fout.format(ub + "%d(%b) ", ub, b);
-    }
-    fout.format("\n");
-  } */
+  public static boolean closeEnoughAbs(float v1, float v2, float maxAbsDiff) {
+    return Math.abs(v1-v2) <=  Math.abs(maxAbsDiff);
+  }
 
   static public String showInts(int[] inta) {
     if (inta == null) return "null";
     Formatter f = new Formatter();
-    for (int i : inta) f.format("%d, ", i);
+    for (int i : inta) f.format("%d,", i);
+    return f.toString();
+  }
+
+  static public String showInts(List<Integer> intList) {
+    if (intList == null) return "null";
+    Formatter f = new Formatter();
+    for (int i : intList) f.format("%d,", i);
     return f.toString();
   }
 
@@ -179,8 +171,7 @@ public class Misc {
   }
 
   static public void showBytes(byte[] buff, Formatter f) {
-    for (int i = 0; i < buff.length; i++) {
-      byte b = buff[i];
+    for (byte b : buff) {
       int ub = (b < 0) ? b + 256 : b;
       f.format("%3d ", ub);
     }
@@ -197,7 +188,7 @@ public class Misc {
   static public List getList(Iterable ii) {
     if (ii instanceof List)
       return (List) ii;
-    List<Object> result = new ArrayList<Object>();
+    List<Object> result = new ArrayList<>();
     for (Object i : ii) result.add(i);
     return result;
   }

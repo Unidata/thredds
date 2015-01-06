@@ -44,6 +44,8 @@ import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.ma2.*;
 
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -148,7 +150,7 @@ public class H5header {
   private Map<Long, GlobalHeap> heapMap = new HashMap<>();
   private java.text.SimpleDateFormat hdfDateParser;
 
-  private java.io.PrintStream debugOut = System.out;
+  private java.io.PrintWriter debugOut = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
   private MemTracker memTracker;
 
   H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) {
@@ -165,7 +167,7 @@ public class H5header {
     return isNetcdf4;
   }
 
-  public void read(java.io.PrintStream debugPS) throws IOException {
+  public void read(java.io.PrintWriter debugPS) throws IOException {
     if (debugPS != null)
       debugOut = debugPS;
 
@@ -2596,7 +2598,7 @@ public class H5header {
   }
 
   // Header Message: Level 2A1 and 2A2 (part of Data Object)
-  public class HeaderMessage implements Comparable {
+  public class HeaderMessage implements Comparable<HeaderMessage> {
     long start;
     byte headerMessageFlags;
     int size;
@@ -2774,8 +2776,8 @@ public class H5header {
       return header_length + size;
     }
 
-    public int compareTo(Object o) {
-      return type - ((HeaderMessage) o).type;
+    public int compareTo(HeaderMessage o) {
+      return Short.compare(type, o.type);
     }
 
     public String toString() {
@@ -4805,7 +4807,7 @@ There is _no_ datatype information stored for these kind of selections currently
     raf.seek(savePos);
   }
 
-  static void printBytes(String head, byte[] buff, int n, boolean count, java.io.PrintStream ps) {
+  static void printBytes(String head, byte[] buff, int n, boolean count, java.io.PrintWriter ps) {
     ps.print(head + " == ");
     for (int i = 0; i < n; i++) {
       byte b = buff[i];
@@ -4817,17 +4819,6 @@ There is _no_ datatype information stored for these kind of selections currently
         ps.print(b);
         ps.print(")");
       }
-      ps.print(" ");
-    }
-    ps.println();
-  }
-
-  static void printBytes(String head, byte[] buff, int offset, int n, java.io.PrintStream ps) {
-    ps.print(head + " == ");
-    for (int i = 0; i < n; i++) {
-      byte b = buff[offset + i];
-      int ub = (b < 0) ? b + 256 : b;
-      ps.print(ub);
       ps.print(" ");
     }
     ps.println();

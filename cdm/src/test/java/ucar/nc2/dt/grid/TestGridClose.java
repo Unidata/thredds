@@ -68,19 +68,12 @@ public class TestGridClose extends TestCase {
   }
 
   public void openDatasetAndView(String url) throws IOException {
-    GridDataset dataset = null;
     Array temp_data;
-    try {
-      dataset = GridDataset.open(url);
+    try (GridDataset dataset = GridDataset.open(url)) {
       for (GridDatatype grid : dataset.getGrids()) {
         temp_data = grid.readDataSlice(0, 0, -1, -1);
         System.err.println("Min is: " + grid.getMinMaxSkipMissingData(temp_data).min);
         System.err.println("Max is: " + grid.getMinMaxSkipMissingData(temp_data).max);
-      }
-    } finally {
-      if (dataset != null) {
-        dataset.getNetcdfFile().close();
-        dataset.close();
       }
     }
   }
@@ -104,15 +97,9 @@ public class TestGridClose extends TestCase {
   }
 
   public void checkFile(String url) throws IOException {
-    NetcdfFile file = null;
-    try {
-      file = NetcdfFile.open(url, null);
+    try (NetcdfFile file = NetcdfFile.open(url, null)) {
       System.out.printf("%s%n", file);
-      assert file.findVariable(newVarName) != null;
-    } finally {
-      if (file != null) {
-        file.close();
-      }
+      assert file.findVariable(newVarName) != null : "cant find "+newVarName;
     }
   }
 
