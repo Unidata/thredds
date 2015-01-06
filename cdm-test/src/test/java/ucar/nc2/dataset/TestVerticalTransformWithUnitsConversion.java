@@ -89,8 +89,7 @@ public class TestVerticalTransformWithUnitsConversion {
 				{TestDir.cdmUnitTestDir + "transforms/HybridSigmaPressure.nc", "/share/testdata/cdmUnitTest/transforms/HybridSigmaPressure.ncml", new LatLonPointImpl( 40.019, -105.293 ), "T"} ,    //HybridSigma with P
 				{TestDir.cdmUnitTestDir + "transforms/HIRLAMhybrid.ncml","/share/testdata/cdmUnitTest/transforms/HIRLAMhybrid_hPa.ncml", new LatLonPointImpl( 42.86, -8.55 ), "Relative_humidity_hybrid"}  //HybridSigma with AP
 		};
-		
-		
+
 		return Arrays.asList(data);
 	}
 

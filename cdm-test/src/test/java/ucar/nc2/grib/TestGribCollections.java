@@ -109,7 +109,8 @@ public class TestGribCollections {
   public void testGC_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3");
 
-    assert count.nread == 22909; // 23229
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 22909 : count.nread; // 23229
     assert count.nmiss == 0;
   }
 
@@ -117,7 +118,8 @@ public class TestGribCollections {
   public void testPofG_Grib2() throws IOException {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3");
 
-    assert count.nread == 93052;  // 93052 ??
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 93052 : count.nread;  // 93052 ??
     assert count.nmiss == 0;
   }
 
@@ -127,8 +129,8 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/GFS_CONUS_80km_20141024_0000.grib1.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 7122 : count.nread;
     assert count.nmiss == 153;
-    assert count.nread == 7122;
     assert count.nerrs == 0;
   }
 
@@ -137,8 +139,8 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 37188 : count.nread;
     assert count.nmiss == 816;
-    assert count.nread == 37188;
     assert count.nerrs == 0;
   }
 
@@ -147,8 +149,8 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    assert count.nread == 51838 : count.nread;
     assert count.nmiss == 1126;
-    assert count.nread == 51838;
     assert count.nerrs == 0;
   }
 

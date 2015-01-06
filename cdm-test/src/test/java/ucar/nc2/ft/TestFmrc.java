@@ -82,8 +82,8 @@ public class TestFmrc {
       doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41);
       //doOne(datadir + "rtofs/rtofs.ncml", 9, 6, 10, 1, "N3-D_Temperature", 2, 3, 4); // weird change in variable "V" name, causes out-of-heap due to caching in FmrcDataset
 
-      doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcGribRunseq.ncml", 13, 5, 8, 2, "Temperature_height_above_ground", 4, 29, 35);
-      doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcGrib.ncml", 54, 19, 20, 12, "Temperature_height_above_ground", 8, 29, 72);
+      doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcGribRunseq.ncml", 19, 6, 9, 2, "Temperature_height_above_ground", 4, 29, 35);
+      doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcGrib.ncml", 58, 27, 22, 12, "Temperature_height_above_ground", 8, 29, 72);
       doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcNonuniform.ncml", 48, 12, 17, 6, "Temperature_height_above_ground", 3, 9, 9);
       doOne(TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml", 41, 6, 10, 4, "u", 15, 11, 39);     //*/
 

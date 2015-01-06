@@ -95,7 +95,7 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
   }
 
-  @Test
+  // @Test
   public void testWwwCoastalAlaska() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("Coastal_Alaska", "test/Coastal_Alaska", FeatureCollectionType.GRIB2,
@@ -315,7 +315,7 @@ public class TestGribIndexCreation {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Test
+  // @Test
   public void testGsdHrrSurface() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("GSD_HRRR_CONUS_3km_surface", "test/GSD_HRRR_CONUS_3km_surface", FeatureCollectionType.GRIB2,
@@ -328,7 +328,7 @@ public class TestGribIndexCreation {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Test
+  // @Test
   public void testRtma() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("RTMA-CONUS_2p5km", "test/RTMA-CONUS_2p5km", FeatureCollectionType.GRIB2,
