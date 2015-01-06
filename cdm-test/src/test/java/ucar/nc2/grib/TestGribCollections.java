@@ -110,7 +110,7 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 22909 : count.nread; // 23229
+    assert count.nread == 23229 : count.nread; // 23229 22909
     assert count.nmiss == 0;
   }
 
@@ -119,7 +119,7 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 93052 : count.nread;  // 93052 ??
+    assert count.nread == 94352 : count.nread;  // 93052 ??
     assert count.nmiss == 0;
   }
 

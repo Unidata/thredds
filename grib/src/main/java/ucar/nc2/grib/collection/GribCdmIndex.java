@@ -47,7 +47,10 @@ import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCacheIF;
+import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
@@ -61,7 +64,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Utilities for creating GRIB ncx2 files, both collections and partitions
+ * Utilities for creating GRIB CDM index (ncx3) files, both collections and partitions
  *
  * @author John
  * @since 12/5/13
@@ -71,12 +74,12 @@ public class GribCdmIndex implements IndexReader {
 
   /////////////////////////////////////////////////////////////////////////////
 
-      // object cache for ncx2 files - these are opened only as GribCollection
+  // object cache for ncx3 files - these are opened only as GribCollection
   static public FileCacheIF gribCollectionCache;
 
   static public void initDefaultCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    gribCollectionCache = new ucar.nc2.util.cache.FileCache("DefaultGribCollectionCache", minElementsInMemory, maxElementsInMemory, -1, period);
-    // gribCollectionCache = new ucar.nc2.util.cache.FileCacheGuava("PartitionCollectionImmutable", maxElementsInMemory);
+    // gribCollectionCache = new ucar.nc2.util.cache.FileCache("DefaultGribCollectionCache", minElementsInMemory, maxElementsInMemory, -1, period);
+    gribCollectionCache = new ucar.nc2.util.cache.FileCacheGuava("DefaultGribCollectionCache", maxElementsInMemory);
   }
 
   static public void disableGribCollectionCache() {
@@ -89,13 +92,20 @@ public class GribCdmIndex implements IndexReader {
     gribCollectionCache = cache;
   }
 
-      // open GribCollectionImmutable from an existing index file. return null on failure
-  static public GribCollectionImmutable acquireGribCollection(String indexFilename, FeatureCollectionConfig config, boolean useCache, Logger logger) {
+  // open GribCollectionImmutable from an existing index file. return null on failure
+  static public GribCollectionImmutable acquireGribCollection(FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
+    FileCacheable result;
+
     if (gribCollectionCache != null) {
-      return null;  // TBD
+      // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
+      result = GribCdmIndex.gribCollectionCache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
+
     }  else {
-      return openCdmIndex(indexFilename, config, useCache, logger);
-    }
+      // String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage
+      result = factory.open(location, buffer_size, cancelTask, spiObject);
+     }
+
+    return (GribCollectionImmutable) result;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////

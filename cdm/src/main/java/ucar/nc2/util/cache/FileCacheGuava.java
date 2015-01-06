@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Describe
+ * Memory cache using guava cache
  *
  * @author caron
  * @since 11/12/2014
