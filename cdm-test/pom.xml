@@ -114,6 +114,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
       <groupId>org.slf4j</groupId>

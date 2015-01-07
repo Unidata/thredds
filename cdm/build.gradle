@@ -34,7 +34,6 @@ dependencies {
     compile libraries["jcip-annotations"]
     compile libraries["quartz"]
     compile libraries["protobuf-java"]
-    compile libraries["ehcache-core"]
     compile libraries["guava"]
     compile libraries["bzip2"]
     compile libraries["jcommander"]

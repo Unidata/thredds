@@ -68,12 +68,6 @@
       <artifactId>protobuf-java</artifactId>
     </dependency>
 
-    <!-- Required for object caching. -->
-    <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache-core</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
