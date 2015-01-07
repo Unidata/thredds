@@ -86,7 +86,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     TP,                // PC: Multiple Runtime Single Time Partition   [nruns, 1]
     TwoD,              // PC: TwoD time partition                      [nruns, ntimes]
     Best,              // PC: Best time partition                      [ntimes]
-    Analysis}          // PC: Analysis only time partition (ot done)   [ntimes]
+    Analysis}          // PC: Analysis only time partition (not done)   [ntimes]
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
@@ -99,9 +99,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   protected final List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected final CoordinateRuntime masterRuntime;
 
-  protected final Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
+  protected final Map<Integer, MFile> fileMap; // all the files used in the GC; key is the index in original collection, GC has subset of them
   protected final GribTables cust;
-  protected final String indexFilename;          // full path of index Filename
+  protected final String indexFilename;       // full path of index Filename
 
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
 

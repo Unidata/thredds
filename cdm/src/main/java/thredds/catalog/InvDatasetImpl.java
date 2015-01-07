@@ -799,8 +799,8 @@ public class InvDatasetImpl extends InvDataset {
   /**
    * Add a service to this dataset.
    *
-   * @param service add this
-   * @deprecated put services in catalog
+   * @param service add this service to the dataset
+   * @deprecated add services only to catalog
    */
   public void addService(InvService service) {
     // System.out.println("--add dataset service= "+service.getName());
@@ -813,6 +813,7 @@ public class InvDatasetImpl extends InvDataset {
     }
     hashCode = 0;
   }
+
 
   /**
    * Remove a service from this dataset.
