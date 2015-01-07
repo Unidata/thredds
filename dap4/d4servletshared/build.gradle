@@ -4,9 +4,11 @@ dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4shared')
     compile project(':dap4:d4cdmshared')
-    compile project(':cdm')
     compile project(':netcdf4')
+    compile project(':cdm')
 
-    compile group: 'net.java.dev.jna', name: 'jna', version: jnaVersion
-    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: servletVersion
+    providedCompile libraries["javax.servlet-api"]
+    compile libraries["jcip-annotations"]
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
 }

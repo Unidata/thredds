@@ -13,7 +13,9 @@ jar {
 } */
 
 dependencies {
-  compile project(':cdm')
-  compile group: 'com.sleepycat', name: 'je', version: comSleepycatVersion
-  testCompile project(':cdm').sourceSets.test.output
+    compile project(':cdm')
+    compile libraries["jdom2"]
+    compile libraries["je"]
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
 }

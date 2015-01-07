@@ -1,3 +1,5 @@
+apply from: "gradle/dependencies.gradle"
+
 subprojects {
     apply plugin: 'java'
 
@@ -13,7 +15,7 @@ subprojects {
     processResources.destinationDir = compileJava.destinationDir
 
     repositories {
-        mavenLocal()
+//        mavenLocal()
         mavenCentral()
         maven {
             url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"

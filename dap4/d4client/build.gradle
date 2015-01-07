@@ -1,9 +1,7 @@
 dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4shared')
-    compile project(':httpservices')
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: httpclientVersion
-    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: httpcoreVersion
-    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: httpmimeVersion
-    compile group: 'commons-cli', name: 'commons-cli', version: commonsCliVersion
+    compile libraries["jcommander"]
+    compile libraries["slf4j-api"]
+    runtime libraries["slf4j-jdk14"]
 }

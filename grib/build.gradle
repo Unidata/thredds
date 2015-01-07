@@ -5,9 +5,13 @@ jar {
 }
 
 dependencies {
-  compile project(':cdm')
-  compile group: 'org.jsoup', name: 'jsoup', version: orgJsoupVersion
-  compile group: 'edu.ucar', name: 'jj2000', version: eduUcarJj2000Version
-  compile group: 'org.itadaki', name: 'bzip2', version: orgItadakiBzip2Version
-  testCompile project(':cdm').sourceSets.test.output
+    compile project(':cdm')
+    compile libraries["protobuf-java"]
+    compile libraries["jdom2"]
+    compile libraries["jsoup"]
+    compile libraries["jcip-annotations"]
+    compile libraries["jj2000"]
+    compile libraries["bzip2"]
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
 }

@@ -52,38 +52,39 @@ apply plugin: 'shadow'
 } */
 
 dependencies {
-  compile project(':cdm')
-  compile project(':grib')
-  compile group: 'edu.wisc.ssec', name: 'visad', version: visadVersion
-  testCompile project(':cdm').sourceSets.test.output
+    compile project(':cdm')
+    compile project(':grib')
+    compile libraries["visad"]
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
 }
 
 shadow {
-  outputFile = file("${destinationDir }/visadCdm-${version}.jar")
-  stats = true
+    outputFile = file("${destinationDir}/visadCdm-${version}.jar")
+    stats = true
 
-  artifactSet {
-      //include 'visad.jar'
-      include ('edu.wisc.ssec:visad:2.0-20130124')
-  }
-
-  /* filter('edu.wisc.ssec:visad:2.0-20130124') {
-    exclude 'dods/*'
-    exclude 'gnu/*'
-    exclude 'HTTPClient/*'
-    exclude 'loci/*'
-    exclude 'ncsa/*'
-    exclude 'ucar/*'
-    exclude 'visad/bom/*'
-    exclude 'visad/cluster/*'
-    exclude 'visad/install/*'
-    exclude 'visad/python/*'
-  }  */
-
-  jar {
-    manifest {
-      attributes 'Implementation-Title': 'visadCdm'
+    artifactSet {
+        //include 'visad.jar'
+        include('edu.wisc.ssec:visad:2.0-20130124')
     }
-  }
+
+    /* filter('edu.wisc.ssec:visad:2.0-20130124') {
+      exclude 'dods/*'
+      exclude 'gnu/*'
+      exclude 'HTTPClient/*'
+      exclude 'loci/*'
+      exclude 'ncsa/*'
+      exclude 'ucar/*'
+      exclude 'visad/bom/*'
+      exclude 'visad/cluster/*'
+      exclude 'visad/install/*'
+      exclude 'visad/python/*'
+    }  */
+
+    jar {
+        manifest {
+            attributes 'Implementation-Title': 'visadCdm'
+        }
+    }
 
 }

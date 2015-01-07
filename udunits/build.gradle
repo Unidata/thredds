@@ -1,6 +1,6 @@
 dependencies {
-  compile group: 'joda-time', name: 'joda-time', version: jodaTimeVersion
-  compile group: 'net.jcip', name: 'jcip-annotations', version: netJcipVersion
+    compile libraries["joda-time"]
+    compile libraries["jcip-annotations"]
 }
 
 jar {

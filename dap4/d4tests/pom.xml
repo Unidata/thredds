@@ -16,32 +16,39 @@
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
+    <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4cdmclient</artifactId>
+    <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4shared</artifactId>
+    <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4servletshared</artifactId>
+    <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4ts</artifactId>
+    <scope>test</scope>
   </dependency>
 
   <!-- Thredds/CDM dependencies -->
   <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
+      <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>httpservices</artifactId>
+    <scope>test</scope>
   </dependency>
 
   <!-- library dependencies -->
@@ -55,6 +62,7 @@
     <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
+        <scope>test</scope>
     </dependency>
 
     <dependency>

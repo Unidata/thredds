@@ -11,10 +11,17 @@ jar {
 }
 
 dependencies {
-  compile project(':cdm')
-  compile group: 'org.n52.sensorweb', name: '52n-xml-waterML-v20', version: orgN52CommonXmlVersion
-  compile group: 'org.n52.sensorweb', name: '52n-oxf-xmlbeans', version: orgN52XmlbeansVersion
-  compile group: 'com.google.guava', name: 'guava', version: guavaVersion
-  compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
-  testRuntime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
+    compile project(':cdm')
+
+    compile libraries["xmlbeans"]
+    compile libraries["52n-oxf-xmlbeans"]
+    compile libraries["52n-xml-waterML-v20"]
+    compile libraries["52n-xml-gml-v321"]
+    compile libraries["52n-xml-sweCommon-v20"]
+    compile libraries["52n-xml-om-v20"]
+    compile libraries["52n-xml-sampling-v20"]
+
+    compile libraries["guava"]
+    compile libraries["joda-time"]
+    testRuntime libraries["slf4j-jdk14"]
 }

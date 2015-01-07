@@ -1,61 +1,62 @@
 apply plugin: 'shadow'
 
 dependencies {
-  compile project(':cdm')
-  compile project(':bufr')
-  compile project(':grib')
-  compile project(':opendap')
-  compile project(':visad')
+    compile project(":cdm")
+    compile project(":bufr")
+    compile project(":grib")
+    compile project(":netcdf4")
+    compile project(":opendap")
+    compile project(":visad")
 
-  runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
-  runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
+    compile libraries["slf4j-api"]
+    runtime libraries["slf4j-jdk14"]
 }
 
 jar {
-  manifest {
-    attributes 'Implementation-Title': 'ncIdv'
-  }
+    manifest {
+        attributes 'Implementation-Title': 'ncIdv'
+    }
 }
 
 //////////////////////////////////////////////////////////
 
 ext {
-  ncIdvJar = 'ncIdvs-'+version+'.jar'
-  webstartWorkingDir = "build/signed"
-  if ( project.hasProperty( "webdir")) {
-    webstartDir = webdir + "webstart"
-  }
-  destinationDir = 'build/libs/'
+    ncIdvJar = 'ncIdvs-' + version + '.jar'
+    webstartWorkingDir = "build/signed"
+    if (project.hasProperty("webdir")) {
+        webstartDir = webdir + "webstart"
+    }
+    destinationDir = 'build/libs/'
 }
 
 shadow {
-  outputFile = file("${destinationDir}/${ncIdvJar}")
-  outputFile = file("${ncIdvJar}")
-  stats = true
+    outputFile = file("${destinationDir}/${ncIdvJar}")
+    outputFile = file("${ncIdvJar}")
+    stats = true
 
-  exclude 'AUTHORS'    // crap from other packages
-  exclude 'DATE'
-  exclude 'LICENCE'
-  exclude 'LICENSE'
-  exclude 'NOTICE'
-  exclude '*.txt'
-  exclude '*.xml'
-  exclude 'META-INF/DEPENDENCIES'
-  exclude 'META-INF/LICENSE'
-  exclude 'META-INF/NOTICE'
-  exclude 'META-INF/*.DSA'
-  exclude 'META-INF/*.RSA'
-  exclude 'META-INF/*.txt'
-  exclude 'META-INF/*.xml'
+    exclude 'AUTHORS'    // crap from other packages
+    exclude 'DATE'
+    exclude 'LICENCE'
+    exclude 'LICENSE'
+    exclude 'NOTICE'
+    exclude '*.txt'
+    exclude '*.xml'
+    exclude 'META-INF/DEPENDENCIES'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    exclude 'META-INF/*.txt'
+    exclude 'META-INF/*.xml'
 
-  exclude 'edu/wisc/**'
-  exclude 'nom/**'
-  exclude 'visad/**'
+    exclude 'edu/wisc/**'
+    exclude 'nom/**'
+    exclude 'visad/**'
 
-  artifactSet {
-    exclude 'commons-logging:commons-logging:*'
-    exclude 'net.sf.ehcache:ehcache-core:*'
-  }
+    artifactSet {
+        exclude 'commons-logging:commons-logging:*'
+        exclude 'net.sf.ehcache:ehcache-core:*'
+    }
 
 }
 
@@ -67,16 +68,15 @@ shadow {
    ftpdir:ftp directory
  */
 task releaseCdm(dependsOn: ['shadow']) << {
-  if (  project.hasProperty( "ftpdir") ) {
-    // println "destinationDir= " + ${destinationDir}
-    println "copy " + ncIdvJar + " to " + ftpdir
-    copy { // does not give error message
-      // from ${destinationDir} + ncIdvJar
-      from ncIdvJar
-      into ftpdir
+    if (project.hasProperty("ftpdir")) {
+        // println "destinationDir= " + ${destinationDir}
+        println "copy " + ncIdvJar + " to " + ftpdir
+        copy { // does not give error message
+            // from ${destinationDir} + ncIdvJar
+            from ncIdvJar
+            into ftpdir
+        }
+    } else {
+        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
     }
-  } else {
-      println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
-  }
 }
-

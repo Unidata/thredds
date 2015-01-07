@@ -101,8 +101,8 @@ libraries["httpunit"] = dependencies.create("httpunit:httpunit:1.7") {
 //        <scope>test</scope>
 //        <type>test-jar</type>
 //      </dependency>
-// libraries[""] = "::"     How do I do this?
-
+// I'll do this later. See
+// http://softnoise.wordpress.com/2014/09/07/gradle-sub-project-test-dependencies-in-multi-project-builds/
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 

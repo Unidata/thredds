@@ -5,13 +5,12 @@ jar {
 }
 
 dependencies {
-  compile project(':cdm')
+    compile project(':cdm')
+    compile libraries["jdom2"]
+    compile libraries["spring-core"]
 
-  // logging should be a group
-  compile group: 'org.slf4j', name: 'slf4j-api', version:slf4jVersion
-  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version:log4jVersion
-  compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version:log4jVersion
-  compile (group: 'org.springframework', name: 'spring-core', version: springVersion)  {
-      exclude group: "commons-logging"
-    }
+    compile libraries["slf4j-api"]
+    compile libraries["log4j-api"]
+    compile libraries["log4j-core"]
+    runtime libraries["jcl-over-slf4j"]
 }

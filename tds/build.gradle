@@ -1,78 +1,73 @@
 apply plugin: 'war'
 
 dependencies {
-  compile project(':bufr')
-  compile project(':cdm')
-  compile project(':clcommon')
-  compile project(':grib')
-  compile project(':netcdf4')
-  compile project(':opendap')
-  compile (project(':tdcommon')) {
-    exclude group: "commons-logging"
-  }
-  compile project(':visad')
-  compile project(':waterml')
+    compile project(":cdm")
+    compile project(":clcommon")
+    compile project(":grib")
+    compile project(":netcdf4")
+    compile project(":opendap")
+    compile project(":tdcommon")
+    compile project(":waterml")
+    compile project(":httpservices")
+    compile project(":dap4:d4core")
+    compile project(":dap4:d4servletshared")
 
-  compile project(':dap4:d4servletshared')
+    compile libraries["coverity-escapers"]
+    compile libraries["httpclient"]
+    compile libraries["httpcore"]
+    compile libraries["commons-fileupload"]
+    compile libraries["jdom2"]
+    compile libraries["quartz"]
+    compile libraries["commons-lang3"]
+    compile libraries["commons-io"]
+    compile libraries["jcip-annotations"]
+    compile libraries["guava"]
+    compile libraries["joda-time"]
+    compile libraries["52n-xml-waterML-v20"]
 
-  compile group: 'com.coverity.security', name: 'coverity-escapers', version: coverityEscapersVersion
+    compile libraries["spring-core"]
+    compile libraries["spring-context"]
+    compile libraries["spring-beans"]
+    compile libraries["spring-web"]
+    compile libraries["spring-webmvc"]
 
-  compile group: 'org.springframework', name: 'spring-context', version: springVersion
-  compile group: 'org.springframework', name: 'spring-beans', version: springVersion
-  compile group: 'org.springframework', name: 'spring-webmvc', version: springVersion
+    runtime libraries["threddsIso"]
+    compile libraries["ncwms"]
+    compile libraries["geoapi-pending"]
+    compile libraries["oro"]
 
-  compile group: 'commons-fileupload', name: 'commons-fileupload', version: commonsFileuploadVersion
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: commonsLang3Version
-  compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion
+    providedCompile libraries["javax.servlet-api"]
+    runtime libraries["jstl"]
+    compile libraries["validation-api"]
+    runtime libraries["hibernate-validator"]
+    runtime libraries["jaxen"]
 
-  // plug-in
-  runtime group: 'EDS', name: 'threddsIso', version: edsThreddsIsoVersion
+    testCompile libraries["spring-test"]
+    testCompile libraries["hamcrest-core"]
+    testCompile libraries["httpunit"]
+// TODO: testCompile cdm:test-jar
 
-  // ncss
-  // JSR 303 with Hibernate Validator
-  compile group: 'javax.validation', name: 'validation-api', version: javaxValidationVersion
-  compile group: 'org.hibernate', name: 'hibernate-validator', version: orgHibernateVersion
-  compile (group: 'org.jfree', name: 'jfreechart', version: orgJfreeJfreechartVersion) {
-    exclude group: 'com.lowagie'
-  }
-
-  // wms
-  compile (group: 'uk.ac.rdg.resc', name: 'ncwms', version: ncwmsVersion) {
-    exclude group: 'commons-logging'
-    exclude group: 'edu.ucar'
-    exclude group: 'joda-time'
-    exclude group: 'org.jfree'
-    exclude group: 'org.springframework'
-    exclude group: 'org.slf4j'
-  }
-  compile group: 'oro', name: 'oro', version: oroVersion
-
-  providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: servletVersion
-  testCompile project(':cdm').sourceSets.test.output
-  testCompile group: 'org.springframework', name: 'spring-test', version: springVersion
-  testCompile group: 'httpunit', name: 'httpunit', version: httpunitVersion
-
-  // logging
-  runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion
-  runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
+    compile libraries["slf4j-api"]
+    runtime libraries["log4j-slf4j-impl"]
+    runtime libraries["log4j-core"]
+    runtime libraries["jcl-over-slf4j"]
 }
 
 war {
-  archiveName = 'thredds.war'
+    archiveName = 'thredds.war'
 
-  manifest {
-    attributes 'Implementation-Version': version,
-            'Implementation-Title': 'THREDDS Data Server (TDS)',
-            'Implementation-Vendor': 'UCAR/Unidata',
-            'Implementation-Vendor-Id': 'edu.ucar',
-            'Built-On': new Date(),
-            'Build-Jdk': System.properties['java.version']
-  }
+    manifest {
+        attributes 'Implementation-Version': version,
+                'Implementation-Title': 'THREDDS Data Server (TDS)',
+                'Implementation-Vendor': 'UCAR/Unidata',
+                'Implementation-Vendor-Id': 'edu.ucar',
+                'Built-On': new Date(),
+                'Build-Jdk': System.properties['java.version']
+    }
 
 }
 
 task printProps << {
-  println System.properties['java.version'];
-  for (prop in System.properties.propertyNames()) printf("%s = %s%n", prop, System.properties[prop])
+    println System.properties['java.version'];
+    for (prop in System.properties.propertyNames()) printf("%s = %s%n", prop, System.properties[prop])
 }
-

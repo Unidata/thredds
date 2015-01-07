@@ -8,42 +8,33 @@ import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 
 dependencies {
-    compile project(':cdm')
-    compile project(':clcommon')
-    compile project(':bufr')
-    compile project(':grib')
-    compile project(':netcdf4')
-    compile(project(':opendap')) {
-        exclude module: 'javax.servlet-api'
-    }
-    compile project(':visad')
-    compile project(':waterml')
+    compile project(":cdm")
+    compile project(":clcommon")
+    compile project(":bufr")
+    compile project(":grib")
+    compile project(":netcdf4")
+    compile project(":opendap")
+    compile project(":waterml")
+    compile project(":httpservices")
 
-    // DAP4 dependencies (technically forward)
-    compile project(':dap4:d4core')
-    compile project(':dap4:d4shared')
-    compile project(':dap4:d4cdmshared')
-    compile project(':dap4:d4cdmclient')
+    compile libraries["ehcache-core"]
+    compile libraries["jdom2"]
+    compile libraries["spring-context"]
+    compile libraries["jcommon"]
+    compile libraries["jfreechart"]
+    compile libraries["jgoodies-forms"]
+    compile libraries["httpclient"]
+    compile libraries["httpcore"]
+    compile libraries["bounce"]
+    compile libraries["imgscalr-lib"]
+    compile libraries["bzip2"]
+    compile libraries["commons-lang3"]
+    compile libraries["52n-oxf-xmlbeans"]
 
-    compile group: 'org.jfree', name: 'jcommon', version: orgJfreeJcommonVersion
-    compile(group: 'org.jfree', name: 'jfreechart', version: orgJfreeJfreechartVersion) {
-        exclude group: 'com.lowagie'
-    }
-    compile group: 'com.jgoodies', name: 'jgoodies-forms', version: comJgoodiesVersion
-
-    compile group: 'org.bounce', name: 'bounce', version: bounceVersion
-    compile group: 'org.imgscalr', name: 'imgscalr-lib', version: imgscalrLibVersion
-    compile group: 'org.itadaki', name: 'bzip2', version: orgItadakiBzip2Version
-    compile group: 'net.sf.ehcache', name: 'ehcache-core', version: netSfEhcacheVersion
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: commonsLang3Version
-
-    compile(group: 'org.springframework', name: 'spring-core', version: springVersion) {
-        transitive = false  // commons-logging
-    }
-    compile group: 'org.springframework', name: 'spring-context', version: springVersion
-
-    testCompile project(':cdm').sourceSets.test.output
-    runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
+    compile libraries["slf4j-api"]
+    runtime libraries["slf4j-jdk14"]
+    runtime libraries["jcl-over-slf4j"]
+    // TODO: testCompile cdm:test-jar
 }
 
 jar {
@@ -61,7 +52,7 @@ ext {
         webstartDir = webdir + "webstart"
     }
 
-    jarsContainingDuplicateEntries = [ 'xmlbeans-2.6.0.jar' ]
+    jarsContainingDuplicateEntries = ['xmlbeans-2.6.0.jar']
 }
 
 shadow {
@@ -140,7 +131,7 @@ task releaseWebstart(dependsOn: jar) << {
 
         copy {
             println "copy2web"
-            from( webstartWorkingDir )
+            from(webstartWorkingDir)
             into webstartDir
         }
     } else {
@@ -214,7 +205,6 @@ task showDependencies << {
         println " " + file
     }
 }
-
 
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate

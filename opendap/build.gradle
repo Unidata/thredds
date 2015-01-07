@@ -1,8 +1,17 @@
 apply plugin: 'war'
 
 dependencies {
-  compile project(':cdm')
-  compile group: 'com.coverity.security', name: 'coverity-escapers', version: coverityEscapersVersion
-  providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: servletVersion
-  testCompile project(':cdm').sourceSets.test.output
+    compile project(':cdm')
+    compile project(':httpservices')
+
+    providedCompile libraries["javax.servlet-api"]
+    compile libraries["jdom2"]
+    compile libraries["httpclient"]
+    compile libraries["httpcore"]
+    compile libraries["jcip-annotations"]
+    compile libraries["coverity-escapers"]
+
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
+    runtime libraries["jcl-over-slf4j"]
 }
