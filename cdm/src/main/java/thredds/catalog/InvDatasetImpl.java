@@ -799,15 +799,11 @@ public class InvDatasetImpl extends InvDataset {
   /**
    * Add a service to this dataset.
    *
-   * @param service add this service to the parent catalog
+   * @param service add this service to the dataset
+   * @deprecated add services only to catalog
    */
   public void addService(InvService service) {
-    InvCatalog parentCat = getParentCatalog();
-    if (parentCat != null && parentCat instanceof InvCatalogImpl) {
-      ((InvCatalogImpl) parentCat).addService(service);
-    }
-
-    /*System.out.println("--add dataset service= "+service.getName());
+    // System.out.println("--add dataset service= "+service.getName());
     servicesLocal.add(service);
     services.add(service);
     // add nested servers
@@ -815,8 +811,9 @@ public class InvDatasetImpl extends InvDataset {
       services.add(nested);
       // System.out.println("--add expanded service= "+nested.getName());
     }
-    hashCode = 0; */
+    hashCode = 0;
   }
+
 
   /**
    * Remove a service from this dataset.

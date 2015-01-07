@@ -40,7 +40,6 @@ import ucar.nc2.constants.FeatureType;
 /** Test catalog read JUnit framework. */
 
 public class TestInherit1 extends TestCase {
-  private static boolean showValidation = false;
 
   public TestInherit1( String name) {
     super(name);
@@ -75,9 +74,9 @@ public class TestInherit1 extends TestCase {
 
   public void testServiceInherit() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
-    InvDataset ds = null;
-    InvService s = null;
-    String val = null;
+    InvDataset ds;
+    InvService s;
+    String val;
 
     ds = cat.findDatasetByID("top");
     s = ds.getServiceDefault();
@@ -85,25 +84,25 @@ public class TestInherit1 extends TestCase {
 
     ds = cat.findDatasetByID("nest1");
     s = ds.getServiceDefault();
-    assert s != null : s;
+    assert s != null : "nest1";
     val = s.getName();
     assert val.equals("ACD") : val;
 
     ds = cat.findDatasetByID("nest11");
     s = ds.getServiceDefault();
-    assert s != null : s;
+    assert s != null : "nest11";
     val = s.getName();
     assert val.equals("ACD") : val;
 
     ds = cat.findDatasetByID("nest12");
     s = ds.getServiceDefault();
-    assert s != null : s;
+    assert s != null : "nest12";
     val = s.getName();
     assert val.equals("local") : val;
 
     ds = cat.findDatasetByID("nest121");
     s = ds.getServiceDefault();
-    assert s != null : s;
+    assert s != null : "nest121";
     val = s.getName();
     assert val.equals("ACD") : val;
 
@@ -114,9 +113,8 @@ public class TestInherit1 extends TestCase {
 
   public void testdataTypeInherit() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
-    InvDataset ds = null;
-    FeatureType s = null;
-    String val = null;
+    InvDataset ds;
+    FeatureType s;
 
     ds = cat.findDatasetByID("top");
     s = ds.getDataType();
@@ -145,9 +143,8 @@ public class TestInherit1 extends TestCase {
 
   public void testAuthorityInherit() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
-    InvDataset ds = null;
-    FeatureType s = null;
-    String val = null;
+    InvDataset ds;
+    String val;
 
     ds = cat.findDatasetByID("top");
     val = ds.getAuthority();
@@ -176,9 +173,9 @@ public class TestInherit1 extends TestCase {
 
   public void testMetadataInherit() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
-    InvDataset ds = null;
-    List list = null;
-    InvMetadata m = null;
+    InvDataset ds;
+    List list;
+    InvMetadata m;
 
     ds = cat.findDatasetByID("top");
     list = ds.getMetadata( MetadataType.NETCDF);
@@ -188,7 +185,7 @@ public class TestInherit1 extends TestCase {
     list = ds.getMetadata( MetadataType.NETCDF);
     assert (list.size() == 1) : list.size();
     m = (InvMetadata) list.get(0);
-    assert (m != null) : m;
+    assert (m != null) : "nest1";
 
     ds = cat.findDatasetByID("nest11");
     list = ds.getMetadata( MetadataType.NETCDF);
@@ -209,9 +206,9 @@ public class TestInherit1 extends TestCase {
 
   public void testDocInherit() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
-    InvDataset ds = null;
-    List list = null;
-    InvDocumentation d = null;
+    InvDataset ds;
+    List list;
+    InvDocumentation d;
 
     ds = cat.findDatasetByID("top");
     list = ds.getDocumentation();
@@ -220,7 +217,7 @@ public class TestInherit1 extends TestCase {
     ds = cat.findDatasetByID("nest1");
     list = ds.getDocumentation();
     d = (InvDocumentation) list.get(0);
-    assert (d != null) : d;
+    assert (d != null) : "nest1";
     assert d.getInlineContent().equals("HEY");
 
     ds = cat.findDatasetByID("nest11");

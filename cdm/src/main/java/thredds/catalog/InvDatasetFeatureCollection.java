@@ -76,7 +76,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
   static protected final String LATEST_SERVICE = "latest";
   static protected final String VARIABLES = "?metadata=variableMap";
-  static protected final String FILES = "FILES";
+  static protected final String FILES = "files";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
   static protected final String Default_Services = "DefaultServices";
   static protected final String Download_Services = InvService.fileServer.getName();
@@ -585,7 +585,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     String name = (pos > -1) ? matchPath.substring(pos + 1) : "";
 
     // this assumes that these are files. also might be remote datasets from a catalog
-    if (type.equals(FILES)) {
+    if (type.equalsIgnoreCase(FILES)) {
       if (topDirectory == null) return null;
 
       String filename = topDirectory + (topDirectory.endsWith("/") ? "" : "/") + name;
@@ -615,7 +615,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     String name = (pos > -1) ? matchPath.substring(pos + 1) : "";
 
     // this assumes that these are files. also might be remote datasets from a catalog
-    if (type.equals(FILES)) {
+    if (type.equalsIgnoreCase(FILES)) {
       if (topDirectory == null) return null;
 
       String filename = new StringBuilder(topDirectory)
