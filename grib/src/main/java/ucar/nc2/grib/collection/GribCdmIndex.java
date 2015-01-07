@@ -108,6 +108,10 @@ public class GribCdmIndex implements IndexReader {
     return (GribCollectionImmutable) result;
   }
 
+  static public void shutdown() {
+    if (gribCollectionCache != null) gribCollectionCache.clearCache(true);
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**

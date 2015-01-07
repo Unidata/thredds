@@ -44,17 +44,27 @@
 <h3>Version 4.6</h3>
 <p>The GRIB Collections framework has been  rewritten in CDM version 4.6, in order to handle large collections efficiently. Oh wait we already did that in 4.5. Sorry, it wasnt  good enough.</p>
 <ul>
-  <li>Collection index files now use the suffix <strong>ncx3</strong>. These will be rewritten first time you access the files. The gbx9 files do NOT need to be rewritten, which is good because those are the slow ones.</li>
-  <li>TimePartition can now be set to <strong>directory</strong> (default), <strong>file</strong> or <strong>timePeriod</strong>. Details <a href="Partitions.html">here</a>.</li>
+  <li>Collection index files now use the suffix <strong>ncx3</strong>. These will be rewritten first time you access the files. The <strong>gbx9</strong> files do NOT need to be rewritten, which is good because those are the slow ones.</li>
+  <li>TimePartition can now be set to <strong>directory</strong> (default), <strong>file, timePeriod </strong>or<strong> none</strong>. Details <a href="Partitions.html">here</a>.</li>
   <li>Multiple reference times are handled more efficiently, eg only one index file typically needs to be written.</li>
-  <li>How do you set the disk cache for grib collections in 4.6?</li>
+  <li>How do you set the disk cache for GRIB collections in 4.6?</li>
   <pre> // place cdm indices somewhere other than default
  GribIndexCache.setDiskCache2(DiskCache2 dc); 
 
  // optional object caching for performance
  ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
  GribCdmIndex.initDefaultCollectionCache(100, 200, -1);</pre>
-  <li>DefaultServices. One can use the service name &quot;DefaultServices&quot; to use the default services for that Feature Type. If you dont specify the service name, DefaultServices is used as the default.</li>
+  <li>DefaultServices. One can use the service name &quot;DefaultServices&quot; to use the default services for that Feature Type. (IN PROGRESS)
+    <ul>
+      <li> If you dont specify the service name, DefaultServices is used as the default.</li>
+      <li>DefaultServices use all  enabled services appropriate to that <a href="../../../netcdf-java/reference/FeatureDatasets/Overview.html">Feature Type</a>.</li>
+    </ul>
+  </li>
+  <li>Global attributes promoted to dataset properties in the catalog
+    <ul>
+      <li></li>
+    </ul>
+  </li>
 </ul>
 <p>For background, please read:</p>
 <ul>

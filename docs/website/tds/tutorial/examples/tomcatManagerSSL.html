@@ -1,14 +1,17 @@
-<h3>Enabling SSL for the Tomcat <code>manager</code> application</h3>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Production Server Overview</title>
+  <link rel="stylesheet" href="../tutorial2.css" type="text/css"/>
+</head>
+<body>
+<h2>Enabling SSL for the Tomcat <code>manager</code> application</h2>
 <ol>
   <li>Modify the deployment descriptor of the Tomcat <code>manager</code> application.</li>
-
-
   <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code>manager</code> application:</p>
 <pre>
 <strong>$</strong> vi ${tomcat_home}/webapps/manager/WEB-INF/web.xml
 </pre>
-
-
   <p>Locate the <code>&lt;security-constraint&gt;</code> elements (near the bottom of the file):</p>
 <pre>
 &lt;!-- Define a Security Constraint on this Application --&gt;
@@ -77,10 +80,11 @@
   &lt;auth-constraint&gt;
      &lt;role-name&gt;manager-gui&lt;/role-name&gt;
   &lt;/auth-constraint&gt;
-    <strong>&lt;user-data-constraint&gt;
-      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-      &lt;/user-data-constraint&gt;</strong>
+  <strong>&lt;user-data-constraint&gt;
+    &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;</strong>
 &lt;/security-constraint&gt;
+
 &lt;security-constraint&gt;
   &lt;web-resource-collection&gt;
     &lt;web-resource-name&gt;
@@ -91,10 +95,11 @@
   &lt;auth-constraint&gt;
      &lt;role-name&gt;manager-script&lt;/role-name&gt;
   &lt;/auth-constraint&gt;
-   <strong> &lt;user-data-constraint&gt;
-     &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-     &lt;/user-data-constraint&gt;</strong>
+  <strong>&lt;user-data-constraint&gt;
+    &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;</strong>
 &lt;/security-constraint&gt;
+
 &lt;security-constraint&gt;
   &lt;web-resource-collection&gt;
     &lt;web-resource-name&gt;JMX Proxy interface&lt;/web-resource-name&gt;
@@ -102,11 +107,12 @@
   &lt;/web-resource-collection&gt;
   &lt;auth-constraint&gt;
      &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
-  &lt;/auth-constraint&gt;
-   <strong> &lt;user-data-constraint&gt;
-     &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-     &lt;/user-data-constraint&gt;</strong>
-&lt;/security-constraint&gt;
+  &lt;/auth-constraint&gt;  
+<strong>  &lt;user-data-constraint&gt;
+    &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;
+</strong>&lt;/security-constraint&gt;
+
 &lt;security-constraint&gt;
   &lt;web-resource-collection&gt;
     &lt;web-resource-name&gt;Status interface&lt;/web-resource-name&gt;
@@ -118,27 +124,25 @@
      &lt;role-name&gt;manager-jmx&lt;/role-name&gt;
      &lt;role-name&gt;manager-status&lt;/role-name&gt;
   &lt;/auth-constraint&gt;
-   <strong> &lt;user-data-constraint&gt;
-     &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-     &lt;/user-data-constraint&gt;</strong>
-&lt;/security-constraint&gt;
-
-</pre>
-
-  </ul>
-  <li>Verify SSL has been enabled for the Tomcat <code>manager</code> application.</li>
+ <strong> &lt;user-data-constraint&gt;
+   &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+  &lt;/user-data-constraint&gt;</strong>
+&lt;/security-constraint&gt;</pre>
+<li>Verify SSL has been enabled for the Tomcat <code>manager</code> application.</li>
   <p>Restart Tomcat and verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li>
   </p>
-
-  <p><a href="../images/managerssl.png"><img src="../images/managerssl.png" width="500" height="138" alt="Tomcat manager authentication prompt"></a></p>
-
-
+  <p><a href="../images/managerssl.png"><img src="../images/managerssl.png" alt="Tomcat manager authentication prompt"></a></p>
+  <li>NOTE: You will have to redo this every time you upgrade Tomcat.</li>
+</ol>
+  
   <div id="expanded" class="troubleshooting">
     <h4>Troubleshooting</h4>
     <ul>
-      <li>Check the XML syntax in <code>web.xml</code> to make sure it is well-formed and without error.</li>
-      <li>Did you specify a <code>&lt;transport-guarantee&gt;</code> of <code>CONFIDENTIAL</code>?</li>
-      <li>Did you restart Tomcat after you made your changes to <code>web.xml</code>?</li>
+      <li>        Check the XML syntax in <code>web.xml</code> to make sure it is well-formed and without error.      </li>
+      <li>        Did you specify a <code>&lt;transport-guarantee&gt;</code> of <code>CONFIDENTIAL</code>?      </li>
+      <li>        Did you restart Tomcat after you made your changes to <code>web.xml</code>?      </li>
     </ul>
   </div>
-</ol>
+
+</head>
+</html>
