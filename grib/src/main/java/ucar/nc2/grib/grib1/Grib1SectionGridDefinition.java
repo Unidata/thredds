@@ -33,7 +33,6 @@
 package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
-import ucar.ma2.DataType;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -52,7 +51,9 @@ public class Grib1SectionGridDefinition {
   private final byte[] rawData;
   private final long startingPosition;
   private final int gridTemplate; // octet 6
+
   private final int predefinedGridDefinition; // = -1 if not used
+  private final int predefinedGridDefinitionCenter; // = -1 if not used
 
   /**
    * Read Grib Definition section from raf.
@@ -78,6 +79,7 @@ public class Grib1SectionGridDefinition {
     raf.readFully(rawData);
 
     predefinedGridDefinition = -1;
+    predefinedGridDefinitionCenter = -1;
   }
 
   /**
@@ -90,13 +92,14 @@ public class Grib1SectionGridDefinition {
     this.gridTemplate = getOctet(6);
     this.startingPosition = -1;
     predefinedGridDefinition = -1;
+    predefinedGridDefinitionCenter = -1;
   }
 
   public Grib1SectionGridDefinition(Grib1SectionProductDefinition pds) {
     startingPosition = -1;
     gridTemplate = -pds.getGridDefinition(); // LOOK ??
     rawData = null;
-    gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(pds.getCenter(), pds.getGridDefinition());
+    predefinedGridDefinitionCenter = pds.getCenter();
     predefinedGridDefinition = pds.getGridDefinition();
   }
 
@@ -115,19 +118,16 @@ public class Grib1SectionGridDefinition {
    * @return CRC  of the entire byte array
    */
   public long calcCRC() {
-    if (crc == 0) {
-      if (rawData == null)
-        crc = hashCode();
-      else {
-        CRC32 crc32 = new CRC32();
-        crc32.update(rawData);
-        crc = crc32.getValue();
-      }
+    long crc;
+    if (rawData == null)
+      crc = predefinedGridDefinitionCenter << 16 + predefinedGridDefinition;
+    else {
+      CRC32 crc32 = new CRC32();
+      crc32.update(rawData);
+      crc = crc32.getValue();
     }
     return crc;
   }
-
-  private long crc = 0;
 
   public int getLength() {
     return (rawData == null) ? 0 : rawData.length;
@@ -154,20 +154,20 @@ public class Grib1SectionGridDefinition {
     return predefinedGridDefinition;
   }
 
-  private final int getOctet(int index) {
-    if (rawData == null) return 255;   // predefined
+  private int getOctet(int index) {
+    if (rawData == null)
+      return 255;   // predefined
     if (index > rawData.length) return GribNumbers.UNDEFINED;
     return rawData[index - 1] & 0xff;
   }
 
-  private Grib1Gds gds = null;
-
   public Grib1Gds getGDS() {
-    if (gds == null) {
-      gds = Grib1Gds.factory(gridTemplate, rawData);
-      if (isThin()) {
-        gds.setNptsInLine(getNptsInLine());
-      }
+    if (predefinedGridDefinition != -1)
+      return ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(predefinedGridDefinitionCenter, predefinedGridDefinition);
+
+    Grib1Gds gds = Grib1Gds.factory(gridTemplate, rawData);
+    if (isThin()) {
+      gds.setNptsInLine(getNptsInLine(gds));
     }
     return gds;
   }
@@ -194,9 +194,8 @@ public class Grib1SectionGridDefinition {
    *  total number of rows defined within the grid description)"
    * @return number of points in each line as int[]
    */
-  private int[] getNptsInLine() {
+  private int[] getNptsInLine(Grib1Gds gds) {
     int numPts;
-
     if ((gds.getScanMode() & 32) == 0) { // bit3 = 0 : Adjacent points in i direction are consecutive
       numPts = gds.getNy();
     } else {                             // bit3 = 1 : Adjacent points in j direction are consecutive

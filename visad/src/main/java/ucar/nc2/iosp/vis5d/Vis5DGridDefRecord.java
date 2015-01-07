@@ -84,14 +84,14 @@ public class Vis5DGridDefRecord extends GridDefRecord {
 
   public String toString() {
     // TODO: make this more unique
-    return getParam(PROJ) + " X:" + getParam(NX) + " " + "Y:" + getParam(NY);
+    return getParam(PROJ) + " X:" + getParam(NX) + " " + "Y:" + getParam(NY) + " Proj:" + projection;
   }
 
   public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof McGridDefRecord)) {
+    if (!(o instanceof Vis5DGridDefRecord)) {
       return false;
     }
     return this.toString().equals(o.toString());
@@ -100,6 +100,8 @@ public class Vis5DGridDefRecord extends GridDefRecord {
   public int hashCode() {
     return toString().hashCode();
   }
+
+
 
   private void setParams(int Projection, double[] projargs) {
     double NorthBound;

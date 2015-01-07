@@ -22,7 +22,7 @@ public class CoordinateSharer<T> {
    * @param isRuntimeUnion if true, make union of runtimes, otherwise keep separate runtimes if distinct
    */
   public CoordinateSharer(boolean isRuntimeUnion) {
-    this.isRuntimeUnion = isRuntimeUnion;
+    this.isRuntimeUnion = false; // isRuntimeUnion; LOOK turn this off until we can fix it
   }
 
   Set<Coordinate> runtimeBuilders = new HashSet<>();
@@ -162,8 +162,6 @@ public class CoordinateSharer<T> {
         } else {                  // use the old one
           unionCoords.add(coord);
         }
-
-
       }
     }
 

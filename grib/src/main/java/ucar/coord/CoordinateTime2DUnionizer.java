@@ -33,7 +33,10 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
     for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {  // possible duplicate runtimes from different partitions
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
-      timeMap.put(coordT2D.getRuntime(runIdx), times);          // later partitions will override LOOK could check how many times there are and choose larger
+      CoordinateTimeAbstract timesPrev = timeMap.get(coordT2D.getRuntime(runIdx));
+      if (timesPrev != null)
+        System.out.println("HEY");
+      timeMap.put(coordT2D.getRuntime(runIdx), times);   // later partitions will override LOOK could check how many times there are and choose larger
     }
   }
 

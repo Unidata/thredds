@@ -1,36 +1,34 @@
 /*
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
- *  *
- *  *  Portions of this software were developed by the Unidata Program at the
- *  *  University Corporation for Atmospheric Research.
- *  *
- *  *  Access and use of this software shall impose the following obligations
- *  *  and understandings on the user. The user is granted the right, without
- *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  *  this software, and any derivative works thereof, and its supporting
- *  *  documentation for any purpose whatsoever, provided that this entire
- *  *  notice appears in all copies of the software, derivative works and
- *  *  supporting documentation.  Further, UCAR requests that the user credit
- *  *  UCAR/Unidata in any publications that result from the use of this
- *  *  software or in any product that includes this software. The names UCAR
- *  *  and/or Unidata, however, may not be used in any advertising or publicity
- *  *  to endorse or promote any products or commercial entity unless specific
- *  *  written permission is obtained from UCAR/Unidata. The user also
- *  *  understands that UCAR/Unidata is not obligated to provide the user with
- *  *  any support, consulting, training or assistance of any kind with regard
- *  *  to the use, operation and performance of this software nor to provide
- *  *  the user with any updates, revisions, new versions or "bug fixes."
- *  *
- *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -197,16 +195,22 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
 
     if (part != null) {  // merged file
       subType = MERGED;
-      String vertName = ((DMParam) part.params.get(0)).kprmnm;
-      if (vertName.equals("PRES")) {
-        ivert = PRES_COORD;
-      } else if (vertName.equals("THTA")) {
-        ivert = THTA_COORD;
-      } else if (vertName.equals("HGHT") || vertName.equals("MHGT") || vertName.equals("DHGT")) {
-        ivert = HGHT_COORD;
-      } else {
-        logError("unknown vertical coordinate in merged file");
-        return false;
+      String vertName = part.params.get(0).kprmnm;
+      switch (vertName) {
+        case "PRES":
+          ivert = PRES_COORD;
+          break;
+        case "THTA":
+          ivert = THTA_COORD;
+          break;
+        case "HGHT":
+        case "MHGT":
+        case "DHGT":
+          ivert = HGHT_COORD;
+          break;
+        default:
+          logError("unknown vertical coordinate in merged file");
+          return false;
       }
 
     } else {
@@ -244,7 +248,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
    * @return a list of the unmerged parts (only SNDT)
    */
   public List<String> getMergedParts() {
-    List<String> list = new ArrayList<String>(1);
+    List<String> list = new ArrayList<>(1);
     list.add(SNDT);
     return list;
   }
@@ -255,7 +259,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
    * @return a list of the unmerged parts
    */
   public List<String> getUnmergedParts() {
-    return new ArrayList<String>(unmergedParts);
+    return new ArrayList<>(unmergedParts);
   }
 
   /**
@@ -279,13 +283,13 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
     boolean merge = getFileSubType().equals(MERGED);
     List<String> parts;
     if (merge) {
-      parts = new ArrayList<String>();
+      parts = new ArrayList<>();
       parts.add(SNDT);
     } else {
       parts = unmergedParts;
     }
     for (String part : parts) {
-      RData rd = null;
+      RData rd;
       try {
         rd = DM_RDTR(row, col, part);
       } catch (IOException ioe) {
@@ -374,10 +378,10 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
    * @return list of part names
    */
   private List<String> SN_CKUA() {
-    List<String> types = new ArrayList<String>();
+    List<String> types = new ArrayList<>();
     boolean above = false;
     boolean done = false;
-    String partToCheck = "";
+    String partToCheck;
     while (!done) {
       // check for mandatory groups
       for (int group = 0; group < belowGroups.length; group++) {

@@ -108,7 +108,9 @@ public class TestGribCollectionsBig {
     // roberto:    that took 6 secs total, 0.196227 msecs per record
     // jenkins:    that took 2 secs total, 0.083042 msecs per record
 
-    assert count.nread == 35464;
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+
+    assert count.nread == 35464 : count.nread;
     assert count.nmiss == 0;
   }
 
@@ -119,8 +121,9 @@ public class TestGribCollectionsBig {
 
       // roberto:
       // jenkins:  that took 32 secs total, 0.077869 msecs per record
+      System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
-      assert count.nread == 837408;
+      assert count.nread == 837408 : count.nread;
       assert count.nmiss == 0;
 
     } catch (Throwable t) {
@@ -138,6 +141,7 @@ public class TestGribCollectionsBig {
     // 2D only      486523/6476133
     // jenkems : that took 560 secs total, 0.079659 msecs per record
 
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     assert count.nmiss == 6032888;       // 6032888/7034124  vs 973046/13925312 LOOK
     assert count.nread == 7034124;

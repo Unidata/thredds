@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -53,8 +53,6 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * Gets a representative grid for this lookup
-   *
-   * @param sample
    */
   public McIDASLookup(McIDASGridRecord sample) {
     this.sample = sample;
@@ -62,21 +60,12 @@ public final class McIDASLookup implements GridTableLookup {
       cust = Grib1Customizer.factory(0, 0, 0, null); // WMO standard? Maybe they use NCEP. haha
   }
 
-  /**
-   * .
-   *
-   * @param gds
-   * @return ShapeName.
-   */
   public String getShapeName(GridDefRecord gds) {
     return "Spherical";
   }
 
   /**
    * gets the grid type.
-   *
-   * @param gds
-   * @return GridName
    */
   public final String getGridName(GridDefRecord gds) {
     return gds.toString();
@@ -101,9 +90,6 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * gets the DisciplineName.
-   *
-   * @param gr
-   * @return DisciplineName
    */
   public final String getDisciplineName(GridRecord gr) {
     // all disciplines are the same in McIDAS
@@ -112,9 +98,6 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * gets the CategoryName.
-   *
-   * @param gr
-   * @return CategoryName
    */
   public final String getCategoryName(GridRecord gr) {
     // no categories in McIDAS
@@ -123,15 +106,11 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * gets the LevelName.
-   *
-   * @param gr
-   * @return LevelName
    */
   public final String getLevelName(GridRecord gr) {
-    String result = null;
 
     if (cust != null) {
-      result = cust.getLevelNameShort( gr.getLevelType1());
+      String result = cust.getLevelNameShort( gr.getLevelType1());
       if (result != null) return result;
     }
 
@@ -157,9 +136,6 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * gets the LevelDescription.
-   *
-   * @param gr
-   * @return LevelDescription
    */
   public final String getLevelDescription(GridRecord gr) {
     if (cust != null) {
@@ -173,9 +149,6 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * gets the LevelUnit.
-   *
-   * @param gr
-   * @return LevelUnit
    */
   public final String getLevelUnit(GridRecord gr) {
     if (cust != null) {
@@ -201,9 +174,6 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * is this a LatLon grid.
-   *
-   * @param gds
-   * @return isLatLon
    */
   public final boolean isLatLon(GridDefRecord gds) {
     return getProjectionName(gds).equals("EQUI");
@@ -211,28 +181,23 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * gets the ProjectionType.
-   *
-   * @param gds
-   * @return ProjectionType
    */
   public final int getProjectionType(GridDefRecord gds) {
     String name = getProjectionName(gds).trim();
-    if (name.equals("MERC")) {
-      return Mercator;
-    } else if (name.equals("CONF")) {
-      return LambertConformal;
-    } else if (name.equals("PS")) {
-      return PolarStereographic;
-    } else {
-      return -1;
+    switch (name) {
+      case "MERC":
+        return Mercator;
+      case "CONF":
+        return LambertConformal;
+      case "PS":
+        return PolarStereographic;
+      default:
+        return -1;
     }
   }
 
   /**
    * is this a VerticalCoordinate.
-   *
-   * @param gr
-   * @return isVerticalCoordinate
    */
   public final boolean isVerticalCoordinate(GridRecord gr) {
     if (cust != null) {
@@ -268,9 +233,6 @@ public final class McIDASLookup implements GridTableLookup {
 
   /**
    * is this a PositiveUp VerticalCoordinate.
-   *
-   * @param gr
-   * @return isPositiveUp
    */
   public final boolean isPositiveUp(GridRecord gr) {
     if (cust != null) {
@@ -340,7 +302,7 @@ public final class McIDASLookup implements GridTableLookup {
    * @return the name or null if not set
    */
   private String getProjectionName(GridDefRecord gds) {
-    return gds.getParam(gds.PROJ);
+    return gds.getParam(GridDefRecord.PROJ);
   }
 
   // CF Conventions Global Attributes

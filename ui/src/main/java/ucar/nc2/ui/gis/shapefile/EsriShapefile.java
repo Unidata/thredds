@@ -69,6 +69,7 @@ public class EsriShapefile {
   private int bytesSeen = 0;         // so far, in bytes.
   private int version;         // of shapefile format (currently 1000)
   private Type type;
+  private boolean debug;
 
   private List<EsriFeature> features;        // EsriFeatures in List
   private Rectangle2D listBounds;    // bounds from shapefile
@@ -263,7 +264,7 @@ public class EsriShapefile {
 
     /* Read through file, filtering out features that don't
        intersect bounding box. */
-    features = new ArrayList<EsriFeature>();
+    features = new ArrayList<>();
     while (bytesSeen < fileBytes) {
       EsriFeature gf = nextFeature();
       if (gf.getBounds2D().intersects(bBox))
@@ -314,6 +315,7 @@ public class EsriShapefile {
 
     int recordNumber = readInt(); // starts at 1, not 0
     int contentLength = readInt(); // in 16-bit words
+    if (debug) System.out.printf("recordNumber=%d contentLength=%d%n", recordNumber, contentLength);
     int type = readLEInt();
     Type featureType = assignType(type);
     switch (featureType) {
@@ -403,7 +405,7 @@ public class EsriShapefile {
     if (bBox == null)
       return features;
 
-    List<EsriFeature> list = new ArrayList<EsriFeature>();
+    List<EsriFeature> list = new ArrayList<>();
     for (EsriFeature gf : features) {
       if (gf.getBounds2D().intersects(bBox))
         list.add(gf);
@@ -423,7 +425,7 @@ public class EsriShapefile {
     protected Rectangle2D bounds;
     protected int numPoints;
     protected int numParts;
-    protected List<GisPart> partsList = new ArrayList<GisPart>();
+    protected List<GisPart> partsList = new ArrayList<>();
 
     // private DbaseFile dbfile;
     // private int recordNumber;

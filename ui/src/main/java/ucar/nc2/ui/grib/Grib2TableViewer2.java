@@ -52,7 +52,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
@@ -358,7 +357,7 @@ public class Grib2TableViewer2 extends JPanel {
     }
 
     public int getKey() {
-      return Grib2Customizer.makeHash(param.getDiscipline(),param.getCategory(),param.getNumber());
+      return Grib2Customizer.makeParamId(param.getDiscipline(), param.getCategory(), param.getNumber());
     }
 
     public String getUnit() {

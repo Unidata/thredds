@@ -1247,7 +1247,7 @@ public class Grib2DataPanel extends JPanel {
       } else {
         f.format(" Unknown Parameter  = %d-%d-%d %n", gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
       }
-      VertCoord.VertUnit levelUnit = Grib2Utils.getLevelUnit(pds.getLevelType1());
+      VertCoord.VertUnit levelUnit = cust.getVertUnit(pds.getLevelType1());
       f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
 
       String intvName = "none";

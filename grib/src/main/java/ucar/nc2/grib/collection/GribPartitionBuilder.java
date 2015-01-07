@@ -67,13 +67,13 @@ abstract class GribPartitionBuilder  {
 
   protected final PartitionManager partitionManager; // defines the partition
   protected String name;            // collection name
-  protected File directory;         // top directory
+  //protected File directory;         // top directory
   protected org.slf4j.Logger logger;
   protected PartitionCollectionMutable result;  // build this object
 
-  protected GribPartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
+  protected GribPartitionBuilder(String name, PartitionManager tpc, org.slf4j.Logger logger) {
     this.name = name;
-    this.directory = directory;
+    //this.directory = directory;
     this.partitionManager = tpc;
     this.logger = logger;
   }

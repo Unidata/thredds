@@ -36,11 +36,7 @@ package ucar.nc2.grib.grib2.table;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.nc2.grib.GribResourceReader;
-import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.GribStatType;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.NcepTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -320,6 +316,30 @@ public class NcepLocalTables extends LocalTables {
       return WmoCodeTable.getTableValue(tableName, code);
 
     return codeMap.get(tableName + "." + code);
+  }
+
+  ////////////////////////////////////////////////////////////////////
+  // Vert
+
+  @Override
+  public VertCoord.VertUnit getVertUnit(int code) {
+
+    switch (code) {
+      case 235:
+        return new GribLevelType(code, "0.1 C", null, true);
+
+      case 237:
+        return new GribLevelType(code, "m", null, true);
+
+      case 238:
+        return new GribLevelType(code, "m", null, true);
+
+      case 241:
+        return new GribLevelType(code, "seq", null, true);   // eg see NCEP World Watch datasets
+
+      default:
+        return super.getVertUnit(code);
+    }
   }
 
   @Override

@@ -33,7 +33,6 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.Immutable;
-import ucar.nc2.grib.grib2.Grib2Utils;
 
 import java.util.*;
 
@@ -47,7 +46,7 @@ import java.util.*;
 public class VertCoord { // implements Comparable<VertCoord> {
 
   static public void assignVertNames(List<VertCoord> vertCoords, GribTables tables) {
-    List<VertCoord> temp = new ArrayList<VertCoord>(vertCoords); // dont change order of original !!!!!
+    List<VertCoord> temp = new ArrayList<>(vertCoords); // dont change order of original !!!!!
 
     // assign name
     for (VertCoord vc : temp) {
@@ -84,11 +83,11 @@ public class VertCoord { // implements Comparable<VertCoord> {
   private final VertUnit unit;
   private final boolean isLayer;
 
-  public VertCoord(int code, List<VertCoord.Level> coords, boolean isLayer) {
+  /* public VertCoord(int code, List<VertCoord.Level> coords, boolean isLayer) {
     this.coords = coords;
     this.isLayer = isLayer;
     this.unit = Grib2Utils.getLevelUnit(code);
-  }
+  }  */
 
   public VertCoord(List<VertCoord.Level> coords, VertUnit unit, boolean isLayer) {
     this.coords = coords;
@@ -198,20 +197,18 @@ public class VertCoord { // implements Comparable<VertCoord> {
     final double value1;
     final double value2;
     final double mid;
-    boolean isLayer;
+    final boolean isLayer;
 
-    // LOOK - you might need to track isLayer
-    public Level(double value1, double value2) {
+    /* public Level(double value1, double value2) {
       this.value1 = value1;
       this.value2 = value2;
       this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
-    }
+    } */
 
-    // LOOK - you might need to track isLayer
     public Level(double value1, double value2, boolean isLayer) {
       this.value1 = value1;
       this.value2 = value2;
-      this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
+      this.mid = (Double.compare(value2, 0.0) == 0 || GribNumbers.isUndefined(value2)) ? value1 : (value1 + value2) / 2;
       this.isLayer = isLayer;
     }
 

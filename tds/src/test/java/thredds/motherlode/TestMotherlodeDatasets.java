@@ -56,15 +56,15 @@ import ucar.httpservices.HTTPSession;
  */
 @RunWith(Parameterized.class)
 public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
-
+  public static String server = "http://thredds-dev.ucar.edu/thredds";
 
   @Parameterized.Parameters
  	public static Collection<Object[]> getTestParameters(){
  		return Arrays.asList(new Object[][]{
             {"/idd/modelsNcep.xml", CatalogCrawler.Type.random_direct, false},
             {"/idd/modelsFnmoc.xml", CatalogCrawler.Type.random_direct, false},
-            {"/idd/modelsOther.xml", CatalogCrawler.Type.random_direct, false},
-            {"/idd/idd/rtmodel.xml", CatalogCrawler.Type.random_direct, false},
+            {"/modelsHrrr.xml", CatalogCrawler.Type.random_direct, false},
+            {"/testDatasets.xml", CatalogCrawler.Type.random_direct, false},
     });
  	}
 
@@ -89,7 +89,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   }
 
   public TestMotherlodeDatasets(String catURL, CatalogCrawler.Type type, boolean skipDatasetScan) throws IOException {
-    this.catUrl = TestMotherlodePing.server + catURL;
+    this.catUrl = server + catURL;
     this.type = type;
     this.skipDatasetScan = skipDatasetScan;
     this.out = new PrintWriter( System.out);

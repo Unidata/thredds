@@ -252,7 +252,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     max = ThreddsConfig.getInt("RandomAccessFile.maxFiles", 500);
     secs = ThreddsConfig.getSeconds("RandomAccessFile.scour", 11 * 60);
     if (max > 0) {
-      RandomAccessFile.setGlobalFileCache( new FileCache(min, max, secs));
+      RandomAccessFile.setGlobalFileCache( new FileCache("RandomAccessFile", min, max, -1, secs));
       startupLog.info("CdmInit: RandomAccessFile.initPartitionCache= ["+min+","+max+"] scour = "+secs);
     }
 

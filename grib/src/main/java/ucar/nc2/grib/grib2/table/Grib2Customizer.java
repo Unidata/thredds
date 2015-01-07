@@ -89,7 +89,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     }
   }
 
-   static public int makeHash(int discipline, int category, int number) {
+  static public int makeParamId(int discipline, int category, int number) {
     return (discipline << 16) + (category << 8) + number;
   }
 
@@ -98,6 +98,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   ///////////////////////////////////////////////////////////////
+
   protected final Grib2Table grib2Table;
 
   protected Grib2Customizer(Grib2Table grib2Table) {
@@ -123,39 +124,39 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }
 
-  /////////////////////////////////////////////////////
-  // debugging
-  public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-    return WmoCodeTable.getParameterEntry(discipline, category, number);
+  @Override
+  public String getSubCenterName(int center_id, int subcenter_id) {
+    return CommonCodeTable.getSubCenterName(center_id, subcenter_id);
   }
 
-  // debugging
-  public String getTablePath(int discipline, int category, int number) {
-    return WmoCodeTable.standard.getResourceName();
+  public String getGeneratingProcessName(int genProcess) {
+    return null;
   }
 
-  // debugging
-  public List<GribTables.Parameter> getParameters() {
-    List<GribTables.Parameter> allParams = new ArrayList<>(3000);
-    try {
-      WmoCodeTable.WmoTables wmo = WmoCodeTable.getWmoStandard();
-      for (String key : wmo.map.keySet()) {
-        if (key.startsWith("4.2.")) {
-          WmoCodeTable params = wmo.map.get(key);
-          allParams.addAll(params.entries);
-        }
-      }
-    } catch (IOException e) {
-      System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
-    }
-    return allParams;
+  public String getGeneratingProcessTypeName(int genProcess) {
+    return getTableValue("4.3", genProcess);
   }
 
-  // debugging
-  public void lookForProblems(Formatter f) {
+  public String getCategory(int discipline, int category) {
+    return getTableValue("4.1." + discipline, category);
   }
+
 
   ////////////////////////////////////////////////////////////////////////////////////////////
+  // Time
+
+  private TimeUnitConverter timeUnitConverter;  // LOOK not really immutable
+
+  public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
+    if (this.timeUnitConverter != null) throw new RuntimeException("Cant modify timeUnitConverter once its been set");
+    this.timeUnitConverter = timeUnitConverter;
+  }
+
+  @Override
+  public int convertTimeUnit(int timeUnit) {
+    if (timeUnitConverter == null) return timeUnit;
+    return timeUnitConverter.convertTimeUnit(timeUnit);
+  }
 
   public CalendarDate getForecastDate(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
@@ -291,6 +292,147 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return result;
   }
 
+  public String getStatisticName(int id) {
+    return getTableValue("4.10", id); // WMO
+  }
+
+  public String getStatisticNameShort(int id) {
+    GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
+    return (stat == null) ?"UnknownStatType-" + id : stat.toString();
+  }
+
+  @Override
+  public GribStatType getStatType(int grib2StatCode) {
+    return GribStatType.getStatTypeFromGrib2(grib2StatCode);
+  }
+
+   /*
+Code Table Code table 4.7 - Derived forecast (4.7)
+    0: Unweighted mean of all members
+    1: Weighted mean of all members
+    2: Standard deviation with respect to cluster mean
+    3: Standard deviation with respect to cluster mean, normalized
+    4: Spread of all members
+    5: Large anomaly index of all members
+    6: Unweighted mean of the cluster members
+    7: Interquartile range (range between the 25th and 75th quantile)
+    8: Minimum of all ensemble members
+    9: Maximum of all ensemble members
+   -1: Reserved
+   -1: Reserved for local use
+  255: Missing
+  */
+
+  public String getProbabilityNameShort(int id) {
+    switch (id) {
+      case 0:
+        return "unweightedMean";
+      case 1:
+        return "weightedMean";
+      case 2:
+        return "stdDev";
+      case 3:
+        return "stdDevNormalized";
+      case 4:
+        return "spread";
+      case 5:
+        return "largeAnomalyIndex";
+      case 6:
+        return "unweightedMeanCluster";
+      case 7:
+        return "interquartileRange";
+      case 8:
+        return "minimumEnsemble";
+      case 9:
+        return "maximumEnsemble";
+      default:
+        return "UnknownProbType" + id;
+     }
+  }
+
+ ///////////////////////////////////////////////////////////////////////////////////////
+  // Vert
+
+  /**
+   * Unit of vertical coordinate.
+   * from Grib2 code table 4.5.
+   * Only levels with units get a dimension added
+   *
+   * @param code code from table 4.5
+   * @return level unit, default is empty unit string
+   */
+  @Override
+  public VertCoord.VertUnit getVertUnit(int code) {
+    //     GribLevelType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
+    switch (code) {
+
+      case 11:
+      case 12:
+        return new GribLevelType(code, "m", null, true);
+
+      case 20:
+        return new GribLevelType(code, "K", null, false);
+
+      case 100:
+        return new GribLevelType(code, "Pa", null, false);
+
+      case 102:
+        return new GribLevelType(code, "m", "mean sea level", true);
+
+      case 103:
+        return new GribLevelType(code, "m", "ground", true);
+
+      case 104:
+      case 105:
+        return new GribLevelType(code, "sigma", null, false); // positive?
+
+      case 106:
+        return new GribLevelType(code, "m", "land surface", false);
+
+      case 107:
+        return new GribLevelType(code, "K", null, true); // positive?
+
+      case 108:
+        return new GribLevelType(code, "Pa", "ground", true);
+
+      case 109:
+        return new GribLevelType(code, "K m2 kg-1 s-1", null, true); // positive?
+
+      case 114:
+        return new GribLevelType(code, "numeric", null, false);
+
+      case 117:
+        return new GribLevelType(code, "m", null, true);
+
+      case 119:
+        return new GribLevelType(code, "Pa", null, false); // ??
+
+      case 160:
+        return new GribLevelType(code, "m", "sea level", false);
+
+      case 161:
+        return new GribLevelType(code, "m", "water surface", false);
+
+      // LOOK NCEP specific
+      case 235:
+        return new GribLevelType(code, "0.1 C", null, true);
+
+      case 237:
+        return new GribLevelType(code, "m", null, true);
+
+      case 238:
+        return new GribLevelType(code, "m", null, true);
+
+      default:
+        return new GribLevelType(code, null, null, true);
+    }
+  }
+
+  public boolean isLevelUsed(int code) {
+    VertCoord.VertUnit vunit = getVertUnit(code);
+    return vunit.isVerticalCoordinate();
+  }
+
   public String getLevelName(int id) {
     return getTableValue("4.5", id);
   }
@@ -367,105 +509,36 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     }
   }
 
-  /*
-Code Table Code table 4.7 - Derived forecast (4.7)
-    0: Unweighted mean of all members
-    1: Weighted mean of all members
-    2: Standard deviation with respect to cluster mean
-    3: Standard deviation with respect to cluster mean, normalized
-    4: Spread of all members
-    5: Large anomaly index of all members
-    6: Unweighted mean of the cluster members
-    7: Interquartile range (range between the 25th and 75th quantile)
-    8: Minimum of all ensemble members
-    9: Maximum of all ensemble members
-   -1: Reserved
-   -1: Reserved for local use
-  255: Missing
-
-  */
-  public String getProbabilityNameShort(int id) {
-    switch (id) {
-      case 0:
-        return "unweightedMean";
-      case 1:
-        return "weightedMean";
-      case 2:
-        return "stdDev";
-      case 3:
-        return "stdDevNormalized";
-      case 4:
-        return "spread";
-      case 5:
-        return "largeAnomalyIndex";
-      case 6:
-        return "unweightedMeanCluster";
-      case 7:
-        return "interquartileRange";
-      case 8:
-        return "minimumEnsemble";
-      case 9:
-        return "maximumEnsemble";
-      default:
-        return "UnknownProbType" + id;
-     }
+    /////////////////////////////////////////////////////
+  // debugging
+  public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
+    return WmoCodeTable.getParameterEntry(discipline, category, number);
   }
 
-  public String getStatisticName(int id) {
-    return getTableValue("4.10", id); // WMO
+  // debugging
+  public String getTablePath(int discipline, int category, int number) {
+    return WmoCodeTable.standard.getResourceName();
   }
 
-  public String getStatisticNameShort(int id) {
-    GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
-    return (stat == null) ?"UnknownStatType-" + id : stat.toString();
+  // debugging
+  public List<GribTables.Parameter> getParameters() {
+    List<GribTables.Parameter> allParams = new ArrayList<>(3000);
+    try {
+      WmoCodeTable.WmoTables wmo = WmoCodeTable.getWmoStandard();
+      for (String key : wmo.map.keySet()) {
+        if (key.startsWith("4.2.")) {
+          WmoCodeTable params = wmo.map.get(key);
+          allParams.addAll(params.entries);
+        }
+      }
+    } catch (IOException e) {
+      System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
+    }
+    return allParams;
   }
 
-  @Override
-  public GribStatType getStatType(int grib2StatCode) {
-    return GribStatType.getStatTypeFromGrib2(grib2StatCode);
-  }
-
-  @Override
-  public VertCoord.VertUnit getVertUnit(int code) {
-    return Grib2Utils.getLevelUnit(code);
-  }
-
-  /////////////////////////////////////////////
-  private TimeUnitConverter timeUnitConverter;  // LOOK not really immutable
-
-  public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
-    this.timeUnitConverter = timeUnitConverter;
-  }
-
-  @Override
-  public int convertTimeUnit(int timeUnit) {
-    if (timeUnitConverter == null) return timeUnit;
-    return timeUnitConverter.convertTimeUnit(timeUnit);
-  }
-
-  //////////////
-
-  @Override
-  public String getSubCenterName(int center_id, int subcenter_id) {
-    return CommonCodeTable.getSubCenterName(center_id, subcenter_id);
-  }
-
-  public String getGeneratingProcessName(int genProcess) {
-    return null;
-  }
-
-  public String getGeneratingProcessTypeName(int genProcess) {
-    return getTableValue("4.3", genProcess);
-  }
-
-  public String getCategory(int discipline, int category) {
-    return getTableValue("4.1." + discipline, category);
-  }
-
-  public static void main(String[] args) {
-    Grib2Customizer cust = factory(0, 0, 0, 0, 0);
-    String c = cust.getCategory(0, 14);
-    System.out.printf("%s%n", c);
+  // debugging
+  public void lookForProblems(Formatter f) {
   }
 
 }

@@ -66,7 +66,7 @@
    &lt;useGenType&gt;true&lt;/useGenType&gt;
  &lt;/pdsHash&gt;
 </pre>
-  <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version (octet 4) is used in the CDM hashcode. If true, records with different table versions will create different variables. Default is false.   Set this to true if, in the same dataset, you have records with the same parameter but with different table versions that should be made into diffeerent variables. By default, different table versions will be ignored.</p>
+  <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version (octet 4) is used in the CDM hashcode. If true, records with different table versions will create different variables. Default is false.   Set this to true if, in the same dataset, you have records with the same parameter number but with different table versions that should be made into different variables. By default, different table versions will be ignored.</p>
   <pre> &lt;pdsHash&gt;
    &lt;<strong>useTableVersion</strong>&gt;false&lt;/<strong>useTableVersion</strong>&gt;
  &lt;/pdsHash&gt;</pre>
@@ -129,10 +129,14 @@
   <p>Miscellaneous values that control how the GribCollection is made can be set with   <strong>option</strong> elements. All option elements are key / value pairs.</p>
   <h4>timeUnit </h4>
   <p>The  unit of the time coordinates is taken from the first GRIB record in the collection. Occasionally you may want to override this. The value must be a valid string for <strong>ucar.nc2.time.CalendarPeriod.of(  timeUnit)</strong></p>
-<pre>&lt;option name=&quot;timeUnit&quot; value=&quot;1 minute&quot; /&gt;</pre>
+<pre>&lt;gribConfig&gt;
+  &lt;option name=&quot;timeUnit&quot; value=&quot;1 minute&quot; /&gt;
+&lt;/gribConfig&gt;</pre>
   <h4>unionRuntimeCoord </h4>
   <p>When multiple reference times are in the same dataset, but they differ for different variables, by default unique runtime coordinates are created. These can proliferate in a large collection, differing only by a few missing records. By setting the <strong>runtimeCoordinate</strong> option to &quot;<em>union</em>&quot;, you can force all variables to use the same runtime coordinates, at the cost of some extra missing values. This happens only at the leaf collections (eg file or directory).</p>
-<pre>&lt;option name=&quot;runtimeCoordinate&quot; value=&quot;union&quot; /&gt;</pre>
+<pre>&lt;gribConfig&gt;
+  &lt;option name=&quot;runtimeCoordinate&quot; value=&quot;union&quot; /&gt;
+&lt;/gribConfig&gt;</pre>
 </blockquote>
 
 <hr />

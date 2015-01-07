@@ -73,10 +73,10 @@ public class CoordinateUnionizer {
           ensBuilder.addAll(coord);
           break;
         case vert:
-          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode());
+          CoordinateVert vertCoord = (CoordinateVert) coord;
+          if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode(), vertCoord.getVertUnit());
           vertBuilder.addAll(coord);
           break;
-
       }
     }
   }

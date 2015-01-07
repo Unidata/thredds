@@ -145,11 +145,6 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       localState.dateRange = getCalendarDateCoverage();
   }
 
-  @Override
-  public void updateProto() {
-    // probably dont need this
-  }
-
   /* called when a request comes in, see if everything is ready to go
   // in particular, state.datasets and state.scan
   @Override

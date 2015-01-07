@@ -424,24 +424,24 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       LatLon other = (LatLon) o;
       if (!Misc.closeEnoughAbs(la1, other.la1, maxReletiveErrorPos * deltaLat)) return false;   // allow some slop, reletive to grid size
       if (!Misc.closeEnoughAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
-      if (!Misc.closeEnough(deltaLat, other.deltaLat)) return false;
-      if (!Misc.closeEnough(deltaLon, other.deltaLon)) return false;
+      if (!Misc.closeEnoughAbs(la2, other.la2, maxReletiveErrorPos * deltaLat)) return false;
+      if (!Misc.closeEnoughAbs(lo2, other.lo2, maxReletiveErrorPos * deltaLon)) return false;
       return true;
     }
 
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat1 = (int) (la1 / (maxReletiveErrorPos * deltaLat));  //  Two equal objects must have the same hashCode() value
-        int useLon1 = (int) (lo1 / (maxReletiveErrorPos * deltaLon));
-        int useDeltaLon = (int) (deltaLon / Misc.maxReletiveError);
-        int useDeltaLat = (int) (deltaLat / Misc.maxReletiveError);
+        int useLat1 = (int) Math.round(la1 / (maxReletiveErrorPos * deltaLat));  //  Two equal objects must have the same hashCode() value
+        int useLon1 = (int) Math.round(lo1 / (maxReletiveErrorPos * deltaLon));
+        int useLat2 = (int) Math.round(la2 / (maxReletiveErrorPos * deltaLat));
+        int useLon2 = (int) Math.round(lo2 / (maxReletiveErrorPos * deltaLon));
 
         int result = super.hashCode();
         result = 31 * result + useLat1;
         result = 31 * result + useLon1;
-        result = 31 * result + useDeltaLon;
-        result = 31 * result + useDeltaLat;
+        result = 31 * result + useLat2;
+        result = 31 * result + useLon2;
         hashCode = result;
       }
       return hashCode;
@@ -614,7 +614,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
 
       la1 = getOctet4(39) * scale6;
       lo1 = getOctet4(43) * scale6;
-      flags =  getOctet(47);
+      flags = getOctet(47);
       lad = getOctet4(48) * scale6;
       la2 = getOctet4(52) * scale6;
       lo2 = getOctet4(56) * scale6;
@@ -638,7 +638,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
 
       if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
       if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
-      if (!Misc.closeEnough(lad, that.lad)) return false;
+      if (!Misc.closeEnoughAbs(lad, that.lad, maxReletiveErrorPos * dY)) return false;
       if (!Misc.closeEnough(dY, that.dY)) return false;
       if (!Misc.closeEnough(dX, that.dX)) return false;
 
@@ -648,11 +648,11 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) (lad / Misc.maxReletiveError);
-        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
-        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+        int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
+        int useLad = (int) Math.round(lad / (maxReletiveErrorPos * dY));
+        int useDeltaLon = (int) Math.round(dX / Misc.maxReletiveError);
+        int useDeltaLat = (int) Math.round(dY / Misc.maxReletiveError);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -774,12 +774,12 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) (lad / Misc.maxReletiveError);
-        int useLov = (int) (lov / Misc.maxReletiveError);
-        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
-        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+        int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
+        int useLad = (int) Math.round(lad / Misc.maxReletiveError);
+        int useLov = (int) Math.round(lov / Misc.maxReletiveError);
+        int useDeltaLon = (int) Math.round(dX / Misc.maxReletiveError);
+        int useDeltaLat = (int) Math.round(dY / Misc.maxReletiveError);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -803,7 +803,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60))  [Snyder,Working Manual p157]
       // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
       double scale;
-      if (Double.isNaN(lad)) { // LOOK ??
+      if (GribNumbers.isUndefined(lad)) { // LOOK
         scale = 0.9330127018922193;
       } else {
         scale = (1.0 + Math.sin(Math.toRadians( Math.abs( Math.abs(lad))))) / 2;
@@ -924,14 +924,14 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
-        int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) (lad / Misc.maxReletiveError);
-        int useLov = (int) (lov / Misc.maxReletiveError);
-        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
-        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
-        int useLatin1 = (int) (latin1 / Misc.maxReletiveError);
-        int useLatin2 = (int) (latin2 / Misc.maxReletiveError);
+        int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
+        int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
+        int useLad = (int) Math.round(lad / Misc.maxReletiveError);
+        int useLov = (int) Math.round(lov / Misc.maxReletiveError);
+        int useDeltaLon = (int) Math.round(dX / Misc.maxReletiveError);
+        int useDeltaLat = (int) Math.round(dY / Misc.maxReletiveError);
+        int useLatin1 = (int) Math.round(latin1 / Misc.maxReletiveError);
+        int useLatin2 = (int) Math.round(latin2 / Misc.maxReletiveError);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -1108,9 +1108,34 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
       Nparellels = getOctet4(68);
     }
 
+    /*
+case cfsr:
+ 31:                                                     Ni - number of points along a parallel == 1152
+ 35:                                                     Nj - number of points along a meridian == 576
+ 39:                                               Basic angle of the initial production domain == 0
+ 43: Subdivisions of basic angle used to define extreme longitudes and latitudes, and direction increments == 0
+ 47:                                                         La1 - latitude of first grid point == 89761000
+ 51:                                                        Lo1 - longitude of first grid point == 0
+ 55:                                                             Resolution and component flags == 48
+ 56:                                                          La2 - latitude of last grid point == -89761000
+ 60:                                                         Lo2 - longitude of last grid point == 359688000
+ 64:                                                                 Di - i direction increment == 313000
+ 68:                                     N - number of parallels between a pole and the Equator == 288
+
+some records differ only by:
+ 60:                                                         Lo2 - longitude of last grid point == 359687000
+
+ note that  1152 * .313 = 360.576
+            359.688000 / (1152-1) = 0.31250043440486533449174630755864
+            359.687000 / (1152-1) = 0.31249956559513466550825369244136
+
+ so we need to tolerate .001 < toler * .3125, toler > 1/312, so set to 1/100
+     */
+
     protected void finish() {
       super.finish();
       deltaLon = (lo2 - lo1) / (getNx()-1); // more accurate - deltaLon may have roundoff
+      deltaLat = 0.1f; // meaningless for gaussian
     }
 
     @Override

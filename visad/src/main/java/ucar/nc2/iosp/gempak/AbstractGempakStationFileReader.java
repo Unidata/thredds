@@ -1,36 +1,34 @@
 /*
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
- *  *
- *  *  Portions of this software were developed by the Unidata Program at the
- *  *  University Corporation for Atmospheric Research.
- *  *
- *  *  Access and use of this software shall impose the following obligations
- *  *  and understandings on the user. The user is granted the right, without
- *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  *  this software, and any derivative works thereof, and its supporting
- *  *  documentation for any purpose whatsoever, provided that this entire
- *  *  notice appears in all copies of the software, derivative works and
- *  *  supporting documentation.  Further, UCAR requests that the user credit
- *  *  UCAR/Unidata in any publications that result from the use of this
- *  *  software or in any product that includes this software. The names UCAR
- *  *  and/or Unidata, however, may not be used in any advertising or publicity
- *  *  to endorse or promote any products or commercial entity unless specific
- *  *  written permission is obtained from UCAR/Unidata. The user also
- *  *  understands that UCAR/Unidata is not obligated to provide the user with
- *  *  any support, consulting, training or assistance of any kind with regard
- *  *  to the use, operation and performance of this software nor to provide
- *  *  the user with any updates, revisions, new versions or "bug fixes."
- *  *
- *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -108,7 +106,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
   /**
    * list of parameters
    */
-  private Map<String, List<GempakParameter>> partParamMap = new HashMap<String, List<GempakParameter>>();
+  private Map<String, List<GempakParameter>> partParamMap = new HashMap<>();
 
   /**
    * data formatter
@@ -206,7 +204,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
             || !date.type.equals(time.type)) {
       return null;
     }
-    List<Key> dt = new ArrayList<Key>(2);
+    List<Key> dt = new ArrayList<>(2);
     dt.add(date);
     dt.add(time);
     return dt;
@@ -227,7 +225,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
     } else {
       toCheck = headers.colHeaders;
     }
-    List<String> fileDates = new ArrayList<String>();
+    List<String> fileDates = new ArrayList<>();
     for (int[] header : toCheck) {
       if (header[0] != IMISSD) {
         // convert to GEMPAK date/time
@@ -256,7 +254,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
    * @return parameters from the info in that part.
    */
   private List<GempakParameter> makeParams(DMPart part) {
-    List<GempakParameter> gemparms = new ArrayList<GempakParameter>(part.kparms);
+    List<GempakParameter> gemparms = new ArrayList<>(part.kparms);
     for (DMParam param : part.params) {
       String name = param.kprmnm;
       GempakParameter parm = GempakParameters.getParameter(name);
@@ -296,7 +294,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
     } else {
       toCheck = headers.colHeaders;
     }
-    List<GempakStation> fileStations = new ArrayList<GempakStation>();
+    List<GempakStation> fileStations = new ArrayList<>();
     int i = 0;
     for (int[] header : toCheck) {
       if (header[0] != IMISSD) {
@@ -324,28 +322,40 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
     GempakStation newStation = new GempakStation();
     for (Key key : stationKeys) {
       int loc = key.loc + 1;
-      if (key.name.equals(GempakStation.STID)) {
-        newStation.setSTID(GempakUtil.ST_ITOC(header[loc]).trim());
-      } else if (key.name.equals(GempakStation.STNM)) {
-        newStation.setSTNM(header[loc]);
-      } else if (key.name.equals(GempakStation.SLAT)) {
-        newStation.setSLAT(header[loc]);
-      } else if (key.name.equals(GempakStation.SLON)) {
-        newStation.setSLON(header[loc]);
-      } else if (key.name.equals(GempakStation.SELV)) {
-        newStation.setSELV(header[loc]);
-      } else if (key.name.equals(GempakStation.SPRI)) {
-        newStation.setSPRI(header[loc]);
-      } else if (key.name.equals(GempakStation.STAT)) {
-        newStation.setSTAT(GempakUtil.ST_ITOC(header[loc]).trim());
-      } else if (key.name.equals(GempakStation.COUN)) {
-        newStation.setCOUN(GempakUtil.ST_ITOC(header[loc]).trim());
-      } else if (key.name.equals(GempakStation.SWFO)) {
-        newStation.setSWFO(GempakUtil.ST_ITOC(header[loc]).trim());
-      } else if (key.name.equals(GempakStation.WFO2)) {
-        newStation.setWFO2(GempakUtil.ST_ITOC(header[loc]).trim());
-      } else if (key.name.equals(GempakStation.STD2)) {
-        newStation.setSTD2(GempakUtil.ST_ITOC(header[loc]).trim());
+      switch (key.name) {
+        case GempakStation.STID:
+          newStation.setSTID(GempakUtil.ST_ITOC(header[loc]).trim());
+          break;
+        case GempakStation.STNM:
+          newStation.setSTNM(header[loc]);
+          break;
+        case GempakStation.SLAT:
+          newStation.setSLAT(header[loc]);
+          break;
+        case GempakStation.SLON:
+          newStation.setSLON(header[loc]);
+          break;
+        case GempakStation.SELV:
+          newStation.setSELV(header[loc]);
+          break;
+        case GempakStation.SPRI:
+          newStation.setSPRI(header[loc]);
+          break;
+        case GempakStation.STAT:
+          newStation.setSTAT(GempakUtil.ST_ITOC(header[loc]).trim());
+          break;
+        case GempakStation.COUN:
+          newStation.setCOUN(GempakUtil.ST_ITOC(header[loc]).trim());
+          break;
+        case GempakStation.SWFO:
+          newStation.setSWFO(GempakUtil.ST_ITOC(header[loc]).trim());
+          break;
+        case GempakStation.WFO2:
+          newStation.setWFO2(GempakUtil.ST_ITOC(header[loc]).trim());
+          break;
+        case GempakStation.STD2:
+          newStation.setSTD2(GempakUtil.ST_ITOC(header[loc]).trim());
+          break;
       }
     }
     return newStation;
@@ -357,7 +367,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
    * @return the list of station key names
    */
   public List<String> getStationKeyNames() {
-    List<String> keys = new ArrayList<String>();
+    List<String> keys = new ArrayList<>();
     if ((stationKeys != null) && !stationKeys.isEmpty()) {
       for (Key key : stationKeys) {
         keys.add(key.name);
@@ -389,7 +399,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
     }
     String tslat = slat.type;
     // check to make sure they are all in the same set of keys
-    List<Key> stKeys = new ArrayList<Key>();
+    List<Key> stKeys = new ArrayList<>();
     stKeys.add(slat);
     stKeys.add(slon);
     if ((stid != null) && !stid.type.equals(tslat)) {
@@ -457,7 +467,7 @@ public abstract class AbstractGempakStationFileReader extends GempakFileReader {
    */
   public List<Date> getDates() {
     if ((dates == null || dates.isEmpty()) && !dateList.isEmpty()) {
-      dates = new ArrayList<Date>(dateList.size());
+      dates = new ArrayList<>(dateList.size());
       dateFmt.setTimeZone(TimeZone.getTimeZone("GMT"));
       for (String dateString : dateList) {
         Date d = dateFmt.parse(dateString, new ParsePosition(0));

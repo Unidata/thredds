@@ -226,7 +226,8 @@ public class TdsMonitor extends JPanel {
             if (data.wantRoots) {
               String urls = data.getServerPrefix() + "/thredds/admin/log/dataroots.txt";
               File localDir = LogLocalManager.getDirectory(data.server, "");
-              localDir.mkdirs();
+              if (!localDir.mkdirs())
+                manage.getTextArea().append("\nmkdirs failed");
               File file = new File(localDir, "roots.txt");
               HTTPSession session = HTTPFactory.newSession(urls);
               // session.setCredentialsProvider(provider);

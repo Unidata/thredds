@@ -426,7 +426,7 @@ public class GCpass1 {
     counters.count("table version", table);
     counters.count("referenceDate", pds.getReferenceDate());
 
-    int gdsHash = gdss.getGDS().hashCode();
+    int gdsHash = gr.getGDS().hashCode();
     int cdmHash = Grib1Variable.cdmVariableHash(cust1, gr, gdsHash, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
     String name =  Grib1Iosp.makeVariableName(cust1, gribConfig, pds);
     counters.count("variable", new Variable(cdmHash, name));

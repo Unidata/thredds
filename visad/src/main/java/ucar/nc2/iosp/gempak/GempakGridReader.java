@@ -1,36 +1,34 @@
 /*
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
- *  *
- *  *  Portions of this software were developed by the Unidata Program at the
- *  *  University Corporation for Atmospheric Research.
- *  *
- *  *  Access and use of this software shall impose the following obligations
- *  *  and understandings on the user. The user is granted the right, without
- *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  *  this software, and any derivative works thereof, and its supporting
- *  *  documentation for any purpose whatsoever, provided that this entire
- *  *  notice appears in all copies of the software, derivative works and
- *  *  supporting documentation.  Further, UCAR requests that the user credit
- *  *  UCAR/Unidata in any publications that result from the use of this
- *  *  software or in any product that includes this software. The names UCAR
- *  *  and/or Unidata, however, may not be used in any advertising or publicity
- *  *  to endorse or promote any products or commercial entity unless specific
- *  *  written permission is obtained from UCAR/Unidata. The user also
- *  *  understands that UCAR/Unidata is not obligated to provide the user with
- *  *  any support, consulting, training or assistance of any kind with regard
- *  *  to the use, operation and performance of this software nor to provide
- *  *  the user with any updates, revisions, new versions or "bug fixes."
- *  *
- *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -327,9 +325,8 @@ public class GempakGridReader extends GempakFileReader {
   public int getGridPackingType(int gridNumber) throws IOException {
     // See DM_RDTR
     int irow = 1;  // Always 1 for grids
-    int icol = gridNumber;
-    if ((icol < 1) || (icol > dmLabel.kcol)) {
-      logWarning("bad grid number " + icol);
+    if ((gridNumber < 1) || (gridNumber > dmLabel.kcol)) {
+      logWarning("bad grid number " + gridNumber);
       return -9;
     }
     int iprt = getPartNumber("GRID");
@@ -338,7 +335,7 @@ public class GempakGridReader extends GempakFileReader {
       return -10;
     }
     // gotta subtract 1 because parts are 1 but List is 0 based
-    DMPart part = (DMPart) parts.get(iprt - 1);
+    DMPart part = parts.get(iprt - 1);
     // check for valid data type
     if (part.ktyprt != MDGRID) {
       logWarning("Not a valid type: "
@@ -348,7 +345,7 @@ public class GempakGridReader extends GempakFileReader {
     int ilenhd = part.klnhdr;
     int ipoint = dmLabel.kpdata
             + (irow - 1) * dmLabel.kcol * dmLabel.kprt
-            + (icol - 1) * dmLabel.kprt + (iprt - 1);
+            + (gridNumber - 1) * dmLabel.kprt + (iprt - 1);
     // From DM_RPKG
     int istart = DM_RINT(ipoint);
     if (istart == 0) {
@@ -366,11 +363,10 @@ public class GempakGridReader extends GempakFileReader {
     }
     int[] header = new int[ilenhd];
     DM_RINT(isword, header);
-    int nword = length - ilenhd;
+    // int nword = length - ilenhd;
     isword += ilenhd;
     // read the data packing type
-    int ipktyp = DM_RINT(isword);
-    return ipktyp;
+    return DM_RINT(isword);
   }
 
   /**
@@ -380,12 +376,12 @@ public class GempakGridReader extends GempakFileReader {
    * @return the grid header or null
    */
   public GempakGridRecord findGrid(String parm) {
-    List gridList = gridIndex.getGridRecords();
+    List<GridRecord> gridList = gridIndex.getGridRecords();
     if (gridList == null) {
       return null;
     }
-    for (int i = 0; i < gridList.size(); i++) {
-      GempakGridRecord gh = (GempakGridRecord) gridList.get(i);
+    for (GridRecord grid : gridList) {
+      GempakGridRecord gh = (GempakGridRecord) grid;
       if (gh.param.trim().equals(parm)) {
         return gh;
       }
@@ -403,8 +399,8 @@ public class GempakGridReader extends GempakFileReader {
   public float[] readGrid(GridRecord gr) throws IOException {
 
     int gridNumber = ((GempakGridRecord) gr).getGridNumber();
-    int irow = 1;  // Always 1 for grids
-    int icol = gridNumber;
+    //int irow = 1;  // Always 1 for grids
+    //int icol = gridNumber;
     RData data = DM_RDTR(1, gridNumber, "GRID", gr.getDecimalScale());
     float[] vals = null;
     if (data != null) {
@@ -426,7 +422,7 @@ public class GempakGridReader extends GempakFileReader {
           throws IOException {
     // from DM_RPKG
     // read the data packing type
-    float[] data = null;
+    float[] data;
     int ipktyp = DM_RINT(isword);
     int iiword = isword + 1;
     int lendat = nword - 1;
@@ -464,7 +460,7 @@ public class GempakGridReader extends GempakFileReader {
     int misflg = iarray[1];
     boolean miss = misflg != 0;
     int kxky = iarray[2];
-    int mword = kxky;
+    // int mword = kxky;
     int kx = 0;
     if (iiw == 4) {
       kx = iarray[3];
@@ -581,7 +577,7 @@ public class GempakGridReader extends GempakFileReader {
               : idata[iword] << jshft;
       idat = idat & imax;
       //
-      //    Check to see if packed integer overflows into next word.
+      //    Check to see if packed integer overflows into next word. LOOK fishy bit operations
       //
       if (jshft > 0) {
         jshft -= 32;
@@ -741,7 +737,6 @@ public class GempakGridReader extends GempakFileReader {
     }
 
     // LOOK - not dealing with repeated records
-
     return new Grib2Record(null, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing);
   }
 

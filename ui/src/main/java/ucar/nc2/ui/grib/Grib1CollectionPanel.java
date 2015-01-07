@@ -38,7 +38,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.collection.Grib1CollectionBuilder;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
@@ -82,7 +81,6 @@ public class Grib1CollectionPanel extends JPanel {
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private Grib1Customizer cust = null;
   private FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
-  //private Grib1Rectilyser rect = null;
 
   public Grib1CollectionPanel(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;

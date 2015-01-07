@@ -103,7 +103,7 @@ abstract class GribCollectionBuilderFromIndex {
       if (debug) System.out.printf("GribCollectionBuilderFromIndex %s (%s) records len = %d%n", raf.getLocation(), getMagicStart(), skip);
 
       int size = NcStream.readVInt(raf);
-      if ((size < 0) || (size > 200 * 1000 * 1000)) {
+      if ((size < 0) || (size > 300 * 1000 * 1000)) { // ncx bigger than 300 MB?
         logger.warn("GribCollectionBuilderFromIndex {}: invalid index size", gc.getName(), raf.getLocation());
         throw new IllegalStateException();   // temp debug
         //return false;
@@ -160,6 +160,7 @@ abstract class GribCollectionBuilderFromIndex {
 
       // directory always taken from proto, since ncx2 file may be moved, or in cache, etc  LOOK
       gc.directory = gc.setOrgDirectory(proto.getTopDir());
+      gc.indexVersion = proto.getVersion();
 
       int fsize = 0;
       int n = proto.getMfilesCount();

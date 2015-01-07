@@ -168,7 +168,7 @@ public class TestGrib1CoordsMatch {
   public void testRdavmDs083p2() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp.ncx3";
     File fileInCache = GribIndexCache.getExistingFileOrCache(filename);
-    TestGribCollections.Count count = read(fileInCache.getPath());
+    TestGribCollections.Count count = read( fileInCache.getPath());
 
     // that took 63 secs total, 1.471143 msecs per record total == 4624/33718/43248
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
@@ -428,7 +428,7 @@ public class TestGrib1CoordsMatch {
       ptime = gr.getParamTime(cust);
 
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
-      gdsHash = gr.getGDSsection().getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
+      gdsHash = gr.getGDS().hashCode();       // boolean useTableVersion, boolean intvMerge, boolean useCenter
     }
 
     @Override

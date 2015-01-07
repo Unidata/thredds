@@ -171,6 +171,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
       indexBuilder.setName(name);
       indexBuilder.setTopDir(dcm.getRoot());
+      indexBuilder.setVersion(currentVersion);
 
       // directory and mfile list
       File directory = new File(dcm.getRoot());

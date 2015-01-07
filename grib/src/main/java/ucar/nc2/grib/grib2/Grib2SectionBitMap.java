@@ -46,7 +46,7 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib2SectionBitMap {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2SectionBitMap.class);
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2SectionBitMap.class);
 
   private final long startingPosition;
   private final int bitMapIndicator;

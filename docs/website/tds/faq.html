@@ -23,6 +23,7 @@
 <ul>
   <li><a href="#CatalogURLs">How do I construct the URLs I find in a THREDDS Catalog?</a></li>
   <li><a href="#extraDataset">How do I eliminate the extra dataset level when using a Catalog Reference?</a></li>
+  <li><a href="#externalService">How do I provide an external service, one that is not provided by the TDS?</a></li>
 </ul>
 <h2>TDS</h2>
 <ul>
@@ -164,8 +165,8 @@
 <p><strong>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? </strong><br>
 </p>
 
-<p>A: Heres the general idea in the <a href="tutorial/BasicConfigCatalogs.html">tutorial</a> and the
-  <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM
+<p>A: Heres the general idea in the <a href="tutorial/CatalogPrimer.html#Constructing_an_access_URL">tutorial</a> and the
+  <a href="catalog/InvCatalogSpec.html#constructingURLs">catalog spec</a> docs. If you are using the CDM
   library, you can call </p>
 <pre>InvAccess.getUrlPath()</pre>
 
@@ -192,6 +193,22 @@
 
 <hr width="100%">
 
+<p><strong><a name="externalService"></a>Q: How do I provide an external service, one that is not provided by the TDS?</strong></p>
+<p>Make up your own service element, with an absolute URL for its base, in the configuration catalog. For example, suppose you want to use the THREDDS OPeNDAP server, and an external  WMS server:</p>
+<pre>
+&lt;?xml version="1.0" ?&gt;  
+&lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
+  &lt;service name=&quot;both&quot; serviceType=&quot;compound&quot; base=&quot;&quot;&gt;
+   &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
+   &lt;service name="extWMS" serviceType="WMS" base="http://myserver:8080/wms" /&gt;
+  &lt;/service&gt;
+
+  &lt;dataset name="SAGE III Ozone 2006-10-31" serviceName="both" urlPath="sage/20061031.nc" ID="20061031.nc"/&gt;
+&lt;/catalog&gt;
+</pre>
+<p>The problem is communicating the correct URL to your external WMS server.</p>
+<hr width="100%">
+<p>&nbsp;</p>
 <h2>TDS</h2>
 <h4><a name="throttleRequests"></a>Q: How do I keep client requests from overwhelming my server?</h4>
 

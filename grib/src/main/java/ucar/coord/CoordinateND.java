@@ -262,14 +262,17 @@ public class CoordinateND<T> {
         for (Object val : curr.getValues()) {
           boolean ok = curr.getIndex((CoordinateTime2D.Time2D) val, index2D);
           if (!ok)
-            System.out.println("HEY");
+            System.out.println("HEY");   // LOOK
           currValMap.put(val, index2D[1]); // want the time index
         }
 
         int count = 0;
         indexMap = new int[prev.getSize()];
         for (Object val : prev.getValues()) {
-          indexMap[count++] = currValMap.get(val); // where does this value fit in the curr coordinates?
+          if (currValMap.get(val) == null)
+            System.out.printf("HEY Time2DIndexMap %s%n", val); // LOOK
+          else
+            indexMap[count++] = currValMap.get(val); // where does this value fit in the curr coordinates?
         }
       }
 

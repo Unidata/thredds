@@ -29,7 +29,7 @@
 
     <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
     <update startup="true" trigger="allow"/>
-    <tdm rewrite="true" rescan="0 0/5 * * * ? *" trigger="allow"/>
+    <tdm rewrite="test" rescan="0 0/5 * * * ? *" />
     <gribConfig datasetTypes="Best LatestFile Files"/>
 
   </featureCollection>
@@ -47,7 +47,7 @@
         timePartition="file" />
 
     <update startup="test" trigger="allow"/>
-    <tdm rewrite="always" rescan="0 2,17,32,47 * * * ? *" trigger="allow"/>
+    <tdm rewrite="always" rescan="0 2,17,32,47 * * * ? *" />
 
     <gribConfig datasetTypes="TwoD LatestFile Files">
       <pdsHash>

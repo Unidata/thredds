@@ -194,11 +194,11 @@
     <datum>sea level</datum>
   </parameter>
   <parameter code="200">
-    <description>Entire atmosphere</description>
+    <description>Entire atmosphere (considered as a single layer)</description>
     <abbrev>entire_atmosphere</abbrev>
   </parameter>
   <parameter code="201">
-    <description>Entire ocean</description>
+    <description>Entire ocean (considered as a single layer)</description>
     <abbrev>entire_ocean</abbrev>
   </parameter>
   <parameter code="210">

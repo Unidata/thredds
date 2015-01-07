@@ -315,9 +315,9 @@ public class NcepHtmlScraper  {
     for (Param p : params)
       f.format("%3d:%s:%s [%s]%n", p.pnum, p.name, p.desc, p.unit); // 1:PRES:Pressure [Pa]
 
-    FileOutputStream fout = new FileOutputStream(dirOut + filename);
-    fout.write(f.toString().getBytes(CDM.utf8Charset));
-    fout.close();
+    try (FileOutputStream fout = new FileOutputStream(dirOut + filename)) {
+      fout.write(f.toString().getBytes(CDM.utf8Charset));
+    }
 
     if (show) System.out.printf("%s%n", f);
   }
@@ -326,7 +326,7 @@ public class NcepHtmlScraper  {
 
   public static void main(String[] args) throws IOException {
     File dir = new File(dirOut);
-    boolean result = dir.mkdirs();
+    if (!dir.mkdirs()) System.out.printf("mkdir %s failed %n", dir.getPath());
     NcepHtmlScraper scraper = new NcepHtmlScraper();
     scraper.parseTopDoc();
   }

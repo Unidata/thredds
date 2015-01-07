@@ -172,7 +172,7 @@ value R, the binary scale factor E and the decimal scale factor D by means of th
     // octet 4, 1st half (packing flag)
     int unusedbits = raf.read();
     if ((unusedbits & 192) != 0) {
-      logger.error("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing for {}", raf.getLocation());
+      logger.error("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing for {} len={}", raf.getLocation(), msgLength);
       throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
     }
 

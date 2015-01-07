@@ -1,36 +1,34 @@
 /*
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
- *  *
- *  *  Portions of this software were developed by the Unidata Program at the
- *  *  University Corporation for Atmospheric Research.
- *  *
- *  *  Access and use of this software shall impose the following obligations
- *  *  and understandings on the user. The user is granted the right, without
- *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  *  this software, and any derivative works thereof, and its supporting
- *  *  documentation for any purpose whatsoever, provided that this entire
- *  *  notice appears in all copies of the software, derivative works and
- *  *  supporting documentation.  Further, UCAR requests that the user credit
- *  *  UCAR/Unidata in any publications that result from the use of this
- *  *  software or in any product that includes this software. The names UCAR
- *  *  and/or Unidata, however, may not be used in any advertising or publicity
- *  *  to endorse or promote any products or commercial entity unless specific
- *  *  written permission is obtained from UCAR/Unidata. The user also
- *  *  understands that UCAR/Unidata is not obligated to provide the user with
- *  *  any support, consulting, training or assistance of any kind with regard
- *  *  to the use, operation and performance of this software nor to provide
- *  *  the user with any updates, revisions, new versions or "bug fixes."
- *  *
- *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -41,10 +39,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -308,7 +303,7 @@ public class GempakFileReader implements GempakConstants {
     for (int i = 0; i < numheaders; i++) {
       types[i] = DM_RINT(iread++);
     }
-    fileHeaderInfo = new ArrayList<DMFileHeaderInfo>();
+    fileHeaderInfo = new ArrayList<>();
 
     for (int i = 0; i < numheaders; i++) {
       DMFileHeaderInfo ghi = new DMFileHeaderInfo();
@@ -331,14 +326,14 @@ public class GempakFileReader implements GempakConstants {
     keys = new DMKeys();
     // read the row keys
     int num = dmLabel.krkeys;
-    List<Key> rkeys = new ArrayList<Key>(num);
+    List<Key> rkeys = new ArrayList<>(num);
     for (int i = 0; i < num; i++) {
       String key = DM_RSTR(dmLabel.kprkey + i);
       rkeys.add(new Key(key, i, ROW));
     }
     keys.kkrow = rkeys;
     num = dmLabel.kckeys;
-    List<Key> ckeys = new ArrayList<Key>(num);
+    List<Key> ckeys = new ArrayList<>(num);
     for (int i = 0; i < num; i++) {
       String key = DM_RSTR(dmLabel.kpckey + i);
       ckeys.add(new Key(key, i, COL));
@@ -370,7 +365,7 @@ public class GempakFileReader implements GempakConstants {
       return;
     }
     headers = new DMHeaders();
-    List<int[]> rowHeaders = new ArrayList<int[]>(dmLabel.krow);
+    List<int[]> rowHeaders = new ArrayList<>(dmLabel.krow);
     int istart = dmLabel.kprowh;
 
     // first word is a valid flag so we have to add 1 to size
@@ -385,7 +380,7 @@ public class GempakFileReader implements GempakConstants {
       istart += header.length;
     }
     headers.rowHeaders = rowHeaders;
-    List<int[]> colHeaders = new ArrayList<int[]>(dmLabel.kcol);
+    List<int[]> colHeaders = new ArrayList<>(dmLabel.kcol);
     istart = dmLabel.kpcolh;
     for (int i = 0; i < dmLabel.kcol; i++) {
       header = new int[dmLabel.kckeys + 1];
@@ -466,18 +461,15 @@ public class GempakFileReader implements GempakConstants {
     // read the part names
     for (int i = 0; i < numParts; i++) {
       partArray[i] = new DMPart();
-      String partName = DM_RSTR(iread++);
-      partArray[i].kprtnm = partName;
+      partArray[i].kprtnm = DM_RSTR(iread++);
     }
     // read the part header lengths
     for (int i = 0; i < numParts; i++) {
-      int headerLen = DM_RINT(iread++);
-      partArray[i].klnhdr = headerLen;
+      partArray[i].klnhdr = DM_RINT(iread++);
     }
     // read the part types
     for (int i = 0; i < numParts; i++) {
-      int partType = DM_RINT(iread++);
-      partArray[i].ktyprt = partType;
+      partArray[i].ktyprt = DM_RINT(iread++);
     }
     // get number of parameters/per part.
     for (int i = 0; i < numParts; i++) {
@@ -486,7 +478,7 @@ public class GempakFileReader implements GempakConstants {
     // read parameter names
     for (int i = 0; i < numParts; i++) {
       int numParms = partArray[i].kparms;
-      List<DMParam> parms = new ArrayList<DMParam>(numParms);
+      List<DMParam> parms = new ArrayList<>(numParms);
       for (int j = 0; j < numParms; j++) {
         DMParam dmp = new DMParam();
         parms.add(dmp);
@@ -521,10 +513,8 @@ public class GempakFileReader implements GempakConstants {
         dmp.kbits = DM_RINT(iread++);
       }
     }
-    parts = new ArrayList<DMPart>(numParts);
-    for (int i = 0; i < numParts; i++) {
-      parts.add(partArray[i]);
-    }
+    parts = new ArrayList<>(numParts);
+    parts.addAll(Arrays.asList(partArray).subList(0, numParts));
     for (DMPart part : parts) {
       if (part.ktyprt == MDRPCK) {
         part.packInfo = new PackingInfo(part);
@@ -684,11 +674,6 @@ public class GempakFileReader implements GempakConstants {
     public boolean kvmst;
 
     /**
-     * ieee flags
-     */
-    public boolean kieeet;
-
-    /**
      * Create a new DMLabel for the GempakFileReader
      */
     public DMLabel() {
@@ -710,7 +695,6 @@ public class GempakFileReader implements GempakConstants {
         mmmm = GempakUtil.swp4(mmmm);
         needToSwap = true;
       }
-      //System.out.println("needToSwap = "  + needToSwap);
       kmachn = mmmm;
       mvmst = (getByteOrder() == RandomAccessFile.BIG_ENDIAN);
       kvmst = ((kmachn == MTVAX) || (kmachn == MTULTX)
@@ -722,9 +706,7 @@ public class GempakFileReader implements GempakConstants {
       kmissd = IMISSD;
       smissd = RMISSD;
 
-
       String label = DM_RSTR(1, 28);
-      //System.out.println("label = " + label);
       if (!label.equals(DMLABEL)) {
         return false;
       }
@@ -762,7 +744,7 @@ public class GempakFileReader implements GempakConstants {
      * @return a String representation of this.
      */
     public String toString() {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
 
       buf.append("GEMPAK file label:\n");
       buf.append("\tVersion: " + kversn + "\n");
@@ -787,6 +769,7 @@ public class GempakFileReader implements GempakConstants {
       buf.append("\tinteger missing value: " + kmissd + "\n");
       buf.append("\tfloat missing value: " + smissd + "\n");
       buf.append("\tswap? " + needToSwap);
+      buf.append("\tswap flags: " + kvmst);
       return buf.toString();
 
     }
@@ -825,14 +808,7 @@ public class GempakFileReader implements GempakConstants {
      * @return a String representation of this object.
      */
     public String toString() {
-      StringBuffer buf = new StringBuffer();
-      buf.append("Name = ");
-      buf.append(kfhnam);
-      buf.append("; length = ");
-      buf.append(kfhlen);
-      buf.append("; type = ");
-      buf.append(kfhtyp);
-      return buf.toString();
+      return "Name = " + kfhnam + "; length = " + kfhlen + "; type = " + kfhtyp;
     }
   }
 
@@ -880,7 +856,6 @@ public class GempakFileReader implements GempakConstants {
      * packing info
      */
     public PackingInfo packInfo = null;
-    ;
 
     /**
      * Default ctor
@@ -894,7 +869,7 @@ public class GempakFileReader implements GempakConstants {
      * @return a String representation of this object.
      */
     public String toString() {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       buf.append("Part Name = ");
       buf.append(kprtnm);
       buf.append("; header length = ");
@@ -907,8 +882,8 @@ public class GempakFileReader implements GempakConstants {
       buf.append(kwordp);
       buf.append("\nParameters: ");
       if ((params != null) && !params.isEmpty()) {
-        for (int i = 0; i < params.size(); i++) {
-          buf.append("\n  " + params.get(i));
+        for (DMParam param : params) {
+          buf.append("\n  ").append(param);
         }
       }
       return buf.toString();
@@ -952,16 +927,7 @@ public class GempakFileReader implements GempakConstants {
      * @return a String representation of this object.
      */
     public String toString() {
-      StringBuffer buf = new StringBuffer();
-      buf.append("Param name = ");
-      buf.append(kprmnm);
-      buf.append("; scale = ");
-      buf.append(kscale);
-      buf.append("; offset = ");
-      buf.append(koffst);
-      buf.append("; bits = ");
-      buf.append(kbits);
-      return buf.toString();
+      return "Param name = " + kprmnm + "; scale = " + kscale + "; offset = " + koffst + "; bits = " + kbits;
     }
   }
 
@@ -1107,7 +1073,7 @@ public class GempakFileReader implements GempakConstants {
      * @return a String representation of this object.
      */
     public String toString() {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       buf.append("\nKeys:\n");
       buf.append("  row keys = ");
       for (Key key : keys.kkrow) {
@@ -1218,8 +1184,7 @@ public class GempakFileReader implements GempakConstants {
     if ((fileHeaderInfo == null) || fileHeaderInfo.isEmpty()) {
       return null;
     }
-    for (Iterator iter = fileHeaderInfo.iterator(); iter.hasNext(); ) {
-      DMFileHeaderInfo fhi = (DMFileHeaderInfo) iter.next();
+    for (DMFileHeaderInfo fhi : fileHeaderInfo) {
       if (name.equals(fhi.kfhnam)) {
         return fhi;
       }
@@ -1349,8 +1314,7 @@ public class GempakFileReader implements GempakConstants {
    */
   public DMPart getPart(String name) {
     if ((parts != null) && !parts.isEmpty()) {
-      for (int i = 0; i < parts.size(); i++) {
-        DMPart part = parts.get(i);
+      for (DMPart part : parts) {
         String partName = part.kprtnm;
         if (partName.equals(name)) {
           return part;
@@ -1382,7 +1346,7 @@ public class GempakFileReader implements GempakConstants {
       return ipoint;
     }
     // gotta subtract 1 because parts are 1 but List is 0 based
-    DMPart part = (DMPart) parts.get(iprt - 1);
+    DMPart part = parts.get(iprt - 1);
     // check for valid data type
     if ((part.ktyprt != MDREAL) && (part.ktyprt != MDGRID)
             && (part.ktyprt != MDRPCK)) {
@@ -1610,7 +1574,7 @@ public class GempakFileReader implements GempakConstants {
     ipoint = dmLabel.kpdata + (irow - 1) * dmLabel.kcol * dmLabel.kprt
             + (icol - 1) * dmLabel.kprt + (iprt - 1);
 
-    float[] rdata = null;
+    float[] rdata;
     int[] header = null;
     int istart = DM_RINT(ipoint);
     if (istart == 0) {
@@ -1667,7 +1631,7 @@ public class GempakFileReader implements GempakConstants {
   public float[] DM_UNPK(DMPart part, int[] ibitst) {
     int nparms = part.kparms;
     int nwordp = part.kwordp;
-    int npack = (int) (ibitst.length - 1) / nwordp + 1;
+    int npack = (ibitst.length - 1) / nwordp + 1;
     if (npack * nwordp != ibitst.length) {
       //logError("number of packed records not correct");
       // System.out.println("number of packed records not correct: "
@@ -1683,9 +1647,7 @@ public class GempakFileReader implements GempakConstants {
       //  Move bitstring into internal words.  TODO: necessary?
       //
       int[] jdata = new int[nwordp];
-      for (int i = 0; i < nwordp; i++) {
-        jdata[i] = ibitst[ii + i];
-      }
+      System.arraycopy(ibitst, ii, jdata, 0, nwordp);
 
       //
       //  Extract each data value.

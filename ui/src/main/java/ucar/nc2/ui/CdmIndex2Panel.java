@@ -294,17 +294,6 @@ public class CdmIndex2Panel extends JPanel {
   }
 
   public void showInfo(Formatter f) {
-    if (indexFile == null) return;
-    f.format("indexFile=%s%n", indexFile);
-    BasicFileAttributes attr = null;
-    try {
-      attr = Files.readAttributes(indexFile, BasicFileAttributes.class);
-      f.format("  size=%d lastModifiedTime=%s lastAccessTime=%s creationTime=%s%n", attr.size(), attr.lastModifiedTime(), attr.lastAccessTime(), attr.creationTime());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    f.format("%n");
-
     if (gc == null) return;
     gc.showIndex(f);
     f.format("%n");
@@ -730,18 +719,11 @@ public class CdmIndex2Panel extends JPanel {
       this.group = g;
       this.type = type;
 
-      /* int nvars = 0;
-      int total = 0;
-      avgDensity = 0;
       for (GribCollectionImmutable.VariableIndex vi : group.getVariables()) {
-       // vi.calcTotalSize();
-       // total += vi.totalSize;
-       // nrecords += vi.nrecords;
-       // avgDensity += vi.density;
-        nvars++;
+         nrecords += vi.getNrecords();
+         ndups += vi.getNdups();
+         nmissing += vi.getNmissing();
       }
-      if (nvars != 0) avgDensity /= nvars;
-      density = (total == 0) ? 0 : ((float) nrecords) / total;  */
     }
 
     void clear() {

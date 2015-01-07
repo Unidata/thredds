@@ -1651,7 +1651,7 @@ public class V5DStruct {
           delta = VertArgs[1] - VertArgs[0];
         }
         else if (i > 1) {
-          if (delta != (VertArgs[i] - VertArgs[i - 1])) {
+          if (Float.compare(delta, VertArgs[i] - VertArgs[i - 1]) != 0) {  // LOOK float compare
             VerticalSystem = 2;
           }
         }

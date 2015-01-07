@@ -266,7 +266,8 @@ public class URLExtracter {
 
     File dir = new File(dirpath);
     if (!dir.exists())
-      dir.mkdirs();
+      if (!dir.mkdirs())
+        System.out.printf("mkdirs failed on %s%n", dir);
 
     URLExtracter ue = new URLExtracter();
     ue.extractJPG(startURL, 1);

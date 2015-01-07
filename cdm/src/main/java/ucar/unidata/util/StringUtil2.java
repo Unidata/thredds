@@ -340,6 +340,10 @@ public class StringUtil2 {
     return replace(x, htmlIn, htmlOut);
   }
 
+  static public String unquoteHtmlContent(String x) {
+    return unreplace(x, htmlOut, htmlIn);
+  }
+
   /**
    * Replace special characters with entities for XML attributes.
    * special: '&', '<', '>', '\'', '"', '\r', '\n'

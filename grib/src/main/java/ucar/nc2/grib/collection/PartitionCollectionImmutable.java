@@ -264,17 +264,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       // acquire or construct GribCollection - caller must call gc.close() when done
       public GribCollectionImmutable getGribCollection() throws IOException {
-        GribCollectionImmutable result;
         String path = getIndexFilenameInCache();
-
-        if (GribCdmIndex.gribCollectionCache != null) {
-                    // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
-          result = (GribCollectionImmutable) GribCdmIndex.gribCollectionCache.acquire(partitionCollectionFactory, path, path, -1, null, this);
-        } else {
-                    // String location, int buffer_size, CancelTask cancelTask, Object iospMessage
-          result = (GribCollectionImmutable) partitionCollectionFactory.open(path, -1, null, this);
-        }
-        return result;
+        return GribCdmIndex.acquireGribCollection(partitionCollectionFactory, path, path, -1, null, this);
       }
 
       @Override

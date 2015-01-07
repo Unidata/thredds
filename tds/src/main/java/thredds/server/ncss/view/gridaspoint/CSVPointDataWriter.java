@@ -324,7 +324,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 						printWriter.print(p.z);
             printWriter.print("," );
 
-						if(actualLevel != -9999.9) {//Print the actual level LOOK WTF ??
+						if (Double.compare(actualLevel, -9999.9) != 0) { //Print the actual level LOOK WTF ??
               printWriter.print(actualLevel);
               printWriter.print(",");
             }

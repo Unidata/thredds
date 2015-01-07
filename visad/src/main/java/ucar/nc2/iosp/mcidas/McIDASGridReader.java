@@ -1,34 +1,34 @@
 /*
- * Copyright 1998-2013 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
  *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
@@ -48,6 +48,7 @@ import java.util.*;
 
 /**
  * Read grid(s) from a McIDAS grid file
+ *
  * @author dmurray
  */
 public class McIDASGridReader {
@@ -75,8 +76,7 @@ public class McIDASGridReader {
   /**
    * hashMap of GridDefRecords
    */
-  private HashMap<String, McGridDefRecord> gdsMap = new HashMap<String,
-          McGridDefRecord>();
+  private HashMap<String, McGridDefRecord> gdsMap = new HashMap<>();
 
   /**
    * maximum number of grids in a file
@@ -177,7 +177,7 @@ public class McIDASGridReader {
     // read the fileheader
     String label = rf.readString(32);
     // GEMPAK too closely like McIDAS
-    if (label.indexOf("GEMPAK DATA MANAGEMENT FILE") >= 0) {
+    if (label.contains("GEMPAK DATA MANAGEMENT FILE")) {
       logError("label indicates this is a GEMPAK grid");
       return false;
     } else { // check that they are all printable ASCII chars
@@ -192,7 +192,7 @@ public class McIDASGridReader {
 
     //System.out.println("label = " + label);
 
-    int project = readInt(8);
+    // int project = readInt(8);
     //System.out.println("Project = " + project);
 
     int date = readInt(9);
@@ -277,10 +277,10 @@ public class McIDASGridReader {
    * @param gr the grid record
    * @return the data
    */
-  public float[] readGrid(McIDASGridRecord gr) {
+  public float[] readGrid(McIDASGridRecord gr) throws IOException {
 
-    float[] data = null;
-    try {
+    float[] data;
+    //try {
       int te = (gr.getOffsetToHeader() + 64) * 4;
       int rows = gr.getRows();
       int cols = gr.getColumns();
@@ -289,10 +289,8 @@ public class McIDASGridReader {
       float scale = (float) gr.getParamScale();
 
       data = new float[rows * cols];
-      rf.order(needToSwap
-              ? rf.LITTLE_ENDIAN
-              : rf.BIG_ENDIAN);
-      int n = 0;
+      rf.order(needToSwap ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN);
+      // int n = 0;
       // store such that 0,0 is in lower left corner...
       for (int nc = 0; nc < cols; nc++) {
         for (int nr = 0; nr < rows; nr++) {
@@ -303,10 +301,10 @@ public class McIDASGridReader {
                   : ((float) temp) / scale;
         }
       }
-      rf.order(rf.BIG_ENDIAN);
-    } catch (Exception esc) {
-      System.out.println(esc);
-    }
+      rf.order(RandomAccessFile.BIG_ENDIAN);
+    //} catch (Exception esc) {
+    //  System.out.println(esc);
+    //}
     return data;
   }
 

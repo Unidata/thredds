@@ -295,9 +295,11 @@ public class ViewerServiceImpl implements ViewerService {
       // look through all access for {serviceName}
       for (InvAccess acc : access) {
         String sname = "{" + acc.getService().getServiceType() + "}";
-        if (org.contains(sname))
-          return StringUtil2.substitute(org, sname, acc
-                  .getStandardUri().toString());
+        if (org.contains(sname)) {
+          URI uri = acc.getStandardUri();
+          if (uri != null)
+            return StringUtil2.substitute(org, sname, uri.toString());
+        }
       }
 
       String sname = "{url}";

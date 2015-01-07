@@ -75,8 +75,8 @@ public class Grib1Variable {
   public Grib1Variable(Grib1Customizer cust, Grib1Record gr, int gdsHashOverride, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
     this.cust = cust;
     this.pds = gr.getPDSsection();
-    this.gds = gr.getGDSsection().getGDS();
-    this.gdsHash = gdsHashOverride != 0 ? gdsHashOverride : gr.getGDSsection().getGDS().hashCode();
+    this.gds = gr.getGDS();
+    this.gdsHash = gdsHashOverride != 0 ? gdsHashOverride : gr.getGDS().hashCode();
     this.useTableVersion = useTableVersion;
     this.intvMerge = intvMerge;
     this.useCenter = useCenter;
@@ -87,17 +87,16 @@ public class Grib1Variable {
    *
    * @param cust              customizer
    * @param pds               pds section
-   * @param gdssBytes         raw bytes of the Grib1SectionGridDefinition
+   * @param gds               the group gds
    * @param useTableVersion   use pdss.getTableVersion(), default is false
    * @param intvMerge         put all intervals together, default true
    * @param useCenter         use center id when param no > 127, default is false
    */
-  public Grib1Variable(Grib1Customizer cust, Grib1SectionProductDefinition pds, byte[] gdssBytes, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
+  public Grib1Variable(Grib1Customizer cust, Grib1SectionProductDefinition pds, Grib1Gds gds, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
     this.cust = cust;
     this.pds = pds;
-    Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(gdssBytes);
-    this.gds = gdss.getGDS();
-    this.gdsHash = gds.hashCode;             // this requires no overridden gds hashCodes have made it into the ncx3
+    this.gds = gds;
+    this.gdsHash = gds.hashCode();             // this assumes no overridden gds hashCodes have made it into the ncx3
     this.useTableVersion = useTableVersion;
     this.intvMerge = intvMerge;
     this.useCenter = useCenter;

@@ -129,6 +129,10 @@
             <version>2.16</version>
           </dependency>
         </dependencies -->
+        <configuration>
+          <skip>${skipTests}</skip>
+          <argLine>-Xmx2g -Dfile.encoding=UTF-8</argLine>
+        </configuration>
       </plugin>
 
       <plugin>

@@ -1,7 +1,7 @@
 package ucar.coord;
 
+import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
@@ -39,7 +39,7 @@ public class TestCoordinate implements Coordinate {
       case vert:
         List<VertCoord.Level> vert = new ArrayList<>(nvals);
          for (int i=0; i<nvals; i++) vert.add(new VertCoord.Level((double) (i+1), (double) (i+2), true));
-        return new CoordinateVert(1, Grib2Utils.getLevelUnit(1), vert);
+        return new CoordinateVert(1, new GribLevelType(11, "m", null, true), vert);  // random vert unit
      }
     return null;
   }

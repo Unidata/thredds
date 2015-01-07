@@ -76,7 +76,7 @@ public class KmaLocalTables extends LocalTables {
         String unit = (String) record.get(5);
 
         Grib2Parameter s = new Grib2Parameter(disc,cat,param,name,unit,null,null);
-        local.put(makeHash(disc,cat,param), s);
+        local.put(makeParamId(disc, cat, param), s);
       }
 
     } catch (IOException ioe) {

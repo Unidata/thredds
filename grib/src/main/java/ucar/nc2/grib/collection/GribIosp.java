@@ -862,6 +862,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     if (v2.getSPobject() instanceof Time2Dinfo) {
       Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
       Array data = makeLazyCoordinateData(v2, info);
+      assert data != null;
       Section sectionFilled = Section.fill(section, v2.getShape());
       return data.sectionNoReduce(sectionFilled.getRanges());
     }

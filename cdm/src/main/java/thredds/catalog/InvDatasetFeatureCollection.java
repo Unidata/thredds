@@ -51,6 +51,8 @@ import ucar.nc2.util.log.LoggerFactoryImpl;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -76,10 +78,12 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static protected final String VARIABLES = "?metadata=variableMap";
   static protected final String FILES = "files";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
+  static protected final String Default_Services = "DefaultServices";
 
   static private String catalogServletName = "/catalog";            // LOOK
   static protected String context = "/thredds";                     // LOOK
   static private String cdmrFeatureServiceUrlPath = "/cdmrFeature"; // LOOK
+
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
   static private org.slf4j.Logger initLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class.getName() + ".catalogInit");
 
@@ -215,29 +219,45 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return config.collectionName;
   }
 
+  // CollectionUpdater sends this message asynchronously
   @Override
-  // DatasetCollectionManager was changed asynchronously
   public void sendEvent(CollectionUpdateType type) {
     try {
       update(type);
     } catch (IOException e) {
       logger.error("Error processing event", e);
     }
-
-/*     if (event == CollectionUpdateListener.TriggerType.updateNocheck)
-
-    else if (event == CollectionUpdateListener.TriggerType.update)
-      update(CollectionManager.Force.always);
-
-    else if (event == CollectionUpdateListener.TriggerType.resetProto)
-      updateProto();  */
   }
 
-  /**
-   * update the proto dataset being used.
-   * called by CollectionUpdater via handleCollectionEvent, so in a quartz scheduler thread
-   */
-  abstract protected void updateProto();
+  public void showStatus(Formatter f) {
+    try {
+      checkState();
+      _showStatus(f, false);
+
+    } catch (Throwable t) {
+      StringWriter sw = new StringWriter(5000);
+      t.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
+    }
+  }
+
+  public String showStatusShort() {
+    Formatter f = new Formatter();
+    try {
+      checkState();
+      _showStatus(f, true);
+
+    } catch (Throwable t) {
+      StringWriter sw = new StringWriter(5000);
+      t.printStackTrace(new PrintWriter(sw));
+      f.format(sw.toString());
+    }
+
+    return f.toString();
+  }
+
+  protected void _showStatus(Formatter f, boolean summaryOnly) throws IOException {
+  }
 
   // localState is synched, may be directly changed
   abstract protected void updateCollection(State localState, CollectionUpdateType force);
@@ -268,7 +288,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected void firstInit() {
     this.orgService = getServiceDefault();
     if (this.orgService == null) {
-      this.orgService = makeServiceDefault();
+      this.orgService = makeDefaultService();
     }
     this.virtualService = makeServiceVirtual(this.orgService);
     this.cdmrService = makeCdmrFeatureService(); // WTF ??
@@ -371,10 +391,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
-  protected InvService makeServiceDefault() {
+  protected InvService makeDefaultService() {
 
     // LOOK need (thredds.server.config.AllowableService)
-    InvService result = new InvService("Default", ServiceType.COMPOUND.toString(), null, null, null);
+    InvService result = new InvService(Default_Services, ServiceType.COMPOUND.toString(), null, null, null);
     result.addService(InvService.opendap);
     result.addService(InvService.fileServer);
     result.addService(InvService.wms);
