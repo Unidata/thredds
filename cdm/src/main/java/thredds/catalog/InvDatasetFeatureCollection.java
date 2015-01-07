@@ -76,9 +76,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
   static protected final String LATEST_SERVICE = "latest";
   static protected final String VARIABLES = "?metadata=variableMap";
-  static protected final String FILES = "files";
+  static protected final String FILES = "FILES";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
   static protected final String Default_Services = "DefaultServices";
+  static protected final String Download_Services = InvService.fileServer.getName();
 
   static private String catalogServletName = "/catalog";            // LOOK
   static protected String context = "/thredds";                     // LOOK
@@ -407,7 +408,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return result;
   }
 
-  protected InvService makeServiceVirtual(InvService org) {
+  protected InvService makeDownloadService() {
+     return InvService.fileServer;
+   }
+
+   protected InvService makeServiceVirtual(InvService org) {
     if (org.getServiceType() != ServiceType.COMPOUND) return org;
 
     InvService result = new InvService(Virtual_Services, ServiceType.COMPOUND.toString(), null, null, null);
@@ -490,7 +495,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     }
 
     //sort copy of files
-    List<String> sortedFilenames = new ArrayList<String>(filenames);
+    List<String> sortedFilenames = new ArrayList<>(filenames);
     Collections.sort(sortedFilenames, String.CASE_INSENSITIVE_ORDER);
 
     // if not increasing (i.e. we WANT newest file listed first), reverse sort

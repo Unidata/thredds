@@ -68,9 +68,9 @@ public class InvService {
   private ServiceType type = null;
 
   private java.net.URI uri = null;
-  private List<InvService> nestedServices = new ArrayList<InvService>();
-  private List<InvProperty> properties = new ArrayList<InvProperty>();
-  private List<InvProperty> roots = new ArrayList<InvProperty>(); // deprecated
+  private List<InvService> nestedServices = new ArrayList<>();
+  private List<InvProperty> properties = new ArrayList<>();
+  private List<InvProperty> roots = new ArrayList<>(); // deprecated
 
   private StringBuilder log = new StringBuilder();
 
@@ -155,6 +155,7 @@ public class InvService {
    * Get dataset roots.
    *
    * @return List of InvProperty. May be empty, may not be null.
+   * @deprecated put roots only in the catalog
    */
   public java.util.List<InvProperty> getDatasetRoots() {
     return roots;
@@ -186,16 +187,43 @@ public class InvService {
     return null;
   }
 
-  /**
-   * string representation
-   */
+
+  @Override
   public String toString() {
     return "name:(" + name + ") type:(" + type + ") base:(" + base + ") suffix:(" + suffix + ")";
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    InvService that = (InvService) o;
+
+    if (!base.equals(that.base)) return false;
+    if (!name.equals(that.name)) return false;
+    if (nestedServices != null ? !nestedServices.equals(that.nestedServices) : that.nestedServices != null) return false;
+    if (properties != null ? !properties.equals(that.properties) : that.properties != null) return false;
+    if (suffix != null ? !suffix.equals(that.suffix) : that.suffix != null) return false;
+    if (!type.equals(that.type)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = name.hashCode();
+    result = 31 * result + base.hashCode();
+    result = 31 * result + (suffix != null ? suffix.hashCode() : 0);
+    result = 31 * result + type.hashCode();
+    result = 31 * result + (nestedServices != null ? nestedServices.hashCode() : 0);
+    result = 31 * result + (properties != null ? properties.hashCode() : 0);
+    return result;
+  }
+
   /**
    * InvServices with same values are equal
-   */
+   *
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -206,7 +234,7 @@ public class InvService {
 
   /**
    * Override Object.hashCode() to implement equals.
-   */
+   *
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
@@ -220,9 +248,9 @@ public class InvService {
       hashCode = result;
     }
     return hashCode;
-  }
+  }  */
 
-  private volatile int hashCode = 0; // Bloch, item 8
+  // private volatile int hashCode = 0; // Bloch, item 8
 
   /**
    * @return debugging info
