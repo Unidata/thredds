@@ -65,7 +65,8 @@ export CATALINA_OPTS</pre>
   <li>Make the following modifications to <strong>${tomcat_home}/webapps/manager/WEB-INF/web.xml</strong>:</li>
   <ol>
     <li>Make sure the manager is only <a href="../tutorial/examples/tomcatManagerSSL.html">available via SSL</a> by adding a user-data-constraint with a
-      transport-guarantee of CONFIDENTIAL inside the security-constraint element. </li>
+      transport-guarantee of CONFIDENTIAL inside the security-constraint element.</li>
+    <li>DO NOT ENABLE THE MANAGER WITHOUT RESTRICTING TO SSL ACCESS ONLY. (!)</li>
   </ol>
   <li><a href="../tutorial/Security.html#unused">Remove any unused applications</a> from ${tomcat_home}/webapps.</li>
   <li>(optional) <a href="../../netcdf-java/reference/netcdf4Clibrary.html">Build netCDF-C library</a> on your server. Standard install directory is <strong>/opt/netcdf.</strong></li>

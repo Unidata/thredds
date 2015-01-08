@@ -338,6 +338,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * This shuts down any background threads in order to get a clean process shutdown.
    */
   static public void shutdown() {
+    if (fileCache != null) fileCache.clearCache(true);
     FileCache.shutdown();
   }
 

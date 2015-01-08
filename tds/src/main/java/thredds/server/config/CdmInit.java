@@ -282,14 +282,22 @@ public class CdmInit implements InitializingBean,  DisposableBean{
 
   //should be called when tomcat exits
   public void destroy() throws Exception {
+    // background threads
     if (timer != null) timer.cancel();
-    FileCache.shutdown();              // this handles all instances of FileCache
+    FileCache.shutdown();              // this handles background threads for all instances of FileCache
     if (aggCache != null) aggCache.exit();
     if (gribCache != null) gribCache.exit();
     if (cdmrCache != null) cdmrCache.exit();
-    //if (cacheManager != null) cacheManager.close();
-    thredds.inventory.bdb.MetadataManager.closeAll();
+    thredds.inventory.bdb.MetadataManager.closeAll(); // LOOK used ??
     CollectionUpdater.INSTANCE.shutdown();
+
+    // open files caches
+    RandomAccessFile.shutdown();
+    NetcdfDataset.shutdown();
+
+    // memory caches
+    GribCdmIndex.shutdown();
+
     startupLog.info("CdmInit shutdown");
     MDC.clear();
   }

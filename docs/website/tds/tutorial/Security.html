@@ -295,8 +295,15 @@
     <li>The Tomcat documentation includes a section on <a href="http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore">importing
       your certificate into a keystore</a> file.
     </li>
-    <li>Tomcat uses the <code>keystore</code> file for SSL transactions.</li>
+    <li>Tomcat uses the <code>keystore</code> file for SSL transactions. Example:</li>
   </ul>
+  <pre> &lt;Connector protocol=&quot;HTTP/1.1&quot; port=&quot;8443&quot; maxThreads=&quot;200&quot; 
+    scheme=&quot;https&quot; secure=&quot;true&quot; SSLEnabled=&quot;true&quot;
+    keystoreFile=&quot;${user.home}/.keystore&quot; 
+    keystorePass=&quot;changeit&quot;
+    clientAuth=&quot;false&quot; sslProtocol=&quot;TLS&quot;/&gt;</pre>
+  
+
 
   <a id="enablingSSL" class="example">
     Enabling SSL in Tomcat
@@ -342,7 +349,7 @@
     &lt;/auth-constraint&gt;
     <strong>&lt;user-data-constraint&gt;
       &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-      &lt;/user-data-constraint&gt;</strong>
+    &lt;/user-data-constraint&gt;</strong>
   &lt;/security-constraint&gt;
 </pre>
 
