@@ -40,8 +40,38 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>clcommon</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>grib</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>httpservices</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>opendap</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>visadCdm</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
+    </dependency>
+
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
