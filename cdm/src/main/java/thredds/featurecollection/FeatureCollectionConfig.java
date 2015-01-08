@@ -406,7 +406,7 @@ public class FeatureCollectionConfig {
   // GribConfig
 
   static private final Set<GribDatasetType> defaultGribDatasetTypes =
-          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Latest));
+          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.TwoD, GribDatasetType.Best, GribDatasetType.Files, GribDatasetType.Latest));
 
   static public boolean useGenTypeDef = false, useTableVersionDef = false, intvMergeDef = true, useCenterDef = false;
 

@@ -32,6 +32,6 @@
 
     <!-- example of catalog Reference -->
     <catalogRef xlink:href="http://www.unidata.ucar.edu/projects/thredds/xml/InvCatalog5.part2.xml"
-                xlink:title="ETA data"/>
+                xlink:title="ETA data" name=""/>
   </dataset>
 </catalog>

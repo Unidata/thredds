@@ -79,6 +79,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static protected final String FILES = "files";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
   static protected final String Default_Services = "DefaultServices";
+  static protected final String Download_Services = InvService.fileServer.getName();
 
   static private String catalogServletName = "/catalog";            // LOOK
   static protected String context = "/thredds";                     // LOOK
@@ -407,7 +408,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return result;
   }
 
-  protected InvService makeServiceVirtual(InvService org) {
+  protected InvService makeDownloadService() {
+     return InvService.fileServer;
+   }
+
+   protected InvService makeServiceVirtual(InvService org) {
     if (org.getServiceType() != ServiceType.COMPOUND) return org;
 
     InvService result = new InvService(Virtual_Services, ServiceType.COMPOUND.toString(), null, null, null);
@@ -490,7 +495,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     }
 
     //sort copy of files
-    List<String> sortedFilenames = new ArrayList<String>(filenames);
+    List<String> sortedFilenames = new ArrayList<>(filenames);
     Collections.sort(sortedFilenames, String.CASE_INSENSITIVE_ORDER);
 
     // if not increasing (i.e. we WANT newest file listed first), reverse sort
@@ -580,7 +585,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     String name = (pos > -1) ? matchPath.substring(pos + 1) : "";
 
     // this assumes that these are files. also might be remote datasets from a catalog
-    if (type.equals(FILES)) {
+    if (type.equalsIgnoreCase(FILES)) {
       if (topDirectory == null) return null;
 
       String filename = topDirectory + (topDirectory.endsWith("/") ? "" : "/") + name;
@@ -610,7 +615,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     String name = (pos > -1) ? matchPath.substring(pos + 1) : "";
 
     // this assumes that these are files. also might be remote datasets from a catalog
-    if (type.equals(FILES)) {
+    if (type.equalsIgnoreCase(FILES)) {
       if (topDirectory == null) return null;
 
       String filename = new StringBuilder(topDirectory)

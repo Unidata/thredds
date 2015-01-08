@@ -454,7 +454,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     String hasName = StringUtil2.replace(name, ' ', "_") + "_";
 
     try {
-      if (wantType.equals(FILES)) {
+      if (wantType.equalsIgnoreCase(FILES)) {
         NetcdfDataset ncd = getNetcdfDataset(matchPath);
         return ncd == null ? null : new ucar.nc2.dt.grid.GridDataset(ncd);
 

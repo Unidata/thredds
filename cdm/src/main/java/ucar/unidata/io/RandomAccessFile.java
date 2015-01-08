@@ -230,6 +230,10 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     if (cache != null) cache.eject(location);
   }
 
+  static public void shutdown() {
+    if (cache != null) cache.clearCache(true);
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**

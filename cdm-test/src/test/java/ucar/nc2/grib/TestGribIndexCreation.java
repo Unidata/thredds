@@ -70,48 +70,6 @@ public class TestGribIndexCreation {
 
   /////////////////////////////////////////////////////////
 
-  // @Test
-  public void testFireWx() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("namFirewx", "test/namFirewx", FeatureCollectionType.GRIB2,
- //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
-            "B:/lead/namFirewx/.*gbx9",  null,
-            null, null, "file", null);
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-  }
-
-  // @Test
-  public void testRadarNWS() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("radarNWS", "test/radarNWS", FeatureCollectionType.GRIB1,
- //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
-            "B:/lead/radar/**/.*gbx9",  null,
-            null, null, "directory", null);
-    config.gribConfig.setOption("timeUnit", "1 minute");
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-  }
-
-  // @Test
-  public void testWwwCoastalAlaska() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("Coastal_Alaska", "test/Coastal_Alaska", FeatureCollectionType.GRIB2,
- //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
-            "B:/idd/WWW/Coastal_Alaska/.*gbx9",
-            null, null, null, "file", null);
-    // config.gribConfig.addGdsHash("-804803647", "-804803709");
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
-  }
-
-  /////////////////////////////////////////////////////////////
-
 
   @Test
   public void testGdsHashChange() throws IOException {
@@ -267,76 +225,6 @@ public class TestGribIndexCreation {
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-
-  //          <collection name = "ds626.0.pl.3hr" spec="/glade/p/rda/data/ds626.0/e20c.oper.an.pl.3hr/**/.*grb$"
-  //                    dateFormatMark="#regn80#...yyyyMMddHH"
-  //                    timePartition="year" />
-
-  // @Test
-  public void testTimePartitionWithSubdirs() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds626.0", "test/ds626.0", FeatureCollectionType.GRIB1,
-            "B:/rdavm/ds626.0/**/.*gbx9", null, "#regn80#...yyyyMMddHH", null, "year", null);
-    config.gribConfig.unionRuntimeCoord = true;
-    System.out.printf("config = %s%n", config);
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  // @Test
-  public void testCfsr() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test/ds093.1", FeatureCollectionType.GRIB2,
-            "B:/rdavm/ds093.1/data/.*gbx9", null, null, null, null, null);
-    // config.gribConfig.unionRuntimeCoord = true;
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  // @Test
-  public void testCfsr2() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.1", "test/ds094.1", FeatureCollectionType.GRIB2,
-            "B:/rdavm/ds094.1/2011/.*gbx9", null, null, null, null, null);
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  // @Test
-  public void testGsdHrrSurface() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("GSD_HRRR_CONUS_3km_surface", "test/GSD_HRRR_CONUS_3km_surface", FeatureCollectionType.GRIB2,
-            "B:/idd/GSD_HRRR_CONUS_3km_surface/.*gbx9", null, null, null, "file", null);
-    config.gribConfig.setOption("timeUnit", "1 minute");
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  // @Test
-  public void testRtma() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("RTMA-CONUS_2p5km", "test/RTMA-CONUS_2p5km", FeatureCollectionType.GRIB2,
-            "B:/idd/RTMA-CONUS_2p5km/.*gbx9", null, null, null, "file", null);
-    // config.gribConfig.setOption("timeUnit", "1 minute");
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }

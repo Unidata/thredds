@@ -69,6 +69,8 @@ import java.util.*;
  *  path/partitionName/dataset/groupName         // partition, multiple group
  *  path/partitionName/../partitionName/dataset/groupName
  *
+ * files
+ *  path/partitionName/../partitionName/FILES/filename
  * @author caron
  * @since 4/15/11
  */
@@ -165,7 +167,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return collectionName;
   }
 
-  private InvDatasetImpl makeDatasetFromCollection( boolean isTop, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
+  private InvDatasetImpl makeDatasetFromCollection( boolean isTop, InvCatalogImpl parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
     // StateGrib localState = (StateGrib) state;
 
     String dsName = isTop ? getName() : makeCollectionShortName(fromGc.getName());
@@ -224,8 +226,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         makeDatasetsFromGroups(tp, groups, isSingleGroup);
 
-      } else {
-        tmi.setServiceName(Virtual_Services);
+      } else { // not a partition
+
+        // tmi.setServiceName(this.orgService.getName());
         result.setUrlPath(pathStart);
 
         if (ds.getType() == GribCollectionImmutable.Type.SRC) {
@@ -240,6 +243,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
 
         makeDatasetsFromGroups(result, groups, isSingleGroup);
+
+        if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
+          String filesPath = pathStart + "/" + FILES;
+          InvCatalogRef filesRef = new InvCatalogRef(this, FILES, getCatalogHref(filesPath));
+          filesRef.finish();
+          addFileDatasets(parentCatalog, result, fromGc, config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
+        }
+
       }
 
     }
@@ -311,6 +322,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     }
 
+    // remove the urlPath on the parent if multiple groups;
+    // cannot get a dataset with multiple groups in it
+    if (!isSingleGroup) {
+      parent.setUrlPath(null);
+    }
+
   }
 
   private InvDatasetImpl makeDatasetFromPartition(InvDatasetImpl parent, String parentCollectionName, PartitionCollectionImmutable.Partition partition, boolean isPofP) throws IOException {
@@ -344,6 +361,27 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     parent.addDataset(ds);
   }  */
 
+    // this catalog lists the individual files comprising the collection.
+  protected void addFileDatasets(InvCatalogImpl parentCatalog, InvDatasetImpl parent, GribCollectionImmutable fromGc, boolean addLatest) throws IOException {
+    List<MFile> mfiles = new ArrayList<>(fromGc.getFiles());
+    Collections.sort(mfiles);
+    InvDatasetImpl filesParent = new InvDatasetImpl(this, "Raw Files");
+    filesParent.tmi.setServiceName(Download_Services);
+    parent.addDataset(filesParent);
+    if (parentCatalog != null) parentCatalog.addService(makeDownloadService());
+
+    for (MFile mfile : mfiles) {
+      InvDatasetImpl ds = new InvDatasetImpl(this, mfile.getName());
+      String lpath = parent.getUrlPath() + "/" + FILES + "/" +  mfile.getName();  // LOOK wrong
+      ds.setUrlPath(lpath);
+      ds.setID(lpath);
+      ds.tm.setDataSize(mfile.getLength());
+      // ds.tm.setXXXX(mfile.getLastModified());
+      ds.finish();
+      filesParent.addDataset(ds);
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   @Override
@@ -354,6 +392,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
       mainCatalog.addService(InvService.latest);
     mainCatalog.addDataset(((StateGrib) localState).top);
+    // mainCatalog.addService(orgService);
     mainCatalog.addService(virtualService);
     mainCatalog.finish();
 
@@ -417,7 +456,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     // result.addService(orgService);
     result.addService(virtualService);
 
-    InvDatasetImpl ds = makeDatasetFromCollection(false, parentCollectionName, fromGc);
+    InvDatasetImpl ds = makeDatasetFromCollection(false, result, parentCollectionName, fromGc);
     result.addDataset(ds);
     // String serviceName = ds.getServiceName(); LAME - cant do this way, needs service already added -fix in cat2; YEAH right, cat2
     result.finish();
@@ -431,7 +470,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   @Override
   protected void makeDatasetTop(State state) throws IOException {
     StateGrib localState = (StateGrib) state;
-    localState.top = makeDatasetFromCollection(true, null, localState.gribCollection);
+    localState.top = makeDatasetFromCollection(true, null, null, localState.gribCollection);
   }
 
   // path/latest.xml
@@ -533,42 +572,26 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public File getFile(String remaining) {
-    return null;
-  }
-
-  // LOOK
-  /*  if (null == topDirectory) return null;
-
-    StateGrib localState = (StateGrib) checkState();
-
-    DatasetParse dp = null;
     try {
-      dp = parse(remaining, localState);
-      if (dp == null) return super.getFile(remaining);
+      StateGrib localState = (StateGrib) checkState();
+      int pos = remaining.lastIndexOf("/");
+      final String filename = (pos >= 0) && (remaining.length() > 1) ? remaining.substring(pos+1)  : remaining;
 
-      GribCollectionImmutable gc = null;
-      boolean isPartitionGc = false;
-      try {
-        if (dp.partition != null) {   // specific time partition
-          gc =  dp.partition.getGribCollection();
-          isPartitionGc = true;
-        } else {
-          gc = localState.gribCollection;
+      MFile result = (MFile) findDataset(remaining, localState.gribCollection, new DatasetCreator() {
+        @Override
+        public Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException {
+          return gc.findMFileByName(filename);
         }
-        String first = gc.getFirstFilename();
-        if (first == null) return null;
-        return new File(first);
+      });
 
-      } finally {
-        if (isPartitionGc) gc.close(); // leave main gc open
-      }
+      if (result == null) return null;
+      return new File(result.getPath());
 
-    } catch (IOException e) {
-      logger.error("Failed to get file="+ remaining, e);
+    } catch (IOException iow ) {
       return null;
     }
-  }  */
 
+  }
 
   @Override
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
