@@ -2,6 +2,7 @@ package ucar.nc2.grib;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
@@ -70,6 +71,7 @@ public class TestGribIndexCreationOther {
 
   /////////////////////////////////////////////////////////
 
+  @Ignore("B: not visible on spock")
   @Test
   public void testFireWx() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("namFirewx", "test/namFirewx", FeatureCollectionType.GRIB2,
@@ -82,7 +84,8 @@ public class TestGribIndexCreationOther {
     System.out.printf("changed = %s%n", changed);
   }
 
-  @Test
+  @Ignore("B: not visible on spock")
+ @Test
   public void testRadarNWS() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("radarNWS", "test/radarNWS", FeatureCollectionType.GRIB1,
  //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
@@ -95,6 +98,7 @@ public class TestGribIndexCreationOther {
     System.out.printf("changed = %s%n", changed);
   }
 
+  @Ignore("B: not visible on spock")
   @Test
   public void testWwwCoastalAlaska() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -115,6 +119,7 @@ public class TestGribIndexCreationOther {
   //                    dateFormatMark="#regn80#...yyyyMMddHH"
   //                    timePartition="year" />
 
+  @Ignore("B: not visible on spock")
   @Test
   public void testTimePartitionWithSubdirs() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -129,6 +134,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("B: not visible on spock")
   @Test
   public void make626inv() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds626.0.invariants", "test/ds626.0inv", FeatureCollectionType.GRIB1,
@@ -141,6 +147,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("B: not visible on spock")
   @Test
   public void makeCfsr() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -154,6 +161,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("B: not visible on spock")
   @Test
   public void makeCfsr2() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -167,6 +175,7 @@ public class TestGribIndexCreationOther {
   }
 
 
+  @Ignore("B: not visible on spock")
   @Test
   public void makeDs0832() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -179,6 +188,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("B: not visible on spock")
   @Test
   public void testGsdHrrSurface() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -192,6 +202,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("B: not visible on spock")
   @Test
   public void testRtma() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));

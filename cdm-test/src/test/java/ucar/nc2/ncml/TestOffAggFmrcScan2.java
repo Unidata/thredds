@@ -34,6 +34,7 @@
 
 package ucar.nc2.ncml;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -50,6 +51,7 @@ import java.io.IOException;
 public class TestOffAggFmrcScan2 {
 
   // Disable for now - Variable name (time1_bounds) must be unique within Group
+  @Ignore("Cant use Fmrc on GRIB")
   @Test
   public void testOpen() throws Exception {
     String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/rtmodels/";
@@ -73,6 +75,7 @@ public class TestOffAggFmrcScan2 {
     ncfile.close();
   }
 
+  @Ignore("Cant use Fmrc on GRIB")
   @Test
   public void testOpenNomads() throws Exception {
     String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/nomads/";
