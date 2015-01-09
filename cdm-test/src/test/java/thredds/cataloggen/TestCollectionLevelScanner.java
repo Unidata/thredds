@@ -32,7 +32,6 @@
  */
 package thredds.cataloggen;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -90,7 +89,7 @@ public class TestCollectionLevelScanner {
     InvCatalog cat = me.generateCatalog();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(cat, expectedCatalogDocFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -126,7 +125,7 @@ public class TestCollectionLevelScanner {
     InvCatalog cat = me.generateCatalog();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(cat, expectedCatalogDocFile, debugShowCatalogs);
 
   }
 
@@ -163,6 +162,6 @@ public class TestCollectionLevelScanner {
     InvCatalog cat = me.generateCatalog();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(cat, expectedCatalogDocFile, debugShowCatalogs);
   }
 }

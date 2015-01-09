@@ -35,7 +35,7 @@
 
 package ucar.nc2.grib.collection;
 
-import thredds.catalog.DataFormatType;
+import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -43,8 +43,6 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
-import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -93,7 +91,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
     String val = cust.getGeneratingProcessName(getGenProcessId());
     if (val != null)
       result.add(new Attribute(GribUtils.GEN_PROCESS, val));
-    result.add(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB1.toString()));
+    result.add(new Attribute(CDM.FILE_FORMAT, DataFormatType.GRIB1.getDescription()));
   }
 
 }

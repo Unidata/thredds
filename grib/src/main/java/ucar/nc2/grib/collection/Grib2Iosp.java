@@ -35,7 +35,7 @@
 
 package ucar.nc2.grib.collection;
 
-import thredds.catalog.DataFormatType;
+import ucar.nc2.constants.DataFormatType;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.grib2.*;
 import ucar.ma2.*;
@@ -47,7 +47,6 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * Grib-2 Collection IOSP, ver2.
@@ -365,7 +364,7 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   public String getFileTypeId() {
-    return DataFormatType.GRIB2.toString();
+    return DataFormatType.GRIB2.getDescription();
   }
 
   @Override

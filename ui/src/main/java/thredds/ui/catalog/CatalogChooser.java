@@ -33,8 +33,8 @@
 
 package thredds.ui.catalog;
 
-import thredds.catalog.*;
-import thredds.cataloggen.DirectoryScanner;
+import thredds.client.catalog.*;
+import thredds.client.catalog.writer.DatasetHtmlWriter;
 import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;
@@ -46,9 +46,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
@@ -180,43 +177,6 @@ public class CatalogChooser extends JPanel {
         catgenFileChooser.getFileChooser().setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
         catgenFileChooser.getFileChooser().setDialogTitle( "Run CatGen on Directory");
 
-        AbstractAction catgenAction = new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            String filename = catgenFileChooser.chooseFilename();
-            if (filename == null) return;
-            File d = new File( filename);
-            if (d.isDirectory()) {
-              System.out.println("Run catgen on filename");
-
-              InvService service = new InvService( "local", ServiceType.FILE.toString(), d.toURI().toString(), null, null );
-              DirectoryScanner catgen = new DirectoryScanner( service, "local access to files", d, null, false );
-
-              InvCatalogImpl cat = (InvCatalogImpl) catgen.getDirCatalog (d, null, false, false);
-
-              InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-
-              // internalize to dirscan?
-              try {
-                cat.setBaseURI( new URI(d.toURI().toString()+"catalog.xml"));
-              } catch (URISyntaxException e1) {
-                e1.printStackTrace();
-              }
-              // catFactory.setCatalogConverter(cat, XMLEntityResolver.CATALOG_NAMESPACE_10);
-
-              setCatalog(cat);
-
-              try {
-                // System.out.println( catFactory.writeXML( cat));
-                catFactory.writeXML( cat, filename+"/catalog.xml");
-              } catch (IOException e1) {
-                e1.printStackTrace();
-              }
-            }
-          }
-        };
-        BAMutil.setActionProperties(catgenAction, "catalog", "run catgen on directory...", false, 'L', -1);
-        BAMutil.addActionToContainer(topButtons, catgenAction);
-
         AbstractAction srcEditAction = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
             TextGetPutPane sourceEditor = new TextGetPutPane(null);
@@ -245,13 +205,14 @@ public class CatalogChooser extends JPanel {
           firePropertyChangeEvent(e);
 
         } else if (e.getPropertyName().equals("Selection")) {
-          InvDatasetImpl ds = (InvDatasetImpl) tree.getSelectedDataset();
+          DatasetNode ds = tree.getSelectedDataset();
           if (ds == null)
             return;
-          showDatasetInfo(ds);
+          if (ds instanceof Dataset)
+            showDatasetInfo((Dataset)ds);
 
-          if (ds instanceof InvCatalogRef) {
-            InvCatalogRef ref = (InvCatalogRef) ds;
+          if (ds instanceof CatalogRef) {
+            CatalogRef ref = (CatalogRef) ds;
             String href = ref.getXlinkHref();
             try {
               java.net.URI uri = ref.getParentCatalog().resolveUri(href);
@@ -264,8 +225,8 @@ public class CatalogChooser extends JPanel {
             setCurrentURL(tree.getCatalogURL());
           }
 
-        } else if (e.getNewValue() instanceof InvDataset) { // Dataset or File
-          firePropertyChangeEvent((InvDataset) e.getNewValue(), e.getPropertyName());
+        } else if (e.getNewValue() instanceof Dataset) { // Dataset or File
+          firePropertyChangeEvent((Dataset) e.getNewValue(), e.getPropertyName());
         }
       }
     });
@@ -279,11 +240,12 @@ public class CatalogChooser extends JPanel {
         if (e.getPropertyName().equals("datasetURL")) {
           String datasetURL = (String) e.getNewValue();
           if (debugEvents) System.out.println("***datasetURL= " + datasetURL);
-          InvDataset dataset = tree.getSelectedDataset();
-          if (dataset != null) {
-            InvAccess access = dataset.findAccess(datasetURL);
-            firePropertyChangeEvent(new PropertyChangeEvent(this,
-                    "InvAccess", null, access));
+          DatasetNode node = tree.getSelectedDataset();
+          if (node == null) return;
+          if (node instanceof Dataset) {
+            Dataset dataset = (Dataset) node;
+            Access access = dataset.findAccess(datasetURL);
+            firePropertyChangeEvent(new PropertyChangeEvent(this, "InvAccess", null, access));
           }
         } else if (e.getPropertyName().equals("catrefURL")) {
           String urlString = (String) e.getNewValue();
@@ -377,15 +339,6 @@ public class CatalogChooser extends JPanel {
   }
 
   /**
-   * Set a dataset filter to be used on all catalogs.
-   * To turn off, set to null.
-   * @param filter DatasetFilter or null
-   */
-  public void setDatasetFilter( DatasetFilter filter) {
-    tree.setDatasetFilter( filter);
-  }
-
-  /**
    * Save persistent state.
    */
   public void save() {
@@ -400,7 +353,7 @@ public class CatalogChooser extends JPanel {
     }
   }
 
-  private void firePropertyChangeEvent(InvDataset ds, String oldPropertyName) {
+  private void firePropertyChangeEvent(Dataset ds, String oldPropertyName) {
     String propertyName = (eventType != null) ? eventType : oldPropertyName;
     PropertyChangeEvent event = new PropertyChangeEvent(this, propertyName, null, ds);
     firePropertyChangeEvent( event);
@@ -456,18 +409,18 @@ public class CatalogChooser extends JPanel {
   public void setSelectedItem( String item) {
     if (catListBox != null)
       catListBox.setSelectedItem( item);
-  };
+  }
 
   /**
    * Set the currently selected InvDataset.
    * @param ds select this InvDataset, must be already in the tree.
    */
-  public void setSelectedDataset(InvDatasetImpl ds) {
+  public void setSelectedDataset(Dataset ds) {
     tree.setSelectedDataset( ds);
     showDatasetInfo(ds);
   }
 
-  public InvDataset getSelectedDataset() {
+  public DatasetNode getSelectedDataset() {
     return tree.getSelectedDataset();
   }
 
@@ -475,7 +428,7 @@ public class CatalogChooser extends JPanel {
    * Get the current catalog being shown.
    * @return current catalog, or null.
    */
-  public InvCatalog getCurrentCatalog() { return tree.getCatalog(); }
+  public Catalog getCurrentCatalog() { return tree.getCatalog(); }
 
   /**
    * Get the TreeView component.
@@ -498,7 +451,7 @@ public class CatalogChooser extends JPanel {
   /**
    * Set the current catalog.
    */
-  public void setCatalog(InvCatalogImpl catalog) {
+  public void setCatalog(Catalog catalog) {
     tree.setCatalog( catalog);
   }
 
@@ -510,10 +463,11 @@ public class CatalogChooser extends JPanel {
     tree.setCatalog(catalogURL.trim());
   }
 
-  private void showDatasetInfo(InvDatasetImpl ds) {
+  private void showDatasetInfo(Dataset ds) {
     if (ds == null) return;
     StringBuilder sbuff = new StringBuilder( 20000);
-    InvDatasetImpl.writeHtmlDescription(sbuff, ds, true, false, datasetEvents, catrefEvents, true);
+    DatasetHtmlWriter writer = new DatasetHtmlWriter();
+    writer.writeHtmlDescription(sbuff, ds, true, false, datasetEvents, catrefEvents, true);
     if (showHTML) System.out.println("HTML=\n"+sbuff);
     htmlViewer.setContent( ds.getName(), sbuff.toString());
   }

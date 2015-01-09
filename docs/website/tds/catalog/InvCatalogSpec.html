@@ -68,6 +68,7 @@
   <li><a href="Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
   <li>InvCatalog XML Schema:</li>
   <ul>
+    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd">Version 1.0.7</a></li>
     <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">Version 1.0.6</a></li>
     <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd">Version 1.0.5</a></li>
     <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd">Version 1.0.4</a></li>
@@ -88,7 +89,7 @@
 
 <h3><em>catalog</em><a name="catalog"></a> element</h3>
 
-<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.2" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.7" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;</pre>
 
 <p>The <em>catalog</em> element is the top-level element. It may contain zero
   or more <em><a href="#service">service</a></em> elements, followed by zero
@@ -98,7 +99,7 @@
   <em>name</em> will be displayed to a user. The <em>expires</em><a name="expires"></a>
   element tells clients until when this catalog should be reread, so they can cache
   the catalog information. The value of the <em>version</em> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The
-  <em>version</em> attribute is optional and to indicate conformance with this specification should be set to "1.0.2".</p>
+  <em>version</em> attribute is optional, but should be used to document which version of the schema was used.</p>
 
 <p>Example of simplest useful catalog. Note that to provide access to a dataset you need at least one service element. </p>
 
@@ -223,8 +224,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
   The <em><a href="#dataFormatType">dataFormat</a></em> is important when the
   <a href="#serviceTypes"><em>serviceType</em></a> is a bulk transport like <em>FTP</em>
   or <em>HTTP</em>, as it specifies the format of the transferred file. It is
-  not needed for client/server protocols like DODS or ADDE.<br>
-</p>
+  not needed for client/server protocols like DODS or ADDE.</p>
 
 <p>An <em>access</em> element may contain an optional <a href="#dataSize"><em>dataSize</em></a>
   element to specify how large the dataset would be if it were to be copied to

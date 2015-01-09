@@ -37,7 +37,6 @@ import org.junit.Before;
 import static org.junit.Assert.*;
 
 import thredds.catalog.*;
-import thredds.cataloggen.TestCatalogGen;
 import thredds.cataloggen.DatasetEnhancer1;
 
 import java.io.*;
@@ -142,7 +141,7 @@ public class TestDatasetSource
 
     InvDataset ds = me1.expand();
 
-    TestCatalogGen.compareCatalogToCatalogDocFile( ds.getParentCatalog(), expectedCatDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(ds.getParentCatalog(), expectedCatDocFile, debugShowCatalogs);
   }
 
   // Expand a nested collection dataset using directory filtering.
@@ -181,7 +180,7 @@ public class TestDatasetSource
     InvDataset ds = me1.expand();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile(ds.getParentCatalog(), expectedCatalogDocFile, debugShowCatalogs);
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(ds.getParentCatalog(), expectedCatalogDocFile, debugShowCatalogs);
   }
 
   // Expand a nested collection dataset creating catalogRefs for all sub-collection datasets.
@@ -213,7 +212,7 @@ public class TestDatasetSource
     InvDataset ds = me1.expand();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( ds.getParentCatalog(), expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(ds.getParentCatalog(), expectedCatalogDocFile, debugShowCatalogs);
   }
 
   // Expand a nested collection dataset creating catalogRefs for all sub-collection datasets.
@@ -246,7 +245,7 @@ public class TestDatasetSource
     InvCatalog cat = me1.fullExpand();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat, expectedCatalogDocFile, true);
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(cat, expectedCatalogDocFile, true);
   }
 
   @Test

@@ -18,6 +18,11 @@
       <artifactId>cdm</artifactId>
     </dependency>
 
+    <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>grib</artifactId>
+     </dependency>
+
     <!-- logging -->
     <dependency>
       <groupId>org.slf4j</groupId>

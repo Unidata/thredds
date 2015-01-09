@@ -32,7 +32,7 @@
  */
 package ucar.nc2.iosp.gini;
 
-import thredds.catalog.DataFormatType;
+import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -468,7 +468,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
-    return DataFormatType.GINI.toString();
+    return DataFormatType.GINI.getDescription();
   }
 
   public String getFileTypeDescription() {

@@ -32,7 +32,7 @@
  */
 package ucar.nc2.iosp.nids;
 
-import thredds.catalog.DataFormatType;
+import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -82,7 +82,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
-    return DataFormatType.NIDS.toString();
+    return DataFormatType.NIDS.getDescription();
   }
 
   public String getFileTypeDescription() {
