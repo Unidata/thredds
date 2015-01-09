@@ -2,12 +2,12 @@ dependencies {
     // A lot of these depedencies should be in the testRuntime config, not testCompile.
 
     testCompile project(":cdm")
-    testCompile project(":bufr")
-    testCompile project(":grib")
-    testCompile project(":netcdf4")
-    testCompile project(":opendap")
+    testRuntime project(":bufr")
+    testRuntime project(":grib")
+    testRuntime project(":netcdf4")
+    testRuntime project(":opendap")
     testCompile project(":httpservices")
-    testCompile project(":visad")
+    testRuntime project(":visad")
     testRuntime project(":clcommon")
 
     testCompile libraries["visad"]

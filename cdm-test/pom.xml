@@ -25,26 +25,26 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>bufr</artifactId>
-      <scope>test</scope>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
-      <scope>test</scope>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>netcdf4</artifactId>
-      <scope>test</scope>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <!-- This is needed at runtime if an attempt to read a dods file is made. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>opendap</artifactId>
-      <scope>test</scope>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>visadCdm</artifactId>
-      <scope>test</scope>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <!-- Need this for the Gini IOSP. -->

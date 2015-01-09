@@ -76,7 +76,9 @@ shadow {
     exclude 'META-INF/*.xml'
 
     artifactSet {
-        exclude 'commons-logging:commons-logging:*'
+        // ToolsUI won't be run in a web container.
+        // Dragged in by opendap.
+        exclude 'javax.servlet:javax.servlet-api:*'
     }
 
     jar {

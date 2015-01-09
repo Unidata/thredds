@@ -2,11 +2,11 @@ apply plugin: 'shadow'
 
 dependencies {
     compile project(":cdm")
-    compile project(":bufr")
-    compile project(":grib")
-    compile project(":netcdf4")
-    compile project(":opendap")
-    compile project(":visad")
+    runtime project(":bufr")
+    runtime project(":grib")
+    runtime project(":netcdf4")
+    runtime project(":opendap")
+    runtime project(":visad")
 
     compile libraries["slf4j-api"]
     runtime libraries["slf4j-jdk14"]

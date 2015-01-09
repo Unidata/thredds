@@ -4,9 +4,11 @@ dependencies {
     compile project(":cdm")
     compile project(":clcommon")
     compile project(":grib")
+    compile project(":httpservices")
     compile project(":netcdf4")
     compile project(":opendap")
     compile project(":tdcommon")
+    runtime project(":visad")
     compile project(":waterml")
     compile project(":dap4:d4core")
     compile project(":dap4:d4servletshared")
@@ -44,7 +46,7 @@ dependencies {
     testCompile libraries["spring-test"]
     testCompile libraries["hamcrest-core"]
     testCompile libraries["httpunit"]
-// TODO: testCompile cdm:test-jar
+    // TODO: testCompile cdm:test-jar
 
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]

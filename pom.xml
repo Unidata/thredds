@@ -181,14 +181,6 @@
       <id>unidata-3rdparty</id>
       <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/</url>
     </repository>
- 
-    <!-- json-taglib  ( for ncWMS ) -->
-    <repository>
-      <id>mvmsearch</id>
-      <name>mvmsearch</name>
-      <url>http://www.mvnsearch.org/maven2/</url>
-    </repository>    
-    
   </repositories>
 
   <!-- ===========================================================
@@ -745,7 +737,7 @@
 
 
   <dependencies>
-    <!-- All modules use JUnit for their test. -->
+    <!-- All modules use JUnit for their tests. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

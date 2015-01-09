@@ -13,7 +13,7 @@ include 'dap4:d4ts'
 include 'dap4:d4tswar'
 include 'grib'
 include 'httpservices'
-//include 'it'      Not ready yet.
+include 'it'
 include 'ncIdv'
 include 'netcdf4'
 include 'opendap'

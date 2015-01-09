@@ -1,23 +1,21 @@
 dependencies {
-    // A lot of these depedencies should be in the testRuntime config, not testCompile.
-
     testCompile project(":cdm")
-    testCompile project(":clcommon")
-    testCompile project(":grib")
-    testCompile project(":opendap")
-    testCompile project(":visad")
+    testRuntime project(":clcommon")
+    testRuntime project(":grib")
+    testCompile project(":httpservices")
+    testRuntime project(":opendap")
+    testRuntime project(":visad")
 
-    testCompile libraries["visad"]
-    testCompile libraries["protobuf-java"]
-    testCompile libraries["jdom2"]
     testRuntime libraries["jaxen"]
+    testCompile libraries["jdom2"]
     testCompile libraries["commons-io"]
+    testCompile libraries["joda-time"]
+    testCompile libraries["httpcore"]
+    testCompile libraries["httpclient"]
 
-    testCompile libraries["spring-test"]
     testCompile libraries["com.eclipsesource.restfuse"]
     // TODO: testCompile cdm:test-jar
 
-    testCompile libraries["slf4j-api"]
     testRuntime libraries["slf4j-jdk14"]
     testRuntime libraries["jcl-over-slf4j"]
 }

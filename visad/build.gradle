@@ -62,32 +62,31 @@ dependencies {
     testRuntime libraries["slf4j-jdk14"]
 }
 
-shadow {
-    outputFile = file("${destinationDir}/visadCdm-${version}.jar")
-    stats = true
-
-    artifactSet {
-        //include 'visad.jar'
-        include('edu.wisc.ssec:visad:2.0-20130124')
-    }
-
-    /* filter('edu.wisc.ssec:visad:2.0-20130124') {
-      exclude 'dods/*'
-      exclude 'gnu/*'
-      exclude 'HTTPClient/*'
-      exclude 'loci/*'
-      exclude 'ncsa/*'
-      exclude 'ucar/*'
-      exclude 'visad/bom/*'
-      exclude 'visad/cluster/*'
-      exclude 'visad/install/*'
-      exclude 'visad/python/*'
-    }  */
-
-    jar {
-        manifest {
-            attributes 'Implementation-Title': 'visadCdm'
-        }
-    }
-
-}
+//shadow {
+//    outputFile = file("${destinationDir}/visadCdm-${version}.jar")
+//    stats = true
+//
+//    artifactSet {
+//        //include 'visad.jar'
+//        include('edu.wisc.ssec:visad:2.0-20130124')
+//    }
+//
+//    /* filter('edu.wisc.ssec:visad:2.0-20130124') {
+//      exclude 'dods/*'
+//      exclude 'gnu/*'
+//      exclude 'HTTPClient/*'
+//      exclude 'loci/*'
+//      exclude 'ncsa/*'
+//      exclude 'ucar/*'
+//      exclude 'visad/bom/*'
+//      exclude 'visad/cluster/*'
+//      exclude 'visad/install/*'
+//      exclude 'visad/python/*'
+//    }  */
+//
+//    jar {
+//        manifest {
+//            attributes 'Implementation-Title': 'visadCdm'
+//        }
+//    }
+//}
