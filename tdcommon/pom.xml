@@ -18,7 +18,12 @@
       <artifactId>cdm</artifactId>
     </dependency>
 
-    <!-- Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files. -->
+    <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>grib</artifactId>
+     </dependency>
+
+    <!-- logging -->
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom2</artifactId>

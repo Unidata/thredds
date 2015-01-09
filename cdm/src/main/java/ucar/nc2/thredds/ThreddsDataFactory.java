@@ -389,7 +389,7 @@ public class ThreddsDataFactory {
 
     IOException saveException = null;
 
-    List<InvAccess> accessList = new ArrayList<InvAccess>(invDataset.getAccess()); // a list of all the accesses
+    List<InvAccess> accessList = new ArrayList<>(invDataset.getAccess()); // a list of all the accesses
     while (accessList.size() > 0) {
       InvAccess access = chooseDatasetAccess(accessList);
 
@@ -410,7 +410,7 @@ public class ThreddsDataFactory {
       if (serviceType == ServiceType.RESOLVER) {
         InvDatasetImpl rds = openResolver(datasetLocation, task, result);
         if (rds == null) return null;
-        accessList = new ArrayList<InvAccess>(rds.getAccess());
+        accessList = new ArrayList<>(rds.getAccess());
         continue;
       }
 
@@ -655,7 +655,7 @@ public class ThreddsDataFactory {
 
   private InvAccess getImageAccess(InvDataset invDataset, ucar.nc2.util.CancelTask task, Result result) {
 
-    List<InvAccess> accessList = new ArrayList<InvAccess>(invDataset.getAccess()); // a list of all the accesses
+    List<InvAccess> accessList = new ArrayList<>(invDataset.getAccess()); // a list of all the accesses
     while (accessList.size() > 0) {
       InvAccess access = chooseImageAccess(accessList);
       if (access != null) return access;
@@ -676,7 +676,7 @@ public class ThreddsDataFactory {
         return null;
 
 // use the access list from the resolved dataset
-      accessList = new ArrayList<InvAccess>(invDataset.getAccess());
+      accessList = new ArrayList<>(invDataset.getAccess());
     } // loop over accesses
 
     return null;

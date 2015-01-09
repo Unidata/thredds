@@ -89,7 +89,7 @@ public class TestDirectoryScanner
     InvCatalog catalog = me.getDirCatalog( new File( this.serviceAccessPoint), null, false, false);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(catalog, expectedCatalogDocFile, debugShowCatalogs);
   }
 
   @Test
@@ -108,7 +108,7 @@ public class TestDirectoryScanner
     InvCatalog catalog = me.getDirCatalog( new File( this.serviceAccessPoint), null, false, false);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(catalog, expectedCatalogDocFile, debugShowCatalogs);
   }
 
   @Test
@@ -127,7 +127,7 @@ public class TestDirectoryScanner
     InvCatalog catalog = me.getDirCatalog( new File( this.serviceAccessPoint), null, false, false);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(catalog, expectedCatalogDocFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -150,7 +150,7 @@ public class TestDirectoryScanner
     InvCatalog catalog = me.getDirCatalog( dirToScan, filterPattern, false, false);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(catalog, expectedCatalogDocFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -198,7 +198,7 @@ public class TestDirectoryScanner
     InvCatalog catalog = me.getDirCatalog( catalogCrDs, ".*", true, "idBase", false, null, null, null);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(catalog, expectedCatalogDocFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -246,7 +246,7 @@ public class TestDirectoryScanner
     InvCatalog catalog = me.getDirCatalog( catalogCrDs, ".*", true, "idBase", false, null, null, null);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(catalog, expectedCatalogDocFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -277,6 +277,6 @@ public class TestDirectoryScanner
     InvCatalog catalog = me.getDirCatalog( dirToScan, filterPattern, false, false );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(catalog, expectedCatalogDocFile, debugShowCatalogs);
   }
 }

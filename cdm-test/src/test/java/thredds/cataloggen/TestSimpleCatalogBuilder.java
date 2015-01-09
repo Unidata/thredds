@@ -32,13 +32,13 @@
  */
 package thredds.cataloggen;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 
 import thredds.catalog.InvCatalog;
+import thredds.catalog.TestInvDatasetScan;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFactory;
 
@@ -91,6 +91,6 @@ public class TestSimpleCatalogBuilder
 
     // Compare the resulting catalog an the expected catalog resource.
     File expectedCatDocFile = new File( "src/test/data/thredds/cataloggen/testSimpleCatBuilder.basic.result.xml");
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatDocFile, debugShowCatalogs );
+    TestInvDatasetScan.compareCatalogToCatalogDocFile(catalog, expectedCatDocFile, debugShowCatalogs);
   }
 }

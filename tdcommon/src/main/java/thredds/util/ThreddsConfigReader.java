@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * read threddsConfig.xml, make available
+ * read threddsConfig.xml, make elements available
  *
  * @author caron
  * @since 5/15/13

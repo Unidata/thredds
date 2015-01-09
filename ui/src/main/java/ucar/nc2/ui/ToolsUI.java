@@ -33,10 +33,11 @@
 
 package ucar.nc2.ui;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import thredds.client.catalog.builder.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
+import thredds.ui.catalog.ThreddsUI;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -188,7 +189,7 @@ public class ToolsUI extends JPanel {
   private AboutWindow aboutWindow = null;
 
   // data
-  private ucar.nc2.thredds.ThreddsDataFactory threddsDataFactory = new ucar.nc2.thredds.ThreddsDataFactory();
+  private thredds.client.catalog.builder.DataFactory threddsDataFactory = new thredds.client.catalog.builder.DataFactory();
   private DateFormatter formatter = new DateFormatter();
 
   private boolean setUseRecordStructure = false;
@@ -628,11 +629,11 @@ public class ToolsUI extends JPanel {
         threddsUI.addPropertyChangeListener(new PropertyChangeListener() {
           public void propertyChange(PropertyChangeEvent e) {
             if (e.getPropertyName().equals("InvAccess")) {
-              thredds.catalog.InvAccess access = (thredds.catalog.InvAccess) e.getNewValue();
+              thredds.client.catalog.Access access = (thredds.client.catalog.Access) e.getNewValue();
               jumptoThreddsDatatype(access);
             }
             if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
-              thredds.catalog.InvDataset ds = (thredds.catalog.InvDataset) e.getNewValue();
+              thredds.client.catalog.Dataset ds = (thredds.client.catalog.Dataset) e.getNewValue();
               setThreddsDatatype(ds, e.getPropertyName());
             }
           }
@@ -1281,7 +1282,7 @@ public class ToolsUI extends JPanel {
 
   // jump to the appropriate tab based on datatype of InvDataset
 
-  private void setThreddsDatatype(thredds.catalog.InvDataset invDataset, String wants) {
+  private void setThreddsDatatype(thredds.client.catalog.Dataset invDataset, String wants) {
     if (invDataset == null) return;
 
     boolean wantsViewer = wants.equals("File");
@@ -1302,7 +1303,7 @@ public class ToolsUI extends JPanel {
       }
 
       // otherwise do the datatype thing
-      ThreddsDataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invDataset, null);
+      DataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invDataset, null);
       if (threddsData == null) {
         JOptionPane.showMessageDialog(null, "Unknown datatype");
         return;
@@ -1317,22 +1318,22 @@ public class ToolsUI extends JPanel {
   }
 
   // jump to the appropriate tab based on datatype of InvAccess
-  private void jumptoThreddsDatatype(thredds.catalog.InvAccess invAccess) {
+  private void jumptoThreddsDatatype(thredds.client.catalog.Access invAccess) {
     if (invAccess == null) return;
 
-    thredds.catalog.InvService s = invAccess.getService();
-    if (s.getServiceType() == thredds.catalog.ServiceType.HTTPServer) {
+    thredds.client.catalog.Service s = invAccess.getService();
+    if (s.getType() == thredds.client.catalog.ServiceType.HTTPServer) {
       downloadFile(invAccess.getStandardUrlName());
       return;
     }
 
-    if (s.getServiceType() == thredds.catalog.ServiceType.WMS) {
+    if (s.getType() == thredds.client.catalog.ServiceType.WMS) {
       openWMSDataset(invAccess.getStandardUrlName());
       return;
     }
 
-    thredds.catalog.InvDataset ds = invAccess.getDataset();
-    if (ds.getDataType() == null) {
+    thredds.client.catalog.Dataset ds = invAccess.getDataset();
+    if (ds.getFeatureType() == null) {
       // if no feature type, just open as a NetcdfDataset
       try {
         openNetcdfFile(threddsDataFactory.openDataset(invAccess, true, null, null));
@@ -1343,7 +1344,7 @@ public class ToolsUI extends JPanel {
     }
 
     try {
-      ThreddsDataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
+      DataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
       jumptoThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
@@ -1354,7 +1355,7 @@ public class ToolsUI extends JPanel {
   }
 
   // jump to the appropriate tab based on datatype of threddsData
-  private void jumptoThreddsDatatype(ThreddsDataFactory.Result threddsData) {
+  private void jumptoThreddsDatatype(DataFactory.Result threddsData) {
 
     if (threddsData.fatalError) {
       JOptionPane.showMessageDialog(this, "Cant open dataset=" + threddsData.errLog);
@@ -1393,33 +1394,6 @@ public class ToolsUI extends JPanel {
 
     }
   }
-
-
-  /* jump to the appropriate tab based on datatype of NetcdfDataset
-  private void setDataset(thredds.catalog.DataType dtype, NetcdfDataset ds) {
-
-    if (dtype == thredds.catalog.DataType.GRID) {
-      makeComponent("Grids");
-      gridPanel.setDataset(ds);
-      tabbedPane.setSelectedComponent(gridPanel);
-      return;
-    }
-
-    /* else if (dtype == thredds.catalog.DataType.STATION) {
-      makeComponent("StationDataset");
-      stnTablePanel.setStationObsDataset( ds);
-      tabbedPane.setSelectedComponent( stnTablePanel);
-      return;
-    } *
-
-    else {
-
-      makeComponent("Viewer");
-      viewerPanel.setDataset(ds);
-      tabbedPane.setSelectedComponent(viewerPanel);
-      return;
-    }
-  } */
 
 
   private NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {
@@ -5836,7 +5810,7 @@ public class ToolsUI extends JPanel {
 
       //StringBuilder log = new StringBuilder();
       try {
-        ThreddsDataFactory.Result result = threddsDataFactory.openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
+        DataFactory.Result result = threddsDataFactory.openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
         if (result.fatalError) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + result.errLog.toString());
           return false;

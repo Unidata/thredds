@@ -32,7 +32,7 @@
  */
 package ucar.nc2.iosp.hdf4;
 
-import thredds.catalog.DataFormatType;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -66,7 +66,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     public String getFileTypeId() {
       if (header.isEos()) return "HDF4-EOS";
-      return DataFormatType.HDF4.toString();
+      return DataFormatType.HDF4.getDescription();
     }
 
     public String getFileTypeDescription() {

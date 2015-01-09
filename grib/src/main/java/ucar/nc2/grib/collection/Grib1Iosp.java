@@ -35,7 +35,7 @@
 
 package ucar.nc2.grib.collection;
 
-import thredds.catalog.DataFormatType;
+import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.constants.CDM;
@@ -336,7 +336,7 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public String getFileTypeId() {
-    return DataFormatType.GRIB1.toString();
+    return DataFormatType.GRIB1.getDescription();
   }
 
   @Override

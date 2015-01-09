@@ -34,7 +34,7 @@
 package thredds.ui.catalog;
 
 import ucar.httpservices.*;
-import thredds.catalog.*;
+import thredds.client.catalog.*;
 import ucar.nc2.ui.widget.*;
 
 import java.awt.event.ActionEvent;

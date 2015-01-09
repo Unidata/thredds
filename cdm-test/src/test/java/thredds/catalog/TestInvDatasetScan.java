@@ -37,13 +37,14 @@ import org.junit.Before;
 import static org.junit.Assert.*;
 
 import thredds.catalog.util.DeepCopyUtils;
-import thredds.cataloggen.TestCatalogGen;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -84,6 +85,53 @@ public class TestInvDatasetScan
 
   private String testInvDsScan_compoundServerFilterProblem_1_ResourceName = "testInvDsScan.compoundServerFilterProblem.1.result.xml";
   private String testInvDsScan_compoundServerFilterProblem_2_ResourceName = "testInvDsScan.compoundServerFilterProblem.2.result.xml";
+
+  public static void compareCatalogToCatalogDocFile( InvCatalog expandedCatalog, File expectedCatalogDocFile, boolean display)
+          throws IOException
+  {
+    assertNotNull( expandedCatalog);
+    assertNotNull( expectedCatalogDocFile);
+    assertTrue( "File doesn't exist [" + expectedCatalogDocFile.getPath() + "].", expectedCatalogDocFile.exists());
+    assertTrue( "File is a directory [" + expectedCatalogDocFile.getPath() + "].", expectedCatalogDocFile.isFile());
+    assertTrue( "Can't read file [" + expectedCatalogDocFile.getPath() + "].", expectedCatalogDocFile.canRead());
+
+    InputStream expectedCatalogInputStream = new FileInputStream( expectedCatalogDocFile);
+
+    // Read in expected result catalog.
+    InvCatalogFactory factory = new InvCatalogFactory( "default", true );
+    InvCatalogImpl expectedCatalog = factory.readXML( expectedCatalogInputStream, expectedCatalogDocFile.toURI());
+
+    expectedCatalogInputStream.close();
+
+    String expectedCatalogAsString;
+    String catalogAsString;
+    try
+    {
+      expectedCatalogAsString = factory.writeXML( (InvCatalogImpl) expectedCatalog );
+      catalogAsString = factory.writeXML( (InvCatalogImpl) expandedCatalog );
+    } catch ( IOException e ) {
+      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
+      return;
+    }
+    // Print expected and resulting catalogs to std out.
+    if ( display )
+    {
+      System.out.println( "Expected catalog (" + expectedCatalogDocFile.getPath() + "):" );
+      System.out.println( "--------------------" );
+      System.out.println( expectedCatalogAsString );
+      System.out.println( "--------------------" );
+      //System.out.println( "Resulting catalog (" + expandedCatalog.getUriString() + "):" );
+      System.out.println( "--------------------" );
+      System.out.println( catalogAsString );
+      System.out.println( "--------------------\n" );
+    }
+    assertEquals( expectedCatalogAsString, catalogAsString );
+    System.out.println( "Expected catalog as String equals resulting catalog as String");
+
+    // Compare the two catalogs.
+    //assertTrue( "Expanded catalog object does not equal expected catalog object.",
+    //            ( (InvCatalogImpl) expandedCatalog ).equals( expectedCatalog ) );
+  }
 
   @Before
   public void setupResultsDirectory() {
@@ -141,7 +189,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   @Test
@@ -198,7 +246,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   @Test
@@ -256,7 +304,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/" + secondDirPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -321,7 +369,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -385,7 +433,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/eta_211/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -449,7 +497,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -515,7 +563,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/eta_211/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -560,7 +608,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/dmsp/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -628,7 +676,7 @@ public class TestInvDatasetScan
     InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/eta_211/catalog.xml", reqURI );
 
     // Compare the resulting catalog and the expected catalog.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -699,7 +747,7 @@ public class TestInvDatasetScan
     System.out.println( "            Possible use case: current DQC Latest server URLs like \"/thredds/dqc/latest?eta_211\"." );
 
     // Compare the resulting catalog and the expected catalog.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -817,8 +865,8 @@ public class TestInvDatasetScan
     InvCatalog catalog2 = dsScan2.makeCatalogForDirectory( "testRelativeEta/catalog.xml", reqURI2 );
 
     // Compare the resulting catalog and the expected catalog.
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog1, expectedCatalog1File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( catalog2, expectedCatalog2File, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(catalog1, expectedCatalog1File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(catalog2, expectedCatalog2File, debugShowCatalogs);
   }
 
   /**
@@ -845,7 +893,7 @@ public class TestInvDatasetScan
 
     InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset( cat, targetDatasetID );
 
-    TestCatalogGen.compareCatalogToCatalogDocFile( subsetCat, expectedCatalogFile, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(subsetCat, expectedCatalogFile, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -920,9 +968,9 @@ public class TestInvDatasetScan
     }
     InvCatalogImpl cat3 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/Alaska_191km/catalog.xml", reqURI );
 
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat1, expectedCatalog1File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat2, expectedCatalog2File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat3, expectedCatalog3File, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(cat1, expectedCatalog1File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(cat2, expectedCatalog2File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(cat3, expectedCatalog3File, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -996,9 +1044,9 @@ public class TestInvDatasetScan
     }
     InvCatalogImpl cat3 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/Alaska_191km/catalog.xml", reqURI );
 
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat1, expectedCatalog1File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat2, expectedCatalog2File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat3, expectedCatalog3File, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(cat1, expectedCatalog1File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(cat2, expectedCatalog2File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(cat3, expectedCatalog3File, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -1072,9 +1120,9 @@ public class TestInvDatasetScan
     }
     InvCatalogImpl cat3 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/Alaska_191km/catalog.xml", reqURI );
 
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat1, expectedCatalog1File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat2, expectedCatalog2File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat3, expectedCatalog3File, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(cat1, expectedCatalog1File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(cat2, expectedCatalog2File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(cat3, expectedCatalog3File, debugShowCatalogs);
   }
 
   // ToDo Get this test working
@@ -1161,9 +1209,9 @@ public class TestInvDatasetScan
     }
     InvCatalogImpl cat4 = scan.makeCatalogForDirectory( "myGridData/NCEP/NAM/catalog.xml", reqURI );
 
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat1, expectedCatalog1File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat2, expectedCatalog2File, debugShowCatalogs );
-    TestCatalogGen.compareCatalogToCatalogDocFile( cat3, expectedCatalog3File, debugShowCatalogs );
+    compareCatalogToCatalogDocFile(cat1, expectedCatalog1File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(cat2, expectedCatalog2File, debugShowCatalogs);
+    compareCatalogToCatalogDocFile(cat3, expectedCatalog3File, debugShowCatalogs);
 
     assertTrue( "Unexpected non-null NAM catalog, should be excluded by filter.",
                 cat4 == null );

@@ -30,23 +30,17 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ui;
+package thredds.ui.catalog;
 
-import thredds.catalog.*;
+import thredds.client.catalog.*;
 import thredds.ui.catalog.CatalogChooser;
 import thredds.ui.catalog.ThreddsDatasetChooser;
-import thredds.ui.catalog.tools.CatalogCopier;
-import thredds.ui.catalog.tools.CatalogEnhancer;
-import thredds.ui.catalog.tools.DLCrawler;
-import thredds.ui.catalog.tools.TDServerConfigurator;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.util.IO;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.Debug;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -72,10 +66,6 @@ public class ThreddsUI extends JPanel {
 
   // the main components
   private ThreddsDatasetChooser datasetChooser = null;
-  private CatalogEnhancer catEditor = null;
-  private CatalogCopier catCopier = null;
-  private DLCrawler catCrawler = null;
-  private TDServerConfigurator serverConfigure = null;
 
   // UI components that need global scope
   private TextGetPutPane sourcePane;
@@ -132,23 +122,6 @@ public class ThreddsUI extends JPanel {
     /// catalog, DQC, query choosers
     datasetChooser = makeDatasetChooser(); // adds itself to the JTabbedPane
 
-    // all the other component are defferred for fast startup
-    tabbedPane.addTab("Catalog Crawler", new JLabel("Catalog Crawler"));
-    tabbedPane.addTab("Catalog Enhancer", new JLabel("Catalog Enhancer"));
-    tabbedPane.addTab("Catalog Copier", new JLabel("Catalog Copier"));
-    tabbedPane.addTab("TDS Configure", new JLabel("TDS Configure"));
-    tabbedPane.setSelectedIndex(0);
-    tabbedPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        Component c = tabbedPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = tabbedPane.getSelectedIndex();
-          String title = tabbedPane.getTitleAt(idx);
-          makeComponent(tabbedPane, title);
-        }
-      }
-    });
-
     // panel to show source
     sourcePane = new TextGetPutPane((PreferencesExt) store.node("getputPane"));
     sourceWindow = new IndependentWindow("Source", BAMutil.getImage("thredds"), sourcePane);
@@ -170,8 +143,8 @@ public class ThreddsUI extends JPanel {
 
     datasetChooser = new ThreddsDatasetChooser((PreferencesExt) store.node("ThreddsDatasetChooser"), tabbedPane);
 
-    if (Debug.isSet("System/filterDataset"))
-      datasetChooser.setDatasetFilter(new DatasetFilter.ByServiceType(ServiceType.DODS));
+    //if (Debug.isSet("System/filterDataset"))
+    //  datasetChooser.setDatasetFilter(new DatasetFilter.ByServiceType(ServiceType.DODS));
 
     datasetChooser.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 
@@ -183,10 +156,10 @@ public class ThreddsUI extends JPanel {
 
         if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
           // intercept XML, ASCII return types
-          InvDataset ds = (InvDataset) e.getNewValue();
-          InvAccess access = ds.getAccess(ServiceType.HTTPServer);
+          Dataset ds = (Dataset) e.getNewValue();
+          Access access = ds.getAccess(ServiceType.HTTPServer);
           if (access != null) {
-            DataFormatType format = access.getDataFormatType();
+            DataFormatType format = access.getDataFormat();
             if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
               String urlString = access.getWrappedUrlName();
               //System.out.println("got station XML data access = "+urlString);
@@ -223,7 +196,7 @@ public class ThreddsUI extends JPanel {
 
   // deferred creation of components to minimize startup
 
-  private void makeComponent(JTabbedPane parent, String title) {
+  /* private void makeComponent(JTabbedPane parent, String title) {
     if (parent == null) parent = tabbedPane;
 
     // find the correct index
@@ -262,7 +235,7 @@ public class ThreddsUI extends JPanel {
 
     parent.setComponentAt(idx, c);
     if (debugTab) System.out.println("tabbedPane changed " + title + " added ");
-  }
+  }  */
 
 
   /**
@@ -275,10 +248,10 @@ public class ThreddsUI extends JPanel {
     if (fileChooser != null)  fileChooser.save();
     if (datasetChooser != null) datasetChooser.save();
     if (sourcePane != null)  sourcePane.save();
-    if (catEditor != null) catEditor.save();
+    /* if (catEditor != null) catEditor.save();
     if (catCrawler != null) catCrawler.save();
     if (serverConfigure != null) serverConfigure.save();
-    if (catCopier != null) catCopier.save();
+    if (catCopier != null) catCopier.save();   */
   }
 
   /**
@@ -457,7 +430,7 @@ public class ThreddsUI extends JPanel {
     };
     BAMutil.setActionProperties(clearDebugFlagsAction, null, "Clear Debug Flags", false, 'D', -1);
 
-    AbstractAction setDebugFlagsAction = new AbstractAction() {
+    /* AbstractAction setDebugFlagsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         // LOOK set netcdf debug flags
 
@@ -472,7 +445,7 @@ public class ThreddsUI extends JPanel {
         InvCatalogFactory.showCatalogXML = Debug.isSet("InvCatalogFactory/showCatalogXML");
       }
     };
-    BAMutil.setActionProperties(setDebugFlagsAction, null, "Set Debug Flags", false, 'S', -1);
+    BAMutil.setActionProperties(setDebugFlagsAction, null, "Set Debug Flags", false, 'S', -1);  */
 
     /* exitAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {

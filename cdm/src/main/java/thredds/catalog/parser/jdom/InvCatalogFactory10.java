@@ -51,6 +51,7 @@ import org.jdom2.input.*;
 import org.jdom2.output.*;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.*;
 import java.util.*;
 import java.lang.reflect.Constructor;
@@ -337,6 +338,33 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     config.spec = expandAliasForCollectionSpec(config.spec);
 
     try {
+      // InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory(parent, config);
+      Class c = this.getClass().getClassLoader().loadClass("thredds.catalog.InvDatasetFeatureCollection");
+      Method m = c.getMethod("factory", InvDatasetImpl.class, FeatureCollectionConfig.class);
+      InvDatasetImpl result = (InvDatasetImpl) m.invoke(null, parent, config);
+
+      if (result == null) {
+        logger.error("featureCollection " + config.collectionName + " has fatal error ");
+        return null;
+      }
+
+      // regular dataset elements
+      readDatasetInfo(catalog, result, dsElem, base);
+      return result;
+
+    } catch (Exception e) {
+      logger.error("featureCollection " + config.collectionName + " has fatal error, skipping ", e);
+      return null;
+    }
+
+  }
+
+  /* protected InvDatasetImpl readFeatureCollection(InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
+
+    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(dsElem);
+    config.spec = expandAliasForCollectionSpec(config.spec);
+
+    try {
       InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory(parent, config);
       if (ds == null) {
         logger.error("featureCollection " + config.collectionName + " has fatal error ");
@@ -351,7 +379,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return null;
     }
 
-  }
+  } */
 
   // read a dataset scan element
   protected InvDatasetScan readDatasetScan(InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
