@@ -19,11 +19,11 @@
     </dependency>
 
     <dependency>
-       <groupId>edu.ucar</groupId>
+        <groupId>${project.groupId}</groupId>
        <artifactId>grib</artifactId>
      </dependency>
 
-    <!-- logging -->
+    <!-- Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files. -->
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom2</artifactId>
