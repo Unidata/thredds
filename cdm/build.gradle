@@ -28,6 +28,7 @@ task integrationTest(type: Test, dependsOn: jar) {
 dependencies {
     compile project(':udunits')
     compile project(':httpservices')
+
     compile libraries["httpcore"]
     compile libraries["joda-time"]
     compile libraries["jdom2"]
@@ -37,8 +38,10 @@ dependencies {
     compile libraries["guava"]
     compile libraries["bzip2"]
     compile libraries["jcommander"]
+
     compile libraries["slf4j-api"]
     testRuntime libraries["slf4j-jdk14"]
+    runtime libraries["jcl-over-slf4j"]
 }
 
 javadoc {

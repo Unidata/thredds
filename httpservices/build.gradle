@@ -8,6 +8,7 @@ dependencies {
     compile libraries["jcip-annotations"]
     compile libraries["httpclient"]
     compile libraries["httpcore"]
+
     compile libraries["slf4j-api"]
     testRuntime libraries["slf4j-jdk14"]
     runtime libraries["jcl-over-slf4j"]
