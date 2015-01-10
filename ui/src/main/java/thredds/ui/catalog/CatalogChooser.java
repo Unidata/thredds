@@ -47,6 +47,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
+import java.util.Formatter;
 
 /**
  * A Swing widget for THREDDS clients to access and choose from Dataset Inventory catalogs.
@@ -465,7 +466,7 @@ public class CatalogChooser extends JPanel {
 
   private void showDatasetInfo(Dataset ds) {
     if (ds == null) return;
-    StringBuilder sbuff = new StringBuilder( 20000);
+    Formatter sbuff = new Formatter();
     DatasetHtmlWriter writer = new DatasetHtmlWriter();
     writer.writeHtmlDescription(sbuff, ds, true, false, datasetEvents, catrefEvents, true);
     if (showHTML) System.out.println("HTML=\n"+sbuff);

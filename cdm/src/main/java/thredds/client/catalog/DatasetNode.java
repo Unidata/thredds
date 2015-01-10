@@ -33,6 +33,7 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import thredds.client.catalog.builder.DatasetBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,13 +52,19 @@ public class DatasetNode {
   protected final String NAME = "name";
   protected final String DATASETS = "datasets";
 
-  protected final Map<String, Object> flds;     // keep memory small. dont have reference objects for nulls
+  protected final Map<String, Object> flds;     // keep memory small. dont store reference objects for nulls
 
-  public DatasetNode(DatasetNode parent, String name, List<Dataset> datasets) {
+  protected DatasetNode(DatasetNode parent, String name, List<DatasetBuilder> datasetBuilders) {
     flds = new HashMap<>(20);
     if (parent != null) flds.put(PARENT, parent);
     if (name != null) flds.put(NAME, name);
-    if (datasets != null) flds.put(DATASETS, datasets);
+
+    if (datasetBuilders != null && datasetBuilders.size() > 0) {
+      List<Dataset> datasets = new ArrayList<>(datasetBuilders.size());
+      for (DatasetBuilder dsb : datasetBuilders)
+        datasets.add (dsb.makeDataset(this));
+      flds.put(DATASETS, datasets);
+    }
   }
 
   public DatasetNode getParent() {

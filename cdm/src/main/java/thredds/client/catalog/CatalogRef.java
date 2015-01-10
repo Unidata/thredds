@@ -33,6 +33,11 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import thredds.client.catalog.builder.AccessBuilder;
+import thredds.client.catalog.builder.DatasetBuilder;
+
+import java.net.URI;
+import java.util.List;
 
 /**
  * Describe
@@ -40,12 +45,12 @@ import net.jcip.annotations.Immutable;
  * @author caron
  * @since 1/7/2015
  */
-@Immutable
-public class CatalogRef extends DatasetNode {
- private final String xlink;
+public class CatalogRef extends Dataset {
+  private final String xlink;
+  private boolean isRead;
 
-  public CatalogRef(DatasetNode parent, String name, String xlink) {
-    super(parent, name, null);
+  public CatalogRef(DatasetNode parent, String name, String xlink, String collectionType, Boolean harvest, String id, String urlPath, List<Metadata> metadata, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
+    super(parent, name, collectionType, harvest, id, urlPath, metadata, accessBuilders, datasetBuilders);
     this.xlink = xlink;
   }
 
@@ -53,8 +58,29 @@ public class CatalogRef extends DatasetNode {
     return xlink;
   }
 
+  // LOOK not so sure about this
   public boolean isRead() {
-    return false;
+    return isRead;
   }
+
+  public void setRead(boolean isRead) {
+    this.isRead = isRead;
+  }
+
+  /**
+   * @return Xlink reference as a URI, resolved
+   */
+  public URI getURI() {
+    try {
+      Catalog parent = getParentCatalog();
+      if (parent != null)
+        return parent.resolveUri(xlink);
+    }
+    catch (java.net.URISyntaxException e) {
+      return null;
+    }
+    return null;
+  }
+
 
 }

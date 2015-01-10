@@ -34,7 +34,7 @@
 package ucar.nc2.ui;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import thredds.client.catalog.builder.DataFactory;
+import thredds.client.catalog.writer.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.catalog.ThreddsUI;
@@ -189,7 +189,7 @@ public class ToolsUI extends JPanel {
   private AboutWindow aboutWindow = null;
 
   // data
-  private thredds.client.catalog.builder.DataFactory threddsDataFactory = new thredds.client.catalog.builder.DataFactory();
+  private DataFactory threddsDataFactory = new DataFactory();
   private DateFormatter formatter = new DateFormatter();
 
   private boolean setUseRecordStructure = false;

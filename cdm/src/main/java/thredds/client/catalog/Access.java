@@ -33,7 +33,6 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
-import thredds.catalog.*;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.stream.CdmRemote;
 
@@ -84,11 +83,11 @@ public class Access {                 // (5)
 
   public DataFormatType getDataFormat() {
     return dataFormat;
-  }
+  }     // optional
 
   public long getDataSize() {
     return dataSize;
-  }
+  }                   // optional
 
   /**
    * Get the standard URL, with resolution if the URL is reletive.
@@ -113,7 +112,6 @@ public class Access {                 // (5)
       Catalog cat = dataset.getParentCatalog();
       if (cat == null)
         return new URI(getUnresolvedUrlName());
-
       return cat.resolveUri(getUnresolvedUrlName());
 
     } catch (java.net.URISyntaxException e) {

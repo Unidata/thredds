@@ -33,6 +33,9 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import thredds.client.catalog.builder.AccessBuilder;
+import thredds.client.catalog.builder.DatasetBuilder;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 
 import java.util.ArrayList;
@@ -65,7 +68,7 @@ import java.util.List;
  * @since 1/7/2015
  */
 @Immutable
-public class Dataset extends DatasetNode {                 // (11)
+public class Dataset extends DatasetNode {
   private final String COLLECTIONTYPE = "collectionType";
   private final String HARVEST = "harvest";
   private final String ID = "id";
@@ -73,14 +76,22 @@ public class Dataset extends DatasetNode {                 // (11)
   private final String METADATA = "metadata";
   private final String ACCESS = "access";
 
-  public Dataset(DatasetNode parent, String name, String collectionType, Boolean harvest, String id, String urlPath, List<Metadata> metadata, List<Access> access, List<Dataset> datasets) {
-    super(parent, name, datasets);
+  public Dataset(DatasetNode parent, String name, String collectionType, Boolean harvest, String id, String urlPath, List<Metadata> metadata,
+                 List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
+    super(parent, name, datasetBuilders);
+
     if (collectionType != null) flds.put(COLLECTIONTYPE, collectionType);
     if (harvest != null) flds.put(HARVEST, harvest);
     if (id != null) flds.put(ID, id);
     if (urlPath != null) flds.put(URLPATH, urlPath);
     if (metadata != null) flds.put(METADATA, metadata);
-    if (access != null) flds.put(ACCESS, access);
+
+    if (accessBuilders != null && accessBuilders.size() > 0) {
+      List<Access> access = new ArrayList<>(accessBuilders.size());
+      for (AccessBuilder acc : accessBuilders)
+        access.add ( acc.makeAccess(this));
+      flds.put(ACCESS, access);
+    }
   }
 
   public String getCollectionType() {
@@ -88,7 +99,8 @@ public class Dataset extends DatasetNode {                 // (11)
   }
 
   public boolean isHarvest() {
-    return (Boolean) flds.get(HARVEST);
+    Boolean result = (Boolean) flds.get(HARVEST);
+    return (result != null) && result;
   }
 
   public String getId() {
@@ -153,4 +165,33 @@ public class Dataset extends DatasetNode {                 // (11)
   public boolean isDatasetScan() {
     return false;
   }
+
+  public DataFormatType getDataFormatType() {
+    return null;
+  }
+
+  public long getDataSize() {
+    return 0;
+  }
+
+  public String getAuthority() {
+    return null;
+  }
+
+  /**
+   * Get URL to this dataset. Dataset must have an ID.
+   * Form is catalogURL#DatasetID
+   *
+   * @return URL to this dataset.
+   */
+  public String getCatalogUrl() {
+    Catalog parent = getParentCatalog();
+    if (parent == null) return null;
+    String baseUri = parent.getUriString();
+    if (baseUri == null) return null;
+    return baseUri + "#" + getId();
+  }
+
+
+
 }

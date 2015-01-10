@@ -43,6 +43,7 @@ public enum ServiceType {
   CATALOG,
   CdmRemote,
   CdmrFeature,
+  Compound,
   DAP4,
   DODS,
   FILE,
@@ -62,4 +63,12 @@ public enum ServiceType {
   WFS,
   WMS,
   ;
+
+  // ignore case
+  static public ServiceType getServiceTypeIgnoreCase(String typeS) {
+    for (ServiceType s : values()) {
+      if (s.toString().equalsIgnoreCase(typeS)) return s;
+    }
+    return null;
+  }
 }

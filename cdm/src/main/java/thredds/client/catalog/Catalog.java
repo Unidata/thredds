@@ -33,6 +33,7 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.time.CalendarDate;
 
 import java.net.URI;
@@ -66,7 +67,7 @@ public class Catalog extends DatasetNode {
   private final String SERVICES = "services";
   private final String PROPERTIES = "properties";
 
-  public Catalog(URI baseURI, String name, CalendarDate expires, String version, List<Service> services, List<Property> properties, List<Dataset> datasets) {
+  public Catalog(URI baseURI, String name, CalendarDate expires, String version, List<Service> services, List<Property> properties, List<DatasetBuilder> datasets) {
     super(null, name, datasets);
     if (baseURI != null) flds.put(BASEURI, baseURI);
     if (expires != null) flds.put(EXPIRES, expires);
@@ -132,5 +133,11 @@ public class Catalog extends DatasetNode {
     //otherwise let the URI class resolve it
     return baseURI.resolve(want);
   }
+
+  public String getUriString() {
+    URI baseURI = getBaseURI();
+    return baseURI == null ? null : baseURI.toString();
+  }
+
 
 }

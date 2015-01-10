@@ -33,9 +33,13 @@
 package thredds.client.catalog.builder;
 
 import thredds.client.catalog.*;
+import ucar.nc2.time.CalendarDate;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -50,29 +54,49 @@ public class CatalogBuilder {
     void setCatalog(Catalog cat);
   }
 
-  public Catalog buildFromLocation(String location) {
-    return null;
+  public Catalog buildFromCatref(CatalogRef catref) throws IOException {
+    Catalog result =  buildFromURI(catref.getURI());
+    catref.setRead(!error);
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////
+
+  private Formatter errlog = new Formatter();
+  private boolean error = false;
+
+  public Catalog buildFromLocation(String location) throws IOException {
+    URI uri;
+    try {
+      uri = new URI(location);
+    } catch (URISyntaxException e) {
+      errlog.format("Bad location = %s err=%s%n", location, e.getMessage());
+      return null;
+    }
+    return buildFromURI(uri);
+  }
+
+  public Catalog buildFromURI(URI uri) throws IOException {
+    JdomCatalogBuilder jdomBuilder = new JdomCatalogBuilder(errlog);
+    error = jdomBuilder.readXML(this, uri);
+    return makeCatalog();
   }
 
   public String getErrorMessage() {
-    return null;
+    return errlog.toString();
   }
 
-  public Catalog buildFromCatref(CatalogRef catref) {
-     return null;
-  }
-
-  public void buildFromCatrefAsynch(CatalogRef catref, CatalogBuilder.Callback call) {
-    Catalog cat = buildFromCatref(catref);
-    if (cat != null) call.setCatalog(cat);
+  public boolean hasFatalError() {
+    return error;
   }
 
   ////////////////////////////////////////////////////
-  private String name, expires, version;
-  private URI baseURI;
+  String name, version;
+  CalendarDate expires;
+  URI baseURI;
   List<Property> properties;
   List<Service> services;
-  List<DatasetBuilder> datasets;
+  List<DatasetBuilder> datasetBuilders;
 
   public void setName(String name) {
     this.name = name;
@@ -82,7 +106,7 @@ public class CatalogBuilder {
     this.baseURI = baseURI;
   }
 
-  public void setExpires(String expires) {
+  public void setExpires(CalendarDate expires) {
     this.expires = expires;
   }
 
@@ -101,8 +125,14 @@ public class CatalogBuilder {
   }
 
   public void addDataset(DatasetBuilder d) {
-    if (datasets == null) datasets = new ArrayList<>();
-    datasets.add(d);
+    if (datasetBuilders == null) datasetBuilders = new ArrayList<>();
+    datasetBuilders.add(d);
+  }
+
+  Catalog makeCatalog() {
+
+    return new Catalog(baseURI, name, expires, version, services, properties, datasetBuilders);
+
   }
 
 

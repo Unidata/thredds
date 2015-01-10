@@ -32,9 +32,10 @@
  */
 package thredds.client.catalog.builder;
 
-import thredds.client.catalog.Access;
+import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.Metadata;
+import ucar.nc2.constants.FeatureType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,40 +49,74 @@ import java.util.List;
 public class DatasetBuilder {
 
   DatasetBuilder parent;
+  String authority;
   String name;
   String collectionType;
+  FeatureType featureType;
   Boolean harvest;
   String id;
+  String serviceName;
   String urlPath;
   List<Metadata> metadata;
-  List<AccessBuilder> access;
-  List<DatasetBuilder> datasets;
+  List<AccessBuilder> accessBuilders;
+  List<DatasetBuilder> datasetBuilders;
 
-  public DatasetBuilder(DatasetBuilder parent, String name, String collectionType, Boolean harvest, String id, String urlPath) {
+  public DatasetBuilder(DatasetBuilder parent) {
     this.parent = parent;
+  }
+
+  public void setAuthority(String authority) {
+    this.authority = authority;
+  }
+
+  public void setName(String name) {
     this.name = name;
+  }
+
+  public void setCollectionType(String collectionType) {
     this.collectionType = collectionType;
+  }
+
+  public void setFeatureType(FeatureType featureType) {
+    this.featureType = featureType;
+  }
+
+  public void setHarvest(Boolean harvest) {
     this.harvest = harvest;
+  }
+
+  public void setId(String id) {
     this.id = id;
+  }
+
+  public void setServiceName(String serviceName) {
+    this.serviceName = serviceName;
+  }
+
+  public void setUrlPath(String urlPath) {
     this.urlPath = urlPath;
   }
 
   public void addDataset(DatasetBuilder d) {
     if (d == null) return;
-    if (datasets == null) datasets = new ArrayList<>();
-    datasets.add(d);
+    if (datasetBuilders == null) datasetBuilders = new ArrayList<>();
+    datasetBuilders.add(d);
   }
 
 
   public void addAccess(AccessBuilder d) {
-    if (access == null) access = new ArrayList<>();
-    access.add(d);
+    if (accessBuilders == null) accessBuilders = new ArrayList<>();
+    accessBuilders.add(d);
   }
 
 
   public void addMetadata(Metadata d) {
     if (metadata == null) metadata = new ArrayList<>();
     metadata.add(d);
+  }
+
+  public Dataset makeDataset(DatasetNode parent) {
+    return new Dataset(parent, name, collectionType, harvest, id, urlPath, metadata, accessBuilders, datasetBuilders);
   }
 
 }

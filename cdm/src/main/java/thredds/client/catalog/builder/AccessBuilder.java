@@ -32,12 +32,13 @@
  */
 package thredds.client.catalog.builder;
 
+import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
 import ucar.nc2.constants.DataFormatType;
 
 /**
- * Describe
+ * build immutable access element
  *
  * @author caron
  * @since 1/8/2015
@@ -45,15 +46,20 @@ import ucar.nc2.constants.DataFormatType;
 public class AccessBuilder {
   DatasetBuilder dataset;
   String urlPath;
-  String serviceName;
-  String dataFormat;
-  double dataSize;
+  Service service;
+  String dataFormatS;
+  long dataSize;
 
-  public AccessBuilder(DatasetBuilder dataset, String urlPath, String serviceName, String dataFormat, double dataSize) {
+  public AccessBuilder(DatasetBuilder dataset, String urlPath, Service service, String dataFormatS, long dataSize) {
     this.dataset = dataset;
     this.urlPath = urlPath;
-    this.serviceName = serviceName;
-    this.dataFormat = dataFormat;
+    this.service = service;
+    this.dataFormatS = dataFormatS;
     this.dataSize = dataSize;
+  }
+
+  public Access makeAccess(Dataset dataset) {
+    DataFormatType dataFormat = DataFormatType.valueOf(dataFormatS);
+    return new Access(dataset, urlPath, service, dataFormat, dataSize);
   }
 }

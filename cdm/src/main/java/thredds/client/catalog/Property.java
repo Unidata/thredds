@@ -35,7 +35,7 @@ package thredds.client.catalog;
 import net.jcip.annotations.Immutable;
 
 /**
- * Describe
+ * name/value
  *
  * @author caron
  * @since 1/7/2015

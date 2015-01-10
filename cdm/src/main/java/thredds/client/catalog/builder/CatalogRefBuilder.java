@@ -32,24 +32,35 @@
  */
 package thredds.client.catalog.builder;
 
-import thredds.client.catalog.Property;
-import thredds.client.catalog.Service;
-import thredds.client.catalog.ServiceType;
-
-import java.util.List;
+import thredds.client.catalog.CatalogRef;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.DatasetNode;
 
 /**
  * Describe
  *
  * @author caron
- * @since 1/7/2015
+ * @since 1/9/2015
  */
-public class ServiceBuilder {
-  public String name;
-  public String base;
-  public ServiceType type;
-  public String desc;
-  public String suffix;
-  public List<Service> nestedServices;
-  public List<Property> properties;
+public class CatalogRefBuilder extends DatasetBuilder {
+
+  String title;
+  String href;
+
+  public CatalogRefBuilder(DatasetBuilder parent) {
+    super(parent);
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setHref(String href) {
+    this.href = href;
+  }
+
+  @Override
+  public Dataset makeDataset(DatasetNode parent) {
+    return new CatalogRef(parent, title, href, collectionType, harvest, id, urlPath, metadata, accessBuilders, datasetBuilders);
+  }
 }

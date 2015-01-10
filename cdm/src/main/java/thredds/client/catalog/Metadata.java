@@ -41,11 +41,28 @@ package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
 
+import java.util.Map;
+
 @Immutable
 public class Metadata {
   public enum Type { NcML }
 
+  public final String PARENT = "parent";
+  public final String NAME = "name";
+  public final String INHERITED = "isInherited";
+
+  public final Map<String, Object> flds;     // keep memory small. dont store reference objects for nulls
+
+  public Metadata(Map<String, Object> flds) {
+    this.flds = flds;
+  }
+
   Metadata.Type getType() {
     return Type.NcML;
+  }
+
+  public boolean isInherited() {
+    Boolean isInherited = (Boolean) flds.get(INHERITED);
+    return isInherited != null && isInherited;
   }
 }
