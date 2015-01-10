@@ -26,29 +26,23 @@ Dependencies: Mandatory dependencies are listed first. Then
     <groupId>${project.groupId}</groupId>
     <artifactId>d4core</artifactId>
   </dependency>
+
   <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>d4shared</artifactId>
   </dependency>
 
-  <!-- Servlet -->
-<!--
   <dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <version>${javax.servlet.version}</version>
-    <scope>provided</scope>
-  </dependency>
--->
-
-  <!-- CDM -->
-  <dependency>
-    <groupId>edu.ucar</groupId>
+    <groupId>${project.groupId}</groupId>
     <artifactId>cdm</artifactId>
-    <!-- version>${thredds.version}</version -->
-    <!-- scope>provided</scope -->
   </dependency>
 
+  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <scope>test</scope>
+  </dependency>
 </dependencies>
 
 </project>

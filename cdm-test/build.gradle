@@ -1,17 +1,27 @@
-
 dependencies {
-  compile project(':cdm')
-  compile project(':clcommon')
-  compile project(':bufr')
-  compile project(':grib')
-  compile project(':netcdf4')
-  compile project(':opendap')
-  compile project(':visad')
+    // A lot of these depedencies should be in the testRuntime config, not testCompile.
 
-  compile 'org.apache.commons:commons-compress:1.8.1'
-  compile 'org.itadaki:bzip2:0.9.1'
-  compile 'org.tukaani:xz:1.0'
+    testCompile project(":cdm")
+    testRuntime project(":bufr")
+    testRuntime project(":grib")
+    testRuntime project(":netcdf4")
+    testRuntime project(":opendap")
+    testCompile project(":httpservices")
+    testRuntime project(":visad")
+    testRuntime project(":clcommon")
 
-  testCompile project(':cdm').sourceSets.test.output
-  testCompile 'commons-io:commons-io:2.4'
+    testCompile libraries["visad"]
+    testCompile libraries["httpclient"]
+    testCompile libraries["httpcore"]
+    testCompile libraries["commons-io"]
+    testCompile libraries["commons-compress"]
+    testCompile libraries["bzip2"]
+    testCompile libraries["xz"]
+    testCompile libraries["jj2000"]
+    testCompile libraries["jdom2"]
+
+    testCompile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
+    testRuntime libraries["jcl-over-slf4j"]
+    // TODO: testCompile cdm:test-jar
 }

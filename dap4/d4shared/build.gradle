@@ -1,10 +1,9 @@
-
-description = ''
 dependencies {
-  compile project(':dap4:d4core')
-  compile project(':httpservices')
+    compile project(':dap4:d4core')
+    compile project(':httpservices')
 
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.2.6'
-    compile group: 'org.apache.httpcomponents', name: 'httpcore', version:'4.2.5'
-    compile group: 'org.apache.httpcomponents', name: 'httpmime', version:'4.2.6'
+    compile libraries["httpclient"]
+    compile libraries["httpcore"]
+    testRuntime libraries["slf4j-jdk14"]
+    testRuntime libraries["jcl-over-slf4j"]
 }

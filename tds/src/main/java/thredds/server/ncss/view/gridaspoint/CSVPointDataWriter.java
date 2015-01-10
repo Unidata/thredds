@@ -33,7 +33,6 @@
 
 package thredds.server.ncss.view.gridaspoint;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -290,7 +289,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 			}
 			allDone = true;
 		}catch(IOException ioe){
-			Log.error("Error reading data", ioe);
+			log.error("Error reading data", ioe);
 		}	
 		printWriter.println();	
 		return allDone;
@@ -351,7 +350,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 			}
 			allDone = true;
 		}catch(IOException ioe){
-			Log.error("Error reading data", ioe);
+			log.error("Error reading data", ioe);
 		}	
 		printWriter.println();	
 		return allDone;
@@ -392,7 +391,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 			}
 			allDone = true;
 		}catch(IOException ioe){
-			Log.error("Error reading data", ioe);
+			log.error("Error reading data", ioe);
 		}	
 		printWriter.println();	
 		return allDone;
@@ -440,7 +439,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 			}
 			allDone = true;
 		}catch(IOException ioe){
-			Log.error("Error reading data", ioe);
+			log.error("Error reading data", ioe);
 		}
 		printWriter.println();	
 		return allDone;

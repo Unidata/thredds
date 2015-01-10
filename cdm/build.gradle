@@ -8,15 +8,15 @@ jar {
 
 sourceSets {
     test {
-       java {
-           exclude 'thredds/catalog2/**/*.java'
-       }
+        java {
+            exclude 'thredds/catalog2/**/*.java'
+        }
     }
 
     integrationTest {
-      java.srcDir file('src/integration-test/java')
-      resources.srcDir file('src/integration-test/resources')
-  }
+        java.srcDir file('src/integration-test/java')
+        resources.srcDir file('src/integration-test/resources')
+    }
 }
 
 task integrationTest(type: Test, dependsOn: jar) {
@@ -26,73 +26,76 @@ task integrationTest(type: Test, dependsOn: jar) {
 }
 
 dependencies {
-  compile project(':udunits')
-  compile project(':httpservices')
-  compile 'org.apache.httpcomponents:httpcore:4.2.5'
-  compile 'com.google.protobuf:protobuf-java:2.5.0'
-  compile 'com.google.guava:guava:18.0'
-  compile 'joda-time:joda-time:2.2'
-  compile 'net.jcip:jcip-annotations:1.0'
-  compile 'org.jdom:jdom2:2.0.4'
-  compile 'org.itadaki:bzip2:0.9.1'
-  compile 'org.quartz-scheduler:quartz:2.2.0'
-  compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
-  runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
-  compile group: 'com.beust', name: 'jcommander', version: jcommanderVersion
+    compile project(':udunits')
+    compile project(':httpservices')
+
+    compile libraries["httpcore"]
+    compile libraries["joda-time"]
+    compile libraries["jdom2"]
+    compile libraries["jcip-annotations"]
+    compile libraries["quartz"]
+    compile libraries["protobuf-java"]
+    compile libraries["guava"]
+    compile libraries["bzip2"]
+    compile libraries["jcommander"]
+
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
+    runtime libraries["jcl-over-slf4j"]
 }
 
 javadoc {
-  title = 'Public javadoc for netcdf-java version ' + version
-  source = fileTree(dir: 'src/main/java').matching {
-    include 'thredds/catalog/*.java'
-    include 'ucar/ma2/*.java'
-    include 'ucar/nc2/*.java'
-    include 'ucar/nc2/constants/*.java'
-    include 'ucar/nc2/dataset/**/*.java'
-    include 'ucar/nc2/dt/*.java'
-    include 'ucar/nc2/dt/grid/*.java'
-    include 'ucar/nc2/ft/*.java'
-    include 'ucar/nc2/ncml/*.java'
-    include 'ucar/nc2/time/*.java'
-    include 'ucar/nc2/units/*.java'
-    include 'ucar/nc2/util/*.java'
-    include 'ucar/unidata/**/*.java'
-  }
+    title = 'Public javadoc for netcdf-java version ' + version
+    source = fileTree(dir: 'src/main/java').matching {
+        include 'thredds/catalog/*.java'
+        include 'ucar/ma2/*.java'
+        include 'ucar/nc2/*.java'
+        include 'ucar/nc2/constants/*.java'
+        include 'ucar/nc2/dataset/**/*.java'
+        include 'ucar/nc2/dt/*.java'
+        include 'ucar/nc2/dt/grid/*.java'
+        include 'ucar/nc2/ft/*.java'
+        include 'ucar/nc2/ncml/*.java'
+        include 'ucar/nc2/time/*.java'
+        include 'ucar/nc2/units/*.java'
+        include 'ucar/nc2/util/*.java'
+        include 'ucar/unidata/**/*.java'
+    }
 }
 
 task releaseDocs(dependsOn: javadoc) << {
-  def releaseDir = webdir + "javadoc"
+    def releaseDir = webdir + "javadoc"
 
-  ant.delete(dir: releaseDir)
-  ant.mkdir(dir: releaseDir)
+    ant.delete(dir: releaseDir)
+    ant.mkdir(dir: releaseDir)
 
-  copy {
-    println "copyDocs to " + releaseDir
-    from("build/docs/javadoc")
-    into releaseDir
-  }
+    copy {
+        println "copyDocs to " + releaseDir
+        from("build/docs/javadoc")
+        into releaseDir
+    }
 }
 
 /////////
 
 shadow {
-  outputFile = file("${destinationDir }/cdms-${version}.jar")
-  stats = true
+    outputFile = file("${destinationDir}/cdms-${version}.jar")
+    stats = true
 
-  exclude 'META-INF/*.DSA'
-  exclude 'META-INF/*.RSA'
-  exclude 'META-INF/NOTICE'
-  exclude 'META-INF/LICENSE'
-  exclude 'META-INF/*.txt'
-  exclude 'META-INF/*.xml'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/*.txt'
+    exclude 'META-INF/*.xml'
 
-  artifactSet {
-      exclude 'commons-logging:commons-logging:*'
-  }
-
-  jar {
-    manifest {
-      attributes 'Main-Class': 'ucar.nc2.NCdumpW'
+    artifactSet {
+        exclude 'commons-logging:commons-logging:*'
     }
-  }
+
+    jar {
+        manifest {
+            attributes 'Main-Class': 'ucar.nc2.NCdumpW'
+        }
+    }
 }

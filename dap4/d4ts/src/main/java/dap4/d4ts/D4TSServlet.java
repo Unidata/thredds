@@ -4,22 +4,15 @@
 
 package dap4.d4ts;
 
-import dap4.ce.CEConstraint;
-import dap4.ce.parser.*;
-import dap4.core.dmr.*;
-import dap4.core.dmr.parser.Dap4Parser;
-import dap4.core.util.*;
-import dap4.dap4shared.*;
+import dap4.core.util.DapException;
+import dap4.core.util.DapUtil;
 import dap4.servlet.*;
-import org.xml.sax.SAXException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.*;
-import java.io.*;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.nio.ByteOrder;
-import java.nio.charset.Charset;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class D4TSServlet extends DapServlet
 {

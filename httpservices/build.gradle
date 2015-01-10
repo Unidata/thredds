@@ -5,7 +5,11 @@ jar {
 }
 
 dependencies {
-  compile ('org.apache.httpcomponents:httpcore:4.2.5', 'org.apache.httpcomponents:httpclient:4.2.6', 'org.apache.httpcomponents:httpmime:4.2.6')
-  compile 'net.jcip:jcip-annotations:1.0'
-  compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+    compile libraries["jcip-annotations"]
+    compile libraries["httpclient"]
+    compile libraries["httpcore"]
+
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
+    runtime libraries["jcl-over-slf4j"]
 }

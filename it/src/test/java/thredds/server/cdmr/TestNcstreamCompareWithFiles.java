@@ -15,14 +15,16 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.StringUtil2;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.util.StringUtil2;
 
 @RunWith(Parameterized.class)
 public class TestNcstreamCompareWithFiles {

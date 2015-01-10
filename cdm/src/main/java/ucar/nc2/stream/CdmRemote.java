@@ -129,7 +129,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       NcStreamReader reader = new NcStreamReader();
       reader.readStream(is, this);
       this.location = SCHEME + remoteURI;
-
     } finally {
       if (method != null) method.close();
     }

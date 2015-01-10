@@ -2,54 +2,58 @@ apply plugin: 'shadow'
 import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
 
 dependencies {
-  compile project(':cdm')
-  compile project(':grib')
-  compile project(':tdcommon')
+    compile project(':httpservices')
+    compile project(':cdm')
+    compile project(':grib')
+    compile project(':tdcommon')
 
-  compile group: 'org.springframework', name: 'spring-context', version: springVersion
-  compile group: 'org.springframework', name: 'spring-beans', version: springVersion
+    compile libraries["httpclient"]
+    compile libraries["jdom2"]
+    compile libraries["spring-core"]
+    compile libraries["spring-context"]
 
-  runtime group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
-  runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion
-  runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
+    compile libraries["slf4j-api"]
+    runtime libraries["log4j-slf4j-impl"]
+    runtime libraries["log4j-core"]
+    runtime libraries["jcl-over-slf4j"]
 }
 
 shadow {
-  outputFile = file("${destinationDir }/tdms-${version}.jar")
-  stats = true
+    outputFile = file("${destinationDir}/tdms-${version}.jar")
+    stats = true
 
-  exclude 'com/sleepycat/**'
-  exclude 'net/sf/**'
-  exclude 'org/quartz/**'
-  exclude 'META-INF/*.DSA'
-  exclude 'META-INF/*.RSA'
-  exclude 'META-INF/NOTICE'
-  exclude 'META-INF/LICENSE'
-  exclude 'META-INF/*.txt'
-  exclude 'META-INF/*.xml'
+    exclude 'com/sleepycat/**'
+    exclude 'net/sf/**'
+    exclude 'org/quartz/**'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/*.txt'
+    exclude 'META-INF/*.xml'
 
-  artifactSet {
-      exclude 'commons-logging:commons-logging:*'
-  }
-
-  jar {
-    manifest {
-      attributes 'Main-Class': 'thredds.tdm.TdmRunner'
+    artifactSet {
+        exclude 'commons-logging:commons-logging:*'
     }
-  }
 
-  transformer(AppendingTransformer) {
-      resource = 'META-INF/spring.handlers'
-   }
-   transformer(AppendingTransformer) {
-      resource = 'META-INF/spring.schemas'
-   }
+    jar {
+        manifest {
+            attributes 'Main-Class': 'thredds.tdm.TdmRunner'
+        }
+    }
+
+    transformer(AppendingTransformer) {
+        resource = 'META-INF/spring.handlers'
+    }
+    transformer(AppendingTransformer) {
+        resource = 'META-INF/spring.schemas'
+    }
 }
 
 task showClasspath << {
-   buildscript.configurations.classpath.each { println it }
+    buildscript.configurations.classpath.each { println it }
 }
 
 task showMeCache << {
-  configurations.compile.each { println it }
+    configurations.compile.each { println it }
 }

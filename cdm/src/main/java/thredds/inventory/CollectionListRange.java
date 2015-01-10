@@ -33,7 +33,6 @@
 package thredds.inventory;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import org.slf4j.Logger;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;

@@ -8,42 +8,34 @@ import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 
 dependencies {
-    compile project(':cdm')
-    compile project(':clcommon')
-    compile project(':bufr')
-    compile project(':grib')
-    compile project(':netcdf4')
-    compile(project(':opendap')) {
-        exclude module: 'javax.servlet-api'
-    }
-    compile project(':visad')
-    compile project(':waterml')
+    compile project(":cdm")
+    compile project(":clcommon")
+    compile project(":bufr")
+    compile project(":grib")
+    compile project(":netcdf4")
+    compile project(":opendap")
+    compile project(":waterml")
+    compile project(":httpservices")
 
-    // DAP4 dependencies (technically forward)
-    compile project(':dap4:d4core')
-    compile project(':dap4:d4shared')
-    compile project(':dap4:d4cdmshared')
-    compile project(':dap4:d4cdmclient')
+    compile libraries["ehcache-core"]
+    compile libraries["jdom2"]
+    compile libraries["spring-context"]
+    compile libraries["jcommon"]
+    compile libraries["jfreechart"]
+    compile libraries["jgoodies-forms"]
+    compile libraries["httpclient"]
+    compile libraries["httpcore"]
+    compile libraries["bounce"]
+    compile libraries["imgscalr-lib"]
+    compile libraries["bzip2"]
+    compile libraries["commons-lang3"]
+    compile libraries["52n-oxf-xmlbeans"]
+    compile libraries["guava"]
 
-    compile('org.jfree:jcommon:1.0.23')
-    compile(group: 'org.jfree', name: 'jfreechart', version: jfreechartVersion) {
-        exclude group: 'com.lowagie'
-    }
-    compile('com.jgoodies:jgoodies-forms:1.6.0')
-
-    compile('org.bounce:bounce:0.14')
-    compile('org.imgscalr:imgscalr-lib:4.2')
-    compile('org.itadaki:bzip2:0.9.1')
-    compile('net.sf.ehcache:ehcache-core:2.6.2')
-    compile('org.apache.commons:commons-lang3:3.1')
-
-    compile(group: 'org.springframework', name: 'spring-core', version: springVersion) {
-        transitive = false  // commons-logging
-    }
-    compile group: 'org.springframework', name: 'spring-context', version: springVersion
-
-    testCompile project(':cdm').sourceSets.test.output
-    runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
+    compile libraries["slf4j-api"]
+    runtime libraries["slf4j-jdk14"]
+    runtime libraries["jcl-over-slf4j"]
+    // TODO: testCompile cdm:test-jar
 }
 
 jar {
@@ -61,7 +53,7 @@ ext {
         webstartDir = webdir + "webstart"
     }
 
-    jarsContainingDuplicateEntries = [ 'xmlbeans-2.6.0.jar' ]
+    jarsContainingDuplicateEntries = ['xmlbeans-2.6.0.jar']
 }
 
 shadow {
@@ -84,7 +76,9 @@ shadow {
     exclude 'META-INF/*.xml'
 
     artifactSet {
-        exclude 'commons-logging:commons-logging:*'
+        // ToolsUI won't be run in a web container.
+        // Dragged in by opendap.
+        exclude 'javax.servlet:javax.servlet-api:*'
     }
 
     jar {
@@ -140,7 +134,7 @@ task releaseWebstart(dependsOn: jar) << {
 
         copy {
             println "copy2web"
-            from( webstartWorkingDir )
+            from(webstartWorkingDir)
             into webstartDir
         }
     } else {
@@ -214,7 +208,6 @@ task showDependencies << {
         println " " + file
     }
 }
-
 
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate

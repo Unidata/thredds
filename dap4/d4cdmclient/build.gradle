@@ -3,4 +3,5 @@ dependencies {
     compile project(':dap4:d4shared')
     compile project(':dap4:d4cdmshared')
     compile project(':cdm')
+    testRuntime libraries["slf4j-jdk14"]
 }

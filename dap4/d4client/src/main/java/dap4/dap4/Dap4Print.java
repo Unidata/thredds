@@ -3,17 +3,23 @@
 */
 package dap4.dap4;
 
-import dap4.core.util.*;
-import dap4.core.dmr.*;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import dap4.core.data.*;
-
-import dap4.dap4shared.*;
-import org.apache.commons.cli.*;
+import dap4.core.dmr.*;
+import dap4.core.util.*;
+import dap4.dap4shared.D4DSP;
+import dap4.dap4shared.D4DataCompoundArray;
+import dap4.dap4shared.D4DataDataset;
+import dap4.dap4shared.HttpDSP;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Retrieve a DAP4 remote source and print in DMR format.
@@ -29,6 +35,7 @@ import java.util.*;
 
 public class Dap4Print
 {
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Dap4Print.class);
 
     //////////////////////////////////////////////////
     // Constants
@@ -728,78 +735,67 @@ public class Dap4Print
      *         return path;
      *         }
      */
+
     //////////////////////////////////////////////////
-    // Main helper methods
-    static void
-    usage(String msg)
-    {
-        System.err.println(msg);
-        System.err.println("usage: java -jar Dap4Print"
-            + "-o <output-file>"
-            + "<url-with-constraint>"
-        );
-        System.exit(1);
-    }
+    // Main helper class
 
-    static CommandlineOptions
-    getopts(String[] argv)
-    {
-        // Get command line options
-        Options options = new Options();
-        options.addOption("o", true, "send output to this file");
+    private static class CommandLine {
+        @Parameter(names = {"-o"}, description = "Output file", required = false)
+        public File outputFile;
 
-        CommandLineParser clparser = new PosixParser();
-        CommandLine cmd = null;
-        try {
-            cmd = clparser.parse(options, argv);
-        } catch (ParseException pe) {
-            usage("Command line parse failure: " + pe.getMessage());
+        @Parameter(arity = 1, description = "<URL-with-constraint>", required = true)
+        public List<String> urls = new ArrayList<>();
+
+        @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+        public boolean help = false;
+
+        private final JCommander jc;
+
+        public CommandLine(String progName, String[] args) throws ParameterException {
+            this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+            jc.setProgramName(progName);           // Displayed in the usage information.
         }
 
-        CommandlineOptions cloptions = new CommandlineOptions();
-        String[] remainder = cmd.getArgs();
-        if(remainder.length > 0)
-            cloptions.path = remainder[0];
-        if(cmd.hasOption("o")) {
-            cloptions.outputfile = cmd.getOptionValue("o");
+        public void printUsage() {
+            jc.usage();
         }
-        return cloptions;
     }
 
     //////////////////////////////////////////////////
     // Main
 
-    /**
-     * Main program.
-     * See usage() for command line arguments.
-     * Default is to dump the header info only.
-     *
-     * @param argv command line arguments
-     */
-    static public void
-    main(String[] argv)
-    {
+    public static void main(String[] args) throws Exception {
+        String progName = "Dap4Print";
+
         try {
+            CommandLine cmdLine = new CommandLine(progName, args);
 
-            if(argv.length == 0)
-                usage("");
+            if (cmdLine.help) {
+                cmdLine.printUsage();
+                return;
+            }
 
-            CommandlineOptions options = getopts(argv);
-            PrintWriter output = null;
-            if(options.outputfile != null) {
-                File f = new File(options.outputfile);
-                if(!f.canWrite())
-                    usage("Cannot write to output file: " + options.outputfile);
-                output = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f), DapUtil.UTF8));
-            } else
-                output = new PrintWriter(new OutputStreamWriter(System.out, DapUtil.UTF8));
-            Dap4Print d4printer = new Dap4Print(options.path, output);
-            d4printer.print();
-            output.close();
+            assert !cmdLine.urls.isEmpty() : "JCommander should have caught the lack of a main param.";
+            String url = cmdLine.urls.get(0);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+            if (cmdLine.urls.size() > 1) {
+                logger.warn("Ignoring all URLs after the first.");
+            }
+
+            OutputStream outStream;
+            if (cmdLine.outputFile != null) {
+                outStream = new FileOutputStream(cmdLine.outputFile);
+            } else {
+                outStream = System.out;
+            }
+
+            try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(outStream, DapUtil.UTF8))) {
+                Dap4Print d4printer = new Dap4Print(url, writer);
+                d4printer.print();
+            }
+        } catch (ParameterException e) {
+            System.err.println(e.getMessage());
+            System.err.printf("Try \"%s --help\" for more information.%n", progName);
         }
     }
 

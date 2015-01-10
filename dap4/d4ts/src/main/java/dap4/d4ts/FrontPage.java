@@ -5,12 +5,11 @@ package dap4.d4ts;
 
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.dap4shared.XURI;
-import dap4.servlet.*;
+import dap4.servlet.DapLog;
+import dap4.servlet.ServletInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -5,9 +5,15 @@ jar {
 }
 
 dependencies {
-  compile project(':cdm')
-  compile 'org.jsoup:jsoup:1.6.1'
-  compile 'edu.ucar:jj2000:5.2'
-  compile 'org.itadaki:bzip2:0.9.1'
-  testCompile project(':cdm').sourceSets.test.output
+    compile project(':cdm')
+    compile libraries["protobuf-java"]
+    compile libraries["jdom2"]
+    compile libraries["jsoup"]
+    compile libraries["jcip-annotations"]
+    compile libraries["jj2000"]
+    compile libraries["bzip2"]
+    compile libraries["guava"]
+
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
 }

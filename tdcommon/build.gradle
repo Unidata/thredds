@@ -5,14 +5,14 @@ jar {
 }
 
 dependencies {
-  compile project(':cdm')
+    compile project(':cdm')
+    compile project(':grib')
 
-  // logging should be a group
-  compile group: 'org.slf4j', name: 'slf4j-api', version:slf4jVersion
-  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version:log4jVersion
-  compile group: 'org.apache.logging.log4j', name: 'log4j-core', version:log4jVersion
-  compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version:log4jVersion
-  compile (group: 'org.springframework', name: 'spring-core', version: springVersion)  {
-      exclude group: "commons-logging"
-    }
+    compile libraries["jdom2"]        // Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files.
+    compile libraries["spring-core"]
+
+    compile libraries["slf4j-api"]
+    compile libraries["log4j-api"]
+    compile libraries["log4j-core"]
+    runtime libraries["jcl-over-slf4j"]
 }

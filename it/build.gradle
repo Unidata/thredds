@@ -1,0 +1,21 @@
+dependencies {
+    testCompile project(":cdm")
+    testRuntime project(":clcommon")
+    testRuntime project(":grib")
+    testCompile project(":httpservices")
+    testRuntime project(":opendap")
+    testRuntime project(":visad")
+
+    testRuntime libraries["jaxen"]
+    testCompile libraries["jdom2"]
+    testCompile libraries["commons-io"]
+    testCompile libraries["joda-time"]
+    testCompile libraries["httpcore"]
+    testCompile libraries["httpclient"]
+
+    testCompile libraries["com.eclipsesource.restfuse"]
+    // TODO: testCompile cdm:test-jar
+
+    testRuntime libraries["slf4j-jdk14"]
+    testRuntime libraries["jcl-over-slf4j"]
+}

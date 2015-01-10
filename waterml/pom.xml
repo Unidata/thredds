@@ -31,20 +31,43 @@
 
     <dependencies>
         <dependency>
-            <groupId>edu.ucar</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>cdm</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.n52.sensorweb</groupId>
-            <artifactId>52n-xml-waterML-dr-v20</artifactId>
-            <version>1.1.5</version>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.n52.sensorweb</groupId>
             <artifactId>52n-oxf-xmlbeans</artifactId>
-            <version>1.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-waterML-v20</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-gml-v321</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sweCommon-v20</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-om-v20</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.n52.sensorweb</groupId>
+            <artifactId>52n-xml-sampling-v20</artifactId>
         </dependency>
 
         <dependency>
@@ -52,6 +75,12 @@
             <artifactId>guava</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+
+        <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>

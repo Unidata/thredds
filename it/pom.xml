@@ -33,67 +33,92 @@
  =========================================================== -->
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cdm</artifactId>
       <scope>test</scope>
     </dependency>
 
-    <!-- thredds dependencies are not needed jet. Cargo takes the thredds.war from the tds/target directory -->
-    <!-- dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>thredds</artifactId>          
-      <type>war</type>
-    </dependency>
-    
     <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>thredds</artifactId>          
-      <type>jar</type>
-      <classifier>classes</classifier>
-    </dependency-->
-
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>cdm</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>clcommon</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>httpservices</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>opendap</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>visadCdm</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
-      <groupId>edu.wisc.ssec</groupId>
-      <artifactId>visad</artifactId>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <scope>test</scope>  <!-- testRuntime -->
     </dependency>
 
     <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <dependency>
+      <groupId>com.restfuse</groupId>
+      <artifactId>com.eclipsesource.restfuse</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
 
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
@@ -101,32 +126,10 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom2</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.restfuse</groupId>
-      <artifactId>com.eclipsesource.restfuse</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -162,7 +165,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>${skipTests}</skip>
           <excludes>
             <exclude>/thredds/tds/*</exclude>
           </excludes>
@@ -185,15 +187,13 @@
       </plugin>
 
       <!-- ===========================================================
-         Cargo configuration.
-        Runs in the pre-integration-test and post-integration-test phases
-        It uses a new tomcat with version ${tomcat7.version} It downloads, installs, runs and stops a new tomcat instance on every run.
-         It could also use an existing tomcat instance.
-     =========================================================== -->
+        Cargo configuration. Runs in the pre-integration-test and post-integration-test phases.
+        It downloads apache-tomcat-7.0.56 from the Unidata public website, installs it, starts it, and stops it
+        on every run. It could also use an existing tomcat instance, though it's not configured that way.
+      =========================================================== -->
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
-        <version>${cargo-plugin.version}</version>
 
         <executions>
           <execution>

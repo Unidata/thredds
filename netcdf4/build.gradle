@@ -5,6 +5,8 @@ jar {
 }
 
 dependencies {
-  compile project(':cdm')
-  compile group: 'net.java.dev.jna', name: 'jna', version: jnaVersion
+    compile project(':cdm')
+    compile libraries["jna"]
+    compile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
 }

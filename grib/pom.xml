@@ -50,9 +50,8 @@
            Dependencies
        =========================================================== -->
   <dependencies>
-
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
 
@@ -72,25 +71,29 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>net.jcip</groupId>
       <artifactId>jcip-annotations</artifactId>
     </dependency>
 
     <dependency>
-	  <groupId>edu.ucar</groupId>
+	  <groupId>${project.groupId}</groupId>
 	  <artifactId>jj2000</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>cdm</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
+      <groupId>org.itadaki</groupId>
+      <artifactId>bzip2</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <dependency>
@@ -98,25 +101,13 @@
       <artifactId>slf4j-jdk14</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.itadaki</groupId>
-      <artifactId>bzip2</artifactId>
-      <version>0.9.1</version>
-    </dependency>
-
   </dependencies>
 
   <build>
-    <testSourceDirectory>src/test/java</testSourceDirectory>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>${skipTests}</skip>
-        </configuration>
       </plugin>
 
     </plugins>

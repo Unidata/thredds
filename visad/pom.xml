@@ -22,12 +22,12 @@
   <!-- Dependencies -->
   <dependencies>
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>edu.ucar</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
     </dependency>
 
@@ -37,15 +37,14 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
 
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>cdm</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <dependency>
@@ -55,48 +54,48 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <!-- finalName>visadCdm</finalName -->
-    <!--testSourceDirectory>void</testSourceDirectory-->
+  <!--<build>-->
+    <!--&lt;!&ndash; finalName>visadCdm</finalName &ndash;&gt;-->
+    <!--&lt;!&ndash;testSourceDirectory>void</testSourceDirectory&ndash;&gt;-->
 
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <minimizeJar>true</minimizeJar>
-              <artifactSet>
-                <includes>
-                  <include>edu.wisc.ssec:visad</include>
-                </includes>
-              </artifactSet>
+    <!--<plugins>-->
+      <!--<plugin>-->
+        <!--<groupId>org.apache.maven.plugins</groupId>-->
+        <!--<artifactId>maven-shade-plugin</artifactId>-->
+        <!--<executions>-->
+          <!--<execution>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+              <!--<goal>shade</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+              <!--<createDependencyReducedPom>false</createDependencyReducedPom>-->
+              <!--<minimizeJar>true</minimizeJar>-->
+              <!--<artifactSet>-->
+                <!--<includes>-->
+                  <!--<include>edu.wisc.ssec:visad</include>-->
+                <!--</includes>-->
+              <!--</artifactSet>-->
 
-              <filters>
-                <filter>
-                  <artifact>edu.wisc.ssec:visad</artifact>
-                  <excludes>
-                    <exclude>dods/**</exclude>
-                    <exclude>gnu/**</exclude>
-                    <exclude>HTTPClient/**</exclude>
-                    <exclude>loci/**</exclude>
-                    <exclude>ncsa/**</exclude>
-                    <exclude>ucar/**</exclude>
-                  </excludes>
-                </filter>
-              </filters>
+              <!--<filters>-->
+                <!--<filter>-->
+                  <!--<artifact>edu.wisc.ssec:visad</artifact>-->
+                  <!--<excludes>-->
+                    <!--<exclude>dods/**</exclude>-->
+                    <!--<exclude>gnu/**</exclude>-->
+                    <!--<exclude>HTTPClient/**</exclude>-->
+                    <!--<exclude>loci/**</exclude>-->
+                    <!--<exclude>ncsa/**</exclude>-->
+                    <!--<exclude>ucar/**</exclude>-->
+                  <!--</excludes>-->
+                <!--</filter>-->
+              <!--</filters>-->
 
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+            <!--</configuration>-->
+          <!--</execution>-->
+        <!--</executions>-->
+      <!--</plugin>-->
+    <!--</plugins>-->
+  <!--</build>-->
 
 </project>

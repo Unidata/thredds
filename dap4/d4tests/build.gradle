@@ -1,28 +1,18 @@
 apply plugin: 'war'
 
 dependencies {
-    compile project(':dap4:d4core')
-    compile project(':dap4:d4cdmclient')
-    compile project(':dap4:d4shared')
-    compile project(':dap4:d4servletshared')
-    compile project(':dap4:d4ts')
-    compile project(':cdm')
-    compile project(':netcdf4')
-    compile project(':tdm')
+    // A lot of these depedencies should be in the testRuntime config, not testCompile.
 
-    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.2.5'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.2.6'
-    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.2.6'
+    testCompile project(':dap4:d4core')
+    testCompile project(':dap4:d4cdmclient')
+    testCompile project(':dap4:d4shared')
+    testCompile project(':dap4:d4servletshared')
+    testCompile project(':dap4:d4ts')
+    testCompile project(':cdm')
+    testCompile project(':httpservices')
 
-    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
-    runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
-    runtime group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
-
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
-    runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion
-
-    testCompile group: 'org.springframework', name: 'spring-test', version: springVersion
-
-    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: servletVersion
+    testCompile libraries["javax.servlet-api"]
+    testCompile libraries["slf4j-api"]
+    testRuntime libraries["slf4j-jdk14"]
+    // TODO: testCompile cdm:test-jar
 }

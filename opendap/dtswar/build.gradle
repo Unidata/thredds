@@ -1,14 +1,12 @@
 apply plugin: 'war'
 
 dependencies {
-    compile project(':dap4:d4core')
-    compile project(':dap4:d4servletshared')
-    compile project(':dap4:d4shared')
-    compile project(':dap4:d4ts')
     compile project(':cdm')
-    compile project(':netcdf4')
+    compile project(':opendap')
 
     providedCompile libraries["javax.servlet-api"]
+    runtime libraries["jstl"]
+
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-core"]
