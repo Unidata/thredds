@@ -34,8 +34,6 @@ package thredds.client.catalog.builder;
 
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
-import thredds.client.catalog.Metadata;
-import ucar.nc2.constants.FeatureType;
 
 import java.util.*;
 
@@ -75,7 +73,6 @@ public class DatasetBuilder {
   String name;
   Map<String, Object> flds = new HashMap<>(10);
 
-  List<Metadata> metadata;
   List<AccessBuilder> accessBuilders;
   List<DatasetBuilder> datasetBuilders;
 
@@ -104,11 +101,6 @@ public class DatasetBuilder {
   public void addAccess(AccessBuilder d) {
     if (accessBuilders == null) accessBuilders = new ArrayList<>();
     accessBuilders.add(d);
-  }
-
-  public void addMetadata(Metadata d) {
-    if (metadata == null) metadata = new ArrayList<>();
-    metadata.add(d);
   }
 
   public Dataset makeDataset(DatasetNode parent) {

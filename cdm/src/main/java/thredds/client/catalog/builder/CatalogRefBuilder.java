@@ -36,9 +36,6 @@ import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * CatalogRef Builder
  *
