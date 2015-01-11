@@ -38,9 +38,10 @@ import thredds.client.catalog.builder.DatasetBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Describe
+ * A Client CatalogRef
  *
  * @author caron
  * @since 1/7/2015
@@ -49,8 +50,8 @@ public class CatalogRef extends Dataset {
   private final String xlink;
   private boolean isRead;
 
-  public CatalogRef(DatasetNode parent, String name, String xlink, String collectionType, Boolean harvest, String id, String urlPath, List<Metadata> metadata, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
-    super(parent, name, collectionType, harvest, id, urlPath, metadata, accessBuilders, datasetBuilders);
+  public CatalogRef(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
+    super(parent, name, flds, accessBuilders, datasetBuilders);
     this.xlink = xlink;
   }
 

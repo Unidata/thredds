@@ -35,96 +35,69 @@ package thredds.client.catalog;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.constants.FeatureType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
- * <xsd:complexType name="DatasetType">
-   <xsd:sequence>
-     <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" />
-
-     <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
-     <xsd:element ref="ncml:netcdf" minOccurs="0"/>
-     <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/>
-   </xsd:sequence>
-
-   <xsd:attribute name="name" type="xsd:string" use="required"/>
-   <xsd:attribute name="alias" type="xsd:token"/>
-   <xsd:attribute name="authority" type="xsd:string"/> <!-- deprecated : use element -->
-   <xsd:attribute name="collectionType" type="collectionTypes"/>
-   <xsd:attribute name="dataType" type="dataTypes"/> <!-- deprecated : use element -->
-   <xsd:attribute name="harvest" type="xsd:boolean"/>
-   <xsd:attribute name="ID" type="xsd:token"/>
-   <xsd:attribute name="resourceControl" type="xsd:string"/>
-
-   <xsd:attribute name="serviceName" type="xsd:string" /> <!-- deprecated : use element -->
-   <xsd:attribute name="urlPath" type="xsd:token" />
- </xsd:complexType>
- *
+ * A Client Catalog Dataset
  * @author caron
  * @since 1/7/2015
  */
 @Immutable
 public class Dataset extends DatasetNode {
-  private final String COLLECTIONTYPE = "collectionType";
-  private final String HARVEST = "harvest";
-  private final String ID = "id";
-  private final String URLPATH = "urlPath";
-  private final String METADATA = "metadata";
-  private final String ACCESS = "access";
+  public static final String Access = "Access";
+  public static final String Alias = "Alias";
+  public static final String Authority = "Authority";
+  public static final String CollectionType = "CollectionType";
+  public static final String Contributors = "Contributors";
+  public static final String Creators = "Creators";
+  public static final String DataFormatType = "DataFormatType";
+  public static final String Datasets = "Datasets";
+  public static final String DataSize = "DataSize";
+  public static final String Dates = "Dates";
+  public static final String Documentation = "Documentation";
+  public static final String Expires = "Expires";
+  public static final String FeatureType = "FeatureType";
+  public static final String GeospatialCoverage = "GeospatialCoverage";
+  public static final String Harvest = "Harvest";
+  public static final String Id = "Id";
+  public static final String Keywords = "Keywords";
+  public static final String MetadataOther = "MetadataOther";
+  public static final String Projects = "Projects";
+  public static final String Properties = "Properties";
+  public static final String Publishers = "Publishers";
+  public static final String ResourceControl = "ResourceControl";
+  public static final String ServiceName = "ServiceName";
+  public static final String Services = "Services";
+  public static final String ThreddsMetadata = "ThreddsMetadata";
+  public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable";
+  public static final String TimeCoverage = "TimeCoverage";
+  public static final String VariableGroups = "VariableGroups";
+  public static final String VariableMapLink = "VariableMapLink";
+  public static final String Version = "Version";
+  public static final String UrlPath = "UrlPath";
 
-  public Dataset(DatasetNode parent, String name, String collectionType, Boolean harvest, String id, String urlPath, List<Metadata> metadata,
-                 List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
-    super(parent, name, datasetBuilders);
-
-    if (collectionType != null) flds.put(COLLECTIONTYPE, collectionType);
-    if (harvest != null) flds.put(HARVEST, harvest);
-    if (id != null) flds.put(ID, id);
-    if (urlPath != null) flds.put(URLPATH, urlPath);
-    if (metadata != null) flds.put(METADATA, metadata);
+  public Dataset(DatasetNode parent, String name, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
+    super(parent, name, flds, datasetBuilders);
 
     if (accessBuilders != null && accessBuilders.size() > 0) {
       List<Access> access = new ArrayList<>(accessBuilders.size());
       for (AccessBuilder acc : accessBuilders)
         access.add ( acc.makeAccess(this));
-      flds.put(ACCESS, access);
+      flds.put(Access, Collections.unmodifiableList(access));
     }
   }
 
-  public String getCollectionType() {
-    return (String) flds.get(COLLECTIONTYPE);
-  }
-
-  public boolean isHarvest() {
-    Boolean result = (Boolean) flds.get(HARVEST);
-    return (result != null) && result;
-  }
-
-  public String getId() {
-    return (String) flds.get(ID);
-  }
-
-  public String getUrlPath() {
-    return (String) flds.get(URLPATH);
-  }
-
-  public List<Metadata> getMetadata() {
-    List<Metadata> metadata = (List<Metadata>) flds.get(METADATA);
-    return metadata == null ? new ArrayList<Metadata>(0) : metadata;
-  }
-
-  public List<Metadata> getMetadata(Metadata.Type want) {
-    List<Metadata> result = new ArrayList<>();
-    for (Metadata m : getMetadata())
-      if (m.getType() == want) result.add(m);
-    return result;
-  }
+  /////////////////////////////////////////////////////
 
   public List<Access> getAccess() {
-    List<Access> access = (List<Access>) flds.get(ACCESS);
+    List<Access> access = (List<Access>) flds.get(Access);
     return access == null ? new ArrayList<Access>(0) : access;
   }
 
@@ -154,30 +127,6 @@ public class Dataset extends DatasetNode {
     return null;
   }
 
-  public List<Property> getProperties() {
-    return new ArrayList<>(0);
-  }
-
-  public FeatureType getFeatureType() {
-    return null;
-  }
-
-  public boolean isDatasetScan() {
-    return false;
-  }
-
-  public DataFormatType getDataFormatType() {
-    return null;
-  }
-
-  public long getDataSize() {
-    return 0;
-  }
-
-  public String getAuthority() {
-    return null;
-  }
-
   /**
    * Get URL to this dataset. Dataset must have an ID.
    * Form is catalogURL#DatasetID
@@ -192,6 +141,180 @@ public class Dataset extends DatasetNode {
     return baseUri + "#" + getId();
   }
 
+   /////////////////////////////////////////////////////
+  // non-inheritable metadata
+  public String getCollectionType() {
+    return (String) flds.get(CollectionType);
+  }
+  public boolean isDatasetScan() {
+    return false;
+  }
+  public boolean isHarvest() {
+    Boolean result = (Boolean) flds.get(Harvest);
+    return (result != null) && result;
+  }
+  public String getId() {
+    return (String) flds.get(Id);
+  }
+  public String getUrlPath() {
+    return (String) flds.get(UrlPath);
+  }
 
+  /////////////////////////////////////////////////////
+  // inheritable metadata
+  Object getInheritedField(String fldName) {
+    Object value = flds.get(fldName);
+    if (value != null) return value;
+    ThreddsMetadata tmi = (ThreddsMetadata) flds.get(ThreddsMetadataInheritable);
+    if (tmi != null) {
+      value = tmi.get(fldName);
+      if (value != null) return value;
+    }
+    Dataset parent = getParentDataset();
+    return (parent == null) ? null : parent.getInheritedField( fldName);
+  }
+
+  List getInheritedFieldAsList(String fldName) {
+    Object value = getInheritedField(fldName);
+    if (value == null) return new ArrayList(0);
+    if (value instanceof List) return (List) value;
+    List list1 = new ArrayList(1);
+    list1.add(value);
+    return list1;
+  }
+
+  ///////////////////////////////////////////////////////////
+  public String getAuthority() {
+    return (String) getInheritedField(Authority);
+  }
+
+  public String getDataFormatType() {
+    return (String) getInheritedField(DataFormatType);
+  }
+
+  public long getDataSize() {
+    Long size = (Long) getInheritedField(DataSize);
+    return (size == null) ? -1 : size;
+  }
+
+  public boolean hasDataSize() {
+    Long size = (Long) getInheritedField(DataSize);
+    return (size != null) && size > 0;
+  }
+
+  public ucar.nc2.constants.FeatureType getFeatureType() {
+    String name = getFeatureTypeName();
+    ucar.nc2.constants.FeatureType ft;
+    try {
+      return ucar.nc2.constants.FeatureType.valueOf(name);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public String getFeatureTypeName() {
+    return (String) getInheritedField(FeatureType);
+  }
+
+ public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
+    return (ThreddsMetadata.GeospatialCoverage) getInheritedField(GeospatialCoverage);
+  }
+
+  public String getResourceControl() {
+    return (String) getInheritedField(ResourceControl);
+  }
+
+  public DateRange getTimeCoverage() {
+    return (DateRange) getInheritedField(TimeCoverage);
+  }
+
+  public URI getVariableMapLink() {
+    return (URI) getInheritedField(VariableMapLink);
+  }
+
+  ///////////////////////////////////////////
+
+  public List<ThreddsMetadata.Source> getCreators() {
+    return (List<ThreddsMetadata.Source>) getInheritedFieldAsList(Dataset.Creators);
+  }
+
+  public List<ThreddsMetadata.Contributor> getContributors() {
+    return (List<ThreddsMetadata.Contributor>) getInheritedFieldAsList(Dataset.Contributors);
+  }
+
+  public List<DateType> getDates() {
+    return (List<DateType>) getInheritedFieldAsList(Dates);
+  }
+
+  public List<Documentation> getDocumentation() {
+    return (List<Documentation>) getInheritedFieldAsList(Documentation);
+  }
+
+  public List<ThreddsMetadata.Vocab> getKeywords() {
+    return (List<ThreddsMetadata.Vocab>) getInheritedFieldAsList(Keywords);
+  }
+
+  public List<ThreddsMetadata.MetadataOther> getMetadataOther() {
+    return (List<ThreddsMetadata.MetadataOther>) getInheritedFieldAsList(MetadataOther);
+  }
+
+  /* public List<ThreddsMetadata.MetadataOther> getMetadata(Metadata.Type want) {
+    List<ThreddsMetadata.MetadataOther> result = new ArrayList<>();
+    for (ThreddsMetadata.MetadataOther m : getMetadata())
+      if (m.getType() == want) result.add(m);
+    return result;
+  } */
+
+  public List<ThreddsMetadata.Vocab> getProjects() {
+    return (List<ThreddsMetadata.Vocab>) getInheritedFieldAsList(Projects);
+  }
+
+  public List<Property> getProperties() {
+    return (List<Property>) getInheritedFieldAsList(Properties);
+  }
+
+  public List<ThreddsMetadata.Source> getPublishers() {
+    return (List<ThreddsMetadata.Source>) getInheritedFieldAsList(Dataset.Publishers);
+  }
+
+  public List<ThreddsMetadata.VariableGroup> getVariables() {
+    return (List<ThreddsMetadata.VariableGroup>) getInheritedFieldAsList(Dataset.VariableGroups);
+  }
+
+  public String getDocumentation(String type) {
+    for (Documentation doc : getDocumentation()) {
+      String dtype = doc.getType();
+      if ((dtype != null) && dtype.equalsIgnoreCase(type)) return doc.getInlineContent();
+    }
+    return null;
+  }
+
+  /**
+   * @return specific type of documentation = history
+   */
+  public String getHistory() {
+    return getDocumentation("history");
+  }
+
+  /**
+   * @return specific type of documentation = processing_level
+   */
+  public String getProcessing() {
+    return getDocumentation("processing_level");
+  }
+
+  /**
+   * @return specific type of documentation = rights
+   */
+  public String getRights() {
+    return getDocumentation("rights");
+  }
+
+  /**
+   * @return specific type of documentation = summary
+   */
+  public String getSummary() {
+    return getDocumentation("summary");
+  }
 
 }

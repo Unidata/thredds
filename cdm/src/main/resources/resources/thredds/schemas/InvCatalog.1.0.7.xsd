@@ -99,8 +99,7 @@
     <xsd:sequence>
       <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/> <!-- deprecated -->
 
-      <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>
-
+      <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>   <!-- this means any of these elements can appear directly in the dataset element -->
       <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element ref="ncml:netcdf" minOccurs="0"/>
       <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/>

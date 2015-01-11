@@ -37,26 +37,44 @@ import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.Metadata;
 import ucar.nc2.constants.FeatureType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
- * Describe
+ * Builder of datasets
  *
  * @author caron
  * @since 1/8/2015
  */
 public class DatasetBuilder {
 
+  public static void addToList(Map<String, Object> flds, String fldName, Object fldValue) {
+    if (fldValue == null) return;
+    Object prevVal = flds.get(fldName);
+    if (prevVal == null) {
+      flds.put(fldName, fldValue);
+      return;
+    }
+
+    List prevList;
+    if (prevVal instanceof List) {
+      prevList = (List) prevVal;
+    } else {
+      prevList = new ArrayList(5);
+      prevList.add(prevVal);
+      flds.put(fldName, prevList);
+    }
+
+    if (fldValue instanceof List) {
+      prevList.addAll((List) fldValue);
+    } else {
+      prevList.add(fldValue);
+    }
+  }
+
   DatasetBuilder parent;
-  String authority;
   String name;
-  String collectionType;
-  FeatureType featureType;
-  Boolean harvest;
-  String id;
-  String serviceName;
-  String urlPath;
+  Map<String, Object> flds = new HashMap<>(10);
+
   List<Metadata> metadata;
   List<AccessBuilder> accessBuilders;
   List<DatasetBuilder> datasetBuilders;
@@ -65,36 +83,16 @@ public class DatasetBuilder {
     this.parent = parent;
   }
 
-  public void setAuthority(String authority) {
-    this.authority = authority;
+  public Object get(String fldName) {
+    return flds.get(fldName);
+  }
+
+  public void put(String fldName, Object fldValue) {
+    if (fldValue != null) flds.put(fldName, fldValue);
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public void setCollectionType(String collectionType) {
-    this.collectionType = collectionType;
-  }
-
-  public void setFeatureType(FeatureType featureType) {
-    this.featureType = featureType;
-  }
-
-  public void setHarvest(Boolean harvest) {
-    this.harvest = harvest;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public void setServiceName(String serviceName) {
-    this.serviceName = serviceName;
-  }
-
-  public void setUrlPath(String urlPath) {
-    this.urlPath = urlPath;
   }
 
   public void addDataset(DatasetBuilder d) {
@@ -103,12 +101,10 @@ public class DatasetBuilder {
     datasetBuilders.add(d);
   }
 
-
   public void addAccess(AccessBuilder d) {
     if (accessBuilders == null) accessBuilders = new ArrayList<>();
     accessBuilders.add(d);
   }
-
 
   public void addMetadata(Metadata d) {
     if (metadata == null) metadata = new ArrayList<>();
@@ -116,7 +112,8 @@ public class DatasetBuilder {
   }
 
   public Dataset makeDataset(DatasetNode parent) {
-    return new Dataset(parent, name, collectionType, harvest, id, urlPath, metadata, accessBuilders, datasetBuilders);
+    return new Dataset(parent, name, flds, accessBuilders, datasetBuilders);
   }
+
 
 }

@@ -38,9 +38,7 @@ import ucar.nc2.time.CalendarDate;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * builds Catalogs
@@ -130,8 +128,14 @@ public class CatalogBuilder {
   }
 
   Catalog makeCatalog() {
+    Map<String, Object> flds = new HashMap<>(10);
 
-    return new Catalog(baseURI, name, expires, version, services, properties, datasetBuilders);
+    if (expires != null) flds.put(Dataset.Expires, expires);
+    if (version != null) flds.put(Dataset.Version, version);
+    if (services != null) flds.put(Dataset.Services, services);
+    if (properties != null) flds.put(Dataset.Properties, properties);
+
+    return new Catalog(baseURI, name, flds, datasetBuilders);
 
   }
 

@@ -39,16 +39,7 @@ import ucar.nc2.stream.CdmRemote;
 import java.net.URI;
 
 /**
- * <xsd:element name="access">
-   <xsd:complexType>
-     <xsd:sequence>
-       <xsd:element ref="dataSize" minOccurs="0"/>
-     </xsd:sequence>
-     <xsd:attribute name="urlPath" type="xsd:token" use="required"/>
-     <xsd:attribute name="serviceName" type="xsd:string"/>
-     <xsd:attribute name="dataFormat" type="dataFormatTypes"/>
-   </xsd:complexType>
- </xsd:element >
+ *  A Dataset Access element
  *
  * @author caron
  * @since 1/7/2015

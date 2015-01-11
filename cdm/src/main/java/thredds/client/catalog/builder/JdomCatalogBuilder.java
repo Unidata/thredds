@@ -87,6 +87,20 @@ public class JdomCatalogBuilder {
 
   }
 
+  /* <xsd:element name="catalog">
+     <xsd:complexType>
+       <xsd:sequence>
+         <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+         <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
+       </xsd:sequence>
+
+       <xsd:attribute name="name" type="xsd:string" />
+       <xsd:attribute name="expires" type="dateType"/>
+       <xsd:attribute name="version" type="xsd:token" default="1.0.2" />
+     </xsd:complexType>
+   </xsd:element>
+   */
   protected boolean readCatalog(CatalogBuilder catBuilder, Element catalogElem, URI docBaseURI) {
     this.docBaseURI = docBaseURI;
 
@@ -145,6 +159,17 @@ public class JdomCatalogBuilder {
     return error;
   }
 
+  /* <xsd:element name="access">
+     <xsd:complexType>
+       <xsd:sequence>
+         <xsd:element ref="dataSize" minOccurs="0"/>   // whyd we do that ?
+       </xsd:sequence>
+       <xsd:attribute name="urlPath" type="xsd:token" use="required"/>
+       <xsd:attribute name="serviceName" type="xsd:string"/>
+       <xsd:attribute name="dataFormat" type="dataFormatTypes"/>
+     </xsd:complexType>
+   </xsd:element >
+  */
   protected AccessBuilder readAccess(DatasetBuilder dataset, Element accessElem) {
     String urlPath = accessElem.getAttributeValue("urlPath");
     String serviceName = accessElem.getAttributeValue("serviceName");
@@ -154,8 +179,7 @@ public class JdomCatalogBuilder {
     if (s == null) {
       errlog.format("Cant find service name='%s'%n", serviceName);
     }
-
-    return new AccessBuilder(dataset, urlPath, s, dataFormat, (long) readDataSize(accessElem));
+    return new AccessBuilder(dataset, urlPath, s, dataFormat, readDataSize(accessElem));
   }
 
   protected Property readProperty(Element s) {
@@ -164,6 +188,21 @@ public class JdomCatalogBuilder {
     return new Property(name, value);
   }
 
+  /* <xsd:element name="service">
+    <xsd:complexType>
+     <xsd:sequence>
+       <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+       <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" />
+     </xsd:sequence>
+
+     <xsd:attribute name="name" type="xsd:string" use="required" />
+     <xsd:attribute name="base" type="xsd:string" use="required" />
+     <xsd:attribute name="serviceType" type="serviceTypes" use="required" />
+     <xsd:attribute name="desc" type="xsd:string"/>
+     <xsd:attribute name="suffix" type="xsd:string" />
+    </xsd:complexType>
+   </xsd:element>
+   */
   protected Service readService(Element s) {
     String name = s.getAttributeValue("name");
     String typeS = s.getAttributeValue("serviceType");
@@ -198,8 +237,40 @@ public class JdomCatalogBuilder {
     serviceMap.put(name, result);
     return result;
   }
+  
+  
+  protected DatasetBuilder readCatalogRef(DatasetBuilder parent, Element catRefElem) {
+    String title = catRefElem.getAttributeValue("title", xlinkNS);
+    if (title == null) title = catRefElem.getAttributeValue("name");
+    String href = catRefElem.getAttributeValue("href", xlinkNS);
+    CatalogRefBuilder catRef = new CatalogRefBuilder(parent);
+    readDatasetInfo( catRef, catRefElem);
+    catRef.setTitle(title);
+    catRef.setHref(href);
+    return catRef;
+  }  
 
-  // read a dataset element
+  /* <xsd:complexType name="DatasetType">
+     <xsd:sequence>
+       <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" />
+  
+       <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
+       <xsd:element ref="ncml:netcdf" minOccurs="0"/>
+       <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/>
+     </xsd:sequence>
+  
+     <xsd:attribute name="name" type="xsd:string" use="required"/>
+     <xsd:attribute name="alias" type="xsd:token"/>
+     <xsd:attribute name="authority" type="xsd:string"/> <!-- deprecated : use element -->
+     <xsd:attribute name="collectionType" type="collectionTypes"/>
+     <xsd:attribute name="dataType" type="dataTypes"/> <!-- deprecated : use element -->
+     <xsd:attribute name="harvest" type="xsd:boolean"/>
+     <xsd:attribute name="ID" type="xsd:token"/>
+     <xsd:attribute name="resourceControl" type="xsd:string"/>
+  
+     <xsd:attribute name="serviceName" type="xsd:string" /> <!-- deprecated : use element -->
+     <xsd:attribute name="urlPath" type="xsd:token" />
+   </xsd:complexType> */
   protected DatasetBuilder readDataset(DatasetBuilder parent, Element dsElem) {
 
     DatasetBuilder dataset = new DatasetBuilder(parent);
@@ -211,7 +282,7 @@ public class JdomCatalogBuilder {
       dataset.addAccess(readAccess(dataset, e));
     }
 
-    // look for top-level dataset and catalogRefs elements (keep them in order)
+    // look for nested dataset and catalogRefs elements (keep them in order)
     java.util.List<Element> allChildren = dsElem.getChildren();
     for (Element e : allChildren) {
       if (e.getName().equals("dataset")) {
@@ -224,56 +295,181 @@ public class JdomCatalogBuilder {
 
     return dataset;
   }
-
-  protected DatasetBuilder readCatalogRef(DatasetBuilder parent, Element catRefElem) {
-    String title = catRefElem.getAttributeValue("title", xlinkNS);
-    if (title == null) title = catRefElem.getAttributeValue("name");
-    String href = catRefElem.getAttributeValue("href", xlinkNS);
-    CatalogRefBuilder catRef = new CatalogRefBuilder(parent);
-    readDatasetInfo( catRef, catRefElem);
-    catRef.setTitle(title);
-    catRef.setHref(href);
-    return catRef;
-  }
-
   protected void readDatasetInfo(DatasetBuilder dataset, Element dsElem) {
     // read attributes
-    String authority = dsElem.getAttributeValue("authority");
-    String collectionTypeName = dsElem.getAttributeValue("collectionType");
-    String dataTypeName = dsElem.getAttributeValue("dataType");
-    String harvest = dsElem.getAttributeValue("harvest");
-    String id = dsElem.getAttributeValue("ID");
     String name = dsElem.getAttributeValue("name");
-    String serviceName = dsElem.getAttributeValue("serviceName");
-    String urlPath = dsElem.getAttributeValue("urlPath");
+    if (name == null) 
+      errlog.format(" ** warning: dataset must have a name = %s%n", dsElem);
+    else
+      dataset.setName(name);
+    
+    dataset.put( Dataset.Alias, dsElem.getAttributeValue("alias"));
+    dataset.put( Dataset.Authority, dsElem.getAttributeValue("authority"));
+    dataset.put( Dataset.CollectionType, dsElem.getAttributeValue("collectionType"));
+    dataset.put( Dataset.Id, dsElem.getAttributeValue("ID"));
+    dataset.put( Dataset.ResourceControl, dsElem.getAttributeValue("resourceControl"));          
+    dataset.put( Dataset.ServiceName, dsElem.getAttributeValue("serviceName"));          
+    dataset.put( Dataset.UrlPath, dsElem.getAttributeValue("urlPath"));
 
-    FeatureType dataType = null;
+    String dataTypeName = dsElem.getAttributeValue("dataType");
     if (dataTypeName != null) {
-      dataType = FeatureType.getType(dataTypeName.toUpperCase());
+      FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
       if (dataType == null) {
         errlog.format(" ** warning: non-standard data type = %s%n", dataTypeName);
+      } else {
+        dataset.put( Dataset.FeatureType, dataType);
       }
     }
 
-    dataset.setAuthority(authority);
-    dataset.setCollectionType(collectionTypeName);
-    dataset.setFeatureType(dataType);
-    if (harvest != null) dataset.setHarvest(harvest.equalsIgnoreCase("true"));
-    dataset.setId(id);
-    dataset.setName(name);
-    dataset.setServiceName(serviceName);
-    dataset.setUrlPath(urlPath);
+    String harvest = dsElem.getAttributeValue("harvest");
+    if (harvest != null && harvest.equalsIgnoreCase("true")) dataset.put(Dataset.Harvest, Boolean.TRUE);
 
     // catalog.addDatasetByID(dataset); // need to do immed for alias processing
 
-    // look for direct thredds metadata (not inherited)
-    ThreddsMetadata tmg = new ThreddsMetadata(false);
-    readThreddsMetadata(dataset, dsElem, tmg);
+    // read attributes
+    readThreddsMetadataGroup(dataset.flds, dataset, dsElem);
+  }
+  
+  /*
+   <!-- group of elements can be used in a dataset or in metadata elements -->
+  <xsd:group name="threddsMetadataGroup">
+    <xsd:choice>
+      <xsd:element name="documentation" type="documentationType"/>
+      <xsd:element ref="metadata"/>
+      <xsd:element ref="property"/>
+
+      <xsd:element ref="contributor"/>
+      <xsd:element name="creator" type="sourceType"/>
+      <xsd:element name="date" type="dateTypeFormatted"/>
+      <xsd:element name="keyword" type="controlledVocabulary"/>
+      <xsd:element name="project" type="controlledVocabulary"/>
+      <xsd:element name="publisher" type="sourceType"/>
+
+      <xsd:element ref="geospatialCoverage"/>
+      <xsd:element name="timeCoverage" type="timeCoverageType"/>
+      <xsd:element ref="variables"/>
+      <xsd:element ref="variableMap"/>
+
+      <xsd:element name="dataType" type="dataTypes"/>
+      <xsd:element name="dataFormat" type="dataFormatTypes"/>
+      <xsd:element name="serviceName" type="xsd:string"/>
+      <xsd:element name="authority" type="xsd:string"/>
+      <xsd:element ref="dataSize"/>
+    </xsd:choice>
+  </xsd:group>  
+   */
+  protected void readThreddsMetadataGroup(Map<String,Object> flds, DatasetBuilder dataset, Element parent) {
+    List<Element> list;
+
+    // look for creators - kind of a Source
+    list = parent.getChildren("creator", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.Creators, readSource(e));
+    }
+
+    // look for contributors
+    list = parent.getChildren("contributor", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.Contributors, readContributor(e));
+    }
+
+    // look for dates
+    list = parent.getChildren("date", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e));
+    }
+
+    // look for documentation
+    list = parent.getChildren("documentation", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.Documentation, readDocumentation(e));
+    }
+
+    // look for keywords - kind of a controlled vocabulary
+    list = parent.getChildren("keyword", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.Keywords, readControlledVocabulary(e));
+    }
+
+    // look for metadata elements
+    list = parent.getChildren("metadata", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.MetadataOther, readMetadata(flds, dataset, e));
+    }
+
+    // look for projects - kind of a controlled vocabulary
+    list = parent.getChildren("project", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.Projects, readControlledVocabulary(e));
+    }
+
+    // look for properties
+    list = parent.getChildren("property", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.Properties, readProperty(e));
+    }
+
+    // look for publishers - kind of a Source
+    list = parent.getChildren("publisher", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.Publishers, readSource(e));
+    }
+
+    // look for variables
+    list = parent.getChildren("variables", defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.VariableGroups, readVariables(e));
+    }
+
+    // can only be one each of these kinds
+    ThreddsMetadata.GeospatialCoverage gc = readGeospatialCoverage(parent.getChild("geospatialCoverage", defNS));
+    if (gc != null) flds.put(Dataset.GeospatialCoverage, gc);
+
+    DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", defNS));
+    if (tc != null) flds.put(Dataset.TimeCoverage, tc);
+
+    Element serviceNameElem = parent.getChild("serviceName", defNS);
+    if (serviceNameElem != null) flds.put(Dataset.ServiceName, serviceNameElem.getText());
+
+    Element authElem = parent.getChild("authority", defNS);
+    if (authElem != null) flds.put(Dataset.Authority, authElem.getText());
+
+    Element dataTypeElem = parent.getChild("dataType", defNS);
+    if (dataTypeElem != null) {
+      String dataTypeName = dataTypeElem.getText();
+      if ((dataTypeName != null) && (dataTypeName.length() > 0)) {
+        FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
+        if (dataType == null) {
+          errlog.format(" ** warning: non-standard feature type = %s%n", dataTypeName);
+        }
+        flds.put(Dataset.FeatureType, dataTypeName);
+      }
+    }
+
+    Element dataFormatElem = parent.getChild("dataFormat", defNS);
+    if (dataFormatElem != null) {
+      String dataFormatTypeName = dataFormatElem.getText();
+      if ((dataFormatTypeName != null) && (dataFormatTypeName.length() > 0)) {
+        DataFormatType dataFormatType = DataFormatType.getType(dataFormatTypeName);
+        if (dataFormatType == null) {
+          errlog.format(" ** warning: non-standard dataFormat type = %s%n", dataFormatTypeName);
+        }
+        flds.put(Dataset.DataFormatType, dataFormatTypeName);
+      }
+    }
+
+    long size = readDataSize(parent);
+    if (size > 0)
+      flds.put(Dataset.DataSize, size);
+
+    URI mapUri = readVariableMap(parent.getChild("variableMap", defNS));
+    if (mapUri != null)
+      flds.put(Dataset.VariableMapLink, mapUri);
   }
 
-  protected double readDataSize(Element parent) {
+  protected long readDataSize(Element parent) {
     Element elem = parent.getChild("dataSize", defNS);
-    if (elem == null) return Double.NaN;
+    if (elem == null) return -1;
 
     double size;
     String sizeS = elem.getText();
@@ -281,7 +477,7 @@ public class JdomCatalogBuilder {
       size = Double.parseDouble(sizeS);
     } catch (NumberFormatException e) {
       errlog.format(" ** Parse error: Bad double format in size element = %s%n", sizeS);
-      return Double.NaN;
+      return -1;
     }
 
     String units = elem.getAttributeValue("units");
@@ -291,7 +487,7 @@ public class JdomCatalogBuilder {
     else if (c == 'G') size *= 1000 * 1000 * 1000;
     else if (c == 'T') size *= 1000.0 * 1000 * 1000 * 1000;
     else if (c == 'P') size *= 1000.0 * 1000 * 1000 * 1000 * 1000;
-    return size;
+    return (long) size;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -359,9 +555,9 @@ public class JdomCatalogBuilder {
 
     String zpositive = gcElem.getAttributeValue("zpositive");
 
-    ThreddsMetadata.Range northsouth = readGeospatialRange(gcElem.getChild("northsouth", defNS), CDM.LAT_UNITS);
-    ThreddsMetadata.Range eastwest = readGeospatialRange(gcElem.getChild("eastwest", defNS), CDM.LON_UNITS);
-    ThreddsMetadata.Range updown = readGeospatialRange(gcElem.getChild("updown", defNS), "m");
+    ThreddsMetadata.GeospatialRange northsouth = readGeospatialRange(gcElem.getChild("northsouth", defNS), CDM.LAT_UNITS);
+    ThreddsMetadata.GeospatialRange eastwest = readGeospatialRange(gcElem.getChild("eastwest", defNS), CDM.LON_UNITS);
+    ThreddsMetadata.GeospatialRange updown = readGeospatialRange(gcElem.getChild("updown", defNS), "m");
 
     // look for names
     List<ThreddsMetadata.Vocab> names = new ArrayList<>();
@@ -374,7 +570,7 @@ public class JdomCatalogBuilder {
     return new ThreddsMetadata.GeospatialCoverage(eastwest, northsouth, updown, names, zpositive);
   }
 
-  protected ThreddsMetadata.Range readGeospatialRange(Element spElem, String defUnits) {
+  protected ThreddsMetadata.GeospatialRange readGeospatialRange(Element spElem, String defUnits) {
     if (spElem == null) return null;
 
     double start = readDouble(spElem.getChild("start", defNS));
@@ -384,16 +580,26 @@ public class JdomCatalogBuilder {
     String units = spElem.getChildText("units", defNS);
     if (units == null) units = defUnits;
 
-    return new ThreddsMetadata.Range(start, size, resolution, units);
+    return new ThreddsMetadata.GeospatialRange(start, size, resolution, units);
   }
 
-  protected void readMetadata(DatasetBuilder dataset, Element mdataElement, ThreddsMetadata tmg) {
-    // there are 6 cases to deal with: threddsNamespace vs not & inline vs Xlink & hasConverter or not
-    // (the hasConverter only applies when its not threddsNamespace, giving 6 cases)
-    // this factory is the converter for threddsNamespace metadata
-    //  and also handles non-threddsNamespace when there is no converter, in which case it just
-    //   propagates the inline dom elements
+    
+  /*
+    <xsd:element name="metadata">
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+      </xsd:choice>
 
+      <xsd:attribute name="inherited" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="metadataType" type="metadataTypeEnum"/>
+      <xsd:attributeGroup ref="XLink"/>
+    </xsd:complexType>
+  </xsd:element>
+   */
+  protected ThreddsMetadata.MetadataOther readMetadata(Map<String,Object> flds, DatasetBuilder dataset, Element mdataElement) {
+    // there are 4 cases to deal with: threddsNamespace vs not & inline vs Xlink
     Namespace namespace;
     List inlineElements = mdataElement.getChildren();
     if (inlineElements.size() > 0) // look at the namespace of the children, if they exist
@@ -409,23 +615,33 @@ public class JdomCatalogBuilder {
 
     boolean isThreddsNamespace = ((mtype == null) || mtype.equalsIgnoreCase("THREDDS")) && namespace.getURI().equals(CATALOG_NAMESPACE_10);
 
-    // the case where its not ThreddsMetadata, but theres no converter
+    // the case where its not ThreddsMetadata
     if (!isThreddsNamespace) {
       ThreddsMetadata.MetadataOther mo;
-
       if (inlineElements.size() > 0) {
-        // just hold onto the jdom elements as the "content" LOOK should be DOM?
+        // just hold onto the jdom elements as the "content"
          mo = new ThreddsMetadata.MetadataOther( mtype, namespace.getURI(), namespace.getPrefix(), inherited, mdataElement);
 
       } else { // otherwise it must be an Xlink
         mo = new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited);
       }
-      tmg.addMetadata(mo);
-      return;
+      return mo;
     }
 
-    // the case where its ThreddsMetadata: gonna get stick in the tmg. LOOK losing inheritence
-    readThreddsMetadata( dataset, mdataElement, tmg);
+    // the case where its ThreddsMetadata:
+    if (inherited) {  // gonna put stuff in the tmi.
+      ThreddsMetadata tmi = (ThreddsMetadata) dataset.get(Dataset.ThreddsMetadataInheritable);
+      if (tmi == null) {
+        tmi = new ThreddsMetadata();
+        dataset.put(Dataset.ThreddsMetadataInheritable, tmi);
+      }
+      readThreddsMetadataGroup(tmi.getFlds(), dataset, mdataElement);
+
+    } else { // not inherited - stick it directly into the dataset
+      readThreddsMetadataGroup(flds, dataset, mdataElement);
+    }
+
+    return null;
   }
 
   private Element readContentFromURL(java.net.URI uri) throws java.io.IOException {
@@ -466,115 +682,7 @@ public class JdomCatalogBuilder {
     }
   }
 
-  protected void readThreddsMetadata(DatasetBuilder dataset, Element parent, ThreddsMetadata tmg) {
-    List<Element> list;
 
-    // look for creators - kind of a Source
-    list = parent.getChildren("creator", defNS);
-    for (Element e : list) {
-      tmg.addCreator(readSource(e));
-    }
-
-    // look for contributors
-    list = parent.getChildren("contributor", defNS);
-    for (Element e : list) {
-      tmg.addContributor(readContributor(e));
-    }
-
-    // look for dates
-    list = parent.getChildren("date", defNS);
-    for (Element e : list) {
-      DateType d = readDate(e);
-      tmg.addDate(d);
-    }
-
-    // look for documentation
-    list = parent.getChildren("documentation", defNS);
-    for (Element e : list) {
-      Documentation doc = readDocumentation( e);
-      tmg.addDocumentation(doc);
-    }
-
-    // look for keywords - kind of a controlled vocabulary
-    list = parent.getChildren("keyword", defNS);
-    for (Element e : list) {
-      tmg.addKeyword(readControlledVocabulary(e));
-    }
-
-    // look for metadata
-    java.util.List<Element> mList = parent.getChildren("metadata", defNS);
-    for (Element mdataElement : mList) {
-      readMetadata( dataset, mdataElement, tmg);
-    }
-
-    // look for projects - kind of a controlled vocabulary
-    list = parent.getChildren("project", defNS);
-    for (Element e : list) {
-      tmg.addProject(readControlledVocabulary(e));
-    }
-
-    // look for properties
-    list = parent.getChildren("property", defNS);
-    for (Element e : list) {
-      Property p = readProperty(e);
-      tmg.addProperty(p);
-    }
-
-    // look for publishers - kind of a Source
-    list = parent.getChildren("publisher", defNS);
-    for (Element e : list) {
-      tmg.addPublisher(readSource(e));
-    }
-
-    // look for variables
-    list = parent.getChildren("variables", defNS);
-    for (Element e : list) {
-      ThreddsMetadata.Variables vars = readVariables( dataset, e);
-      tmg.addVariables(vars);
-    }
-
-    // can only be one each of these kinds
-    ThreddsMetadata.GeospatialCoverage gc = readGeospatialCoverage(parent.getChild("geospatialCoverage", defNS));
-    if (gc != null) tmg.setGeospatialCoverage(gc);
-
-    DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", defNS));
-    if (tc != null) tmg.setTimeCoverage(tc);
-
-    Element serviceNameElem = parent.getChild("serviceName", defNS);
-    if (serviceNameElem != null) tmg.setServiceName(serviceNameElem.getText());
-
-    Element authElem = parent.getChild("authority", defNS);
-    if (authElem != null) tmg.setAuthority(authElem.getText());
-
-    Element dataTypeElem = parent.getChild("dataType", defNS);
-    if (dataTypeElem != null) {
-      String dataTypeName = dataTypeElem.getText();
-      if ((dataTypeName != null) && (dataTypeName.length() > 0)) {
-        FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
-        if (dataType == null) {
-          errlog.format(" ** warning: non-standard data type = %s%n", dataTypeName);
-        }
-        tmg.setDataType(dataType);
-      }
-    }
-
-    Element dataFormatElem = parent.getChild("dataFormat", defNS);
-    if (dataFormatElem != null) {
-      String dataFormatTypeName = dataFormatElem.getText();
-      if ((dataFormatTypeName != null) && (dataFormatTypeName.length() > 0)) {
-        DataFormatType dataFormatType = DataFormatType.getType(dataFormatTypeName);
-        if (dataFormatType == null) {
-          dataFormatType = DataFormatType.getType(dataFormatTypeName);
-          errlog.format(" ** warning: non-standard dataFormat type = %s%n", dataFormatTypeName);
-        }
-        tmg.setDataFormatType(dataFormatType);
-      }
-    }
-
-    double size = readDataSize(parent);
-    if (!Double.isNaN(size))
-      tmg.setDataSize(size);
-  }
 
   protected ThreddsMetadata.Variable readVariable(Element varElem) {
     if (varElem == null) return null;
@@ -589,7 +697,7 @@ public class JdomCatalogBuilder {
   }
 
 
-  protected ThreddsMetadata.Variables readVariables( DatasetBuilder ds, Element varsElem) {
+  protected ThreddsMetadata.VariableGroup readVariables( Element varsElem) {
     if (varsElem == null) return null;
 
     String vocab = varsElem.getAttributeValue("vocabulary");
@@ -606,39 +714,30 @@ public class JdomCatalogBuilder {
 
     java.util.List<Element> vlist = varsElem.getChildren("variable", defNS);
 
-    String mapHref = null;
-    URI mapUri = null;
-    Element map = varsElem.getChild("variableMap", defNS);
-    if (map != null) {
-      mapHref = map.getAttributeValue("href", xlinkNS);
-      try {
-        mapUri =  docBaseURI.resolve(mapHref);
-      } catch (Exception e) {
-        errlog.format(" ** Invalid Variables map URI= %s err=%s%n", mapHref, e.getMessage());
-      }
-    }
-
+    URI mapUri = readVariableMap(varsElem.getChild("variableMap", defNS));
     if ((mapUri != null) && vlist.size() > 0) { // cant do both
-      errlog.format(" ** Catalog error: cant have variableMap and variable in same element (dataset = %s)%n", ds.name);
+      errlog.format(" ** Catalog error: cant have variableMap and variable in same element%n", varsElem);
       mapUri = null;
     }
 
-    ThreddsMetadata.Variables variables = new ThreddsMetadata.Variables(vocab, vocabHref, vocabUri, mapHref, mapUri);
-
-    for (Element e : vlist) {
-      ThreddsMetadata.Variable v = readVariable(e);
-      variables.addVariable(v);
+    List<ThreddsMetadata.Variable> variables = null;
+    if (vlist.size() > 0) {
+      variables = new ArrayList<>();
+      for (Element e : vlist) {
+        variables.add(readVariable(e));
+      }
     }
 
     // read in variable map LOOK: would like to defer
     if (mapUri != null) {
-      Element varsElement;
       try {
-        varsElement = readContentFromURL(mapUri);
+        Element varsElement = readContentFromURL(mapUri);
         List<Element> list = varsElement.getChildren("variable", defNS);
-        for (Element e : list) {
-          ThreddsMetadata.Variable v = readVariable(e);
-          variables.addVariable(v);
+        if (vlist.size() > 0) {
+          variables = new ArrayList<>();
+          for (Element e : list) {
+            variables.add(readVariable(e));
+          }
         }
       } catch (IOException e) {
         errlog.format("Failure reading variable %s mapUri err=%s%n", vocab, e.getMessage());
@@ -656,7 +755,7 @@ public class JdomCatalogBuilder {
 
     }
 
-    return variables;
+    return new ThreddsMetadata.VariableGroup(vocab, vocabHref, vocabUri, mapUri, variables);
   }
   
   protected ThreddsMetadata.Vocab readControlledVocabulary(Element elem) {
@@ -667,6 +766,19 @@ public class JdomCatalogBuilder {
   protected ThreddsMetadata.Contributor readContributor(Element elem) {
     if (elem == null) return null;
     return new ThreddsMetadata.Contributor(elem.getText(), elem.getAttributeValue("role"));
+  }
+
+  private URI readVariableMap(Element variableMapElem) {
+    if (variableMapElem == null) return null;
+    String mapHref = null;
+    mapHref = variableMapElem.getAttributeValue("href", xlinkNS);
+    URI mapUri = null;
+    try {
+      mapUri =  docBaseURI.resolve(mapHref);
+    } catch (Exception e) {
+      errlog.format(" ** Invalid Variables map URI= %s err=%s%n", mapHref, e.getMessage());
+    }
+    return mapUri;
   }
 
 }

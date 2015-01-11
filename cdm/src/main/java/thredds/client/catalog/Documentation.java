@@ -41,7 +41,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- * Describe
+ * Client catalog documentation element
  *
  * @author caron
  * @since 1/9/2015

@@ -57,7 +57,7 @@ import java.util.List;
  * @author caron
  * @since 1/9/2015
  */
-public class ThreddsMetadata {
+public class ThreddsMetadataBuilder {
   protected boolean inherited;
 
   protected List<Source> creators = new ArrayList<>();
@@ -69,7 +69,7 @@ public class ThreddsMetadata {
   protected List<Vocab> projects = new ArrayList<>();
   protected List<Property> properties = new ArrayList<>(); //
   protected List<Source> publishers = new ArrayList<>(); //
-  protected List<Variables> variables = new ArrayList<>();  //
+  protected List<VariableGroup> variables = new ArrayList<>();  //
   protected String variableMapLink;
 
   // singles
@@ -81,27 +81,27 @@ public class ThreddsMetadata {
   protected DataFormatType dataFormat;
   protected double dataSize = 0.0;
 
-  public ThreddsMetadata(boolean inherited) {
+  public ThreddsMetadataBuilder(boolean inherited) {
     this.inherited = inherited;
   }
 
-  /**
+  /*
    * Copy Constructor.
    *
    * @param from copy from here
-   */
-  public ThreddsMetadata(ThreddsMetadata from) {
+   *
+  public ThreddsMetadataBuilder(ThreddsMetadataBuilder from) {
     this.inherited = from.inherited;
     add(from, true);
-  }
+  } */
 
-  /**
+  /*
    * Add all the content from another ThreddsMetadata
    *
    * @param tmd              get content from here
    * @param includeInherited if false, dont add inherited Metadata
-   */
-  public void add(ThreddsMetadata tmd, boolean includeInherited) {
+   *
+  public void add(ThreddsMetadataBuilder tmd, boolean includeInherited) {
     creators.addAll(tmd.getCreators());
     contributors.addAll(tmd.getContributors());
     dates.addAll(tmd.getDates());
@@ -130,348 +130,163 @@ public class ThreddsMetadata {
     if (dataFormat == null) dataFormat = tmd.getDataFormatType();
     if (authorityName == null) authorityName = tmd.getAuthority();
     if (variableMapLink == null) variableMapLink = tmd.getVariableMap();
-  }
+  }  */
 
-  /**
-   * Add a creator
-   * @param c add this
-   */
   public void addCreator(Source c) {
     if (c != null) creators.add(c);
   }
-
-  /**
-   * @return list of creators (type Source); may be empty, not null.
-   */
-  public List<ThreddsMetadata.Source> getCreators() {
+  public List<ThreddsMetadataBuilder.Source> getCreators() {
     return creators;
   }
-
-  /**
-   * Set list of creators (type Source); may be empty, not null.
-   * @param creators set creators to this list
-   */
   public void setCreators(List<Source> creators) {
     this.creators = creators;
   }
 
-  /**
-   * Add a contributor
-   * @param c add this
-   */
   public void addContributor(Contributor c) {
     if (c != null) contributors.add(c);
   }
-
-  /**
-   * @return list of contributors (type Contributor); may be empty, not null.
-   */
   public List<Contributor> getContributors() {
     return contributors;
   }
-
-  /**
-   * Set list of contributors (type Contributor); may be empty, not null.
-   * @param contributors set contributers to this
-   */
   public void setContributors(List<Contributor> contributors) {
     this.contributors = contributors;
   }
 
-  /**
-   * Add a date
-   * @param d add this dateType
-   */
   public void addDate(DateType d) {
     if (d != null) dates.add(d);
   }
-
-  /**
-   * @return list of DateType; may be empty, not null.
-   */
   public List<DateType> getDates() {
     return dates;
   }
 
-  /**
-   * Add a documentation
-   * @param d add this
-   */
   public void addDocumentation(Documentation d) {
     if (d != null) docs.add(d);
   }
 
-  /**
-   * @return list of Documentation; may be empty, not null.
-   */
   public List<Documentation> getDocumentation() {
     return docs;
   }
 
-  /**
-   * Add a keyword
-   * @param keyword add this
-   */
   public void addKeyword(Vocab keyword) {
     if (keyword != null) keywords.add(keyword);
   }
-
-  /**
-   * @return list of keywords; may be empty, not null.
-   */
   public List<Vocab> getKeywords() {
     return keywords;
   }
-
-  /**
-   * Set list of keywords; may be empty, not null.
-   * @param keywords set list of keywords to this
-   */
   public void setKeywords(List<Vocab> keywords) {
     this.keywords = keywords;
   }
 
-  /**
-   * Add Metadata
-   * @param m add this
-   */
   public void addMetadata(MetadataOther m) {
     if (m != null) metadata.add(m);
   }
-
-  /**
-   * remove an Metadata element from list, using equals() to locate it.
-   * @param m remove this
-   */
   public void removeMetadata(Metadata m) {
     metadata.remove(m);
   }
-
-  /**
-   * @return list of Metadata; may be empty, not null.
-   */
   public List<MetadataOther> getMetadata() {
     return metadata;
   }
 
-  /**
-   * Add a project
-   * @param project add this
-   */
   public void addProject(Vocab project) {
     if (project != null) projects.add(project);
   }
-
-  /**
-   * @return list of projects (type Vocab); may be empty, not null.
-   */
   public List<Vocab> getProjects() {
     return projects;
   }
-
-  /**
-   * Set list of projects (type Vocab); may be empty, not null.
-   * @param projects set list of projects to this
-   */
   public void setProjects(List<Vocab> projects) {
     this.projects = projects;
   }
 
-  /**
-   * Add a property
-   * @param p add this
-   */
   public void addProperty(Property p) {
     if (p != null) properties.add(p);
   }
-
   public void addProperties(List<Attribute> atts) {
     for (Attribute att : atts)
       if (att.isString()) properties.add(new Property(att.getShortName(), att.getStringValue()));
   }
-
-  /**
-   * @return list of properties; may be empty, not null.
-   */
   public List<Property> getProperties() {
     return properties;
   }
 
-  /**
-   * Add a publisher
-   * @param p add this
-   */
   public void addPublisher(Source p) {
     if (p != null) publishers.add(p);
   }
-
-  /**
-   * @return list of publishers (type Source); may be empty, not null.
-   */
   public List<Source> getPublishers() {
     return publishers;
   }
-
-  /**
-   * Set list of publishers (type Source); may be empty, not null.
-   * @param publishers set list of publishers to this
-   */
   public void setPublishers(List<Source> publishers) {
     this.publishers = publishers;
   }
 
-  /**
-   * Add variables
-   * @param vs add this
-   */
-  public void addVariables(Variables vs) {
+  public void addVariables(VariableGroup vs) {
     if (vs != null) variables.add(vs);
   }
-
-  /**
-   * @return list of Variables; may be empty, not null.
-   */
-  public List<Variables> getVariables() {
+  public List<VariableGroup> getVariables() {
     return variables;
   }
-
-  /**
-   * Add a variable Map link
-   * @param xlinkHref         : URI of xlink
-   * */
   public void addVariableMapLink(String xlinkHref) {
     variableMapLink = xlinkHref;
   }
-
   public String getVariableMap() {
     return variableMapLink;
   }
 
-  /**
-   * set GeospatialCoverage element
-   * @param gc set GeospatialCoverage to this
-   */
   public void setGeospatialCoverage(GeospatialCoverage gc) {
     this.gc = gc;
   }
-
-  /**
-   * @return GeospatialCoverage element
-   */
   public GeospatialCoverage getGeospatialCoverage() {
     return gc;
   }
 
-  /**
-   * set TimeCoverage element
-   * @param tc set TimeCoverage to this
-   */
   public void setTimeCoverage(DateRange tc) {
     this.timeCoverage = tc;
   }
-
-  /**
-   * set TimeCoverage from a CalendarDateRange
-   * @param cdc set CalendarDateRange to this
-   */
   public void setTimeCoverage(CalendarDateRange cdc) {
     if (cdc == null) return;
     this.timeCoverage = cdc.toDateRange();
   }
-
-  /**
-   * @return TimeCoverage element  as DateRange
-   */
   public DateRange getTimeCoverage() {
     return timeCoverage;
   }
-
-  /**
-   * @return TimeCoverage element as CalendarDateRange
-   */
   public CalendarDateRange getCalendarDateCoverage() {
     return timeCoverage == null ? null : CalendarDateRange.of(timeCoverage);
   }
 
-  /**
-   * @return true if this is inherited
-   */
   public boolean isInherited() {
     return inherited;
   }
-
-  /**
-   * Set inherited
-   * @param inherited set true if inherited
-   */
   public void setInherited(boolean inherited) {
     this.inherited = inherited;
   }
 
-  /**
-   * @return serviceName
-   */
   public String getServiceName() {
     return serviceName;
   }
-
-  /**
-   * Set serviceName
-   * @param serviceName set service name to this, must be valid service
-   */
   public void setServiceName(String serviceName) {
     this.serviceName = serviceName;
   }
 
-  /**
-   * @return dataType
-   */
-  public FeatureType getDataType() {
+  public FeatureType getFeatureType() {
     return dataType;
   }
-
-  /**
-   * Set dataType
-   * @param dataType set to this dataType
-   */
-  public void setDataType(FeatureType dataType) {
+  public void setFeatureType(FeatureType dataType) {
     this.dataType = dataType;
   }
 
-  /**
-   * @return dataType
-   */
   public DataFormatType getDataFormatType() {
     return dataFormat;
   }
-
-  /**
-   * Set dataTypeFormat
-   * @param dataFormat set to this dataTypeFormat
-   */
   public void setDataFormatType(DataFormatType dataFormat) {
     this.dataFormat = dataFormat;
   }
 
-  /**
-   * @return authority
-   */
   public String getAuthority() {
     return authorityName;
   }
-
-  /**
-   * Set authority
-   * @param authorityName set to this
-   */
   public void setAuthority(String authorityName) {
     this.authorityName = authorityName;
   }
 
-  /**
-   * @return specific type of documentation
-   * @param type match on doc.getType()
-   */
   public String getDocumentation(String type) {
     for (Documentation doc : getDocumentation()) {
       String dtype = doc.getType();
@@ -866,12 +681,12 @@ public class ThreddsMetadata {
    * Implements GeospatialCoverage type.
    */
   static public class GeospatialCoverage {
-    static private Range defaultEastwest = new Range(0.0, 0.0, Double.NaN, CDM.LON_UNITS);
-    static private Range defaultNorthsouth = new Range(0.0, 0.0, Double.NaN, CDM.LAT_UNITS);
-    static private Range defaultUpdown = new Range(0.0, 0.0, Double.NaN, "km");
+    static private GeospatialRange defaultEastwest = new GeospatialRange(0.0, 0.0, Double.NaN, CDM.LON_UNITS);
+    static private GeospatialRange defaultNorthsouth = new GeospatialRange(0.0, 0.0, Double.NaN, CDM.LAT_UNITS);
+    static private GeospatialRange defaultUpdown = new GeospatialRange(0.0, 0.0, Double.NaN, "km");
     static private GeospatialCoverage empty = new GeospatialCoverage();
 
-    private Range eastwest, northsouth, updown;
+    private GeospatialRange eastwest, northsouth, updown;
     private boolean isGlobal = false;
     private String zpositive = "up";
     private List<Vocab> names = new ArrayList<Vocab>(); // Vocab
@@ -880,7 +695,7 @@ public class ThreddsMetadata {
     public GeospatialCoverage() {
     }
 
-    public GeospatialCoverage(Range eastwest, Range northsouth, Range updown, List<Vocab> names, String zpositive) {
+    public GeospatialCoverage(GeospatialRange eastwest, GeospatialRange northsouth, GeospatialRange updown, List<Vocab> names, String zpositive) {
       this.eastwest = eastwest; //  : new Range(defaultEastwest);
       this.northsouth = northsouth; // : new Range(defaultNorthsouth);
       this.updown = updown; //  : new Range(defaultUpdown);
@@ -904,19 +719,19 @@ public class ThreddsMetadata {
       return this.equals(empty);
     }
 
-    public Range getEastWestRange() {
+    public GeospatialRange getEastWestRange() {
       return eastwest;
     }
 
-    public Range getNorthSouthRange() {
+    public GeospatialRange getNorthSouthRange() {
       return northsouth;
     }
 
-    public Range getUpDownRange() {
+    public GeospatialRange getUpDownRange() {
       return updown;
     }
 
-    public List<ThreddsMetadata.Vocab> getNames() {
+    public List<ThreddsMetadataBuilder.Vocab> getNames() {
       return names;
     }
 
@@ -977,7 +792,7 @@ public class ThreddsMetadata {
      */
     public void setLatStart(double start) {
       if (northsouth == null)
-        northsouth = new Range(defaultNorthsouth);
+        northsouth = new GeospatialRange(defaultNorthsouth);
       northsouth.start = start;
       hashCode = 0;
     }
@@ -995,7 +810,7 @@ public class ThreddsMetadata {
      */
     public void setLatExtent(double size) {
       if (northsouth == null)
-        northsouth = new Range(defaultNorthsouth);
+        northsouth = new GeospatialRange(defaultNorthsouth);
       northsouth.size = size;
       hashCode = 0;
     }
@@ -1013,7 +828,7 @@ public class ThreddsMetadata {
      */
     public void setLatResolution(double resolution) {
       if (northsouth == null)
-        northsouth = new Range(defaultNorthsouth);
+        northsouth = new GeospatialRange(defaultNorthsouth);
       northsouth.resolution = resolution;
       hashCode = 0;
     }
@@ -1031,7 +846,7 @@ public class ThreddsMetadata {
      */
     public void setLatUnits(String units) {
       if (northsouth == null)
-        northsouth = new Range(defaultNorthsouth);
+        northsouth = new GeospatialRange(defaultNorthsouth);
       northsouth.units = units;
       hashCode = 0;
     }
@@ -1058,7 +873,7 @@ public class ThreddsMetadata {
      */
     public void setLonStart(double start) {
       if (eastwest == null)
-        eastwest = new Range(defaultEastwest);
+        eastwest = new GeospatialRange(defaultEastwest);
       eastwest.start = start;
       hashCode = 0;
     }
@@ -1076,7 +891,7 @@ public class ThreddsMetadata {
      */
     public void setLonExtent(double size) {
       if (eastwest == null)
-        eastwest = new Range(defaultEastwest);
+        eastwest = new GeospatialRange(defaultEastwest);
       eastwest.size = size;
       hashCode = 0;
     }
@@ -1094,7 +909,7 @@ public class ThreddsMetadata {
      */
     public void setLonResolution(double resolution) {
       if (eastwest == null)
-        eastwest = new Range(defaultEastwest);
+        eastwest = new GeospatialRange(defaultEastwest);
       eastwest.resolution = resolution;
       hashCode = 0;
     }
@@ -1112,7 +927,7 @@ public class ThreddsMetadata {
      */
     public void setLonUnits(String units) {
       if (eastwest == null)
-        eastwest = new Range(defaultEastwest);
+        eastwest = new GeospatialRange(defaultEastwest);
       eastwest.units = units;
       hashCode = 0;
     }
@@ -1141,7 +956,7 @@ public class ThreddsMetadata {
      */
     public void setHeightStart(double start) {
       if (updown == null)
-        updown = new Range(defaultUpdown);
+        updown = new GeospatialRange(defaultUpdown);
       updown.start = start;
       hashCode = 0;
     }
@@ -1159,7 +974,7 @@ public class ThreddsMetadata {
      */
     public void setHeightExtent(double size) {
       if (updown == null)
-        updown = new Range(defaultUpdown);
+        updown = new GeospatialRange(defaultUpdown);
       updown.size = size;
       hashCode = 0;
     }
@@ -1177,7 +992,7 @@ public class ThreddsMetadata {
      */
     public void setHeightResolution(double resolution) {
       if (updown == null)
-        updown = new Range(defaultUpdown);
+        updown = new GeospatialRange(defaultUpdown);
       updown.resolution = resolution;
       hashCode = 0;
     }
@@ -1195,7 +1010,7 @@ public class ThreddsMetadata {
      */
     public void setHeightUnits(String units) {
       if (updown == null)
-        updown = new Range(defaultUpdown);
+        updown = new GeospatialRange(defaultUpdown);
       updown.units = units;
       hashCode = 0;
     }
@@ -1210,8 +1025,8 @@ public class ThreddsMetadata {
       LatLonPointImpl urpt = bb.getUpperRightPoint();
       double height = urpt.getLatitude() - llpt.getLatitude();
 
-      this.eastwest = new Range(llpt.getLongitude(), bb.getWidth(), 0.0, CDM.LON_UNITS);
-      this.northsouth = new Range(llpt.getLatitude(), height, 0.0, CDM.LAT_UNITS);
+      this.eastwest = new GeospatialRange(llpt.getLongitude(), bb.getWidth(), 0.0, CDM.LON_UNITS);
+      this.northsouth = new GeospatialRange(llpt.getLatitude(), height, 0.0, CDM.LAT_UNITS);
 
       if ((bb.getWidth() > 358) && (height > 178))
         setGlobal(true); // LOOK ??
@@ -1222,7 +1037,7 @@ public class ThreddsMetadata {
       double size = vaxis.getCoordValue(n - 1) - vaxis.getCoordValue(0);
       double resolution = vaxis.getIncrement();
       String units = vaxis.getUnitsString();
-      this.updown = new Range(vaxis.getCoordValue(0), size, resolution, units);
+      this.updown = new GeospatialRange(vaxis.getCoordValue(0), size, resolution, units);
       if (units != null) {
         setZPositiveUp(SimpleUnit.isCompatible("m", units));
       }
@@ -1230,7 +1045,7 @@ public class ThreddsMetadata {
 
     public void setVertical(double start, double end, double resolution, String units, boolean isPositiveUp) {
       double size = end - start;
-      this.updown = new Range(start, size, resolution, units);
+      this.updown = new GeospatialRange(start, size, resolution, units);
       setZPositiveUp(isPositiveUp);
     }
 
@@ -1268,7 +1083,7 @@ public class ThreddsMetadata {
   /**
    * Implements spatialRange type.
    */
-  static public class Range {
+  static public class GeospatialRange {
     private double start, size, resolution;
     private String units;
 
@@ -1280,7 +1095,7 @@ public class ThreddsMetadata {
      * @param resolution data resolution, or NaN if unknown
      * @param units      what units are start, size in?
      */
-    public Range(double start, double size, double resolution, String units) {
+    public GeospatialRange(double start, double size, double resolution, String units) {
       this.start = start;
       this.size = size;
       this.resolution = resolution;
@@ -1291,7 +1106,7 @@ public class ThreddsMetadata {
      * Copy constructor
      * @param from copy this
      */
-    public Range(Range from) {
+    public GeospatialRange(GeospatialRange from) {
       this.start = from.start;
       this.size = from.size;
       this.resolution = from.resolution;
@@ -1318,7 +1133,7 @@ public class ThreddsMetadata {
       return (resolution != 0.0) && !Double.isNaN(resolution);
     }
 
-    public void extend(Range r) {
+    public void extend(GeospatialRange r) {
       double stop = Math.max(this.start+this.size, r.start+r.size);
       this.start = Math.min(this.start, r.start);
       this.size = this.start - stop;
@@ -1326,7 +1141,7 @@ public class ThreddsMetadata {
 
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof Range)) return false;
+      if (!(o instanceof GeospatialRange)) return false;
       return o.hashCode() == this.hashCode();
     }
 
@@ -1589,16 +1404,16 @@ public class ThreddsMetadata {
   /**
    * Implements Variables type.
    */
-  static public class Variables {
+  static public class VariableGroup {
     private String vocabulary, vocabHref, mapHref;
     private URI vocabUri, mapUri;
     private List<Variable> variables = new ArrayList<Variable>();
 
-    public Variables(String vocab) {
+    public VariableGroup(String vocab) {
       this.vocabulary = vocab;
     }
 
-    public Variables(String vocab, String vocabHref, URI vocabUri, String mapHref, URI mapUri) {
+    public VariableGroup(String vocab, String vocabHref, URI vocabUri, String mapHref, URI mapUri) {
       this.vocabulary = vocab;
       this.vocabHref = vocabHref;
       this.vocabUri = vocabUri;
@@ -1648,7 +1463,7 @@ public class ThreddsMetadata {
 
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof Variables)) return false;
+      if (!(o instanceof VariableGroup)) return false;
       return o.hashCode() == this.hashCode();
     }
 

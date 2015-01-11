@@ -40,61 +40,42 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * <xsd:element name="catalog">
-   <xsd:complexType>
-     <xsd:sequence>
-       <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
-       <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
-       <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
-     </xsd:sequence>
-
-     <xsd:attribute name="name" type="xsd:string" />
-     <xsd:attribute name="expires" type="dateType"/>
-     <xsd:attribute name="version" type="xsd:token" default="1.0.2" />
-   </xsd:complexType>
- </xsd:element>
+ * A Client Catalog
  *
  * @author caron
  * @since 1/7/2015
  */
 @Immutable
 public class Catalog extends DatasetNode {
-  private final String BASEURI = "baseURI";
-  private final String EXPIRES = "expires";
-  private final String VERSION = "version";
-  private final String SERVICES = "services";
-  private final String PROPERTIES = "properties";
+  private final URI baseURI;
 
-  public Catalog(URI baseURI, String name, CalendarDate expires, String version, List<Service> services, List<Property> properties, List<DatasetBuilder> datasets) {
-    super(null, name, datasets);
-    if (baseURI != null) flds.put(BASEURI, baseURI);
-    if (expires != null) flds.put(EXPIRES, expires);
-    if (version != null) flds.put(VERSION, version);
-    if (services != null) flds.put(SERVICES, services);
-    if (properties != null) flds.put(PROPERTIES, properties);
-  }
-
-  public CalendarDate getExpires() {
-    return (CalendarDate) flds.get(EXPIRES);
+  public Catalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
+    super(null, name, flds, datasets);
+    this.baseURI = baseURI;
   }
 
   public URI getBaseURI() {
-    return (URI) flds.get(BASEURI);
+    return baseURI;
+  }
+
+  public CalendarDate getExpires() {
+    return (CalendarDate) flds.get(Dataset.Expires);
   }
 
   public String getVersion() {
-    return (String) flds.get(VERSION);
+    return (String) flds.get(Dataset.Version);
   }
 
   public List<Service> getServices() {
-    List<Service> services = (List<Service>) flds.get(SERVICES);
+    List<Service> services = (List<Service>) flds.get(Dataset.Services);
     return services == null ? new ArrayList<Service>(0) : services;
   }
 
   public List<Property> getProperties() {
-    List<Property> properties = (List<Property>) flds.get(PROPERTIES);
+    List<Property> properties = (List<Property>) flds.get(Dataset.Properties);
     return properties == null ? new ArrayList<Property>(0) : properties;
   }
 

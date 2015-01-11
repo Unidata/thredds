@@ -36,8 +36,11 @@ import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Describe
+ * CatalogRef Builder
  *
  * @author caron
  * @since 1/9/2015
@@ -61,6 +64,6 @@ public class CatalogRefBuilder extends DatasetBuilder {
 
   @Override
   public Dataset makeDataset(DatasetNode parent) {
-    return new CatalogRef(parent, title, href, collectionType, harvest, id, urlPath, metadata, accessBuilders, datasetBuilders);
+    return new CatalogRef(parent, title, href, flds, accessBuilders, datasetBuilders);
   }
 }
