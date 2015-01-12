@@ -180,22 +180,24 @@ public class CatalogCrawler {
       listen.getDataset(ds, context);
 
     // recurse - depth first
-    List<Dataset> dlist;
+    List<Dataset> dlist = null;
     if (isCatRef) {
       CatalogRef catref = (CatalogRef) ds;
       CatalogBuilder builder = new CatalogBuilder();
       Catalog nested = builder.buildFromCatref(catref);
-      dlist = nested.getDatasets();
+      if (nested != null) dlist = nested.getDatasets();
       //if (!isDataScan)
       //  listen.getDataset(catref.getProxyDataset(), context); // wait till a catref is read, so all metadata is there !
     } else {
       dlist = ds.getDatasets();
     }
 
-    for (Dataset dds : dlist) {
-      crawlDataset(dds, task, out, context, release);
-      if ((task != null) && task.isCancel())
-        break;
+    if (dlist != null) {
+      for (Dataset dds : dlist) {
+        crawlDataset(dds, task, out, context, release);
+        if ((task != null) && task.isCancel())
+          break;
+      }
     }
 
     /* if (isCatRef && release) {

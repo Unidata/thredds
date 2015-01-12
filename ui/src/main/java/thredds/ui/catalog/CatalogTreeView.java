@@ -476,8 +476,10 @@ public class CatalogTreeView extends JPanel {
         CatalogBuilder builder = new CatalogBuilder();
         try {
           Catalog cat = builder.buildFromCatref(catref);
-          if (builder.hasFatalError())
-            javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, "Error reading catref " + catref.getName()+" err="+builder.getErrorMessage());
+          if (builder.hasFatalError() || cat == null) {
+            javax.swing.JOptionPane.showMessageDialog(CatalogTreeView.this, "Error reading catref " + catref.getName() + " err=" + builder.getErrorMessage());
+            return;
+          }
 
           setCatalog(cat);
         } catch (IOException e) {

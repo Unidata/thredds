@@ -162,19 +162,21 @@ public class DatasetHtmlWriter {
           else if (stype == ServiceType.NCML || stype == ServiceType.UDDC || stype == ServiceType.ISO) {
             String catalogUrl = ds.getCatalogUrl();
             String datasetId = ds.getId();
-            if (catalogUrl.indexOf('#') > 0)
-              catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
-            try {
-              catalogUrl = URLEncoder.encode(catalogUrl, "UTF-8");
-              datasetId = URLEncoder.encode(datasetId, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-              e.printStackTrace();
-            }
-            fullUrlString = fullUrlString + "?catalog=" + catalogUrl + "&dataset=" + datasetId;
-          } else if (stype == ServiceType.NetcdfSubset)
-            fullUrlString = fullUrlString + "/dataset.html";
-          else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
-            fullUrlString = fullUrlString + "?req=form";
+            if (catalogUrl != null && datasetId != null) {
+              if (catalogUrl.indexOf('#') > 0)
+                catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
+              try {
+                catalogUrl = URLEncoder.encode(catalogUrl, "UTF-8");
+                datasetId = URLEncoder.encode(datasetId, "UTF-8");
+              } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+              }
+              fullUrlString = fullUrlString + "?catalog=" + catalogUrl + "&dataset=" + datasetId;
+            } else if (stype == ServiceType.NetcdfSubset)
+              fullUrlString = fullUrlString + "/dataset.html";
+            else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
+              fullUrlString = fullUrlString + "?req=form";
+          }
         }
         out.format(" <li> <b>%s:</b>%s</li>%n", s.getType().toString(), makeHref(fullUrlString, urlString));
       }

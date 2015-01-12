@@ -214,11 +214,13 @@ public class CatalogChooser extends JPanel {
           if (ds instanceof CatalogRef) {
             CatalogRef ref = (CatalogRef) ds;
             String href = ref.getXlinkHref();
-            try {
-              java.net.URI uri = ref.getParentCatalog().resolveUri(href);
-              setCurrentURL(uri.toString());
-            } catch (URISyntaxException ee) {
-              throw new RuntimeException(ee);
+            if (href != null) {
+              try {
+                java.net.URI uri = ref.getParentCatalog().resolveUri(href);
+                setCurrentURL(uri.toString());
+              } catch (URISyntaxException ee) {
+                throw new RuntimeException(ee);
+              }
             }
           }
           else if (ds.getParent() == null) { // top

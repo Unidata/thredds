@@ -104,9 +104,8 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
     CatalogBuilder catFactory = new CatalogBuilder();
     Catalog cat = catFactory.buildFromLocation(catalogUrl);
-    boolean isValid = !catFactory.hasFatalError();
-    if (!isValid) {
-      logger.warn("Catalog invalid= "+catalogUrl+" validation output= "+ catFactory.getErrorMessage());
+    if (!catFactory.hasFatalError() || cat == null) {
+      logger.warn("Catalog invalid= "+catalogUrl+" err= "+ catFactory.getErrorMessage());
       return false;
     }
 

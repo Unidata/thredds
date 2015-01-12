@@ -226,7 +226,7 @@ public class JdomCatalogBuilder {
       services.add(readService(e));
     }
 
-    Service result = new Service(name, serviceBase, type, suffix, desc, services, properties);
+    Service result = new Service(name, serviceBase, type, desc, suffix, services, properties);
     serviceMap.put(name, result);
     return result;
   }
@@ -706,27 +706,23 @@ public class JdomCatalogBuilder {
     }
 
     java.util.List<Element> vlist = varsElem.getChildren("variable", Catalog.defNS);
-
     URI mapUri = readVariableMap(varsElem.getChild("variableMap", Catalog.defNS));
     if ((mapUri != null) && vlist.size() > 0) { // cant do both
-      errlog.format(" ** Catalog error: cant have variableMap and variable in same element%n", varsElem);
+      errlog.format(" ** Catalog error: cant have variableMap and variable in same element %s%n", varsElem);
       mapUri = null;
     }
 
-    List<ThreddsMetadata.Variable> variables = null;
-    if (vlist.size() > 0) {
-      variables = new ArrayList<>();
-      for (Element e : vlist) {
-        variables.add(readVariable(e));
-      }
+    List<ThreddsMetadata.Variable> variables = new ArrayList<>();
+    for (Element e : vlist) {
+      variables.add(readVariable(e));
     }
 
-    // read in variable map LOOK: would like to defer
+    /* read in variable map LOOK: would like to defer
     if (mapUri != null) {
       try {
         Element varsElement = readContentFromURL(mapUri);
         List<Element> list = varsElement.getChildren("variable", Catalog.defNS);
-        if (vlist.size() > 0) {
+        if (list.size() > 0) {
           variables = new ArrayList<>();
           for (Element e : list) {
             variables.add(readVariable(e));
@@ -744,9 +740,9 @@ public class JdomCatalogBuilder {
           ThreddsMetadata.Variable v = readVariable( (Element) list.get(j));
           variables.addVariable(v);
         }
-      } */
+      } //
 
-    }
+    } */
 
     return new ThreddsMetadata.VariableGroup(vocab, vocabHref, vocabUri, mapUri, variables);
   }
