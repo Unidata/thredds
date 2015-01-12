@@ -71,6 +71,7 @@ public class TestTdsDatasetScan {
   @Test
   public void testHarvest() throws IOException {
     Catalog cat = TestTdsLocal.open("catalog/testEnhanced/catalog.xml");
+    assert cat != null;
     Dataset dscan = cat.findDatasetByID("testEnhanced");
     assert dscan != null;
     assert dscan.isHarvest();
