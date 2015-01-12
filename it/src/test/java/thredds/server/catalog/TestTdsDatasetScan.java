@@ -34,6 +34,8 @@ package thredds.server.catalog;
 
 import org.junit.Test;
 import thredds.catalog.*;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
 
 import java.io.IOException;
 import java.util.List;
@@ -42,10 +44,10 @@ public class TestTdsDatasetScan {
 
   @Test
   public void testSort() throws IOException {
-    InvCatalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/tds/ncep/catalog.xml");
+    Catalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/tds/ncep/catalog.xml");
 
-    InvDataset last = null;
-    for (InvDataset ds : cat.getDatasets()) {
+    Dataset last = null;
+    for (Dataset ds : cat.getDatasets()) {
       if (last != null)
         assert ds.getName().compareTo( last.getName()) > 0 ;
       last = ds;
@@ -54,11 +56,11 @@ public class TestTdsDatasetScan {
 
   @Test
   public void testLatest() throws IOException {
-     InvCatalogImpl cat = TestTdsLocal.open("catalog/testGFSfmrc/files/latest.xml");
-     List dss = cat.getDatasets();
+    Catalog cat = TestTdsLocal.open("catalog/testGFSfmrc/files/latest.xml");
+     List<Dataset> dss = cat.getDatasets();
      assert (dss.size() == 1);
 
-     InvDatasetImpl ds = (InvDatasetImpl) dss.get(0);
+    Dataset ds = dss.get(0);
      assert ds.hasAccess();
      assert ds.getDatasets().size() == 0;
 
@@ -68,28 +70,28 @@ public class TestTdsDatasetScan {
 
   @Test
   public void testHarvest() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open("catalog/testEnhanced/catalog.xml");
-    InvDataset dscan = cat.findDatasetByID("testEnhanced");
+    Catalog cat = TestTdsLocal.open("catalog/testEnhanced/catalog.xml");
+    Dataset dscan = cat.findDatasetByID("testEnhanced");
     assert dscan != null;
     assert dscan.isHarvest();
 
-    List dss = dscan.getDatasets();
+    List<Dataset> dss = dscan.getDatasets();
     assert (dss.size() > 0);
-    InvDataset nested = (InvDataset) dss.get(0);
+    Dataset nested = dss.get(0);
     assert !nested.isHarvest();
 
     cat = TestTdsLocal.open("/catalog.xml");
-    InvDataset ds = cat.findDatasetByID("testDataset");
+    Dataset ds = cat.findDatasetByID("testDataset");
     assert ds != null;
     assert !ds.isHarvest();
   }
 
   @Test
   public void testNestedDirs() throws IOException {
-    InvCatalog cat = TestTdsLocal.open("catalog/station/profiler/wind/06min/catalog.xml");
+    Catalog cat = TestTdsLocal.open("catalog/station/profiler/wind/06min/catalog.xml");
 
-    InvDataset top = cat.findDatasetByID("NWS/NPN/6min");
-    List<InvDataset> children = top.getDatasets();
+    Dataset top = cat.findDatasetByID("NWS/NPN/6min");
+    List<Dataset> children = top.getDatasets();
     assert children.size() == 2 : children.size();
 
   }

@@ -1,8 +1,8 @@
 package ucar.nc2.ui.coverage;
 
-import thredds.catalog.InvDataset;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.ServiceType;
+import thredds.client.catalog.ServiceType;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -356,9 +356,13 @@ public class CoverageDisplay extends JPanel {
         String filename = fileChooser.chooseFilename();
         if (filename == null) return;
 
-        InvDataset invDs;
-        try {
-          invDs = new InvDatasetImpl(filename, FeatureType.GRID, ServiceType.NETCDF);
+        Dataset invDs;
+        try {     // DatasetNode parent, String name, Map<String, Object> flds, List< AccessBuilder > accessBuilders, List< DatasetBuilder > datasetBuilders
+          Map<String, Object> flds = new HashMap<>();
+          flds.put(Dataset.FeatureType, FeatureType.GRID.toString());
+          flds.put(Dataset.ServiceName, ServiceType.FILE.toString());  // bogus
+          invDs = new Dataset(null, filename, flds, null, null);
+          // invDs = new Dataset(filename, FeatureType.GRID, ServiceType.NETCDF);
         } catch (Exception ue) {
           JOptionPane.showMessageDialog(CoverageDisplay.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
           ue.printStackTrace();
@@ -964,7 +968,7 @@ public class CoverageDisplay extends JPanel {
     redrawLater();
   }
 
-  public void setDataset(InvDataset ds) {
+  public void setDataset(Dataset ds) {
     if (ds == null) return;
 
     OpenDatasetTask openTask = new OpenDatasetTask(ds);
@@ -1438,11 +1442,11 @@ public class CoverageDisplay extends JPanel {
 
   // open remote dataset in cancellable task
   private class OpenDatasetTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
-    ucar.nc2.thredds.ThreddsDataFactory factory;
-    thredds.catalog.InvDataset invds;
+    DataFactory factory;
+    Dataset invds;
 
-    OpenDatasetTask(thredds.catalog.InvDataset ds) {
-      factory = new ucar.nc2.thredds.ThreddsDataFactory();
+    OpenDatasetTask(Dataset ds) {
+      factory = new DataFactory();
       this.invds = ds;
     }
 

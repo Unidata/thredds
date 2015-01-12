@@ -56,13 +56,6 @@ import java.util.*;
  * @since 1/8/2015
  */
 public class JdomCatalogBuilder {
-  static public final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
-  static public final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
-  static public final String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
-
-  static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
-  static public final Namespace defNS = Namespace.getNamespace(CATALOG_NAMESPACE_10);
-  static public final Namespace ncmlNS = Namespace.getNamespace("ncml", NJ22_NAMESPACE);
 
   private Formatter errlog;
   private URI docBaseURI;
@@ -134,13 +127,13 @@ public class JdomCatalogBuilder {
     catBuilder.setVersion(version);
 
     // read top-level services
-    java.util.List<Element> sList = catalogElem.getChildren("service", defNS);
+    java.util.List<Element> sList = catalogElem.getChildren("service", Catalog.defNS);
     for (Element e : sList) {
       catBuilder.addService(readService(e));
     }
 
     // read top-level properties
-    java.util.List<Element> pList = catalogElem.getChildren("property", defNS);
+    java.util.List<Element> pList = catalogElem.getChildren("property", Catalog.defNS);
     for (Element e : pList) {
       catBuilder.addProperty(readProperty(e));
     }
@@ -219,7 +212,7 @@ public class JdomCatalogBuilder {
     }
 
     List<Property> properties = null;
-    List<Element> propertyList = s.getChildren("property", defNS);
+    List<Element> propertyList = s.getChildren("property", Catalog.defNS);
     for (Element e : propertyList) {
       if (properties == null) properties = new ArrayList<>();
       properties.add(readProperty(e));
@@ -227,7 +220,7 @@ public class JdomCatalogBuilder {
 
     // nested services
     List<Service> services = null;
-    java.util.List<Element> serviceList = s.getChildren("service", defNS);
+    java.util.List<Element> serviceList = s.getChildren("service", Catalog.defNS);
     for (Element e : serviceList) {
       if (services == null) services = new ArrayList<>();
       services.add(readService(e));
@@ -240,9 +233,9 @@ public class JdomCatalogBuilder {
   
   
   protected DatasetBuilder readCatalogRef(DatasetBuilder parent, Element catRefElem) {
-    String title = catRefElem.getAttributeValue("title", xlinkNS);
+    String title = catRefElem.getAttributeValue("title", Catalog.xlinkNS);
     if (title == null) title = catRefElem.getAttributeValue("name");
-    String href = catRefElem.getAttributeValue("href", xlinkNS);
+    String href = catRefElem.getAttributeValue("href", Catalog.xlinkNS);
     CatalogRefBuilder catRef = new CatalogRefBuilder(parent);
     readDatasetInfo( catRef, catRefElem);
     catRef.setTitle(title);
@@ -277,7 +270,7 @@ public class JdomCatalogBuilder {
     readDatasetInfo(dataset, dsElem);
 
     // look for access elements
-    java.util.List<Element> aList = dsElem.getChildren("access", defNS);
+    java.util.List<Element> aList = dsElem.getChildren("access", Catalog.defNS);
     for (Element e : aList) {
       dataset.addAccess(readAccess(dataset, e));
     }
@@ -362,79 +355,79 @@ public class JdomCatalogBuilder {
     List<Element> list;
 
     // look for creators - kind of a Source
-    list = parent.getChildren("creator", defNS);
+    list = parent.getChildren("creator", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.Creators, readSource(e));
     }
 
     // look for contributors
-    list = parent.getChildren("contributor", defNS);
+    list = parent.getChildren("contributor", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.Contributors, readContributor(e));
     }
 
     // look for dates
-    list = parent.getChildren("date", defNS);
+    list = parent.getChildren("date", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e));
     }
 
     // look for documentation
-    list = parent.getChildren("documentation", defNS);
+    list = parent.getChildren("documentation", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.Documentation, readDocumentation(e));
     }
 
     // look for keywords - kind of a controlled vocabulary
-    list = parent.getChildren("keyword", defNS);
+    list = parent.getChildren("keyword", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.Keywords, readControlledVocabulary(e));
     }
 
     // look for metadata elements
-    list = parent.getChildren("metadata", defNS);
+    list = parent.getChildren("metadata", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.MetadataOther, readMetadata(flds, dataset, e));
     }
 
     // look for projects - kind of a controlled vocabulary
-    list = parent.getChildren("project", defNS);
+    list = parent.getChildren("project", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.Projects, readControlledVocabulary(e));
     }
 
     // look for properties
-    list = parent.getChildren("property", defNS);
+    list = parent.getChildren("property", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.Properties, readProperty(e));
     }
 
     // look for publishers - kind of a Source
-    list = parent.getChildren("publisher", defNS);
+    list = parent.getChildren("publisher", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.Publishers, readSource(e));
     }
 
     // look for variables
-    list = parent.getChildren("variables", defNS);
+    list = parent.getChildren("variables", Catalog.defNS);
     for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.VariableGroups, readVariables(e));
     }
 
     // can only be one each of these kinds
-    ThreddsMetadata.GeospatialCoverage gc = readGeospatialCoverage(parent.getChild("geospatialCoverage", defNS));
+    ThreddsMetadata.GeospatialCoverage gc = readGeospatialCoverage(parent.getChild("geospatialCoverage", Catalog.defNS));
     if (gc != null) flds.put(Dataset.GeospatialCoverage, gc);
 
-    DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", defNS));
+    DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", Catalog.defNS));
     if (tc != null) flds.put(Dataset.TimeCoverage, tc);
 
-    Element serviceNameElem = parent.getChild("serviceName", defNS);
+    Element serviceNameElem = parent.getChild("serviceName", Catalog.defNS);
     if (serviceNameElem != null) flds.put(Dataset.ServiceName, serviceNameElem.getText());
 
-    Element authElem = parent.getChild("authority", defNS);
+    Element authElem = parent.getChild("authority", Catalog.defNS);
     if (authElem != null) flds.put(Dataset.Authority, authElem.getText());
 
-    Element dataTypeElem = parent.getChild("dataType", defNS);
+    Element dataTypeElem = parent.getChild("dataType", Catalog.defNS);
     if (dataTypeElem != null) {
       String dataTypeName = dataTypeElem.getText();
       if ((dataTypeName != null) && (dataTypeName.length() > 0)) {
@@ -446,7 +439,7 @@ public class JdomCatalogBuilder {
       }
     }
 
-    Element dataFormatElem = parent.getChild("dataFormat", defNS);
+    Element dataFormatElem = parent.getChild("dataFormat", Catalog.defNS);
     if (dataFormatElem != null) {
       String dataFormatTypeName = dataFormatElem.getText();
       if ((dataFormatTypeName != null) && (dataFormatTypeName.length() > 0)) {
@@ -462,13 +455,13 @@ public class JdomCatalogBuilder {
     if (size > 0)
       flds.put(Dataset.DataSize, size);
 
-    URI mapUri = readVariableMap(parent.getChild("variableMap", defNS));
+    URI mapUri = readVariableMap(parent.getChild("variableMap", Catalog.defNS));
     if (mapUri != null)
       flds.put(Dataset.VariableMapLink, mapUri);
   }
 
   protected long readDataSize(Element parent) {
-    Element elem = parent.getChild("dataSize", defNS);
+    Element elem = parent.getChild("dataSize", Catalog.defNS);
     if (elem == null) return -1;
 
     double size;
@@ -522,8 +515,8 @@ public class JdomCatalogBuilder {
   }
 
   protected Documentation readDocumentation(Element s) {
-    String href = s.getAttributeValue("href", xlinkNS);
-    String title = s.getAttributeValue("title", xlinkNS);
+    String href = s.getAttributeValue("href", Catalog.xlinkNS);
+    String title = s.getAttributeValue("title", Catalog.xlinkNS);
     String type = s.getAttributeValue("type"); // not XLink type
     String content = s.getTextNormalize();
 
@@ -555,13 +548,13 @@ public class JdomCatalogBuilder {
 
     String zpositive = gcElem.getAttributeValue("zpositive");
 
-    ThreddsMetadata.GeospatialRange northsouth = readGeospatialRange(gcElem.getChild("northsouth", defNS), CDM.LAT_UNITS);
-    ThreddsMetadata.GeospatialRange eastwest = readGeospatialRange(gcElem.getChild("eastwest", defNS), CDM.LON_UNITS);
-    ThreddsMetadata.GeospatialRange updown = readGeospatialRange(gcElem.getChild("updown", defNS), "m");
+    ThreddsMetadata.GeospatialRange northsouth = readGeospatialRange(gcElem.getChild("northsouth", Catalog.defNS), CDM.LAT_UNITS);
+    ThreddsMetadata.GeospatialRange eastwest = readGeospatialRange(gcElem.getChild("eastwest", Catalog.defNS), CDM.LON_UNITS);
+    ThreddsMetadata.GeospatialRange updown = readGeospatialRange(gcElem.getChild("updown", Catalog.defNS), "m");
 
     // look for names
     List<ThreddsMetadata.Vocab> names = new ArrayList<>();
-    java.util.List<Element> list = gcElem.getChildren("name", defNS);
+    java.util.List<Element> list = gcElem.getChildren("name", Catalog.defNS);
     for (Element e : list) {
       ThreddsMetadata.Vocab name = readControlledVocabulary(e);
       names.add(name);
@@ -573,11 +566,11 @@ public class JdomCatalogBuilder {
   protected ThreddsMetadata.GeospatialRange readGeospatialRange(Element spElem, String defUnits) {
     if (spElem == null) return null;
 
-    double start = readDouble(spElem.getChild("start", defNS));
-    double size = readDouble(spElem.getChild("size", defNS));
-    double resolution = readDouble(spElem.getChild("resolution", defNS));
+    double start = readDouble(spElem.getChild("start", Catalog.defNS));
+    double size = readDouble(spElem.getChild("size", Catalog.defNS));
+    double resolution = readDouble(spElem.getChild("resolution", Catalog.defNS));
 
-    String units = spElem.getChildText("units", defNS);
+    String units = spElem.getChildText("units", Catalog.defNS);
     if (units == null) units = defUnits;
 
     return new ThreddsMetadata.GeospatialRange(start, size, resolution, units);
@@ -608,12 +601,12 @@ public class JdomCatalogBuilder {
       namespace = mdataElement.getNamespace(); // will be thredds
 
     String mtype = mdataElement.getAttributeValue("metadataType");
-    String href = mdataElement.getAttributeValue("href", xlinkNS);
-    String title = mdataElement.getAttributeValue("title", xlinkNS);
+    String href = mdataElement.getAttributeValue("href", Catalog.xlinkNS);
+    String title = mdataElement.getAttributeValue("title", Catalog.xlinkNS);
     String inheritedS = mdataElement.getAttributeValue("inherited");
     boolean inherited = (inheritedS != null) && inheritedS.equalsIgnoreCase("true");
 
-    boolean isThreddsNamespace = ((mtype == null) || mtype.equalsIgnoreCase("THREDDS")) && namespace.getURI().equals(CATALOG_NAMESPACE_10);
+    boolean isThreddsNamespace = ((mtype == null) || mtype.equalsIgnoreCase("THREDDS")) && namespace.getURI().equals(Catalog.CATALOG_NAMESPACE_10);
 
     // the case where its not ThreddsMetadata
     if (!isThreddsNamespace) {
@@ -657,8 +650,8 @@ public class JdomCatalogBuilder {
 
   protected ThreddsMetadata.Source readSource(Element elem) {
     if (elem == null) return null;
-    ThreddsMetadata.Vocab name = readControlledVocabulary(elem.getChild("name", defNS));
-    Element contact = elem.getChild("contact", defNS);
+    ThreddsMetadata.Vocab name = readControlledVocabulary(elem.getChild("name", Catalog.defNS));
+    Element contact = elem.getChild("contact", Catalog.defNS);
     if (contact == null) {
       errlog.format(" ** Parse error: Missing contact element in = %s%n", elem.getName());
       return null;
@@ -669,10 +662,10 @@ public class JdomCatalogBuilder {
   protected DateRange readTimeCoverage(Element tElem) {
     if (tElem == null) return null;
 
-    DateType start = readDate(tElem.getChild("start", defNS));
-    DateType end = readDate(tElem.getChild("end", defNS));
-    TimeDuration duration = readDuration(tElem.getChild("duration", defNS));
-    TimeDuration resolution = readDuration(tElem.getChild("resolution", defNS));
+    DateType start = readDate(tElem.getChild("start", Catalog.defNS));
+    DateType end = readDate(tElem.getChild("end", Catalog.defNS));
+    TimeDuration duration = readDuration(tElem.getChild("duration", Catalog.defNS));
+    TimeDuration resolution = readDuration(tElem.getChild("resolution", Catalog.defNS));
 
     try {
       return new DateRange(start, end, duration, resolution);
@@ -701,7 +694,7 @@ public class JdomCatalogBuilder {
     if (varsElem == null) return null;
 
     String vocab = varsElem.getAttributeValue("vocabulary");
-    String vocabHref = varsElem.getAttributeValue("href", xlinkNS);
+    String vocabHref = varsElem.getAttributeValue("href", Catalog.xlinkNS);
 
     URI vocabUri = null;
     if (vocabHref != null) {
@@ -712,9 +705,9 @@ public class JdomCatalogBuilder {
       }
     }
 
-    java.util.List<Element> vlist = varsElem.getChildren("variable", defNS);
+    java.util.List<Element> vlist = varsElem.getChildren("variable", Catalog.defNS);
 
-    URI mapUri = readVariableMap(varsElem.getChild("variableMap", defNS));
+    URI mapUri = readVariableMap(varsElem.getChild("variableMap", Catalog.defNS));
     if ((mapUri != null) && vlist.size() > 0) { // cant do both
       errlog.format(" ** Catalog error: cant have variableMap and variable in same element%n", varsElem);
       mapUri = null;
@@ -732,7 +725,7 @@ public class JdomCatalogBuilder {
     if (mapUri != null) {
       try {
         Element varsElement = readContentFromURL(mapUri);
-        List<Element> list = varsElement.getChildren("variable", defNS);
+        List<Element> list = varsElement.getChildren("variable", Catalog.defNS);
         if (vlist.size() > 0) {
           variables = new ArrayList<>();
           for (Element e : list) {
@@ -771,7 +764,7 @@ public class JdomCatalogBuilder {
   private URI readVariableMap(Element variableMapElem) {
     if (variableMapElem == null) return null;
     String mapHref = null;
-    mapHref = variableMapElem.getAttributeValue("href", xlinkNS);
+    mapHref = variableMapElem.getAttributeValue("href", Catalog.xlinkNS);
     URI mapUri = null;
     try {
       mapUri =  docBaseURI.resolve(mapHref);

@@ -84,7 +84,6 @@ import java.util.Formatter;
  * use a ThreddsDatasetChooser instead, for a more complete interface.
  *
  * @see ThreddsDatasetChooser
- * @see thredds.catalog.InvDataset
  *
  * @author John Caron
  */

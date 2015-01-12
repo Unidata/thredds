@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.bufr;
 
 import org.jdom2.Element;
+import thredds.client.catalog.Catalog;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -158,9 +159,9 @@ public class BufrConfig {
 
   private void merge(Element iospParam) {
     assert iospParam.getName().equals("iospParam");
-    Element bufr2nc = iospParam.getChild("bufr2nc", NcMLReader.ncNS);
+    Element bufr2nc = iospParam.getChild("bufr2nc", Catalog.ncmlNS);
     if (bufr2nc == null) return;
-    for (Element child : bufr2nc.getChildren("fld", NcMLReader.ncNS))
+    for (Element child : bufr2nc.getChildren("fld", Catalog.ncmlNS))
       merge(child, rootConverter);
   }
 
@@ -210,7 +211,7 @@ public class BufrConfig {
       fld.setAction(action);
 
     if (jdom.getChildren("fld") != null) {
-      for (Element child : jdom.getChildren("fld", NcMLReader.ncNS)) {
+      for (Element child : jdom.getChildren("fld", Catalog.ncmlNS)) {
         merge(child, fld);
       }
     }

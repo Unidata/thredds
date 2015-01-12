@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import thredds.catalog.InvCatalogImpl;
+import thredds.client.catalog.Catalog;
 import ucar.nc2.util.IO;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class TestCatalogMapping {
   public void testRead() throws IOException {
 
     if (catPath.endsWith(".xml")) {
-      InvCatalogImpl cat = TestTdsLocal.open(catPath);
+      Catalog cat = TestTdsLocal.open(catPath);
       assert cat != null;
 
     }  else {

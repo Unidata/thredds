@@ -32,9 +32,9 @@
  */
 package ucar.nc2.ui.grid;
 
-import thredds.catalog.InvDataset;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.ServiceType;
+import thredds.client.catalog.ServiceType;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -274,7 +274,7 @@ public class GridUI extends JPanel {
     gridTable.clear();
   }
 
-  public void setDataset(InvDataset ds) {
+  public void setDataset(Dataset ds) {
      if (ds == null) return;
 
      OpenDatasetTask openTask = new OpenDatasetTask(ds);
@@ -382,9 +382,9 @@ public class GridUI extends JPanel {
         String filename = fileChooser.chooseFilename();
         if (filename == null) return;
 
-        InvDataset invDs;
+        Dataset invDs;
         try {
-          invDs = new InvDatasetImpl(filename, FeatureType.GRID, ServiceType.NETCDF);
+          invDs = new Dataset(filename, FeatureType.GRID, ServiceType.FILE); // LOOK WTF ??
         } catch (Exception ue) {
           JOptionPane.showMessageDialog(GridUI.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
           ue.printStackTrace();
@@ -894,11 +894,11 @@ public class GridUI extends JPanel {
   }
 
   private class OpenDatasetTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
-    ucar.nc2.thredds.ThreddsDataFactory factory;
-    thredds.catalog.InvDataset invds;
+    DataFactory factory;
+    Dataset invds;
 
-    OpenDatasetTask(thredds.catalog.InvDataset ds) {
-      factory = new ucar.nc2.thredds.ThreddsDataFactory();
+    OpenDatasetTask(Dataset ds) {
+      factory = new DataFactory();
       this.invds = ds;
     }
 

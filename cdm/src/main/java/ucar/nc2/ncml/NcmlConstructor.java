@@ -4,6 +4,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
+import thredds.client.catalog.Catalog;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -92,19 +93,19 @@ public class NcmlConstructor {
     }
 
     // look for attributes
-    java.util.List<Element> attList = groupElem.getChildren("attribute", NcMLReader.ncNS);
+    java.util.List<Element> attList = groupElem.getChildren("attribute", Catalog.ncmlNS);
     for (Element attElem : attList) {
       readAtt(g, attElem);
     }
 
     // look for dimensions
-    java.util.List<Element> dimList = groupElem.getChildren("dimension", NcMLReader.ncNS);
+    java.util.List<Element> dimList = groupElem.getChildren("dimension", Catalog.ncmlNS);
     for (Element dimElem : dimList) {
       readDim(g, dimElem);
     }
 
     // look for variables
-    java.util.List<Element> varList = groupElem.getChildren("variable", NcMLReader.ncNS);
+    java.util.List<Element> varList = groupElem.getChildren("variable", Catalog.ncmlNS);
     for (Element varElem : varList) {
       readVariable(ncfile, g, null, varElem);
     }
@@ -112,7 +113,7 @@ public class NcmlConstructor {
     // LOOK for typedef enums
 
     // look for nested groups
-    java.util.List<Element> groupList = groupElem.getChildren("group", NcMLReader.ncNS);
+    java.util.List<Element> groupList = groupElem.getChildren("group", Catalog.ncmlNS);
     for (Element gElem : groupList) {
       readGroup(ncfile, g, gElem);
     }
@@ -152,7 +153,7 @@ public class NcmlConstructor {
       s.setDimensions(shape);
       v = s;
       // look for nested variables
-      java.util.List<Element> varList = varElem.getChildren("variable", NcMLReader.ncNS);
+      java.util.List<Element> varList = varElem.getChildren("variable", Catalog.ncmlNS);
       for (Element vElem : varList) {
         readVariable(ncfile, g, s, vElem);
       }
@@ -161,7 +162,7 @@ public class NcmlConstructor {
         Sequence s = new Sequence(ncfile, g, parentS, name);
         v = s;
         // look for nested variables
-        java.util.List<Element> varList = varElem.getChildren("variable", NcMLReader.ncNS);
+        java.util.List<Element> varList = varElem.getChildren("variable", Catalog.ncmlNS);
         for (Element vElem : varList) {
           readVariable(ncfile, g, s, vElem);
         }
@@ -170,14 +171,14 @@ public class NcmlConstructor {
       v = new Variable(ncfile, g, parentS, name, dtype, shape);
 
       // deal with values
-      Element valueElem = varElem.getChild("values", NcMLReader.ncNS);
+      Element valueElem = varElem.getChild("values", Catalog.ncmlNS);
       if (valueElem != null)
         readValues(v, varElem, valueElem);
       // otherwise has fill values.
     }
 
     // look for attributes
-    java.util.List<Element> attList = varElem.getChildren("attribute", NcMLReader.ncNS);
+    java.util.List<Element> attList = varElem.getChildren("attribute", Catalog.ncmlNS);
     for (Element attElem : attList)
       readAtt(v, attElem);
 
@@ -206,7 +207,7 @@ public class NcmlConstructor {
     }
 
     // otherwise values are listed in text
-    String values = varElem.getChildText("values", NcMLReader.ncNS);
+    String values = varElem.getChildText("values", Catalog.ncmlNS);
     String sep = valuesElem.getAttributeValue("separator");
     if (sep == null) sep = " ";
 

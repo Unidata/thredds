@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import org.jdom2.Element;
+import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.coord.*;
@@ -125,7 +126,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     if (special instanceof org.jdom2.Element) {  // the root element will be <iospParam>
       Element root = (org.jdom2.Element) special;
-      config.gribConfig.configFromXml(root, NcMLReader.ncNS);
+      config.gribConfig.configFromXml(root, Catalog.ncmlNS);
       return null;
     }
 

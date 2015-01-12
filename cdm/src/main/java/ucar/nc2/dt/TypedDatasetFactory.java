@@ -38,7 +38,6 @@ import java.util.List;
 import java.io.IOException;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.constants.FeatureType;
 
 /**

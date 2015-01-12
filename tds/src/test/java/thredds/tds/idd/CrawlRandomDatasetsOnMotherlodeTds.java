@@ -36,11 +36,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
-
-import thredds.catalog.InvDataset;
 
 /**
  * _more_
@@ -60,16 +59,15 @@ public class CrawlRandomDatasetsOnMotherlodeTds
     }
 
     @Parameterized.Parameters
-    public static Collection<Object[]> getDatasetUrls()
-    {
+    public static Collection<Object[]> getDatasetUrls() throws IOException {
         String tdsUrl = "http://thredds.ucar.edu/thredds/";
         StringBuilder log = new StringBuilder();
 
-        List<String> catalogUrls = new ArrayList<String>();
+        List<String> catalogUrls = new ArrayList<>();
         catalogUrls.addAll( StandardCatalogUtils.getIddDeepCatalogUrlList());
         catalogUrls.addAll( StandardCatalogUtils.getMlodeDeepCatalogUrlList() );
 
-        List<String> fullCatalogUrls = new ArrayList<String>();
+        List<String> fullCatalogUrls = new ArrayList<>();
         for ( String s : catalogUrls )
           fullCatalogUrls.add( tdsUrl + s);
 

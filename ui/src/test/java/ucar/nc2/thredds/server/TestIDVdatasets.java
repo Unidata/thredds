@@ -1,4 +1,3 @@
-// $Id: TestIDVdatasets.java 68 2006-07-13 00:08:20Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -33,7 +32,9 @@
  */
 package ucar.nc2.thredds.server;
 
-import thredds.catalog.*;
+import thredds.client.catalog.*;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.units.DateRange;
 
 import java.io.*;
@@ -43,7 +44,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -61,8 +61,8 @@ public class TestIDVdatasets {
   String skip;
   int countDone = 0, maxDone= Integer.MAX_VALUE;
   int errCount = 0;
-  InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-  ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
+  CatalogBuilder catFactory = new CatalogBuilder();
+  DataFactory tdataFactory = new DataFactory();
 
   /**
    *
@@ -77,30 +77,29 @@ public class TestIDVdatasets {
     if (maxDone > 0) this.maxDone = maxDone;
 
     out.println("******* read "+catName);
-    InvCatalogImpl cat;
+    Catalog cat;
     try {
-      cat = catFactory.readXML(catName);
-      StringBuilder buff = new StringBuilder();
-      boolean isValid = cat.check( buff, false);
+      cat = catFactory.buildFromLocation(catName);
+      boolean isValid = catFactory.hasFatalError();
       out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
-      out.println(" validation output=\n" + buff);
+      out.println(" validation output=\n" + catFactory.getErrorMessage());
     } catch (Exception e) {
       e.printStackTrace(out);
       return;
     }
 
-    out.println("***CATALOG "+cat.getCreateFrom());
+    out.println("***CATALOG "+cat.getBaseURI());
     extractDatasetInfo(out, cat.getDatasets(), doOneOnly);
   }
 
   // breadth first
-  public void extractDatasetInfo(PrintStream out, List<InvDataset> datasets, boolean doOneOnly) {
+  public void extractDatasetInfo(PrintStream out, List<Dataset> datasets, boolean doOneOnly) {
     if (countDone > maxDone) return;
 
-    for (InvDataset ds : datasets) {
-      out.printf(" DATASET '%s' id=%s%n", ds.getName(), ds.getID());
-      if (ds instanceof InvCatalogRef) {
-        InvCatalogRef catref = (InvCatalogRef) ds;
+    for (Dataset ds : datasets) {
+      out.printf(" DATASET '%s' id=%s%n", ds.getName(), ds.getId());
+      if (ds instanceof CatalogRef) {
+        CatalogRef catref = (CatalogRef) ds;
         out.printf("   catref= %s%n", catref.getURI());
       }
 
@@ -110,7 +109,7 @@ public class TestIDVdatasets {
       }
 
       if (ds.hasAccess()) {
-        ThreddsDataFactory.Result tdata = null;
+        DataFactory.Result tdata = null;
         try {
           long start = System.currentTimeMillis();
           try {
@@ -128,8 +127,8 @@ public class TestIDVdatasets {
           }
 
           int took = (int) (System.currentTimeMillis() - start);
-          InvAccess access = tdata.accessUsed;
-          ServiceType st = (access == null) ? null : access.getService().getServiceType();
+          Access access = tdata.accessUsed;
+          ServiceType st = (access == null) ? null : access.getService().getType();
 
           if (tdata.featureType == FeatureType.GRID) {
             out.printf(" *Opened %d GRID %s access=%s took %d msecs%n", countDone, tdata.location, st, took);
@@ -158,7 +157,7 @@ public class TestIDVdatasets {
     if (countDone > maxDone) return;
 
     // recurse
-    for (InvDataset ds : datasets) {
+    for (Dataset ds : datasets) {
       if (ds.getName().equals(skip)) {
         out.println(" SKIP ");
         continue;
@@ -301,47 +300,6 @@ public class TestIDVdatasets {
 
       if (llbbMax == null)
         out.println("***NO BB");
-      else {
-        ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
-        gc.setBoundingBox(llbbMax);
-        if (gcsMax != null) {
-          gc.setVertical( gcsMax.getVerticalAxis());
-          gc.setZPositiveUp( gcsMax.isZPositive());
-       }
-      /*  try {
-          gc.toXML( out);
-        } catch (IOException e) {
-          e.printStackTrace();
-        } */
-      }
-
   }
-
-  
-  static public void main( String[] args)  throws Exception {
-    String server = "http://thredds-dev.ucar.edu/thredds";
-    if (args.length > 0)
-      server = args[0];
-
-    TestIDVdatasets ts = new TestIDVdatasets();
-    OutputStream out = new BufferedOutputStream(new FileOutputStream("C:/temp/servertest4.txt"));
-    PrintStream pout = System.out; // new PrintStream( out);
-
-    //ts.extract(System.out, "http://whoopee:8080/thredds/dodsC/model/catalog.xml", false);
-    //ts.extract(System.out, "http://whoopee:8080/thredds/dodsC/radars.xml", false);
-
-
-    //ts.extract(System.out, "http://lead.unidata.ucar.edu:8080/thredds/idv/latestModels.xml", false, null, 0);
-
-    ts.extract(System.out, server + "/idd/modelsOther.xml", false, null, 0);
-    //ts.extract(System.out, "http://motherlode.ucar.edu:8081/thredds/idv/rt-models.1.0.xml", false, null, 0);
-
-    //ts.extract( pout, "http://motherlode.ucar.edu:9080/thredds/catalog.xml", true, "NEXRAD Radar", 0);
-    //ts.extract( pout, "http://motherlode.ucar.edu:8088/thredds/dodsC/radars.xml", true, null, 0);
-
-    //ts.extract(System.out, "http://motherlode.ucar.edu:8088/thredds/dodsC/radars.xml", true);
-    // ts.extract(System.out, "http://whoopee:8080/thredds/dodsC/shared/testdata2/radar/nexrad/level3/catalog.xml", false);
-  }
-
 
 }

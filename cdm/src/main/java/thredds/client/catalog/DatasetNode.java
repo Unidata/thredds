@@ -75,6 +75,14 @@ public class DatasetNode {
     return datasets == null ? new ArrayList<Dataset>(0) : datasets;
   }
 
+  public Dataset findDatasetByName(String name) {
+    for (Dataset ds : getDatasets()) {
+      if (ds.getName().equals(name))
+        return ds;
+    }
+    return null;
+  }
+
   public boolean hasNestedDatasets() {
     List<Dataset> datasets = getDatasets();
     return !datasets.isEmpty();

@@ -33,6 +33,7 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.stream.CdmRemote;
 
@@ -49,14 +50,14 @@ public class Access {                 // (5)
   private final Dataset dataset;
   private final String urlPath;
   private final Service service;
-  private final DataFormatType dataFormat;
+  private final String dataFormatS;
   private final long dataSize;
 
-  public Access(Dataset dataset, String urlPath, Service service, DataFormatType dataFormat, long dataSize) {
+  public Access(Dataset dataset, String urlPath, Service service, String dataFormatS, long dataSize) {
     this.dataset = dataset;
     this.urlPath = urlPath;
     this.service = service;
-    this.dataFormat = dataFormat;
+    this.dataFormatS = dataFormatS;
     this.dataSize = dataSize;
   }
 
@@ -72,9 +73,17 @@ public class Access {                 // (5)
     return service;
   }
 
-  public DataFormatType getDataFormat() {
-    return dataFormat;
-  }     // optional
+  public DataFormatType getDataFormatType() {
+    try {
+      return DataFormatType.valueOf(dataFormatS);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public String getDataFormatName() {
+    return dataFormatS;
+  }
 
   public long getDataSize() {
     return dataSize;
@@ -124,7 +133,7 @@ public class Access {                 // (5)
     if (uri == null) return null;
 
     if (service.getType() == ServiceType.THREDDS)
-      return ucar.nc2.thredds.ThreddsDataFactory.SCHEME + uri;
+      return DataFactory.SCHEME + uri;
     if (service.getType() == ServiceType.CdmRemote)
       return CdmRemote.SCHEME + uri;
     return uri.toString();

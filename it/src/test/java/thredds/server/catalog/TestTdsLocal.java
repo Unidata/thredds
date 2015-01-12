@@ -34,8 +34,8 @@ package thredds.server.catalog;
 
 import org.junit.Test;
 import thredds.TestWithLocalServer;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvCatalogFactory;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.builder.CatalogBuilder;
 
 /**
  * Test catalog utilities
@@ -43,21 +43,19 @@ import thredds.catalog.InvCatalogFactory;
 public class TestTdsLocal {
   public static boolean showValidationMessages = false;
 
-  public static InvCatalogImpl open(String catalogName) {
+  public static Catalog open(String catalogName) {
     if (catalogName == null) catalogName = "/catalog.xml";
     String catalogPath = TestWithLocalServer.server + catalogName;
     System.out.println("\n open= "+catalogPath);
-    StringBuilder buff = new StringBuilder();
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false);
 
     try {
-      InvCatalogImpl cat = catFactory.readXML(catalogPath);
-      boolean isValid = cat.check( buff, false);
-      if (!isValid) {
-        System.out.println("Validate failed "+ catalogName+" = \n<"+ buff.toString()+">");
-        assert false : buff.toString();
+      CatalogBuilder builder = new CatalogBuilder();
+      Catalog cat = builder.buildFromLocation(catalogPath);
+      if (builder.hasFatalError()) {
+        System.out.println("Validate failed "+ catalogName+" = \n<"+ builder.getErrorMessage()+">");
+        assert false : builder.getErrorMessage();
       } else if (showValidationMessages)
-        System.out.println("Validate ok "+ catalogName+" = \n<"+ buff.toString()+">");
+        System.out.println("Validate ok "+ catalogName+" = \n<"+ builder.getErrorMessage()+">");
 
       return cat;
 
@@ -71,7 +69,7 @@ public class TestTdsLocal {
 
   @Test
   public void readCatalog() {
-    InvCatalogImpl mainCat = open(null);
+    Catalog mainCat = open(null);
     assert mainCat != null;
   }
 

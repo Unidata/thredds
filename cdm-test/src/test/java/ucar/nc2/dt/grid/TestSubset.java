@@ -33,6 +33,7 @@
 package ucar.nc2.dt.grid;
 
 import org.junit.Test;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -41,7 +42,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
@@ -195,7 +195,7 @@ public class TestSubset {
   public void testDODS() throws Exception {
     String ds = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
     //String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
-    ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
+    DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
     System.out.println("result errlog= " + result.errLog);
     assert !result.fatalError;
     assert result.featureType == FeatureType.GRID;
@@ -225,7 +225,7 @@ public class TestSubset {
 
   public void utestDODS2() throws Exception {
     String threddsURL = "http://lead.unidata.ucar.edu:8080/thredds/dqcServlet/latestOUADAS?adas";
-    ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset(threddsURL, null);
+    DataFactory.Result result = new DataFactory().openFeatureDataset(threddsURL, null);
     assert result.featureDataset != null;
     GridDataset dataset = (GridDataset) result.featureDataset;
 

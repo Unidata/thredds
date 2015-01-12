@@ -44,9 +44,10 @@ import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvDataset;
 import thredds.TestWithLocalServer;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.writer.DataFactory;
 import thredds.server.catalog.TestTdsLocal;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
@@ -57,7 +58,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -120,15 +120,15 @@ public class TestTdsDodsServer {
    */
 
    private void testSingleDataset() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open(null);
+     Catalog cat = TestTdsLocal.open(null);
 
-    InvDataset ds = cat.findDatasetByID("testDataset2");
+    Dataset ds = cat.findDatasetByID("testDataset2");
     assert (ds != null) : "cant find dataset 'testDataset'";
-    assert ds.getDataType() == FeatureType.GRID;
+    assert ds.getFeatureType() == FeatureType.GRID;
 
-    ThreddsDataFactory fac = new ThreddsDataFactory();
+    DataFactory fac = new DataFactory();
 
-    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
 
     assert dataResult != null;
     assert !dataResult.fatalError;

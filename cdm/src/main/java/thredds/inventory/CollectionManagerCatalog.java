@@ -34,18 +34,20 @@
 package thredds.inventory;
 
 import net.jcip.annotations.ThreadSafe;
+import thredds.client.catalog.Access;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.CatalogRef;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.writer.CatalogCrawler;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.units.DateType;
-import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.ft.fmrc.Fmrc;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Date;
 import java.util.List;
-
-import thredds.catalog.*;
-import thredds.catalog.crawl.CatalogCrawler;
 
 /**
  * CollectionManager of datasets from a catalog.
@@ -100,16 +102,15 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
   public boolean scan(boolean sendEvent) throws IOException {
    mfiles = new ArrayList<>(100);
 
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-    InvCatalogImpl cat = catFactory.readXML(catalogUrl);
-    StringBuilder buff = new StringBuilder();
-    boolean isValid = cat.check(buff, false);
+    CatalogBuilder catFactory = new CatalogBuilder();
+    Catalog cat = catFactory.buildFromLocation(catalogUrl);
+    boolean isValid = !catFactory.hasFatalError();
     if (!isValid) {
-      logger.warn("Catalog invalid= "+catalogUrl+" validation output= "+ buff);
+      logger.warn("Catalog invalid= "+catalogUrl+" validation output= "+ catFactory.getErrorMessage());
       return false;
     }
 
-    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, this);
+    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all_direct, null, this);
     long start = System.currentTimeMillis();
     try {
       crawler.crawl(cat, null, null, null);
@@ -129,10 +130,10 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
   private static class MFileRemote implements MFile {
     private Object info;
-    private final InvAccess access;
+    private final Access access;
     private Date lastModified;
 
-    MFileRemote(InvAccess access) {
+    MFileRemote(Access access) {
       this.access = access;
       for (DateType dateType : access.getDataset().getDates()) {
         if (dateType.getType().equals("modified"))
@@ -190,10 +191,10 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
   // CatalogCrawler.Listener
 
   @Override
-  public void getDataset(InvDataset ds, Object context) {
+  public void getDataset(Dataset ds, Object context) {
     if (ds.hasAccess()) {
-      ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
-      InvAccess access = tdataFactory.chooseDatasetAccess(ds.getAccess());
+      DataFactory tdataFactory = new DataFactory();
+      Access access = tdataFactory.chooseDatasetAccess(ds.getAccess());
       if (access == null) throw new IllegalStateException();
       MFileRemote mfile = new MFileRemote(access);
       if (mfile.getPath().endsWith(".xml")) return; // eliminate latest.xml  LOOK kludge-o-rama
@@ -204,7 +205,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
 
   @Override
-  public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+  public boolean getCatalogRef(CatalogRef dd, Object context) {
     return true;
   }
 

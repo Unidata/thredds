@@ -89,7 +89,7 @@ public class DatasetHtmlWriter {
 
     out.format("<h2>Dataset: %s</h2>%n<ul>", ds.getName());
     if (ds.getDataFormatType() != null)
-      out.format(" <li><em>Data format: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getDataFormatType()));
+      out.format(" <li><em>Data format: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getDataFormatName()));
 
     if ((ds.getDataSize() > 0))
       out.format(" <li><em>Data size: </em>%s</li>%n", Format.formatByteSize(ds.getDataSize()));
@@ -130,9 +130,8 @@ public class DatasetHtmlWriter {
         String type = (doc.getType() == null) ? "" : "<strong>" + StringUtil2.quoteHtmlContent(doc.getType()) + ":</strong> ";
         String inline = doc.getInlineContent();
         if ((inline != null) && (inline.length() > 0))
-          out.format(" <li>%s</li>%n", StringUtil2.quoteHtmlContent(inline));
+          out.format(" <li>%s %s</li>%n", type, StringUtil2.quoteHtmlContent(inline));
         if (doc.hasXlink()) {
-          // out.format(" <li>" + type + makeHrefResolve(ds, url.toString(), doc.getXlinkTitle()) + "</a>\n");
           out.format(" <li>%s %s</li>%n", type, makeHref(doc.getXlinkHref(), doc.getXlinkTitle()));
         }
       }

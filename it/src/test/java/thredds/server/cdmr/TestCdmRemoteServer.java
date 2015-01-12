@@ -32,10 +32,10 @@
  */
 package thredds.server.cdmr;
 
-import thredds.catalog.*;
-import thredds.catalog.crawl.CatalogCrawler;
+import thredds.client.catalog.*;
+import thredds.client.catalog.writer.CatalogCrawler;
+import thredds.client.catalog.writer.DataFactory;
 import thredds.server.catalog.TestTdsLocal;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
@@ -49,15 +49,14 @@ import java.io.IOException;
 public class TestCdmRemoteServer {
 
   public void testSingleDataset() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open(null);
+    Catalog cat = TestTdsLocal.open(null);
 
-    InvDataset ds = cat.findDatasetByID("testDataset2");
+    Dataset ds = cat.findDatasetByID("testDataset2");
     assert (ds != null) : "cant find dataset 'testDataset2'";
-    assert ds.getDataType() == FeatureType.GRID;
+    assert ds.getFeatureType() == FeatureType.GRID;
 
-    ThreddsDataFactory fac = new ThreddsDataFactory();
-
-    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+    DataFactory fac = new DataFactory();
+    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
 
     assert dataResult != null;
     if (dataResult.fatalError) {
@@ -85,24 +84,24 @@ public class TestCdmRemoteServer {
     dataResult.featureDataset.close();
   }
 
-  private void doOne(InvDataset ds) throws IOException {
-    InvAccess access = ds.getAccess(ServiceType.CdmRemote);
+  private void doOne(Dataset ds) throws IOException {
+    Access access = ds.getAccess(ServiceType.CdmRemote);
     if (access == null) {
       System.out.printf("No cdmremote access for %s%n", ds);
       return;
     }
 
-    ThreddsDataFactory fac = new ThreddsDataFactory();
-    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( access, null);
+    DataFactory fac = new DataFactory();
+    DataFactory.Result dataResult = fac.openFeatureDataset( access, null);
     System.out.println("ThreddsDataFactory.Result= "+dataResult);
   }
 
   public void utestUrlReading() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open(null);
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
+    Catalog cat = TestTdsLocal.open(null);
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, null, new CatalogCrawler.Listener() {
 
       @Override
-      public void getDataset(InvDataset dd, Object context) {
+      public void getDataset(Dataset dd, Object context) {
         try {
           doOne(dd);
         } catch (IOException e) {
@@ -111,7 +110,7 @@ public class TestCdmRemoteServer {
       }
 
       @Override
-      public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+      public boolean getCatalogRef(CatalogRef dd, Object context) {
         return true;
       }
     });

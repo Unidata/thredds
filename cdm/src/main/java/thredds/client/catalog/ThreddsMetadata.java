@@ -46,7 +46,7 @@ import java.util.*;
  * @since 1/10/2015
  */
 @Immutable
-public class ThreddsMetadata {
+public class ThreddsMetadata implements ThreddsMetadataContainer {
   private final Map<String, Object> flds;
 
   public ThreddsMetadata() {
@@ -58,8 +58,21 @@ public class ThreddsMetadata {
     return flds;
   }
 
-  public Object get(String fldName) {
+  @Override
+  public Object getLocalField(String fldName) {
     return flds.get(fldName);
+  }
+
+  @Override
+  public List getLocalFieldAsList(String fldName) {
+    Object value = flds.get(fldName);
+    if (value != null) {
+      if (value instanceof List) return (List) value;
+      List result = new ArrayList(1);
+      result.add(value);
+      return result;
+    }
+    return new ArrayList(0);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

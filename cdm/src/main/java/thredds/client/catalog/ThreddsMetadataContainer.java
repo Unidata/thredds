@@ -30,35 +30,19 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.client.catalog.builder;
+package thredds.client.catalog;
 
-import thredds.client.catalog.Access;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Service;
-import ucar.nc2.constants.DataFormatType;
+import java.util.List;
 
 /**
- * build immutable access element
+ * Describe
  *
  * @author caron
- * @since 1/8/2015
+ * @since 1/11/2015
  */
-public class AccessBuilder {
-  DatasetBuilder dataset;
-  String urlPath;
-  Service service;
-  String dataFormatS;
-  long dataSize;
+public interface ThreddsMetadataContainer {
 
-  public AccessBuilder(DatasetBuilder dataset, String urlPath, Service service, String dataFormatS, long dataSize) {
-    this.dataset = dataset;
-    this.urlPath = urlPath;
-    this.service = service;
-    this.dataFormatS = dataFormatS;
-    this.dataSize = dataSize;
-  }
+  public Object getLocalField(String fldName);
+  public List getLocalFieldAsList(String fldName);
 
-  public Access makeAccess(Dataset dataset) {
-    return new Access(dataset, urlPath, service, dataFormatS, dataSize);
-  }
 }

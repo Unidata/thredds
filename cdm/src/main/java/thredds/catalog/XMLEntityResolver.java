@@ -183,6 +183,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
   // nj22 namespaces
   static public final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
+  static public final Namespace ncmlNS = Namespace.getNamespace("xlink", NJ22_NAMESPACE);
 
   // other namespaces
   static public final String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";

@@ -33,12 +33,14 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import org.jdom2.Namespace;
 import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.time.CalendarDate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,11 +52,34 @@ import java.util.Map;
  */
 @Immutable
 public class Catalog extends DatasetNode {
+  static public final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
+  static public final Namespace defNS = Namespace.getNamespace(CATALOG_NAMESPACE_10);
+  static public final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
+  static public final Namespace ncmlNS = Namespace.getNamespace("ncml", NJ22_NAMESPACE);
+  static public final String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
+  static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
+  static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+
+  //////////////////////////////////////////////////////////////////////////////////////////
   private final URI baseURI;
 
   public Catalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
     super(null, name, flds, datasets);
     this.baseURI = baseURI;
+
+    Map<String, Dataset> datasetMap = new HashMap<>();
+    addDatasetsToHash(getDatasets(), datasetMap);
+    if (!datasetMap.isEmpty())
+      flds.put(Dataset.DatasetHash, datasetMap);
+  }
+
+  private void addDatasetsToHash(List<Dataset> datasets, Map<String, Dataset> datasetMap) {
+    if (datasets == null) return;
+    for (Dataset ds : datasets) {
+      String id = ds.getId();
+      if (id != null) datasetMap.put(id, ds);
+      addDatasetsToHash(ds.getDatasets(), datasetMap);
+    }
   }
 
   public URI getBaseURI() {
@@ -74,13 +99,23 @@ public class Catalog extends DatasetNode {
     return services == null ? new ArrayList<Service>(0) : services;
   }
 
+  public Service findService(String serviceName)  {
+    List<Service> services = (List<Service>) flds.get(Dataset.Services);
+    if (services == null) return null;
+    for (Service s : services) {
+      if (s.getName().equals(serviceName)) return s;
+    }
+    return null;
+  }
+
   public List<Property> getProperties() {
     List<Property> properties = (List<Property>) flds.get(Dataset.Properties);
     return properties == null ? new ArrayList<Property>(0) : properties;
   }
 
   public Dataset findDatasetByID( String id) {
-    return null;
+    Map<String, Dataset> datasetMap = (Map<String, Dataset>) flds.get(Dataset.DatasetHash);
+    return datasetMap == null ? null : datasetMap.get(id);
   }
 
   /**

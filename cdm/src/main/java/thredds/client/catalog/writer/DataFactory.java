@@ -513,7 +513,7 @@ public class DataFactory {
       Access tryAccess = findAccessByServiceType(accessList, ServiceType.HTTPServer);
 
       if (tryAccess != null) {
-        DataFormatType format = tryAccess.getDataFormat();
+        DataFormatType format = tryAccess.getDataFormatType();
 
         // these are the file types we can read
         if ((DataFormatType.BUFR == format) || (DataFormatType.GINI == format) || (DataFormatType.GRIB1 == format)
@@ -662,7 +662,7 @@ public class DataFactory {
 
   private Access findAccessByDataFormatType(List<Access> accessList, DataFormatType type) {
     for (Access a : accessList) {
-      if (type.toString().equalsIgnoreCase(a.getDataFormat().toString()))
+      if (type.toString().equalsIgnoreCase(a.getDataFormatType().toString()))
         return a;
     }
     return null;
