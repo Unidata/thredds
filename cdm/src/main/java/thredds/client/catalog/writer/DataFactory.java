@@ -121,11 +121,11 @@ public class DataFactory {
   public DataFactory.Result openFeatureDataset(String urlString, ucar.nc2.util.CancelTask task) throws IOException {
 
     DataFactory.Result result = new DataFactory.Result();
-    Dataset Dataset = openCatalogFromLocation(urlString, task, result);
-    if (result.fatalError)
+    Dataset dataset = openCatalogFromLocation(urlString, task, result);
+    if (result.fatalError || dataset == null)
       return result;
 
-    return openFeatureDataset(null, Dataset, task, result);
+    return openFeatureDataset(null, dataset, task, result);
   }
 
   /**

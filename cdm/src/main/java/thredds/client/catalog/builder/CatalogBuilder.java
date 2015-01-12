@@ -53,7 +53,13 @@ public class CatalogBuilder {
   }
 
   public Catalog buildFromCatref(CatalogRef catref) throws IOException {
-    Catalog result =  buildFromURI(catref.getURI());
+    URI catrefURI = catref.getURI();
+    if (catrefURI == null) {
+      errlog.format("Catref doesnt have valid UrlPath=%s%n", catref.getUrlPath());
+      error = true;
+      return null;
+    }
+    Catalog result =  buildFromURI(catrefURI);
     catref.setRead(!error);
     return result;
   }

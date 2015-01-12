@@ -119,6 +119,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     long dataSize = getDataSize();
 
     Catalog cat = getParentCatalog();
+    if (cat == null) return result; // empty list
     Service s = cat.findService(serviceDefault);
 
     // add access element if urlPath and service is specified

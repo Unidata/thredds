@@ -103,15 +103,6 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
     return isScanNeeded() && scan(false);
   }
 
-  ////////////////////////
-  // experimental
-  protected ChangeChecker changeChecker = null;
-
-  @Override
-  public synchronized void setChangeChecker(ChangeChecker strat) {
-    this.changeChecker = strat;
-  }
-
   /////////////////////////////////////////////////////////////////////
   // experimental
   // use bdb to manage metadata associated with the collection. currently, only DatasetInv.xml files

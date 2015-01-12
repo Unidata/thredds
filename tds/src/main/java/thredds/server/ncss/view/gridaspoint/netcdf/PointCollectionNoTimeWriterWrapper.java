@@ -110,7 +110,7 @@ class PointCollectionNoTimeWriterWrapper implements CFPointWriterWrapper {
     List<Station> stnList = new ArrayList<>();
     stnList.add(s);
 
-
+    /*  LoOK WTF ?
     try {
 
       // LOOK fake
@@ -120,7 +120,7 @@ class PointCollectionNoTimeWriterWrapper implements CFPointWriterWrapper {
 
     } catch (IOException ioe) {
       log.error("Error writing header", ioe);
-    }
+    }  */
 
     return headerDone;
 
