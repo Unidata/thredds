@@ -497,12 +497,17 @@ public class EscapeStrings
 
   /**
    * backslash escape a string
-   * @param x escape this
+   * @param x escape this; may be null
    * @param reservedChars these chars get a backslash in front of them
    * @return escaped string
    */
   static public String backslashEscape(String x, String reservedChars) {
-    if (reservedChars == null) return x;
+    if (x == null) {
+      return null;
+    } else if (reservedChars == null) {
+      return x;
+    }
+
     boolean ok = true;
     for (int pos = 0; pos < x.length(); pos++) {
       char c = x.charAt(pos);
