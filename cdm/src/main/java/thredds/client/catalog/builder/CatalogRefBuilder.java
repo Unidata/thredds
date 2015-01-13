@@ -37,7 +37,7 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 
 /**
- * CatalogRef Builder
+ * client CatalogRef Builder
  *
  * @author caron
  * @since 1/9/2015

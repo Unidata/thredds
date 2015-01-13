@@ -50,7 +50,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * uses JDOM to parse XML catalogs
+ * uses JDOM to parse XML client catalogs
  *
  * @author caron
  * @since 1/8/2015
@@ -231,7 +231,19 @@ public class JdomCatalogBuilder {
     return result;
   }
   
-  
+
+  /*
+    <xsd:element name="catalogRef" substitutionGroup="dataset">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="DatasetType">
+          <xsd:attributeGroup ref="XLink"/>
+          <xsd:attribute name="useRemoteCatalogService" type="xsd:boolean"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+   */
   protected DatasetBuilder readCatalogRef(DatasetBuilder parent, Element catRefElem) {
     String title = catRefElem.getAttributeValue("title", Catalog.xlinkNS);
     if (title == null) title = catRefElem.getAttributeValue("name");
@@ -317,7 +329,7 @@ public class JdomCatalogBuilder {
     String harvest = dsElem.getAttributeValue("harvest");
     if (harvest != null && harvest.equalsIgnoreCase("true")) dataset.put(Dataset.Harvest, Boolean.TRUE);
 
-    // catalog.addDatasetByID(dataset); // need to do immed for alias processing
+    // catalog.addDatasetByID(dataset); // LOOK need to do immed for alias processing
 
     // read attributes
     readThreddsMetadataGroup(dataset.flds, dataset, dsElem);
@@ -460,6 +472,12 @@ public class JdomCatalogBuilder {
       flds.put(Dataset.VariableMapLink, mapUri);
   }
 
+
+  protected ThreddsMetadata.Contributor readContributor(Element elem) {
+    if (elem == null) return null;
+    return new ThreddsMetadata.Contributor(elem.getText(), elem.getAttributeValue("role"));
+  }
+
   protected long readDataSize(Element parent) {
     Element elem = parent.getChild("dataSize", Catalog.defNS);
     if (elem == null) return -1;
@@ -485,34 +503,6 @@ public class JdomCatalogBuilder {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  protected DateType readDate(Element elem) {
-    if (elem == null) return null;
-    String format = elem.getAttributeValue("format");
-    String type = elem.getAttributeValue("type");
-    return makeDateType(elem.getText(), format, type);
-  }
-
-  protected DateType makeDateType(String text, String format, String type) {
-    if (text == null) return null;
-    try {
-      return new DateType(text, format, type);
-    } catch (java.text.ParseException e) {
-      errlog.format(" ** Parse error: Bad date format = %s%n", text);
-      return null;
-    }
-  }
-
-  protected TimeDuration readDuration(Element elem) {
-    if (elem == null) return null;
-    String text = null;
-    try {
-      text = elem.getText();
-      return new TimeDuration(text);
-    } catch (java.text.ParseException e) {
-      errlog.format(" ** Parse error: Bad duration format = %s%n", text);
-      return null;
-    }
-  }
 
   protected Documentation readDocumentation(Element s) {
     String href = s.getAttributeValue("href", Catalog.xlinkNS);
@@ -543,6 +533,36 @@ public class JdomCatalogBuilder {
     }
   }
 
+  /*
+    <xsd:element name="geospatialCoverage">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="northsouth" type="spatialRange" minOccurs="0"/>
+        <xsd:element name="eastwest" type="spatialRange" minOccurs="0"/>
+        <xsd:element name="updown" type="spatialRange" minOccurs="0"/>
+        <xsd:element name="name" type="controlledVocabulary" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="zpositive" type="upOrDown" default="up"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="spatialRange">
+    <xsd:sequence>
+      <xsd:element name="start" type="xsd:double"/>
+      <xsd:element name="size" type="xsd:double"/>
+      <xsd:element name="resolution" type="xsd:double" minOccurs="0"/>
+      <xsd:element name="units" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="upOrDown">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="up"/>
+      <xsd:enumeration value="down"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+   */
   protected ThreddsMetadata.GeospatialCoverage readGeospatialCoverage(Element gcElem) {
     if (gcElem == null) return null;
 
@@ -576,7 +596,6 @@ public class JdomCatalogBuilder {
     return new ThreddsMetadata.GeospatialRange(start, size, resolution, units);
   }
 
-    
   /*
     <xsd:element name="metadata">
     <xsd:complexType>
@@ -648,6 +667,21 @@ public class JdomCatalogBuilder {
     return doc.getRootElement();
   }
 
+  /*
+    <xsd:complexType name="sourceType">
+    <xsd:sequence>
+      <xsd:element name="name" type="controlledVocabulary"/>
+
+      <xsd:element name="contact">
+        <xsd:complexType>
+          <xsd:attribute name="email" type="xsd:string" use="required"/>
+          <xsd:attribute name="url" type="xsd:anyURI"/>
+        </xsd:complexType>
+      </xsd:element>
+
+    </xsd:sequence>
+  </xsd:complexType>
+   */
   protected ThreddsMetadata.Source readSource(Element elem) {
     if (elem == null) return null;
     ThreddsMetadata.Vocab name = readControlledVocabulary(elem.getChild("name", Catalog.defNS));
@@ -659,6 +693,61 @@ public class JdomCatalogBuilder {
     return new ThreddsMetadata.Source(name, contact.getAttributeValue("url"), contact.getAttributeValue("email"));
   }
 
+  /*
+    <xsd:complexType name="timeCoverageType">
+    <xsd:sequence>
+      <xsd:choice minOccurs="2" maxOccurs="3">
+        <xsd:element name="start" type="dateTypeFormatted"/>
+        <xsd:element name="end" type="dateTypeFormatted"/>
+        <xsd:element name="duration" type="duration"/>
+      </xsd:choice>
+
+      <xsd:element name="resolution" type="duration" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- may be a dateType or have a format attribute  -->
+  <xsd:complexType name="dateTypeFormatted">
+    <xsd:simpleContent>
+      <xsd:extension base="dateType">
+        <xsd:attribute name="format" type="xsd:string"/>
+        <!-- follow java.text.SimpleDateFormat -->
+        <xsd:attribute name="type" type="dateEnumTypes"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <!-- may be a built in date or dateTIme, or a udunit encoded string -->
+  <xsd:simpleType name="dateType">
+    <xsd:union memberTypes="xsd:date xsd:dateTime udunitDate">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="present"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="udunitDate">
+    <xsd:restriction base="xsd:string">
+      <xsd:annotation>
+        <xsd:documentation>Must conform to complete udunits date string, eg "20 days since 1991-01-01"</xsd:documentation>
+      </xsd:annotation>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="duration">
+    <xsd:union memberTypes="xsd:duration udunitDuration"/>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="udunitDuration">
+    <xsd:restriction base="xsd:string">
+      <xsd:annotation>
+        <xsd:documentation>Must conform to udunits time duration, eg "20.1 hours"</xsd:documentation>
+      </xsd:annotation>
+    </xsd:restriction>
+  </xsd:simpleType>
+   */
   protected DateRange readTimeCoverage(Element tElem) {
     if (tElem == null) return null;
 
@@ -675,21 +764,75 @@ public class JdomCatalogBuilder {
     }
   }
 
-
-
-  protected ThreddsMetadata.Variable readVariable(Element varElem) {
-    if (varElem == null) return null;
-
-    String name = varElem.getAttributeValue("name");
-    String desc = varElem.getText();
-    String vocabulary_name = varElem.getAttributeValue("vocabulary_name");
-    String units = varElem.getAttributeValue("units");
-    String id = varElem.getAttributeValue("vocabulary_id");
-
-    return new ThreddsMetadata.Variable(name, desc, vocabulary_name, units, id);
+  protected DateType readDate(Element elem) {
+    if (elem == null) return null;
+    String format = elem.getAttributeValue("format");
+    String type = elem.getAttributeValue("type");
+    return makeDateType(elem.getText(), format, type);
   }
 
+  protected DateType makeDateType(String text, String format, String type) {
+    if (text == null) return null;
+    try {
+      return new DateType(text, format, type);
+    } catch (java.text.ParseException e) {
+      errlog.format(" ** Parse error: Bad date format = %s%n", text);
+      return null;
+    }
+  }
 
+  protected TimeDuration readDuration(Element elem) {
+    if (elem == null) return null;
+    String text = null;
+    try {
+      text = elem.getText();
+      return new TimeDuration(text);
+    } catch (java.text.ParseException e) {
+      errlog.format(" ** Parse error: Bad duration format = %s%n", text);
+      return null;
+    }
+  }
+
+  /*
+    <xsd:element name="variables">
+    <xsd:complexType>
+      <xsd:choice>
+        <xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="variableMap" minOccurs="0"/>
+      </xsd:choice>
+      <xsd:attribute name="vocabulary" type="variableNameVocabulary" use="optional"/>
+      <xsd:attributeGroup ref="XLink"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="variable">
+    <xsd:complexType mixed="true">
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="vocabulary_name" type="xsd:string" use="optional"/>
+      <xsd:attribute name="vocabulary_id" type="xsd:string" use="optional"/>
+      <xsd:attribute name="units" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="variableMap">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="XLink"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="variableNameVocabulary">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="CF-1.0"/>
+          <xsd:enumeration value="DIF"/>
+          <xsd:enumeration value="GRIB-1"/>
+          <xsd:enumeration value="GRIB-2"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+   */
   protected ThreddsMetadata.VariableGroup readVariables( Element varsElem) {
     if (varsElem == null) return null;
 
@@ -746,16 +889,24 @@ public class JdomCatalogBuilder {
 
     return new ThreddsMetadata.VariableGroup(vocab, vocabHref, vocabUri, mapUri, variables);
   }
+
+  protected ThreddsMetadata.Variable readVariable(Element varElem) {
+     if (varElem == null) return null;
+
+     String name = varElem.getAttributeValue("name");
+     String desc = varElem.getText();
+     String vocabulary_name = varElem.getAttributeValue("vocabulary_name");
+     String units = varElem.getAttributeValue("units");
+     String id = varElem.getAttributeValue("vocabulary_id");
+
+     return new ThreddsMetadata.Variable(name, desc, vocabulary_name, units, id);
+   }
   
   protected ThreddsMetadata.Vocab readControlledVocabulary(Element elem) {
     if (elem == null) return null;
     return new ThreddsMetadata.Vocab(elem.getText(), elem.getAttributeValue("vocabulary"));
   }
 
-  protected ThreddsMetadata.Contributor readContributor(Element elem) {
-    if (elem == null) return null;
-    return new ThreddsMetadata.Contributor(elem.getText(), elem.getAttributeValue("role"));
-  }
 
   private URI readVariableMap(Element variableMapElem) {
     if (variableMapElem == null) return null;

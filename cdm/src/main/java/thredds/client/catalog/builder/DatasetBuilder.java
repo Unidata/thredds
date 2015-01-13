@@ -38,7 +38,7 @@ import thredds.client.catalog.DatasetNode;
 import java.util.*;
 
 /**
- * Builder of datasets
+ * Builder of client catalog Dataset
  *
  * @author caron
  * @since 1/8/2015

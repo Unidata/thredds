@@ -41,7 +41,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * builds Catalogs
+ * builds client Catalogs
  *
  * @author caron
  * @since 1/8/2015

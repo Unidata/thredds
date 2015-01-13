@@ -216,7 +216,6 @@
       <xsd:choice maxOccurs="unbounded">
         <xsd:element name="regExpOnName" type="NamerSelectorType"/>
         <xsd:element name="regExpOnPath" type="NamerSelectorType"/>
-        <!--xsd:element name="crawlableDatasetLabelerImpl" type="UserImplType"/-->
       </xsd:choice>
     </xsd:complexType>
   </xsd:element>
@@ -243,7 +242,6 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="simpleLatest" minOccurs="0" maxOccurs="unbounded"/>
-        <!--xsd:element name="datasetInserterImpl" minOccurs="0" type="UserImplType"/-->
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
