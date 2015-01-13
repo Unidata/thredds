@@ -658,21 +658,9 @@ class FmrcDataset {
     CoordinateSystem replace = result.findCoordinateSystem(protoCs.getName());
     if (replace != null) return replace;
 
-    List<CoordinateAxis> axes = new ArrayList<CoordinateAxis>();
+    List<CoordinateAxis> axes = new ArrayList<>();
     for (CoordinateAxis axis : protoCs.getCoordinateAxes()) {
-      Variable v = result.findCoordinateAxis(axis.getFullNameEscaped());
-      CoordinateAxis ra;
-      if (v instanceof CoordinateAxis)
-        ra = (CoordinateAxis) v;
-      else {
-        // if not a CoordinateAxis, will turn into one
-        ra = result.addCoordinateAxis((VariableDS) v);
-
-        if (axis.getAxisType() != null) {
-          ra.setAxisType(axis.getAxisType());
-          ra.addAttribute(new Attribute(_Coordinate.AxisType, axis.getAxisType().toString()));
-        }
-      }
+      CoordinateAxis ra = result.findCoordinateAxis(axis.getFullNameEscaped());
       axes.add(ra);
     }
 
@@ -950,8 +938,10 @@ class FmrcDataset {
       }
     }
 
-    CoordSysBuilderIF builder = result.enhance();
-    if (debugEnhance) System.out.printf("GridDataset1D parseInfo = %s%n", builder.getParseInfo());
+    if (debugEnhance) {
+      CoordSysBuilderIF builder = result.enhance();
+      System.out.printf("GridDataset1D parseInfo = %s%n", builder.getParseInfo());
+    }
 
     return new ucar.nc2.dt.grid.GridDataset(result);
   }

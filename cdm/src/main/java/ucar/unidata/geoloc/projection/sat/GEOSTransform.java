@@ -361,9 +361,8 @@ public class GEOSTransform {
     GEOSTransform that = (GEOSTransform) o;
 
     if (Double.compare(that.sub_lon, sub_lon) != 0) return false;
-    if (!scan_geom.equals(that.scan_geom)) return false;
 
-    return true;
+    return scan_geom.equals(that.scan_geom);
   }
 
   @Override
@@ -387,7 +386,6 @@ public class GEOSTransform {
     double r_pol;  // semi-minor axis (polar radius km)
     double r_eq;   // semi-major axis (equatorial radius km)
     double f;      // flattening
-    double invf;   // inverse flattening
 
     public Geoid() {
     }
@@ -395,7 +393,6 @@ public class GEOSTransform {
     public Geoid(double r_pol, double r_eq, double invf) {
       this.r_pol = r_pol;
       this.r_eq = r_eq;
-      this.invf = invf;
       this.f = 1.0 / invf;
     }
 
@@ -403,7 +400,6 @@ public class GEOSTransform {
       this.r_pol = r_pol;
       this.r_eq = r_eq;
       this.f = (r_eq - r_pol) / r_eq;
-      this.invf = 1.0 / f;
     }
 
   }
@@ -414,7 +410,6 @@ public class GEOSTransform {
       r_pol = 6356.7523;  // kilometers
       r_eq = 6378.1370;
       f = 1.0 / 298.257223563;
-      invf = 1.0 / f;
     }
   }
 
@@ -423,7 +418,6 @@ public class GEOSTransform {
     public GeoidGRS80() {
       r_pol = 6356.7523;  // kilometers
       r_eq = 6378.1370;
-      invf = 298.257222101;
       f = 1.0 / 298.257222101;
     }
   }

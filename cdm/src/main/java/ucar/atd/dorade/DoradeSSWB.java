@@ -183,6 +183,8 @@ class DoradeSSWB extends DoradeDescriptor {
         s += "  SSWB version: " + version + "\n";
         s += "  status: " + status + "\n";
         s += "  number of key tables: " + nKeyTables;
+        for(KeyTable k: keyTables)
+          s += "  key table type contained: " + k.type + "\n";
         return s;
     }
 
