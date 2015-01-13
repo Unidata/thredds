@@ -384,7 +384,7 @@ public class GridUI extends JPanel {
 
         Dataset invDs;
         try {
-          invDs = new Dataset(filename, FeatureType.GRID, ServiceType.FILE); // LOOK WTF ??
+          invDs = new Dataset(filename, FeatureType.GRID, ServiceType.File); // LOOK WTF ??
         } catch (Exception ue) {
           JOptionPane.showMessageDialog(GridUI.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
           ue.printStackTrace();
