@@ -1,6 +1,5 @@
 package ucar.nc2.iosp.hdf5;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.SpecialMathFunction;
 
@@ -251,7 +250,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       }
 
       else  {
-        throw new NotImplementedException(); // "DHeapId subtype = "+subtype);
+        throw new UnsupportedOperationException(); // "DHeapId subtype ="+subtype);
       }
 
 

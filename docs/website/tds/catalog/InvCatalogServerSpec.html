@@ -7,44 +7,53 @@
 </head>
 
 <body>
-<h1><img alt="THREDDS" src="../THREDDSlogo.jpg" height="54" width="67"/> Server-side Catalog Specification<br/>
+<h1> Server-side Catalog Specification<br/>
 </h1>
-<address>
-  Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS
-  mailgroup</a>
-</address>
 <hr/>
 <p>The
   THREDDS Data Server (TDS) uses specialized catalogs as configuration
-  documents. This document specifies the semantics and XML representation of the server-side specializations allowed in THREDDS catalogs. It should be used in conjuction with the <a href="InvCatalogSpec.html">client-side catalog specification</a>.</p>
+  documents. This document specifies the semantics and XML representation of the server-side specializations allowed in THREDDS catalogs. It should be used in conjunction with the <a href="InvCatalogSpec.html">client-side catalog specification</a>.</p>
 
 <h3>Contents:</h3>
-<ol>
-  <li>Server-side Elements
-    <ul>
-      <li><a href="#datasetRoot_Element">datasetRoot</a></li>
-      <li><a href="#datasetScan_Element">datasetScan</a></li>
-      <li><a href="../reference/collections/FeatureCollections.html">featureCollection</a><br/>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#index">Index</a></li>
-</ol>
-<h3>Related resources:<br/>
-</h3>
+<p>Server-side elements described in this document:</p>
 <ul>
-  <li><a href="InvCatalogSpec.html">Client catalog specification</a></li>
-  <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">XML Schema</a><br/>
+  <li><a href="#datasetRoot_Element">datasetRoot</a></li>
+  <li><a href="#datasetScan_Element">datasetScan</a></li>
+</ul>
+<p>Also see:</p>
+<ul>
+  <li><a href="../reference/collections/FeatureCollections.html">featureCollection</a></li>
+  <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd">Catalog XML Schema</a><br/>
   </li>
 </ul>
 <h3><strong>Change History:</strong></h3>
 <ul>
-  <li>version 1.0.2
+  <li>version 1.0.7
     <ul>
-      <li>Reorganize addProxies element definition</li>
-      <li> add isResolver
-        attribute to simpleLatest and latestComplete elements      </li>
-      <li>Add datasetFMRC element.</li>
+      <li>seperate tdm from update element, redo both</li>
+      <li>gribConfigType changes (see <a href="../reference/collections/GribConfig.html">here</a> now)</li>
+      <li>bring dataFormatTypes and ServiceTypes  up to date</li>
+    </ul>
+  </li>
+  <li>version 1.0.6
+    <ul>
+      <li>add useRemoteCatalogService attribute on catalogRef</li>
+      <li>featureCollection updateType rewrite</li>
+      <li>gribConfigType changes</li>
+    </ul>
+  </li>
+  <li>
+    version 1.0.5
+      <ul>
+        <li>updateType.startup is a string to allow &quot;<em>nocheck</em>&quot; value</li>
+        <li>add pdsHash to gribConfigType</li>
+        <li>add latestNamer, bestNamer, fileSort elements</li>
+      </ul>
+  </li>
+  <li>
+    version 1.0.4
+      <ul>
+        <li>modify featureCollection, epecially gribConfigType</li>
     </ul>
   </li>
   <li>version 1.0.3
@@ -53,24 +62,14 @@
       <li>datasetFMRC is deprecated</li>
     </ul>
   </li>
-  <li>version 1.0.4
-    <ul>
-      <li>modify featureCollection, epecially gribConfigType</li>
-    </ul>
-  </li>
-  <li>version 1.0.5
-    <ul>
-      <li>updateType.startup is a string to allow &quot;<em>nocheck</em>&quot; value</li>
-      <li>add pdsHash to gribConfigType</li>
-      <li>add latestNamer, bestNamer, fileSort elements</li>
-    </ul>
-  </li>
-  <li>version 1.0.6
-    <ul>
-      <li>add useRemoteCatalogService attribte on catalogRef</li>
-      <li>featureCollection updateType rewrite</li>
-      <li>gribConfigType changes</li>
-    </ul>
+  <li>
+    version 1.0.2
+<ul>
+      <li>Reorganize addProxies element definition</li>
+      <li> add isResolver
+        attribute to simpleLatest and latestComplete elements      </li>
+      <li>Add datasetFMRC element.  </li>
+</ul>
   </li>
 </ul>
 <hr/>
@@ -333,6 +332,9 @@ So, when cataloged, this dataset would end up as something like this:<br/>
   <li><a href="#sort_Element">sort</a>: an element</li>
 </ul>
 <hr/>
+<p><img alt="THREDDS" src="../thread.png" height="108" width="110" />This document is maintained by Unidata and was
+  last updated January 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+support</a>. </p>
 
 </body>
 </html>

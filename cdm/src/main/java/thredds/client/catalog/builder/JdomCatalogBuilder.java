@@ -75,7 +75,7 @@ public class JdomCatalogBuilder {
 
     } catch (Exception e) {
       errlog.format("failed to read catalog at %s err=%s%n", uri.toString(), e);
-      return false;
+      return true;
     }
 
   }

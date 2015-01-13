@@ -79,7 +79,7 @@ public class Service {            // (7)
   }
 
   public String getSuffix() {
-    return suffix;
+    return suffix == null ? "" : suffix;
   }
 
   public List<Service> getNestedServices() {

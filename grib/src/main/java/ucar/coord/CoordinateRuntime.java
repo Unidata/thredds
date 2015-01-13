@@ -21,7 +21,7 @@ public class CoordinateRuntime implements Coordinate {
   final CalendarDate firstDate;
   final CalendarPeriod timeUnit;
   final String periodName;
-  String name = "reftime";
+  final String name = "reftime";
 
   public CoordinateRuntime(List<Long> runtimeSorted, CalendarPeriod timeUnit) {
     this.runtimes = new long[runtimeSorted.size()];
@@ -98,7 +98,6 @@ public class CoordinateRuntime implements Coordinate {
 
   public void setName(String name) {
     if (!this.name.equals("reftime")) throw new IllegalStateException("Cant modify");
-    this.name = name;
   }
 
   @Override

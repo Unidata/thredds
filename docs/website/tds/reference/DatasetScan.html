@@ -33,7 +33,7 @@
 
 <ol>
   <li>The <strong>path</strong> attribute on the <strong>datasetScan</strong> element is the part of the URL that identifies this datasetScan and is used to map
-    dataset URLs to a location.<br>
+     URLs to a file on disk.<br>
   </li>
   <li>The <strong>location</strong> attribute on the <strong>datasetScan</strong> element gives the location of the dataset collection on the local file system.
   </li>
@@ -59,7 +59,7 @@
   GFS/
     CONUS_191km/
       GFS_CONUS_191km_20061107_0000.grib1
-      GFS_CONUS_191km_20061107_0000.grib1.gbx
+      GFS_CONUS_191km_20061107_0000.grib1.gbx9
       GFS_CONUS_191km_20061107_0600.grib1
       GFS_CONUS_191km_20061107_1200.grib1
     CONUS_80km/
@@ -84,7 +84,7 @@
 
 <ol>
 
-  <li>Files are turned into datasets, subdirectories are turned into nested catalogRef elements.</li>
+  <li>Files are turned into <strong>dataset </strong>elements, subdirectories are turned into nested <strong>catalogRef</strong> elements.</li>
   <li>All the catalog URLs are relative. If the original catalog URL is <strong>http://server:8080/thredds/catalog.xml </strong>then the first catalogRef
     xlink:href value of "/thredds/catalog/ncep/catalog.xml" resolves to<strong> http://server:8080/thredds/catalog/ncep/catalog.xml</strong>. From that catalog,
     the catalogRef xlink:href value of "GFS/catalog.xml" resolves to <strong>http://server:8080/thredds/catalog/ncep/GFS/catalog.xml</strong>.
@@ -107,10 +107,10 @@
 <h2>Inherited Metadata</h2>
 
 
-<p>The datasetScan element is an extension of a dataset element, and it
-  can contain any of the metadata elements that a dataset can. Typically
+<p>The <strong>datasetScan</strong> element is an extension of a dataset element, and it
+  can contain any of the <strong>metadata</strong> elements that a dataset can. Typically
   you want all of its contained datasets to inherit the metadata, so add
-  an inherited metadata element contained in the datasetScan element: </p>
+  an inherited <strong>metadata</strong> element contained in the <strong>datasetScan</strong> element, for example:</p>
 
 
 <pre>
@@ -171,14 +171,13 @@
 
 <p>Its a good idea to always include a filter element, so that if stray
   files accidentally get into your data directories, they wont generate
-  erroneous catalog entries. A good choice for this datasetScan would be something like:<br>
-</p>
+  erroneous catalog entries. A good choice for this datasetScan would be something like:</p>
 
 <pre>
 &lt;filter&gt;
   &lt;include wildcard="*.grib1"/&gt;
   &lt;include wildcard="*.grib2"/&gt;
-  &lt;exclude wildcard="*.gbx"/&gt;
+  &lt;exclude wildcard="*.gbx9"/&gt;
 &lt;/filter&gt;
 </pre>
 
@@ -211,8 +210,7 @@ dataset names. The following namer looks for datasets named "GFS" or
 
 <p>More complex renaming is possible as well. The namer uses a <a href="http://www.regular-expressions.info/">regular expression</a> match on the dataset name.
   If the match succeeds, any regular expression <a href="http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> are used
-  in the replacement string.<br>
-</p>
+  in the replacement string.</p>
 
 
 <p>A capturing group is a part of a regular expression enclosed in
@@ -261,7 +259,7 @@ the name "NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT".
 So, when cataloged, this dataset would end up as something like this:<br>
 
 
-<pre>&lt;dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"<br>        &nbsp;urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/&gt;<strong></strong><br></pre>
+<pre>&lt;dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"<br>        &nbsp;urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/&gt;<strong></strong></pre>
 
 
 <h2><a name="Sorting_Datasets"></a>Sorting Datasets</h2>
@@ -274,14 +272,7 @@ So, when cataloged, this dataset would end up as something like this:<br>
 
 
 <pre>&lt;sort&gt;<br>  &lt;lexigraphicByName increasing="false" /&gt;<br>&lt;/sort&gt;</pre>
-
-
-<p>Other sort order functionality will be looked at for future enhancements.</p>
-
-
 <p>Notes:</p>
-
-
 <ol>
 
   <li>The "natural" order of the datasets is determined by the order returned by the listDatasets() method in CrawlableDataset.</li>
@@ -326,14 +317,12 @@ elements must point to an existing service.<br>
   <strong>serviceName</strong> attribute that references the service used by the proxy dataset, the <strong>top</strong>
   attribute which indicates if the proxy dataset should appear at the top
   or bottom of the list of datasets in this collection, and the <strong>lastModifiedLimit</strong> which feeds into the algorithm which determines which dataset
-  is being proxied.<br>
-</p>
+  is being proxied.</p>
 
 
 <p>The <strong>simpleLatest</strong> element allows for the same attributes as the <strong>latestComplete</strong> element minus the
   <strong>lastModifiedLimit</strong> attribute. In this case, all the attributes have default values: the <strong>name</strong> attribute defaults to
-  "latest.xml", the <strong>top</strong> attribute defaults to "true", and the <strong>serviceName</strong> attribute defaults to "latest".<br>
-</p>
+  "latest.xml", the <strong>top</strong> attribute defaults to "true", and the <strong>serviceName</strong> attribute defaults to "latest".</p>
 
 
 <p>The results would be something like: </p>
@@ -415,24 +404,20 @@ elements must point to an existing service.<br>
 <p>results in the following timeCoverage element:</p>
 
 
-<pre><strong>  &lt;timeCoverage&gt;<br> &lt;start&gt;</strong>2005-07-18T12:00:00<strong>&lt;/start&gt;<br> &lt;duration&gt;</strong>60 hours<strong>&lt;/duration&gt;<br>
-  &lt;/timeCoverage&gt;</strong></pre>
+<pre><strong> &lt;timeCoverage&gt;<br>   &lt;start&gt;</strong>2005-07-18T12:00:00<strong>&lt;/start&gt;<br>   &lt;duration&gt;</strong>60 hours<strong>&lt;/duration&gt;
+ &lt;/timeCoverage&gt;</strong></pre>
 
 
-<p>A new (2009-05-06, TDS 4.0) variation is the addition of the <strong>datasetPathMatchPattern</strong> attribute. It can be used instead of the <strong>datasetNameMatchPattern</strong>
+<p>A variation is the addition of the <strong>datasetPathMatchPattern</strong> attribute. It can be used instead of the <strong>datasetNameMatchPattern</strong>
   attribute and changes the target of the match from the dataset name to the dataset path. If both attributes are used, the
-  <strong>datasetNameMatchPattern</strong> attribute takes precedence.</p>
-
-<p>Future versions will allow more complex determinations of the timeCoverage element.<br>
+  <strong>datasetNameMatchPattern</strong> attribute takes precedence.<br>
 </p>
 <hr size="2" width="100%">
 <h2>Sample Config Files</h2>
 
-<p><a name="sample1"></a>Basic catalog:<br>
-</p>
+<p><a name="sample1"></a>Basic catalog:</p>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>  &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
-<p><a name="sample2"></a>Catalog with filtering added:<br>
-</p>
+<p><a name="sample2"></a>Catalog with filtering added:</p>
 
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;<br></pre>
 <p><a name="sample3"></a>Catalog with dataset size added:<br>
@@ -441,7 +426,7 @@ elements must point to an existing service.<br>
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">This document is maintained by Unidata and was
-  last updated November, 2012. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated Jabuary, 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 <p></p>

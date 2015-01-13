@@ -366,7 +366,7 @@ public class DataFactory {
         System.out.println("ThreddsDataset.openDataset try " + datasetLocation + " " + serviceType);
 
       // deal with RESOLVER type
-      if (serviceType == ServiceType.RESOLVER) {
+      if (serviceType == ServiceType.Resolver) {
         Dataset rds = openResolver(datasetLocation, task, result);
         if (rds == null) return null;
         accessList = new ArrayList<>(rds.getAccess());
@@ -427,7 +427,7 @@ public class DataFactory {
     if (debugOpen) System.out.println("ThreddsDataset.openDataset= " + datasetLocation);
 
     // deal with RESOLVER type
-    if (serviceType == ServiceType.RESOLVER) {
+    if (serviceType == ServiceType.Resolver) {
       Dataset rds = openResolver(datasetLocation, task, result);
       if (rds == null) return null;
       return openDataset(rds, acquire, task, result);
@@ -506,7 +506,7 @@ public class DataFactory {
     if (access == null)
        access = findAccessByServiceType(accessList, ServiceType.DAP4);
     if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.FILE); // should mean that it can be opened through netcdf API
+      access = findAccessByServiceType(accessList, ServiceType.File); // should mean that it can be opened through netcdf API
 
     // look for HTTP with format we can read
     if (access == null) {
@@ -530,7 +530,7 @@ public class DataFactory {
 
     // RESOLVER
     if (access == null) {
-      access = findAccessByServiceType(accessList, ServiceType.RESOLVER);
+      access = findAccessByServiceType(accessList, ServiceType.Resolver);
     }
 
     return access;

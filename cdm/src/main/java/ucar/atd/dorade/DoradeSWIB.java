@@ -129,7 +129,8 @@ class DoradeSWIB extends DoradeDescriptor {
     s += "  start angle: " + startAngle + "\n";
     s += "  end angle: " + endAngle + "\n";
     s += "  fixed angle: " + fixedAngle + "\n";
-    s += "  filter flag: " + filterFlag;
+    s += "  filter flag: " + filterFlag + "\n";
+    s += "  comment: " + comment;
     return s;
   }
 

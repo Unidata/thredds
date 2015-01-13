@@ -429,7 +429,6 @@ public class AWIPSConvention extends CoordSysBuilder {
   private ProjectionCT makeStereoProjection(NetcdfDataset ds, String name) throws NoSuchElementException {
     double centralLat = findAttributeDouble(ds, "centralLat");
     double centralLon = findAttributeDouble(ds, "centralLon");
-    double rotation = findAttributeDouble(ds, "rotation");
 
     // scale factor at lat = k = 2*k0/(1+sin(lat))  [Snyder,Working Manual p157]
     // then to make scale = 1 at lat, k0 = (1+sin(lat))/2

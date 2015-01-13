@@ -360,7 +360,7 @@ public class CoverageDisplay extends JPanel {
         try {     // DatasetNode parent, String name, Map<String, Object> flds, List< AccessBuilder > accessBuilders, List< DatasetBuilder > datasetBuilders
           Map<String, Object> flds = new HashMap<>();
           flds.put(Dataset.FeatureType, FeatureType.GRID.toString());
-          flds.put(Dataset.ServiceName, ServiceType.FILE.toString());  // bogus
+          flds.put(Dataset.ServiceName, ServiceType.File.toString());  // bogus
           invDs = new Dataset(null, filename, flds, null, null);
           // invDs = new Dataset(filename, FeatureType.GRID, ServiceType.NETCDF);
         } catch (Exception ue) {

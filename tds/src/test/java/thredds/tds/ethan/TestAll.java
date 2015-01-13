@@ -395,7 +395,7 @@ public class TestAll extends TestCase
     {
       public void getDataset( Dataset ds, Object context )
       {
-        if ( ds.hasAccess() && ds.getAccess( ServiceType.RESOLVER ) != null )
+        if ( ds.hasAccess() && ds.getAccess( ServiceType.Resolver ) != null )
           checkLatestModelResolverDs( ds, failureMsgs );
       }
       public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
@@ -428,7 +428,7 @@ public class TestAll extends TestCase
   private static boolean checkLatestModelResolverDs( Dataset ds, Map<String, String> failureMsgs )
   {
     // Resolve the resolver dataset.
-    Access curAccess = ds.getAccess( ServiceType.RESOLVER );
+    Access curAccess = ds.getAccess( ServiceType.Resolver );
     String curResDsPath = curAccess.getStandardUri().toString();
     StringBuilder buf = new StringBuilder();
     Catalog curResolvedCat = openAndValidateCatalog( curResDsPath, buf, false );

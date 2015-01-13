@@ -844,12 +844,14 @@
           <xsd:enumeration value="McIDAS-AREA"/>
           <xsd:enumeration value="NcML"/>
           <xsd:enumeration value="NetCDF"/>
+          <xsd:enumeration value="NetCDF-4"/>
           <xsd:enumeration value="NEXRAD2"/>
           <xsd:enumeration value="NIDS"/>
 
           <xsd:enumeration value="image/gif"/>
           <xsd:enumeration value="image/jpeg"/>
           <xsd:enumeration value="image/tiff"/>
+          <xsd:enumeration value="text/csv"/>
           <xsd:enumeration value="text/html"/>
           <xsd:enumeration value="text/plain"/>
           <xsd:enumeration value="text/tab-separated-values"/>
@@ -928,10 +930,15 @@
         <xsd:restriction base="xsd:token">
           <!-- client/server -->
           <xsd:enumeration value="ADDE"/>
-          <xsd:enumeration value="DODS"/>
-          <!-- same as OpenDAP -->
+          <xsd:enumeration value="DAP4"/>
+          <xsd:enumeration value="DODS"/> <!-- same as OpenDAP -->
           <xsd:enumeration value="OpenDAP"/>
-          <xsd:enumeration value="OpenDAP-G"/>
+          <xsd:enumeration value="OpenDAPG"/>
+          <xsd:enumeration value="NetcdfSubset"/>
+          <xsd:enumeration value="CdmRemote"/>
+          <xsd:enumeration value="CdmFeature"/>
+          <xsd:enumeration value="ncJSON"/>
+          <xsd:enumeration value="H5Service"/>
 
           <!-- bulk transport -->
           <xsd:enumeration value="HTTPServer"/>
@@ -939,14 +946,14 @@
           <xsd:enumeration value="GridFTP"/>
           <xsd:enumeration value="File"/>
 
-          <xsd:enumeration value="NetcdfSubset"/>
-          <xsd:enumeration value="CdmRemote"/>
-
           <!-- web services -->
+          <xsd:enumeration value="ISO"/>
           <xsd:enumeration value="LAS"/>
-          <xsd:enumeration value="WMS"/>
-          <xsd:enumeration value="WFS"/>
+          <xsd:enumeration value="LAS"/>
+          <xsd:enumeration value="NcML"/>
+          <xsd:enumeration value="UDDC"/>
           <xsd:enumeration value="WCS"/>
+          <xsd:enumeration value="WMS"/>
           <xsd:enumeration value="WSDL"/>
 
           <!--offline -->
@@ -954,9 +961,9 @@
 
           <!-- THREDDS -->
           <xsd:enumeration value="Catalog"/>
-          <xsd:enumeration value="QueryCapability"/>
-          <xsd:enumeration value="Resolver"/>
           <xsd:enumeration value="Compound"/>
+          <xsd:enumeration value="Resolver"/>
+          <xsd:enumeration value="THREDDS"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:union>

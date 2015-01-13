@@ -98,16 +98,10 @@ public final class FysatHeader {
     // gini header process
     byte[] buf = new byte[FY_AWX_PIB_LEN];
     int count = raf.read(buf);
-    EndianByteBuffer byteBuffer = null;
+    EndianByteBuffer byteBuffer;
     if (count == FY_AWX_PIB_LEN) {
-      byteBuffer = new EndianByteBuffer(buf);
-
+      byteBuffer = new EndianByteBuffer(buf, this.firstHeader.byteOrder);
       this.firstHeader.fillHeader(byteBuffer);
-
-      // if big endian bytes, fill the head with BIG_ENDIAN instead;
-      if (this.firstHeader.byteOrder != EndianByteBuffer.LITTLE_ENDIAN) {
-        byteBuffer = new EndianByteBuffer(buf, EndianByteBuffer.BIG_ENDIAN);
-      }
 
     } else {
       return false;
@@ -291,8 +285,6 @@ public final class FysatHeader {
 
         // get dimensions
         int velems;
-        boolean isRecord = false;
-
 
         int nx = geoSatelliteSecondHeader.widthOfImage;
         int ny = geoSatelliteSecondHeader.heightOfImage;
@@ -313,6 +305,8 @@ public final class FysatHeader {
         ncfile.addDimension(null, dimX);
 
         int byteAmountofData = 1;
+        var.setDataType(DataType.BYTE);
+        Class dataType = DataType.BYTE.getPrimitiveClassType();
         velems = dimX.getLength() * dimY.getLength() * byteAmountofData;
         List<Dimension> dims = new ArrayList<>();
         dims.add(dimT);
@@ -320,24 +314,6 @@ public final class FysatHeader {
         dims.add(dimX);
 
         var.setDimensions(dims);
-
-        // data type
-        Class dataType = null;
-        switch (byteAmountofData) {
-          case 1:
-            var.setDataType(DataType.BYTE);
-            dataType = DataType.BYTE.getPrimitiveClassType();
-            break;
-          case 2:
-            var.setDataType(DataType.SHORT);
-            dataType = DataType.SHORT.getPrimitiveClassType();
-            break;
-          case 4:
-            var.setDataType(DataType.INT);
-            dataType = DataType.INT.getPrimitiveClassType();
-            break;
-
-        }
 
         var.addAttribute(new Attribute(CF.COORDINATES, "Lon Lat"));
 
@@ -357,8 +333,8 @@ public final class FysatHeader {
         int vsize = velems;
         long begin = this.firstHeader.recordsOfHeader * this.firstHeader.recoderLength;
         if (debug)
-          log.warn(" name= " + vname + " vsize=" + vsize + " velems=" + velems + " begin= " + begin + " isRecord=" + isRecord + "\n");
-        var.setSPobject(new Vinfo(vsize, begin, isRecord, nx, ny, dataType, this.firstHeader.byteOrder));
+          log.warn(" name= " + vname + " vsize=" + vsize + " velems=" + velems + " begin= " + begin + "\n");
+        var.setSPobject(new Vinfo(vsize, begin, nx, ny, dataType, this.firstHeader.byteOrder));
         String coordinates;
         if (proj != 4) {
           coordinates = "x y time";
@@ -444,9 +420,7 @@ public final class FysatHeader {
           Variable ct = new Variable(ncfile, null, null, projection.getClassName());
           ct.setDataType(DataType.CHAR);
           ct.setDimensions("");
-          List params = projection.getProjectionParameters();
-          for (int i = 0; i < params.size(); i++) {
-            Parameter p = (Parameter) params.get(i);
+          for (Parameter p : projection.getProjectionParameters()) {
             ct.addAttribute(new Attribute(p));
           }
           ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
@@ -622,8 +596,6 @@ public final class FysatHeader {
 
         // get dimensions
         int velems;
-        boolean isRecord = false;
-
 
         int nx = gridprocuctSecondHeader.amountofHorizontalSpacing;
         int ny = gridprocuctSecondHeader.amountofVerticalSpacing;
@@ -645,7 +617,7 @@ public final class FysatHeader {
         var.setDimensions(dims);
 
         // data type
-        Class dataType = null;
+        Class dataType;
         switch (gridprocuctSecondHeader.byteAmountofData) {
           case 1:
             var.setDataType(DataType.BYTE);
@@ -673,20 +645,20 @@ public final class FysatHeader {
 
         if (var.getDataType() == DataType.BYTE) {
           var.addAttribute(new Attribute("_missing_value", (byte) -1));
-          var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) gridprocuctSecondHeader.dataBaseValue));
-          var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) gridprocuctSecondHeader.dataBaseValue));
+          var.addAttribute(new Attribute(CDM.ADD_OFFSET, gridprocuctSecondHeader.dataBaseValue));
+          var.addAttribute(new Attribute(CDM.SCALE_FACTOR, gridprocuctSecondHeader.dataBaseValue));
         } else {
           var.addAttribute(new Attribute("_missing_value", (short) -1));
-          var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) gridprocuctSecondHeader.dataBaseValue));
-          var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) gridprocuctSecondHeader.dataScale));
+          var.addAttribute(new Attribute(CDM.ADD_OFFSET, gridprocuctSecondHeader.dataBaseValue));
+          var.addAttribute(new Attribute(CDM.SCALE_FACTOR, gridprocuctSecondHeader.dataScale));
         }
 
         // size and beginning data position in file
         int vsize = velems;
         long begin = this.firstHeader.recordsOfHeader * this.firstHeader.recoderLength;
         if (debug)
-          log.warn(" name= " + vname + " vsize=" + vsize + " velems=" + velems + " begin= " + begin + " isRecord=" + isRecord + "\n");
-        var.setSPobject(new Vinfo(vsize, begin, isRecord, nx, ny, dataType, this.firstHeader.byteOrder));
+          log.warn(" name= " + vname + " vsize=" + vsize + " velems=" + velems + " begin= " + begin + "\n");
+        var.setSPobject(new Vinfo(vsize, begin, nx, ny, dataType, this.firstHeader.byteOrder));
         String coordinates = "lon lat time";
         var.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
@@ -1010,16 +982,14 @@ public final class FysatHeader {
   static class Vinfo {
     int vsize; // size of array in bytes. if isRecord, size per record.
     long begin; // offset of start of data from start of file
-    boolean isRecord; // is it a record variable?
     int nx;
     int ny;
     Class classType;
     short byteOrder;
 
-    Vinfo(int vsize, long begin, boolean isRecord, int x, int y, Class dt, short byteOrder) {
+    Vinfo(int vsize, long begin, int x, int y, Class dt, short byteOrder) {
       this.vsize = vsize;
       this.begin = begin;
-      this.isRecord = isRecord;
       this.nx = x;
       this.ny = y;
       this.classType = dt;
