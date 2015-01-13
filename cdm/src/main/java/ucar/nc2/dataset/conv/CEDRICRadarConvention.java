@@ -92,12 +92,12 @@ public class CEDRICRadarConvention extends CF1Convention {
         pv.addAttribute(new Attribute("longitude_of_projection_origin", lonv) );
         pv.addAttribute(new Attribute("latitude_of_projection_origin", latv) );
 
+        Variable tvar = ncDataset.findVariable("time");
+        /*Date dt = null;
         Variable sdate = ncDataset.findVariable("start_date");
         Variable stime = ncDataset.findVariable("start_time");
-        Variable tvar = ncDataset.findVariable("time");
         String dateStr = sdate.readScalarString();
         String timeStr = stime.readScalarString();
-        /*Date dt = null;
         try {
           dt = DateUtil.parse(dateStr + " " + timeStr);
         } catch (Exception e) {}  */

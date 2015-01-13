@@ -273,7 +273,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
     List<Range> ranges = section.getRanges();
     Range joinRange = section.getRange(0);
-    List<Range> nestedSection = new ArrayList<Range>(ranges); // get copy
+    List<Range> nestedSection = new ArrayList<>(ranges); // get copy
     List<Range> innerSection = ranges.subList(1, ranges.size());
 
     if (debug) System.out.println("   agg wants range=" + mainv.getFullName() + "(" + joinRange + ")");
@@ -349,7 +349,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
     List<Dataset> nestedDatasets = getDatasets();
     if (executor != null) {
-      CompletionService<Result> completionService = new ExecutorCompletionService<Result>(executor);
+      CompletionService<Result> completionService = new ExecutorCompletionService<>(executor);
 
       int count = 0;
       for (Dataset vnested : nestedDatasets)
@@ -765,7 +765,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
         Range want = section.get(0);
         if (fullRange.last() < want.last()) {
           Range limitRange = new Range(want.first(), fullRange.last(), want.stride());
-          section = new ArrayList<Range>(section); // make a copy
+          section = new ArrayList<>(section); // make a copy
           section.set(0, limitRange);
         }
 
@@ -807,7 +807,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
     // clear out old stuff from the Hash, so it doesnt grow forever
     void reset() {
-      Map<String, Array> newMap = new HashMap<String, Array>();
+      Map<String, Array> newMap = new HashMap<>();
       for (Dataset ds : datasets) {
         String id = ds.getId();
         Array data = dataMap.get(id);
@@ -854,7 +854,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
           varData = varData.section(innerSection.getRanges());
 
         } else if ((innerSection == null) && (varData.getSize() != nestedJoinRange.length())) {
-          List<Range> nestedSection = new ArrayList<Range>(ranges); // make copy
+          List<Range> nestedSection = new ArrayList<>(ranges); // make copy
           nestedSection.set(0, nestedJoinRange);
           varData = varData.section(nestedSection);
      }
@@ -1062,7 +1062,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
   /////////////////////////////////////////////
   // global attributes promoted to variables
   class PromoteVarCompose extends PromoteVar {
-    String varName;
     String format;
     String[] gattNames;
 
@@ -1085,7 +1084,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       Array data = getData(dset.getId());
       if (data != null) return data;
 
-      List<Object> vals = new ArrayList<Object>();
+      List<Object> vals = new ArrayList<>();
       for (String gattName : gattNames) {
         Attribute att = ncfile.findGlobalAttribute(gattName);
         if (att == null)

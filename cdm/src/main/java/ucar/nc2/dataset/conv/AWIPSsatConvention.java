@@ -208,10 +208,10 @@ public class AWIPSsatConvention extends CoordSysBuilder {
   }
 
  private ProjectionCT makeMercatorProjection(NetcdfDataset ds, String name, int nx, int ny) throws NoSuchElementException {
-    double centralLat = findAttributeDouble( ds, "centralLat");
+    // double centralLat = findAttributeDouble( ds, "centralLat");
     // Center longitude for the mercator projection, where the mercator projection is parallel to the Earth's surface.
     // from this, i guess is actually transverse mercator
-    double centralLon = findAttributeDouble( ds, "centralLon");
+    // double centralLon = findAttributeDouble( ds, "centralLon");
     // lat0, central meridian, scale factor
     // TransverseMercator proj = new TransverseMercator(centralLat, centralLon, 1.0);
 

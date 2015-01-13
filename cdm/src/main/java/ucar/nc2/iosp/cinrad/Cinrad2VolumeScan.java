@@ -625,6 +625,8 @@ public class Cinrad2VolumeScan {
   }
 
   // check if compressed file seems ok
+  // LOOK While the IOSP seems to read files fine, this function seems terribly
+  // broken on the data in our cdmUnitTests/formats/cinrad directory.
   static public long testValid(String ufilename) throws IOException {
     boolean lookForHeader = false;
 
@@ -684,39 +686,6 @@ public class Cinrad2VolumeScan {
       e.printStackTrace();
     }
     return 0;
-  }
-
-  /**
-   * test
-   */
-  public static void main2(String[] args) throws IOException {
-    File testDir = new File("/share/testdata/radar/problem");
-
-    File[] files = testDir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
-      if (!file.getPath().endsWith(".ar2v")) continue;
-      System.out.println(file.getPath() + " " + file.length());
-      long pos = testValid(file.getPath());
-      if (pos == file.length()) {
-        System.out.println("OK");
-        try {
-          NetcdfFile.open(file.getPath());
-        } catch (Throwable t) {
-          System.out.println("ERROR=  " + t);
-        }
-      } else
-        System.out.println("NOT pos=" + pos);
-
-      System.out.println();
-    }
-  }
-
-  public static void main(String args[]) throws IOException {
-    NexradStationDB.init();
-
-    RandomAccessFile raf = new RandomAccessFile("R:/testdata/radar/nexrad/Cinrad2/problem/KCCX_20060627_1701", "r");
-    new Cinrad2VolumeScan(raf, null);
   }
 
 }

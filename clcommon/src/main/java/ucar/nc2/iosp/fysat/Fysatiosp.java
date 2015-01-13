@@ -40,7 +40,6 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import java.io.*;
 import java.awt.image.*;
-import java.util.*;
 import java.util.zip.Inflater;
 import java.util.zip.DataFormatException;
 
@@ -57,8 +56,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   final static int Z_DEFLATED = 8;
   final static int DEF_WBITS = 15;
-
-  protected boolean debug = false;
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     FysatHeader localHeader = new FysatHeader();
@@ -168,7 +165,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     if (start_p + stop_p + stride_p == 0) { //default pixels
       start_p = 0;
       stride_p = 1;
-      stop_p = nx - 1;
     }
 
     int Len = shape[1]; // length of pixels read each line
@@ -208,7 +204,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
     if (db instanceof DataBufferByte) {
       DataBufferByte dbb = (DataBufferByte) db;
-      int t = dbb.getNumBanks();
       byte[] udata = dbb.getData();
 
       Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), udata);
@@ -230,7 +225,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     raf.readFully(data);
 
     // decompress the bytes
-    int resultLength = 0;
+    int resultLength;
     int result = 0;
     byte[] tmp;
     int uncompLen;        /* length of decompress space    */
@@ -267,7 +262,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
         System.arraycopy(data, data_size - tt, b2, 0, 2);
         if (isZlibHed(b2) == 0) {
           System.arraycopy(data, data_size - tt, uncomp, result, tt);
-          result = result + tt;
           break;
         }
         inflater.reset();
@@ -331,8 +325,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
   }
 
-  protected boolean fill;
-
   public short convertunsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);
   }
@@ -350,7 +342,6 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     }
 
     return 0;
-
   }
 
 }

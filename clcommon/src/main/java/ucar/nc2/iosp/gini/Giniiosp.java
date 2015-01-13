@@ -53,9 +53,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
   final static int Z_DEFLATED = 8;
   final static int DEF_WBITS = 15;
 
-  protected boolean debug = false, debugSize = false, debugSPIO = false;
-  protected boolean showHeaderBytes = false;
-
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
           throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
@@ -158,7 +155,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
     if (shape == null) shape = v2.getShape();
 
     Giniheader.Vinfo vinfo = (Giniheader.Vinfo) v2.getSPobject();
-    ucar.ma2.DataType dataType = v2.getDataType();
 
     int nx = vinfo.nx;
     int ny = vinfo.ny;
@@ -179,23 +175,19 @@ public class Giniiosp extends AbstractIOServiceProvider {
     if (start_p + stop_p + stride_p == 0) { //default pixels
       start_p = 0;
       stride_p = 1;
-      stop_p = nx - 1;
     }
 
     int Len = shape[1]; // length of pixels read each line
-    ucar.ma2.DataType ConvertFrom = ucar.ma2.DataType.BYTE;
     ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]});
     Index indx = adata.getIndex();
     long doff = dataPos + start_p;
     // initially no data conversion is needed.
-    if (ConvertFrom == ucar.ma2.DataType.BYTE) {
-      for (int iline = start_l; iline <= stop_l; iline += stride_l) {
-        /* read 1D byte[] */
-        byte[] buf = getGiniLine(nx, ny, doff, iline, Len, stride_p);
-        /* write into 2D array */
-        for (int i = 0; i < Len; i++) {
-          adata.setByte(indx.set(iline - start_l, i), buf[i]);
-        }
+    for (int iline = start_l; iline <= stop_l; iline += stride_l) {
+      /* read 1D byte[] */
+      byte[] buf = getGiniLine(nx, ny, doff, iline, Len, stride_p);
+      /* write into 2D array */
+      for (int i = 0; i < Len; i++) {
+        adata.setByte(indx.set(iline - start_l, i), buf[i]);
       }
     }
     return adata;
@@ -220,7 +212,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
     if (db instanceof DataBufferByte) {
       DataBufferByte dbb = (DataBufferByte) db;
-      int t = dbb.getNumBanks();
       byte[] udata = dbb.getData();
 
       if (levels == null) {
@@ -281,9 +272,8 @@ public class Giniiosp extends AbstractIOServiceProvider {
     raf.readFully(data);
 
     // decompress the bytes
-    int resultLength = 0;
+    int resultLength;
     int result = 0;
-    byte[] inflateData = new byte[nx * (ny)];
     byte[] tmp;
     int uncompLen;        /* length of decompress space    */
     byte[] uncomp = new byte[nx * (ny + 1) + 4000];
@@ -317,7 +307,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
         System.arraycopy(data, data_size - tt, b2, 0, 2);
         if (isZlibHed(b2) == 0) {
           System.arraycopy(data, data_size - tt, uncomp, result, tt);
-          result = result + tt;
           break;
         }
         inflater.reset();
@@ -328,7 +317,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
     inflater.end();
 
-    System.arraycopy(uncomp, 0, inflateData, 0, nx * ny);
     if (levels == null) {
       Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), uncomp);
       if (array.getSize() < Variable.defaultSizeToCache)
@@ -444,8 +432,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
     return 0;
   }  */
-
-  protected boolean fill;
 
   // get this to inline for performance
   private short convertUnsignedByte2Short(byte b) {

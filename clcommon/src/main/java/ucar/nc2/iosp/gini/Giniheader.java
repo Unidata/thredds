@@ -589,7 +589,6 @@ class Giniheader {
 
     // get dimensions
     int velems;
-    boolean isRecord = false;
     List<Dimension> dims = new ArrayList<>();
 
     Dimension dimX = new Dimension("x", nx, true, false, false);
@@ -606,12 +605,11 @@ class Giniheader {
     var.setDimensions(dims);
 
     // size and beginning data position in file
-    int vsize = velems;
     long begin = dataStart;
-    if (debug) log.warn(" name= " + vname + " vsize=" + vsize + " velems=" + velems + " begin= " + begin + " isRecord=" + isRecord + "\n");
+    if (debug) log.warn(" name= " + vname + " velems=" + velems + " begin= " + begin + "\n");
     if (navcal == 128) {
       var.setDataType(DataType.FLOAT);
-      var.setSPobject(new Vinfo(vsize, begin, isRecord, nx, ny, calcods));
+      var.setSPobject(new Vinfo(begin, nx, ny, calcods));
      /*   var.addAttribute(new Attribute("_Unsigned", "true"));
         int numer = calcods[0] - calcods[1];
         int denom = calcods[2] - calcods[3];
@@ -626,7 +624,7 @@ class Giniheader {
       // var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
       var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) (1)));
       var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) (0)));
-      var.setSPobject(new Vinfo(vsize, begin, isRecord, nx, ny));
+      var.setSPobject(new Vinfo(begin, nx, ny));
     }
     String coordinates = "x y time";
     var.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
@@ -1340,25 +1338,19 @@ class Giniheader {
 
   // variable info for reading/writing
   static class Vinfo {
-    int vsize; // size of array in bytes. if isRecord, size per record.
     long begin; // offset of start of data from start of file
-    boolean isRecord; // is it a record variable?
     int nx;
     int ny;
     int[] levels;
 
-    Vinfo(int vsize, long begin, boolean isRecord, int x, int y) {
-      this.vsize = vsize;
+    Vinfo(long begin, int x, int y) {
       this.begin = begin;
-      this.isRecord = isRecord;
       this.nx = x;
       this.ny = y;
     }
 
-    Vinfo(int vsize, long begin, boolean isRecord, int x, int y, int[] levels) {
-      this.vsize = vsize;
+    Vinfo(long begin, int x, int y, int[] levels) {
       this.begin = begin;
-      this.isRecord = isRecord;
       this.nx = x;
       this.ny = y;
       this.levels = levels;
@@ -1384,63 +1376,3 @@ class Giniheader {
   }
 
 }
-/* Change History:
-   $Log: Giniheader.java,v $
-   Revision 1.15  2005/10/11 18:44:11  yuanho
-   change missing value attribute to variable
-
-   Revision 1.14  2005/10/11 18:09:06  yuanho
-   adding missing value attribute
-
-   Revision 1.13  2005/10/11 15:25:05  yuanho
-   variable naming changes for satellite data
-
-   Revision 1.12  2005/10/10 21:02:56  yuanho
-   adding changes for satellite data
-
-   Revision 1.11  2005/07/28 21:46:36  yuanho
-   remove the static from Vinfo class
-
-   Revision 1.10  2005/07/12 23:00:58  yuanho
-   remove static, add global attr
-
-   Revision 1.9  2005/05/11 00:10:03  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.8  2004/12/15 22:35:25  caron
-   add _unsigned
-
-   Revision 1.7  2004/12/07 22:13:28  yuanho
-   add phyElem for 1hour and total precipitation
-
-   Revision 1.6  2004/12/07 22:13:15  yuanho
-   add phyElem for 1hour and total precipitation
-
-   Revision 1.5  2004/12/07 01:29:31  caron
-   redo convention parsing, use _Coordinate encoding.
-
-   Revision 1.4  2004/10/29 00:14:11  caron
-   no message
-
-   Revision 1.3  2004/10/19 15:17:22  yuanho
-   gini header DxKm update
-
-   Revision 1.2  2004/10/15 23:18:34  yuanho
-   gini projection update
-
-   Revision 1.1  2004/10/13 22:57:57  yuanho
-   no message
-
-   Revision 1.4  2004/08/16 20:53:45  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:17  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.2  2004/07/06 19:28:10  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
- */
