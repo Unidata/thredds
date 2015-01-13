@@ -388,7 +388,6 @@ public class GEOSTransform {
     double r_eq;   // semi-major axis (equatorial radius km)
     double f;      // flattening
     double invf;   // inverse flattening
-    String id;
 
     public Geoid() {
     }
@@ -416,7 +415,6 @@ public class GEOSTransform {
       r_eq = 6378.1370;
       f = 1.0 / 298.257223563;
       invf = 1.0 / f;
-      id = WGS84;
     }
   }
 
@@ -427,7 +425,6 @@ public class GEOSTransform {
       r_eq = 6378.1370;
       invf = 298.257222101;
       f = 1.0 / 298.257222101;
-      id = GRS80;
     }
   }
 }
