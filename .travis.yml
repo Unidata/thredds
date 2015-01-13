@@ -6,16 +6,9 @@ jdk:
   - oraclejdk8
   - openjdk7
 
-env:
-  global:
-    - MAVEN_OPTS="-Djna.library.path=${TRAVIS_BUILD_DIR}/travis -DskipTests=false -DfailIfNoTests=false"
-
 script:
-  - cd cdm && mvn test ${MAVEN_OPTS}
-  - cd ../udunits && mvn test ${MAVEN_OPTS}
-  - cd ../ui && mvn test ${MAVEN_OPTS}
-  - cd ../waterml && mvn test ${MAVEN_OPTS}
-    #- cd ../dap4/d4tests && mvn test ${MAVEN_OPTS}
+        # Need to add back d4tests, eventually cdm-test
+  - ./gradlew :cdm:test :udunits:test :ui:test :waterml:test
 
 cache:
   directories:
