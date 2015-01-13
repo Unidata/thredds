@@ -32,12 +32,14 @@
  */
 package thredds.client.catalog;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.constants.CDM;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -46,16 +48,16 @@ import java.net.URL;
  * @author caron
  * @since 1/9/2015
  */
+@Immutable
 public class Documentation {
-  private String href, title, type, inlineContent;
-   private URI uri; // resolved
-
+  private final String href, title, type, inlineContent;
+  private final URI uri; // resolved
 
    /**
     * Constructor.
     *
     * @param href          : href of documentation, may be null.
-    * @param uri           : resolved URL, or null
+    * @param uri           : absolute URL, or null
     * @param title         : Xlink title, may be null.
     * @param type          : user-defined InvDocumentation type
     * @param inlineContent : optional inline contents.
@@ -63,28 +65,21 @@ public class Documentation {
    public Documentation(String href, URI uri, String title, String type, String inlineContent) {
      this.href = href;
      this.uri = uri;
-     this.title = title;
      this.type = type;
      this.inlineContent = inlineContent;
 
-     if ((uri != null) && (title == null))
+     if (title != null)
+       this.title = title;
+     else if (uri != null)
        this.title = uri.toString();
+     else
+       this.title = null;
    }
 
-   /**
-    * @return documentation type
-    */
    public String getType() {
      return type;
    }
 
-   public void setType(String type) {
-     this.type = type;
-   }
-
-   /**
-    * @return true if it has an XLink
-    */
    public boolean hasXlink() {
      return uri != null;
    }
@@ -105,10 +100,6 @@ public class Documentation {
      return title;
    }
 
-   public void setXlinkTitle(String title) {
-     this.title = title;
-   }
-
    /**
     * if its a XLink, get the href, to display the link to the user.
     * @return the XLink href, or null
@@ -117,49 +108,36 @@ public class Documentation {
      return href;
    }
 
-   public void setXlinkHref(String href) throws URISyntaxException {
-     this.href = href;
-     this.uri = new URI(href);
-   }
-
-   /**
-    * if its a XLink, get its content. This triggers a URL read the first time.
-    * @return the XLink content
-    * @throws java.io.IOException on read error
-    */
-   public String getXlinkContent() throws java.io.IOException {
-     if (content != null) return content;
-     if (uri == null) return "";
-
-     URL url = uri.toURL();
-     InputStream is = url.openStream();
-     ByteArrayOutputStream os = new ByteArrayOutputStream(is.available());
-
-     // copy to string
-     byte[] buffer = new byte[1024];
-     while (true) {
-       int bytesRead = is.read(buffer);
-       if (bytesRead == -1) break;
-       os.write(buffer, 0, bytesRead);
-     }
-     is.close();
-
-     content = new String(os.toByteArray(), CDM.utf8Charset);
-     return content;
-   }
-
-   private String content = null;
-
    /**
     * Get inline content as a string, else null if there is none
     * @return  inline content as a string, else null
     */
    public String getInlineContent() {
-     return inlineContent;
-   }
+     if (uri == null) return "";
 
-   public void setInlineContent(String s) {
-     this.inlineContent = s;
+     URL url;
+     try {
+       url = uri.toURL();
+     } catch (MalformedURLException e) {
+       return e.getMessage();
+     }
+
+     try (InputStream is = url.openStream()) {
+       ByteArrayOutputStream os = new ByteArrayOutputStream(is.available());
+
+       // copy to string
+       byte[] buffer = new byte[1024];
+       while (true) {
+         int bytesRead = is.read(buffer);
+         if (bytesRead == -1) break;
+         os.write(buffer, 0, bytesRead);
+       }
+       return new String(os.toByteArray(), CDM.utf8Charset);
+
+     } catch (IOException ioe) {
+       return ioe.getMessage();
+     }
+
    }
 
    /**
@@ -167,7 +145,7 @@ public class Documentation {
     */
    public String toString() {
      if (hasXlink())
-       return "<" + uri + "> <" + title + "> <" + type + ">" + ((content == null) ? "" : " <" + content + ">");
+       return "<" + uri + "> <" + title + "> <" + type + ">";
      else
        return "<" + inlineContent + ">";
    }

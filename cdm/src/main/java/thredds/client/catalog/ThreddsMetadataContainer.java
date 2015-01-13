@@ -35,7 +35,7 @@ package thredds.client.catalog;
 import java.util.List;
 
 /**
- * Describe
+ * Container of ThreddsMetadata: Dataset or ThreddsMetadata
  *
  * @author caron
  * @since 1/11/2015

@@ -389,7 +389,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public String getDocumentation(String type) {
     for (Documentation doc : getDocumentation()) {
       String dtype = doc.getType();
-      if ((dtype != null) && dtype.equalsIgnoreCase(type)) return doc.getInlineContent();
+      if ((dtype != null) && dtype.equalsIgnoreCase(type))
+        return doc.getInlineContent();
     }
     return null;
   }

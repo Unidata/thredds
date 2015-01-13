@@ -52,8 +52,8 @@
 <pre>
 1 &lt;?xml version="1.0" ?&gt;  
 2 &lt;<strong>catalog</strong> <strong>xmlns</strong>="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
-3  &lt;<strong>service</strong> name="<strong>odap</strong>" serviceType="<strong>OpenDAP</strong>" base="/thredds/dodsC/" /&gt;
-4  &lt;<strong>dataset</strong> name="<strong>SAGE III Ozone 2006-10-31</strong>" serviceName="<strong>odap</strong>" urlPath="sage/20061031.nc" ID="20061031.nc"/&gt;
+3   &lt;<strong>service</strong> name="<strong>odap</strong>" serviceType="<strong>OpenDAP</strong>" base="/thredds/dodsC/" /&gt;
+4   &lt;<strong>dataset</strong> name="<strong>SAGE III Ozone 2006-10-31</strong>" serviceName="<strong>odap</strong>" urlPath="sage/20061031.nc" ID="20061031.nc"/&gt;
 5 &lt;/<strong>catalog</strong>&gt;
 </pre>
 
@@ -283,6 +283,8 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         <li>This dataset overrides
             <code>authority</code>, but uses the other 2 metadata values</li>
     </ol>
+    <p><strong>When should I use a metadata element?</strong></p>
+    <p>Both the <strong>dataset</strong> and <strong>metadata</strong> elements are containers for  metadata called the <strong>threddsMetadata group</strong>. When the metadata is specific to  the dataset, put it directly in the <strong>dataset</strong> element. When you want to share it with all  nested datasets, put it in a<strong> metadata inherited="true" </strong>element.</p>
 </div>
 
 <div id="section">
@@ -328,6 +330,7 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         </blockquote>
         <li><code>catalogRefs </code> needn't point to local catalogs only; this one points to a remote one at
         Far Away University. </li>
+        <li><strong>The metadata elements with inherited="true" </strong>are NOT not copied across catalogRefs. The <strong>catalog</strong> that a <strong>catalogRef</strong> refers to is stand-alone in that sense.</li>
     </ol>
 </div>
 
@@ -351,19 +354,16 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
   &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
 &lt;/service&gt;
 </pre>
-
-    <p>defines a compound service named <code>all</code> which contains two
+<p>defines a compound service named <code>all</code> which contains two
         nested services. Any dataset that reference the compound service will
-        have two access methods. For instance:<br>
-    </p>
-
+  have two access methods. For instance:</p>
 <pre>
 &lt;dataset name="SAGE III Ozone 2006-10-31" urlPath="sage/20061031.nc" ID="20061031.nc"&gt;
   &lt;serviceName&gt;<strong>all</strong>&lt;/serviceName&gt;
 &lt;/dataset&gt;
 </pre>
 
-    <p>would result in these two access URLs, one for OpenDAP access and one for WCS access:<br></p>
+    <p>would result in these two access URLs, one for OpenDAP access and one for WCS access:</p>
 
     <pre>/thredds/dodsC/sage/20061031.nc
 

@@ -33,7 +33,6 @@
 
 package ucar.nc2.ncml;
 
-import thredds.catalog.XMLEntityResolver;
 import thredds.client.catalog.Catalog;
 import thredds.inventory.MFile;
 import ucar.nc2.constants.CDM;
