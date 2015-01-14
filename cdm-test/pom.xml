@@ -19,6 +19,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
