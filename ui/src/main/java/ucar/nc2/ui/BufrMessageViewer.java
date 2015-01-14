@@ -401,7 +401,11 @@ public class BufrMessageViewer extends JPanel {
         } catch (Exception ex) {
           StringWriter sw = new StringWriter();
           ex.printStackTrace(new PrintWriter(sw));
-          infoTA.appendLine(out.toString());
+          try {
+            infoTA.appendLine(out.toString(CDM.UTF8));
+          } catch (UnsupportedEncodingException uee) {
+            uee.printStackTrace();
+          }
           infoTA.appendLine(sw.toString());
         }
 

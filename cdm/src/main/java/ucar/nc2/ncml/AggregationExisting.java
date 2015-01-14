@@ -33,6 +33,7 @@
 
 package ucar.nc2.ncml;
 
+import thredds.client.catalog.Catalog;
 import thredds.inventory.MFile;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -371,7 +372,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       map.put(ds.getId(), ds);
     }
 
-    List<Element> ncList = aggElem.getChildren("netcdf", NcMLReader.ncNS);
+    List<Element> ncList = aggElem.getChildren("netcdf", Catalog.ncmlNS);
     for (Element netcdfElemNested : ncList) {
       String id = netcdfElemNested.getAttributeValue("id");
       DatasetOuterDimension dod = (DatasetOuterDimension) map.get(id);
@@ -401,7 +402,7 @@ public class AggregationExisting extends AggregationOuterDimension {
 
       // if (dod.coordValue != null) continue; // allow ncml to override
 
-      List<Element> cacheElemList = netcdfElemNested.getChildren("cache", NcMLReader.ncNS);
+      List<Element> cacheElemList = netcdfElemNested.getChildren("cache", Catalog.ncmlNS);
       for (Element cacheElemNested : cacheElemList) {
         String varName = cacheElemNested.getAttributeValue("varName");
         CacheVar pv = findCacheVariable(varName);

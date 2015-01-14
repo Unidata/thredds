@@ -947,7 +947,9 @@ public class Grib2DataReader2 {
  128    1 0 Points of first row or column scan in the +i (+x) direction
           1 Points of first row or column scan in the –i (–x) direction
  64     2 0 Points of first row or column scan in the –j (–y) direction
-          1 Points of first row or column scan in the +j (+y) direction
+
+
+
  32     3 0 Adjacent points in i (x) direction are consecutive
           1 Adjacent points in j (y) direction is consecutive
  16     4 0 All rows scan in the same direction
@@ -957,6 +959,39 @@ public class Grib2DataReader2 {
         (1) i direction: west to east along a parallel or left to right along an x-axis.
         (2) j direction: south to north along a meridian, or bottom to top along a y-axis.
         (3) If bit number 4 is set, the first row scan is as defined by previous flags.
+   */
+
+  /*
+  Flag table 3.4 – Scanning mode
+  Bit No. Value Meaning
+  1 0 Points of first row or column scan in the +i (+x) direction
+    1 Points of first row or column scan in the –i (–x) direction
+  2 0 Points of first row or column scan in the –j (–y) direction
+    1 Points of first row or column scan in the +j (+y) direction
+  3 0 Adjacent points in i (x) direction are consecutive
+    1 Adjacent points in j (y) direction is consecutive
+  4 0 All rows scan in the same direction
+    1 Adjacent rows scans in the opposite direction
+  5–8 Reserved
+
+  Code Table Flag table 3.4 - Scanning mode (3.4)
+      1: Points of first row or column scan in the +i (+x) direction
+      1: Points of first row or column scan in the -i (-x) direction
+      2: Points of first row or column scan in the -j (-y) direction
+      2: Points of first row or column scan in the +j (+y) direction
+      3: Adjacent points in i (x) direction are consecutive
+      3: Adjacent points in j (y) direction is consecutive
+      4: All rows scan in the same direction
+      4: Adjacent rows scans in the opposite direction
+      5: Points within odd rows are not offset in i (x) direction
+      5: Points within odd rows are offset by Di/2 in i (x) direction
+      6: Points within even rows are not offset in i (x) direction
+      6: Points within even rows are offset by Di/2 in i (x) direction
+      7: Points are not offset in j (y) direction
+      7: Points are offset by Dj/2 in j (y) direction
+      8: Rows have Ni grid points and columns have Nj grid points
+      8: Rows have Ni grid points if points are not offset in i direction Rows have Ni-1 grid points if points are offset by Di/2 in i direction
+         Columns have Nj grid points if points are not offset in j direction Columns have Nj-1 grid points if points are offset by Dj/2 in j direction
    */
 
   // Rearrange the data array using the scanning mode.

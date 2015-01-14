@@ -529,5 +529,8 @@ public class GribWmoCodesPanel extends JPanel {
     public int getLine() {
       return te.line;
     }
+    public int getValue() {
+       return te.value;
+     }
   }
 }

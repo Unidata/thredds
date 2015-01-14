@@ -38,7 +38,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.dataset.*;
 
-import thredds.catalog.XMLEntityResolver;
 import org.jdom2.*;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
@@ -56,9 +55,7 @@ import java.util.*;
  */
 
 public class NcMLWriter {
-  protected static final Namespace ncNS = Namespace.getNamespace(XMLEntityResolver.NJ22_NAMESPACE);
-  protected static final Namespace xsiNS = Namespace.getNamespace("xsi", XMLEntityResolver.W3C_XML_NAMESPACE);
-
+  static private final Namespace ncNS = thredds.client.catalog.Catalog.ncmlNS;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLWriter.class);
 
   private NetcdfDataset ncd;

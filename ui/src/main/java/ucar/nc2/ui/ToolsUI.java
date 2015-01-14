@@ -34,7 +34,7 @@
 package ucar.nc2.ui;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import thredds.client.catalog.builder.DataFactory;
+import thredds.client.catalog.writer.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.catalog.ThreddsUI;
@@ -65,7 +65,6 @@ import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.coverage.CoverageDisplay;
@@ -189,7 +188,7 @@ public class ToolsUI extends JPanel {
   private AboutWindow aboutWindow = null;
 
   // data
-  private thredds.client.catalog.builder.DataFactory threddsDataFactory = new thredds.client.catalog.builder.DataFactory();
+  private DataFactory threddsDataFactory = new DataFactory();
   private DateFormatter formatter = new DateFormatter();
 
   private boolean setUseRecordStructure = false;
@@ -913,7 +912,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
     Nc4Iosp.setDebugFlags(debugFlags);
-    ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
+    DataFactory.setDebugFlags(debugFlags);
 
     ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
     ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
@@ -1087,11 +1086,11 @@ public class ToolsUI extends JPanel {
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        ThreddsDataFactory.setPreferCdm(state);
+        DataFactory.setPreferCdm(state);
       }
     };
     // ToolsUI default is to use cdmRemote access
-    ThreddsDataFactory.setPreferCdm(true);
+    DataFactory.setPreferCdm(true);
     a.putValue(BAMutil.STATE, true);
     BAMutil.setActionPropertiesToggle(a, null, "preferCdm", true, 'P', -1);
     BAMutil.addActionToMenu(subMenu, a);

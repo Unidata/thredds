@@ -35,6 +35,7 @@ package ucar.atd.dorade;
 
 import ucar.nc2.constants.CDM;
 
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Date;
 
@@ -56,6 +57,13 @@ class DoradeSSWB extends DoradeDescriptor {
             this.offset = offset;
             this.size = size;
             this.type = type;
+        }
+
+        private byte[] readTable(RandomAccessFile raf) throws IOException {
+            raf.seek(this.offset);
+            byte[] ret = new byte[this.size];
+            raf.read(ret);
+            return ret;
         }
     }
 
@@ -175,6 +183,8 @@ class DoradeSSWB extends DoradeDescriptor {
         s += "  SSWB version: " + version + "\n";
         s += "  status: " + status + "\n";
         s += "  number of key tables: " + nKeyTables;
+        for(KeyTable k: keyTables)
+          s += "  key table type contained: " + k.type + "\n";
         return s;
     }
 

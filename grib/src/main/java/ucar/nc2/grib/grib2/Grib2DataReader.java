@@ -45,6 +45,7 @@ import java.io.IOException;
  * @see "https://raw.githubusercontent.com/Unidata/gempak/master/extlibs/NDFD/mdlg2dec/unpk_cmplx.f"
  * @see "http://slosh.nws.noaa.gov/svn/degrib/vendor/grib2_unpacker/current/unpksecdif.f"
  * @see "unpk_complex in wgrib2 code"
+ * @deprecated use Grib2DataReader2
  * @author caron
  * @since 4/2/11
  */

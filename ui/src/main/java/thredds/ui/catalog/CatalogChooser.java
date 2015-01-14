@@ -47,6 +47,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
+import java.util.Formatter;
 
 /**
  * A Swing widget for THREDDS clients to access and choose from Dataset Inventory catalogs.
@@ -83,7 +84,6 @@ import java.net.URISyntaxException;
  * use a ThreddsDatasetChooser instead, for a more complete interface.
  *
  * @see ThreddsDatasetChooser
- * @see thredds.catalog.InvDataset
  *
  * @author John Caron
  */
@@ -214,11 +214,13 @@ public class CatalogChooser extends JPanel {
           if (ds instanceof CatalogRef) {
             CatalogRef ref = (CatalogRef) ds;
             String href = ref.getXlinkHref();
-            try {
-              java.net.URI uri = ref.getParentCatalog().resolveUri(href);
-              setCurrentURL(uri.toString());
-            } catch (URISyntaxException ee) {
-              throw new RuntimeException(ee);
+            if (href != null) {
+              try {
+                java.net.URI uri = ref.getParentCatalog().resolveUri(href);
+                setCurrentURL(uri.toString());
+              } catch (URISyntaxException ee) {
+                throw new RuntimeException(ee);
+              }
             }
           }
           else if (ds.getParent() == null) { // top
@@ -465,7 +467,7 @@ public class CatalogChooser extends JPanel {
 
   private void showDatasetInfo(Dataset ds) {
     if (ds == null) return;
-    StringBuilder sbuff = new StringBuilder( 20000);
+    Formatter sbuff = new Formatter();
     DatasetHtmlWriter writer = new DatasetHtmlWriter();
     writer.writeHtmlDescription(sbuff, ds, true, false, datasetEvents, catrefEvents, true);
     if (showHTML) System.out.println("HTML=\n"+sbuff);

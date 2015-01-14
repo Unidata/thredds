@@ -34,16 +34,15 @@
 
 package thredds.tds;
 
-import thredds.catalog.crawl.CatalogCrawler;
-import thredds.catalog.InvDataset;
-import thredds.catalog.InvCatalogRef;
+import thredds.client.catalog.*;
+import thredds.client.catalog.writer.CatalogCrawler;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.constants.FeatureType;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
@@ -52,17 +51,17 @@ import ucar.ma2.Array;
 public class TimeTDSfixed {
   public static final int EPSILON = 20;
 
-  ThreddsDataFactory tdf = new ThreddsDataFactory();
+  DataFactory tdf = new DataFactory();
   long start, count, testTime;
   CancelTaskImpl cancel;
   PrintWriter out;
 
-  TimeTDSfixed(String catUrl, int secs, PrintWriter ps) {
+  TimeTDSfixed(String catUrl, int secs, PrintWriter ps) throws IOException {
     testTime = 1000 * secs;
     this.out = ps;
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener() {
-      public void getDataset(InvDataset dd, Object context) {
+      public void getDataset(Dataset dd, Object context) {
         extractDatasetInfo(dd, out);
         count++;
         long took = System.currentTimeMillis() - start;
@@ -70,10 +69,10 @@ public class TimeTDSfixed {
           cancel.isCancel = true;
         }
       }
-      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
+      public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
       
     };
-    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, listener);
+    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all_direct, null, listener);
 
     cancel = new CancelTaskImpl();
     start = System.currentTimeMillis();
@@ -90,10 +89,10 @@ public class TimeTDSfixed {
   }
 
   // breadth first
-  void extractDatasetInfo(InvDataset dd, PrintWriter out) {
+  void extractDatasetInfo(Dataset dd, PrintWriter out) {
     if (out != null) out.println(" -dataset= " + dd.getName());
 
-    ThreddsDataFactory.Result tdata = null;
+    DataFactory.Result tdata = null;
     try {
       try {
         tdata = tdf.openFeatureDataset(dd, null);
@@ -128,7 +127,7 @@ public class TimeTDSfixed {
     }
   }
 
-  public static void main(String args[]) {
+  public static void main(String args[]) throws IOException {
 
     //new TimeTDSfixed("http://localhost:8080/thredds/catalog.xml", 5, null);
     new TimeTDSfixed("http://motherlode.ucar.edu:8080/thredds/catalog.xml", 90, null);

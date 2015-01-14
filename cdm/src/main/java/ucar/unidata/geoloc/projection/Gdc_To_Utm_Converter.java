@@ -101,7 +101,7 @@ class Gdc_To_Utm_Converter {
 
   private double A;
   private double F; // flattening
-  private double C, Eps2, Eps25, Epps2, CScale = .9996, poly1b, poly2b, poly3b, poly4b, poly5b;
+  private double Eps2, Eps25, Epps2, CScale = .9996, poly1b, poly2b, poly3b, poly4b, poly5b;
   private double axlon0, axlon0_deg;
 
   /**
@@ -154,7 +154,6 @@ class Gdc_To_Utm_Converter {
     double polx2b, polx3b, polx4b, polx5b;
 
     //  Create the ERM constants.
-    C = (A) * (1 - F);
     Eps2 = (F) * (2.0 - F);
     Eps25 = .25 * (Eps2);
     Epps2 = (Eps2) / (1.0 - Eps2);

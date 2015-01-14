@@ -30,22 +30,37 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.client.catalog;
+package thredds.client.catalog.builder;
+
+import thredds.client.catalog.CatalogRef;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.DatasetNode;
 
 /**
- * Describe
+ * client CatalogRef Builder
  *
  * @author caron
- * @since 1/8/2015
+ * @since 1/9/2015
  */
+public class CatalogRefBuilder extends DatasetBuilder {
 
-import net.jcip.annotations.Immutable;
+  String title;
+  String href;
 
-@Immutable
-public class Metadata {
-  public enum Type { NcML }
+  public CatalogRefBuilder(DatasetBuilder parent) {
+    super(parent);
+  }
 
-  Metadata.Type getType() {
-    return Type.NcML;
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setHref(String href) {
+    this.href = href;
+  }
+
+  @Override
+  public Dataset makeDataset(DatasetNode parent) {
+    return new CatalogRef(parent, title, href, flds, accessBuilders, datasetBuilders);
   }
 }

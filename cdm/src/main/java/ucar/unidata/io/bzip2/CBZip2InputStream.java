@@ -158,9 +158,10 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
   public CBZip2InputStream(InputStream zStream, boolean skip) throws IOException {
     if (skip) {
-      char c =  (char) zStream.read();
-      char c2 = (char) zStream.read();
-      //System.out.println(c+""+c2);
+      byte[] bzString = new byte[2];
+      int ret = zStream.read(bzString);
+      if (ret == -1)
+          throw new IOException("End of stream reached skipping bytes");
     }
     setStream(zStream);
   }
@@ -192,8 +193,10 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
     bsSetStream(zStream);
     initialize();
-    initBlock();
-    setupBlock();
+    if (!streamEnd) { // Handle if initialize does not detect valid bz2 stream
+      initBlock();
+      setupBlock();
+    }
   }
 
 
@@ -343,17 +346,15 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   private int bsR(int n) {
     int v;
     while (bsLive < n) {
-      int zzi;
-      char thech = 0;
+      int zzi = 0;
       try {
-        thech = (char) bsStream.read();
+        zzi = bsStream.read();
       } catch (IOException e) {
         compressedStreamEOF();
       }
-      if (thech == -1) {
+      if (zzi == -1) {
         compressedStreamEOF();
       }
-      zzi = thech;
       bsBuff = (bsBuff << 8) | (zzi & 0xff);
       bsLive += 8;
     }
@@ -565,17 +566,15 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         {
           {
             while (bsLive < 1) {
-              int zzi;
-              char thech = 0;
+              int zzi = 0;
               try {
-                thech = (char) bsStream.read();
+                zzi = bsStream.read();
               } catch (IOException e) {
                 compressedStreamEOF();
               }
-              if (thech == -1) {
+              if (zzi == -1) {
                 compressedStreamEOF();
               }
-              zzi = thech;
               bsBuff = (bsBuff << 8) | (zzi & 0xff);
               bsLive += 8;
             }
@@ -620,17 +619,15 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
               {
                 {
                   while (bsLive < 1) {
-                    int zzi;
-                    char thech = 0;
+                    int zzi = 0;
                     try {
-                      thech = (char) bsStream.read();
+                      zzi = bsStream.read();
                     } catch (IOException e) {
                       compressedStreamEOF();
                     }
-                    if (thech == -1) {
+                    if (zzi == -1) {
                       compressedStreamEOF();
                     }
-                    zzi = thech;
                     bsBuff = (bsBuff << 8) | (zzi & 0xff);
                     bsLive += 8;
                   }

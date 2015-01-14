@@ -242,8 +242,6 @@ public class Cosmic1Convention extends CoordSysBuilder {
       Array yLeo = v.read();
       v = ds.findVariable("zLeo");
       Array zLeo = v.read();
-      Array tArray = tVar.read();
-      double pi = 3.1415926;
       double a = 6378.1370;
       double b = 6356.7523142;
       IndexIterator iiter0 = xLeo.getIndexIterator();
@@ -269,7 +267,6 @@ public class Cosmic1Convention extends CoordSysBuilder {
         // cal lat/lon here
         // double [] llh = ECFtoLLA(v_ecf[0]*1000, v_ecf[1]*1000, v_ecf[2]*1000, a,  b);
         double[] llh = xyzell(a, b, v_ecf);
-        double llt = tArray.getDouble(i);
         latData.set(i, (float) llh[0]);
         lonData.set(i, (float) llh[1]);
         altData.set(i, (float) llh[2]);
@@ -375,10 +372,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
   public double[] xyzell(double a, double b, double[] xstat) {
 
 
-    double[] dxell = new double[3];
     double[] xstell = new double[3];
-    double scell;
-    double[] xp = new double[3];
     double e2, s, rlam, zps, h, phi, n, hp, phip;
     int i, niter;
 
@@ -514,9 +508,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
     double gmst = 24110.548410 + 8640184.8128660 * tu
             + 0.093104 * tu * tu - 6.2E-6 * Math.pow(tu, 3);  //       !gmst=Greenwich mean...
     double utco = (ihr * 3600) + (imin * 60) + sec;
-    double theta = togreenw(dsec, utco, gmst);
 
-    return theta;
+    return togreenw(dsec, utco, gmst);
   }
 
   /**
@@ -579,9 +572,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
     // This gmst is without the corrections from the equation of equinoxes.  For
     // GPS/MET applications, the corrections from equation of equinoxes is not
     // necessary because of the accurary needed.
-    double theta = gmst * 2.0 * pi / 86400.0;  //!*** This is the THETA in radian.
-    //
-    return theta;
+    return gmst * 2.0 * pi / 86400.0;  //!*** This is the THETA in radian.
   }
 
 
@@ -650,12 +641,9 @@ public class Cosmic1Convention extends CoordSysBuilder {
       v3[i] = s[i][0] * v1[0] + s[i][1] * v1[1] + s[i][2] * v1[2];
     }
 
-    for (int i = 0; i < 3; i++) {
-      v2[i] = v3[i];
-    }
+    System.arraycopy(v3, 0, v2, 0, 3);
 
     return v2;
-
   }
 
   /**

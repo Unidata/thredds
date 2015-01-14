@@ -33,7 +33,8 @@
 package ucar.nc2.dataset;
 
 import org.apache.http.Header;
-import thredds.catalog.ServiceType;
+import thredds.client.catalog.ServiceType;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.ma2.Array;
@@ -46,7 +47,6 @@ import ucar.nc2.ncml.NcMLGWriter;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.EscapeStrings;
@@ -726,7 +726,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
               buffer_size, cancelTask, spiObject);
     } else if (svctype == ServiceType.THREDDS) {
       Formatter log = new Formatter();
-      ThreddsDataFactory tdf = new ThreddsDataFactory();
+      DataFactory tdf = new DataFactory();
       NetcdfFile ncfile = tdf.openDataset(location, false, cancelTask, log); // LOOK acquire ??
       if (ncfile == null)
         throw new IOException(log.toString());
@@ -792,7 +792,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return ServiceType.DAP4;
     else if (protocol.equals(CdmRemote.PROTOCOL))
       return ServiceType.CdmRemote;
-    else if (protocol.equals(ThreddsDataFactory.PROTOCOL)) //thredds
+    else if (protocol.equals(DataFactory.PROTOCOL)) //thredds
       return ServiceType.THREDDS;
     return null;
   }

@@ -33,8 +33,6 @@
 package thredds.ui.catalog;
 
 import thredds.client.catalog.*;
-import thredds.ui.catalog.CatalogChooser;
-import thredds.ui.catalog.ThreddsDatasetChooser;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.util.IO;
@@ -159,7 +157,7 @@ public class ThreddsUI extends JPanel {
           Dataset ds = (Dataset) e.getNewValue();
           Access access = ds.getAccess(ServiceType.HTTPServer);
           if (access != null) {
-            DataFormatType format = access.getDataFormat();
+            DataFormatType format = access.getDataFormatType();
             if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
               String urlString = access.getWrappedUrlName();
               //System.out.println("got station XML data access = "+urlString);

@@ -36,18 +36,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.CatalogRef;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.ThreddsMetadata;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.writer.CatalogCrawler;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
 import java.util.*;
 
-import thredds.catalog.crawl.CatalogCrawler;
-import thredds.catalog.*;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.httpservices.HTTPSession;
 
@@ -72,8 +76,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private CatalogCrawler.Type type;
   private boolean skipDatasetScan = false;
 
-  private InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-  private ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
+  private DataFactory tdataFactory = new DataFactory();
 
   private PrintWriter out;
   private int countDatasets, countNoAccess, countNoOpen;
@@ -84,7 +87,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
 
   @Before
   public void init() throws IOException {
-      ThreddsDataFactory.setPreferCdm(true);
+      DataFactory.setPreferCdm(true);
       HTTPSession.setGlobalUserAgent("TestMotherlodeDatasets");
   }
 
@@ -98,8 +101,8 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private class FilterDataset implements CatalogCrawler.Filter {
 
     @Override
-    public boolean skipAll(InvDataset ds) {
-      if (skipDatasetScan && (ds instanceof InvCatalogRef) && ds.findProperty("DatasetScan") != null) return true;
+    public boolean skipAll(Dataset ds) {
+      if (skipDatasetScan && (ds instanceof CatalogRef) && ds.findProperty("DatasetScan") != null) return true;
       return false;
     }
   }
@@ -108,16 +111,17 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   public void crawl() throws IOException {
     out.println("Read " + catUrl);
 
-    InvCatalogImpl cat = catFactory.readXML(catUrl);
-    StringBuilder buff = new StringBuilder();
-    boolean isValid = cat.check(buff, false);
+    CatalogBuilder catFactory = new CatalogBuilder();
+    Catalog cat = catFactory.buildFromLocation(catUrl);
+    boolean isValid = !catFactory.hasFatalError();
+
     if (!isValid) {
-      System.out.println("***Catalog invalid= " + catUrl + " validation output=\n" + buff);
-      out.println("***Catalog invalid= " + catUrl + " validation output=\n" + buff);
+      System.out.println("***Catalog invalid= " + catUrl + " validation output=\n" + catFactory.getErrorMessage());
+      out.println("***Catalog invalid= " + catUrl + " validation output=\n" + catFactory.getErrorMessage());
       return;
     }
     out.println("catalog <" + cat.getName() + "> is valid");
-    out.println(" validation output=\n" + buff);
+    out.println(" validation output=\n" + catFactory.getErrorMessage());
 
     countDatasets = 0;
     countNoAccess = 0;
@@ -141,12 +145,12 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   }
 
   @Override
-  public void getDataset(InvDataset ds, Object context) {
+  public void getDataset(Dataset ds, Object context) {
     countDatasets++;
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
     if (gc == null)
-      out.printf("   GeospatialCoverage NULL id = %s%n", ds.getID());
+      out.printf("   GeospatialCoverage NULL id = %s%n", ds.getId());
 
     NetcdfDataset ncd = null;
     try {
@@ -162,7 +166,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
         java.util.List<GridDatatype> grids =  gds.getGrids();
         int n = grids.size();
         if (n == 0)
-          out.printf("  # Grids == 0 id = %s%n", ds.getID());
+          out.printf("  # Grids == 0 id = %s%n", ds.getId());
         else if (verbose)
           out.printf("   %d %s OK%n", n, gds.getLocationURI());
 
@@ -200,10 +204,10 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
 
   }
 
-  private void compareCdm(InvDataset ds, NetcdfDataset dods) {
+  private void compareCdm(Dataset ds, NetcdfDataset dods) {
     NetcdfDataset cdm = null;
     try {
-      ThreddsDataFactory.setPreferCdm(true);
+      DataFactory.setPreferCdm(true);
       Formatter log = new Formatter();
       cdm = tdataFactory.openDataset(ds, false, null, log);
 
@@ -223,7 +227,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
 
       countNoOpen++;
     } finally {
-      ThreddsDataFactory.setPreferCdm(false);
+      DataFactory.setPreferCdm(false);
       if (cdm != null) try {
         cdm.close();
       } catch (IOException e) {
@@ -231,7 +235,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     }
   }
 
-  public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+  public boolean getCatalogRef(CatalogRef dd, Object context) {
     return true;
   }
 

@@ -33,27 +33,25 @@
 package thredds.client.catalog.writer;
 
 import thredds.client.catalog.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDuration;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
+import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Formatter;
 
 /**
- * Describe
+ * Create Html from a dataset
  *
  * @author caron
  * @since 1/8/2015
  */
 public class DatasetHtmlWriter {
-
-  public void writeHtmlDescription(StringBuilder buff, Dataset ds,
-                                   boolean complete, boolean isServer,
-                                   boolean datasetEvents, boolean catrefEvents,
-                                   boolean resolveRelativeUrls) {
-
-  }
 
   /**
    * Write an Html representation of the given dataset.
@@ -62,7 +60,7 @@ public class DatasetHtmlWriter {
    * <p> With datasetEvents, catrefEvents = false, this is used to construct an HTML page on the server.
    * (eg using HtmlPage); the client then detects URL clicks and processes.
    *
-   * @param buff          put HTML here.
+   * @param out          put HTML here.
    * @param ds            the dataset.
    * @param complete      if true, add HTML header and ender so its a complete, valid HTML page.
    * @param isServer      if true, then we are in the thredds data server, so do the following: <ul>
@@ -70,9 +68,9 @@ public class DatasetHtmlWriter {
    *                      </ul>
    * @param datasetEvents if true, prepend "dataset:" to any dataset access URLS
    * @param catrefEvents  if true, prepend "catref:" to any catref URLS
-   *
+   */
 
-  public void writeHtmlDescription(StringBuilder buff, Dataset ds,
+  public void writeHtmlDescription(Formatter out, Dataset ds,
                                    boolean complete, boolean isServer,
                                    boolean datasetEvents, boolean catrefEvents,
                                    boolean resolveRelativeUrls) {
@@ -80,39 +78,39 @@ public class DatasetHtmlWriter {
     if (ds == null) return;
 
     if (complete) {
-      buff.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n")
-              .append("        \"http://www.w3.org/TR/html4/loose.dtd\">\n")
-              .append("<html>\n");
-      buff.append("<head>");
-      buff.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
-      buff.append("</head>");
-      buff.append("<body>\n");
+      out.format("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"%n");
+      out.format("        \"http://www.w3.org/TR/html4/loose.dtd\">%n");
+      out.format("<html>%n");
+      out.format("<head>%n");
+      out.format("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">%n");
+      out.format("</head>%n");
+      out.format("<body>%n");
     }
 
-    buff.append("<h2>Dataset: ").append(ds.getFullName()).append("</h2>\n<ul>\n");
-    if ((ds.getDataFormatType() != null) && (ds.getDataFormatType() != DataFormatType.NONE))
-      buff.append(" <li><em>Data format: </em>").append(StringUtil2.quoteHtmlContent(ds.getDataFormatType().toString())).append("</li>\n");
+    out.format("<h2>Dataset: %s</h2>%n<ul>", ds.getName());
+    if (ds.getDataFormatType() != null)
+      out.format(" <li><em>Data format: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getDataFormatName()));
 
-    if ((ds.getDataSize() != 0.0) && !Double.isNaN(ds.getDataSize()))
-      buff.append(" <li><em>Data size: </em>").append(Format.formatByteSize(ds.getDataSize())).append("</li>\n");
+    if ((ds.getDataSize() > 0))
+      out.format(" <li><em>Data size: </em>%s</li>%n", Format.formatByteSize(ds.getDataSize()));
 
-    if ((ds.getFeatureType() != null) && (ds.getFeatureType() != FeatureType.ANY) && (ds.getFeatureType() != FeatureType.NONE))
-      buff.append(" <li><em>Data type: </em>").append(StringUtil2.quoteHtmlContent(ds.getFeatureType().toString())).append("</li>\n");
+    if (ds.getFeatureType() != null)
+      out.format(" <li><em>Feature type: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getFeatureTypeName()));
 
     if (ds.getCollectionType() != null)
-      buff.append(" <li><em>Collection type: </em>").append(StringUtil2.quoteHtmlContent(ds.getCollectionType())).append("</li>\n");
+      out.format(" <li><em>Collection type: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getCollectionType()));
 
     if (ds.isHarvest())
-      buff.append(" <li><em>Harvest: </em>").append(ds.isHarvest()).append("</li>\n");
+      out.format(" <li><em>Harvest:</em> true</li>%n");
 
     if (ds.getAuthority() != null)
-      buff.append(" <li><em>Naming Authority: </em>").append(StringUtil2.quoteHtmlContent(ds.getAuthority())).append("</li>\n");
+      out.format(" <li><em>Naming Authority: </em>%s</li>%n%n", StringUtil2.quoteHtmlContent(ds.getAuthority()));
 
     if (ds.getId() != null)
-      buff.append(" <li><em>ID: </em>").append(StringUtil2.quoteHtmlContent(ds.getId())).append("</li>\n");
+      out.format(" <li><em>ID: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getId()));
 
-    if (ds.getRestrictAccess() != null)
-      buff.append(" <li><em>RestrictAccess: </em>").append(StringUtil2.quoteHtmlContent(ds.getRestrictAccess())).append("</li>\n");
+    if (ds.getResourceControl() != null)
+      out.format(" <li><em>RestrictAccess: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getResourceControl()));
 
     if (ds instanceof CatalogRef) {
       CatalogRef catref = (CatalogRef) ds;
@@ -120,30 +118,29 @@ public class DatasetHtmlWriter {
               ? resolve(ds, catref.getXlinkHref())
               : catref.getXlinkHref();
       if (catrefEvents) href = "catref:" + href;
-      buff.append(" <li><em>CatalogRef: </em>").append(makeHref(href, null)).append("</li>\n");
+      out.format(" <li><em>CatalogRef: </em>%s</li>%n", makeHref(href, null));
     }
 
-    buff.append("</ul>\n");
+    out.format("</ul>\n");
 
-    java.util.List<InvDocumentation> docs = ds.getDocumentation();
+    java.util.List<Documentation> docs = ds.getDocumentation();
     if (docs.size() > 0) {
-      buff.append("<h3>Documentation:</h3>\n<ul>\n");
-      for (InvDocumentation doc : docs) {
+      out.format("<h3>Documentation:</h3>\n<ul>\n");
+      for (Documentation doc : docs) {
         String type = (doc.getType() == null) ? "" : "<strong>" + StringUtil2.quoteHtmlContent(doc.getType()) + ":</strong> ";
         String inline = doc.getInlineContent();
         if ((inline != null) && (inline.length() > 0))
-          buff.append(" <li>").append(type).append(StringUtil2.quoteHtmlContent(inline)).append("</li>\n");
+          out.format(" <li>%s %s</li>%n", type, StringUtil2.quoteHtmlContent(inline));
         if (doc.hasXlink()) {
-          // buff.append(" <li>" + type + makeHrefResolve(ds, url.toString(), doc.getXlinkTitle()) + "</a>\n");
-          buff.append(" <li>").append(type).append(makeHref(doc.getXlinkHref(), doc.getXlinkTitle())).append("</li>\n");
+          out.format(" <li>%s %s</li>%n", type, makeHref(doc.getXlinkHref(), doc.getXlinkTitle()));
         }
       }
-      buff.append("</ul>\n");
-    }
+      out.format("</ul>\n");
+    }  
 
     java.util.List<Access> access = ds.getAccess();
     if (access.size() > 0) {
-      buff.append("<h3>Access:</h3>\n<ol>\n");
+      out.format("<h3>Access:</h3>\n<ol>\n");
       for (Access a : access) {
         Service s = a.getService();
         String urlString = resolveRelativeUrls || datasetEvents
@@ -164,99 +161,100 @@ public class DatasetHtmlWriter {
             //NGDC update 8/18/2011
           else if (stype == ServiceType.NCML || stype == ServiceType.UDDC || stype == ServiceType.ISO) {
             String catalogUrl = ds.getCatalogUrl();
-            String datasetId = ds.id;
-            if (catalogUrl.indexOf('#') > 0)
-              catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
-            try {
-              catalogUrl = URLEncoder.encode(catalogUrl, "UTF-8");
-              datasetId = URLEncoder.encode(datasetId, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-              e.printStackTrace();
-            }
-            fullUrlString = fullUrlString + "?catalog=" + catalogUrl + "&dataset=" + datasetId;
-          } else if (stype == ServiceType.NetcdfSubset)
-            fullUrlString = fullUrlString + "/dataset.html";
-          else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
-            fullUrlString = fullUrlString + "?req=form";
+            String datasetId = ds.getId();
+            if (catalogUrl != null && datasetId != null) {
+              if (catalogUrl.indexOf('#') > 0)
+                catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
+              try {
+                catalogUrl = URLEncoder.encode(catalogUrl, "UTF-8");
+                datasetId = URLEncoder.encode(datasetId, "UTF-8");
+              } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+              }
+              fullUrlString = fullUrlString + "?catalog=" + catalogUrl + "&dataset=" + datasetId;
+            } else if (stype == ServiceType.NetcdfSubset)
+              fullUrlString = fullUrlString + "/dataset.html";
+            else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
+              fullUrlString = fullUrlString + "?req=form";
+          }
         }
-        buff.append(" <li> <b>").append(StringUtil2.quoteHtmlContent(s.getServiceType().toString()));
-        buff.append(":</b> ").append(makeHref(fullUrlString, urlString)).append("</li>\n");
+        out.format(" <li> <b>%s:</b>%s</li>%n", s.getType().toString(), makeHref(fullUrlString, urlString));
       }
-      buff.append("</ol>\n");
+      out.format("</ol>\n");
     }
 
-    java.util.List<Metadata.Contributor> contributors = ds.getContributors();
+    java.util.List<ThreddsMetadata.Contributor> contributors = ds.getContributors();
     if (contributors.size() > 0) {
-      buff.append("<h3>Contributors:</h3>\n<ul>\n");
-      for (Metadata.Contributor t : contributors) {
+      out.format("<h3>Contributors:</h3>\n<ul>\n");
+      for (ThreddsMetadata.Contributor t : contributors) {
         String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil2.quoteHtmlContent(t.getRole()) + ")</strong> ";
-        buff.append(" <li>").append(StringUtil2.quoteHtmlContent(t.getName())).append(role).append("</li>\n");
+        out.format(" <li>%s %s</li>%n", StringUtil2.quoteHtmlContent(t.getName()), role);
       }
-      buff.append("</ul>\n");
+      out.format("</ul>\n");
     }
 
-    java.util.List<Metadata.Vocab> keywords = ds.getKeywords();
+    java.util.List<ThreddsMetadata.Vocab> keywords = ds.getKeywords();
     if (keywords.size() > 0) {
-      buff.append("<h3>Keywords:</h3>\n<ul>\n");
-      for (Metadata.Vocab t : keywords) {
+      out.format("<h3>Keywords:</h3>\n<ul>\n");
+      for (ThreddsMetadata.Vocab t : keywords) {
         String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
-        buff.append(" <li>").append(StringUtil2.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
+        out.format(" <li>%s %s</li>%n", StringUtil2.quoteHtmlContent(t.getText()), vocab);
       }
-      buff.append("</ul>\n");
+      out.format("</ul>\n");
     }
 
     java.util.List<DateType> dates = ds.getDates();
     if (dates.size() > 0) {
-      buff.append("<h3>Dates:</h3>\n<ul>\n");
+      out.format("<h3>Dates:</h3>\n<ul>\n");
       for (DateType d : dates) {
         String type = (d.getType() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(d.getType()) + ")</strong> ";
-        buff.append(" <li>").append(StringUtil2.quoteHtmlContent(d.getText())).append(type).append("</li>\n");
+        out.format(" <li>%s %s</li>%n", StringUtil2.quoteHtmlContent(d.getText()), type);
       }
-      buff.append("</ul>\n");
+      out.format("</ul>\n");
     }
 
-    java.util.List<Metadata.Vocab> projects = ds.getProjects();
+    java.util.List<ThreddsMetadata.Vocab> projects = ds.getProjects();
     if (projects.size() > 0) {
-      buff.append("<h3>Projects:</h3>\n<ul>\n");
-      for (Metadata.Vocab t : projects) {
+      out.format("<h3>Projects:</h3>\n<ul>\n");
+      for (ThreddsMetadata.Vocab t : projects) {
         String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
-        buff.append(" <li>").append(StringUtil2.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
+        out.format(" <li>%s %s</li>%n", StringUtil2.quoteHtmlContent(t.getText()), vocab);
       }
-      buff.append("</ul>\n");
+      out.format("</ul>\n");
     }
 
-    java.util.List<Metadata.Source> creators = ds.getCreators();
+    java.util.List<ThreddsMetadata.Source> creators = ds.getCreators();
     if (creators.size() > 0) {
-      buff.append("<h3>Creators:</h3>\n<ul>\n");
-      for (Metadata.Source t : creators) {
-        buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
-        buff.append(" <li><em>email: </em>").append(StringUtil2.quoteHtmlContent(t.getEmail())).append("</li>\n");
+      out.format("<h3>Creators:</h3>\n<ul>\n");
+      for (ThreddsMetadata.Source t : creators) {
+        out.format(" <li><strong>%s</strong><ul>%n", StringUtil2.quoteHtmlContent(t.getName()));
+        out.format(" <li><em>email: </em>%s</li>%n", StringUtil2.quoteHtmlContent(t.getEmail()));
         if (t.getUrl() != null) {
           String newUrl = resolveRelativeUrls
                   ? makeHrefResolve(ds, t.getUrl(), null)
                   : makeHref(t.getUrl(), null);
-          buff.append(" <li> <em>").append(newUrl).append("</em></li>\n");
+          out.format(" <li> <em>%s</em></li>%n", newUrl);
         }
-        buff.append(" </ul></li>\n");
+        out.format(" </ul></li>\n");
       }
-      buff.append("</ul>\n");
+      out.format("</ul>\n");
     }
 
-    java.util.List<Metadata.Source> publishers = ds.getPublishers();
+    java.util.List<ThreddsMetadata.Source> publishers = ds.getPublishers();
     if (publishers.size() > 0) {
-      buff.append("<h3>Publishers:</h3>\n<ul>\n");
-      for (Metadata.Source t : publishers) {
-        buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
-        buff.append(" <li><em>email: </em>").append(StringUtil2.quoteHtmlContent(t.getEmail())).append("\n");
+      out.format("<h3>Publishers:</h3>\n<ul>\n");
+      for (ThreddsMetadata.Source t : publishers) {
+        out.format(" <li><strong>%s</strong><ul>%n", StringUtil2.quoteHtmlContent(t.getName()));
+        out.format(" <li><em>email: </em>%s%n", StringUtil2.quoteHtmlContent(t.getEmail()));
         if (t.getUrl() != null) {
           String urlLink = resolveRelativeUrls
                   ? makeHrefResolve(ds, t.getUrl(), null)
                   : makeHref(t.getUrl(), null);
-          buff.append(" <li> <em>").append(urlLink).append("</em>\n");
+          out.format(" <li> <em>%s</em></li>%n", urlLink);
         }
-        buff.append(" </ul>\n");
+        out.format(" </ul>\n");
       }
-      buff.append("</ul>\n");
+      out.format("</ul>\n");
     }
  
      /*
@@ -292,137 +290,135 @@ public class DatasetHtmlWriter {
      </ul>
      </ul>
       */
-     /*
-    java.util.List<Metadata.Variables> vars = ds.getVariables();
+    java.util.List<ThreddsMetadata.VariableGroup> vars = ds.getVariables();
     if (vars.size() > 0) {
-      buff.append("<h3>Variables:</h3>\n<ul>\n");
-      for (Metadata.Variables t : vars) {
+      out.format("<h3>Variables:</h3>\n<ul>\n");
+      for (ThreddsMetadata.VariableGroup t : vars) {
 
-        buff.append("<li><em>Vocabulary</em> [");
+        out.format("<li><em>Vocabulary</em> [");
         if (t.getVocabUri() != null) {
           URI uri = t.getVocabUri();
           String vocabLink = resolveRelativeUrls
                   ? makeHrefResolve(ds, uri.toString(), t.getVocabulary())
                   : makeHref(uri.toString(), t.getVocabulary());
-          buff.append(vocabLink);
+          out.format(vocabLink);
         } else {
-          buff.append(StringUtil2.quoteHtmlContent(t.getVocabulary()));
+          out.format(StringUtil2.quoteHtmlContent(t.getVocabulary()));
         }
-        buff.append("]:\n<ul>\n");
+        out.format("]:\n<ul>\n");
 
-        java.util.List<Metadata.Variable> vlist = t.getVariableList();
+        java.util.List<ThreddsMetadata.Variable> vlist = t.getVariableList();
         if (vlist.size() > 0) {
-          for (Metadata.Variable v : vlist) {
+          for (ThreddsMetadata.Variable v : vlist) {
             String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
-            buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
-            String desc = (v.getDescription() == null) ? "" : " <i>" + StringUtil2.quoteHtmlContent(v.getDescription()) + "</i> = ";
-            buff.append(desc);
+            out.format(" <li><strong>%s</strong> = ", StringUtil2.quoteHtmlContent(v.getName() + units));
+            if (v.getDescription() != null)
+              out.format(" <i>%s</i> = ", StringUtil2.quoteHtmlContent(v.getDescription()));
             if (v.getVocabularyName() != null)
-              buff.append(StringUtil2.quoteHtmlContent(v.getVocabularyName()));
-            buff.append("\n");
+              out.format("%s", StringUtil2.quoteHtmlContent(v.getVocabularyName()));
+            out.format("%n");
           }
         }
-        buff.append("</ul>\n");
+        out.format("</ul>%n");
       }
-      buff.append("</ul>\n");
+      out.format("</ul>%n");
     }
     if (ds.getVariableMapLink() != null) {
-      buff.append("<h3>Variables:</h3>\n");
-      buff.append("<ul><li>" + makeHref(ds.getVariableMapLink(), "VariableMap") + "</li></ul>\n");
+      out.format("<h3>Variables:</h3>\n");
+      out.format("<ul><li>" + makeHref(ds.getVariableMapLink().toString(), "VariableMap") + "</li></ul>\n");
     }
 
-    Metadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
-    if ((gc != null) && !gc.isEmpty()) {
-      buff.append("<h3>GeospatialCoverage:</h3>\n<ul>\n");
+    ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+    if (gc != null) {
+      out.format("<h3>GeospatialCoverage:</h3>\n<ul>\n");
       if (gc.isGlobal())
-        buff.append(" <li><em> Global </em>\n");
+        out.format(" <li><em> Global </em>\n");
 
-      buff.append(" <li><em> Longitude: </em> ").append(rangeString(gc.getEastWestRange())).append("</li>\n");
-      buff.append(" <li><em> Latitude: </em> ").append(rangeString(gc.getNorthSouthRange())).append("</li>\n");
+      out.format(" <li><em> Longitude: </em> %s</li>%n", rangeString(gc.getEastWestRange()));
+      out.format(" <li><em> Latitude: </em> %s</li>%n", rangeString(gc.getNorthSouthRange()));
       if (gc.getUpDownRange() != null) {
-        buff.append(" <li><em> Altitude: </em> ").append(rangeString(gc.getUpDownRange())).append(" (positive is <strong>").append(StringUtil2.quoteHtmlContent(gc.getZPositive())).append(")</strong></li>\n");
+        out.format(" <li><em> Altitude: </em> %s (positive is <strong>%s)</strong></li>%n", rangeString(gc.getUpDownRange()), gc.getZPositive());
       }
 
-      java.util.List<Metadata.Vocab> nlist = gc.getNames();
+      java.util.List<ThreddsMetadata.Vocab> nlist = gc.getNames();
       if ((nlist != null) && (nlist.size() > 0)) {
-        buff.append(" <li><em>  Names: </em> <ul>\n");
-        for (Metadata.Vocab elem : nlist) {
-          buff.append(" <li>").append(StringUtil2.quoteHtmlContent(elem.getText())).append("\n");
+        out.format(" <li><em>  Names: </em> <ul>\n");
+        for (ThreddsMetadata.Vocab elem : nlist) {
+          out.format(" <li>%s</li>%n", StringUtil2.quoteHtmlContent(elem.getText()));
         }
-        buff.append(" </ul>\n");
+        out.format(" </ul>\n");
       }
-      buff.append(" </ul>\n");
+      out.format(" </ul>\n");
     }
 
-    CalendarDateRange tc = ds.getCalendarDateCoverage();
+    DateRange tc = ds.getTimeCoverage();
     if (tc != null) {
-      buff.append("<h3>TimeCoverage:</h3>\n<ul>\n");
-      CalendarDate start = tc.getStart();
+      out.format("<h3>TimeCoverage:</h3>\n<ul>\n");
+      DateType start = tc.getStart();
       if (start != null)
-        buff.append(" <li><em>  Start: </em> ").append(start.toString()).append("\n");
-      CalendarDate end = tc.getEnd();
+        out.format(" <li><em>  Start: </em> %s</li>%n", start.toString());
+      DateType end = tc.getEnd();
       if (end != null) {
-        buff.append(" <li><em>  End: </em> ").append(end.toString()).append("\n");
+        out.format(" <li><em>  End: </em> %s</li>%n", end.toString());
       }
-      CalendarDuration duration = tc.getDuration();
+      TimeDuration duration = tc.getDuration();
       if (duration != null)
-        buff.append(" <li><em>  Duration: </em> ").append(StringUtil2.quoteHtmlContent(duration.toString())).append("\n");
-      CalendarDuration resolution = tc.getResolution();
+        out.format(" <li><em>  Duration: </em> %s</li>%n", StringUtil2.quoteHtmlContent(duration.toString()));
+      TimeDuration resolution = tc.getResolution();
       if (resolution != null) {
-        buff.append(" <li><em>  Resolution: </em> ").append(StringUtil2.quoteHtmlContent(resolution.toString())).append("\n");
+        out.format(" <li><em>  Resolution: </em> %s</li>%n", StringUtil2.quoteHtmlContent(resolution.toString()));
       }
-      buff.append(" </ul>\n");
+      out.format(" </ul>\n");
     }
 
-    java.util.List<InvMetadata> metadata = ds.getMetadata();
+    java.util.List<ThreddsMetadata.MetadataOther> metadata = ds.getMetadataOther();
     boolean gotSomeMetadata = false;
-    for (InvMetadata m : metadata) {
-      if (m.hasXlink()) gotSomeMetadata = true;
+    for (ThreddsMetadata.MetadataOther m : metadata) {
+      if (m.getXlinkHref() != null) gotSomeMetadata = true;
     }
 
     if (gotSomeMetadata) {
-      buff.append("<h3>Metadata:</h3>\n<ul>\n");
-      for (InvMetadata m : metadata) {
-        String type = (m.getMetadataType() == null) ? "" : m.getMetadataType();
-        if (m.hasXlink()) {
-          String title = (m.getXlinkTitle() == null) ? "Type " + type : m.getXlinkTitle();
+      out.format("<h3>Metadata:</h3>%n<ul>%n");
+      for (ThreddsMetadata.MetadataOther m : metadata) {
+        String type = (m.getType() == null) ? "" : m.getType();
+        if (m.getXlinkHref() != null) {
+          String title = (m.getTitle() == null) ? "Type " + type : m.getTitle();
           String mdLink = resolveRelativeUrls
                   ? makeHrefResolve(ds, m.getXlinkHref(), title)
                   : makeHref(m.getXlinkHref(), title);
-          buff.append(" <li> ").append(mdLink).append("\n");
+          out.format(" <li> %s</li>%n", mdLink);
         } //else {
-        //buff.append(" <li> <pre>"+m.getMetadataType()+" "+m.getContentObject()+"</pre>\n");
+        //out.format(" <li> <pre>"+m.getMetadataType()+" "+m.getContentObject()+"</pre>\n");
         //}
       }
-      buff.append("</ul>\n");
+      out.format("</ul>\n");
     }
 
-    java.util.List<InvProperty> propsOrg = ds.getProperties();
-    java.util.List<InvProperty> props = new ArrayList<>(ds.getProperties().size());
-    for (InvProperty p : propsOrg) {
+    java.util.List<Property> propsOrg = ds.getProperties();
+    java.util.List<Property> props = new ArrayList<>(ds.getProperties().size());
+    for (Property p : propsOrg) {
       if (!p.getName().startsWith("viewer"))  // eliminate the viewer properties from the html view
         props.add(p);
     }
     if (props.size() > 0) {
-      buff.append("<h3>Properties:</h3>\n<ul>\n");
-      for (InvProperty p : props) {
-        if (p.getName().equals("attachments")) // LOOK whats this ?
-        {
+      out.format("<h3>Properties:</h3>\n<ul>\n");
+      for (Property p : props) {
+        if (p.getName().equals("attachments")) { // LOOK whats this ?
           String attachLink = resolveRelativeUrls
                   ? makeHrefResolve(ds, p.getValue(), p.getName())
                   : makeHref(p.getValue(), p.getName());
-          buff.append(" <li>").append(attachLink).append("\n");
+          out.format(" <li>%s</li>%n", attachLink);
         } else {
-          buff.append(" <li>").append(StringUtil2.quoteHtmlContent(p.getName() + " = \"" + p.getValue())).append("\"\n");
+          out.format(" <li>%s = \"%s\"</li>%n", StringUtil2.quoteHtmlContent(p.getName()), StringUtil2.quoteHtmlContent(p.getValue()));
         }
       }
-      buff.append("</ul>\n");
+      out.format("</ul>\n");
     }
 
-    if (complete) buff.append("</body></html>");
-  }   */
+    if (complete) out.format("</body></html>");
+  }
 
-  /* private String rangeString(Metadata.Range r) {
+  private String rangeString(ThreddsMetadata.GeospatialRange r) {
     if (r == null) return "";
     String units = (r.getUnits() == null) ? "" : " " + r.getUnits();
     String resolution = r.hasResolution() ? " Resolution=" + r.getResolution() : "";
@@ -435,7 +431,7 @@ public class DatasetHtmlWriter {
    * @param ds   use ds parent catalog, if it exists
    * @param href URL to resolve
    * @return resolved URL
-   *
+   */
   public String resolve(Dataset ds, String href) {
     Catalog cat = ds.getParentCatalog();
     if (cat != null) {
@@ -443,7 +439,7 @@ public class DatasetHtmlWriter {
         java.net.URI uri = cat.resolveUri(href);
         href = uri.toString();
       } catch (java.net.URISyntaxException e) {
-        logger.warn("Dataset.writeHtml: error parsing URL= " + href);
+        return "DatasetHtmlWriter: error parsing URL= "+href;
       }
     }
     return href;
@@ -458,5 +454,5 @@ public class DatasetHtmlWriter {
     if (title == null) title = href;
     href = resolve(ds, href);
     return makeHref(href, title);
-  }  */
+  }
 }

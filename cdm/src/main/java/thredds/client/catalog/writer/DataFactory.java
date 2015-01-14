@@ -30,9 +30,10 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.client.catalog.builder;
+package thredds.client.catalog.writer;
 
 import thredds.client.catalog.*;
+import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
@@ -120,11 +121,11 @@ public class DataFactory {
   public DataFactory.Result openFeatureDataset(String urlString, ucar.nc2.util.CancelTask task) throws IOException {
 
     DataFactory.Result result = new DataFactory.Result();
-    Dataset Dataset = openCatalogFromLocation(urlString, task, result);
-    if (result.fatalError)
+    Dataset dataset = openCatalogFromLocation(urlString, task, result);
+    if (result.fatalError || dataset == null)
       return result;
 
-    return openFeatureDataset(null, Dataset, task, result);
+    return openFeatureDataset(null, dataset, task, result);
   }
 
   /**
@@ -146,7 +147,7 @@ public class DataFactory {
     return openFeatureDataset(wantFeatureType, ds, task, result);
   }
 
-  private Dataset openCatalogFromLocation(String location, ucar.nc2.util.CancelTask task, Result result) {
+  private Dataset openCatalogFromLocation(String location, ucar.nc2.util.CancelTask task, Result result) throws IOException {
     location = location.trim();
     location = StringUtil2.replace(location, '\\', "/");
 
@@ -365,7 +366,7 @@ public class DataFactory {
         System.out.println("ThreddsDataset.openDataset try " + datasetLocation + " " + serviceType);
 
       // deal with RESOLVER type
-      if (serviceType == ServiceType.RESOLVER) {
+      if (serviceType == ServiceType.Resolver) {
         Dataset rds = openResolver(datasetLocation, task, result);
         if (rds == null) return null;
         accessList = new ArrayList<>(rds.getAccess());
@@ -426,7 +427,7 @@ public class DataFactory {
     if (debugOpen) System.out.println("ThreddsDataset.openDataset= " + datasetLocation);
 
     // deal with RESOLVER type
-    if (serviceType == ServiceType.RESOLVER) {
+    if (serviceType == ServiceType.Resolver) {
       Dataset rds = openResolver(datasetLocation, task, result);
       if (rds == null) return null;
       return openDataset(rds, acquire, task, result);
@@ -505,14 +506,14 @@ public class DataFactory {
     if (access == null)
        access = findAccessByServiceType(accessList, ServiceType.DAP4);
     if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.FILE); // should mean that it can be opened through netcdf API
+      access = findAccessByServiceType(accessList, ServiceType.File); // should mean that it can be opened through netcdf API
 
     // look for HTTP with format we can read
     if (access == null) {
       Access tryAccess = findAccessByServiceType(accessList, ServiceType.HTTPServer);
 
       if (tryAccess != null) {
-        DataFormatType format = tryAccess.getDataFormat();
+        DataFormatType format = tryAccess.getDataFormatType();
 
         // these are the file types we can read
         if ((DataFormatType.BUFR == format) || (DataFormatType.GINI == format) || (DataFormatType.GRIB1 == format)
@@ -529,13 +530,13 @@ public class DataFactory {
 
     // RESOLVER
     if (access == null) {
-      access = findAccessByServiceType(accessList, ServiceType.RESOLVER);
+      access = findAccessByServiceType(accessList, ServiceType.Resolver);
     }
 
     return access;
   }
 
-  private Dataset openResolver(String urlString, ucar.nc2.util.CancelTask task, Result result) {
+  private Dataset openResolver(String urlString, ucar.nc2.util.CancelTask task, Result result) throws IOException {
     CatalogBuilder catFactory = new CatalogBuilder();
     Catalog catalog = catFactory.buildFromLocation(urlString);
     if (catalog == null) {
@@ -600,7 +601,7 @@ public class DataFactory {
 
 // look for an access method for an image datatype
 
-  private Access getImageAccess(Dataset ds, ucar.nc2.util.CancelTask task, Result result) {
+  private Access getImageAccess(Dataset ds, ucar.nc2.util.CancelTask task, Result result) throws IOException {
 
     List<Access> accessList = new ArrayList<>(ds.getAccess()); // a list of all the accesses
     while (accessList.size() > 0) {
@@ -661,7 +662,7 @@ public class DataFactory {
 
   private Access findAccessByDataFormatType(List<Access> accessList, DataFormatType type) {
     for (Access a : accessList) {
-      if (type.toString().equalsIgnoreCase(a.getDataFormat().toString()))
+      if (type.toString().equalsIgnoreCase(a.getDataFormatType().toString()))
         return a;
     }
     return null;

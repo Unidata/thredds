@@ -89,6 +89,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
           data_msecs    = bytesToInt(b4, true);
           byte [] b2 =  raf.readBytes(2);
           data_julian_date  = (short)bytesToShort(b2, true);
+          if (data_msecs > 86400000) return false;
           java.util.Date dd =Cinrad2Record.getDate(data_julian_date,data_msecs);
 
           Calendar cal = new GregorianCalendar(new SimpleTimeZone(0, "GMT"));

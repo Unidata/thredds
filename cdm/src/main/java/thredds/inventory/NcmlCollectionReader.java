@@ -38,7 +38,7 @@ import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 
-import thredds.catalog.XMLEntityResolver;
+import thredds.client.catalog.Catalog;
 import ucar.nc2.util.URLnaming;
 
 import java.io.*;
@@ -54,7 +54,6 @@ import java.util.*;
  * @since Feb 24, 2010
  */
 public class NcmlCollectionReader {
-  static public final Namespace ncNS = Namespace.getNamespace("nc", XMLEntityResolver.NJ22_NAMESPACE);
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
 
   private static boolean debugURL = false, debugXML = false, showParsedXML = false;
@@ -91,12 +90,12 @@ public class NcmlCollectionReader {
 
     Element netcdfElem = doc.getRootElement();
     Namespace use = netcdfElem.getNamespace(); // detect incorrect namespace
-    if (!use.equals(ncNS)) {
-      errlog.format("Incorrect namespace specified in NcML= %s must be %s%n", use.getURI(), ncNS.getURI());
+    if (!use.equals(Catalog.ncmlNS)) {
+      errlog.format("Incorrect namespace specified in NcML= %s must be %s%n", use.getURI(), Catalog.ncmlNS.getURI());
       return null;
     }
 
-    Element aggElem = netcdfElem.getChild("aggregation", ncNS);
+    Element aggElem = netcdfElem.getChild("aggregation", Catalog.ncmlNS);
     if (aggElem == null) {
       errlog.format("NcML must have aggregation element");
       return null;
@@ -109,8 +108,8 @@ public class NcmlCollectionReader {
       return null;
     }
 
-    Element scanElem = aggElem.getChild("scan", ncNS);
-    if (scanElem == null) scanElem = aggElem.getChild("scanFmrc", ncNS);
+    Element scanElem = aggElem.getChild("scan", Catalog.ncmlNS);
+    if (scanElem == null) scanElem = aggElem.getChild("scanFmrc", Catalog.ncmlNS);
     if (scanElem == null) {
       errlog.format("NcML must have aggregation scan or scanFmrc element");
       return null;
@@ -126,12 +125,12 @@ public class NcmlCollectionReader {
 
   NcmlCollectionReader(String ncmlLocation, Element netcdfElem) {
 
-    Element aggElem = netcdfElem.getChild("aggregation", ncNS);
+    Element aggElem = netcdfElem.getChild("aggregation", Catalog.ncmlNS);
     String recheck = aggElem.getAttributeValue("recheckEvery");
 
     // get the aggregation/scan element
-    Element scanElem = aggElem.getChild("scan", ncNS);
-    if (scanElem == null) scanElem = aggElem.getChild("scanFmrc", ncNS);
+    Element scanElem = aggElem.getChild("scan", Catalog.ncmlNS);
+    if (scanElem == null) scanElem = aggElem.getChild("scanFmrc", Catalog.ncmlNS);
 
     String dirLocation = scanElem.getAttributeValue("location");
     dirLocation = URLnaming.resolve(ncmlLocation, dirLocation); // possible relative location
@@ -165,11 +164,11 @@ public class NcmlCollectionReader {
   }
 
   private boolean hasMods(Element elem) {
-    if (elem.getChildren("attribute", ncNS).size() > 0) return true;
-    if (elem.getChildren("variable", ncNS).size() > 0) return true;
-    if (elem.getChildren("dimension", ncNS).size() > 0) return true;
-    if (elem.getChildren("group", ncNS).size() > 0) return true;
-    if (elem.getChildren("remove", ncNS).size() > 0) return true;
+    if (elem.getChildren("attribute", Catalog.ncmlNS).size() > 0) return true;
+    if (elem.getChildren("variable", Catalog.ncmlNS).size() > 0) return true;
+    if (elem.getChildren("dimension", Catalog.ncmlNS).size() > 0) return true;
+    if (elem.getChildren("group", Catalog.ncmlNS).size() > 0) return true;
+    if (elem.getChildren("remove", Catalog.ncmlNS).size() > 0) return true;
     return false;
   }
 

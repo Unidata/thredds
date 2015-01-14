@@ -368,6 +368,14 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   } */
 
+    ////////////////////////
+  // experimental
+  protected ChangeChecker changeChecker = null;
+
+  public synchronized void setChangeChecker(ChangeChecker strat) {
+    this.changeChecker = strat;
+  }
+
   @Override
   public synchronized boolean scan(boolean sendEvent) throws IOException {
     if (map == null) {

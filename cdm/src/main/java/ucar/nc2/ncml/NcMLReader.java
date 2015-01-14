@@ -41,7 +41,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
 
-import thredds.catalog.XMLEntityResolver;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
@@ -61,7 +60,7 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  */
 
 public class NcMLReader {
-  static public final Namespace ncNS = Namespace.getNamespace("nc", XMLEntityResolver.NJ22_NAMESPACE);
+  static private final Namespace ncNS = thredds.client.catalog.Catalog.ncmlNS;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
 
   private static boolean debugURL = false, debugXML = false, showParsedXML = false;

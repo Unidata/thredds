@@ -33,44 +33,54 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import thredds.client.catalog.builder.DatasetBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * node in a tree of datasets.
+ * node in a tree of datasets, superclass of Catalog and Dataset
  *
  * @author caron
  * @since 1/8/2015
  */
 @Immutable
 public class DatasetNode {
-  protected final String PARENT = "parent";
-  protected final String NAME = "name";
-  protected final String DATASETS = "datasets";
+  protected final DatasetNode parent;
+  protected final String name;
+  protected final Map<String, Object> flds;     // keep memory small. dont store reference objects for nulls
 
-  protected final Map<String, Object> flds;     // keep memory small. dont have reference objects for nulls
+  protected DatasetNode(DatasetNode parent, String name, Map<String, Object> flds, List<DatasetBuilder> datasetBuilders) {
+    this.parent = parent;
+    this.name = name;
+    this.flds = flds;
 
-  public DatasetNode(DatasetNode parent, String name, List<Dataset> datasets) {
-    flds = new HashMap<>(20);
-    if (parent != null) flds.put(PARENT, parent);
-    if (name != null) flds.put(NAME, name);
-    if (datasets != null) flds.put(DATASETS, datasets);
+    if (datasetBuilders != null && datasetBuilders.size() > 0) {
+      List<Dataset> datasets = new ArrayList<>(datasetBuilders.size());
+      for (DatasetBuilder dsb : datasetBuilders)
+        datasets.add (dsb.makeDataset(this));
+      flds.put(Dataset.Datasets, Collections.unmodifiableList(datasets));
+    }
   }
 
   public DatasetNode getParent() {
-    return (DatasetNode) flds.get(PARENT);
+    return parent;
   }
 
   public String getName() {
-    return (String) flds.get(NAME);
+    return name;
   }
 
   public List<Dataset> getDatasets() {
-    List<Dataset> datasets = (List<Dataset>) flds.get(DATASETS);
+    List<Dataset> datasets = (List<Dataset>) flds.get(Dataset.Datasets);
     return datasets == null ? new ArrayList<Dataset>(0) : datasets;
+  }
+
+  public Dataset findDatasetByName(String name) {
+    for (Dataset ds : getDatasets()) {
+      if (ds.getName().equals(name))
+        return ds;
+    }
+    return null;
   }
 
   public boolean hasNestedDatasets() {
@@ -79,10 +89,14 @@ public class DatasetNode {
   }
 
   public Catalog getParentCatalog() {
-    DatasetNode parent = getParent();
     if (parent == null) return null;
     if (parent instanceof Catalog) return (Catalog) parent;
     return parent.getParentCatalog();
   }
+
+  public Dataset getParentDataset() {
+    if (parent == null) return null;
+    return  (parent instanceof Dataset) ? (Dataset) parent : null;
+ }
 
 }

@@ -33,11 +33,12 @@
 package thredds.tds;
 
 import org.junit.Test;
-import thredds.catalog.*;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.writer.DataFactory;
 import thredds.server.catalog.TestTdsLocal;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.Array;
@@ -53,16 +54,16 @@ public class TestTdsNcml {
 
   @Test
   public void testNcMLinDataset() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open(null);
+    Catalog cat = TestTdsLocal.open(null);
 
-    InvDataset ds = cat.findDatasetByID("ExampleNcMLModified");
+    Dataset ds = cat.findDatasetByID("ExampleNcMLModified");
     assert (ds != null) : "cant find dataset 'ExampleNcMLModified'";
-    assert ds.getDataType() == FeatureType.GRID : ds.getDataType();
+    assert ds.getFeatureType() == FeatureType.GRID : ds.getFeatureType();
 
     // ncml should not be sent to the client
-    assert null == ((InvDatasetImpl)ds).getNcmlElement();
+    // assert null == ds.getNcmlElement();
 
-    ThreddsDataFactory fac = new ThreddsDataFactory();
+    DataFactory fac = new DataFactory();
     Formatter log = new Formatter();
 
     NetcdfDataset ncd = fac.openDataset( ds, false, null, log);
@@ -88,18 +89,18 @@ public class TestTdsNcml {
   }
 
   public void testNcMLinDatasetScan() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open(null);
+    Catalog cat = TestTdsLocal.open(null);
 
-    InvDataset parent = cat.findDatasetByID("ModifyDatasetScan");
+    Dataset parent = cat.findDatasetByID("ModifyDatasetScan");
     assert (parent != null) : "cant find dataset 'ModifyDatasetScan'";
-    InvDataset ds = parent.findDatasetByName("example1.nc");
+    Dataset ds = parent.findDatasetByName("example1.nc");
 
-    assert ds.getDataType() == FeatureType.GRID : ds.getDataType();
+    assert ds.getFeatureType() == FeatureType.GRID : ds.getFeatureType();
 
     // ncml should not be sent to the client
-    assert null == ((InvDatasetImpl)ds).getNcmlElement();
+    //assert null == ds.getNcmlElement();
 
-    ThreddsDataFactory fac = new ThreddsDataFactory();
+    DataFactory fac = new DataFactory();
     Formatter log = new Formatter();
 
     NetcdfDataset ncd = fac.openDataset( ds, false, null, log);

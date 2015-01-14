@@ -1,8 +1,9 @@
 package thredds.server.catalog;
 
 import org.junit.Test;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvDataset;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.FeatureType;
@@ -10,7 +11,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.CompareNetcdf2;
 
 import java.io.IOException;
@@ -27,15 +27,14 @@ public class TestTdsFmrc {
 
   @Test
   public void testFmrc() throws IOException {
-    InvCatalogImpl cat = TestTdsLocal.open(catalog);
+    Catalog cat = TestTdsLocal.open(catalog);
 
-    InvDataset ds = cat.findDatasetByID("testNAMfmrc/NAM_FMRC_best.ncd");
+    Dataset ds = cat.findDatasetByID("testNAMfmrc/NAM_FMRC_best.ncd");
     assert (ds != null) : "cant find dataset 'testNAMfmrc/NAM_FMRC_best.ncd'";
-    assert ds.getDataType() == FeatureType.GRID;
+    assert ds.getFeatureType() == FeatureType.GRID;
 
-    ThreddsDataFactory fac = new ThreddsDataFactory();
-
-    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+    DataFactory fac = new DataFactory();
+    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
 
     assert dataResult != null;
     assert !dataResult.fatalError;

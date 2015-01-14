@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft;
 
+import thredds.client.catalog.writer.DataFactory;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
@@ -46,7 +47,6 @@ import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.grid.GridDatasetStandardFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.ft.swath.SwathDatasetFactory;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.stream.CdmrFeatureDataset;
 
 import java.util.List;
@@ -225,8 +225,8 @@ public class FeatureDatasetFactoryManager {
    */
   static public FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     // special processing for thredds: datasets
-    if (location.startsWith(ThreddsDataFactory.SCHEME)) {
-      ThreddsDataFactory.Result result = new ThreddsDataFactory().openFeatureDataset(wantFeatureType, location, task);
+    if (location.startsWith(DataFactory.SCHEME)) {
+      DataFactory.Result result = new DataFactory().openFeatureDataset(wantFeatureType, location, task);
       errlog.format("%s", result.errLog);
       if (!featureTypeOk(wantFeatureType, result.featureType)) {
         errlog.format("wanted %s but dataset is of type %s%n", wantFeatureType, result.featureType);

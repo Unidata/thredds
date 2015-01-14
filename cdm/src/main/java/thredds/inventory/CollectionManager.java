@@ -150,9 +150,6 @@ public interface CollectionManager extends MCollection, CollectionUpdateListener
     boolean hasntChangedSince(MFile file, long when);
   }
 
-  public void setChangeChecker(ChangeChecker strategy);
-
-
   ///////////////////////////////////////////////////////////
 
   /**

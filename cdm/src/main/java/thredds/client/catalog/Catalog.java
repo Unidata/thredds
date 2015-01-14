@@ -33,72 +33,89 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import org.jdom2.Namespace;
+import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.time.CalendarDate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * <xsd:element name="catalog">
-   <xsd:complexType>
-     <xsd:sequence>
-       <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
-       <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
-       <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
-     </xsd:sequence>
-
-     <xsd:attribute name="name" type="xsd:string" />
-     <xsd:attribute name="expires" type="dateType"/>
-     <xsd:attribute name="version" type="xsd:token" default="1.0.2" />
-   </xsd:complexType>
- </xsd:element>
+ * A Client Catalog
  *
  * @author caron
  * @since 1/7/2015
  */
 @Immutable
 public class Catalog extends DatasetNode {
-  private final String BASEURI = "baseURI";
-  private final String EXPIRES = "expires";
-  private final String VERSION = "version";
-  private final String SERVICES = "services";
-  private final String PROPERTIES = "properties";
+  static public final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
+  static public final Namespace defNS = Namespace.getNamespace(CATALOG_NAMESPACE_10);
+  static public final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
+  static public final Namespace ncmlNS = Namespace.getNamespace("ncml", NJ22_NAMESPACE);
+  static public final String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
+  static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
+  static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
-  public Catalog(URI baseURI, String name, CalendarDate expires, String version, List<Service> services, List<Property> properties, List<Dataset> datasets) {
-    super(null, name, datasets);
-    if (baseURI != null) flds.put(BASEURI, baseURI);
-    if (expires != null) flds.put(EXPIRES, expires);
-    if (version != null) flds.put(VERSION, version);
-    if (services != null) flds.put(SERVICES, services);
-    if (properties != null) flds.put(PROPERTIES, properties);
+  //////////////////////////////////////////////////////////////////////////////////////////
+  private final URI baseURI;
+
+  public Catalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
+    super(null, name, flds, datasets);
+    this.baseURI = baseURI;
+
+    Map<String, Dataset> datasetMap = new HashMap<>();
+    addDatasetsToHash(getDatasets(), datasetMap);
+    if (!datasetMap.isEmpty())
+      flds.put(Dataset.DatasetHash, datasetMap);
   }
 
-  public CalendarDate getExpires() {
-    return (CalendarDate) flds.get(EXPIRES);
+  private void addDatasetsToHash(List<Dataset> datasets, Map<String, Dataset> datasetMap) {
+    if (datasets == null) return;
+    for (Dataset ds : datasets) {
+      String id = ds.getId();
+      if (id != null) datasetMap.put(id, ds);
+      addDatasetsToHash(ds.getDatasets(), datasetMap);
+    }
   }
 
   public URI getBaseURI() {
-    return (URI) flds.get(BASEURI);
+    return baseURI;
+  }
+
+  public CalendarDate getExpires() {
+    return (CalendarDate) flds.get(Dataset.Expires);
   }
 
   public String getVersion() {
-    return (String) flds.get(VERSION);
+    return (String) flds.get(Dataset.Version);
   }
 
   public List<Service> getServices() {
-    List<Service> services = (List<Service>) flds.get(SERVICES);
+    List<Service> services = (List<Service>) flds.get(Dataset.Services);
     return services == null ? new ArrayList<Service>(0) : services;
   }
 
+  public Service findService(String serviceName)  {
+    List<Service> services = (List<Service>) flds.get(Dataset.Services);
+    if (services == null) return null;
+    for (Service s : services) {
+      if (s.getName().equals(serviceName)) return s;
+    }
+    return null;
+  }
+
   public List<Property> getProperties() {
-    List<Property> properties = (List<Property>) flds.get(PROPERTIES);
+    List<Property> properties = (List<Property>) flds.get(Dataset.Properties);
     return properties == null ? new ArrayList<Property>(0) : properties;
   }
 
   public Dataset findDatasetByID( String id) {
-    return null;
+    Map<String, Dataset> datasetMap = (Map<String, Dataset>) flds.get(Dataset.DatasetHash);
+    return datasetMap == null ? null : datasetMap.get(id);
   }
 
   /**
@@ -132,5 +149,11 @@ public class Catalog extends DatasetNode {
     //otherwise let the URI class resolve it
     return baseURI.resolve(want);
   }
+
+  public String getUriString() {
+    URI baseURI = getBaseURI();
+    return baseURI == null ? null : baseURI.toString();
+  }
+
 
 }

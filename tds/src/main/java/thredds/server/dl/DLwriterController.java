@@ -163,7 +163,8 @@ public class DLwriterController {
     if (!catalog.check(sb, false)) {
       res.setContentType(ContentType.html.getContentHeader());
       res.setHeader("Validate", "FAIL");
-      PrintWriter pw = new PrintWriter(res.getOutputStream());
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(
+              res.getOutputStream(), CDM.utf8Charset));
       showValidationMesssage(catURI.toString(), sb.toString(), pw);
       pw.flush();
       return;

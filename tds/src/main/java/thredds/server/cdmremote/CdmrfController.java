@@ -94,17 +94,17 @@ public class CdmrfController {
 
 
 		// absolute path of the dataset endpoint
-		String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();		
+		String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
 		String path = getPathForDataset(req);
 		
 		FeatureDatasetPoint fdp = fdps.findFeatureDatasetPointByPath(req, res, path);
 		String content = CdmrfTextViewFactory.getInstance().getFormViewForDataset(req, res, fdp, absPath, query);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		
-		responseHeaders.setContentLength(content.length());
+
+		responseHeaders.setContentLength(content == null ? 0 : content.length());
 		responseHeaders.setContentType( query.getMediaType() );
 
-		return new ResponseEntity<String>(content,responseHeaders, HttpStatus.OK );
+		return new ResponseEntity<>(content,responseHeaders, HttpStatus.OK );
 
 		/*try {
 	        CdmRemoteQueryBean.RequestType reqType = query.getRequestType();

@@ -33,8 +33,9 @@
 
 package ucar.nc2.ui.widget;
 
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.writer.CatalogXmlWriter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
@@ -208,7 +209,7 @@ public class TextGetPutPane extends TextHistoryPane {
       pm.start(this, "Open URL " + urlString, 10);
     }
 
-    public void setCatalog(String urlString, InvCatalogImpl cat) throws IOException {
+    public void setCatalog(String urlString, Catalog cat) throws IOException {
       // add URL to combobox
       ArrayList list = getList();
       if (!list.contains(urlString))
@@ -217,11 +218,11 @@ public class TextGetPutPane extends TextHistoryPane {
 
       // write catalog to text
       ByteArrayOutputStream os = new ByteArrayOutputStream(20000);
-      cat.writeXML(os, true);
+      CatalogXmlWriter writer = new CatalogXmlWriter();
+      writer.writeXML(cat, os, false);
       ta.setText(os.toString(CDM.UTF8));
     }
 
-    private InvCatalogFactory catFactory = null;
    //private DqcFactory dqcFactory = null;
     void validate(String urlString) {
       if (urlString == null) return;
@@ -239,27 +240,19 @@ public class TextGetPutPane extends TextHistoryPane {
 
       ByteArrayInputStream is = new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset));
 
-      //if (isCatalog) {
-        if (catFactory == null) catFactory = InvCatalogFactory.getDefaultFactory(true);
-        InvCatalogImpl catalog = catFactory.readXML(is, uri);
-        StringBuilder buff = new StringBuilder();
-        boolean check = catalog.check(buff);
-        javax.swing.JOptionPane.showMessageDialog(this,
-           "Catalog Validation = " + check + "\n" +  buff.toString());
+      try {
+        CatalogBuilder catFactory = new CatalogBuilder();
+        Catalog cat = catFactory.buildFromLocation(urlString);
+        boolean isValid = !catFactory.hasFatalError();
 
-      /* }  else {
-        try {
-          if (dqcFactory == null)
-            dqcFactory = new DqcFactory(true);
-          QueryCapability dqc = dqcFactory.readXML(is, uri);
-          javax.swing.JOptionPane.showMessageDialog(this,
-             "DQC Errors = \n" +dqc.getErrorMessages());
-        }
-        catch (IOException ioe) {
-          javax.swing.JOptionPane.showMessageDialog(this,
-             "IO Error = " +ioe);
-        }
-      } */
+       javax.swing.JOptionPane.showMessageDialog(this,
+          "Catalog Validation = " + isValid + "\n" +  catFactory.getErrorMessage());
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+
     }
 
     void putURL(String uriString) throws IOException {

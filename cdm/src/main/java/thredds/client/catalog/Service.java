@@ -37,20 +37,7 @@ import net.jcip.annotations.Immutable;
 import java.util.List;
 
 /**
- * <xsd:element name="service">
-  <xsd:complexType>
-   <xsd:sequence>
-     <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
-     <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" />
-   </xsd:sequence>
-
-   <xsd:attribute name="name" type="xsd:string" use="required" />
-   <xsd:attribute name="base" type="xsd:string" use="required" />
-   <xsd:attribute name="serviceType" type="serviceTypes" use="required" />
-   <xsd:attribute name="desc" type="xsd:string"/>
-   <xsd:attribute name="suffix" type="xsd:string" />
-  </xsd:complexType>
- </xsd:element>
+ *  Client catalog service
  *
  * @author caron
  * @since 1/7/2015
@@ -92,7 +79,7 @@ public class Service {            // (7)
   }
 
   public String getSuffix() {
-    return suffix;
+    return suffix == null ? "" : suffix;
   }
 
   public List<Service> getNestedServices() {

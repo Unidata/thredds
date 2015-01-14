@@ -30,26 +30,19 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.client.catalog.builder;
-
-import thredds.client.catalog.Property;
-import thredds.client.catalog.Service;
-import thredds.client.catalog.ServiceType;
+package thredds.client.catalog;
 
 import java.util.List;
 
 /**
- * Describe
+ * Container of ThreddsMetadata: Dataset or ThreddsMetadata
  *
  * @author caron
- * @since 1/7/2015
+ * @since 1/11/2015
  */
-public class ServiceBuilder {
-  public String name;
-  public String base;
-  public ServiceType type;
-  public String desc;
-  public String suffix;
-  public List<Service> nestedServices;
-  public List<Property> properties;
+public interface ThreddsMetadataContainer {
+
+  public Object getLocalField(String fldName);
+  public List getLocalFieldAsList(String fldName);
+
 }

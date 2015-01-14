@@ -75,7 +75,7 @@ public class CrawlableCatalog implements CrawlableDataset {
     this.configObj = configObj;
     if (configObj instanceof Element) {
       Element configElement = (Element) configObj;
-      Element serviceElement = configElement.getChild("serviceType", NcMLReader.ncNS);
+      Element serviceElement = configElement.getChild("serviceType", XMLEntityResolver.ncmlNS);
       if (null != serviceElement) {
         String service = serviceElement.getTextTrim();
         serviceType = ServiceType.getType(service);

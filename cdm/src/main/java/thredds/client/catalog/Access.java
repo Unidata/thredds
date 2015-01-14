@@ -33,23 +33,14 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
-import thredds.catalog.*;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.stream.CdmRemote;
 
 import java.net.URI;
 
 /**
- * <xsd:element name="access">
-   <xsd:complexType>
-     <xsd:sequence>
-       <xsd:element ref="dataSize" minOccurs="0"/>
-     </xsd:sequence>
-     <xsd:attribute name="urlPath" type="xsd:token" use="required"/>
-     <xsd:attribute name="serviceName" type="xsd:string"/>
-     <xsd:attribute name="dataFormat" type="dataFormatTypes"/>
-   </xsd:complexType>
- </xsd:element >
+ *  A Dataset Access element
  *
  * @author caron
  * @since 1/7/2015
@@ -59,14 +50,14 @@ public class Access {                 // (5)
   private final Dataset dataset;
   private final String urlPath;
   private final Service service;
-  private final DataFormatType dataFormat;
+  private final String dataFormatS;
   private final long dataSize;
 
-  public Access(Dataset dataset, String urlPath, Service service, DataFormatType dataFormat, long dataSize) {
+  public Access(Dataset dataset, String urlPath, Service service, String dataFormatS, long dataSize) {
     this.dataset = dataset;
     this.urlPath = urlPath;
     this.service = service;
-    this.dataFormat = dataFormat;
+    this.dataFormatS = dataFormatS;
     this.dataSize = dataSize;
   }
 
@@ -82,13 +73,21 @@ public class Access {                 // (5)
     return service;
   }
 
-  public DataFormatType getDataFormat() {
-    return dataFormat;
+  public DataFormatType getDataFormatType() {
+    try {
+      return DataFormatType.valueOf(dataFormatS);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public String getDataFormatName() {
+    return dataFormatS;
   }
 
   public long getDataSize() {
     return dataSize;
-  }
+  }                   // optional
 
   /**
    * Get the standard URL, with resolution if the URL is reletive.
@@ -113,7 +112,6 @@ public class Access {                 // (5)
       Catalog cat = dataset.getParentCatalog();
       if (cat == null)
         return new URI(getUnresolvedUrlName());
-
       return cat.resolveUri(getUnresolvedUrlName());
 
     } catch (java.net.URISyntaxException e) {
@@ -135,7 +133,7 @@ public class Access {                 // (5)
     if (uri == null) return null;
 
     if (service.getType() == ServiceType.THREDDS)
-      return ucar.nc2.thredds.ThreddsDataFactory.SCHEME + uri;
+      return DataFactory.SCHEME + uri;
     if (service.getType() == ServiceType.CdmRemote)
       return CdmRemote.SCHEME + uri;
     return uri.toString();

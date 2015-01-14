@@ -37,6 +37,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
+import thredds.client.catalog.Catalog;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
@@ -110,7 +111,7 @@ public class Grib1ParamTableReader {
    */
   public Grib1ParamTableReader(org.jdom2.Element paramTableElem) throws IOException {
     this.name = paramTableElem.getChildText("title");
-    DssParser p = new DssParser(NcMLReader.ncNS);
+    DssParser p = new DssParser(Catalog.ncmlNS);
     this.parameters = p.parseXml(paramTableElem);
   }
 

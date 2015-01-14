@@ -46,7 +46,6 @@ import org.jdom2.output.Format;
 import java.io.*;
 import java.util.*;
 
-import thredds.catalog.XMLEntityResolver;
 import ucar.unidata.util.Parameter;
 
 /**
@@ -58,7 +57,6 @@ import ucar.unidata.util.Parameter;
  */
 
 public class NcMLGWriter {
-  protected static final Namespace ncNS = Namespace.getNamespace("http://www.ucar.edu/schemas/netcdf");
   protected static final String schemaLocation = "http://www.unidata.ucar.edu/schemas/netcdf-cs.xsd";
 
   /**
@@ -80,13 +78,13 @@ public class NcMLGWriter {
   }
 
   Document makeDocument(NetcdfDataset ncd, boolean showCoords, String uri) {
-    Element rootElem = new Element("netcdf", ncNS);
+    Element rootElem = new Element("netcdf", thredds.client.catalog.Catalog.ncmlNS);
     Document doc = new Document(rootElem);
 
       // namespaces
-    rootElem.addNamespaceDeclaration(ncNS);
-    rootElem.addNamespaceDeclaration(XMLEntityResolver.xsiNS);
-    rootElem.setAttribute("schemaLocation", ncNS.getURI()+" "+schemaLocation, XMLEntityResolver.xsiNS);
+    rootElem.addNamespaceDeclaration(thredds.client.catalog.Catalog.ncmlNS);
+    rootElem.addNamespaceDeclaration(thredds.client.catalog.Catalog.xsiNS);
+    rootElem.setAttribute("schemaLocation", thredds.client.catalog.Catalog.ncmlNS.getURI()+" "+schemaLocation, thredds.client.catalog.Catalog.xsiNS);
 
     if (null != ncd.getId())
       rootElem.setAttribute("id", ncd.getId());
@@ -208,7 +206,7 @@ public class NcMLGWriter {
   }
 
   private Element makeAttribute( ucar.nc2.Attribute att, String elementName) {
-    Element attElem = new Element(elementName, ncNS);
+    Element attElem = new Element(elementName, thredds.client.catalog.Catalog.ncmlNS);
     attElem.setAttribute("name", att.getShortName());
 
     DataType dt = att.getDataType();
@@ -237,7 +235,7 @@ public class NcMLGWriter {
   }
 
   private Element makeAttribute( ucar.unidata.util.Parameter att, String elementName) {
-    Element attElem = new Element(elementName, ncNS);
+    Element attElem = new Element(elementName, thredds.client.catalog.Catalog.ncmlNS);
     attElem.setAttribute("name", att.getName());
 
     if (att.isString()) {
@@ -264,7 +262,7 @@ public class NcMLGWriter {
 
   private Element makeCoordinateAxis( CoordinateAxis var, boolean showCoords) {
 
-    Element varElem = new Element("coordinateAxis", ncNS);
+    Element varElem = new Element("coordinateAxis", thredds.client.catalog.Catalog.ncmlNS);
     varElem.setAttribute("name", var.getFullName());
 
     StringBuffer buff = new StringBuffer();
@@ -317,11 +315,11 @@ public class NcMLGWriter {
   }
 
   private Element makeCoordSys( CoordinateSystem cs) {
-    Element csElem = new Element("coordinateSystem", ncNS);
+    Element csElem = new Element("coordinateSystem", thredds.client.catalog.Catalog.ncmlNS);
     csElem.setAttribute("name", cs.getName());
 
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
-      Element axisElem = new Element("coordinateAxisRef", ncNS);
+      Element axisElem = new Element("coordinateAxisRef", thredds.client.catalog.Catalog.ncmlNS);
       axisElem.setAttribute("ref", axis.getFullName());
       csElem.addContent(axisElem);
     }
@@ -330,7 +328,7 @@ public class NcMLGWriter {
     if (transforms != null)
       for (CoordinateTransform ct : transforms) {
         if (ct == null) continue;
-        Element tElem = new Element("coordinateTransformRef", ncNS);
+        Element tElem = new Element("coordinateTransformRef", thredds.client.catalog.Catalog.ncmlNS);
         tElem.setAttribute("ref", ct.getName());
         csElem.addContent(tElem);
       }
@@ -338,7 +336,7 @@ public class NcMLGWriter {
   }
 
   private Element makeCoordTransform( CoordinateTransform coordTransform) {
-    Element elem = new Element("coordinateTransform", ncNS);
+    Element elem = new Element("coordinateTransform", thredds.client.catalog.Catalog.ncmlNS);
     elem.setAttribute("name", coordTransform.getName());
     elem.setAttribute("authority", coordTransform.getAuthority());
     if (coordTransform.getTransformType() != null)
@@ -352,7 +350,7 @@ public class NcMLGWriter {
   }
 
   private Element makeDim( Dimension dim) {
-    Element dimElem = new Element("dimension", ncNS);
+    Element dimElem = new Element("dimension", thredds.client.catalog.Catalog.ncmlNS);
     dimElem.setAttribute("name", dim.getShortName());
     dimElem.setAttribute("length", Integer.toString(dim.getLength()));
     if (dim.isUnlimited())
@@ -361,7 +359,7 @@ public class NcMLGWriter {
   }
 
   /* private Element makeReferenceSys( ReferenceSystem referenceSystem) {
-    Element elem = new Element("referenceCoordinateSystem", ncNS);
+    Element elem = new Element("referenceCoordinateSystem", thredds.client.catalog.Catalog.ncmlNS);
     elem.setAttribute("name", referenceSystem.getName());
     elem.setAttribute("authority", referenceSystem.getAuthority());
     if (referenceSystem.getReferenceType() != null)
@@ -377,7 +375,7 @@ public class NcMLGWriter {
 
   private Element makeVariable( VariableDS var) {
 
-    Element varElem = new Element("variable", ncNS);
+    Element varElem = new Element("variable", thredds.client.catalog.Catalog.ncmlNS);
 
     varElem.setAttribute("name", var.getFullName());
 
@@ -419,7 +417,7 @@ public class NcMLGWriter {
   }
 
   private Element makeValues( VariableDS v) {
-    Element elem = new Element("values", ncNS);
+    Element elem = new Element("values", thredds.client.catalog.Catalog.ncmlNS);
 
     StringBuffer buff = new StringBuffer();
     Array a;

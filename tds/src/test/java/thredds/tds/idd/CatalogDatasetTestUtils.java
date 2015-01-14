@@ -32,17 +32,16 @@
 
 package thredds.tds.idd;
 
+import thredds.client.catalog.Access;
+import thredds.client.catalog.CatalogRef;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.writer.CatalogCrawler;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.util.*;
 import java.io.*;
-
-import thredds.catalog.crawl.CatalogCrawler;
-import thredds.catalog.InvDataset;
-import thredds.catalog.InvCatalogRef;
-import thredds.catalog.InvAccess;
 
 import static org.junit.Assert.*;
 
@@ -56,13 +55,12 @@ public class CatalogDatasetTestUtils
 {
     private CatalogDatasetTestUtils() {}
 
-    private static ThreddsDataFactory threddsDataFactory = new ThreddsDataFactory();
+    private static DataFactory threddsDataFactory = new DataFactory();
 
 
     public static List<String> getRandomAccessibleDatasetUrlFromEachCollectionInCatalogListTree(
-            List<String> catalogUrls, StringBuilder log, boolean verbose )
-    {
-        List<String> datasetUrls = new ArrayList<String>();
+            List<String> catalogUrls, StringBuilder log, boolean verbose ) throws IOException {
+        List<String> datasetUrls = new ArrayList<>();
         for ( String currentCatalogUrl : catalogUrls )
         {
             List<String> datasetList = CatalogDatasetTestUtils
@@ -74,8 +72,7 @@ public class CatalogDatasetTestUtils
     }
 
     public static List<String> getRandomAccessibleDatasetUrlFromEachCollectionInCatalogTree(
-            String catalogUrl, StringBuilder log, boolean verbose )
-    {
+            String catalogUrl, StringBuilder log, boolean verbose ) throws IOException {
         if ( verbose ) System.out.println( "Crawling catalog: " + catalogUrl );
 
         ByteArrayOutputStream statusMsg = new ByteArrayOutputStream();
@@ -85,16 +82,16 @@ public class CatalogDatasetTestUtils
 
         CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
         {
-            public void getDataset( InvDataset ds, Object context ) {
-                InvAccess bestAccess = threddsDataFactory.chooseDatasetAccess( ds.getAccess() );
+            public void getDataset( Dataset ds, Object context ) {
+                Access bestAccess = threddsDataFactory.chooseDatasetAccess( ds.getAccess() );
                 accessibleDatasetUrls.add( bestAccess.getStandardUrlName() );
             }
 
-            public boolean getCatalogRef( InvCatalogRef dd, Object context ) {
+            public boolean getCatalogRef( CatalogRef dd, Object context ) {
                 return true;
             }
         };
-        CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST, false, listener );
+        CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct_middle, null, listener );
 
         int numDs = crawler.crawl( catalogUrl, null, psStatusMsg, null );
         psStatusMsg.close();

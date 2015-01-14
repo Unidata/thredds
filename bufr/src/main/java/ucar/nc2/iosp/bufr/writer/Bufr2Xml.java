@@ -66,11 +66,8 @@ public class Bufr2Xml {
   // private Formatter out = new Formatter(System.out);
   private XMLStreamWriter staxWriter;
   private Indent indent;
-  private boolean skipMissing;
 
   public Bufr2Xml(Message message, NetcdfFile ncfile, OutputStream os, boolean skipMissing) throws IOException {
-    this.skipMissing = skipMissing;
-
     indent = new Indent(2);
     indent.setIndentLevel(0);
 

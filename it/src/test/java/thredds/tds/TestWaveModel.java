@@ -1,8 +1,9 @@
 package thredds.tds;
 
 import junit.framework.TestCase;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvDataset;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.writer.DataFactory;
 import thredds.server.catalog.TestTdsLocal;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -14,7 +15,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
@@ -38,15 +38,15 @@ public class TestWaveModel extends TestCase {
 
   public void testNcml() throws IOException, InvalidRangeException {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/catalog.xml";
-    InvCatalogImpl cat = TestTdsLocal.open(catalog);
+    Catalog cat = TestTdsLocal.open(catalog);
 
-    InvDataset ds = cat.findDatasetByID("swan_oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd");
+    Dataset ds = cat.findDatasetByID("swan_oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd");
     assert (ds != null) : "cant find dataset 'swan_oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd'";
-    assert ds.getDataType() == FeatureType.GRID;
+    assert ds.getFeatureType() == FeatureType.GRID;
 
-    ThreddsDataFactory fac = new ThreddsDataFactory();
+    DataFactory fac = new DataFactory();
 
-    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
 
     assert dataResult != null;
     assert !dataResult.fatalError;
@@ -69,11 +69,11 @@ public class TestWaveModel extends TestCase {
 
   public void testOffset() throws IOException, InvalidRangeException, ParseException {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/offset/catalog.xml";
-    InvCatalogImpl cat = TestTdsLocal.open(catalog);
+    Catalog cat = TestTdsLocal.open(catalog);
 
-    InvDataset ds = cat.findDatasetByID("swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr");
+    Dataset ds = cat.findDatasetByID("swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr");
     assert (ds != null) : "cant find dataset 'swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr'";
-    assert ds.getDataType() == FeatureType.GRID;
+    assert ds.getFeatureType() == FeatureType.GRID;
 
     DateFormatter df = new DateFormatter();
     DateRange dr = ds.getTimeCoverage();
@@ -82,9 +82,9 @@ public class TestWaveModel extends TestCase {
     assert dr.getEnd().getDate().equals( df.getISODate("2011-07-13T21:00:00Z")) : df.toDateTimeStringISO(dr.getEnd().getDate());
     assert dr.getDuration().equals(new TimeDuration("24 hours")) : dr.getDuration();
 
-    ThreddsDataFactory fac = new ThreddsDataFactory();
+    DataFactory fac = new DataFactory();
 
-    ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
 
     assert dataResult != null;
     assert !dataResult.fatalError;

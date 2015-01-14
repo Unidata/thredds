@@ -39,27 +39,40 @@ package thredds.client.catalog;
  * @since 1/7/2015
  */
 public enum ServiceType {
-  ADDE,
-  CATALOG,
-  CdmRemote,
-  CdmrFeature,
-  DAP4,
-  DODS,
-  FILE,
-  FTP,
-  GRIDFTP,
-  HTTPServer,
-  ISO,
-  LAS,
-  NCML,
-  NetcdfSubset,
-  OPENDAP,
-  OPENDAPG,
-  RESOLVER,
-  THREDDS,
-  UDDC,
-  WCS,
-  WFS,
-  WMS,
+  ADDE,           //
+  Catalog,       //
+  CdmRemote,     //
+  CdmrFeature,   //
+  Compound,      //
+  DAP4,          //
+  DODS,          //
+  File,         //
+  FTP,          //
+  GRIDFTP,     //
+  H5Service,    //
+  HTTPServer,    //
+  ISO,           //
+  LAS,           //
+  NcJSON,          //
+  NCML,          //
+  NetcdfSubset,   //
+  OPENDAP,        //
+  OPENDAPG,       //
+  Resolver,      //
+  THREDDS,       //
+  UDDC,         //
+  WebForm,      //
+  WCS,          //
+  WFS,          //
+  WMS,          //
+  WSDL,         //
   ;
+
+  // ignore case
+  static public ServiceType getServiceTypeIgnoreCase(String typeS) {
+    for (ServiceType s : values()) {
+      if (s.toString().equalsIgnoreCase(typeS)) return s;
+    }
+    return null;
+  }
 }

@@ -39,12 +39,13 @@ import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import thredds.catalog.*;
-import thredds.catalog.crawl.CatalogCrawler;
+import thredds.client.catalog.*;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.writer.CatalogCrawler;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.units.DateType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VerticalCT;
@@ -52,7 +53,6 @@ import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
@@ -273,13 +273,12 @@ public class TestAll extends TestCase
     File f = new File( "z:/tmp/catalog.xml");
     URI uri = f.toURI();
     StringBuilder log = new StringBuilder();
-    InvCatalogImpl cat = TestAll.openAndValidateCatalog( uri.toString(), log, true );
+    Catalog cat = TestAll.openAndValidateCatalog( uri.toString(), log, true );
     int i = 1;
     i++;
   }
-  public static InvCatalogImpl openAndValidateCatalog( String catUrl, StringBuilder log, boolean logToStdOut )
+  public static Catalog openAndValidateCatalog( String catUrl, StringBuilder log, boolean logToStdOut )
   {
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
     StringBuilder validationMsg = new StringBuilder();
     StringBuilder tmpMsg = new StringBuilder();
     String curSysTimeAsString = null;
@@ -287,8 +286,10 @@ public class TestAll extends TestCase
     {
       curSysTimeAsString = CalendarDateFormatter.toDateTimeStringISO(CalendarDate.present()); // DateUtil.getCurrentSystemTimeAsISO8601();
 
-      InvCatalogImpl cat = catFactory.readXML( catUrl );
-      boolean isValid = cat.check( validationMsg, false );
+     CatalogBuilder catFactory = new CatalogBuilder();
+     Catalog cat = catFactory.buildFromLocation(catUrl);
+     boolean isValid = !catFactory.hasFatalError();
+ 
       if ( !isValid )
       {
         tmpMsg.append( "Invalid catalog <" ).append( catUrl ).append( ">." ).append( validationMsg.length() > 0 ? " Validation messages:\n" + validationMsg.toString() : "" );
@@ -315,19 +316,19 @@ public class TestAll extends TestCase
 
   public static boolean openAndValidateCatalogTree( String catUrl, StringBuilder log, boolean onlyRelativeUrls )
   {
-    InvCatalogImpl cat = openAndValidateCatalog( catUrl, log, true );
+    Catalog cat = openAndValidateCatalog( catUrl, log, true );
     if ( cat == null )
       return false;
 
     boolean ok = true;
-    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), log, onlyRelativeUrls );
-    for ( InvCatalogRef catRef : catRefList )
+    List<CatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), log, onlyRelativeUrls );
+    for ( CatalogRef catRef : catRefList )
     {
       if ( onlyRelativeUrls )
       {
         URI uri = null;
-        String href = ( (InvCatalogRef) catRef ).getXlinkHref();
-        String title = ( (InvCatalogRef) catRef ).getName();
+        String href = ( (CatalogRef) catRef ).getXlinkHref();
+        String title = ( (CatalogRef) catRef ).getName();
         try
         {
           uri = new URI( href );
@@ -350,36 +351,36 @@ public class TestAll extends TestCase
 
   public static boolean openAndValidateCatalogOneLevelDeep( String catUrl, StringBuilder log, boolean onlyRelativeUrls )
   {
-    InvCatalogImpl cat = openAndValidateCatalog( catUrl, log, true );
+    Catalog cat = openAndValidateCatalog( catUrl, log, true );
     if ( cat == null )
       return false;
 
     boolean ok = true;
-    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), log, onlyRelativeUrls );
-    for ( InvCatalogRef catRef : catRefList )
+    List<CatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), log, onlyRelativeUrls );
+    for ( CatalogRef catRef : catRefList )
     {
-      InvCatalogImpl cat2 = openAndValidateCatalog( catRef.getURI().toString(), log, true );
+      Catalog cat2 = openAndValidateCatalog( catRef.getURI().toString(), log, true );
       ok &= cat2 != null;
     }
 
     return ok;
   }
 
-  public static InvCatalogImpl openValidateAndCheckExpires( String catalogUrl, StringBuilder log )
+  public static Catalog openValidateAndCheckExpires( String catalogUrl, StringBuilder log )
   {
-    InvCatalogImpl catalog = openAndValidateCatalog( catalogUrl, log, false );
+    Catalog catalog = openAndValidateCatalog( catalogUrl, log, false );
     if ( catalog == null )
     {
       return null;
     }
 
     // Check if the catalog has expired.
-    DateType expiresDateType = catalog.getExpires();
-    if ( expiresDateType != null )
+    CalendarDate expires = catalog.getExpires();
+    if ( expires != null )
     {
-      if ( expiresDateType.getDate().getTime() < System.currentTimeMillis() )
+      if ( expires.getMillis() < System.currentTimeMillis() )
       {
-        log.append( log.length() > 0 ? "\n" : "" ).append( "Expired catalog <" ).append( catalogUrl ).append( ">: " ).append( expiresDateType.toDateTimeStringISO() ).append( "." );
+        log.append( log.length() > 0 ? "\n" : "" ).append( "Expired catalog <" ).append( catalogUrl ).append( ">: " ).append( expires ).append( "." );
         return null;
       }
     }
@@ -387,21 +388,20 @@ public class TestAll extends TestCase
     return catalog;
   }
 
-  public static void openValidateAndCheckAllLatestModelsInCatalogTree( String catalogUrl )
-  {
+  public static void openValidateAndCheckAllLatestModelsInCatalogTree( String catalogUrl ) throws IOException {
     final Map<String, String> failureMsgs = new HashMap<String, String>();
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
     {
-      public void getDataset( InvDataset ds, Object context )
+      public void getDataset( Dataset ds, Object context )
       {
-        if ( ds.hasAccess() && ds.getAccess( ServiceType.RESOLVER ) != null )
+        if ( ds.hasAccess() && ds.getAccess( ServiceType.Resolver ) != null )
           checkLatestModelResolverDs( ds, failureMsgs );
       }
-      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
+      public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
 
     };
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, listener );
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, null, listener );
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
@@ -425,13 +425,13 @@ public class TestAll extends TestCase
     }
   }
 
-  private static boolean checkLatestModelResolverDs( InvDataset ds, Map<String, String> failureMsgs )
+  private static boolean checkLatestModelResolverDs( Dataset ds, Map<String, String> failureMsgs )
   {
     // Resolve the resolver dataset.
-    InvAccess curAccess = ds.getAccess( ServiceType.RESOLVER );
+    Access curAccess = ds.getAccess( ServiceType.Resolver );
     String curResDsPath = curAccess.getStandardUri().toString();
     StringBuilder buf = new StringBuilder();
-    InvCatalogImpl curResolvedCat = openAndValidateCatalog( curResDsPath, buf, false );
+    Catalog curResolvedCat = openAndValidateCatalog( curResDsPath, buf, false );
     if ( curResolvedCat == null )
     {
       failureMsgs.put( curResDsPath, "Failed to open and validate resolver catalog: " + buf.toString() );
@@ -446,8 +446,8 @@ public class TestAll extends TestCase
     }
 
     // Open the actual (OPeNDAP) dataset.
-    InvDatasetImpl curResolvedDs = (InvDatasetImpl) curDatasets.get( 0 );
-    InvAccess curResolvedDsAccess = curResolvedDs.getAccess( ServiceType.OPENDAP );
+    Dataset curResolvedDs = (Dataset) curDatasets.get( 0 );
+    Access curResolvedDsAccess = curResolvedDs.getAccess( ServiceType.OPENDAP );
     String curResolvedDsPath = curResolvedDsAccess.getStandardUri().toString();
 
     String curSysTimeAsString = null;
@@ -512,14 +512,13 @@ public class TestAll extends TestCase
     return true;
   }
 
-  public static boolean crawlCatalogOpenRandomDataset( String catalogUrl, StringBuilder log, boolean verbose )
-  {
-    final ThreddsDataFactory threddsDataFactory = new ThreddsDataFactory();
-    final Map<String, String> failureMsgs = new HashMap<String, String>();
+  public static boolean crawlCatalogOpenRandomDataset( String catalogUrl, StringBuilder log, boolean verbose ) throws IOException {
+    final DataFactory threddsDataFactory = new DataFactory();
+    final Map<String, String> failureMsgs = new HashMap<>();
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
     {
-      public void getDataset( InvDataset ds, Object context )
+      public void getDataset( Dataset ds, Object context )
       {
         Formatter localLog = new Formatter();
         NetcdfDataset ncd;
@@ -551,10 +550,10 @@ public class TestAll extends TestCase
           return;
         }
       }
-      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
+      public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
 
     };
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct, null, listener );
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
@@ -594,8 +593,8 @@ public class TestAll extends TestCase
    */
   public static void main( String[] args )
   {
-    final ThreddsDataFactory threddsDataFactory = new ThreddsDataFactory();
-    final Map<String, String> failureMsgs = new HashMap<String, String>();
+    final DataFactory threddsDataFactory = new DataFactory();
+    final Map<String, String> failureMsgs = new HashMap<>();
     final StringBuilder gcsMsg = new StringBuilder();
     final StringBuilder otherMsg = new StringBuilder();
 
@@ -633,11 +632,11 @@ public class TestAll extends TestCase
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
     {
-      public void getDataset( InvDataset ds, Object context )
+      public void getDataset( Dataset ds, Object context )
       {
         Formatter localLog = new Formatter();
 
-        gcsMsg.append( ds.getFullName()).append("\n");
+        gcsMsg.append( ds.getName()).append("\n");
         NetcdfDataset ncd;
         try
         {
@@ -755,10 +754,10 @@ public class TestAll extends TestCase
 
 
       }
-      public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
+      public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
       
     };
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct, null, listener );
 
     for ( String curCat : catList )
     {
@@ -809,18 +808,18 @@ public class TestAll extends TestCase
    * @param onlyRelativeUrls only include catalogRefs with relative HREF URLs if true, otherwise include all catalogRef datasets
    * @return the list of catalogRef datasets
    */
-  private static List<InvCatalogRef> findAllCatRefs( List<InvDataset> datasets, StringBuilder log, boolean onlyRelativeUrls )
+  private static List<CatalogRef> findAllCatRefs( List<Dataset> datasets, StringBuilder log, boolean onlyRelativeUrls )
   {
-    List<InvCatalogRef> catRefList = new ArrayList<InvCatalogRef>();
-    for ( InvDataset invds : datasets )
+    List<CatalogRef> catRefList = new ArrayList<CatalogRef>();
+    for ( Dataset invds : datasets )
     {
-      InvDatasetImpl curDs = (InvDatasetImpl) invds;
+      Dataset curDs = (Dataset) invds;
 
-      if ( curDs instanceof InvDatasetScan ) continue;
+      // if ( curDs instanceof DatasetScan ) continue;
 
-      if ( curDs instanceof InvCatalogRef )
+      if ( curDs instanceof CatalogRef )
       {
-        InvCatalogRef catRef = (InvCatalogRef) curDs;
+        CatalogRef catRef = (CatalogRef) curDs;
         String name = catRef.getName();
         String href = catRef.getXlinkHref();
         URI uri;

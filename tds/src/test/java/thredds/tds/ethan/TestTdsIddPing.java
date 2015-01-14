@@ -33,8 +33,7 @@
 package thredds.tds.ethan;
 
 import junit.framework.*;
-
-import thredds.catalog.*;
+import thredds.client.catalog.Catalog;
 
 /**
  * _more_
@@ -66,7 +65,7 @@ public class TestTdsIddPing extends TestCase
     System.out.println( "validate catalog: " + catUrl );
 
     StringBuilder msg = new StringBuilder();
-    InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
+    Catalog catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
     if ( catalog == null )
     {
       fail( msg.toString());
@@ -79,7 +78,7 @@ public class TestTdsIddPing extends TestCase
     System.out.println( "validate catalog: " + catUrl );
 
     StringBuilder msg = new StringBuilder();
-    InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
+    Catalog catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
     if ( catalog == null )
     {
       fail( msg.toString() );

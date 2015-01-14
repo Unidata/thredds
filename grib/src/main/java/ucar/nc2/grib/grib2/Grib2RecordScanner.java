@@ -159,7 +159,7 @@ public class Grib2RecordScanner {
       long crc = gds.calcCRC();
       Grib2SectionGridDefinition gdsCached = gdsMap.get(crc);
       if (gdsCached != null)
-        gds = gdsCached;
+        gds = gdsCached;       // hmmmm why ??
       else
         gdsMap.put(crc, gds);
 

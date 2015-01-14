@@ -50,6 +50,8 @@ public class Grib2Record {
    * @param drs         Grib2SectionDataRepresentation
    * @param bms         Grib2SectionBitMap
    * @param dataSection Grib2SectionData
+   * @param bmsReplaced Grib2SectionData
+   * @param scanMode    from GDS of this record
    */
   public Grib2Record(byte[] header, Grib2SectionIndicator is,
                      Grib2SectionIdentification id,

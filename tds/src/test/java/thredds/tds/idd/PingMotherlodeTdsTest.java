@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import java.util.Collection;
 
+import thredds.client.catalog.Catalog;
 import thredds.tds.ethan.TestAll;
-import thredds.catalog.InvCatalogImpl;
 
 import static org.junit.Assert.*;
 
@@ -44,7 +44,7 @@ public class PingMotherlodeTdsTest
     StringBuilder msgLog = new StringBuilder();
 
     String url = this.tdsUrl + this.catUrl;
-    InvCatalogImpl cat = TestAll.openValidateAndCheckExpires( url, msgLog );
+    Catalog cat = TestAll.openValidateAndCheckExpires( url, msgLog );
 
     assertNotNull( "Catalog [" + url + "] failed to open, failed to validate, or was expired: " + msgLog, cat);
   }

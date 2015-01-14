@@ -49,34 +49,42 @@ public enum DataFormatType {
   HDF4(null),
   HDF5(null),
   MCIDAS_AREA("McIDAS-AREA"),
-  NETCDF("netCDF"),
-  NETCDF4("netCDF-4"),
-  NEXRAD2("NEXRAD-2"),
   NCML("NcML"),
-  NIDS("NEXRAD-3"),
+  NETCDF("NetCDF"),
+  NETCDF4("NetCDF-4"),
+  NEXRAD2(null),
+  NIDS(null),
 
-  CSV("csv/comma-separated-values"),
   GIF("image/gif"),
   JPEG("image/jpeg"),
   TIFF("image/tiff"),
+
+  CSV("text/csv"),
+  HTML("text/html"),
   PLAIN("text/plain"),
   TSV("text/tab-separated-values"),
-  XML("text/xml");
+  XML("text/xml"),
+
+  MPEG("video/mpeg"),
+  QUICKTIME("video/quicktime"),
+  REALTIME("video/realtime");
 
   private final String desc;
 
   private DataFormatType(String desc) {
-    this.desc = desc;
+    this.desc = (desc == null) ? toString() : desc;
   }
 
   // case insensitive
   public static DataFormatType getType(String name) {
     if (name == null) return null;
-    try {
-      return valueOf(name.toUpperCase());
-    } catch (IllegalArgumentException e) { // lame!
-      return null;
+    for (DataFormatType m : values()) {
+      if (m.desc.equalsIgnoreCase( name))
+        return m;
+      if (m.toString().equalsIgnoreCase( name))
+        return m;
     }
+    return null;
   }
 
   public String getDescription() {
