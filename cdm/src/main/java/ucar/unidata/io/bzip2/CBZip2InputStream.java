@@ -619,17 +619,15 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
               {
                 {
                   while (bsLive < 1) {
-                    int zzi;
-                    char thech = 0;
+                    int zzi = 0;
                     try {
-                      thech = (char) bsStream.read();
+                      zzi = bsStream.read();
                     } catch (IOException e) {
                       compressedStreamEOF();
                     }
-                    if (thech == -1) {
+                    if (zzi == -1) {
                       compressedStreamEOF();
                     }
-                    zzi = thech;
                     bsBuff = (bsBuff << 8) | (zzi & 0xff);
                     bsLive += 8;
                   }

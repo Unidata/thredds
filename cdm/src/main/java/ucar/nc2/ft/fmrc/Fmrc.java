@@ -183,38 +183,32 @@ public class Fmrc {
   // LOOK : all of these guys could use ehcache
   public GridDataset getDataset2D(NetcdfDataset result) throws IOException {
     checkNeeded( false);
-    GridDataset gds = fmrcDataset.getNetcdfDataset2D(result);
-    return gds;
+    return fmrcDataset.getNetcdfDataset2D(result);
   }
 
   public GridDataset getDatasetBest() throws IOException {
     checkNeeded( false);
-    GridDataset gds =  fmrcDataset.getBest();
-    return gds;
+    return fmrcDataset.getBest();
   }
 
   public GridDataset getDatasetBest(FeatureCollectionConfig.BestDataset bd) throws IOException {
     checkNeeded( false);
-    GridDataset gds =  fmrcDataset.getBest(bd);
-    return gds;
+    return fmrcDataset.getBest(bd);
   }
 
   public GridDataset getRunTimeDataset(CalendarDate run) throws IOException {
     checkNeeded( false);
-    GridDataset gds =  fmrcDataset.getRunTimeDataset(run);
-    return gds;
+    return fmrcDataset.getRunTimeDataset(run);
   }
 
   public GridDataset getConstantForecastDataset(CalendarDate time) throws IOException {
     checkNeeded( false);
-    GridDataset gds =  fmrcDataset.getConstantForecastDataset(time);
-    return gds;
+    return fmrcDataset.getConstantForecastDataset(time);
   }
 
   public GridDataset getConstantOffsetDataset(double hour) throws IOException {
     checkNeeded( false);
-    GridDataset gds =  fmrcDataset.getConstantOffsetDataset(hour);
-    return gds;
+    return fmrcDataset.getConstantOffsetDataset(hour);
   }
 
   /////////////////////////////////////////
@@ -283,7 +277,7 @@ public class Fmrc {
         if (logger.isDebugEnabled())
           logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
 
-        GridDatasetInv inv = null;
+        GridDatasetInv inv;
         try {
           inv = GridDatasetInv.open(manager, f, config.innerNcml); // inventory is discovered for each GDS
         } catch (IOException ioe) {
@@ -340,7 +334,7 @@ public class Fmrc {
     String specH = "C:/data/datasets/nogaps/US058GMET-GR1mdl.*air_temp";
     String specH2 = "C:/data/ft/grid/cg/.*nc$";
     String specH3 = "C:/data/ft/grid/namExtract/#yyyyMMdd_HHmm#.*nc$";
-    Fmrc fmrc = new Fmrc(specH3, errlog);
+    new Fmrc(specH3, errlog);
     System.out.printf("errlog = %s%n", errlog);
   }
 }

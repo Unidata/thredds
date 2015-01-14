@@ -41,10 +41,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import thredds.servlet.HtmlWriter;
 import thredds.util.ContentType;
+import ucar.nc2.constants.CDM;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -64,7 +63,7 @@ public class DebugController{
     response.setHeader("Content-Description", "thredds_debug");
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    PrintStream pw = new PrintStream(bos);
+    PrintStream pw = new PrintStream(bos, false, CDM.UTF8);
     pw.println( HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
     pw.println("<head>");
     pw.println("<title> THREDDS Debug</title>");
@@ -121,9 +120,9 @@ public class DebugController{
     response.setStatus( HttpServletResponse.SC_OK );
 
     // send it out
-    byte[] result = bos.toByteArray();
-    PrintStream responsePS = new PrintStream(response.getOutputStream());
-    responsePS.write(result);
+    PrintWriter responsePS = new PrintWriter(new OutputStreamWriter(
+            response.getOutputStream(), CDM.utf8Charset));
+    responsePS.write(bos.toString(CDM.UTF8));
     responsePS.flush();
   }
 
