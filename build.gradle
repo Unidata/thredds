@@ -1,13 +1,15 @@
 apply from: "gradle/dependencies.gradle"
 
+allprojects {
+    group = "edu.ucar"
+    version = '4.6.0-SNAPSHOT'
+}
+
 subprojects {
     apply plugin: 'java'
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
-    version = '4.6.0-SNAPSHOT'
-
-    compileJava.options.encoding = 'UTF-8'
 
     // Unlike Maven, Gradle places CLASS files and resources in different directories by default.
     // This is a problem for IntelliJ: when running an application from the IDE, it expects everything to be in the
@@ -15,7 +17,6 @@ subprojects {
     processResources.destinationDir = compileJava.destinationDir
 
     repositories {
-//        mavenLocal()
         mavenCentral()
         maven {
             url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
@@ -25,32 +26,50 @@ subprojects {
         }
     }
 
+    // TODO: Only cdm, ncIdv, tdm, ui, and visad use the shadow plugin, so we shouldn't be adding it as
+    // a buildscript-dependency to all subprojects. We should break out the common stuff to /gradle/shadow.gradle
+    // and then apply that script only to those 5.
     buildscript {
         repositories {
             jcenter()
         }
         dependencies {
+            // Also, this needs to be declared in /gradle/dependencies.gradle
             classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
         }
     }
 
-    jar {
+    // Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+
+        // Disable warnings about cross-compilation:
+        // http://docs.oracle.com/javase/8/docs/technotes/tools/windows/javac.html#BHCIJIEG
+        // This is usually not a problem, but to be safe, we should make sure that our production releases are built
+        // on a machine running the same version of the JVM as our project language level.
+        options.compilerArgs = ['-Xlint:-options']
+    }
+
+    jar {  // Don't apply this config to all Jar subtypes (such as War).
         manifest {
-            attributes 'Implementation-Version': version,
+            attributes 'Implementation-Version': project.version,
                     'Implementation-Vendor': 'UCAR/Unidata',
-                    'Implementation-Vendor-Id': 'edu.ucar',
+                    'Implementation-Vendor-Id': project.group,
                     'Built-On': new Date(),
-                    'Build-Jdk': System.properties['java.version'],
+                    'Build-Jdk': JavaVersion.current(),
                     'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
                     'Permissions': 'all-permissions',
                     'Trusted-Only': 'true'
         }
     }
 
-    javadoc {
+    tasks.withType(Javadoc) {
         options.encoding = 'UTF-8'
-        // See http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
-        options.addStringOption('Xdoclint:none', '-quiet')
+
+        if (JavaVersion.current().isJava8Compatible()) {
+            // See http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
     }
 }
 
