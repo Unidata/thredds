@@ -238,7 +238,6 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   private class LinkedInputStream extends InputStream {
     byte[] buffer;
-    long pos = 0;
 
     int nsegs;
     long[] segPosA;
@@ -386,9 +385,6 @@ public class H4iosp extends AbstractIOServiceProvider {
   private static class H4ChunkIterator implements LayoutTiled.DataChunkIterator {
     List<H4header.DataChunk> chunks;
     int chunkNo;
-
-    byte[] buffer;
-    int segPos, segSize;
 
     H4ChunkIterator(H4header.Vinfo vinfo) {
       this.chunks = vinfo.chunks;

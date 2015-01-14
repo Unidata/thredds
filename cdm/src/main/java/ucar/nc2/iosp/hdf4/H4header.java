@@ -49,7 +49,7 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Jul 18, 2007
  */
-public class H4header {
+public class    H4header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   static private final byte[] head = {0x0e, 0x03, 0x13, 0x01};
@@ -1683,7 +1683,8 @@ public class H4header {
 
     public String detail() {
       return super.detail() + " xdim=" + xdim + " ydim=" + ydim + " nelems=" + nelems +
-          " nt_ref=" + nt_ref + " interlace=" + interlace + " compress=" + compress;
+          " nt_ref=" + nt_ref + " interlace=" + interlace + " compress=" +
+          compress + " compress_ref=" + compress_ref;
     }
   }
 
@@ -1709,7 +1710,6 @@ public class H4header {
     short rank, nt_ref;
     int[] shape;
     short[] nt_ref_scale;
-    List<Dimension> dims;
 
     TagSDDimension(short code) throws IOException {
       super(code);
