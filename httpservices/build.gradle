@@ -11,5 +11,4 @@ dependencies {
 
     compile libraries["slf4j-api"]
     testRuntime libraries["slf4j-jdk14"]
-    runtime libraries["jcl-over-slf4j"]
 }

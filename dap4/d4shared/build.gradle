@@ -5,5 +5,4 @@ dependencies {
     compile libraries["httpclient"]
     compile libraries["httpcore"]
     testRuntime libraries["slf4j-jdk14"]
-    testRuntime libraries["jcl-over-slf4j"]
 }

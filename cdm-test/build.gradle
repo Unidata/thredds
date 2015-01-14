@@ -22,6 +22,5 @@ dependencies {
 
     testCompile libraries["slf4j-api"]
     testRuntime libraries["slf4j-jdk14"]
-    testRuntime libraries["jcl-over-slf4j"]
     // TODO: testCompile cdm:test-jar
 }

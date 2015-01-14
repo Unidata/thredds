@@ -169,13 +169,18 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 libraries["threddsIso"] = "EDS:threddsIso:2.2.4-SNAPSHOT"
 
 
-//////////////////////// Global transitive dependency exclusions ////////////////////////
+//////////////////////// Global transitive dependency replacements and exclusions ////////////////////////
 
 subprojects {
     configurations.all {
-        // We're using "jcl-over-slf4j" to convert "commons-logging" calls to "slf4j".
-        // Dragged in by spring-core and httpclient
-        exclude group: 'commons-logging', module: 'commons-logging'
+        // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j".
+        // This effectively converts every jcl call to an slf4j call.
+        // "commons-logging" is dragged in by spring-core and httpclient.
+        resolutionStrategy.eachDependency { DependencyResolveDetails dep ->
+            if (dep.requested.name == 'commons-logging') {
+                dep.useTarget libraries["jcl-over-slf4j"]
+            }
+        }
 
         // STAX comes with Java 1.6+
         // Dragged in by xmlbeans
