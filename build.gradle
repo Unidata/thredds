@@ -45,7 +45,8 @@ subprojects {
 
         // Disable warnings about cross-compilation:
         // http://docs.oracle.com/javase/8/docs/technotes/tools/windows/javac.html#BHCIJIEG
-        // This is usually not a problem, but to be safe, we should make sure that our production releases are built
+        // This is usually fine, but see: http://www.draconianoverlord.com/2014/04/01/jdk-compatibility.html
+        // To be safe, we should make sure that our production releases are built
         // on a machine running the same version of the JVM as our project language level.
         options.compilerArgs = ['-Xlint:-options']
     }
