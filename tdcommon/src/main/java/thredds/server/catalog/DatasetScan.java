@@ -32,6 +32,8 @@
 
 package thredds.server.catalog;
 
+import thredds.inventory.MFile;
+
 /**
  * Description
  *
@@ -39,4 +41,38 @@ package thredds.server.catalog;
  * @since 1/12/2015
  */
 public class DatasetScan {
+
+  org.jdom2.Element getNcmlElement() {
+    return null;
+  }
+
+  MFile requestCrawlableDataset(String path) {
+    return null;
+  }
+
+  private class RegExpNamer {
+    private java.util.regex.Pattern pattern;
+    private String replaceString;
+    private boolean usePath;
+
+    RegExpNamer(String regExp, String replaceString, boolean usePath) {
+      this.pattern = java.util.regex.Pattern.compile(regExp);
+      this.replaceString = replaceString;
+    }
+
+    public String getLabel(MFile mfile) {
+      String name = usePath ? mfile.getPath() : mfile.getName();
+      java.util.regex.Matcher matcher = this.pattern.matcher(name);
+      if (!matcher.find()) return null;
+
+      StringBuffer startTime = new StringBuffer();
+      matcher.appendReplacement(startTime, this.replaceString);
+      startTime.delete(0, matcher.start());
+
+      if (startTime.length() == 0) return null;
+
+      return startTime.toString();
+    }
+  }
+
 }

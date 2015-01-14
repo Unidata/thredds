@@ -150,7 +150,7 @@ public class DatasetScanBuilder {
    */
   private List<DatasetScanConfig.Filter> readDatasetScanFilter(Element filterElem) {
     List<DatasetScanConfig.Filter> filters = new ArrayList<>();
-    if (filterElem == filters) return null;
+    if (filterElem == null) return null;
 
     for (Element curElem : filterElem.getChildren()) {
       String regExpAttVal = curElem.getAttributeValue("regExp");
