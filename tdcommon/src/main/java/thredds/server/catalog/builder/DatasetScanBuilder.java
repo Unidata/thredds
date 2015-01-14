@@ -36,16 +36,10 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
-import thredds.server.catalog.DatasetEnhancer;
-import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.DatasetScanConfig;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -71,30 +65,18 @@ public class DatasetScanBuilder {
             <xsd:element ref="filter" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="namer" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="addLatest" minOccurs="0"/>
-            <xsd:element ref="addProxies" minOccurs="0"/>
-            <xsd:element name="addDatasetSize" minOccurs="0"/>
-            <xsd:element ref="addTimeCoverage" minOccurs="0"/>
+            <xsd:element ref="addLatest" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="addDatasetSize" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="addTimeCoverage" minOccurs="0" maxOccurs="1"/>
           </xsd:sequence>
 
           <xsd:attribute name="path" type="xsd:string" use="required"/>
           <xsd:attribute name="location" type="xsd:string"/>
-          <xsd:attribute name="dirLocation" type="xsd:string"/> <!-- deprecated : use location attribute -->
+          <xsd:attribute name="addLatest" type="xsd:boolean"/>
           <xsd:attribute name="filter" type="xsd:string"/> <!-- deprecated : use filter element -->
-          <xsd:attribute name="addDatasetSize" type="xsd:boolean"/> <!-- deprecated : use enhance/addDatasetSize element -->
-          <xsd:attribute name="addLatest" type="xsd:boolean"/> <!-- deprecated : use addLatest element -->
-          <xsd:attribute name="addId" type="xsd:boolean"/> <!-- deprecated : use addID element -->
         </xsd:extension>
       </xsd:complexContent>
-    </xsd:complexType>
-  </xsd:element>
-
-  <!-- datasetRoot element: associate a url path with a directory location -->
-  <xsd:element name="datasetRoot">
-    <xsd:complexType>
-      <xsd:attribute name="path" type="xsd:string" use="required"/>
-      <xsd:attribute name="location" type="xsd:string" use="required"/>
-      <xsd:attribute name="cache" type="xsd:boolean"/>
     </xsd:complexType>
   </xsd:element>
    */
@@ -104,6 +86,14 @@ public class DatasetScanBuilder {
     result.name = dsElem.getAttributeValue("name");
     result.path = dsElem.getAttributeValue("path");
     result.scanDir = dsElem.getAttributeValue("location");
+    result.restrictAccess = dsElem.getAttributeValue("restrictAccess");
+
+       // look for ncml
+    Element ncmlElem = dsElem.getChild("netcdf", Catalog.defNS);
+    if (ncmlElem != null) {
+      ncmlElem.detach();
+      result.ncmlElement = ncmlElem;
+    }
 
     // Read filter element
     Element filterElem = dsElem.getChild("filter", Catalog.defNS);
@@ -117,14 +107,15 @@ public class DatasetScanBuilder {
     Element sorterElem = dsElem.getChild("sort", Catalog.defNS);
     result.isSortIncreasing = readDatasetScanSorter(sorterElem);  // docs: default true
 
-    // Read allProxies element (and addLatest element)
+    // Deal with latest
+    String addLatestAttribute = dsElem.getAttributeValue("addLatest");
     Element addLatestElem = dsElem.getChild("addLatest", Catalog.defNS);      // not in docs
     Element addProxiesElem = dsElem.getChild("addProxies", Catalog.defNS);
-    result.proxies = readDatasetScanAddProxies(addProxiesElem, addLatestElem);
+    result.proxies = readDatasetScanAddProxies(addProxiesElem, addLatestElem, addLatestAttribute);
 
     // Read addDatasetSize element.
     Element addDsSizeElem = dsElem.getChild("addDatasetSize", Catalog.defNS);
-    if (addDsSizeElem != null) {                                               // docs: default etrue
+    if (addDsSizeElem != null) {                                               // docs: default true
       if (addDsSizeElem.getTextNormalize().equalsIgnoreCase("false"))
         result.addDatasetSize = false;
     }
@@ -157,7 +148,7 @@ public class DatasetScanBuilder {
     <xsd:attribute name="collection" type="xsd:boolean"/>
   </xsd:complexType>
    */
-  List<DatasetScanConfig.Filter> readDatasetScanFilter(Element filterElem) {
+  private List<DatasetScanConfig.Filter> readDatasetScanFilter(Element filterElem) {
     List<DatasetScanConfig.Filter> filters = new ArrayList<>();
     if (filterElem == filters) return null;
 
@@ -195,7 +186,7 @@ public class DatasetScanBuilder {
   }
 
   /*
-    <xsd:element name="namer">
+  <xsd:element name="namer">
     <xsd:complexType>
       <xsd:choice maxOccurs="unbounded">
         <xsd:element name="regExpOnName" type="NamerSelectorType"/>
@@ -215,9 +206,9 @@ public class DatasetScanBuilder {
     if (namerElem == null) return result;
 
     for (Element curElem : namerElem.getChildren()) {
-
       String regExp = curElem.getAttributeValue("regExp");
       String replaceString = curElem.getAttributeValue("replaceString");
+
       boolean onName = curElem.getName().equals("regExpOnName");
       boolean onPath = curElem.getName().equals("regExpOnPath");
       if (!onName && !onPath) {
@@ -295,8 +286,14 @@ public class DatasetScanBuilder {
     </xsd:complexType>
   </xsd:element>
    */
-  protected List<DatasetScanConfig.Proxy> readDatasetScanAddProxies(Element addProxiesElem, Element addLatestElem) {
+  protected List<DatasetScanConfig.Proxy> readDatasetScanAddProxies(Element addProxiesElem, Element addLatestElem, String addLatestAttribute) {
     List<DatasetScanConfig.Proxy> result = new ArrayList<>();
+
+    // handle old "addLatest attribute
+    if (addLatestAttribute != null && addLatestAttribute.equalsIgnoreCase("true")) {
+      result.add( new DatasetScanConfig.Proxy() );  // use defaults
+      return result;
+    }
 
     // Handle old "addLatest" elements.
     if (addLatestElem != null) {
@@ -419,8 +416,6 @@ public class DatasetScanBuilder {
  */
 
   protected DatasetScanConfig.AddTimeCoverage readDatasetScanAddTimeCoverage(Element addTimeCovElem) {
-    DatasetEnhancer timeCovEnhancer = null;
-
     String matchName = addTimeCovElem.getAttributeValue("datasetNameMatchPattern");
     String matchPath = addTimeCovElem.getAttributeValue("datasetPathMatchPattern");
     String subst = addTimeCovElem.getAttributeValue("startTimeSubstitutionPattern");

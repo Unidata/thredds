@@ -6,21 +6,15 @@
   <link href="../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<h1 align="left"><img alt="Unidata" src="../unidataLogo.png" align="middle" height="83" width="92">Changes to Catalog version 1.0.2<br>
+<h1 align="left">Changes to Client Catalog schema<br>
 </h1>
-<address>
-  last update: 29 July 2008
-</address>
 <div class="head"></div>
 <hr>
-<h2>Changes for version 1.0.2</h2>
+<h2>Changes for version 1.0.7</h2>
 <ul>
-  <li>The version attribute is "1.0.2" .</li>
-  <li>The 1.0.2 schema can be found <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">here</a>.
-    [However, you should tell your parser to resolve to a local copy of it,
-    both for performance and to decouple from Unidata's web server.]
-  </li>
+  <li>bring DataFormatTypes and ServiceTypes  enumerations up to date with the code</li>
 </ul>
+<h2>Changes for version 1.0.2</h2>
 <p>Changes to enumerated types:</p>
 <ul>
   <li>"serviceType" enumerations: deprecated "NetcdfServer"; added "NetcdfSubset".</li>
@@ -32,16 +26,6 @@
   <li>"catalog" element: deprecated the "base" attribute (not working in code, should follow XLink spec).</li>
   <li>"variable" element: added the "vocabulary_id" attribute.</li>
   <li>"property" element: require both "name" and "value" attributes.<br></li>
-</ul>
-<h3>Changes to server-side catalog</h3>
-<ul>
-  <li>Add "datasetFmrc" element for defining a Forecast Model Run Collection (FMRC).</li>
-  <li>Modify "datasetScan/addProxies" and "datasetScan/addLatest" elements so
-    that "simpleLatest" and "latestComplete" children both have an
-    "isResolver" attribute.
-  </li>
-  <li>Deprecate "service/datasetRoot", add "catalog/datasetRoot".</li>
-  <li>Change "dataset@resourceControl" to "dataset@restrictedAccess".</li>
 </ul>
 <h2>Changes for version 1.0.1</h2>
 <ul>

@@ -81,6 +81,7 @@ public class CatalogBuilder {
   }
 
   public Catalog buildFromURI(URI uri) throws IOException {
+    setBaseURI(uri);
     JdomCatalogBuilder jdomBuilder = new JdomCatalogBuilder(errlog);
     error = jdomBuilder.readXML(this, uri);
     return makeCatalog();

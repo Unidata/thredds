@@ -8,9 +8,7 @@
 <body>
 <h1>Configuring TDS with DatasetScan</h1>
 <hr>
-<p>The <strong>datasetScan</strong> element specifies the data locations that the
-  TDS will scan for datasets when generating catalogs. It also specifies
-  which URLs will point to the data in those directories.</p>
+<p>The <strong>datasetScan</strong> element allows you to serve all files on your server from a directory tree. The files must be homogenous enough that the same metadata can be applied to all of them.</p>
 
 <h2>Example</h2>
 
@@ -263,31 +261,22 @@ So, when cataloged, this dataset would end up as something like this:<br>
 
 
 <h2><a name="Sorting_Datasets"></a>Sorting Datasets</h2>
-
-
-<p>Without a sort element, datasets at each collection level are listed
-  in their "natural" order. With a sort element you can specify that they
-  are to be sorted by lexicographic order by name either in increasing or
-  decreasing order. For example:</p>
-
-
+<p>Datasets at each collection level are listed
+  in ascending order by name. With a sort element you can specify that they
+  are to be sorted in reverse
+  order:</p>
 <pre>&lt;sort&gt;<br>  &lt;lexigraphicByName increasing="false" /&gt;<br>&lt;/sort&gt;</pre>
 <p>Notes:</p>
 <ol>
-
-  <li>The "natural" order of the datasets is determined by the order returned by the listDatasets() method in CrawlableDataset.</li>
-  <li>The sort is done on the CrawlableDataset list. The naming discussed in
-    the previous section is done to the resulting InvDataset. Therefore,
-    the naming discussed above does not affect the sort order.
-  </li>
+  <li>The sort is done before renaming.</li>
 </ol>
 
+<h2><a name="Adding_Proxy_Datasets"></a>Adding a Link to the &quot;Latest&quot; Dataset</h2>
+<p>For real-time data you may want to have a special link that points to the &quot;latest&quot; data in the collection. Here, latest is simple the last filename is a sorted list by name, so its only the latest if the time stamp is in the filename and the name sort sorts correctly by time.</p>
+<p>The simplest way to enable this is to add the attribute <em>addLatest=&quot;true&quot;</em> to the <strong>datasetScan</strong> element. In this case, the default values are used:  <strong>name</strong>  =
+"latest.xml",  <strong>top</strong> = "true", and  <strong>serviceName</strong> = "latest".</p>
 
-<h2><a name="Adding_Proxy_Datasets"></a>Adding Proxy Datasets</h2>
-
-The <strong>addProxies</strong> element provides a place for
-describing proxy datasets you want to add to the collection. Currently,
-two types of&nbsp; "latest" proxy datasets are all that is supported. The <strong>simpleLatest</strong> element adds the described dataset
+The <strong>addProxies</strong> element allows more control over how latest is displayed. The <strong>simpleLatest</strong> element adds a &quot;latest&quot; dataset
 which proxies the existing dataset whose name is lexicographically
 greatest (which finds the latest dataset assuming a timestamp is part
 of the dataset name). The <strong>latestComplete</strong> element behaves similarly to <strong>simpleLatest</strong>
@@ -426,7 +415,7 @@ elements must point to an existing service.<br>
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">This document is maintained by Unidata and was
-  last updated Jabuary, 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated January, 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 <p></p>

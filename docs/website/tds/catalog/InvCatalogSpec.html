@@ -85,15 +85,16 @@
 
 <h3><em>catalog</em><a name="catalog"></a> element</h3>
 
-<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.7" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name=&quot;base&quot; type=&quot;xsd:anyURI&quot;/&gt;
+    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.7" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;</pre>
 
 <p>The <em>catalog</em> element is the top-level element. It may contain zero
   or more <em><a href="#service">service</a></em> elements, followed by zero
   or more <em><a href="InvCatalogServerSpec.html#datasetRoot_Element">datasetRoot</a></em> elements,  followed by zero
   or more <em><a href="#property">property</a></em> elements, followed by one or
-  more <em><a href="#dataset">dataset</a></em> elements (actually any element in the dataset substitution group). The optional catalog
-  <em>name</em> will be displayed to a user. The <em>expires</em><a name="expires"></a>
-  element tells clients until when this catalog should be reread, so they can cache
+  more <em><a href="#dataset">dataset</a></em> elements (actually any element in the dataset substitution group). The base is the base URL of the catalog, that is, where it was read from. Other URLs used in the catalog are usually are reletive to it. Optionally the catalog may have a display 
+  <em>name</em>. The <em>expires</em><a name="expires"></a>
+  element tells clients when this catalog should be reread, so they can cache
   the catalog information. The value of the <em>version</em> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The
   <em>version</em> attribute is optional, but should be used to document which version of the schema was used.</p>
 
@@ -141,7 +142,7 @@ Example with service base URL relative to catalog URL (see <a href="#constructin
 <pre> &lt;service name="this" serviceType="DODS" base="dods/" /&gt;</pre>
 <h3><a id="dataset"></a><em>dataset</em> element</h3>
 
-<pre>&lt;xsd:element name="dataset" type="DatasetType" /&gt;<br>&lt;xsd:complexType name="DatasetType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" /&gt;<br><br>    &lt;xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/&gt;<br>    &lt;xsd:element ref="ncml:netcdf" minOccurs="0"/&gt;<br>    &lt;xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>  &lt;xsd:attribute name="alias" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="authority" type="xsd:string"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="collectionType" type="collectionTypes"/&gt;<br>  &lt;xsd:attribute name="dataType" type="dataTypes"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="harvest" type="xsd:boolean"/&gt;<br>  &lt;xsd:attribute name="ID" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="resourceControl" type="xsd:string"/&gt;<br>      <br>  &lt;xsd:attribute name="serviceName" type="xsd:string" /&gt; &lt;!-- deprecated : use element --&gt; <br>  &lt;xsd:attribute name="urlPath" type="xsd:token" /&gt;<br>&lt;/xsd:complexType&gt;</pre>
+<pre>&lt;xsd:element name="dataset" type="DatasetType" /&gt;<br>&lt;xsd:complexType name="DatasetType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/&gt;<br>    &lt;xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>  &lt;xsd:attribute name="alias" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="authority" type="xsd:string"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="collectionType" type="collectionTypes"/&gt;<br>  &lt;xsd:attribute name="dataType" type="dataTypes"/&gt; &lt;!-- deprecated : use element --&gt;<br>  &lt;xsd:attribute name="harvest" type="xsd:boolean"/&gt;<br>  &lt;xsd:attribute name="ID" type="xsd:token"/&gt;<br>  &lt;xsd:attribute name="restrictAccess" type="xsd:string"/&gt;<br>      <br>  &lt;xsd:attribute name="serviceName" type="xsd:string" /&gt; &lt;!-- deprecated : use element --&gt; <br>  &lt;xsd:attribute name="urlPath" type="xsd:token" /&gt;<br>&lt;/xsd:complexType&gt;</pre>
 
 <p>A <em>dataset</em> element represents a named, logical set of data at a level
   of granularity appropriate for presentation to a user. A dataset is <strong><em><a href="#directDataset">direct</a>
@@ -213,7 +214,7 @@ elements, or use a <a href="#compoundService">compound service</a>.
 
 <p>An <em>access</em> element specifies how a dataset can be accessed through a
   data <a href="#service"><em>service</em></a>. It always refers to the dataset that it is immediately contained
-  within.</p>
+  within. </p>
 
 <p> The <em>serviceName</em><a name="serviceName"></a> refers to the unique name
   of a service element. The <em>urlPath</em> is appended to the service's base
@@ -227,10 +228,11 @@ elements, or use a <a href="#compoundService">compound service</a>.
   element to specify how large the dataset would be if it were to be copied to
   the client.
 </p>
-
 <p>Example:
 </p>
-<pre>&lt;access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" /&gt;</pre>
+<pre>&lt;access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" /&gt;
+</pre>
+The common case is that the access element is <em>implicit</em>, based on the dataset's <em>serviceName</em> and <em>urlPath</em>.
 <h3><em>catalogRef</em><a name="catalogRef"></a> element</h3>
 
 <pre>&lt;xsd:element name="catalogRef" substitutionGroup="dataset"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="DatasetType"&gt;<br>        &lt;xsd:attributeGroup ref="XLink"/&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>

@@ -62,6 +62,8 @@ public interface GribTables {
 
     public int getNumber();
 
+    public int getValue();
+
     public String getName();
 
     public String getUnit();

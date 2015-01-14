@@ -32,10 +32,12 @@
 
 package thredds.server.catalog;
 
+import org.jdom2.Element;
+
 import java.util.List;
 
 /**
- * Description
+ * DatasetScan Configuration object
  *
  * @author John
  * @since 1/12/2015
@@ -44,10 +46,12 @@ public class DatasetScanConfig {
   public String name;
   public String path;
   public String scanDir;
+  public String restrictAccess;
 
   public boolean addDatasetSize = true;
   public boolean isSortIncreasing = true;
 
+  public Element ncmlElement;
   public List<Filter> filters;
   public List<Namer> namers;
   public List<Proxy> proxies;

@@ -92,6 +92,11 @@ public class Grib1Parameter implements GribTables.Parameter {
   }
 
   @Override
+  public int getValue() {
+    return -1;
+  }
+
+  @Override
   public String getName() {
     return name;
   }

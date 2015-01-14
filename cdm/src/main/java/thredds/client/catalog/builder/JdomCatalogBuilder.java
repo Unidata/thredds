@@ -98,7 +98,7 @@ public class JdomCatalogBuilder {
     this.docBaseURI = docBaseURI;
 
     String name = catalogElem.getAttributeValue("name");
-    String catSpecifiedBaseURL = catalogElem.getAttributeValue("base");
+    String catSpecifiedBaseURL = catalogElem.getAttributeValue("base");   // LOOK what is this ??
     String expiresS = catalogElem.getAttributeValue("expires");
     String version = catalogElem.getAttributeValue("version");
 
