@@ -1054,7 +1054,14 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public String getScanMode() {
-      return Long.toBinaryString(gds.getScanMode());
+      int scanMode = gds.getScanMode();
+      Formatter f = new Formatter();
+      f.format("0x%s=", Long.toHexString(scanMode));
+      if (!GribUtils.scanModeXisPositive(scanMode)) f.format(" Xneg");
+      if (GribUtils.scanModeYisPositive(scanMode)) f.format(" Ypos");
+      if (!GribUtils.scanModeXisConsecutive(scanMode)) f.format(" !XisConsecutive");
+      if (!GribUtils.scanModeSameDirection(scanMode)) f.format(" !SameDirection");
+      return f.toString();
     }
 
     @Override

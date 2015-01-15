@@ -135,7 +135,9 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     maxDirectBlockSize = h5.readLength(); // maximum direct block size in bytes, must be power of 2
     maxHeapSize = raf.readShort(); // log2 of the maximum size of heap's linear address space, in bytes
     startingNumRows = raf.readShort(); // starting number of rows of the root indirect block, 0 = maximum needed
-    rootBlockAddress = h5.readOffset(); // can be undefined if no data
+    rootBlockAddress = h5.readOffset(); // This is the address of the root block for the heap.
+                                        // It can be the undefined address if there is no data in the heap.
+                                        // It either points to a direct block (if the Current # of Rows in the Root Indirect Block value is 0), or an indirect block.
     currentNumRows = raf.readShort(); // current number of rows of the root indirect block, 0 = direct block
 
     boolean hasFilters = (ioFilterLen > 0);
@@ -269,7 +271,10 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
                 assert btreeHugeObjects.btreeType == subtype;
               }
               BTree2.Record1 record1 = btreeHugeObjects.getEntry1(offset);
-              if (record1 == null) throw new RuntimeException("Cant find DHeapId="+offset);
+              if (record1 == null) {
+                btreeHugeObjects.getEntry1(offset); // debug
+                throw new RuntimeException("Cant find DHeapId="+offset);
+              }
               return record1.hugeObjectAddress;
 
             case 3:
@@ -417,7 +422,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     long offset;
     long size;
     int extraBytes;
-
+    boolean wasRead; // when empty, object exists, but fields are not init. not yet sure where to use.
 
     @Override
     public String toString() {
@@ -497,6 +502,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
   }
 
   void readDirectBlock(long pos, long heapAddress, DataBlock dblock) throws IOException {
+    if (pos < 0) return; // means its empty
     raf.seek(pos);
 
     // header
@@ -521,6 +527,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     if ((flags & 2) != 0) dblock.extraBytes += 4; // ?? size of checksum
     //dblock.size -= size; // subtract space used by other fields
 
+    dblock.wasRead = true;
     if (debugDetail || debugFractalHeap)
       debugOut.println("  DirectBlock offset= " + dblock.offset + " dataPos = " + dblock.dataPos);
   }
