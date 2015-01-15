@@ -759,7 +759,6 @@ public class    H4header {
         for (int fld = 0; fld < vh.nfields; fld++) {
           Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
           short type = vh.fld_type[fld];
-          int nbytes = vh.fld_isize[fld];
           short nelems = vh.fld_order[fld];
           H4type.setDataType(type, m);
           if (nelems > 1)
@@ -767,7 +766,7 @@ public class    H4header {
           else
             m.setIsScalar();
 
-          m.setSPobject(new Minfo(vh.fld_offset[fld], nbytes, nelems));
+          m.setSPobject(new Minfo(vh.fld_offset[fld]));
           s.addMemberVariable(m);
         }
 
@@ -789,13 +788,10 @@ public class    H4header {
   // member info
 
   static class Minfo {
-    short nelems;
-    int offset, nbytes;
+    int offset;
 
-    Minfo(int offset, int nbytes, short nelems) {
+    Minfo(int offset) {
       this.offset = offset;
-      this.nbytes = nbytes;
-      this.nelems = nelems;
     }
   }
 
