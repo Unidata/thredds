@@ -1,5 +1,5 @@
-// Gradle dependency managment. This technique was inspired by:
-// http://stackoverflow.com/questions/9547170
+// Gradle dependency managment.
+// This technique was inspired by: http://stackoverflow.com/questions/9547170
 
 ext {
     // Extra properties must be declared in the "ext" namespace.
@@ -77,16 +77,6 @@ libraries["hamcrest-core"] = "org.hamcrest:hamcrest-core:1.3"
 libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfuse:1.0.0"
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
-
-//      <dependency>
-//        <groupId>${project.groupId}</groupId>
-//        <artifactId>cdm</artifactId>
-//        <version>${project.version}</version>
-//        <scope>test</scope>
-//        <type>test-jar</type>
-//      </dependency>
-// I'll do this later. See
-// http://softnoise.wordpress.com/2014/09/07/gradle-sub-project-test-dependencies-in-multi-project-builds/
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 

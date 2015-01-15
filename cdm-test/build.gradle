@@ -9,6 +9,7 @@ dependencies {
     testCompile project(":httpservices")
     testRuntime project(":visad")
     testRuntime project(":clcommon")
+    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     testCompile libraries["visad"]
     testCompile libraries["httpclient"]
@@ -22,5 +23,4 @@ dependencies {
 
     testCompile libraries["slf4j-api"]
     testRuntime libraries["slf4j-jdk14"]
-    // TODO: testCompile cdm:test-jar
 }

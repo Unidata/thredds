@@ -10,9 +10,9 @@ dependencies {
     testCompile project(':dap4:d4ts')
     testCompile project(':cdm')
     testCompile project(':httpservices')
+    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     testCompile libraries["javax.servlet-api"]
     testCompile libraries["slf4j-api"]
     testRuntime libraries["slf4j-jdk14"]
-    // TODO: testCompile cdm:test-jar
 }

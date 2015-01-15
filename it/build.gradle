@@ -5,6 +5,7 @@ dependencies {
     testCompile project(":httpservices")
     testRuntime project(":opendap")
     testRuntime project(":visad")
+    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     testRuntime libraries["jaxen"]
     testCompile libraries["jdom2"]
@@ -14,7 +15,6 @@ dependencies {
     testCompile libraries["httpclient"]
 
     testCompile libraries["com.eclipsesource.restfuse"]
-    // TODO: testCompile cdm:test-jar
 
     testRuntime libraries["slf4j-jdk14"]
 }
