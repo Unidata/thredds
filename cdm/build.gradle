@@ -104,10 +104,10 @@ task releaseDocs(dependsOn: javadoc) << {
 
 configurations {
     // Define a custom configuration and fill it with our test code's runtime dependencies.
-    testArtifacts.extendsFrom testRuntime
+    testArtifacts//.extendsFrom testRuntime
 }
 
-task testArtifacts(type: Jar, dependsOn: testClasses,
+task testArtifactsJar(type: Jar, dependsOn: testClasses,
         group: 'build', description: 'Assembles a JAR containing the test classes.') {
     from sourceSets.test.output  // Our test classes.
     classifier = 'test'
@@ -116,7 +116,14 @@ task testArtifacts(type: Jar, dependsOn: testClasses,
 artifacts {
     // Add the result of the "testArtifacts" TASK (i.e. cdm-<version>-test.jar) to the "testArtifacts" CONFIGURATION.
     // The config already contains the deps that our test classes require (added above in the configurations block).
-    testArtifacts testArtifacts
+    testArtifacts testArtifactsJar
+    println testArtifactsJar.archivePath
+}
+
+tasks.check.doFirst {
+    println configurations.getByName("testArtifacts").resolve().each {
+        println it.getClass().toString() + ": " + it.toString() + "\n"
+    }
 }
 
 // Other projects can depend on these artifacts using:
