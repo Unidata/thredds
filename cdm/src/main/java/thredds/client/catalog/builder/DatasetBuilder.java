@@ -69,36 +69,36 @@ public class DatasetBuilder {
     }
   }
 
-  DatasetBuilder parent;
-  String name;
-  Map<String, Object> flds = new HashMap<>(10);
+  protected DatasetBuilder parent;
+  protected String name;
+  protected Map<String, Object> flds = new HashMap<>(10);
 
-  List<AccessBuilder> accessBuilders;
-  List<DatasetBuilder> datasetBuilders;
+  protected List<AccessBuilder> accessBuilders;
+  protected List<DatasetBuilder> datasetBuilders;
 
-  public DatasetBuilder(DatasetBuilder parent) {
+  protected DatasetBuilder(DatasetBuilder parent) {
     this.parent = parent;
   }
 
-  public Object get(String fldName) {
+  protected Object get(String fldName) {
     return flds.get(fldName);
   }
 
-  public void put(String fldName, Object fldValue) {
+  protected void put(String fldName, Object fldValue) {
     if (fldValue != null) flds.put(fldName, fldValue);
   }
 
-  public void setName(String name) {
+  protected void setName(String name) {
     this.name = name;
   }
 
-  public void addDataset(DatasetBuilder d) {
+  protected void addDataset(DatasetBuilder d) {
     if (d == null) return;
     if (datasetBuilders == null) datasetBuilders = new ArrayList<>();
     datasetBuilders.add(d);
   }
 
-  public void addAccess(AccessBuilder d) {
+  protected void addAccess(AccessBuilder d) {
     if (accessBuilders == null) accessBuilders = new ArrayList<>();
     accessBuilders.add(d);
   }

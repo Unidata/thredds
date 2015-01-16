@@ -3,10 +3,11 @@
          xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink">
 
+  <!--	all referenced servers -->
+  <service name="ACD" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
+  <service name="local" serviceType="NetCDF" base="file://E:/metapps/data/"/>
+
   <dataset name="top-level collection" ID="top" authority="ucar">
-    <!--	all referenced servers -->
-    <service name="ACD" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
-    <service name="local" serviceType="NetCDF" base="file://E:/metapps/data/"/>
 
     <!-- simple collection -->
     <dataset name="Flux measurements" ID="nest1">

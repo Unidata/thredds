@@ -44,18 +44,18 @@ import thredds.client.catalog.DatasetNode;
  */
 public class CatalogRefBuilder extends DatasetBuilder {
 
-  String title;
-  String href;
+  private String title;
+  private String href;
 
-  public CatalogRefBuilder(DatasetBuilder parent) {
+  protected CatalogRefBuilder(DatasetBuilder parent) {
     super(parent);
   }
 
-  public void setTitle(String title) {
+  protected void setTitle(String title) {
     this.title = title;
   }
 
-  public void setHref(String href) {
+  protected void setHref(String href) {
     this.href = href;
   }
 

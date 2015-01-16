@@ -36,9 +36,7 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.constants.CDM;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
@@ -53,103 +51,102 @@ public class Documentation {
   private final String href, title, type, inlineContent;
   private final URI uri; // resolved
 
-   /**
-    * Constructor.
-    *
-    * @param href          : href of documentation, may be null.
-    * @param uri           : absolute URL, or null
-    * @param title         : Xlink title, may be null.
-    * @param type          : user-defined InvDocumentation type
-    * @param inlineContent : optional inline contents.
-    */
-   public Documentation(String href, URI uri, String title, String type, String inlineContent) {
-     this.href = href;
-     this.uri = uri;
-     this.type = type;
-     this.inlineContent = inlineContent;
+  /**
+   * Constructor.
+   *
+   * @param href          : href of documentation, may be null.
+   * @param uri           : absolute URL, or null
+   * @param title         : Xlink title, may be null.
+   * @param type          : user-defined InvDocumentation type
+   * @param inlineContent : optional inline contents.
+   */
+  public Documentation(String href, URI uri, String title, String type, String inlineContent) {
+    this.href = href;
+    this.uri = uri;
+    this.type = type;
+    this.inlineContent = inlineContent;
 
-     if (title != null)
-       this.title = title;
-     else if (uri != null)
-       this.title = uri.toString();
-     else
-       this.title = null;
-   }
+    if (title != null)
+      this.title = title;
+    else if (uri != null)
+      this.title = uri.toString();
+    else
+      this.title = null;
+  }
 
-   public String getType() {
-     return type;
-   }
+  public String getType() {
+    return type;
+  }
 
-   public boolean hasXlink() {
-     return uri != null;
-   }
+  public boolean hasXlink() {
+    return uri != null;
+  }
 
-   /**
-    * if its a XLink, get the absolute URI
-    * @return the XLink URI, else null
-    */
-   public URI getURI() {
-     return uri;
-   }
+  /**
+   * if its a XLink, get the absolute URI
+   *
+   * @return the XLink URI, else null
+   */
+  public URI getURI() {
+    return uri;
+  }
 
-   /**
-    * if its a XLink, get the title, to display the link to the user.
-    * @return the XLink title, else null
-    */
-   public String getXlinkTitle() {
-     return title;
-   }
+  /**
+   * if its a XLink, get the title, to display the link to the user.
+   *
+   * @return the XLink title, else null
+   */
+  public String getXlinkTitle() {
+    return title;
+  }
 
-   /**
-    * if its a XLink, get the href, to display the link to the user.
-    * @return the XLink href, or null
-    */
-   public String getXlinkHref() {
-     return href;
-   }
+  /**
+   * if its a XLink, get the href, to display the link to the user.
+   *
+   * @return the XLink href, or null
+   */
+  public String getXlinkHref() {
+    return href;
+  }
 
-   /**
-    * Get inline content as a string, else null if there is none
-    * @return  inline content as a string, else null
-    */
-   public String getInlineContent() {
-     if (uri == null) return "";
+  public String getInlineContent() {
+    return inlineContent;
+  }
 
-     URL url;
-     try {
-       url = uri.toURL();
-     } catch (MalformedURLException e) {
-       return e.getMessage();
-     }
 
-     try (InputStream is = url.openStream()) {
-       ByteArrayOutputStream os = new ByteArrayOutputStream(is.available());
+  /**
+   * Get inline content as a string, else null if there is none
+   *
+   * @return inline content as a string, else null
+   */
+  public String readXlinkContent() throws java.io.IOException {
+    if (uri == null) return "";
 
-       // copy to string
-       byte[] buffer = new byte[1024];
-       while (true) {
-         int bytesRead = is.read(buffer);
-         if (bytesRead == -1) break;
-         os.write(buffer, 0, bytesRead);
-       }
-       return new String(os.toByteArray(), CDM.utf8Charset);
+    URL url = uri.toURL();
+    InputStream is = url.openStream();
+    ByteArrayOutputStream os = new ByteArrayOutputStream(is.available());
 
-     } catch (IOException ioe) {
-       return ioe.getMessage();
-     }
+    // copy to string
+    byte[] buffer = new byte[1024];
+    while (true) {
+      int bytesRead = is.read(buffer);
+      if (bytesRead == -1) break;
+      os.write(buffer, 0, bytesRead);
+    }
+    is.close();
 
-   }
+    return new String(os.toByteArray(), CDM.utf8Charset);
+  }
 
-   /**
-    * string representation
-    */
-   public String toString() {
-     if (hasXlink())
-       return "<" + uri + "> <" + title + "> <" + type + ">";
-     else
-       return "<" + inlineContent + ">";
-   }
-
+  /**
+   * string representation
+   */
+  public String toString() {
+    if (hasXlink())
+      return "<" + uri + "> <" + title + "> <" + type + ">";
+    else
+      return "<" + inlineContent + ">";
+  }
 
 
 }

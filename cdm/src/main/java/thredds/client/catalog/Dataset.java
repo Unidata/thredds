@@ -57,6 +57,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String DataFormatType = "DataFormatType";
   public static final String Datasets = "Datasets";
   public static final String DatasetHash = "DatasetHash";
+  public static final String DatasetRoots = "DatasetRoots";
   public static final String DataSize = "DataSize";
   public static final String Dates = "Dates";
   public static final String Documentation = "Documentation";
@@ -114,7 +115,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public List<Access> getAccess() {
     List<Access> result = new ArrayList<>();
     String urlPath = getUrlPath();
-    String serviceDefault = getServiceDefault();
+    String serviceDefault = getServiceNameDefault();
     String dataFormat = getDataFormatName();
     long dataSize = getDataSize();
 
@@ -220,16 +221,20 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return flds.get(fldName);
   }
 
-  Object getInheritedField(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) return value;
+  Object getInheritedOnlyField(String fldName) {
     ThreddsMetadata tmi = (ThreddsMetadata) flds.get(ThreddsMetadataInheritable);
     if (tmi != null) {
-      value = tmi.getLocalField(fldName);
+      Object value = tmi.getLocalField(fldName);
       if (value != null) return value;
     }
     Dataset parent = getParentDataset();
-    return (parent == null) ? null : parent.getInheritedField( fldName);
+    return (parent == null) ? null : parent.getInheritedOnlyField( fldName);
+  }
+
+  Object getInheritedField(String fldName) {
+    Object value = flds.get(fldName);
+    if (value != null) return value;
+    return getInheritedOnlyField(fldName);
   }
 
   public String getAuthority() {
@@ -262,9 +267,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   public ucar.nc2.constants.FeatureType getFeatureType() {
     String name = getFeatureTypeName();
-    ucar.nc2.constants.FeatureType ft;
     try {
-      return ucar.nc2.constants.FeatureType.valueOf(name);
+      return ucar.nc2.constants.FeatureType.getType(name);
     } catch (Exception e) {
       return null;
     }
@@ -278,8 +282,14 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (ThreddsMetadata.GeospatialCoverage) getInheritedField(GeospatialCoverage);
   }
 
-  public String getServiceDefault() {
+  public String getServiceNameDefault() {
     return (String) getInheritedField(ServiceName);
+  }
+
+  public Service getServiceDefault() {
+    Catalog cat = getParentCatalog();
+    if (cat == null) return null;
+    return cat.findService( getServiceNameDefault());
   }
 
   public String getResourceControl() {
@@ -308,7 +318,6 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return new ArrayList(0);
   }
 
-
   List getInheritedFieldAsList(String fldName) {
     List result = new ArrayList();
     Object value = flds.get(fldName);
@@ -322,7 +331,6 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   }
 
   void getAllFromInherited(String fldName, List result) {
-
     ThreddsMetadata tmi = (ThreddsMetadata) flds.get(ThreddsMetadataInheritable);
     if (tmi != null) {
       Object value = tmi.getLocalField(fldName);
@@ -361,12 +369,22 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (List<ThreddsMetadata.MetadataOther>) getInheritedFieldAsList(MetadataOther);
   }
 
+  public java.util.List<ThreddsMetadata.MetadataOther> getMetadata(String want) {
+    List<ThreddsMetadata.MetadataOther> result = new ArrayList<>();
+    for (ThreddsMetadata.MetadataOther m : getMetadataOther()) {
+      if (m.getType().equalsIgnoreCase(want))
+        result.add(m);
+    }
+    return result;
+  }
+
   public List<ThreddsMetadata.Vocab> getProjects() {
     return (List<ThreddsMetadata.Vocab>) getInheritedFieldAsList(Projects);
   }
 
   public List<Property> getProperties() {
-    return (List<Property>) getInheritedFieldAsList(Properties);
+    List<Property> result = getInheritedFieldAsList(Properties);
+    return Property.removeDups(result);
   }
 
   public String findProperty(String name) {

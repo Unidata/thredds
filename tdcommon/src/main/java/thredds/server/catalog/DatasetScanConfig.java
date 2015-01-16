@@ -38,6 +38,7 @@ import java.util.List;
 
 /**
  * DatasetScan Configuration object
+ * Could enclose in a DatasetScan ?
  *
  * @author John
  * @since 1/12/2015

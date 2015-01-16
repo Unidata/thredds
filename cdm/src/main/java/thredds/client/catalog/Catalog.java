@@ -100,6 +100,7 @@ public class Catalog extends DatasetNode {
   }
 
   public Service findService(String serviceName)  {
+    if (serviceName == null) return null;
     List<Service> services = (List<Service>) flds.get(Dataset.Services);
     if (services == null) return null;
     for (Service s : services) {

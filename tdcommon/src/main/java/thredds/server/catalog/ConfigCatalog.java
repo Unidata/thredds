@@ -30,57 +30,27 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.client.catalog;
+package thredds.server.catalog;
 
 import net.jcip.annotations.Immutable;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.builder.DatasetBuilder;
 
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Client catalog name/value pair
+ * TDS Configuration Catalog
  *
  * @author caron
- * @since 1/7/2015
+ * @since 1/15/2015
  */
 @Immutable
-public class Property {
-  private final String name;
-  private final String value;
+public class ConfigCatalog extends Catalog {
 
-  public Property(String name, String value) {
-    this.name = name;
-    this.value = value;
+  public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
+    super(baseURI, name, flds, datasets);
   }
 
-  public String getName() {
-    return name;
-  }
-  public String getValue() {
-    return value;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Property property = (Property) o;
-    if (!name.equals(property.name)) return false;
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    return name.hashCode();
-  }
-
-  // first one override
-  public static List<Property> removeDups(List<Property> org) {
-    List<Property> result = new ArrayList<>(org.size());
-    for (Property p : org) {
-      if (!result.contains(p))  // O(n**2)
-        result.add(p);
-    }
-    return result;
-  }
 }

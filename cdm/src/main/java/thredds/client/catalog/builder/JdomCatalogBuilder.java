@@ -94,7 +94,7 @@ public class JdomCatalogBuilder {
      </xsd:complexType>
    </xsd:element>
    */
-  protected boolean readCatalog(CatalogBuilder catBuilder, Element catalogElem, URI docBaseURI) {
+  public boolean readCatalog(CatalogBuilder catBuilder, Element catalogElem, URI docBaseURI) {
     this.docBaseURI = docBaseURI;
 
     String name = catalogElem.getAttributeValue("name");
@@ -317,12 +317,11 @@ public class JdomCatalogBuilder {
     dataset.put( Dataset.UrlPath, dsElem.getAttributeValue("urlPath"));
 
     String dataTypeName = dsElem.getAttributeValue("dataType");
+    dataset.put( Dataset.FeatureType, dataTypeName);
     if (dataTypeName != null) {
       FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
       if (dataType == null) {
         errlog.format(" ** warning: non-standard data type = %s%n", dataTypeName);
-      } else {
-        dataset.put( Dataset.FeatureType, dataType);
       }
     }
 
@@ -442,12 +441,12 @@ public class JdomCatalogBuilder {
     Element dataTypeElem = parent.getChild("dataType", Catalog.defNS);
     if (dataTypeElem != null) {
       String dataTypeName = dataTypeElem.getText();
+      flds.put(Dataset.FeatureType, dataTypeName);
       if ((dataTypeName != null) && (dataTypeName.length() > 0)) {
-        FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
+        FeatureType dataType = FeatureType.getType(dataTypeName);
         if (dataType == null) {
           errlog.format(" ** warning: non-standard feature type = %s%n", dataTypeName);
         }
-        flds.put(Dataset.FeatureType, dataTypeName);
       }
     }
 

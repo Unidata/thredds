@@ -30,57 +30,47 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.client.catalog;
+package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
+import org.junit.Test;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.TestFileDirUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
 /**
- * Client catalog name/value pair
+ * Describe
  *
  * @author caron
- * @since 1/7/2015
+ * @since 1/15/2015
  */
-@Immutable
-public class Property {
-  private final String name;
-  private final String value;
+public class TestServerCatalogs {
 
-  public Property(String name, String value) {
-    this.name = name;
-    this.value = value;
-  }
+    //private String dsScanDir = "src/test/data";
+  private String dsScanDir = TestDir.cdmLocalTestDataDir;
+  private String dsScanFilter = ".*\\.nc$";
 
-  public String getName() {
-    return name;
-  }
-  public String getValue() {
-    return value;
-  }
+  private String serviceName = "ncdods";
+  private String baseURL = "http://localhost:8080/thredds/docsC";
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Property property = (Property) o;
-    if (!name.equals(property.name)) return false;
-    return true;
-  }
+  private File dsScanTmpDir;
+  private File expectedResultsDir;
 
-  @Override
-  public int hashCode() {
-    return name.hashCode();
-  }
+  private String configResourcePath = "/thredds/catalog";
+  private String testInvDsScan_emptyServiceBase_ResourceName = "testInvDsScan.emptyServiceBase.result.xml";
+  private String testInvDsScan_topLevelCat_ResourceName = "testInvDsScan.topLevelCat.result.xml";
+  private String testInvDsScan_secondLevelCat_ResourceName = "testInvDsScan.secondLevelCat.result.xml";
+  private String testInvDsScan_timeCoverage_ResourceName = "testInvDsScan.timeCoverage.result.xml";
+  private String testInvDsScan_addIdTopLevel_ResourceName = "testInvDsScan.addIdTopLevel.result.xml";
+  private String testInvDsScan_addIdLowerLevel_ResourceName = "testInvDsScan.addIdLowerLevel.result.xml";
 
-  // first one override
-  public static List<Property> removeDups(List<Property> org) {
-    List<Property> result = new ArrayList<>(org.size());
-    for (Property p : org) {
-      if (!result.contains(p))  // O(n**2)
-        result.add(p);
-    }
-    return result;
-  }
+  private String testInvDsScan_compoundServiceLower_ResourceName = "testInvDsScan.compoundServiceLower.result.xml";
+  private String testInvDsScan_addDatasetSize_ResourceName = "testInvDsScan.addDatasetSize.result.xml";
+  private String testInvDsScan_addLatest_ResourceName = "testInvDsScan.addLatest.result.xml";
+
+  private String testInvDsScan_compoundServerFilterProblem_1_ResourceName = "testInvDsScan.compoundServerFilterProblem.1.result.xml";
+  private String testInvDsScan_compoundServerFilterProblem_2_ResourceName = "testInvDsScan.compoundServerFilterProblem.2.result.xml";
+
 }
