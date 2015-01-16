@@ -35,15 +35,13 @@ package thredds.client.catalog;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import thredds.client.catalog.builder.CatalogBuilder;
-import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Describe
+ * Sanity test, just read the catalogs
  *
  * @author caron
  * @since 1/15/2015
@@ -63,6 +61,8 @@ public class TestClientCatalogBasic {
     result.add(new Object[]{"nestedServices.xml"});
     result.add(new Object[]{"testHarvest.xml"});
     result.add(new Object[]{"testFilter.xml"});
+    result.add(new Object[]{"http://atm.ucar.edu/thredds/catalog.xml"});
+    result.add(new Object[]{"http://atm.ucar.edu/thredds/catalog/nws/metar/ncdecoded/catalog.xml?dataset=nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr"});
     return result;
   }
 

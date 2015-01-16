@@ -35,6 +35,11 @@ package thredds.client.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.client.catalog.builder.CatalogBuilder;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.TimeDuration;
+import ucar.nc2.units.TimeUnit;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -53,7 +58,7 @@ public class TestClientCatalog {
   }
   
  static public Catalog open(String urlString) throws IOException {
-   if (!urlString.startsWith("file:")) urlString = makeUrlFromFragment(urlString);
+   if (!urlString.startsWith("http:") && !urlString.startsWith("file:")) urlString = makeUrlFromFragment(urlString);
     System.out.printf("Open %s%n", urlString);
     CatalogBuilder builder = new CatalogBuilder();
     Catalog cat = builder.buildFromLocation(urlString);
@@ -81,11 +86,9 @@ public class TestClientCatalog {
 
   /////////////////////////////////
   
-  private final String urlString = "testCatref.xml";
-
   @Test
   public void testResolve() throws IOException{
-    Catalog cat = open(urlString);
+    Catalog cat = open("testCatref.xml");
     Assert.assertEquals("catrefURI", makeFilepath("test2.xml"), getCatrefURI( cat.getDatasets(), "catref"));
 
     String catrefURIn = getCatrefNestedURI(cat, "top", "catref-nested");
@@ -124,7 +127,7 @@ public class TestClientCatalog {
 
   @Test
   public void testDeferredRead() throws IOException {
-    Catalog cat = open(urlString);
+    Catalog cat = open("testCatref.xml");
 
     CatalogRef catref = getCatref( cat.getDatasets(), "catref");
     assert ( !catref.isRead());
@@ -138,6 +141,7 @@ public class TestClientCatalog {
   @Test
   public void testNested() throws IOException {
     Catalog cat = open("nestedServices.xml");
+    assert cat != null;
 
     Dataset ds = cat.findDatasetByID("top");
     assert ds != null;
@@ -156,6 +160,111 @@ public class TestClientCatalog {
  }
 
   ////////////////////////////
+
+  @Test
+   public void testGC() throws Exception {
+     Catalog cat = open("MissingGCProblem.xml");
+     assert cat != null;
+
+     Dataset ds = cat.findDatasetByID("hasGC");
+     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+     assert null != gc;
+     assert gc.getHeightStart() == 5.0 : gc.getHeightStart();
+     assert gc.getHeightExtent() == 47.0 : gc.getHeightExtent();
+
+     assert gc.getEastWestRange() == null;
+     assert gc.getNorthSouthRange() == null;
+   }
+
+  @Test
+  public void testTC() throws Exception {
+    Catalog cat = open("TestTimeCoverage.xml");
+    assert cat != null;
+
+    Dataset ds = cat.findDatasetByID("test1");
+    DateRange tc = ds.getTimeCoverage();
+    assert null != tc;
+    System.out.println(" tc = "+tc);
+    assert tc.getEnd().isPresent();
+    assert tc.getResolution() == null;
+    assert tc.getDuration().equals( new TimeDuration("14 days") );
+
+    ds = cat.findDatasetByID("test2");
+    tc = ds.getTimeCoverage();
+    assert null != tc;
+    System.out.println(" tc = "+tc);
+    CalendarDate got = tc.getStart().getCalendarDate();
+    CalendarDate want = CalendarDateFormatter.isoStringToCalendarDate(null, "1999-11-16T12:00:00");
+    assert got.equals( want);
+    assert tc.getResolution() == null;
+    TimeDuration gott = tc.getDuration();
+    TimeDuration wantt = new TimeDuration("P3M");
+    assert gott.equals( wantt);
+
+    ds = cat.findDatasetByID("test3");
+    tc = ds.getTimeCoverage();
+    assert null != tc;
+    System.out.println(" tc = "+tc);
+    assert tc.getResolution() == null;
+    assert tc.getDuration().equals( new TimeDuration("2 days") );
+
+    ds = cat.findDatasetByID("test4");
+    tc = ds.getTimeCoverage();
+    assert null != tc;
+    System.out.println(" tc = "+tc);
+    TimeDuration r = tc.getResolution();
+    assert r != null;
+    TimeDuration r2 = new TimeDuration("3 hour");
+    assert r.equals( r2 );
+    TimeDuration d = tc.getDuration();
+    TimeUnit tu = d.getTimeUnit();
+    assert tu.getUnitString().equals("days") : tu.getUnitString(); // LOOK should be 3 hours, or hours or ??
+ }
+
+  /////////////
+
+  @Test
+  public void testVariables() throws IOException {
+    Catalog cat = open("TestHarvest.xml");
+    assert cat != null;
+
+    Dataset ds = cat.findDatasetByID("solve1.dc8");
+    assert ds != null;
+
+    List<ThreddsMetadata.VariableGroup> list = ds.getVariables();
+    assert list != null;
+    assert list.size() >= 2;
+
+    ThreddsMetadata.VariableGroup vars = getType( list, "CF-1.0");
+    assert vars != null;
+    checkVariable( vars, "wv","Wind Speed");
+    checkVariable( vars, "o3c", "Ozone Concentration");
+
+    ThreddsMetadata.VariableGroup dif = getType( list, "DIF");
+    assert dif != null;
+    checkVariable( dif, "wind_from_direction",
+        "EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction");
+
+  }
+
+  ThreddsMetadata.VariableGroup getType(List<ThreddsMetadata.VariableGroup> list, String type) {
+    for (int i=0; i<list.size(); i++) {
+      ThreddsMetadata.VariableGroup vars = list.get(i);
+      if (vars.getVocabulary().equals(type)) return vars;
+    }
+    return null;
+  }
+
+  void checkVariable(ThreddsMetadata.VariableGroup vars, String name, String vname) {
+    List<ThreddsMetadata.Variable> list = vars.getVariableList();
+    for (ThreddsMetadata.Variable var : list) {
+      if (var.getName().equals(name)) {
+        assert var.getVocabularyName().equals(vname);
+        return;
+      }
+    }
+    assert false : "cant find "+name;
+  }
 
 
 }

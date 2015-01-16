@@ -125,8 +125,9 @@ public class TestMetadataXLink {
 
     getProject( cat, "Metars", "DIF", "test1");
     getProject( cat, "Radars", "DIF", "test2");
-    getProject( cat, "Zonal", "DIF", "NASA Earth Science Project Office, Ames Research Center");
 
+    // XLink content
+    getProject( cat, "Zonal", "DIF", "NASA Earth Science Project Office, Ames Research Center");
     getKeyword( cat, "Zonal", null, "Ocean Biomass");
     getKeyword( cat, "Zonal", "DIF-Discipline", "Earth Science");
  }
@@ -188,11 +189,11 @@ public class TestMetadataXLink {
 
     m = getMetadataByType(cat, "solve", "ADN");
     assert !m.isInherited();
-    assert null == m.getXlinkHref();
+    assert null != m.getXlinkHref();
 
     m = getMetadataByType(cat, "solve", "DIF");
     assert !m.isInherited();
-    assert null == m.getXlinkHref();
+    assert null != m.getXlinkHref();
  }
 
   private ThreddsMetadata.MetadataOther getMetadataByType(Catalog cat, String name, String mtype) {
@@ -213,8 +214,7 @@ public class TestMetadataXLink {
     assert mlist != null;
     assert mlist.size() > 0;
 
-    for (int i=0; i<mlist.size(); i++) {
-      ThreddsMetadata.MetadataOther m = mlist.get(i);
+    for (ThreddsMetadata.MetadataOther m : mlist) {
       String ns = m.getNamespaceURI();
       // System.out.println(" ns = "+ns);
       if (ns.equals(wantNs))

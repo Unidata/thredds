@@ -373,7 +373,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public java.util.List<ThreddsMetadata.MetadataOther> getMetadata(String want) {
     List<ThreddsMetadata.MetadataOther> result = new ArrayList<>();
     for (ThreddsMetadata.MetadataOther m : getMetadataOther()) {
-      if (m.getType().equalsIgnoreCase(want))
+      if (m.getType() != null && m.getType().equalsIgnoreCase(want))
         result.add(m);
     }
     return result;

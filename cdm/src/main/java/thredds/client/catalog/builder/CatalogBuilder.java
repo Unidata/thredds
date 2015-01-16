@@ -88,7 +88,7 @@ public class CatalogBuilder {
     try {
       uri = new URI(location);
     } catch (URISyntaxException e) {
-      errlog.format("Bad location = %s err=%s%n", location, e.getMessage());
+      errlog.format("Bad location = '%s' err='%s'%n", location, e.getMessage());
       error = true;
       return null;
     }
@@ -178,7 +178,7 @@ public class CatalogBuilder {
       readCatalog(catBuilder, jdomDoc.getRootElement(), uri);
 
     } catch (Exception e) {
-      errlog.format("failed to read catalog at %s err=%s%n", uri.toString(), e);
+      errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
       error = true;
     }
 
@@ -211,7 +211,7 @@ public class CatalogBuilder {
       try {
         expires = CalendarDateFormatter.isoStringToCalendarDate(null, expiresS);
       } catch (Exception e) {
-        errlog.format("bad expires date %s err=%s%n", expiresS, e.getMessage());
+        errlog.format("bad expires date '%s' err='%s'%n", expiresS, e.getMessage());
       }
     }
 
@@ -220,7 +220,7 @@ public class CatalogBuilder {
       try {
         baseURI = new URI(catSpecifiedBaseURL);
       } catch (URISyntaxException e) {
-        errlog.format("readCatalog(): bad catalog specified base URI=%s %n", catSpecifiedBaseURL);
+        errlog.format("readCatalog(): bad catalog specified base URI='%s' %n", catSpecifiedBaseURL);
         baseURI = docBaseURI;
       }
     }
@@ -315,7 +315,7 @@ public class CatalogBuilder {
 
     ServiceType type = ServiceType.getServiceTypeIgnoreCase(typeS);
     if (type == null) {
-      errlog.format(" non-standard service type = %s%n", typeS);
+      errlog.format(" non-standard service type = '%s'%n", typeS);
     }
 
     List<Property> properties = null;
@@ -415,7 +415,7 @@ public class CatalogBuilder {
     // read attributes
     String name = dsElem.getAttributeValue("name");
     if (name == null)
-      errlog.format(" ** warning: dataset must have a name = %s%n", dsElem);
+      errlog.format(" ** warning: dataset must have a name = '%s'%n", dsElem);
     else
       dataset.setName(name);
 
@@ -432,7 +432,7 @@ public class CatalogBuilder {
     if (dataTypeName != null) {
       FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
       if (dataType == null) {
-        errlog.format(" ** warning: non-standard data type = %s%n", dataTypeName);
+        errlog.format(" ** warning: non-standard data type = '%s'%n", dataTypeName);
       }
     }
 
@@ -556,7 +556,7 @@ public class CatalogBuilder {
       if ((dataTypeName != null) && (dataTypeName.length() > 0)) {
         FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
         if (dataType == null) {
-          errlog.format(" ** warning: non-standard feature type = %s%n", dataTypeName);
+          errlog.format(" ** warning: non-standard feature type = '%s'%n", dataTypeName);
         }
       }
     }
@@ -567,7 +567,7 @@ public class CatalogBuilder {
       if ((dataFormatTypeName != null) && (dataFormatTypeName.length() > 0)) {
         DataFormatType dataFormatType = DataFormatType.getType(dataFormatTypeName);
         if (dataFormatType == null) {
-          errlog.format(" ** warning: non-standard dataFormat type = %s%n", dataFormatTypeName);
+          errlog.format(" ** warning: non-standard dataFormat type = '%s'%n", dataFormatTypeName);
         }
         flds.put(Dataset.DataFormatType, dataFormatTypeName);
       }
@@ -597,7 +597,7 @@ public class CatalogBuilder {
     try {
       size = Double.parseDouble(sizeS);
     } catch (NumberFormatException e) {
-      errlog.format(" ** Parse error: Bad double format in size element = %s%n", sizeS);
+      errlog.format(" ** Parse error: Bad double format in size element = '%s'%n", sizeS);
       return -1;
     }
 
@@ -625,7 +625,7 @@ public class CatalogBuilder {
       try {
         uri =  docBaseURI.resolve(href);
       } catch (Exception e) {
-        errlog.format(" ** Invalid documentation href = %s err=%s%n", href, e.getMessage());
+        errlog.format(" ** Invalid documentation href = '%s' err='%s'%n", href, e.getMessage());
       }
     }
 
@@ -638,7 +638,7 @@ public class CatalogBuilder {
     try {
       return Double.parseDouble(text);
     } catch (NumberFormatException e) {
-      errlog.format(" ** Parse error: Bad double format = %s%n", text);
+      errlog.format(" ** Parse error: Bad double format = '%s'%n", text);
       return Double.NaN;
     }
   }
@@ -813,7 +813,7 @@ public class CatalogBuilder {
     ThreddsMetadata.Vocab name = readControlledVocabulary(elem.getChild("name", Catalog.defNS));
     Element contact = elem.getChild("contact", Catalog.defNS);
     if (contact == null) {
-      errlog.format(" ** Parse error: Missing contact element in = %s%n", elem.getName());
+      errlog.format(" ** Parse error: Missing contact element in = '%s'%n", elem.getName());
       return null;
     }
     return new ThreddsMetadata.Source(name, contact.getAttributeValue("url"), contact.getAttributeValue("email"));
@@ -885,7 +885,7 @@ public class CatalogBuilder {
     try {
       return new DateRange(start, end, duration, resolution);
     } catch (java.lang.IllegalArgumentException e) {
-      errlog.format(" ** warning: TimeCoverage error =%s%n", e.getMessage());
+      errlog.format(" ** warning: TimeCoverage error ='%s'%n", e.getMessage());
       return null;
     }
   }
@@ -902,7 +902,7 @@ public class CatalogBuilder {
     try {
       return new DateType(text, format, type);
     } catch (java.text.ParseException e) {
-      errlog.format(" ** Parse error: Bad date format = %s%n", text);
+      errlog.format(" ** Parse error: Bad date format = '%s'%n", text);
       return null;
     }
   }
@@ -914,7 +914,7 @@ public class CatalogBuilder {
       text = elem.getText();
       return new TimeDuration(text);
     } catch (java.text.ParseException e) {
-      errlog.format(" ** Parse error: Bad duration format = %s%n", text);
+      errlog.format(" ** Parse error: Bad duration format = '%s'%n", text);
       return null;
     }
   }
@@ -970,14 +970,14 @@ public class CatalogBuilder {
       try {
         vocabUri =  docBaseURI.resolve(vocabHref);
       } catch (Exception e) {
-        errlog.format(" ** Invalid Variables vocabulary URI= %s err=%s%n",vocabHref,e.getMessage());
+        errlog.format(" ** Invalid Variables vocabulary URI= '%s' err='%s'%n",vocabHref,e.getMessage());
       }
     }
 
     java.util.List<Element> vlist = varsElem.getChildren("variable", Catalog.defNS);
     URI mapUri = readVariableMap(varsElem.getChild("variableMap", Catalog.defNS));
     if ((mapUri != null) && vlist.size() > 0) { // cant do both
-      errlog.format(" ** Catalog error: cant have variableMap and variable in same element %s%n", varsElem);
+      errlog.format(" ** Catalog error: cant have variableMap and variable in same element '%s'%n", varsElem);
       mapUri = null;
     }
 
@@ -1042,7 +1042,7 @@ public class CatalogBuilder {
     try {
       mapUri =  docBaseURI.resolve(mapHref);
     } catch (Exception e) {
-      errlog.format(" ** Invalid Variables map URI= %s err=%s%n", mapHref, e.getMessage());
+      errlog.format(" ** Invalid Variables map URI= '%s' err='%s'%n", mapHref, e.getMessage());
     }
     return mapUri;
   }
