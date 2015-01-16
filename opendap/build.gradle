@@ -3,6 +3,7 @@ apply plugin: 'war'
 dependencies {
     compile project(':cdm')
     compile project(':httpservices')
+    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     providedCompile libraries["javax.servlet-api"]
     compile libraries["jdom2"]

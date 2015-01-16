@@ -1,6 +1,4 @@
 dependencies {
-    // A lot of these depedencies should be in the testRuntime config, not testCompile.
-
     testCompile project(":cdm")
     testCompile project(":bufr")
     testCompile project(":grib")
