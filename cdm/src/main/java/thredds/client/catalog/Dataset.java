@@ -80,6 +80,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String VariableMapLink = "VariableMapLink";
   public static final String Version = "Version";
   public static final String UrlPath = "UrlPath";
+  public static final String UseRemoteCatalogService = "UseRemoteCatalogService";
 
   public Dataset(DatasetNode parent, String name, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
     super(parent, name, flds, datasetBuilders);
@@ -101,7 +102,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
    * @param featureType : data type
    * @param stype    : ServiceType
    */
-  public Dataset(String urlPath, ucar.nc2.constants.FeatureType featureType, ServiceType stype) {
+  public Dataset(String urlPath, ucar.nc2.constants.FeatureType featureType, String stype) {
     super(null, urlPath, new HashMap<String, Object>(), null);
     flds.put(FeatureType, featureType);
     flds.put(ServiceName, "anon");

@@ -34,6 +34,7 @@ package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,16 +47,16 @@ import java.util.List;
 public class Service {            // (7)
   private final String name;
   private final String base;
-  private final ServiceType type;
+  private final String typeS;
   private final String desc;
   private final String suffix;
   private final List<Service> nestedServices;
   private final List<Property> properties;
 
-  public Service(String name, String base, ServiceType type, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
+  public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
     this.name = name;
     this.base = base;
-    this.type = type;
+    this.typeS = typeS;
     this.desc = desc;
     this.suffix = suffix;
     this.nestedServices = nestedServices;
@@ -70,8 +71,11 @@ public class Service {            // (7)
     return base;
   }
 
+  public String getServiceTypeName() {
+    return typeS;
+  }
   public ServiceType getType() {
-    return type;
+    return ServiceType.getServiceTypeIgnoreCase(typeS);
   }
 
   public String getDesc() {
@@ -83,10 +87,10 @@ public class Service {            // (7)
   }
 
   public List<Service> getNestedServices() {
-    return nestedServices;
+    return nestedServices == null ? new ArrayList<Service>(0) : nestedServices;
   }
 
   public List<Property> getProperties() {
-    return properties;
+    return properties == null ? new ArrayList<Property>(0) : properties;
   }
 }

@@ -102,9 +102,17 @@ public class Catalog extends DatasetNode {
   public Service findService(String serviceName)  {
     if (serviceName == null) return null;
     List<Service> services = (List<Service>) flds.get(Dataset.Services);
+    return findService(services, serviceName);
+  }
+
+  private Service findService(List<Service> services, String want)  {
     if (services == null) return null;
     for (Service s : services) {
-      if (s.getName().equals(serviceName)) return s;
+      if (s.getName().equals(want)) return s;
+    }
+    for (Service s : services) {
+      Service result = findService(s.getNestedServices(), want);
+      if (result != null) return result;
     }
     return null;
   }
@@ -129,14 +137,18 @@ public class Catalog extends DatasetNode {
    * @see java.net.URI#resolve
    */
   public URI resolveUri(String uriString) throws URISyntaxException {
+    return resolveUri(getBaseURI(), uriString);
+  }
+
+  // lookj maybe should be utility class
+  public static URI resolveUri(URI baseURI, String uriString) throws URISyntaxException {
     URI want = new URI(uriString);
-    URI baseURI = getBaseURI();
     if ((baseURI == null) || want.isAbsolute())
       return want;
 
     // gotta deal with file ourself
     String scheme = baseURI.getScheme();
-    if ((scheme != null) && scheme.equals("file")) { // LOOK at ucar.nc2.util.NetworkUtils.resolve
+    if ((scheme != null) && scheme.equals("file")) {
       String baseString = baseURI.toString();
       if ((uriString.length() > 0) && (uriString.charAt(0) == '#'))
         return new URI(baseString + uriString);

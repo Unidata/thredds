@@ -76,29 +76,29 @@ public class DatasetBuilder {
   protected List<AccessBuilder> accessBuilders;
   protected List<DatasetBuilder> datasetBuilders;
 
-  protected DatasetBuilder(DatasetBuilder parent) {
+  public DatasetBuilder(DatasetBuilder parent) {
     this.parent = parent;
   }
 
-  protected Object get(String fldName) {
+  public Object get(String fldName) {
     return flds.get(fldName);
   }
 
-  protected void put(String fldName, Object fldValue) {
+  public void put(String fldName, Object fldValue) {
     if (fldValue != null) flds.put(fldName, fldValue);
   }
 
-  protected void setName(String name) {
+  public void setName(String name) {
     this.name = name;
   }
 
-  protected void addDataset(DatasetBuilder d) {
+  public void addDataset(DatasetBuilder d) {
     if (d == null) return;
     if (datasetBuilders == null) datasetBuilders = new ArrayList<>();
     datasetBuilders.add(d);
   }
 
-  protected void addAccess(AccessBuilder d) {
+  public void addAccess(AccessBuilder d) {
     if (accessBuilders == null) accessBuilders = new ArrayList<>();
     accessBuilders.add(d);
   }

@@ -32,61 +32,59 @@
  */
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
-import thredds.client.catalog.builder.AccessBuilder;
-import thredds.client.catalog.builder.DatasetBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import thredds.client.catalog.builder.CatalogBuilder;
 
-import java.net.URI;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
 /**
- * A Client CatalogRef
+ * move this to server client
  *
  * @author caron
- * @since 1/7/2015
+ * @since 1/16/2015
  */
-public class CatalogRef extends Dataset {
-  private final String xlink;
-  private boolean isRead;
+public class TestUseRemoteReference {
+  private String testCatalog = "thredds/catalog/TestRemoteCatalogService.xml";
+  private Catalog cat;
 
-  public CatalogRef(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
-    super(parent, name, flds, accessBuilders, datasetBuilders);
-    this.xlink = xlink;
+  @Before
+  public void getCatalog() throws IOException {
+      boolean validate = true;
+
+      // get test catalog location
+      ClassLoader cl = this.getClass().getClassLoader();
+      URL url = cl.getResource(testCatalog);
+      // read in catalog
+      CatalogBuilder catFactory = new CatalogBuilder();
+      cat = catFactory.buildFromLocation("file:" + url.getPath());
   }
 
-  public String getXlinkHref() {
-    return xlink;
+  @Test
+  public void testUseRemoteCatalogServiceIsSet() {
+
+      List<Dataset> datasets = cat.getDatasets();
+      assert datasets.size() == 1;
+
+      Dataset ds = datasets.get(0);
+      List<Dataset> childDatasets = ds.getDatasets();
+      assert childDatasets.size() == 3;
+
+      for (Dataset thisDs : childDatasets) {
+          String name = thisDs.getName();
+          if (name.contains("default")) {
+              // the default is null...this is detected and handled in HtmlWriter
+              assert ((CatalogRef) thisDs).useRemoteCatalogService() == false;
+          } else if (name.contains("do not")) {
+              // this catalogRef has useRemoteCatalogService set to false
+              assert ((CatalogRef) thisDs).useRemoteCatalogService() == false;
+          } else {
+              // this catalogRef has useRemoteCatalogService set to true
+              assert ((CatalogRef) thisDs).useRemoteCatalogService() == true;
+          }
+      }
   }
-
-  // LOOK not so sure about this
-  public boolean isRead() {
-    return isRead;
-  }
-
-  public void setRead(boolean isRead) {
-    this.isRead = isRead;
-  }
-
-  public boolean useRemoteCatalogService() {
-    Boolean result = (Boolean) flds.get(UseRemoteCatalogService);
-    return (result != null) && result;
-  }
-
-  /**
-   * @return Xlink reference as a URI, resolved
-   */
-  public URI getURI() {
-    try {
-      Catalog parent = getParentCatalog();
-      if (parent != null)
-        return parent.resolveUri(xlink);
-    }
-    catch (java.net.URISyntaxException e) {
-      return null;
-    }
-    return null;
-  }
-
-
+  
 }

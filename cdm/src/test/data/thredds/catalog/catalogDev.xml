@@ -13,11 +13,12 @@
     </metadata>
     
     <dataset name="Realtime data from IDD">
-      <catalogRef xlink:title="NCEP Model Data" xlink:href="http://motherlode.ucar.edu:8080/cataloggen/cataloggen/catalogs/uniModels.xml"/>
+      <catalogRef xlink:title="NCEP Model Data" xlink:href="http://motherlode.ucar.edu:8080/cataloggen/cataloggen/catalogs/uniModels.xml" name=""/>
       <dataset name="Satellite Images from NOAAPort and Unidata/Wisconsin Data Streams" dataType="Image">
-        <catalogRef xlink:title="Catalog" xlink:href="adde/motherlode/catalog.xml"/>
+        <catalogRef xlink:title="Catalog" xlink:href="adde/motherlode/catalog.xml" name=""/>
         <dataset name="Dataset Query Capability" serviceName="this" urlPath="adde/motherlode/dqc.xml" dataType="Image"/>
       </dataset>
+
       <dataset name="Station data">
         <metadata inherited="true">
           <serviceName>this</serviceName>
@@ -50,8 +51,8 @@
     </dataset>
     
     <dataset name="Case Studies">
-      <catalogRef xlink:title="Data for VGEE Curricula" xlink:href="casestudy/vgeeCatalog.xml"/>
-      <catalogRef xlink:title="Data for Comet CaseStudy 034" xlink:href="casestudy/ccs034Catalog.xml"/>
+      <catalogRef xlink:title="Data for VGEE Curricula" xlink:href="casestudy/vgeeCatalog.xml" name=""/>
+      <catalogRef xlink:title="Data for Comet CaseStudy 034" xlink:href="casestudy/ccs034Catalog.xml" name=""/>
     </dataset>
   </dataset>
 </catalog>

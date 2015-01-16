@@ -70,16 +70,7 @@ public class TestClientCatalogBasic {
   Catalog cat;
 
   public TestClientCatalogBasic(String catFrag) throws IOException {
-
-    String urlString = "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/" + catFrag;
-    System.out.printf("%s%n", urlString);
-    CatalogBuilder builder = new CatalogBuilder();
-    cat = builder.buildFromLocation(urlString);
-    if (builder.hasFatalError()) {
-      System.out.printf("ERRORS %s%n", builder.getErrorMessage());
-      assert false;
-    }
-
+    cat = TestClientCatalog.open(catFrag);
   }
 
   @Test

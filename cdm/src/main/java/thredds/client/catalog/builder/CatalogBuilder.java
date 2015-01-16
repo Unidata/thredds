@@ -151,7 +151,7 @@ public class CatalogBuilder {
     datasetBuilders.add(d);
   }
 
-  protected Catalog makeCatalog() {
+  public Catalog makeCatalog() {
     Map<String, Object> flds = setFields();
     return new Catalog(baseURI, name, flds, datasetBuilders);
   }
@@ -313,12 +313,9 @@ public class CatalogBuilder {
     String suffix = s.getAttributeValue("suffix");
     String desc = s.getAttributeValue("desc");
 
-    ServiceType type = null;
-    try {
-      type = ServiceType.getServiceTypeIgnoreCase(typeS);
-    } catch (Exception e) {
-      errlog.format("bad service type = %s%n", typeS);
-      error = true;
+    ServiceType type = ServiceType.getServiceTypeIgnoreCase(typeS);
+    if (type == null) {
+      errlog.format(" non-standard service type = %s%n", typeS);
     }
 
     List<Property> properties = null;
@@ -336,7 +333,7 @@ public class CatalogBuilder {
       services.add(readService(e));
     }
 
-    Service result = new Service(name, serviceBase, type, desc, suffix, services, properties);
+    Service result = new Service(name, serviceBase, typeS, desc, suffix, services, properties);
     serviceMap.put(name, result);
     return result;
   }
@@ -742,39 +739,55 @@ public class CatalogBuilder {
 
     // the case where its not ThreddsMetadata
     if (!isThreddsNamespace) {
-      ThreddsMetadata.MetadataOther mo;
       if (inlineElements.size() > 0) {
         // just hold onto the jdom elements as the "content"
-         mo = new ThreddsMetadata.MetadataOther( mtype, namespace.getURI(), namespace.getPrefix(), inherited, mdataElement);
+         return new ThreddsMetadata.MetadataOther( mtype, namespace.getURI(), namespace.getPrefix(), inherited, mdataElement);
 
       } else { // otherwise it must be an Xlink
-        mo = new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited);
+        return new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited);
       }
-      return mo;
     }
 
-    // the case where its ThreddsMetadata:
-    if (inherited) {  // gonna put stuff in the tmi.
+    if (inherited) {
+      // the case where its inherited ThreddsMetadata: gonna put stuff in the tmi.
       ThreddsMetadata tmi = (ThreddsMetadata) dataset.get(Dataset.ThreddsMetadataInheritable);
       if (tmi == null) {
         tmi = new ThreddsMetadata();
         dataset.put(Dataset.ThreddsMetadataInheritable, tmi);
       }
       readThreddsMetadataGroup(tmi.getFlds(), dataset, mdataElement);
+      return null;
 
-    } else { // not inherited - stick it directly into the dataset
+    } else {
+      // the case where its non-inherited ThreddsMetadata: gonna put stuff directly into the dataset
       readThreddsMetadataGroup(flds, dataset, mdataElement);
+
+      // also need to capture any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
+      if (href != null) {
+        return new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited);
+      } else {
+        return null;
+      }
     }
 
-    return null;
+      /* also need to read any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
+      if (href != null) try {
+        URI xlinkUri = Catalog.resolveUri(baseURI, href);
+        Element remoteMdata = readMetadataFromUrl(xlinkUri);
+        return readMetadata(flds, dataset, remoteMdata);
+      } catch (Exception ioe) {
+        errlog.format("Cant read in referenced metadata %s err=%s%n", href, ioe.getMessage());
+      }
+      return null;
+    }  */
   }
 
-  private Element readContentFromURL(java.net.URI uri) throws java.io.IOException {
+  private Element readMetadataFromUrl(java.net.URI uri) throws java.io.IOException {
     SAXBuilder saxBuilder = new SAXBuilder();
     Document doc;
     try {
       doc = saxBuilder.build(uri.toURL());
-    } catch (JDOMException e) {
+    } catch (Exception e) {
       throw new IOException(e.getMessage());
     }
     return doc.getRootElement();
