@@ -68,6 +68,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String Id = "Id";
   public static final String Keywords = "Keywords";
   public static final String MetadataOther = "MetadataOther";
+  public static final String Ncml = "Ncml";
   public static final String Projects = "Projects";
   public static final String Properties = "Properties";
   public static final String Publishers = "Publishers";

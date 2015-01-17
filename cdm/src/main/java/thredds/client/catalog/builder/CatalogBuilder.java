@@ -403,8 +403,8 @@ public class CatalogBuilder {
       } else if (e.getName().equals("catalogRef")) {
         dataset.addDataset(readCatalogRef(dataset, e));
 
-      }  else {
-        dataset.addDataset( buildOtherDataset(null, e));
+      } else {
+        dataset.addDataset( buildOtherDataset(dataset, e));
       }
     }
 

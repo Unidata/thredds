@@ -73,7 +73,6 @@
     <filter>
       <include wildcard="*.grib1" atomic="true" collection="false"/>
     </filter>
-    <addID/>
     <sort>
       <lexigraphicByName increasing="false"/>
     </sort>
@@ -105,7 +104,6 @@
         <filter>
           <include wildcard="*.nc" atomic="true" collection="false"/>
         </filter>
-        <addID/>
         <sort>
           <lexigraphicByName increasing="false"/>
         </sort>

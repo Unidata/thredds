@@ -32,7 +32,6 @@
  */
 package thredds.server.catalog.builder;
 
-import org.jdom2.Element;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.server.catalog.DatasetScan;
@@ -46,7 +45,6 @@ import thredds.server.catalog.DatasetScanConfig;
  */
 public class DatasetScanBuilder extends DatasetBuilder {
   DatasetScanConfig config;
-  Element ncml;
 
   public DatasetScanBuilder(DatasetBuilder parent, DatasetScanConfig config) {
     super(parent);
@@ -54,6 +52,7 @@ public class DatasetScanBuilder extends DatasetBuilder {
   }
 
   public DatasetScan makeDataset(DatasetNode parent) {
-    return new DatasetScan(parent, name, flds, accessBuilders, datasetBuilders, config, ncml);
+    String xlink = "/thredds/catalog/"+config.path+"/catalog.xml";   // LOOK hardcoded thredds, need context ??
+    return new DatasetScan(parent, name, xlink, flds, accessBuilders, datasetBuilders, config);
   }
 }

@@ -65,9 +65,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     }
 
     else if (elem.getName().equals("netcdf") && elem.getNamespace().equals(Catalog.ncmlNS)) {
-      if (parent instanceof DatasetScanBuilder) {
-        ((DatasetScanBuilder) parent).ncml = elem.detach();
-      }
+      parent.put(Dataset.Ncml, elem.detach());
       return null;
     }
 

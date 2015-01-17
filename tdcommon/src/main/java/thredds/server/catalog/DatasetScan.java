@@ -34,6 +34,7 @@ package thredds.server.catalog;
 
 import net.jcip.annotations.Immutable;
 import org.jdom2.Element;
+import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.AccessBuilder;
@@ -50,19 +51,17 @@ import java.util.Map;
  * @since 1/12/2015
  */
 @Immutable
-public class DatasetScan extends Dataset {
+public class DatasetScan extends CatalogRef {
   private final DatasetScanConfig config;
-  private final Element ncml;
 
-  public DatasetScan(DatasetNode parent, String name, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders,
-          DatasetScanConfig config, Element ncml) {
-    super(parent, name, flds, accessBuilders, datasetBuilders);
+  public DatasetScan(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders,
+          DatasetScanConfig config) {
+    super(parent, name, xlink, flds, accessBuilders, datasetBuilders);
     this.config = config;
-    this.ncml = ncml;
   }
 
   org.jdom2.Element getNcmlElement() {
-    return ncml;
+    return (org.jdom2.Element) getLocalField(Dataset.Ncml);
   }
 
   MFile requestCrawlableDataset(String path) {

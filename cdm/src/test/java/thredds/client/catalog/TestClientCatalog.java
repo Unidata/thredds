@@ -52,13 +52,13 @@ import java.util.List;
  * @since 1/16/2015
  */
 public class TestClientCatalog {
-  
+
   static public String makeUrlFromFragment(String catFrag) {
-    return "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/" + catFrag;    
+    return "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/" + catFrag;
   }
-  
- static public Catalog open(String urlString) throws IOException {
-   if (!urlString.startsWith("http:") && !urlString.startsWith("file:")) urlString = makeUrlFromFragment(urlString);
+
+  static public Catalog open(String urlString) throws IOException {
+    if (!urlString.startsWith("http:") && !urlString.startsWith("file:")) urlString = makeUrlFromFragment(urlString);
     System.out.printf("Open %s%n", urlString);
     CatalogBuilder builder = new CatalogBuilder();
     Catalog cat = builder.buildFromLocation(urlString);
@@ -71,7 +71,7 @@ public class TestClientCatalog {
       if (mess.length() > 0)
         System.out.printf(" parse Messages = %s%n", builder.getErrorMessage());
     }
-   return cat;
+    return cat;
   }
 
   public static String makeFilepath(String catalogName) {
@@ -79,26 +79,26 @@ public class TestClientCatalog {
   }
 
   public static String makeFilepath() {
-    return "file:"+dataDir;
+    return "file:" + dataDir;
   }
 
   public static String dataDir = TestDir.cdmLocalTestDataDir + "thredds/catalog/";
 
   /////////////////////////////////
-  
+
   @Test
-  public void testResolve() throws IOException{
+  public void testResolve() throws IOException {
     Catalog cat = open("testCatref.xml");
-    Assert.assertEquals("catrefURI", makeFilepath("test2.xml"), getCatrefURI( cat.getDatasets(), "catref"));
+    Assert.assertEquals("catrefURI", makeFilepath("test2.xml"), getCatrefURI(cat.getDatasets(), "catref"));
 
     String catrefURIn = getCatrefNestedURI(cat, "top", "catref-nested");
-    assert catrefURIn.equals(makeFilepath("test0.xml")) :catrefURIn;
+    assert catrefURIn.equals(makeFilepath("test0.xml")) : catrefURIn;
   }
 
   private CatalogRef getCatrefNested(Catalog cat, String id, String catName) {
     Dataset ds = cat.findDatasetByID(id);
     assert ds != null;
-    return getCatref( ds.getDatasets(), catName);
+    return getCatref(ds.getDatasets(), catName);
   }
 
   private CatalogRef getCatref(List<Dataset> list, String name) {
@@ -106,7 +106,7 @@ public class TestClientCatalog {
       if (ds.getName().equals(name)) {
         assert ds instanceof CatalogRef;
         CatalogRef catref = (CatalogRef) ds;
-        System.out.println(name+" = "+catref.getXlinkHref()+" == "+catref.getURI());
+        System.out.println(name + " = " + catref.getXlinkHref() + " == " + catref.getURI());
         return catref;
       }
     }
@@ -114,14 +114,14 @@ public class TestClientCatalog {
   }
 
   private String getCatrefURI(List<Dataset> list, String name) {
-    CatalogRef catref = getCatref( list, name);
+    CatalogRef catref = getCatref(list, name);
     if (catref != null)
       return catref.getURI().toString();
     return null;
   }
 
   private String getCatrefNestedURI(Catalog cat, String id, String catName) {
-    return getCatrefNested( cat, id, catName).getURI().toString();
+    return getCatrefNested(cat, id, catName).getURI().toString();
   }
 
 
@@ -129,11 +129,11 @@ public class TestClientCatalog {
   public void testDeferredRead() throws IOException {
     Catalog cat = open("testCatref.xml");
 
-    CatalogRef catref = getCatref( cat.getDatasets(), "catref");
-    assert ( !catref.isRead());
+    CatalogRef catref = getCatref(cat.getDatasets(), "catref");
+    assert (!catref.isRead());
 
-    catref = getCatrefNested( cat, "top", "catref-nested");
-    assert ( !catref.isRead());
+    catref = getCatrefNested(cat, "top", "catref-nested");
+    assert (!catref.isRead());
   }
 
   ////////////////////////
@@ -149,32 +149,32 @@ public class TestClientCatalog {
 
     ds = cat.findDatasetByID("nest1");
     assert ds != null;
-    assert ds.getServiceDefault() != null  : ds.getID();
+    assert ds.getServiceDefault() != null : ds.getID();
 
     ds = cat.findDatasetByID("nest2");
     assert ds != null;
-    assert ds.getServiceDefault() != null  : ds.getID();
+    assert ds.getServiceDefault() != null : ds.getID();
 
 
     System.out.printf("OK%n");
- }
+  }
 
   ////////////////////////////
 
   @Test
-   public void testGC() throws Exception {
-     Catalog cat = open("MissingGCProblem.xml");
-     assert cat != null;
+  public void testGC() throws Exception {
+    Catalog cat = open("MissingGCProblem.xml");
+    assert cat != null;
 
-     Dataset ds = cat.findDatasetByID("hasGC");
-     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
-     assert null != gc;
-     assert gc.getHeightStart() == 5.0 : gc.getHeightStart();
-     assert gc.getHeightExtent() == 47.0 : gc.getHeightExtent();
+    Dataset ds = cat.findDatasetByID("hasGC");
+    ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+    assert null != gc;
+    assert gc.getHeightStart() == 5.0 : gc.getHeightStart();
+    assert gc.getHeightExtent() == 47.0 : gc.getHeightExtent();
 
-     assert gc.getEastWestRange() == null;
-     assert gc.getNorthSouthRange() == null;
-   }
+    assert gc.getEastWestRange() == null;
+    assert gc.getNorthSouthRange() == null;
+  }
 
   @Test
   public void testTC() throws Exception {
@@ -184,42 +184,42 @@ public class TestClientCatalog {
     Dataset ds = cat.findDatasetByID("test1");
     DateRange tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = "+tc);
+    System.out.println(" tc = " + tc);
     assert tc.getEnd().isPresent();
     assert tc.getResolution() == null;
-    assert tc.getDuration().equals( new TimeDuration("14 days") );
+    assert tc.getDuration().equals(new TimeDuration("14 days"));
 
     ds = cat.findDatasetByID("test2");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = "+tc);
+    System.out.println(" tc = " + tc);
     CalendarDate got = tc.getStart().getCalendarDate();
     CalendarDate want = CalendarDateFormatter.isoStringToCalendarDate(null, "1999-11-16T12:00:00");
-    assert got.equals( want);
+    assert got.equals(want);
     assert tc.getResolution() == null;
     TimeDuration gott = tc.getDuration();
     TimeDuration wantt = new TimeDuration("P3M");
-    assert gott.equals( wantt);
+    assert gott.equals(wantt);
 
     ds = cat.findDatasetByID("test3");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = "+tc);
+    System.out.println(" tc = " + tc);
     assert tc.getResolution() == null;
-    assert tc.getDuration().equals( new TimeDuration("2 days") );
+    assert tc.getDuration().equals(new TimeDuration("2 days"));
 
     ds = cat.findDatasetByID("test4");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = "+tc);
+    System.out.println(" tc = " + tc);
     TimeDuration r = tc.getResolution();
     assert r != null;
     TimeDuration r2 = new TimeDuration("3 hour");
-    assert r.equals( r2 );
+    assert r.equals(r2);
     TimeDuration d = tc.getDuration();
     TimeUnit tu = d.getTimeUnit();
     assert tu.getUnitString().equals("days") : tu.getUnitString(); // LOOK should be 3 hours, or hours or ??
- }
+  }
 
   /////////////
 
@@ -235,20 +235,20 @@ public class TestClientCatalog {
     assert list != null;
     assert list.size() >= 2;
 
-    ThreddsMetadata.VariableGroup vars = getType( list, "CF-1.0");
+    ThreddsMetadata.VariableGroup vars = getType(list, "CF-1.0");
     assert vars != null;
-    checkVariable( vars, "wv","Wind Speed");
-    checkVariable( vars, "o3c", "Ozone Concentration");
+    checkVariable(vars, "wv", "Wind Speed");
+    checkVariable(vars, "o3c", "Ozone Concentration");
 
-    ThreddsMetadata.VariableGroup dif = getType( list, "DIF");
+    ThreddsMetadata.VariableGroup dif = getType(list, "DIF");
     assert dif != null;
-    checkVariable( dif, "wind_from_direction",
-        "EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction");
+    checkVariable(dif, "wind_from_direction",
+            "EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction");
 
   }
 
   ThreddsMetadata.VariableGroup getType(List<ThreddsMetadata.VariableGroup> list, String type) {
-    for (int i=0; i<list.size(); i++) {
+    for (int i = 0; i < list.size(); i++) {
       ThreddsMetadata.VariableGroup vars = list.get(i);
       if (vars.getVocabulary().equals(type)) return vars;
     }
@@ -263,7 +263,7 @@ public class TestClientCatalog {
         return;
       }
     }
-    assert false : "cant find "+name;
+    assert false : "cant find " + name;
   }
 
 

@@ -34,9 +34,11 @@ package thredds.server.catalog;
 
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.DatasetBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,4 +55,18 @@ public class ConfigCatalog extends Catalog {
     super(baseURI, name, flds, datasets);
   }
 
+  public List<DatasetRoot> getRoots() {
+    return (List<DatasetRoot>) getLocalFieldAsList(Dataset.DatasetRoots);
+  }
+
+  private List getLocalFieldAsList(String fldName) {
+    Object value = flds.get(fldName);
+    if (value != null) {
+      if (value instanceof List) return (List) value;
+      List result = new ArrayList(1);
+      result.add(value);
+      return result;
+    }
+    return new ArrayList(0);
+  }
 }
