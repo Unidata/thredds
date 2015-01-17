@@ -12,12 +12,6 @@ dependencies {
     runtime libraries["slf4j-jdk14"]
 }
 
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'ncIdv'
-    }
-}
-
 //////////////////////////////////////////////////////////
 
 ext {

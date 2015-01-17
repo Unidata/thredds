@@ -1,9 +1,3 @@
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'tdcommon'
-    }
-}
-
 dependencies {
     compile project(':cdm')
     compile project(':grib')

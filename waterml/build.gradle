@@ -1,12 +1,7 @@
+// TODO: Add to dependencies.gradle
 repositories {
     maven {
         url "http://52north.org/maven/repo/releases"
-    }
-}
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'waterml'
     }
 }
 

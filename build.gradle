@@ -16,6 +16,7 @@ subprojects {
     // same directory. To fix, we're configuring resources to be copied to the same directory as CLASS files.
     processResources.destinationDir = compileJava.destinationDir
 
+    // TODO: Add to dependencies.gradle.
     repositories {
         mavenCentral()
         maven {
@@ -51,11 +52,14 @@ subprojects {
         options.compilerArgs = ['-Xlint:-options']
     }
 
-    jar {  // Don't apply this config to all Jar subtypes (such as War).
+    // FIXME: Extend these to all Jar subtypes (e.g. War)?
+    //Could I then add additional attributes in subproject build scripts?
+    jar {
         manifest {
-            attributes 'Implementation-Version': project.version,
-                    'Implementation-Vendor': 'UCAR/Unidata',
+            attributes 'Implementation-Title': project.name,
+                    'Implementation-Version': project.version,
                     'Implementation-Vendor-Id': project.group,
+                    'Implementation-Vendor': 'UCAR/Unidata',
                     // Commented out to avoid unnecessary re-compilation and re-jarring: http://goo.gl/kbVWXR
                     // I think I can fix this by writing a builtOn.txt file in compileJava,
                     // and then reading in its value here.

@@ -37,12 +37,6 @@ dependencies {
     runtime libraries["slf4j-jdk14"]
 }
 
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'toolsUI'
-    }
-}
-
 //////////////////////////////////////////////////////////
 
 ext {
@@ -82,6 +76,7 @@ shadow {
 
     jar {
         manifest {
+            attributes 'Implementation-Title': 'toolsUI'
             attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
         }
     }

@@ -1,9 +1,3 @@
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'httpservices'
-    }
-}
-
 dependencies {
     compile libraries["jcip-annotations"]
     compile libraries["httpclient"]

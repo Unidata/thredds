@@ -57,12 +57,15 @@ war {
     archiveName = 'thredds.war'
 
     manifest {
-        attributes 'Implementation-Version': version,
+        attributes 'Implementation-Version': project.version,
                 'Implementation-Title': 'THREDDS Data Server (TDS)',
                 'Implementation-Vendor': 'UCAR/Unidata',
-                'Implementation-Vendor-Id': 'edu.ucar',
-                'Built-On': new Date(),
-                'Build-Jdk': System.properties['java.version']
+                'Implementation-Vendor-Id': project.version,
+                // Commented out to avoid unnecessary re-compilation and re-jarring: http://goo.gl/kbVWXR
+                // I think I can fix this by writing a builtOn.txt file in compileJava,
+                // and then reading in its value here.
+                // 'Built-On': new Date(),
+                'Build-Jdk': JavaVersion.current()
     }
 
 }

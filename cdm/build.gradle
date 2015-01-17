@@ -21,12 +21,6 @@ test{
     exclude 'ucar/nc2/util/UnitTestCommon.class'
 }
 
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'cdm'
-    }
-}
-
 javadoc {
     title = 'Public javadoc for netcdf-java version ' + version
     source = fileTree(dir: 'src/main/java').matching {
