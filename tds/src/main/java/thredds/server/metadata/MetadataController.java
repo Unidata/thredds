@@ -44,7 +44,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.catalog.ThreddsMetadata;
-import thredds.catalog.parser.jdom.InvCatalogFactory10;
+import thredds.client.catalog.Catalog;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
@@ -160,13 +160,13 @@ public class MetadataController {
 
   private String writeXML(ThreddsMetadata.Variables vars) {
     Document doc = new Document();
-    Element elem = new Element("variables", InvCatalogFactory10.defNS);
+    Element elem = new Element("variables", Catalog.defNS);
     doc.setRootElement(elem);
 
     if (vars.getVocabulary() != null)
       elem.setAttribute("vocabulary", vars.getVocabulary());
     if (vars.getVocabHref() != null)
-      elem.setAttribute("href", vars.getVocabHref(), InvCatalogFactory10.xlinkNS);
+      elem.setAttribute("href", vars.getVocabHref(), Catalog.xlinkNS);
 
     List<ThreddsMetadata.Variable> varList = vars.getVariableList();
     for (ThreddsMetadata.Variable v : varList) {
@@ -178,7 +178,7 @@ public class MetadataController {
   }
 
   private Element writeVariable(ThreddsMetadata.Variable v) {
-    Element elem = new Element("variable", InvCatalogFactory10.defNS);
+    Element elem = new Element("variable", Catalog.defNS);
     if (v.getName() != null)
       elem.setAttribute("name", v.getName());
     if (v.getDescription() != null) {

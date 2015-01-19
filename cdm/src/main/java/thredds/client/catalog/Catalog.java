@@ -140,7 +140,7 @@ public class Catalog extends DatasetNode {
     return resolveUri(getBaseURI(), uriString);
   }
 
-  // lookj maybe should be utility class
+  // look maybe should be utility class
   public static URI resolveUri(URI baseURI, String uriString) throws URISyntaxException {
     URI want = new URI(uriString);
     if ((baseURI == null) || want.isAbsolute())

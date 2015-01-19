@@ -68,11 +68,11 @@ public class CatalogBuilder {
     URI catrefURI = catref.getURI();
     if (catrefURI == null) {
       errlog.format("Catref doesnt have valid UrlPath=%s%n", catref.getUrlPath());
-      error = true;
+      fatalError = true;
       return null;
     }
     Catalog result =  buildFromURI(catrefURI);
-    catref.setRead(!error);
+    catref.setRead(!fatalError);
     return result;
   }
 
@@ -81,7 +81,7 @@ public class CatalogBuilder {
   protected URI docBaseURI;
   private Map<String, Service> serviceMap = new HashMap<>();
   protected Formatter errlog = new Formatter();
-  protected boolean error = false;
+  protected boolean fatalError = false;
 
   public Catalog buildFromLocation(String location) throws IOException {
     URI uri;
@@ -89,7 +89,7 @@ public class CatalogBuilder {
       uri = new URI(location);
     } catch (URISyntaxException e) {
       errlog.format("Bad location = '%s' err='%s'%n", location, e.getMessage());
-      error = true;
+      fatalError = true;
       return null;
     }
     return buildFromURI(uri);
@@ -106,7 +106,7 @@ public class CatalogBuilder {
   }
 
   public boolean hasFatalError() {
-    return error;
+    return fatalError;
   }
 
   ////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ public class CatalogBuilder {
       errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
       logger.error("failed to read catalog at {}", uri.toString(), e);
       e.printStackTrace();
-      error = true;
+      fatalError = true;
     }
 
   }
@@ -766,7 +766,7 @@ public class CatalogBuilder {
 
       // also need to capture any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
       if (href != null) {
-        return new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited);
+        return new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), false);
       } else {
         return null;
       }

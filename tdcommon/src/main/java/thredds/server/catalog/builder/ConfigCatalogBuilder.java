@@ -72,7 +72,8 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
 
     // this finds ncml in regular dataset elements
     else if (elem.getName().equals("netcdf") && elem.getNamespace().equals(Catalog.ncmlNS)) {
-      parent.put(Dataset.Ncml, elem.detach());
+      if (parent != null)
+        parent.put(Dataset.Ncml, elem.detach());
       return null;
     }
 
@@ -88,29 +89,35 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
   private DatasetBuilder readDatasetScan(DatasetBuilder parent, Element dsElem) {
     DatasetScanConfigBuilder configBuilder = new DatasetScanConfigBuilder(errlog);
     DatasetScanConfig config = configBuilder.readDatasetScanConfig(dsElem);
+    if (configBuilder.fatalError) {
+       this.fatalError = true;
+       return null;
 
-    DatasetScanBuilder dataset = new DatasetScanBuilder(parent, config);
-    readDatasetInfo(dataset, dsElem);
-
-    for (Element elem : dsElem.getChildren("netcdf", Catalog.ncmlNS) ) {
-      dataset.put(Dataset.Ncml, elem.detach());
+     } else {
+      DatasetScanBuilder dataset = new DatasetScanBuilder(parent, config);
+      readDatasetInfo(dataset, dsElem);
+      for (Element elem : dsElem.getChildren("netcdf", Catalog.ncmlNS)) {
+        dataset.put(Dataset.Ncml, elem.detach());
+      }
+      return dataset;
     }
-
-    return dataset;
   }
 
   private DatasetBuilder readFeatureCollection(DatasetBuilder parent, Element fcElem) {
     FeatureCollectionConfigBuilder configBuilder = new FeatureCollectionConfigBuilder(errlog);
     FeatureCollectionConfig config = configBuilder.readConfig(fcElem);
+    if (configBuilder.fatalError) {
+      this.fatalError = true;
+      return null;
 
-    FeatureCollectionBuilder dataset = new FeatureCollectionBuilder(parent, config);
-    readDatasetInfo(dataset, fcElem);
-
-    for (Element elem : fcElem.getChildren("netcdf", Catalog.ncmlNS) ) {   // ??
-      dataset.put(Dataset.Ncml, elem.detach());
+    } else {
+      FeatureCollectionBuilder dataset = new FeatureCollectionBuilder(parent, config);
+      readDatasetInfo(dataset, fcElem);
+      for (Element elem : fcElem.getChildren("netcdf", Catalog.ncmlNS)) {   // ??
+        dataset.put(Dataset.Ncml, elem.detach());
+      }
+      return dataset;
     }
-
-    return dataset;
   }
 
 

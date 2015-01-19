@@ -33,6 +33,10 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -175,6 +179,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     public final String zpositive;
     public final List<Vocab> names;
 
+    // constructor from catalog
     public GeospatialCoverage(GeospatialRange eastwest, GeospatialRange northsouth, GeospatialRange updown, List<Vocab> names, String zpositive) {
       this.eastwest = eastwest; //  : new Range(defaultEastwest);
       this.northsouth = northsouth; // : new Range(defaultNorthsouth);
@@ -190,6 +195,52 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
         }
       }
       this.isGlobal = isGlobalCheck;
+    }
+
+    // constructor from dataset
+    public GeospatialCoverage(LatLonRect bb, CoordinateAxis1D vaxis) {
+      if (bb == null) {
+        this.eastwest = null;
+        this.northsouth = null;
+        this.isGlobal = false;
+        this.names = null;
+
+      } else {
+        LatLonPointImpl llpt = bb.getLowerLeftPoint();
+        LatLonPointImpl urpt = bb.getUpperRightPoint();
+        double height = urpt.getLatitude() - llpt.getLatitude();
+
+        this.eastwest = new GeospatialRange(llpt.getLongitude(), bb.getWidth(), 0.0, CDM.LON_UNITS);
+        this.northsouth = new GeospatialRange(llpt.getLatitude(), height, 0.0, CDM.LAT_UNITS);
+
+        if ((bb.getWidth() > 358) && (height > 178)) { // LOOK 178 ??
+          this.isGlobal = true;
+          this.names = new ArrayList<>();
+          this.names.add(new Vocab("global", "thredds"));
+        } else {
+          this.isGlobal = false;
+          this.names = null;
+        }
+      }
+
+      if (vaxis == null) {
+        this.updown = null;
+        this.zpositive = null;
+
+      } else {
+        int n = (int) vaxis.getSize();
+        double size = vaxis.getCoordValue(n - 1) - vaxis.getCoordValue(0);
+        double resolution = vaxis.getIncrement();
+        String units = vaxis.getUnitsString();
+        this.updown = new GeospatialRange(vaxis.getCoordValue(0), size, resolution, units);
+        if (units != null) {
+          boolean isPositive = SimpleUnit.isCompatible("m", units);
+          this.zpositive = isPositive ? CF.POSITIVE_UP : CF.POSITIVE_DOWN;
+        } else {
+          this.zpositive = CF.POSITIVE_UP;
+        }
+      }
+
     }
 
     /* public boolean isEmpty() {

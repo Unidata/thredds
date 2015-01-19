@@ -43,13 +43,14 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Description
+ * Builder of DatasetScanConfig
  *
  * @author John
  * @since 1/12/2015
  */
 public class DatasetScanConfigBuilder {
   Formatter errlog;
+  boolean fatalError;
 
   DatasetScanConfigBuilder(Formatter errlog) {
     this.errlog = errlog;

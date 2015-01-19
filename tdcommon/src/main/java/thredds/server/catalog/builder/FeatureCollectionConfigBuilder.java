@@ -49,9 +49,9 @@ import java.util.List;
  */
 public class FeatureCollectionConfigBuilder {
   Formatter errlog;
-  boolean fatalError;
+  public boolean fatalError;
 
-  FeatureCollectionConfigBuilder(Formatter errlog) {
+  public FeatureCollectionConfigBuilder(Formatter errlog) {
     this.errlog = errlog;
   }
 

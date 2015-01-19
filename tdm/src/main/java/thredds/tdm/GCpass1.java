@@ -10,7 +10,6 @@ import thredds.inventory.partition.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib1Iosp;
-import ucar.nc2.grib.collection.Grib2Iosp;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.*;
