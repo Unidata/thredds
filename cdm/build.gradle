@@ -86,8 +86,17 @@ configurations {
 }
 
 task testJar(type: Jar, dependsOn: testClasses,
-        group: 'build', description: 'Assembles a JAR containing the test classes.') {
-    from sourceSets.test.output  // Our test classes. TODO: I actually only need the util classes, not the tests.
+        group: 'build', description: 'Assembles a JAR containing the test utility classes.') {
+    from sourceSets.test.output.getAsFileTree().matching {
+        include 'ucar/nc2/TestLocal.class'
+        include 'ucar/nc2/util/UnitTestCommon.class'
+        include 'ucar/unidata/test/Diff.class'
+        include 'ucar/unidata/test/ma2/TestMa2Utils.class'
+        include 'ucar/unidata/test/ma2/TestStructureArray.class'
+        include 'ucar/unidata/test/util/CompareNetcdf.class'
+        include 'ucar/unidata/test/util/TestDir*.class'
+        include 'ucar/unidata/test/util/TestFileDirUtils.class'
+    }
     classifier = 'test'
 }
 

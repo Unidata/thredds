@@ -52,7 +52,7 @@ subprojects {
         options.compilerArgs = ['-Xlint:-options']
     }
 
-    test{
+    tasks.withType(Test) {
         // Don't abort the build on test failure.
         ignoreFailures = true
     }
