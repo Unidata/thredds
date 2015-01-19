@@ -34,7 +34,6 @@ package thredds.client.catalog.builder;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import thredds.client.catalog.*;
@@ -59,6 +58,7 @@ import java.util.*;
  * @since 1/8/2015
  */
 public class CatalogBuilder {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CatalogBuilder.class);
 
   public interface Callback {
     void setCatalog(Catalog cat);
@@ -179,6 +179,8 @@ public class CatalogBuilder {
 
     } catch (Exception e) {
       errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
+      logger.error("failed to read catalog at {}", uri.toString(), e);
+      e.printStackTrace();
       error = true;
     }
 

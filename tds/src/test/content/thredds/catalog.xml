@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog name="TDS Unit Test Server"
          xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-         xmlns:xlink="http://www.w3.org/1999/xlink">
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 
   <service name="latest" serviceType="Resolver" base=""/>
 
@@ -42,7 +43,6 @@
                  location="http://eosdap.hdfgroup.uiuc.edu:8080/opendap/data/NASAFILES/hdf4/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf"/>
   </dataset>
 
-
   <datasetScan name="Test Scan Local (no ID)" path="scanLocal" location="content/testdata/">
     <metadata inherited="true">
       <serviceName>all</serviceName>
@@ -69,6 +69,10 @@
       <dataType>Grid</dataType>
       <dataFormat>GRIB-1</dataFormat>
     </metadata>
+
+    <ncml:netcdf xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+      <attribute name="ncmlAdded" value="stuff"/>
+    </ncml:netcdf>
 
     <filter>
       <include wildcard="*.grib1" atomic="true" collection="false"/>
@@ -125,7 +129,7 @@
   <dataset name="Example NcML Modified - DODS" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
+    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
       <attribute name="name" value="value"/>
       <variable name="Temperature" orgName="T"/>
       <variable name="ReletiveHumidity" orgName="rh">
@@ -133,13 +137,13 @@
         <attribute name="units" value="percent (%)"/>
         <remove type="attribute" name="description"/>
       </variable>
-    </netcdf>
+    </ncml:netcdf>
   </dataset>
 
   <dataset name="Example NcML Modified - cdmremote" ID="ExampleNcMLModified2" urlPath="ExampleNcML2/Modified.nc">
     <serviceName>cdmremote</serviceName>
     <dataType>Grid</dataType>
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
+    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${cdmUnitTest}/tds/example1.nc" addRecords="true">
       <attribute name="name" value="value"/>
       <variable name="Temperature" orgName="T"/>
       <variable name="ReletiveHumidity" orgName="rh">
@@ -147,7 +151,7 @@
         <attribute name="units" value="percent (%)"/>
         <remove type="attribute" name="description"/>
       </variable>
-    </netcdf>
+    </ncml:netcdf>
   </dataset>
 
   <!-- test NcML in datasetScan -->
@@ -162,7 +166,7 @@
       <exclude wildcard="/*" collection="true"/>
     </filter>
 
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true">
+    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true">
       <attribute name="name" value="value"/>
       <variable name="Temperature" orgName="T"/>
       <variable name="ReletiveHumidity" orgName="rh">
@@ -170,7 +174,7 @@
         <attribute name="units" value="percent (%)"/>
         <remove type="attribute" name="description"/>
       </variable>
-    </netcdf>
+    </ncml:netcdf>
 
   </datasetScan>
 
@@ -178,7 +182,7 @@
   <dataset name="Example NcML Aggregation" ID="ExampleNcMLAgg" urlPath="ExampleNcML/Agg.nc">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
       <attribute name="ncmlAdded" value="stuff"/>
       <variable name="lat">
         <attribute name="ncmlAdded" value="lat_stuff"/>
@@ -189,7 +193,7 @@
           <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1800.nc" ncoords="2"/>
           <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060926_0000.nc" ncoords="2"/>
         </aggregation>
-    </netcdf>
+    </ncml:netcdf>
   </dataset>
   <!-- END UNTESTED-->
 

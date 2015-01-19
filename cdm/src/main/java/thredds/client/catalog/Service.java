@@ -93,4 +93,17 @@ public class Service {            // (7)
   public List<Property> getProperties() {
     return properties == null ? new ArrayList<Property>(0) : properties;
   }
+
+  @Override
+  public String toString() {
+    return "Service{" +
+            "name='" + name + '\'' +
+            ", base='" + base + '\'' +
+            ", typeS='" + typeS + '\'' +
+            ", desc='" + desc + '\'' +
+            ", suffix='" + suffix + '\'' +
+            ", nestedServices=" + nestedServices +
+            ", properties=" + properties +
+            '}';
+  }
 }

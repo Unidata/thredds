@@ -36,7 +36,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import thredds.catalog.util.DeepCopyUtils;
 import thredds.client.catalog.Catalog;
+import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
@@ -103,12 +105,11 @@ public class TestServerCatalogs {
   private String testInvDsScan_compoundServerFilterProblem_2_ResourceName = "testInvDsScan.compoundServerFilterProblem.2.result.xml";
 
   @Test
-  public void testRead() throws IOException {
+  public void testReadCatalog() throws IOException {
     String filePath = "../tds/src/test/content/thredds/catalog.xml";
     ConfigCatalog cat = open("file:"+filePath);
     CatalogXmlWriter writer = new CatalogXmlWriter();
-    String catalogAsString = writer.writeXML( cat );
-    System.out.printf("%s%n",  catalogAsString);
+    System.out.printf("%s%n",  writer.writeXML( cat ));
 
     List<DatasetRoot> roots = cat.getRoots();
     for (DatasetRoot root : roots)
@@ -120,8 +121,32 @@ public class TestServerCatalogs {
     Object ncml = ds.getLocalField(Dataset.Ncml);
     assert ncml != null;
 
+    ds = cat.findDatasetByID("scanCdmUnitTests");
+    assert ds != null;
+    assert (ds instanceof DatasetScan);
+    String serviceName = ds.getServiceNameDefault();
+    assert serviceName.equals("all");
 
+    ds = cat.findDatasetByID("testGridScan");
+    assert ds != null;
+    assert (ds instanceof DatasetScan);
+    ncml = ds.getLocalField(Dataset.Ncml);
+    assert ncml != null;
   }
+
+  @Test
+   public void testReadFc() throws IOException {
+     String filePath = "../tds/src/test/content/thredds/catalogGrib.xml";
+     ConfigCatalog cat = open("file:"+filePath);
+     CatalogXmlWriter writer = new CatalogXmlWriter();
+     String catalogAsString = writer.writeXML( cat );
+     System.out.printf("%s%n",  catalogAsString);
+
+     List<Service> ss = cat.getServices();
+     for (Service s : ss)
+       System.out.printf("Service %s%n", s);
+     assert ss.size() == 2;
+   }
 
   public static void compareCatalogToCatalogDocFile( ConfigCatalog expandedCatalog, File expectedCatalogDocFile)
           throws IOException {

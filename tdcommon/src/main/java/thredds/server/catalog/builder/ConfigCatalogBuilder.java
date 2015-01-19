@@ -37,6 +37,7 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetRoot;
 import thredds.server.catalog.DatasetScanConfig;
@@ -53,6 +54,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
   protected List<DatasetRoot> roots;
 
   protected DatasetBuilder buildOtherDataset(DatasetBuilder parent, Element elem) {
+      // this finds datasetRoot in catalogs (unwanted side effect in regular dataset elements)
     if (elem.getName().equals("datasetRoot")) {
       DatasetRoot root = readDatasetRoot(elem);
       if (roots == null) roots = new ArrayList<>();
@@ -64,6 +66,11 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
       return readDatasetScan(parent, elem);
     }
 
+    else if (elem.getName().equals("featureCollection")) {
+      return readFeatureCollection(parent, elem);
+    }
+
+    // this finds ncml in regular dataset elements
     else if (elem.getName().equals("netcdf") && elem.getNamespace().equals(Catalog.ncmlNS)) {
       parent.put(Dataset.Ncml, elem.detach());
       return null;
@@ -72,20 +79,38 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     return null;
   }
 
-  protected DatasetBuilder readDatasetScan(DatasetBuilder parent, Element dsElem) {
+  private DatasetRoot readDatasetRoot(Element s) {
+    String name = s.getAttributeValue("path");
+    String value = s.getAttributeValue("location");
+    return new DatasetRoot(name, value);
+  }
+
+  private DatasetBuilder readDatasetScan(DatasetBuilder parent, Element dsElem) {
     DatasetScanConfigBuilder configBuilder = new DatasetScanConfigBuilder(errlog);
     DatasetScanConfig config = configBuilder.readDatasetScanConfig(dsElem);
 
     DatasetScanBuilder dataset = new DatasetScanBuilder(parent, config);
     readDatasetInfo(dataset, dsElem);
 
+    for (Element elem : dsElem.getChildren("netcdf", Catalog.ncmlNS) ) {
+      dataset.put(Dataset.Ncml, elem.detach());
+    }
+
     return dataset;
   }
 
-  protected DatasetRoot readDatasetRoot(Element s) {
-    String name = s.getAttributeValue("path");
-    String value = s.getAttributeValue("location");
-    return new DatasetRoot(name, value);
+  private DatasetBuilder readFeatureCollection(DatasetBuilder parent, Element fcElem) {
+    FeatureCollectionConfigBuilder configBuilder = new FeatureCollectionConfigBuilder(errlog);
+    FeatureCollectionConfig config = configBuilder.readConfig(fcElem);
+
+    FeatureCollectionBuilder dataset = new FeatureCollectionBuilder(parent, config);
+    readDatasetInfo(dataset, fcElem);
+
+    for (Element elem : fcElem.getChildren("netcdf", Catalog.ncmlNS) ) {   // ??
+      dataset.put(Dataset.Ncml, elem.detach());
+    }
+
+    return dataset;
   }
 
 
