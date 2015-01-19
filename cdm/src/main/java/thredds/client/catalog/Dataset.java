@@ -322,13 +322,13 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   List getInheritedFieldAsList(String fldName) {
     List result = new ArrayList();
-    Object value = flds.get(fldName);
+    Object value = flds.get(fldName); // first look for local
     if (value != null) {
       if (value instanceof List) result.addAll((List) value);
       else result.add(value);
     }
 
-    getAllFromInherited(fldName, result);
+    getAllFromInherited(fldName, result);   // then look for inherited
     return result;
   }
 

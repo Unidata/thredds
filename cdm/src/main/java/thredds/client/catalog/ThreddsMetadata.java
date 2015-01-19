@@ -33,6 +33,9 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
+import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -51,6 +54,7 @@ import java.util.*;
  */
 @Immutable
 public class ThreddsMetadata implements ThreddsMetadataContainer {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ThreddsMetadata.class);
   private final Map<String, Object> flds;
 
   public ThreddsMetadata() {
@@ -491,16 +495,27 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
   }
 
   @Immutable
+  public static class UriResolved {
+    public final String href;
+    public final URI resolved;
+
+    public UriResolved(String href, URI resolved) {
+      this.href = href;
+      this.resolved = resolved;
+    }
+  }
+
+  @Immutable
   static public class VariableGroup {
-    public final String vocabulary, vocabHref;
-    public final URI vocabUri, mapUri;
+    public final String vocabulary;
+    public final UriResolved vocabUri;
+    public final UriResolved variableMap;
     public final List<Variable> variables;
 
-    public VariableGroup(String vocab, String vocabHref, URI vocabUri, URI mapUri, List<Variable> variables) {
+    public VariableGroup(String vocab, UriResolved vocabUri, UriResolved variableMap, List<Variable> variables) {
       this.vocabulary = vocab;
-      this.vocabHref = vocabHref;
       this.vocabUri = vocabUri;
-      this.mapUri = mapUri;
+      this.variableMap = variableMap;
       Collections.sort(variables);
       this.variables = Collections.unmodifiableList(variables);
     }
@@ -509,21 +524,39 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       return vocabulary;
     }
 
-    public String getVocabHref() {
-      return vocabHref;
-    }
-
-    public URI getVocabUri() {
+    public UriResolved getVocabUri() {
       return vocabUri;
     }
 
-    public URI getMapUri() {
-      return mapUri;
+    public UriResolved getVariableMap() {
+      return variableMap;
     }
 
     public List<Variable> getVariableList() {
+      if (variables.size() > 0) return variables;
+      if (variableMap != null) return getVariablesFromMap();
       return variables;
     }
+
+    private List<Variable> getVariablesFromMap() {
+      try {
+        SAXBuilder saxBuilder = new SAXBuilder();
+        org.jdom2.Document jdomDoc = saxBuilder.build(variableMap.resolved.toURL());
+        Element varsElem = jdomDoc.getRootElement();
+
+        java.util.List<Element> vlist = varsElem.getChildren("variable", Catalog.defNS);
+        List<ThreddsMetadata.Variable> variables = new ArrayList<>();
+        for (Element e : vlist) {
+          variables.add(CatalogBuilder.readVariable(e));
+        }
+        return variables;
+
+     } catch (Exception e) {
+       logger.error("failed to read VariablesFromMap at {}", variableMap.resolved.toString(), e);
+       return new ArrayList<>(0);
+     }
+    }
+
   }
 
   @Immutable

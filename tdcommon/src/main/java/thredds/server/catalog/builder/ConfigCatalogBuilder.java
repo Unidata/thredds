@@ -36,6 +36,7 @@ import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.server.catalog.ConfigCatalog;
@@ -84,6 +85,21 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     String name = s.getAttributeValue("path");
     String value = s.getAttributeValue("location");
     return new DatasetRoot(name, value);
+  }
+
+  @Override
+  protected DatasetBuilder readCatalogRef(DatasetBuilder parent, Element catRefElem) {
+    DatasetBuilder catref = super.readCatalogRef( parent, catRefElem);
+
+    String useRemoteCatalogService = catRefElem.getAttributeValue("useRemoteCatalogService");
+    if (useRemoteCatalogService != null) {
+      if (useRemoteCatalogService.equalsIgnoreCase("true"))
+        catref.put(Dataset.UseRemoteCatalogService, Boolean.TRUE);
+      else if (useRemoteCatalogService.equalsIgnoreCase("false"))
+        catref.put(Dataset.UseRemoteCatalogService, Boolean.FALSE);
+    }
+
+    return catref;
   }
 
   private DatasetBuilder readDatasetScan(DatasetBuilder parent, Element dsElem) {

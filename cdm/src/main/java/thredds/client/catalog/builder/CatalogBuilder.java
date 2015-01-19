@@ -45,6 +45,7 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
+import ucar.nc2.util.URLnaming;
 
 import java.io.IOException;
 import java.net.URI;
@@ -579,7 +580,8 @@ public class CatalogBuilder {
     if (size > 0)
       flds.put(Dataset.DataSize, size);
 
-    URI mapUri = readVariableMap(parent.getChild("variableMap", Catalog.defNS));
+    // LOOK: we seem to have put a variableMap element not contained by <variables>
+    ThreddsMetadata.UriResolved mapUri = readUri(parent.getChild("variableMap", Catalog.defNS), "variableMap");
     if (mapUri != null)
       flds.put(Dataset.VariableMapLink, mapUri);
   }
@@ -723,7 +725,7 @@ public class CatalogBuilder {
   </xsd:element>
    */
   protected ThreddsMetadata.MetadataOther readMetadata(Map<String,Object> flds, DatasetBuilder dataset, Element mdataElement) {
-    // there are 4 cases to deal with: threddsNamespace vs not & inline vs Xlink
+    // there are 6 cases to deal with: threddsNamespace vs not & inline vs Xlink & (if thredds) inherited or not
     Namespace namespace;
     List inlineElements = mdataElement.getChildren();
     if (inlineElements.size() > 0) // look at the namespace of the children, if they exist
@@ -750,6 +752,8 @@ public class CatalogBuilder {
       }
     }
 
+    // the case where its ThreddsMetadata
+    Map<String,Object> useFlds;
     if (inherited) {
       // the case where its inherited ThreddsMetadata: gonna put stuff in the tmi.
       ThreddsMetadata tmi = (ThreddsMetadata) dataset.get(Dataset.ThreddsMetadataInheritable);
@@ -757,31 +761,28 @@ public class CatalogBuilder {
         tmi = new ThreddsMetadata();
         dataset.put(Dataset.ThreddsMetadataInheritable, tmi);
       }
-      readThreddsMetadataGroup(tmi.getFlds(), dataset, mdataElement);
-      return null;
+      useFlds = tmi.getFlds();
 
     } else {
       // the case where its non-inherited ThreddsMetadata: gonna put stuff directly into the dataset
-      readThreddsMetadataGroup(flds, dataset, mdataElement);
-
-      // also need to capture any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
-      if (href != null) {
-        return new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), false);
-      } else {
-        return null;
-      }
+      useFlds = flds;
     }
+    readThreddsMetadataGroup(useFlds, dataset, mdataElement);
 
-      /* also need to read any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
-      if (href != null) try {
+
+    // also need to capture any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
+    // in this case we just suck it in as if it was inline
+    if (href != null) {
+      try {
         URI xlinkUri = Catalog.resolveUri(baseURI, href);
         Element remoteMdata = readMetadataFromUrl(xlinkUri);
-        return readMetadata(flds, dataset, remoteMdata);
+        return readMetadata(useFlds, dataset, remoteMdata);
       } catch (Exception ioe) {
         errlog.format("Cant read in referenced metadata %s err=%s%n", href, ioe.getMessage());
       }
-      return null;
-    }  */
+
+    }
+    return null;  // ThreddsMetadata.MetadataOther was directly added
   }
 
   private Element readMetadataFromUrl(java.net.URI uri) throws java.io.IOException {
@@ -965,22 +966,12 @@ public class CatalogBuilder {
     if (varsElem == null) return null;
 
     String vocab = varsElem.getAttributeValue("vocabulary");
-    String vocabHref = varsElem.getAttributeValue("href", Catalog.xlinkNS);
-
-    URI vocabUri = null;
-    if (vocabHref != null) {
-      try {
-        vocabUri =  docBaseURI.resolve(vocabHref);
-      } catch (Exception e) {
-        errlog.format(" ** Invalid Variables vocabulary URI= '%s' err='%s'%n",vocabHref,e.getMessage());
-      }
-    }
+    ThreddsMetadata.UriResolved variableVocabUri = readUri(varsElem, "Variables vocabulary");
 
     java.util.List<Element> vlist = varsElem.getChildren("variable", Catalog.defNS);
-    URI mapUri = readVariableMap(varsElem.getChild("variableMap", Catalog.defNS));
-    if ((mapUri != null) && vlist.size() > 0) { // cant do both
+    ThreddsMetadata.UriResolved variableMap = readUri( varsElem.getChild("variableMap", Catalog.defNS), "Variables Map");
+    if ((variableMap != null) && vlist.size() > 0) { // cant do both
       errlog.format(" ** Catalog error: cant have variableMap and variable in same element '%s'%n", varsElem);
-      mapUri = null;
     }
 
     List<ThreddsMetadata.Variable> variables = new ArrayList<>();
@@ -988,37 +979,10 @@ public class CatalogBuilder {
       variables.add(readVariable(e));
     }
 
-    /* read in variable map LOOK: would like to defer
-    if (mapUri != null) {
-      try {
-        Element varsElement = readContentFromURL(mapUri);
-        List<Element> list = varsElement.getChildren("variable", Catalog.defNS);
-        if (list.size() > 0) {
-          variables = new ArrayList<>();
-          for (Element e : list) {
-            variables.add(readVariable(e));
-          }
-        }
-      } catch (IOException e) {
-        errlog.format("Failure reading variable %s mapUri err=%s%n", vocab, e.getMessage());
-      }
-
-      /*org.w3c.dom.Element domElement = factory.readOtherXML(mapUri);
-      if (domElement != null) {
-        Element varsElement = toJDOM(domElement);
-        List list = varsElement.getChildren("variable", defNS);
-        for (int j = 0; j < list.size(); j++) {
-          ThreddsMetadata.Variable v = readVariable( (Element) list.get(j));
-          variables.addVariable(v);
-        }
-      } //
-
-    } */
-
-    return new ThreddsMetadata.VariableGroup(vocab, vocabHref, vocabUri, mapUri, variables);
+    return new ThreddsMetadata.VariableGroup(vocab, variableVocabUri, variableMap, variables);
   }
 
-  protected ThreddsMetadata.Variable readVariable(Element varElem) {
+  static public ThreddsMetadata.Variable readVariable(Element varElem) {
      if (varElem == null) return null;
 
      String name = varElem.getAttributeValue("name");
@@ -1035,18 +999,18 @@ public class CatalogBuilder {
     return new ThreddsMetadata.Vocab(elem.getText(), elem.getAttributeValue("vocabulary"));
   }
 
+  private ThreddsMetadata.UriResolved readUri(Element elemWithHref, String what) {
+    if (elemWithHref == null) return null;
+    String mapHref = elemWithHref.getAttributeValue("href", Catalog.xlinkNS);
+    if (mapHref == null) return null;
 
-  private URI readVariableMap(Element variableMapElem) {
-    if (variableMapElem == null) return null;
-    String mapHref = null;
-    mapHref = variableMapElem.getAttributeValue("href", Catalog.xlinkNS);
-    URI mapUri = null;
     try {
-      mapUri =  docBaseURI.resolve(mapHref);
+      String mapUri = URLnaming.resolve(docBaseURI.toString(), mapHref);
+      return new ThreddsMetadata.UriResolved(mapHref, new URI(mapUri));
     } catch (Exception e) {
-      errlog.format(" ** Invalid Variables map URI= '%s' err='%s'%n", mapHref, e.getMessage());
+      errlog.format(" ** Invalid %s URI= '%s' err='%s'%n", what, mapHref, e.getMessage());
+      return null;
     }
-    return mapUri;
   }
 
 

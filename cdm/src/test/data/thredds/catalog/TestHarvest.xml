@@ -89,7 +89,7 @@
       </variables>
       
       <variables vocabulary="DIF" xlink:href="http://gcmd.gsfc.nasa.gov/Resources/valids/gcmd_parameters.html">
-           <variableMap xlink:href="dif/metar.vocabulary.xml" />
+         <variableMap xlink:href="dif/metar.vocabulary.xml" />
       </variables>
       
     </dataset>

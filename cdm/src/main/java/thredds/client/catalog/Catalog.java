@@ -36,6 +36,7 @@ import net.jcip.annotations.Immutable;
 import org.jdom2.Namespace;
 import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.URLnaming;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -137,10 +138,12 @@ public class Catalog extends DatasetNode {
    * @see java.net.URI#resolve
    */
   public URI resolveUri(String uriString) throws URISyntaxException {
-    return resolveUri(getBaseURI(), uriString);
+    if (baseURI == null) return new URI(uriString);
+    String resolved = URLnaming.resolve(baseURI.toString(), uriString);
+    return new URI(resolved);
   }
 
-  // look maybe should be utility class
+  // look is this different than URLnaming ??
   public static URI resolveUri(URI baseURI, String uriString) throws URISyntaxException {
     URI want = new URI(uriString);
     if ((baseURI == null) || want.isAbsolute())

@@ -120,8 +120,8 @@ public class TestMetadataXLink {
     CatalogXmlWriter writer = new CatalogXmlWriter();
     writer.writeXML(cat, System.out);
 
-    String url = getMetadataURL(cat, "Zonal", "THREDDS");
-    assert url.equals("ZoneMetadata.xml") : url;
+//    String url = getMetadataURL(cat, "Zonal", "THREDDS");
+//    assert url.equals("ZoneMetadata.xml") : url;
 
     getProject( cat, "Metars", "DIF", "test1");
     getProject( cat, "Radars", "DIF", "test2");

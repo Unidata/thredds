@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <link href="../tds.css" rel="stylesheet" type="text/css"/>
-  <title>Catalog Spec 1.0.2</title>
+  <title>Client Catalog Spec 1.0.7</title>
 </head>
 <body>
 <h1> THREDDS Client Catalog Specification</h1>
@@ -46,7 +46,7 @@
     <li><a href="#durationType">duration</a></li>
     <li><a href="#dataSize">dataSize</a></li>
     <li><a href="#controlledVocabulary">controlledVocabulary</a></li>
-    <li><a href="#variables">variables</a></li>
+    <li><a href="#variablesType">variables</a></li>
   </ul>
   <li><a href="#Enumerations">Enumerations</a></li>
   <li><a href="#Dataset_Access_Methods">Dataset Access Methods</a></li>
@@ -414,11 +414,11 @@ The common case is that the access element is <em>implicit</em>, based on the da
 
 <p>If you use an XLink to point to elements from another namespace, add a metadataType attribute:</p>
 
-<pre>&lt;metadata xlink:href="http://www.unidata.ucar.edu/metadata/ncep/dif.xml" <br>  xlink:title="NCEP DIF metadata" <br>	metadataType="DublinCore"/&gt;</pre>
+<pre>&lt;metadata xlink:href="http://www.unidata.ucar.edu/metadata/ncep/dif.xml"
+	xlink:title="NCEP DIF metadata" metadataType="DublinCore"/&gt;</pre>
 
-<p>which should point to a document whose top element is a metadata
-  element, which declares a different namespace (note you also still need to declare the THREDDS
-  namespace): </p>
+<p>whose xlink:href should point to a document whose top element is a metadata
+  element, which declares a different namespace (note you also still need to declare the THREDDS namespace): </p>
 
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" <br>           xmlns:dc="http://purl.org/dc/elements/1.1/"&gt;<br>  &lt;dc:title&gt;Goto considered harmful&lt;/dc:title &gt;<br>  &lt;dc:description&gt;The unbridled use of the go to statement has an immediate consequence <br>      that it becomes terribly <br>	    hard to find a meaningful set of coordinates in which to describe the process progress.<br>  &lt;/dc:description&gt;<br>  &lt;dc:author&gt;Edsger W. Dijkstra&lt;/dc:author&gt;<br>&lt;/metadata&gt;<br></pre>
 
@@ -602,17 +602,16 @@ The common case is that the access element is <em>implicit</em>, based on the da
 <pre>&lt;xsd:element name="variables"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:choice&gt;<br>      &lt;xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="variableMap" minOccurs="0"/&gt;<br>    &lt;/xsd:choice&gt;<br>    &lt;xsd:attribute name="vocabulary" type="variableNameVocabulary" use="optional"/&gt;<br>    &lt;xsd:attributeGroup ref="XLink"/&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br><br>&lt;xsd:element name="variable"&gt;<br>  &lt;xsd:complexType mixed="true"&gt;<br>    &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>    &lt;xsd:attribute name="vocabulary_name" type="xsd:string" use="optional"/&gt;<br>    &lt;xsd:attribute name="units" type="xsd:string"/&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br><br>&lt;xsd:element name="variableMap"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:attributeGroup ref="XLink"/&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 
 <p>A <em>variables</em> element contains a list of variables OR a <em>variableMap</em> element that refers to another document that contains a list of
-  variables. This list specifies the variables (aka <em>fields</em> or <em>parameters</em>) that are available
+  variables. This element specifies the variables (aka <em>fields</em> or <em>parameters</em>) that are available
   in the dataset, and associates them with a standard vocabulary of names, through
   the <em>vocabulary</em> attribute. The optional <em>XLink</em> is a reference
-  to an online resource describing the standard vocabulary. The possible format(s)
-  of this online resource is yet to be determined.</p>
+  to an online resource describing the standard vocabulary. </p>
 
 <p> Each <em>variable</em> element must have a <em>name</em> attribute which contains the name of variable in the dataset. The optional <em>vocabulary_name</em>
-  attribute contains the variables name from a standard vocabulary (optionally specified by the <em>variables</em> element). The optional <em>units</em>
+  attribute contains the variables name from a standard vocabulary (specified by the <em>variables</em> element). The  <em>units</em>
   attribute contains the units of the variable in the dataset. The content of the <em>variable</em> element can contain text describing the variable. A <em>variableMap</em><a name="variableMap"></a>
   element contains an <em>XLink</em> to <em>variable</em>
-  elements, so that you can factor these out and refer to them from multiple places.</p>
+  elements, so that you can factor these out and refer to them from multiple places. </p>
 
 <p>The main purpose of the <em>variables</em> element is to describe a dataset
   for a search service or digital library, for example GCMD requires a list of
@@ -804,7 +803,18 @@ The common case is that the access element is <em>implicit</em>, based on the da
 
 <h3>variableNameVocabulary<a id="variableNameVocabulary"></a> types </h3>
 
-<pre>&lt;xsd:simpleType name="variableNameVocabulary"&gt;<br>  &lt;xsd:union memberTypes="xsd:token"&gt;<br>    &lt;xsd:simpleType&gt;<br>      &lt;xsd:restriction base="xsd:token"&gt;<br>        &lt;xsd:enumeration value="CF-1.0"/&gt;<br>        &lt;xsd:enumeration value="DIF"/&gt;<br>        &lt;xsd:enumeration value="GRIB-1"/&gt;<br>        &lt;xsd:enumeration value="GRIB-2"/&gt;<br>	    &lt;/xsd:restriction&gt;<br>    &lt;/xsd:simpleType&gt;<br>  &lt;/xsd:union&gt;<br>&lt;/xsd:simpleType&gt;</pre>
+<pre>&lt;xsd:simpleType name="variableNameVocabulary"&gt;
+  &lt;xsd:union memberTypes="xsd:token"&gt;
+    &lt;xsd:simpleType&gt;
+      &lt;xsd:restriction base="xsd:token"&gt;
+        &lt;xsd:enumeration value="CF-1.0"/&gt;
+        &lt;xsd:enumeration value="DIF"/&gt;
+        &lt;xsd:enumeration value="GRIB-1"/&gt;
+        &lt;xsd:enumeration value="GRIB-2"/&gt;
+      &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleType&gt;
+  &lt;/xsd:union&gt;
+&lt;/xsd:simpleType&gt;</pre>
 
 <p>These are the known vocabularies for standard variable names, used in the <a href="#variables">variables</a> element. <strong>CF</strong> refers to the
   <a href="http://cf-pcmdi.llnl.gov/">Climate and Forecast Conventions</a> metadata conventions for netCDF; they have a list of
@@ -1073,7 +1083,7 @@ The common case is that the access element is <em>implicit</em>, based on the da
   <li><a href="#threddsMetadataGroup">threddsMetadataGroup</a> group of elements,
     used in dataset or metadata element.
   </li>
-  <li><a href="#variables">variables</a> element, used in <a href="#threddsMetadataGroup">threddsMetadataGroup,</a> specifies the variables (aka <em>fields</em>
+  <li><a href="#variablesType">variables</a> element, used in <a href="#threddsMetadataGroup">threddsMetadataGroup,</a> specifies the variables (aka <em>fields</em>
     or <em>parameters</em>) available in the dataset.
   </li>
   <li><a href="#variableMap">variableMap</a> element is used in <a href="#variables">variables</a> to link to an external document specifying the variable

@@ -626,12 +626,12 @@ public class CatalogXmlWriter {
     Element elem = new Element("variables", Catalog.defNS);
     if (vs.getVocabulary() != null)
       elem.setAttribute("vocabulary", vs.getVocabulary());
-    if (vs.getVocabHref() != null)
-      elem.setAttribute("href", vs.getVocabHref(), Catalog.xlinkNS);
+    if (vs.getVocabUri() != null)
+      elem.setAttribute("href", vs.getVocabUri().resolved.toString(), Catalog.xlinkNS);
 
-    if (vs.getMapUri() != null) { // variable map
+    if (vs.getVariableMap() != null) { // variable map
       Element mapElem = new Element("variableMap", Catalog.defNS);
-      mapElem.setAttribute("href", vs.getMapUri().toString(), Catalog.xlinkNS);
+      mapElem.setAttribute("href", vs.getVariableMap().resolved.toString(), Catalog.xlinkNS);
       elem.addContent(mapElem);
 
     } else { // inline variables

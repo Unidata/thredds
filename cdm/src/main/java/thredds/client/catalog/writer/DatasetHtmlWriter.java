@@ -297,10 +297,9 @@ public class DatasetHtmlWriter {
 
         out.format("<li><em>Vocabulary</em> [");
         if (t.getVocabUri() != null) {
-          URI uri = t.getVocabUri();
-          String vocabLink = resolveRelativeUrls
-                  ? makeHrefResolve(ds, uri.toString(), t.getVocabulary())
-                  : makeHref(uri.toString(), t.getVocabulary());
+          ThreddsMetadata.UriResolved uri = t.getVocabUri();
+          String vocabLink = resolveRelativeUrls ? makeHref(uri.resolved.toString(), t.getVocabulary())
+                                                 : makeHref(uri.href, t.getVocabulary());
           out.format(vocabLink);
         } else {
           out.format(StringUtil2.quoteHtmlContent(t.getVocabulary()));

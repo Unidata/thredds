@@ -4,7 +4,7 @@
          name="Unidata THREDDS Data Server"
          version="1.0.6">
   <dataset name="Realtime data from IDD">
-    <catalogRef xlink:href="http://thredds.ucar.edu/thredds/catalog.xml" xlink:title="useRemoteCatalogService catalogRef to thredds" name="" useRemoteCatalogService="true"/>
+    <catalogRef xlink:href="http://thredds.ucar.edu/thredds/catalog.xml" xlink:title="please useRemoteCatalogService catalogRef to thredds" name="" useRemoteCatalogService="true"/>
 
     <catalogRef xlink:href="http://thredds.ucar.edu/thredds/catalog.xml" xlink:title="do not useRemoteCatalogService catalogRef to thredds" name="" useRemoteCatalogService="false"/>
 

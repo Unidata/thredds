@@ -153,6 +153,8 @@ public class ThreddsMetadataExtractor {
         vars.add(new ThreddsMetadata.Variable(name, desc, vname, units, id));
       }
 
+      // String vocabRef = "http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html";
+
     } else { // GRID but not GRIB
       vocab = "CF-1.0";
       for (GridDatatype grid : gridDataset.getGrids()) {
@@ -171,7 +173,7 @@ public class ThreddsMetadataExtractor {
 
     Collections.sort(vars);
                                              // String vocab, String vocabHref, URI vocabUri, URI mapUri, List<Variable> variables
-    return new ThreddsMetadata.VariableGroup(vocab, null, null, null, vars);
+    return new ThreddsMetadata.VariableGroup(vocab, null, null, vars);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -197,7 +199,7 @@ public class ThreddsMetadataExtractor {
 
     Collections.sort(vars);
                                              // String vocab, String vocabHref, URI vocabUri, URI mapUri, List<Variable> variables
-    return new ThreddsMetadata.VariableGroup("CF-1.0", null, null, null, vars);
+    return new ThreddsMetadata.VariableGroup("CF-1.0", null, null, vars);
   }
 
   private DateRange extractDateRange(GridDataset gridDataset) {
