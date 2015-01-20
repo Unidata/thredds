@@ -47,7 +47,7 @@ import java.util.*;
 public class DatasetNode {
   protected final DatasetNode parent;
   protected final String name;
-  public final Map<String, Object> flds;     // keep memory small. dont store reference objects for nulls
+  protected final Map<String, Object> flds;     // keep memory small. dont store reference objects for nulls
 
   protected DatasetNode(DatasetNode parent, String name, Map<String, Object> flds, List<DatasetBuilder> datasetBuilders) {
     this.parent = parent;
@@ -60,6 +60,11 @@ public class DatasetNode {
         datasets.add (dsb.makeDataset(this));
       flds.put(Dataset.Datasets, Collections.unmodifiableList(datasets));
     }
+  }
+
+    // do not use after building
+  public Map<String, Object> getFlds() {
+    return flds;
   }
 
   public DatasetNode getParent() {

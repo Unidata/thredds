@@ -421,10 +421,14 @@ public class CatalogBuilder {
   protected void readDatasetInfo(DatasetBuilder dataset, Element dsElem) {
     // read attributes
     String name = dsElem.getAttributeValue("name");
-    if (name == null)
-      errlog.format(" ** warning: dataset must have a name = '%s'%n", dsElem);
-    else
+    if (name == null) {
+      if (dsElem.getName().equals("catalogRef"))
+        dataset.setName("");
+      else
+        errlog.format(" ** warning: dataset must have a name = '%s'%n", dsElem);
+    } else {
       dataset.setName(name);
+    }
 
     dataset.put( Dataset.Alias, dsElem.getAttributeValue("alias"));
     dataset.put( Dataset.Authority, dsElem.getAttributeValue("authority"));
@@ -448,7 +452,7 @@ public class CatalogBuilder {
 
     // catalog.addDatasetByID(dataset); // LOOK need to do immed for alias processing
 
-    // read attributes
+    // read elements
     readThreddsMetadataGroup(dataset.flds, dataset, dsElem);
   }
 
@@ -973,7 +977,7 @@ public class CatalogBuilder {
     ThreddsMetadata.UriResolved variableVocabUri = readUri(varsElem, "Variables vocabulary");
 
     java.util.List<Element> vlist = varsElem.getChildren("variable", Catalog.defNS);
-    ThreddsMetadata.UriResolved variableMap = readUri( varsElem.getChild("variableMap", Catalog.defNS), "Variables Map");
+    ThreddsMetadata.UriResolved variableMap = readUri(varsElem.getChild("variableMap", Catalog.defNS), "Variables Map");
     if ((variableMap != null) && vlist.size() > 0) { // cant do both
       errlog.format(" ** Catalog error: cant have variableMap and variable in same element '%s'%n", varsElem);
     }

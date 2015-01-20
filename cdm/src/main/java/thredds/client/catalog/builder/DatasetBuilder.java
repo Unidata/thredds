@@ -111,21 +111,23 @@ public class DatasetBuilder {
     if (inherit)
       inheritMetadata(flds, from);
 
-    for (Map.Entry<String, Object> entry : from.flds.entrySet()) {
+    Map<String, Object> fromFlds = from.getFlds();
+    for (Map.Entry<String, Object> entry : fromFlds.entrySet()) {
       flds.put(entry.getKey(), entry.getValue());
     }
 
-    // LOOK do inherit
+    // LOOK do tmi
   }
 
   private void inheritMetadata( Map<String, Object> flds, Dataset from) {
 
-    Dataset otherParent = from.getParentDataset();
-    if (otherParent == null) return;
-    // depth first, so closer parents override
-    inheritMetadata( flds, otherParent);
+    Dataset fromParent = from.getParentDataset();
+    if (fromParent == null) return;
+    // depth first, so closer parents override; LOOK need to add to list
+    inheritMetadata( flds, fromParent);
 
-    for (Map.Entry<String, Object> entry : otherParent.flds.entrySet()) {
+    Map<String, Object> fromFlds = fromParent.getFlds();
+    for (Map.Entry<String, Object> entry : fromFlds.entrySet()) {
       flds.put(entry.getKey(), entry.getValue());
     }
   }
