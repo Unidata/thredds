@@ -189,6 +189,7 @@ public class Catalog extends DatasetNode {
 
     List<Service> neededServices = new ArrayList<>();
     DatasetBuilder topDs = copyDataset( null, dataset, neededServices, true );  // LOOK, cant set catalog as datasetNode parent
+
     for (Service s : neededServices)
       builder.addService(s);
 
@@ -197,25 +198,12 @@ public class Catalog extends DatasetNode {
     return builder.makeCatalog();
   }
 
-  private URI formDocBaseUriForSubsetCatalog( Dataset dataset ) {
-    String catDocBaseUri = getUriString();
-    String subsetDocBaseUriString = catDocBaseUri + "/" + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );
-    try {
-      return new URI( subsetDocBaseUriString);
-
-    } catch ( URISyntaxException e ) {
-      // This shouldn't happen. But just in case ...
-      throw new IllegalStateException( "Bad document Base URI for new catalog [" + catDocBaseUri + "/" + (dataset.getID() != null ? dataset.getID() : dataset.getName()) + "].", e );
-    }
-  }
-
   private DatasetBuilder copyDataset( DatasetBuilder parent, Dataset dataset, List<Service> neededServices, boolean copyInherited ) {
 
     neededServices.add(dataset.getServiceDefault());
 
     DatasetBuilder result;
 
-    // ToDo Deal with InvDatasetScan and its ilk.
     if ( dataset instanceof CatalogRef ) {
       CatalogRef catRef = (CatalogRef) dataset;
       CatalogRefBuilder catBuilder = new CatalogRefBuilder( parent);
@@ -235,11 +223,10 @@ public class Catalog extends DatasetNode {
       for ( Dataset currDs : datasets) {
         result.addDataset( copyDataset( result, currDs, neededServices, copyInherited ));
       }
-
     }
 
     result.setName( dataset.getName() );
-    result.transferMetadata( (Dataset) dataset, false );
+    result.transferMetadata( dataset, false );
     return result;
   }
 
@@ -247,5 +234,17 @@ public class Catalog extends DatasetNode {
     neededServices.add(access.getService());  // LOOK may get dups
     return new AccessBuilder( parent, access.getUrlPath(), access.getService(), access.getDataFormatName(), access.getDataSize() );
   }
+
+  private URI formDocBaseUriForSubsetCatalog( Dataset dataset ) {
+    String catDocBaseUri = getUriString();
+    String subsetDocBaseUriString = catDocBaseUri + "/" + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );
+    try {
+      return new URI( subsetDocBaseUriString);
+    } catch ( URISyntaxException e ) {   // This shouldn't happen. But just in case ...
+      throw new IllegalStateException( "Bad document Base URI for new catalog [" + catDocBaseUri + "/" + (dataset.getID() != null ? dataset.getID() : dataset.getName()) + "].", e );
+    }
+  }
+
+
 
 }

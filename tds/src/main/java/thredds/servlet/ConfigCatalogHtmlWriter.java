@@ -105,7 +105,10 @@ public class ConfigCatalogHtmlWriter {
   String convertCatalogToHtml(Catalog cat, boolean isLocalCatalog) {
     StringBuilder sb = new StringBuilder(10000);
 
-    String catname = StringUtil2.quoteHtmlContent(cat.getUriString());
+    String uri = cat.getUriString();
+    if (uri == null) uri = cat.getName();
+    if (uri == null) uri = "unknown";
+    String catname = StringUtil2.quoteHtmlContent(uri);
 
     // Render the page header
     sb.append(html.getHtmlDoctypeAndOpenTag()); // "<html>\n" );

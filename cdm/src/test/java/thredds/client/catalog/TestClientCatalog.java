@@ -35,6 +35,8 @@ package thredds.client.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.writer.CatalogXmlWriter;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
@@ -248,8 +250,7 @@ public class TestClientCatalog {
   }
 
   ThreddsMetadata.VariableGroup getType(List<ThreddsMetadata.VariableGroup> list, String type) {
-    for (int i = 0; i < list.size(); i++) {
-      ThreddsMetadata.VariableGroup vars = list.get(i);
+    for (ThreddsMetadata.VariableGroup vars : list) {
       if (vars.getVocabulary().equals(type)) return vars;
     }
     return null;
@@ -264,6 +265,35 @@ public class TestClientCatalog {
       }
     }
     assert false : "cant find " + name;
+  }
+
+  /////////////////
+  @Test
+  public void testSubset() throws IOException {
+    Catalog cat = open("InvCatalog-1.0.xml");
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    System.out.printf("%s%n", writer.writeXML(cat));
+
+    Dataset ds = cat.findDatasetByID("testSubset");
+    assert (ds != null) : "cant find dataset 'testSubset'";
+    assert ds.getFeatureType() == FeatureType.GRID;
+
+    Catalog subsetCat = cat.subsetCatalogOnDataset(ds);
+    System.out.printf("%s%n", writer.writeXML(subsetCat));
+
+    List<Dataset> dss = subsetCat.getDatasets();
+    assert dss.size() == 1;
+    Dataset first = dss.get(0);
+    assert first.getServiceNameDefault() != null;
+    assert first.getServiceNameDefault().equals("ACD");
+
+    Dataset subsetDs = subsetCat.findDatasetByID("testSubset");
+    assert subsetDs != null;
+    assert subsetDs.getServiceNameDefault() != null;
+    assert subsetDs.getServiceNameDefault().equals("ACD");
+    assert subsetDs.getFeatureTypeName() != null;
+    assert subsetDs.getFeatureTypeName().equalsIgnoreCase("Grid");
+
   }
 
 
