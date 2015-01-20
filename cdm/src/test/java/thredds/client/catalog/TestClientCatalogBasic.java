@@ -59,8 +59,8 @@ public class TestClientCatalogBasic {
     result.add(new Object[]{"TestAlias.xml"});
     result.add(new Object[]{"testMetadata.xml"});
     result.add(new Object[]{"nestedServices.xml"});
-    result.add(new Object[]{"testHarvest.xml"});
-    result.add(new Object[]{"testFilter.xml"});
+    result.add(new Object[]{"TestHarvest.xml"});
+    result.add(new Object[]{"TestFilter.xml"});
     result.add(new Object[]{"http://atm.ucar.edu/thredds/catalog.xml"});
     result.add(new Object[]{"http://atm.ucar.edu/thredds/catalog/nws/metar/ncdecoded/catalog.xml?dataset=nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr"});
     return result;

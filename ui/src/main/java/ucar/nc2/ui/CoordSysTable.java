@@ -344,10 +344,10 @@ public class CoordSysTable extends JPanel {
       if (axis instanceof CoordinateAxis1D) {
         CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
         double[] mids = axis1D.getCoordValues();
+        double[] diffs = new double[mids.length];
         for (int i = 0; i < mids.length - 1; i++)
-          mids[i] = mids[i + 1] - mids[i];
-        mids[mids.length - 1] = 0.0;
-        printArray("midpoint differences=", mids);
+          diffs[i] = mids[i + 1] - mids[i];
+        printArrays("midpoint differences", mids, diffs);
 
       } else if (axis instanceof CoordinateAxis2D) {
         CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
@@ -493,12 +493,22 @@ public class CoordSysTable extends JPanel {
   }
 
   private void printArray(String title, double vals[]) {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append(" ").append(title);
+    Formatter sbuff = new Formatter();
+    sbuff.format(" %s=", title);
     for (double val : vals) {
-      sbuff.append(" ").append(val);
+      sbuff.format(" %f", val);
     }
-    sbuff.append("\n");
+    sbuff.format("%n");
+    infoTA.appendLine(sbuff.toString());
+  }
+
+  private void printArrays(String title, double vals[], double vals2[]) {
+    Formatter sbuff = new Formatter();
+    sbuff.format(" %s%n", title);
+    for (int i=0; i<vals.length; i++) {
+      sbuff.format(" %3d: %10.2f  %10.2f%n", i, vals[i], vals2[i]);
+    }
+    sbuff.format("%n");
     infoTA.appendLine(sbuff.toString());
   }
 

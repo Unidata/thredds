@@ -302,8 +302,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (DateRange) getInheritedField(TimeCoverage);
   }
 
-  public URI getVariableMapLink() {
-    return (URI) getInheritedField(VariableMapLink);
+  public ThreddsMetadata.UriResolved getVariableMapLink() {
+    return (ThreddsMetadata.UriResolved) getInheritedField(VariableMapLink);
   }
 
   ///////////////////////////////////////////

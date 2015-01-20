@@ -324,7 +324,8 @@ public class DatasetHtmlWriter {
     }
     if (ds.getVariableMapLink() != null) {
       out.format("<h3>Variables:</h3>\n");
-      out.format("<ul><li>" + makeHref(ds.getVariableMapLink().toString(), "VariableMap") + "</li></ul>\n");
+      ThreddsMetadata.UriResolved uri = ds.getVariableMapLink();
+      out.format("<ul><li>" + makeHref(uri.resolved.toASCIIString(), "VariableMap") + "</li></ul>\n");
     }
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
