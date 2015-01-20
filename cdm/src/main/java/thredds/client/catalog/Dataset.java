@@ -443,4 +443,13 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return getDocumentation("summary");
   }
 
+  public DateType getLastModifiedDate() {
+    for (DateType dateType : getDates()) {
+      if ((dateType.getType() != null) && dateType.getType().equals("modified")) {
+        return dateType;
+      }
+    }
+    return null;
+  }
+
 }

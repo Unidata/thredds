@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Upgrading To TDS 4.5</title>
+  <link rel="stylesheet" href="tds.css" type="text/css">
+</head>
+<body>
+<h1><img alt="Unidata" src="images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS version 5</h1>
+
+<hr>
+<h2>New Requirements</h2>
+<ul>
+  <li>Java 8 is now required</li>
+  <li>Tomcat 7 (servlet 3.0) is now required</li>
+</ul>
+<p>&nbsp;</p>
+<h2>API Changes</h2>
+<h3>Catalogs</h3>
+<ul>
+  <li>All uses of thredds.catalog.* are deprecated. If you still need it, you must add old.jar to your path.</li>
+  <li>TDS and CDM now use thredds.server.catalog.* and thredds.client.catalog.*</li>
+</ul>
+<h3>Viewers</h3>
+<ul>
+  <li>thredds.servlet.Viewer has InvDatasetImpl changed to Dataset</li>
+  <li>thredds.servlet.ViewerLinkProvider has InvDatasetImpl changed to Dataset</li>
+  <li>thredds.server.viewer.dataservice.ViewerService has InvDatasetImpl changed to Dataset</li>
+</ul>
+<p>&nbsp;</p>
+<h2>New Features in version 4.5</h2>
+<ul>
+  <li>TDS
+    <ul>
+      <li>Point Feature Collections (point, stations) now handled by Netcdf Subset Service.</li>
+      <li>Automatic Metadata Extraction from the dataset into the thredds catalogs, on point collections only but will extend to other collections.</li>
+      <li>NCSS Station data can output WaterML (beta).</li>
+      <li>NCSS Point can output NetCDF-4/CF.</li>
+    </ul>
+  </li>
+  <li>NcML
+    <ul>
+      <li> updated to implement full extended model.</li>
+      <li> logicalReduce allows you to remove length 1 dimensions [<a href="https://bugtracking.unidata.ucar.edu/browse/TDS-267">TDS-267</a>].</li>
+      <li>NcML handles multichar separators.</li>
+    </ul>
+  </li>
+  <li>CDM
+    <ul>
+      <li>add Albers Equal Area projection</li>
+      <li>add Geostationary projection (Tom Rink SSEC)</li>
+      <li>CFPointWriter refactored, can write to netCDF-4</li>
+      <li>CFGridWriter2 replaces CFGridWriter</li>
+    </ul>
+  </li>
+  <li>IOSPs
+  </li>
+  <ul>
+    <li><a href="../netcdf-java/reference/netcdf4Clibrary.html#writing">Netcdf-4 writing</a> improved, default chunking improved.</li>
+    <li>GRIB: yet another rewrite of Grib Collections to allow scaling to very large collections.</li>
+    <li>Improved HDF-EOS processing.</li>
+    <li>CF 1.6 DSG: bug in handling station profiles, multidimensional representation [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.4/current/thredds.war">TDS-513</a>]</li>
+    <li>MSGnavigation scan mode bug</li>
+    <li>IOSP for SIGMET radar files (beta)</li>
+  </ul>
+  <li>GRIB
+    <ul>
+      <li>ECMWF DRS 50002 added by <a href="mailto:jkaehler@meteomatics.com">jkaehler@meteomatics.com</a></li>
+    </ul>
+  </li>
+  <li>ToolsUI 
+  </li>
+  <ul>
+    <li>using new Swing Look and Feel</li>
+    <li>table columns can be set by user (upper right button on header line)</li>
+    <li>File Chooser improvements</li>
+    <li></li>
+  </ul>
+</ul>
+<h3>API changes</h3>
+<ul>
+  <li>Writing CF gridded data: <strong>ucar.nc2.dt.grid.CFGridWriter</strong> is deprecated in favor of <strong>ucar.nc2.dt.grid.CFGridWriter2</strong>. The API is a bit different, and simpler. Please switch to it.</li>
+  <li>Writing Netcdf-4 files with chunking: The <strong>Nc4Chunking</strong>&nbsp;object changed from package ucar.nc2.jni to package ucar.nc2.write. It was substantially rewritten, and the set of standard strategies has changed.</li>
+  <li><strong>ucar.unidata.geoloc.ProjectionRect</strong> no longer extends <strong>java.awt.Rectangle2D</strong>. This is necessary to remove dependence of the core package on java.awt, which is not supported on Android. If you need to convert <strong>ProjectionRect</strong> into <strong>Rectangle2D</strong>, you can use:</li>
+</ul>
+<blockquote>
+<pre><p> Rectangle2D hr = new Rectangle2D.Double();
+ hr.setRect(prect.getX(), prect.getY(), prect.getWidth(), prect.getHeight());</p>
+</pre>
+</blockquote>
+<h3>Internal changes</h3>
+<ul>
+  <li><strong>HttpClient</strong> library upgraded to 4.2, previously was 3.</li>
+  <li>We are now using <strong>log4j2</strong>. The configuration file is in <strong>{tomcat}/webapps/thredds//WEB-INF/classes/log4j2.xml</strong>. See <a href="http://logging.apache.org/log4j/2.x/">http://logging.apache.org/log4j/2.x/</a></li>
+  <li> Most services have been converted to <a href="http://docs.spring.io/spring/docs/3.0.x/reference/mvc.html">annotated Spring controllers</a>. Documentation on adding your own service is coming soon.</li>
+  <li>Point dataset unit tests upgraded to CF 1.6.</li>
+  <li>    Unit testing framework now complete; 2700+ unit tests.</li>
+  <li><a href="https://scan.coverity.com/projects/388?tab=overview">Covarity</a> static analysis now being done. 3000+ defects eliminated, about 1000 to go.</li>
+  <li>Code being converted to use Java 7 constructs, eg try-with-resources, generics.</li>
+</ul>
+<p>&nbsp;</p>
+<hr>
+
+<address>
+  <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
+  last updated Oct 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  support</a>.
+</address>
+
+</body>
+</html>

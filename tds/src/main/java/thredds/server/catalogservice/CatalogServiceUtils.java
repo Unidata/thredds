@@ -35,15 +35,13 @@ package thredds.server.catalogservice;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
-import thredds.catalog.InvCatalog;
-import thredds.catalog.InvDatasetImpl;
+//import thredds.catalog.InvCatalog;
+//import thredds.catalog.InvDatasetImpl;
 import thredds.server.config.HtmlConfig;
 
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.net.URI;
@@ -88,7 +86,7 @@ public class CatalogServiceUtils {
     return bindingResult;
   }
 
-  public static ModelAndView constructModelForCatalogView(InvCatalog cat, HtmlConfig htmlConfig) {
+  /* public static ModelAndView constructModelForCatalogView(InvCatalog cat, HtmlConfig htmlConfig) {
     // Hand to catalog view.
     String catName = cat.getName();
     String catUri = cat.getUriString();
@@ -109,7 +107,7 @@ public class CatalogServiceUtils {
     htmlConfig.addHtmlConfigInfoToModel(model);
 
     return new ModelAndView("thredds/server/catalog/catalog", model);
-  }
+  } */
 
   public static ModelAndView constructValidationMessageModelAndView(URI uri, String validationMessage, HtmlConfig htmlConfig) {
     Map<String, Object> model = new HashMap<>();

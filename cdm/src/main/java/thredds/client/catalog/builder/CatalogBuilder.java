@@ -106,6 +106,10 @@ public class CatalogBuilder {
     return errlog.toString();
   }
 
+  public String getValidationMessage() {
+    return errlog.toString();
+  }
+
   public boolean hasFatalError() {
     return fatalError;
   }

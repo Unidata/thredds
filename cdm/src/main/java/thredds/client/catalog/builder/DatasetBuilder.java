@@ -107,5 +107,28 @@ public class DatasetBuilder {
     return new Dataset(parent, name, flds, accessBuilders, datasetBuilders);
   }
 
+  public void transferMetadata( Dataset from, boolean inherit) {
+    if (inherit)
+      inheritMetadata(flds, from);
+
+    for (Map.Entry<String, Object> entry : from.flds.entrySet()) {
+      flds.put(entry.getKey(), entry.getValue());
+    }
+
+    // LOOK do inherit
+  }
+
+  private void inheritMetadata( Map<String, Object> flds, Dataset from) {
+
+    Dataset otherParent = from.getParentDataset();
+    if (otherParent == null) return;
+    // depth first, so closer parents override
+    inheritMetadata( flds, otherParent);
+
+    for (Map.Entry<String, Object> entry : otherParent.flds.entrySet()) {
+      flds.put(entry.getKey(), entry.getValue());
+    }
+  }
+
 
 }

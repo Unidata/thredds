@@ -47,12 +47,12 @@ import java.util.*;
 public class DatasetNode {
   protected final DatasetNode parent;
   protected final String name;
-  protected final Map<String, Object> flds;     // keep memory small. dont store reference objects for nulls
+  public final Map<String, Object> flds;     // keep memory small. dont store reference objects for nulls
 
   protected DatasetNode(DatasetNode parent, String name, Map<String, Object> flds, List<DatasetBuilder> datasetBuilders) {
     this.parent = parent;
     this.name = name;
-    this.flds = flds;
+    this.flds = flds; // LOOK Collections.unmodifiableMap(flds);
 
     if (datasetBuilders != null && datasetBuilders.size() > 0) {
       List<Dataset> datasets = new ArrayList<>(datasetBuilders.size());

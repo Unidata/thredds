@@ -5,7 +5,6 @@
 
   <bean id="threddsFileView" class="thredds.server.views.FileView" />
 
-  <bean id="threddsInvCatXmlView"
-        class="thredds.server.views.InvCatalogXmlView" />
+  <bean id="threddsInvCatXmlView" class="thredds.server.views.InvCatalogXmlView" />
 
 </beans>

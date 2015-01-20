@@ -34,6 +34,9 @@ package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
 import org.jdom2.Namespace;
+import thredds.client.catalog.builder.AccessBuilder;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.URLnaming;
@@ -171,5 +174,78 @@ public class Catalog extends DatasetNode {
     return baseURI == null ? null : baseURI.toString();
   }
 
+  //////////////////////////////////////////////////////////////////////////////////
+  // from DeepCopyUtils
+
+  public Catalog subsetCatalogOnDataset( Dataset dataset) {
+    if ( dataset == null ) throw new IllegalArgumentException( "Dataset may not be null." );
+    if ( dataset.getParentCatalog() != this ) throw new IllegalArgumentException( "Catalog must contain the dataset." );
+
+    CatalogBuilder builder = new CatalogBuilder();
+
+    URI docBaseUri = formDocBaseUriForSubsetCatalog( dataset );
+    builder.setBaseURI(docBaseUri);
+    builder.setName( dataset.getName());
+
+    List<Service> neededServices = new ArrayList<>();
+    DatasetBuilder topDs = copyDataset( null, dataset, neededServices, true );  // LOOK, cant set catalog as datasetNode parent
+    for (Service s : neededServices)
+      builder.addService(s);
+
+    builder.addDataset( topDs );
+
+    return builder.makeCatalog();
+  }
+
+  private URI formDocBaseUriForSubsetCatalog( Dataset dataset ) {
+    String catDocBaseUri = getUriString();
+    String subsetDocBaseUriString = catDocBaseUri + "/" + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );
+    try {
+      return new URI( subsetDocBaseUriString);
+
+    } catch ( URISyntaxException e ) {
+      // This shouldn't happen. But just in case ...
+      throw new IllegalStateException( "Bad document Base URI for new catalog [" + catDocBaseUri + "/" + (dataset.getID() != null ? dataset.getID() : dataset.getName()) + "].", e );
+    }
+  }
+
+  private DatasetBuilder copyDataset( DatasetBuilder parent, Dataset dataset, List<Service> neededServices, boolean copyInherited ) {
+
+    neededServices.add(dataset.getServiceDefault());
+
+    DatasetBuilder result;
+
+    // ToDo Deal with InvDatasetScan and its ilk.
+    if ( dataset instanceof CatalogRef ) {
+      CatalogRef catRef = (CatalogRef) dataset;
+      CatalogRefBuilder catBuilder = new CatalogRefBuilder( parent);
+      catBuilder.setHref( catRef.getXlinkHref());
+      catBuilder.setTitle( catRef.getName());
+      result = catBuilder;
+
+    } else {
+      result =  new DatasetBuilder(parent);
+
+      List<Access> access = dataset.getLocalFieldAsList(Dataset.Access);  // dont expand
+      for ( Access curAccess : access) {
+        result.addAccess( copyAccess( result, curAccess, neededServices ));
+      }
+
+      List<Dataset> datasets = dataset.getLocalFieldAsList(Dataset.Datasets);  // dont expand
+      for ( Dataset currDs : datasets) {
+        result.addDataset( copyDataset( result, currDs, neededServices, copyInherited ));
+      }
+
+    }
+
+    result.setName( dataset.getName() );
+    result.transferMetadata( (Dataset) dataset, false );
+    return result;
+  }
+
+  private AccessBuilder copyAccess( DatasetBuilder parent, Access access, List<Service> neededServices ) {
+    neededServices.add(access.getService());  // LOOK may get dups
+    return new AccessBuilder( parent, access.getUrlPath(), access.getService(), access.getDataFormatName(), access.getDataSize() );
+  }
 
 }

@@ -44,20 +44,21 @@ import thredds.catalog.InvCatalogImpl;
 import thredds.util.ContentType;
 
 /**
- * _more_
+ * Configured by Spring, noty sure if its actually used
  *
  * @author edavis
  * @since 4.0
  */
 public class InvCatalogXmlView extends AbstractView {
-  // private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InvCatalogXmlView.class);
 
-  protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res)
-          throws Exception {
+  protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
+
     if (model == null || model.isEmpty())
       throw new IllegalArgumentException("Model must not be null or empty.");
+
     if (!model.containsKey("catalog"))
       throw new IllegalArgumentException("Model must contain \"catalog\" key.");
+
     Object o = model.get("catalog");
     if (!(o instanceof InvCatalogImpl))
       throw new IllegalArgumentException("Model must contain an InvCatalogImpl object.");

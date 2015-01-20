@@ -47,15 +47,15 @@ public class CatalogRefBuilder extends DatasetBuilder {
   private String title;
   private String href;
 
-  protected CatalogRefBuilder(DatasetBuilder parent) {
+  public CatalogRefBuilder(DatasetBuilder parent) {
     super(parent);
   }
 
-  protected void setTitle(String title) {
+  public void setTitle(String title) {
     this.title = title;
   }
 
-  protected void setHref(String href) {
+  public void setHref(String href) {
     this.href = href;
   }
 
