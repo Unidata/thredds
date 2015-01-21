@@ -329,7 +329,7 @@ public class NcepLocalTables extends LocalTables {
       case 200:
         return "entire_atmosphere_single_layer";
       case 201:
-        return "entire_ocean_single_layer";
+        return "entire_ocean";
       case 204:
         return "highest_tropospheric_freezing";
       case 206:
