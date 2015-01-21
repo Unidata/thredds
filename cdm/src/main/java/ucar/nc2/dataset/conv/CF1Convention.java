@@ -144,7 +144,7 @@ public class CF1Convention extends CSMConvention {
       if (sname != null) {
         sname = sname.trim();
 
-        if (sname.equalsIgnoreCase("atmosphere_ln_pressure_coordinate")) { // LOOK why isnt this with other Transforms?
+        if (sname.equalsIgnoreCase(CF.atmosphere_ln_pressure_coordinate)) { // LOOK why isnt this with other Transforms?
           makeAtmLnCoordinate(ds, v);
           continue;
         }
@@ -205,11 +205,10 @@ public class CF1Convention extends CSMConvention {
 
   private boolean avhrr_oiv2 = false;
 
-
-  // this is here because it doesnt fit into 3D array thing.
+  // this is here because it doesnt fit into the 3D array thing.
   private void makeAtmLnCoordinate(NetcdfDataset ds, Variable v) {
     // get the formula attribute
-    String formula = ds.findAttValueIgnoreCase(v, "formula_terms", null);
+    String formula = ds.findAttValueIgnoreCase(v, CF.formula_terms, null);
     if (null == formula) {
       String msg = " Need attribute 'formula_terms' on Variable " + v.getFullName() + "\n";
       parseInfo.format(msg);
@@ -266,9 +265,7 @@ public class CF1Convention extends CSMConvention {
       p.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       p.addAttribute(new Attribute(_Coordinate.AliasForDimension, p.getDimensionsString()));
       ds.addVariable(null, p);
-      //Dimension d = p.getDimension(0);
-      //d.addCoordinateVariable(p);
-      parseInfo.format(" added Vertical Pressure coordinate %s%n", p.getFullName());
+      parseInfo.format(" added Vertical Pressure coordinate %s from CF-1 %s%n", p.getFullName(), CF.atmosphere_ln_pressure_coordinate);
 
     } catch (IOException e) {
       String msg = " Unable to read variables from " + v.getFullName() + " formula_terms\n";

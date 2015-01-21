@@ -293,8 +293,6 @@ public class TestClientCatalog {
     assert subsetDs.getServiceNameDefault().equals("ACD");
     assert subsetDs.getFeatureTypeName() != null;
     assert subsetDs.getFeatureTypeName().equalsIgnoreCase("Grid");
-
   }
-
 
 }

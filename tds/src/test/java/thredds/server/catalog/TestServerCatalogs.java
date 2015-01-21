@@ -42,6 +42,7 @@ import thredds.client.catalog.Service;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
@@ -50,6 +51,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -187,6 +189,21 @@ public class TestServerCatalogs {
     //assertTrue( "Expanded catalog object does not equal expected catalog object.",
     //            ( (InvCatalogImpl) expandedCatalog ).equals( expectedCatalog ) );
   }
+
+    /////////////////////////////////////
+  @Test
+  public void testMisspell() throws IOException {
+        // get test catalog location
+    ClassLoader cl = this.getClass().getClassLoader();
+    URL url = cl.getResource("testInheritied.xml");
+    ConfigCatalogBuilder catFactory = new ConfigCatalogBuilder();
+    Catalog cat = catFactory.buildFromLocation("file:" + url.getPath());
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    System.out.printf("%s%n", writer.writeXML(cat));
+
+     Dataset ds = cat.findDatasetByID("test");
+     assert (ds != null) : "cant find dataset 'test'";
+   }
 
 
 }
