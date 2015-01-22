@@ -35,10 +35,7 @@ package thredds.server.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.catalog.util.DeepCopyUtils;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.CatalogRef;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Service;
+import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
@@ -195,14 +192,20 @@ public class TestServerCatalogs {
   public void testMisspell() throws IOException {
         // get test catalog location
     ClassLoader cl = this.getClass().getClassLoader();
-    URL url = cl.getResource("testInheritied.xml");
+    URL url = cl.getResource("thredds/server/catalog/testInheritied.xml");
+    assert (url != null);
+
     ConfigCatalogBuilder catFactory = new ConfigCatalogBuilder();
     Catalog cat = catFactory.buildFromLocation("file:" + url.getPath());
     CatalogXmlWriter writer = new CatalogXmlWriter();
     System.out.printf("%s%n", writer.writeXML(cat));
 
-     Dataset ds = cat.findDatasetByID("test");
-     assert (ds != null) : "cant find dataset 'test'";
+    Dataset ds = cat.findDatasetByID("test");
+    assert (ds != null) : "cant find dataset 'test'";
+    List<ThreddsMetadata.MetadataOther> list = ds.getMetadataOther();
+    assert list != null;
+    assert list.size() == 0;
+
    }
 
 

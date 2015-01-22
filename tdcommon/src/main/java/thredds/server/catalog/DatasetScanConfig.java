@@ -58,6 +58,23 @@ public class DatasetScanConfig {
   public List<Proxy> proxies;
   public AddTimeCoverage addTimeCoverage;
 
+  @Override
+  public String toString() {
+    return "DatasetScanConfig{" +
+            "name='" + name + '\'' +
+            ", path='" + path + '\'' +
+            ", scanDir='" + scanDir + '\'' +
+            ", restrictAccess='" + restrictAccess + '\'' +
+            ", addDatasetSize=" + addDatasetSize +
+            ", isSortIncreasing=" + isSortIncreasing +
+            ", ncmlElement=" + ncmlElement +
+            ", filters=" + filters +
+            ", namers=" + namers +
+            ", proxies=" + proxies +
+            ", addTimeCoverage=" + addTimeCoverage +
+            '}';
+  }
+
   public static class Filter {
     String regExpAttVal, wildcardAttVal, lastModLimitAttVal;
     boolean atomic, collection, includer;

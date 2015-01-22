@@ -1152,7 +1152,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public boolean isLayer() {
-      return Grib2Utils.isLayer(pds);
+      return cust.isLayer(pds);
     }
 
     public final String getStatType() {

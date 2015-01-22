@@ -6303,6 +6303,62 @@ public class ToolsUI extends JPanel {
     });
   }
 
+  /////////////////////////////////////////////////////////////////////
+
+    // run this on the event thread
+  private static void createGui() {
+    try {
+      // Switch to Nimbus Look and Feel, if it's available.
+      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+        if ("Nimbus".equals(info.getName())) {
+          UIManager.setLookAndFeel(info.getClassName());
+          break;
+        }
+      }
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+            UnsupportedLookAndFeelException e) {
+      log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
+    }
+
+    // get a splash screen up right away
+    final MySplashScreen splash = new MySplashScreen();
+
+    // misc initializations
+    BAMutil.setResourcePath("/resources/nj22/ui/icons/");
+
+    // test
+    // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
+
+    // put UI in a JFrame
+    frame = new JFrame("NetCDF (4.6) Tools");
+    ui = new ToolsUI(prefs, frame);
+
+    frame.setIconImage(BAMutil.getImage("netcdfUI"));
+
+    frame.addWindowListener(new WindowAdapter() {
+      public void windowActivated(WindowEvent e) {
+        splash.setVisible(false);
+        splash.dispose();
+      }
+
+      public void windowClosing(WindowEvent e) {
+        if (!done) exit();
+      }
+    });
+
+    frame.getContentPane().add(ui);
+    Rectangle bounds = (Rectangle) prefs.getBean(FRAME_SIZE, new Rectangle(50, 50, 800, 450));
+    frame.setBounds(bounds);
+
+    frame.pack();
+    frame.setBounds(bounds);
+    frame.setVisible(true);
+
+    // in case a dataset was on the command line
+    if (wantDataset != null)
+      setDataset();
+  }
+
   static boolean isCacheInit = false;
 
   public static void main(String args[]) {
@@ -6329,7 +6385,7 @@ public class ToolsUI extends JPanel {
       System.out.println("ToolsUI arguments=" + arguments);
 
       // LOOK - why does it have to start with http ??
-      if(arguments.matches("[a-zA-Z]+:")) {// assume this is a url
+      //if(arguments.matches("[a-zA-Z]+:")) {// assume this is a url
         wantDataset = arguments;
 
         // see if another version is running, if so send it the message
@@ -6338,7 +6394,7 @@ public class ToolsUI extends JPanel {
           System.out.println("ToolsUI already running - pass argument= '" + wantDataset + "' to it and exit");
           System.exit(0);
         }
-      }
+      // }
 
     } else { // no arguments were passed
 
@@ -6476,57 +6532,4 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  // run this on the event thread
-  private static void createGui() {
-    try {
-      // Switch to Nimbus Look and Feel, if it's available.
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-            UnsupportedLookAndFeelException e) {
-      log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
-    }
-
-    // get a splash screen up right away
-    final MySplashScreen splash = new MySplashScreen();
-
-    // misc initializations
-    BAMutil.setResourcePath("/resources/nj22/ui/icons/");
-
-    // test
-    // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
-
-    // put UI in a JFrame
-    frame = new JFrame("NetCDF (4.6) Tools");
-    ui = new ToolsUI(prefs, frame);
-
-    frame.setIconImage(BAMutil.getImage("netcdfUI"));
-
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowActivated(WindowEvent e) {
-        splash.setVisible(false);
-        splash.dispose();
-      }
-
-      public void windowClosing(WindowEvent e) {
-        if (!done) exit();
-      }
-    });
-
-    frame.getContentPane().add(ui);
-    Rectangle bounds = (Rectangle) prefs.getBean(FRAME_SIZE, new Rectangle(50, 50, 800, 450));
-    frame.setBounds(bounds);
-
-    frame.pack();
-    frame.setBounds(bounds);
-    frame.setVisible(true);
-
-    // in case a dataset was on the command line
-    if (wantDataset != null)
-      setDataset();
-  }
 }

@@ -32,6 +32,7 @@
  */
 package thredds.server.ncss.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,8 +62,6 @@ import ucar.nc2.ft.FeatureDataset;
 @RequestMapping(value = "/ncss/**/datasetBoundaries.xml")
 public class NcssDatasetBoundariesController extends AbstractNcssController {
 
-  //static private final Logger log = LoggerFactory.getLogger(NcssDatasetBoundariesController.class);
-
   @Autowired
   FeatureDatasetService datasetService;
 
@@ -71,14 +70,12 @@ public class NcssDatasetBoundariesController extends AbstractNcssController {
 
     //Checking request format...
     SupportedFormat sf = getSupportedFormat(params, SupportedOperation.DATASET_BOUNDARIES_REQUEST);
-
     String datasetPath = getDatasetPath(req);
-    FeatureDataset fd = null;
-    try {
-      fd = datasetService.findDatasetByPath(req, res, datasetPath);
 
+    try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
       if (fd == null)
-        throw new UnsupportedOperationException("Feature Type not supported");
+        throw new FileNotFoundException("Could not find Dataset "+datasetPath);
+
       if (fd.getFeatureType() != FeatureType.GRID)
         throw new UnsupportedOperationException("Dataset Boundaries request is only supported on Grid features");
 
@@ -87,8 +84,6 @@ public class NcssDatasetBoundariesController extends AbstractNcssController {
       res.setContentType(sf.getResponseContentType());
       res.getWriter().write(boundaries);
       res.getWriter().flush();
-    } finally {
-      if (fd != null) fd.close();
     }
   }
 

@@ -520,7 +520,7 @@ public class TestGrib2CoordsMatch {
     }
 
     public boolean isLayer() {
-      return Grib2Utils.isLayer(pds);
+      return cust.isLayer(pds);
     }
 
     public final CalendarDate getForecastDate() {
