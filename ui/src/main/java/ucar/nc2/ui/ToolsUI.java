@@ -6384,17 +6384,14 @@ public class ToolsUI extends JPanel {
       String arguments = sbuff.toString();
       System.out.println("ToolsUI arguments=" + arguments);
 
-      // LOOK - why does it have to start with http ??
-      //if(arguments.matches("[a-zA-Z]+:")) {// assume this is a url
-        wantDataset = arguments;
+      wantDataset = arguments;
 
-        // see if another version is running, if so send it the message
-        sm = new SocketMessage(14444, wantDataset);
-        if (sm.isAlreadyRunning()) {
-          System.out.println("ToolsUI already running - pass argument= '" + wantDataset + "' to it and exit");
-          System.exit(0);
-        }
-      // }
+      // see if another version is running, if so send it the message
+      sm = new SocketMessage(14444, wantDataset);
+      if (sm.isAlreadyRunning()) {
+        System.out.println("ToolsUI already running - pass argument= '" + wantDataset + "' to it and exit");
+        System.exit(0);
+      }
 
     } else { // no arguments were passed
 
