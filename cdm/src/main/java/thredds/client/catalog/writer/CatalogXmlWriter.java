@@ -101,10 +101,10 @@ public class CatalogXmlWriter {
     //fmt.setIndent("  ");
     //fmt.setTrimAllWhite( true);
     XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat());  // LOOK maybe compact ??
-    fmt.output(writeDocument(catalog), os);
+    fmt.output(writeCatalog(catalog), os);
   }
 
-  public Document writeDocument(Catalog cat) {
+  public Document writeCatalog(Catalog cat) {
     Element rootElem = new Element("catalog", Catalog.defNS);
     Document doc = new Document(rootElem);
 

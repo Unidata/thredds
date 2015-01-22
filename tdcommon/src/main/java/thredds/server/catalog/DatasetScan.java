@@ -34,10 +34,7 @@ package thredds.server.catalog;
 
 import net.jcip.annotations.Immutable;
 import org.jdom2.Element;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.CatalogRef;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.DatasetNode;
+import thredds.client.catalog.*;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
@@ -91,7 +88,7 @@ public class DatasetScan extends CatalogRef {
     return null;
   }
 
-  private class RegExpNamer {
+  private static class RegExpNamer {
     private java.util.regex.Pattern pattern;
     private String replaceString;
     private boolean usePath;
@@ -130,39 +127,57 @@ public class DatasetScan extends CatalogRef {
   public Catalog makeCatalogForDirectory(String orgPath, URI catURI) throws IOException {
 
     // Get the dataset path.
-    String dsDirPath = translatePathToLocation(orgPath);
-    if (dsDirPath == null) {
+    String dataDirReletive = translatePathToLocation(orgPath);
+    if (dataDirReletive == null) {
       String tmpMsg = "makeCatalogForDirectory(): Requesting path <" + orgPath + "> must start with \"" + config.path + "\".";
       log.error(tmpMsg);
       return null;
     }
+    String dataDirComplete = config.scanDir +"/"+ dataDirReletive;
 
     // Setup and create catalog builder.
     CatalogBuilder catBuilder = new CatalogBuilder();
     catBuilder.setBaseURI(catURI);
+    for (Service s : this.getParentCatalog().getServices())
+      catBuilder.addService(s);
+
     DatasetBuilder top = new DatasetBuilder(null);
-    top.setName(getName());
+    String name = (dataDirReletive.length() > 0) ? dataDirReletive : getName();
+    String id = (dataDirReletive.length() > 0) ? getId() +"/"+ dataDirReletive : getId();
+    top.transferMetadata(this, true);
+    top.setName(name);
+    top.put(Dataset.Id, id);
     catBuilder.addDataset(top);
 
-    Path p = Paths.get(dsDirPath);
-    if (!Files.exists(p)) throw new FileNotFoundException("Does not exist "+ dsDirPath);
-    if (!Files.isDirectory(p)) throw new FileNotFoundException("Not a directory "+ dsDirPath);
+    Path p = Paths.get(dataDirComplete);
+    if (!Files.exists(p)) throw new FileNotFoundException("Directory does not exist ="+ dataDirComplete);
+    if (!Files.isDirectory(p)) throw new FileNotFoundException("Not a directory ="+ dataDirComplete);
 
     // scan the directory
     try (MFileIterator iter = new MFileIterator(p)) {
       while (iter.hasNext()) {
+        DatasetBuilder ds;
+
         MFile mfile = iter.next();
         if (mfile.isDirectory()) {
           CatalogRefBuilder catref = new CatalogRefBuilder(top);
           catref.setTitle(mfile.getName());
-          catref.setHref(config.path+"/"+mfile.getName());
+          catref.setHref(mfile.getName() + "/catalog.xml");
           top.addDataset(catref);
+          ds = catref;
+
         } else {
-          DatasetBuilder ds = new DatasetBuilder(top);
+          ds = new DatasetBuilder(top);
           ds.setName(mfile.getName());
+          ds.put(Dataset.UrlPath, config.path + "/" + dataDirReletive + "/" +mfile.getName());
+         //  ds.put(Dataset.DataSize, mfile.getLength());   // <dataSize units="Kbytes">54.73</dataSize>
+          // ds.put(Dataset.Dates, mfile.getLength());   // <date type="modified">2011-09-02T20:50:58.288Z</date>
           top.addDataset(ds);
         }
+
+        ds.put(Dataset.Id, this.getId() + "/" + dataDirReletive + "/" +mfile.getName());
       }
+
     }
 
     // make the catalog
@@ -185,7 +200,7 @@ public class DatasetScan extends CatalogRef {
       dataDir = dataDir.substring( 1 );
 
     // heres the location
-    return config.scanDir +"/"+ dataDir;
+    return dataDir;
   }
 
   ///////////////////////
