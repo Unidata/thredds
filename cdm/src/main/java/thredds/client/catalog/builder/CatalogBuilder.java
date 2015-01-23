@@ -635,7 +635,7 @@ public class CatalogBuilder {
     URI uri = null;
     if (href != null) {
       try {
-        uri =  docBaseURI.resolve(href);
+        uri = Catalog.resolveUri(baseURI, href);
       } catch (Exception e) {
         errlog.format(" ** Invalid documentation href = '%s' err='%s'%n", href, e.getMessage());
       }

@@ -265,7 +265,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
 
-    MFileFilter filter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
+    MFileFilter filter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new CompositeMFileFilter(filters));
     CollectionConfig mc = new CollectionConfig(dirName, dirName, wantSubdirs, filter, auxInfo);
 
     // create name

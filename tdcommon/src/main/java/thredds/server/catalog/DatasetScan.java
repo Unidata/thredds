@@ -33,17 +33,21 @@
 package thredds.server.catalog;
 
 import net.jcip.annotations.Immutable;
-import org.jdom2.Element;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.filesystem.MFileOS7;
-import thredds.inventory.CollectionAbstract;
-import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
+import thredds.inventory.MFileFilter;
+import thredds.inventory.filter.*;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CloseableIterator;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,11 +57,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * DatasetScan
@@ -68,12 +68,60 @@ import java.util.NoSuchElementException;
 @Immutable
 public class DatasetScan extends CatalogRef {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetScan.class);
+
   private final DatasetScanConfig config;
+  private final AddTimeCoverageEnhancer addTimeCoverage;
+  private final List<RegExpNamer> namers;
+  private final CompositeMFileFilter fileFilters;
+  private final CompositeMFileFilter dirFilters;
 
   public DatasetScan(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders,
                      DatasetScanConfig config) {
     super(parent, name, xlink, flds, accessBuilders, datasetBuilders);
     this.config = config;
+
+    addTimeCoverage = (config.addTimeCoverage != null) ? new AddTimeCoverageEnhancer(config.addTimeCoverage) : null;
+
+    if (config.namers != null && config.namers.size() > 0) {
+      namers = new ArrayList<>();
+      for (DatasetScanConfig.Namer cname : config.namers)
+        namers.add( new RegExpNamer( cname));
+    } else {
+      namers = null;
+    }
+
+    if (config.filters != null && config.filters.size() > 0) {
+      fileFilters = new CompositeMFileFilter();
+      dirFilters = new CompositeMFileFilter();
+      for (DatasetScanConfig.Filter cfilter : config.filters) {
+        makeFilter(cfilter);
+      }
+
+    } else {
+      fileFilters = null;
+      dirFilters = null;
+    }
+  }
+
+  private void makeFilter(DatasetScanConfig.Filter cfilter) {
+    MFileFilter filter;
+    if (cfilter.wildcardAttVal != null) {
+      filter = new WildcardMatchOnName(cfilter.wildcardAttVal);   // always on name, not path
+    } else if (cfilter.regExpAttVal != null) {
+      filter = new RegExpMatchOnName(cfilter.regExpAttVal);
+    } else if (cfilter.lastModLimitAttVal > 0) {
+      filter = new LastModifiedLimit(cfilter.lastModLimitAttVal);
+    } else {
+      return;
+    }
+
+    if (!cfilter.includer)  // excluder
+      filter = new FilterNegate(filter);
+
+    if (cfilter.collection)
+      dirFilters.addFilter(filter);
+    if (cfilter.atomic)
+      fileFilters.addFilter(filter);
   }
 
   DatasetScanConfig getConfig() {
@@ -88,37 +136,11 @@ public class DatasetScan extends CatalogRef {
     return null;
   }
 
-  private static class RegExpNamer {
-    private java.util.regex.Pattern pattern;
-    private String replaceString;
-    private boolean usePath;
-
-    RegExpNamer(String regExp, String replaceString, boolean usePath) {
-      this.pattern = java.util.regex.Pattern.compile(regExp);
-      this.replaceString = replaceString;
-    }
-
-    public String getLabel(MFile mfile) {
-      String name = usePath ? mfile.getPath() : mfile.getName();
-      java.util.regex.Matcher matcher = this.pattern.matcher(name);
-      if (!matcher.find()) return null;
-
-      StringBuffer startTime = new StringBuffer();
-      matcher.appendReplacement(startTime, this.replaceString);
-      startTime.delete(0, matcher.start());
-
-      if (startTime.length() == 0) return null;
-
-      return startTime.toString();
-    }
-  }
-
   /**
    * Called from DataRootHandler.makeDynamicCatalog(), called from LocalCatalogServiceController ...
-   *
-   * Try to build a catalog for the given path by scanning the location
-   * associated with this InvDatasetScan. The given path must start with
-   * the path of this InvDatasetScan.
+   * <p/>
+   * Build a catalog for the given path by scanning the location
+   * associated with this DatasetScan. The given path must start with the path of this DatasetScan.
    *
    * @param orgPath the part of the baseURI that is the path
    * @param catURI  the base URL for the catalog, used to resolve relative URLs.
@@ -133,7 +155,10 @@ public class DatasetScan extends CatalogRef {
       log.error(tmpMsg);
       return null;
     }
-    String dataDirComplete = config.scanDir +"/"+ dataDirReletive;
+
+    // translate any properties
+    String scanDir = translateAlias(config.scanDir);
+    String dataDirComplete = (dataDirReletive.length() > 1) ? scanDir + "/" + dataDirReletive : scanDir;
 
     // Setup and create catalog builder.
     CatalogBuilder catBuilder = new CatalogBuilder();
@@ -142,72 +167,106 @@ public class DatasetScan extends CatalogRef {
       catBuilder.addService(s);
 
     DatasetBuilder top = new DatasetBuilder(null);
-    String name = (dataDirReletive.length() > 0) ? dataDirReletive : getName();
-    String id = (dataDirReletive.length() > 0) ? getId() +"/"+ dataDirReletive : getId();
+    String name = (dataDirReletive.length() > 1) ? dataDirReletive : getName();
+    String id = (dataDirReletive.length() > 1) ? getId() + "/" + dataDirReletive : getId();
     top.transferMetadata(this, true);
     top.setName(name);
     top.put(Dataset.Id, id);
     catBuilder.addDataset(top);
 
     Path p = Paths.get(dataDirComplete);
-    if (!Files.exists(p)) throw new FileNotFoundException("Directory does not exist ="+ dataDirComplete);
-    if (!Files.isDirectory(p)) throw new FileNotFoundException("Not a directory ="+ dataDirComplete);
+    if (!Files.exists(p)) throw new FileNotFoundException("Directory does not exist =" + dataDirComplete);
+    if (!Files.isDirectory(p)) throw new FileNotFoundException("Not a directory =" + dataDirComplete);
 
     // scan the directory
+    List<MFile> mfiles = new ArrayList<>();
     try (MFileIterator iter = new MFileIterator(p)) {
-      while (iter.hasNext()) {
-        DatasetBuilder ds;
+      while (iter.hasNext())
+        mfiles.add(iter.next());
+    }
 
-        MFile mfile = iter.next();
-        if (mfile.isDirectory()) {
-          CatalogRefBuilder catref = new CatalogRefBuilder(top);
-          catref.setTitle(mfile.getName());
-          catref.setHref(mfile.getName() + "/catalog.xml");
-          top.addDataset(catref);
-          ds = catref;
+    // sort them
+    Collections.sort(mfiles, new Comparator<MFile>() {
+      public int compare(MFile o1, MFile o2) {
+        if (o1.isDirectory() != o2.isDirectory())
+          return o1.isDirectory() ? 1 : -1;
 
-        } else {
-          ds = new DatasetBuilder(top);
-          ds.setName(mfile.getName());
-          ds.put(Dataset.UrlPath, config.path + "/" + dataDirReletive + "/" +mfile.getName());
-         //  ds.put(Dataset.DataSize, mfile.getLength());   // <dataSize units="Kbytes">54.73</dataSize>
-          // ds.put(Dataset.Dates, mfile.getLength());   // <date type="modified">2011-09-02T20:50:58.288Z</date>
-          top.addDataset(ds);
-        }
+        if (config.isSortIncreasing)
+          return o1.getName().compareTo(o2.getName());
+        else
+          return o2.getName().compareTo(o1.getName());
+      }
+    });
 
-        ds.put(Dataset.Id, this.getId() + "/" + dataDirReletive + "/" +mfile.getName());
+    // create Datasets
+    for (MFile mfile : mfiles) {
+      DatasetBuilder ds;
+
+      if (mfile.isDirectory()) {
+        CatalogRefBuilder catref = new CatalogRefBuilder(top);
+        catref.setTitle( makeName(mfile));
+        catref.setHref(mfile.getName() + "/catalog.xml");
+        top.addDataset(catref);
+        ds = catref;
+
+      } else {
+        ds = new DatasetBuilder(top);
+        ds.setName( makeName(mfile));
+        String urlPath = (dataDirReletive.length() > 1) ? config.path + "/" + dataDirReletive + mfile.getName() : config.path + "/" + mfile.getName();
+        ds.put(Dataset.UrlPath, urlPath);
+        ds.put(Dataset.DataSize, mfile.getLength());   // <dataSize units="Kbytes">54.73</dataSize>
+        CalendarDate date = CalendarDate.of(mfile.getLastModified());
+        ds.put(Dataset.Dates, new DateType(date).setType("modified"));   // <date type="modified">2011-09-02T20:50:58.288Z</date>
+
+        if (addTimeCoverage != null)
+          addTimeCoverage.addMetadata(ds, mfile);
+
+        top.addDataset(ds);
       }
 
+      String id2 = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive + mfile.getName() : this.getId() + "/" + mfile.getName();
+      ds.put(Dataset.Id, id2);
     }
 
     // make the catalog
     return catBuilder.makeCatalog();
   }
 
-  public String translatePathToLocation( String dsPath ) {
-    if ( dsPath == null ) return null;
-    if ( dsPath.length() == 0 ) return null;
+  static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
+  public static void addAlias(String aliasKey, String actual) {
+    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
+  }
+  public static String translateAlias(String scanDir) {
+    for (Map.Entry<String, String> entry : alias.entrySet()) {
+      if (scanDir.contains(entry.getKey()))
+        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
+    }
+    return scanDir;
+  }
 
-    if ( dsPath.startsWith( "/" ) )
-      dsPath = dsPath.substring( 1 );
+  public String translatePathToLocation(String dsPath) {
+    if (dsPath == null) return null;
+    if (dsPath.length() == 0) return null;
 
-    if ( !dsPath.startsWith( config.path))
+    if (dsPath.startsWith("/"))
+      dsPath = dsPath.substring(1);
+
+    if (!dsPath.startsWith(config.path))
       return null;
 
     // remove the matching part, the rest is the "data directory"
-    String dataDir = dsPath.substring( config.path.length() );
-    if ( dataDir.startsWith( "/" ) )
-      dataDir = dataDir.substring( 1 );
+    String dataDir = dsPath.substring(config.path.length());
+    if (dataDir.startsWith("/"))
+      dataDir = dataDir.substring(1);
 
-    // heres the location
+    if (!dataDir.endsWith("/"))
+      dataDir = dataDir + "/";
+
     return dataDir;
   }
 
   ///////////////////////
-  private long olderThanMillis = -1;
 
-
-    // returns everything defined by specp, checking olderThanMillis
   private class MFileIterator implements CloseableIterator<MFile> {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
@@ -230,21 +289,21 @@ public class DatasetScan extends CatalogRef {
 
         try {
           Path nextPath = dirStreamIterator.next();
-          BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
-
-          FileTime last = attr.lastModifiedTime();
-          long millisSinceModified = now - last.toMillis();
-          if (millisSinceModified < olderThanMillis)
-            continue;
+          BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
           nextMFile = new MFileOS7(nextPath, attr);
-          return true;
+          if (accept(nextMFile))
+            return true;
 
-       } catch (IOException e) {
-         throw new RuntimeException(e);
-       }
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       }
     }
 
+    private boolean accept(MFile mfile) {
+      if (mfile.isDirectory()) return dirFilters.accept(mfile);
+      return fileFilters.accept(mfile);
+    }
 
     public MFile next() {
       if (nextMFile == null) throw new NoSuchElementException();
@@ -259,6 +318,90 @@ public class DatasetScan extends CatalogRef {
     // then we could use the try-with-resource
     public void close() throws IOException {
       dirStream.close();
+    }
+  }
+
+  ////////////
+
+  private String makeName(MFile mfile) {
+    if (namers == null) return mfile.getName();
+    for (RegExpNamer namer : namers) {
+      String result = namer.rename(mfile);
+      if (result != null) return result;
+    }
+    return mfile.getName();
+  }
+
+  private static class RegExpNamer {
+    private java.util.regex.Pattern pattern;
+    DatasetScanConfig.Namer namer;
+
+    RegExpNamer(DatasetScanConfig.Namer namer) {
+      this.pattern = java.util.regex.Pattern.compile(namer.regExp);
+      this.namer = namer;
+    }
+
+    public String rename(MFile mfile) {
+      String name = namer.onName ? mfile.getName() : mfile.getPath();
+      java.util.regex.Matcher matcher = this.pattern.matcher(name);
+      if (!matcher.find()) return null;
+
+      StringBuffer startTime = new StringBuffer();
+      matcher.appendReplacement(startTime, namer.replaceString);
+      startTime.delete(0, matcher.start());
+
+      if (startTime.length() == 0) return null;
+      return startTime.toString();
+    }
+  }
+
+  private static class AddTimeCoverageEnhancer {
+    private DatasetScanConfig.AddTimeCoverage atc;
+    private boolean matchOnName;
+    private String matchPattern;
+    private java.util.regex.Pattern pattern;
+
+    AddTimeCoverageEnhancer(DatasetScanConfig.AddTimeCoverage atc) {
+      this.atc = atc;
+      this.matchOnName = (atc.matchName != null);
+      this.matchPattern = (atc.matchName != null) ? atc.matchName : atc.matchPath;
+      try {
+        this.pattern = java.util.regex.Pattern.compile( this.matchPattern);
+      } catch (java.util.regex.PatternSyntaxException e) {
+        log.error("ctor(): bad match pattern <" + this.matchPattern + ">, failed to compile: " + e.getMessage());
+        this.pattern = null;
+      }
+    }
+
+    boolean addMetadata(DatasetBuilder dataset, MFile crDataset) {
+      if (this.pattern == null) return false;
+
+      String matchTargetString = (this.matchOnName) ? crDataset.getName() : crDataset.getPath();
+
+      java.util.regex.Matcher matcher = this.pattern.matcher(matchTargetString);
+      if (!matcher.find()) {
+        return (false); // Pattern not found.
+      }
+      StringBuffer startTime = new StringBuffer();
+      try {
+        matcher.appendReplacement(startTime, atc.subst);
+      } catch (IndexOutOfBoundsException e) {
+        log.error("addMetadata(): capture group mismatch between match pattern <" + this.matchPattern + "> and substitution pattern <" + atc.subst + ">: " + e.getMessage());
+        return (false);
+      }
+      startTime.delete(0, matcher.start());
+
+      try {
+        DateRange dateRange = new DateRange(new DateType(startTime.toString(), null, null), null, new TimeDuration(atc.duration), null);
+        dataset.put(Dataset.TimeCoverage, dateRange);
+
+      } catch (Exception e) {
+        log.warn("addMetadata(): Start time <" + startTime.toString() + "> or duration <" + atc.duration + "> not parsable" +
+                " (crDataset.getName() <" + crDataset.getName() + ">, this.matchPattern() <" + this.matchPattern + ">, this.substitutionPattern() <" + atc.subst + ">): " + e.getMessage());
+        return (false);
+      }
+
+      return (true);
     }
   }
 

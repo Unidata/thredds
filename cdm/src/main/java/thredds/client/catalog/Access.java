@@ -139,4 +139,37 @@ public class Access {                 // (5)
     return uri.toString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Access access = (Access) o;
+
+    if (dataSize != access.dataSize) return false;
+    if (dataFormatS != null ? !dataFormatS.equals(access.dataFormatS) : access.dataFormatS != null) return false;
+    if (service != null ? !service.equals(access.service) : access.service != null) return false;
+    if (urlPath != null ? !urlPath.equals(access.urlPath) : access.urlPath != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = urlPath != null ? urlPath.hashCode() : 0;
+    result = 31 * result + (service != null ? service.hashCode() : 0);
+    result = 31 * result + (dataFormatS != null ? dataFormatS.hashCode() : 0);
+    result = 31 * result + (int) (dataSize ^ (dataSize >>> 32));
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Access{" +
+            "urlPath='" + urlPath + '\'' +
+            ", service=" + service +
+            ", dataFormatS='" + dataFormatS + '\'' +
+            ", dataSize=" + dataSize +
+            '}';
+  }
 }

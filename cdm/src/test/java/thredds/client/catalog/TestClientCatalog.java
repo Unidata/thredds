@@ -43,6 +43,7 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.TimeUnit;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,7 +61,11 @@ public class TestClientCatalog {
   }
 
   static public Catalog open(String urlString) throws IOException {
-    if (!urlString.startsWith("http:") && !urlString.startsWith("file:")) urlString = makeUrlFromFragment(urlString);
+    if (!urlString.startsWith("http:") && !urlString.startsWith("file:")) {
+      urlString = makeUrlFromFragment(urlString);
+    } else {
+      urlString = StringUtil2.replace(urlString, "\\", "/");
+    }
     System.out.printf("Open %s%n", urlString);
     CatalogBuilder builder = new CatalogBuilder();
     Catalog cat = builder.buildFromLocation(urlString);
@@ -294,5 +299,52 @@ public class TestClientCatalog {
     assert subsetDs.getFeatureTypeName() != null;
     assert subsetDs.getFeatureTypeName().equalsIgnoreCase("Grid");
   }
+
+  ////////////////////////////
+
+  @Test
+  public void testTimeCoverage() throws Exception {
+    Catalog cat = open("TestTimeCoverage.xml");
+    assert cat != null;
+
+    Dataset ds = cat.findDatasetByID("test1");
+    DateRange tc = ds.getTimeCoverage();
+    assert null != tc;
+    System.out.println(" tc = "+tc);
+    assert tc.getEnd().isPresent();
+    assert tc.getResolution() == null;
+    assert tc.getDuration().equals( new TimeDuration("14 days") );
+
+    ds = cat.findDatasetByID("test2");
+    tc = ds.getTimeCoverage();
+    assert null != tc;
+    System.out.println(" tc = "+tc);
+    CalendarDate got = tc.getStart().getCalendarDate();
+    CalendarDate want = CalendarDateFormatter.isoStringToCalendarDate(null, "1999-11-16T12:00:00");
+    assert got.equals( want);
+    assert tc.getResolution() == null;
+    TimeDuration gott = tc.getDuration();
+    TimeDuration wantt = new TimeDuration("P3M");
+    assert gott.equals( wantt);
+
+    ds = cat.findDatasetByID("test3");
+    tc = ds.getTimeCoverage();
+    assert null != tc;
+    System.out.println(" tc = "+tc);
+    assert tc.getResolution() == null;
+    assert tc.getDuration().equals( new TimeDuration("2 days") );
+
+    ds = cat.findDatasetByID("test4");
+    tc = ds.getTimeCoverage();
+    assert null != tc;
+    System.out.println(" tc = "+tc);
+    TimeDuration r = tc.getResolution();
+    assert r != null;
+    TimeDuration r2 = new TimeDuration("3 hour");
+    assert r.equals( r2 );
+    TimeDuration d = tc.getDuration();
+    TimeUnit tu = d.getTimeUnit();
+    assert tu.getUnitString().equals("days") : tu.getUnitString(); // LOOK should be 3 hours, or hours or ??
+ }
 
 }

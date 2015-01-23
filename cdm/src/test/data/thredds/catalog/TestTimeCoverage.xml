@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
-  <catalog
+<catalog
     xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd"
-  >
+    >
 
   <service base="http://acd.ucar.edu/models/MOZART/DATA_COMP/datasets_nc/solve1/" serviceType="HTTP" name="disk"/>
 
   <dataset name="test1" ID="test1">
 
-   <metadata inherited="true">
+    <metadata inherited="true">
       <timeCoverage>
         <end>present</end>
         <duration>14 days</duration>
@@ -21,10 +21,10 @@
 
   <dataset name="test2" ID="test2">
 
-   <metadata inherited="true">
-      <timeCoverage>  
-	  <start>1999-11-16T12:00:00</start>
-        <duration>P3M</duration>  
+    <metadata inherited="true">
+      <timeCoverage>
+        <start>1999-11-16T12:00:00</start>
+        <duration>P3M</duration>
       </timeCoverage>
     </metadata>
 
@@ -32,7 +32,7 @@
 
   <dataset name="test3" ID="test3">
 
-   <metadata inherited="true">
+    <metadata inherited="true">
       <timeCoverage>
         <start>2005-05-12 00:52:56</start>
         <end>2005-05-14 00:52:56</end>
@@ -43,7 +43,7 @@
 
   <dataset name="test4" ID="test4">
 
-   <metadata inherited="true">
+    <metadata inherited="true">
       <timeCoverage>
         <start>2005-05-12 00:52:56</start>
         <end>2005-05-15 00:52:56</end>

@@ -76,10 +76,11 @@ public class DatasetScanConfig {
   }
 
   public static class Filter {
-    String regExpAttVal, wildcardAttVal, lastModLimitAttVal;
+    String regExpAttVal, wildcardAttVal;
+    long lastModLimitAttVal;
     boolean atomic, collection, includer;
 
-    public Filter(String regExpAttVal, String wildcardAttVal, String lastModLimitAttVal, boolean atomic, boolean collection, boolean includer) {
+    public Filter(String regExpAttVal, String wildcardAttVal, long lastModLimitAttVal, boolean atomic, boolean collection, boolean includer) {
       this.regExpAttVal = regExpAttVal;
       this.wildcardAttVal = wildcardAttVal;
       this.lastModLimitAttVal = lastModLimitAttVal;

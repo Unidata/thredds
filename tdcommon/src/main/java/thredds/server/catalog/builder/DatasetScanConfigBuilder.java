@@ -155,8 +155,8 @@ public class DatasetScanConfigBuilder {
     for (Element curElem : filterElem.getChildren()) {
       String regExpAttVal = curElem.getAttributeValue("regExp");
       String wildcardAttVal = curElem.getAttributeValue("wildcard");
-      String lastModLimitAttVal = curElem.getAttributeValue("lastModLimitInMillis");
-      if (regExpAttVal == null && wildcardAttVal == null && lastModLimitAttVal == null) {
+      String lastModLimitAttValS = curElem.getAttributeValue("lastModLimitInMillis");
+      if (regExpAttVal == null && wildcardAttVal == null && lastModLimitAttValS == null) {
         // If no regExp or wildcard attributes, skip this selector.
         errlog.format("WARN: readDatasetScanFilter(): no regExp, wildcard, or lastModLimitInMillis attribute in filter child <%s>%n", curElem.getName());
 
@@ -167,7 +167,7 @@ public class DatasetScanConfigBuilder {
 
         // Determine if applies to collection datasets, default false.
         String collectionAttVal = curElem.getAttributeValue("collection");
-        boolean collection = !(collectionAttVal == null || collectionAttVal.equalsIgnoreCase("true"));
+        boolean notCollection = collectionAttVal == null || !collectionAttVal.equalsIgnoreCase("true");
 
         // Determine if include or exclude selectors.
         boolean includer = true;
@@ -178,7 +178,17 @@ public class DatasetScanConfigBuilder {
           continue;
         }
 
-        filters.add(new DatasetScanConfig.Filter(regExpAttVal, wildcardAttVal, lastModLimitAttVal, atomic, collection, includer));
+        // check for errors
+        long lastModLimitAttVal = -1;
+        if (lastModLimitAttValS != null) {
+          try {
+            lastModLimitAttVal = Long.parseLong(lastModLimitAttValS);
+          } catch (NumberFormatException e) {
+            errlog.format("WARN: readDatasetScanFilter(): lastModLimitInMillis not valid <" + curElem + ">.");
+          }
+        }
+
+        filters.add(new DatasetScanConfig.Filter(regExpAttVal, wildcardAttVal, lastModLimitAttVal, atomic, !notCollection, includer));
       }
     }
 
@@ -421,7 +431,19 @@ public class DatasetScanConfigBuilder {
     String subst = addTimeCovElem.getAttributeValue("startTimeSubstitutionPattern");
     String duration = addTimeCovElem.getAttributeValue("duration");
 
-    return new DatasetScanConfig.AddTimeCoverage(matchName, matchPath, subst, duration);
+    boolean err = false;
+    if (subst == null) {
+      errlog.format("WARN: readDatasetScanAddTimeCoverage(): must have startTimeSubstitutionPattern elem=<%s>%n", addTimeCovElem);
+      err = true;
+    } else if (duration == null) {
+      errlog.format("WARN: readDatasetScanAddTimeCoverage(): must have duration elem=<%s>%n", addTimeCovElem);
+      err = true;
+    } else if (matchName == null && matchPath == null) {
+      errlog.format("WARN: readDatasetScanAddTimeCoverage(): must have either datasetNameMatchPattern or datasetPathMatchPattern elem=<%s>%n", addTimeCovElem);
+      err = true;
+    }
+
+    return err ? null : new DatasetScanConfig.AddTimeCoverage(matchName, matchPath, subst, duration);
   }
 
 }

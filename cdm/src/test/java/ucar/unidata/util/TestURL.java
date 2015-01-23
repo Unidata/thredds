@@ -30,25 +30,64 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.catalog;
+package ucar.unidata.util;
 
-import junit.framework.*;
-import java.util.*;
-import java.io.IOException;
+import org.junit.Test;
+
+import java.net.*;
+
+/* Test URls */
+
+public class TestURL {
+  //static String u = "http://adde.ucar.edu/pointdata?select='id TXKF'&param=day time t td psl";
+  static String u = "http://adde.ucar.edu/pointdata?group=rtptsrc&descr=01hr&param=LAT&select=\"ida AZCN;day 07-june-2004;time 00:00 22:00\"&num=all&compress=true";
 
 
-public class TestDatasetFmrc extends TestCase {
-
-  public TestDatasetFmrc( String name) {
-    super(name);
+  @Test
+  public void testURL() {
+    doAll("http://adde.ucar.edu/pointdata?select='id%20TXKF'");
+    doAll("http://adde.ucar.edu/test%20test2");
   }
 
-  public void testRead() throws IOException {
-    testRead( TestCatalogAll.open( "DatasetFmrc.xml", true));
+  public void doAll( String s) {
+    doURIencoded(s);
+    doURI(s);
+    doURL(s);
   }
 
-  public void testRead(InvCatalogImpl cat) throws IOException {
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( true);
-    System.out.println("cat=\n"+ fac.writeXML(cat));
+  public void doURL(String u) {
+    try {
+      URL url = new URL(u);
+      System.out.println("TestURL host = " + url.getHost());
+      System.out.println("TestURL file = " + url.getFile());
+      assert true;
+    } catch (Exception e) {
+      System.out.println("URL exception = "+e.getMessage());
+      //assert false;
+    }
   }
+
+  public void doURI(String u) {
+    try {
+      URI uri = new URI(u);
+      System.out.println("TestURI url = " + uri.toString());
+      assert true;
+    } catch (Exception e) {
+      System.out.println("URI exception = "+e.getMessage());
+      //assert false;
+    }
+  }
+
+  public void doURIencoded(String u) {
+    try {
+      String encoded = URLEncoder.encode(u);
+      URI uri = new URI(encoded);
+      System.out.println("TestURI url encoded = " + uri.toString());
+      assert true;
+    } catch (Exception e) {
+      System.out.println("URI exception = "+e.getMessage());
+      //assert false;
+    }
+  }
+
 }

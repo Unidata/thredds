@@ -59,6 +59,28 @@ import java.util.List;
  */
 public class TestServerCatalogs {
 
+  static public ConfigCatalog getFromResource(String catName) throws IOException {
+    // get test catalog location
+    ClassLoader cl = TestServerCatalogs.class.getClassLoader();
+    URL url = cl.getResource(catName);
+    if (url == null) return null;
+
+    ConfigCatalogBuilder builder = new ConfigCatalogBuilder();
+    Catalog cat = builder.buildFromLocation("file:" + url.getPath());
+    if (builder.hasFatalError()) {
+      System.out.printf("%s%n", builder.getErrorMessage());
+      assert false;
+      return null;
+    } else {
+      String mess = builder.getErrorMessage();
+      if (mess.length() > 0)
+        System.out.printf(" parse Messages = %s%n", builder.getErrorMessage());
+    }
+
+    Assert.assertTrue(cat instanceof ConfigCatalog);
+    return (ConfigCatalog) cat;
+  }
+
   static public ConfigCatalog open(String urlString) throws IOException {
     System.out.printf("Open %s%n", urlString);
     ConfigCatalogBuilder builder = new ConfigCatalogBuilder();

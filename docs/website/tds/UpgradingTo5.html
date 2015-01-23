@@ -9,10 +9,10 @@
 <h1><img alt="Unidata" src="images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS version 5</h1>
 
 <hr>
-<h2>New Requirements</h2>
+<h2>Requirements</h2>
 <ul>
-  <li>Java 8 is now required</li>
-  <li>Tomcat 7 (servlet 3.0) is now required</li>
+  <li>Java 8 is now required (?)</li>
+  <li>Tomcat 7 (servlet 3.0)</li>
 </ul>
 <p>&nbsp;</p>
 <h2>API Changes</h2>
@@ -27,7 +27,20 @@
   <li>thredds.servlet.ViewerLinkProvider has InvDatasetImpl changed to Dataset</li>
   <li>thredds.server.viewer.dataservice.ViewerService has InvDatasetImpl changed to Dataset</li>
 </ul>
-<p>&nbsp;</p>
+<h2>Catalog Schema changes</h2>
+<h3>Client Catalogs</h3>
+<ul>
+  <li><strong>service</strong> elements may not be nested inside of <strong>dataset</strong> elements, they must be directly contained in the <strong>catalog</strong> element</li>
+</ul>
+<h3>DatasetScan</h3>
+<ul>
+  <li><strong>addID</strong> is no longer needed, ids are always added</li>
+  <li><strong>addDatasetSizeElement</strong> is no longer needed, the dataset size is always added</li>
+  <li><strong>sort: </strong>by default, datasets at each collection level are listed
+  in ascending order by filename</li>
+  <li><strong>User pluggable classes implementing UserImplType</strong> (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl, crawlableDatasetSorterImpl) are no longer supported. This was never officially released or documented.</li>
+  <li>details are <a href="catalog/InvCatalogServerSpec.html">here</a></li>
+</ul>
 <h2>New Features in version 4.5</h2>
 <ul>
   <li>TDS

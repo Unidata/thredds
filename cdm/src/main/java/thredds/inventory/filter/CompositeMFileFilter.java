@@ -30,53 +30,42 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalog;
+package thredds.inventory.filter;
 
-import org.junit.Test;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.inventory.MFileFilter;
+import thredds.inventory.MFile;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Describe
+ * Composite of MFileFilter, all must be true.
  *
  * @author caron
- * @since 1/21/2015
+ * @since Jul 8, 2009
  */
-public class TestDatasetScan {
 
-  @Test
-  public void testMakeCatalog() throws IOException {
-    String filePath = "C:/dev/github/thredds46/tds/src/test/content/thredds/catalog.xml";
-    ConfigCatalog cat = TestServerCatalogs.open("file:" + filePath);
-    CatalogXmlWriter writer = new CatalogXmlWriter();
-    // System.out.printf("%s%n",  writer.writeXML( cat ));
 
-    List<DatasetRoot> roots = cat.getRoots();
-    for (DatasetRoot root : roots)
-      System.out.printf("DatasetRoot %s -> %s%n", root.path, root.location);
-    assert roots.size() == 2;
+public class CompositeMFileFilter implements MFileFilter {
+  private List<MFileFilter> filters;
 
-    Dataset ds = cat.findDatasetByID("scanCdmUnitTests");
-    assert ds != null;
-    assert (ds instanceof DatasetScan);
-    DatasetScan dss = (DatasetScan) ds;
-    String serviceName = dss.getServiceNameDefault();
-    assert serviceName.equals("all");
+  public CompositeMFileFilter() {
+    this.filters = new ArrayList<>();
+  }
 
-    DatasetScanConfig config = dss.getConfig();
-    System.out.printf("%s%n", config);
+  public CompositeMFileFilter(List<MFileFilter> filters) {
+    this.filters = new ArrayList<>(filters);
+  }
 
-    Catalog scanCat = dss.makeCatalogForDirectory("scanCdmUnitTests", cat.getBaseURI());
-    assert scanCat != null;
-    System.out.printf("%n%s%n",  writer.writeXML( scanCat ));
+  public void addFilter(MFileFilter filter) {
+    this.filters.add(filter);
+  }
 
-    scanCat = dss.makeCatalogForDirectory("scanCdmUnitTests/ncss/test", cat.getBaseURI());
-    System.out.printf("%s%n",  writer.writeXML( scanCat ));
-
+  public boolean accept(MFile mfile) {
+    for (MFileFilter filter : filters) {
+      if (!filter.accept(mfile)) return false;
+    }
+    return true;
   }
 
 }

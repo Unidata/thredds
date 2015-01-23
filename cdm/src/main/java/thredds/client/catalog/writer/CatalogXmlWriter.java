@@ -643,4 +643,5 @@ public class CatalogXmlWriter {
 
     return elem;
   }
+
 }

@@ -71,7 +71,7 @@
     </metadata>
 
     <ncml:netcdf xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-      <attribute name="ncmlAdded" value="stuff"/>
+      <ncml:attribute name="ncmlAdded" value="stuff"/>
     </ncml:netcdf>
 
     <filter>

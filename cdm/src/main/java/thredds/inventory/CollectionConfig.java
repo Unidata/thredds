@@ -34,7 +34,7 @@
 package thredds.inventory;
 
 import net.jcip.annotations.Immutable;
-import thredds.inventory.filter.Composite;
+import thredds.inventory.filter.CompositeMFileFilter;
 
 import java.util.List;
 
@@ -63,7 +63,7 @@ public class CollectionConfig {
     this.name = name;
     this.dirName = dirName;
     this.wantSubdirs = wantSubdirs;
-    ff = (filters == null || filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
+    ff = (filters == null || filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new CompositeMFileFilter(filters));
     this.auxInfo = auxInfo;
   }
 
