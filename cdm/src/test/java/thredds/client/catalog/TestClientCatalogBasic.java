@@ -62,7 +62,7 @@ public class TestClientCatalogBasic {
     result.add(new Object[]{"TestHarvest.xml"});
     result.add(new Object[]{"TestFilter.xml"});
     result.add(new Object[]{"http://thredds-test.unidata.ucar.edu/thredds/catalog.xml"});
-    result.add(new Object[]{"http://thredds-test.unidata.edu/thredds/catalog/nws/metar/ncdecoded/catalog.xml?dataset=nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr"});
+    result.add(new Object[]{"http://thredds-test.unidata.ucar.edu/thredds/catalog/nws/metar/ncdecoded/catalog.xml?dataset=nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr"});
     return result;
   }
 
