@@ -59,7 +59,7 @@
               </td>
               
           <td>
-            <h3> Bounding Box (decimal degrees):</h3>
+            <h3>Bounding box, in decimal degrees (initial extents are approximate):</h3>
             <blockquote>
               West Longitude: <input type="text" name="west" size="14" value="{forecastModelRun/horizBB/attribute::west}"/> <br/>
               East Longitude: <input type="text" name="east" size="14"  value="{forecastModelRun/horizBB/attribute::east}"/> <br/>

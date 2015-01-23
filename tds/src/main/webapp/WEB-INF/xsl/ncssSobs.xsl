@@ -162,7 +162,8 @@
                                         <div id="spatialSubset">
                                             <!-- lat/lon subsetting -->
                                             <div id="bboxSubset" class="absoluteTopLeft borderLightGrey">
-                                                <span class="bold">Bounding Box (decimal degrees):</span>
+                                                <span class="bold">Bounding box, in decimal degrees
+                                                    (initial extents are approximate):</span>
                                                 <div class="top">
                                                     <span>north</span>
                                                     <br/>
@@ -209,7 +210,8 @@
                                                 <input onchange="Ncss.buildAccessUrl()" disabled="disabled" type="text"
                                                        name="longitude" size="10"/>
                                                 <br/>
-                                                <span class="bold">Within Bounding Box:</span>
+                                                <span class="bold">Bounding box, in decimal degrees
+                                                    (initial extents are approximate):</span>
                                                 <div class="top">
                                                     <span>north</span>
                                                     <br/>
@@ -292,7 +294,6 @@
                                     </div>
 
                                     <!-- Output format -->
-                                    <br clear="all"/>
                                     <h3>Choose Output Format:</h3>
                                     <div class="borderLightGrey">
                                         <label class="sized">Format:</label>

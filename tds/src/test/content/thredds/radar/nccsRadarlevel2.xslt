@@ -47,7 +47,7 @@
                 <input type="radio" name="spatial" value="all" checked="checked"> <b>All Stations</b></input>
                 <br/>
                 <input type="radio" name="spatial" value="bb">
-                <b>Bounding Box (decimal degrees):</b>
+                <b>Bounding box, in decimal degrees (initial extents are approximate):</b>
                   <blockquote>
                     <blockquote>
                       <p>North</p>
