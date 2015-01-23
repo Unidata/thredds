@@ -271,7 +271,7 @@ public class TestProjections extends TestCase {
   }
 
   public void testFlatEarth() {
-    testProjection(new FlatEarth());
+    testProjectionLonMax(new FlatEarth(), 180, 80);
     FlatEarth p = new FlatEarth();
     FlatEarth p2 = (FlatEarth) p.constructCopy();
     assert p.equals(p2);

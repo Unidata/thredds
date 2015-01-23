@@ -21,34 +21,32 @@
   <datasetRoot path="localContent" location="content/testdata/"/>
   <datasetRoot path="cdmUnitTest" location="${cdmUnitTest}"/>
 
-  <datasetScan name="Test Scan Grids" ID="testGridScan" path="testGridScan" location="${tmpDir}">
+  <datasetScan name="Test Scan Filter wildcards" ID="testGridScan" path="testGridScan" location="${tmpDir}">
     <metadata inherited="true">
       <serviceName>all</serviceName>
     </metadata>
     <filter>
       <include wildcard="*.nc"/>
     </filter>
-    <sort>
-      <lexigraphicByName increasing="false"/>
-    </sort>
-    <addLatest/>
-    <addDatasetSize/>
-
   </datasetScan>
 
-  <datasetScan name="Test Scan Grids" ID="testGridScanReg" path="testGridScanReg" location="${tmpDir}">
+  <datasetScan name="Test Scan Filter Regexp" ID="testGridScanReg" path="testGridScanReg" location="${tmpDir}">
     <metadata inherited="true">
       <serviceName>all</serviceName>
     </metadata>
     <filter>
-      <include regExp="PROFILER_wind_06min_2013110[67]_[0-9]{4}.nc"/>
+      <include regExp="PROFILER_wind_06min_2013110[67]_[0-9]{4}\.nc"/>
     </filter>
-    <sort>
-      <lexigraphicByName increasing="false"/>
-    </sort>
-    <addLatest/>
-    <addDatasetSize/>
+  </datasetScan>
 
+  <datasetScan name="Test Scan Exclude directory" ID="testExclude" path="testExclude" location="${tmpDir}">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+    <filter>
+      <include regExp="PROFILER_wind_06min_2013110[67]_[0-9]{4}\.nc"/>
+      <exclude regExp="20131106" atomic="false" collection="true"/>
+    </filter>
   </datasetScan>
 
   <dataset name="Test dataset scan nested dirs">
@@ -79,7 +77,6 @@
         <lexigraphicByName increasing="false"/>
       </sort>
       <addLatest/>
-      <addDatasetSize/>
       <addTimeCoverage
           datasetNameMatchPattern="PROFILER_wind_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
           startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
@@ -111,3 +108,4 @@
   </datasetScan>
 
 </catalog>
+

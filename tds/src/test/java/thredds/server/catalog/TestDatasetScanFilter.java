@@ -46,10 +46,10 @@ import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.inventory.MFile;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.util.TestRegexp;
 
 
-public class TestDatasetScanFilter
-{
+public class TestDatasetScanFilter {
   private static File tmpTestDataDir;
   private static MFile tmpTestDataCrDs;
   private static List<String> dataFiles_FullPathNames;
@@ -90,7 +90,7 @@ public class TestDatasetScanFilter
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131107_0001.nc");
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131107_0008.nc");
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131107_0014.nc");
-    TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131107_0016.nc");
+    TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131108_0016.nc");
   }
 
   /* public void createEtaDirWithCvsAndDotGitDirs( File targetDir) {
@@ -167,7 +167,6 @@ public class TestDatasetScanFilter
     assert scanCat.getDatasets().size() == 1;
     root = scanCat.getDatasets().get(0);
     assert root.getDatasets().size() == 4;
-
   }
 
   @Test
@@ -206,166 +205,49 @@ public class TestDatasetScanFilter
     System.out.printf("%n%s%n", writer.writeXML(scanCat));
     assert scanCat.getDatasets().size() == 1;
     root = scanCat.getDatasets().get(0);
-    assert root.getDatasets().size() == 4;
-
-  }
-
-
-
-
-    /* MFile profilesCrDs = createMFile(profilesDir.getPath(), profilesDir.getName());
-
-
-
-
-    // Construct filter
-    CompositeMFileFilter allFilter = new CompositeMFileFilter();
-    allFilter.addFilter( new RegExpMatchOnName( ".*")); // , true, true, false ) );
-
-    // Get filtered list of datasets.
-    List<MFile> list = null;
-    try {
-      list = profilesCrDs.listDatasets( me);
-    } catch ( IOException e ) {
-      fail(String.format( "IOException listing children of the CrDs [%s]: %s", profilesCrDs.getName(), e.getMessage()));
-      return;
-    }
-
-    int expectedNumDs = 2;
-    assertEquals( "Number of datasets", expectedNumDs, list.size());
-
-    List<MFile> subChildren = null;
-    String atomicChildrenMatchPattern = "PROFILER_wind_06min_2013110[67]_[0-9]{4}\\.nc";
-
-    for ( MFile curCrDs : list ) {
-      String crDsName = curCrDs.getName();
-      assertTrue( String.format( "CrDs name [%s] not as expected [%s or %s].", crDsName, "20131106", "20131107"),
-                  crDsName.equals( "20131106" ) || crDsName.equals( "20131107" ));
-      try {
-        subChildren = curCrDs.listDatasets( me );
-      } catch ( IOException e ) {
-        fail(String.format( "IOException listing children of the CrDs [%s]: %s", curCrDs.getName(), e.getMessage()));
-        return;
-      }
-      assertEquals( "Number of CrDs children", 3, subChildren.size());
-      for ( MFile curSubCrDs: subChildren ) {
-        assertTrue( String.format( "CrDs [%s] does not match pattern [%s]", curSubCrDs.getName(), atomicChildrenMatchPattern),
-                    curSubCrDs.getName().matches( atomicChildrenMatchPattern ));
-      }
-    }
-  }
-
-  /*
-  @Test
-  public void testRegExpIncludeAll()
-  {
-    File tmpTestDir = TestFileDirUtils.addDirectory( tmpTestDataDir, "testRegExpIncludeAll" );
-    assertNotNull(tmpTestDir);
-    assertTrue( tmpTestDir.exists());
-    assertTrue( tmpTestDir.canRead());
-    assertTrue( tmpTestDir.canWrite());
-
-    createEtaDirWithCvsAndDotGitDirs( tmpTestDir );
-
-    // Construct filter
-    List<MultiSelectorFilter.Selector> selectors = new ArrayList<MultiSelectorFilter.Selector>();
-    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*"), true, true, false ) );
-    MFileFilter me = new MultiSelectorFilter( selectors );
-    assertTrue( me != null );
-
-    // Get filtered list of datasets.
-    List<MFile> list = null;
-    try {
-      list = tmpTestDataCrDs.listDatasets( me);
-    } catch ( IOException e ) {
-      fail(String.format( "IOException getting children datasets [%s]: %s", tmpTestDataCrDs.getName(), e.getMessage()));
-      return;
-    }
-
-    int expectedNumDs = 6;
-    assertEquals( "Number of datasets", expectedNumDs, list.size());
-    for ( MFile curCd: list ) {
-      assertTrue("Result path [" + curCd.getPath() + "] not as expected [" + allFiles_FullPathNames + "].",
-          allFiles_FullPathNames.contains(curCd.getPath()));
-    }
-
+    assert root.getDatasets().size() == 3;
   }
 
   @Test
-  public void testRegExpIncludeNcExcludeCvsExcludeDotGit()
-  {
-    File tmpTestDir = TestFileDirUtils.addDirectory( tmpTestDataDir, "testRegExpIncludeNcExcludeCVS" );
-    assertNotNull(tmpTestDir);
-    assertTrue( tmpTestDir.exists());
-    assertTrue( tmpTestDir.canRead());
-    assertTrue( tmpTestDir.canWrite());
+  public void testExcludeDir() throws IOException {
+    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
 
-    createEtaDirWithCvsAndDotGitDirs( tmpTestDir );
+    Dataset ds = cat.findDatasetByID("testExclude");
+    assert ds != null;
+    assert (ds instanceof DatasetScan);
+    DatasetScan dss = (DatasetScan) ds;
+    String serviceName = dss.getServiceNameDefault();
+    assert serviceName.equals("all");
 
-    // Construct filter
-    List<MultiSelectorFilter.Selector> selectors = new ArrayList<MultiSelectorFilter.Selector>();
-    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*nc$"), true, true, false ) );
-    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( "CVS"), false, false, true ) );
-    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( "\\.git"), false, false, true ) );
-    MFileFilter me = new MultiSelectorFilter( selectors );
-    assertTrue( me != null );
+    Catalog scanCat = dss.makeCatalogForDirectory("testExclude", cat.getBaseURI());
+    assert scanCat != null;
 
-    // Get filtered list of datasets.
-    List<MFile> list = null;
-    try {
-      list = tmpTestDataCrDs.listDatasets( me );
-    } catch ( IOException e ) {
-      fail(String.format( "IOException getting children datasets [%s]: %s", tmpTestDataCrDs.getName(), e.getMessage()));
-    }
-    assertEquals( "Number of datasets", 4, list.size());
-    for ( MFile curCd: list ) {
-      assertTrue("Result path [" + curCd.getPath() + "] not as expected ]" + dataFiles_FullPathNames + "].",
-          dataFiles_FullPathNames.contains(curCd.getPath()));
-    }
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    System.out.printf("%n%s%n", writer.writeXML(scanCat));
+    assert scanCat.getDatasets().size() == 1;
+    Dataset root = scanCat.getDatasets().get(0);
+    assert root.getDatasets().size() == 1;
+
+    scanCat = dss.makeCatalogForDirectory("testExclude/testDatafilesInDateTimeNestedDirs/profiles", cat.getBaseURI());
+    System.out.printf("%n%s%n", writer.writeXML(scanCat));
+    assert scanCat.getDatasets().size() == 1;
+    root = scanCat.getDatasets().get(0);
+    assert root.getDatasets().size() == 1;
+
+    scanCat = dss.makeCatalogForDirectory("testExclude/testDatafilesInDateTimeNestedDirs/profiles/20131106", cat.getBaseURI());
+    System.out.printf("%n%s%n", writer.writeXML(scanCat));
+    assert scanCat.getDatasets().size() == 1;
+    root = scanCat.getDatasets().get(0);
+    assert root.getDatasets().size() == 3;
+
+    scanCat = dss.makeCatalogForDirectory("testGridScanReg/testDatafilesInDateTimeNestedDirs/profiles/20131107", cat.getBaseURI());
+    assert scanCat == null;
   }
 
   @Test
-  public void testWildcardIncludeNcExcludeCvsExcludeDotGit()
-  {
-    File tmpTestDir = TestFileDirUtils.addDirectory( tmpTestDataDir, "testWildcardIncludeNcExcludeCVS" );
-    assertNotNull(tmpTestDir);
-    assertTrue( tmpTestDir.exists());
-    assertTrue( tmpTestDir.canRead());
-    assertTrue( tmpTestDir.canWrite());
-
-    createEtaDirWithCvsAndDotGitDirs( tmpTestDir );
-
-    // Construct filter
-    List<MultiSelectorFilter.Selector> selectors = new ArrayList<MultiSelectorFilter.Selector>();
-    selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.nc"), true, true, false ) );
-    selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "CVS"), false, false, true ) );
-    selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( ".git"), false, false, true ) );
-    MFileFilter me = new MultiSelectorFilter( selectors );
-    assertTrue( me != null );
-
-    // Get filtered list of datasets.
-    List<MFile> list = null;
-    try {
-      list = tmpTestDataCrDs.listDatasets( me );
-    } catch ( IOException e ) {
-      fail(String.format( "IOException getting children datasets [%s]: %s", tmpTestDataCrDs.getName(), e.getMessage()));
-      return;
-    }
-
-    assertEquals( "Number of datasets", 4, list.size());
-    for ( MFile curCd: list ) {
-      assertTrue("Result path [" + curCd.getPath() + "] not as expected [" + dataFiles_FullPathNames + "].",
-          dataFiles_FullPathNames.contains(curCd.getPath()));
-    }
+  public void testRegexp() throws IOException {
+    TestRegexp.testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}.nc", "PROFILER_wind_06min_20131107_0001.nc", true);
+    TestRegexp.testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}\\.nc", "PROFILER_wind_06min_20131107_0001.nc", true);
+    TestRegexp.testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}\\\\.nc", "PROFILER_wind_06min_20131107_0001.nc", false);
   }
-
-  private static MFile createMFile( String path, String name )
-  {
-    try {
-      return MFileFactory.createMFile(path, null, null);
-    } catch ( Exception e ) {
-      fail( String.format( "Failed to create MFile [%s]: %s", path, e.getMessage()));
-      return null;
-    }
-  }  */
 }

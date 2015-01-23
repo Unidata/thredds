@@ -32,12 +32,18 @@
  */
 package thredds.server.catalog;
 
+import org.junit.Before;
 import org.junit.Test;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
 import thredds.client.catalog.writer.CatalogXmlWriter;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.TimeDuration;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -47,6 +53,12 @@ import java.util.List;
  * @since 1/21/2015
  */
 public class TestDatasetScan {
+  static private final boolean showCats = true;
+
+  @Before
+  public void setup() {
+    DatasetScan.addAlias("${cdmUnitTest}", "Q:/cdmUnitTest");
+  }
 
   @Test
   public void testMakeCatalog() throws IOException {
@@ -76,6 +88,125 @@ public class TestDatasetScan {
 
     scanCat = dss.makeCatalogForDirectory("scanCdmUnitTests/ncss/test", cat.getBaseURI());
     System.out.printf("%s%n",  writer.writeXML( scanCat ));
+  }
+
+  @Test
+  public void testReverseSort() throws IOException {
+    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+
+    Dataset ds = cat.findDatasetByID("NWS/NPN/6min");
+    assert ds != null;
+    assert (ds instanceof DatasetScan);
+    DatasetScan dss = (DatasetScan) ds;
+    String serviceName = dss.getServiceNameDefault();
+    assert serviceName.equals("all");
+
+    DatasetScanConfig config = dss.getConfig();
+    System.out.printf("%s%n", config);
+
+    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min", cat.getBaseURI());
+    assert scanCat != null;
+
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    if (showCats) System.out.printf("%n%s%n", writer.writeXML(scanCat));
+    assert scanCat.getDatasets().size() == 1;
+    Dataset root = scanCat.getDatasets().get(0);
+    assert root.getDatasets().size() == 2;
+
+    // directories get reverse sorted
+    List<Dataset> list = root.getDatasets();
+    String name0 = list.get(0).getName();
+    String name1 = list.get(1).getName();
+    assert name0.compareTo(name1) > 0;
+
+    scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI());
+    assert scanCat != null;
+    if (showCats) System.out.printf("%n%s%n", writer.writeXML(scanCat));
+
+    assert scanCat.getDatasets().size() == 1;
+    root = scanCat.getDatasets().get(0);
+    assert root.getDatasets().size() == 2;
+
+    // files get reverse sorted
+    list = root.getDatasets();
+    name0 = list.get(0).getName();
+    name1 = list.get(1).getName();
+    assert name0.compareTo(name1) > 0;
+  }
+
+  @Test
+  public void testTimeCoverage() throws IOException, ParseException {
+    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+
+    Dataset ds = cat.findDatasetByID("NWS/NPN/6min");
+    assert ds != null;
+    assert (ds instanceof DatasetScan);
+    DatasetScan dss = (DatasetScan) ds;
+    String serviceName = dss.getServiceNameDefault();
+    assert serviceName.equals("all");
+
+    DatasetScanConfig config = dss.getConfig();
+    System.out.printf("%s%n", config);
+
+    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI());
+    assert scanCat != null;
+
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    if (showCats) System.out.printf("%n%s%n", writer.writeXML(scanCat));
+    assert scanCat.getDatasets().size() == 1;
+    Dataset root = scanCat.getDatasets().get(0);
+    assert root.getDatasets().size() == 2;
+
+    List<Dataset> list = root.getDatasets();
+    Dataset ds0 = list.get(0);
+    Dataset ds1 = list.get(1);
+
+    DateRange dr0 = ds0.getTimeCoverage();
+    assert dr0 != null;
+    assert dr0.getStart().getCalendarDate().equals(CalendarDateFormatter.isoStringToCalendarDate(null, "2013-11-02T23:54:00"));
+    assert dr0.getDuration().equals( new TimeDuration("1 hour"));
+
+    DateRange dr1 = ds1.getTimeCoverage();
+    assert dr1 != null;
+    assert dr1.getStart().getCalendarDate().equals(CalendarDateFormatter.isoStringToCalendarDate(null, "2013-11-02T23:48:00"));
+    assert dr1.getDuration().equals( new TimeDuration("1 hour"));
+  }
+
+  @Test
+  public void testLatest() throws IOException, ParseException {
+    ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+
+    Dataset ds = cat.findDatasetByID("NWS/NPN/6min");
+    assert ds != null;
+    assert (ds instanceof DatasetScan);
+    DatasetScan dss = (DatasetScan) ds;
+    String serviceName = dss.getServiceNameDefault();
+    assert serviceName.equals("all");
+
+    DatasetScanConfig config = dss.getConfig();
+    System.out.printf("%s%n", config);
+
+    Catalog scanCat = dss.makeCatalogForDirectory("station/profiler/wind/06min/20131102", cat.getBaseURI());
+    assert scanCat != null;
+
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    if (showCats) System.out.printf("%n%s%n", writer.writeXML(scanCat));
+    assert scanCat.getDatasets().size() == 1;
+    Dataset root = scanCat.getDatasets().get(0);
+
+    Service latestService = null;
+    for (Service s : scanCat.getServices()) {
+      if (s.getName().equals("latest")) latestService = s;
+    }
+    assert latestService != null;
+
+    Dataset latestDataset = null;
+    for (Dataset nds : root.getDatasets()) {
+      Service s = nds.getServiceDefault();
+      assert s != null;
+      if (s.equals(latestService)) latestDataset = nds;
+    }
+    assert latestDataset != null;
 
   }
 

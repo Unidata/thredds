@@ -57,9 +57,9 @@ public class TestReadAndCountDods {
     result.add(new Object[]{"grib/NCEP/GEFS/Global_1p0deg_Ensemble/derived/files/latest.xml", 70, 17, 16, 6}); // 63, 15, 14, 6});
 
     // 133, 26, 27, 21 vs 133, 31, 29, 21
-    result.add(new Object[]{"catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml", 133, -1, -1, 21});
-    result.add(new Object[]{"catalog/grib/NCEP/GFS/Global_onedeg/files/latest.xml", 133, 26, 27, 21});
-    result.add(new Object[]{"catalog/grib/NCEP/GFS/Global_2p5deg/files/latest.xml", 133, 24, 25, 21});
+    result.add(new Object[]{"catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml", 135, -1, -1, 21});
+    result.add(new Object[]{"catalog/grib/NCEP/GFS/Global_onedeg/files/latest.xml", 135, 26, 27, 21});
+    result.add(new Object[]{"catalog/grib/NCEP/GFS/Global_2p5deg/files/latest.xml", 135, 24, 25, 21});
     // flipping between 23, 9, 11, 6 and 23, 12, 14, 6
     result.add(new Object[]{"catalog/grib/NCEP/GFS/N_Hemisphere_381km/files/latest.xml", 23, -1, -1, 6});
     // flipping between 50, 14, 15, 8 and  50, 11, 13, 8

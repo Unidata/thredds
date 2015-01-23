@@ -111,7 +111,7 @@ public class DatasetScanConfigBuilder {
     String addLatestAttribute = dsElem.getAttributeValue("addLatest");
     Element addLatestElem = dsElem.getChild("addLatest", Catalog.defNS);      // not in docs
     Element addProxiesElem = dsElem.getChild("addProxies", Catalog.defNS);
-    result.proxies = readDatasetScanAddProxies(addProxiesElem, addLatestElem, addLatestAttribute);
+    result.addLatest = readDatasetScanAddProxies(addProxiesElem, addLatestElem, addLatestAttribute);
 
     // Read addDatasetSize element.
     Element addDsSizeElem = dsElem.getChild("addDatasetSize", Catalog.defNS);
@@ -296,22 +296,20 @@ public class DatasetScanConfigBuilder {
     </xsd:complexType>
   </xsd:element>
    */
-  protected List<DatasetScanConfig.Proxy> readDatasetScanAddProxies(Element addProxiesElem, Element addLatestElem, String addLatestAttribute) {
-    List<DatasetScanConfig.Proxy> result = new ArrayList<>();
+  protected DatasetScanConfig.AddLatest readDatasetScanAddProxies(Element addProxiesElem, Element addLatestElem, String addLatestAttribute) {
 
     // handle old "addLatest attribute
     if (addLatestAttribute != null && addLatestAttribute.equalsIgnoreCase("true")) {
-      result.add( new DatasetScanConfig.Proxy() );  // use defaults
-      return result;
+      return new DatasetScanConfig.AddLatest();  // use defaults
     }
 
     // Handle old "addLatest" elements.
     if (addLatestElem != null) {
       Element simpleLatestElem = addLatestElem.getChild("simpleLatest", Catalog.defNS);
       if (simpleLatestElem == null)
-        result.add( new DatasetScanConfig.Proxy() ); // if empty, use defaults
+        return new DatasetScanConfig.AddLatest(); // if empty, use defaults
       else
-        result.add( readDatasetScanAddLatest(simpleLatestElem));
+        return readDatasetScanAddLatest(simpleLatestElem);
     }
 
     // Handle all "addProxies" elements.
@@ -320,7 +318,7 @@ public class DatasetScanConfigBuilder {
 
         // Handle "simpleLatest" child elements.
         if (curChildElem.getName().equals("simpleLatest")) {
-          result.add(readDatasetScanAddLatest(curChildElem));
+          return readDatasetScanAddLatest(curChildElem);
         }
 
         // Handle "latestComplete" child elements.
@@ -360,22 +358,22 @@ public class DatasetScanConfigBuilder {
             lastModLimit = Long.parseLong(lastModLimitVal);
 
           // Get isResolver.
-          String isResolverString = curChildElem.getAttributeValue("isResolver");
+          String isResolverString = curChildElem.getAttributeValue("isResolver");  // WTF ?
           boolean isResolver = true;
           if (isResolverString != null)
             if (isResolverString.equalsIgnoreCase("false"))
               isResolver = false;
 
-          result.add(new DatasetScanConfig.Proxy(latestName, serviceName, latestOnTop, isResolver, lastModLimit));
+          return new DatasetScanConfig.AddLatest(latestName, serviceName, latestOnTop, isResolver, lastModLimit);
         }
       }
     }
 
-    return result;
+    return null;
   }
 
 
-  private DatasetScanConfig.Proxy readDatasetScanAddLatest(Element simpleLatestElem) {
+  private DatasetScanConfig.AddLatest readDatasetScanAddLatest(Element simpleLatestElem) {
     // Default values is simpleLatestElem is null.
     String latestName = "latest.xml";
     boolean latestOnTop = true;
@@ -411,7 +409,7 @@ public class DatasetScanConfigBuilder {
           isResolver = false;
     }
 
-    return new DatasetScanConfig.Proxy(latestName, latestServiceName, latestOnTop, isResolver, -1);
+    return new DatasetScanConfig.AddLatest(latestName, latestServiceName, latestOnTop, isResolver, -1);
   }
 
 /*

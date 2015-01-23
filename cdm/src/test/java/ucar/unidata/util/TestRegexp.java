@@ -120,11 +120,10 @@ public class TestRegexp {
   }
 
   // test pattern ps against match, test expected result
-  private void testOne(String ps, String match, boolean expect) {
+  public static void testOne(String ps, String match, boolean expect) {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
-    assertEquals("match " + ps + " against: " + match, expect,
-            matcher.matches() );
+    assertEquals("match " + ps + " against: " + match, expect, matcher.matches() );
   }
 
   @Test

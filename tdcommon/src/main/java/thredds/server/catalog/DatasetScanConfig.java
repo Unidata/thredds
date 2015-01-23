@@ -55,7 +55,7 @@ public class DatasetScanConfig {
   public Element ncmlElement;
   public List<Filter> filters;
   public List<Namer> namers;
-  public List<Proxy> proxies;
+  public AddLatest addLatest;
   public AddTimeCoverage addTimeCoverage;
 
   @Override
@@ -70,7 +70,7 @@ public class DatasetScanConfig {
             ", ncmlElement=" + ncmlElement +
             ", filters=" + filters +
             ", namers=" + namers +
-            ", proxies=" + proxies +
+            ", proxies=" + addLatest +
             ", addTimeCoverage=" + addTimeCoverage +
             '}';
   }
@@ -101,12 +101,12 @@ public class DatasetScanConfig {
     }
   }
 
-  public static class Proxy {
+  public static class AddLatest {
     String latestName, latestServiceName;
     boolean latestOnTop, isResolver;
     long lastModLimit;
 
-    public Proxy() {
+    public AddLatest() {
       latestName = "latest.xml";
       latestOnTop = true;
       latestServiceName = "latest";
@@ -114,7 +114,7 @@ public class DatasetScanConfig {
       lastModLimit = -1;
     }
 
-    public Proxy(String latestName, String latestServiceName, boolean latestOnTop, boolean isResolver, long lastModLimit) {
+    public AddLatest(String latestName, String latestServiceName, boolean latestOnTop, boolean isResolver, long lastModLimit) {
       this.latestName = latestName;
       this.latestServiceName = latestServiceName;
       this.latestOnTop = latestOnTop;

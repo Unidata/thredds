@@ -1556,8 +1556,7 @@ public final class DataRootHandler implements InitializingBean {
    * @throws IOException if have I/O trouble writing response.
    * @deprecated Instead use {@link #processReqForCatalog(HttpServletRequest, HttpServletResponse) processReqForCatalog()} which provides more general proxy dataset handling.
    */
-  public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
-          throws IOException {
+  public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException {
     String orgPath = TdsPathUtils.extractPath(req, null);
 
     String path = orgPath;
@@ -1569,7 +1568,7 @@ public final class DataRootHandler implements InitializingBean {
     }
 
     if (path.equals("/") || path.equals("")) {
-      String resMsg = "No data at root level, \"/latest.xml\" request not available.";
+      String resMsg = "No data at root level, '/latest.xml' request not available.";
       if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
