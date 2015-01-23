@@ -43,9 +43,9 @@ import java.util.*;
  *
  * Matching is thread-safe, as long as put() is no longer being called.
  */
-public class PathMatcher {
+public class PathMatcher<T> {
   static private final boolean debug = false;
-  private final TreeMap<String, Object> treeMap;
+  private final TreeMap<String, T> treeMap;
 
   public PathMatcher() {
     treeMap = new TreeMap<>( new PathComparator());
@@ -56,8 +56,9 @@ public class PathMatcher {
    * @param key sort key
    * @param value add this object to the list to be searched.
    */
-  public void put(String key, Object value) {
-    treeMap.put( key, value == null ? key : value);
+  public void put(String key, T value) {
+    // treeMap.put( key, value == null ? key : value);  LOOK
+    treeMap.put( key, value);
   }
 
   /**
@@ -65,7 +66,7 @@ public class PathMatcher {
    * @param key find object that has this key
    * @return existing object, else null.
    */
-  public Object get(String  key) {
+  public T get(String  key) {
     return treeMap.get( key);
   }
 
@@ -73,7 +74,7 @@ public class PathMatcher {
    * Get an iterator over the values, in sorted order.
    * @return iterator
    */
-  public Iterator iterator() {
+  public Iterator<T> iterator() {
     return treeMap.values().iterator();
   }
 
@@ -82,8 +83,8 @@ public class PathMatcher {
    * @param path find object with longest match where path.startsWith( key)
    * @return the value whose key is the longest that matches path, or null if none
    */
-  public Object match( String path) {
-    SortedMap<String, Object> tail = treeMap.tailMap( path);
+  public T match( String path) {
+    SortedMap<String, T> tail = treeMap.tailMap( path);
     if (tail.isEmpty()) return null;
     String after = tail.firstKey();
     //System.out.println("  "+path+"; after="+afterPath);

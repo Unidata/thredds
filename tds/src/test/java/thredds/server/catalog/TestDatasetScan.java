@@ -67,7 +67,7 @@ public class TestDatasetScan {
     CatalogXmlWriter writer = new CatalogXmlWriter();
     // System.out.printf("%s%n",  writer.writeXML( cat ));
 
-    List<DatasetRoot> roots = cat.getRoots();
+    List<DatasetRoot> roots = cat.getDatasetRoots();
     for (DatasetRoot root : roots)
       System.out.printf("DatasetRoot %s -> %s%n", root.path, root.location);
     assert roots.size() == 2;

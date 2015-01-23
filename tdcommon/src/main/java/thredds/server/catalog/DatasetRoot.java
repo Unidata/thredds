@@ -50,5 +50,11 @@ public class DatasetRoot {
     this.location = location;
   }
 
+  public String getPath() {
+    return path;
+  }
 
+  public String getLocation() {
+    return location;
+  }
 }

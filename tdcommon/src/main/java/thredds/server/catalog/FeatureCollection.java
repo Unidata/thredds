@@ -50,10 +50,25 @@ import java.util.Map;
  */
 public class FeatureCollection extends CatalogRef {
   FeatureCollectionConfig config;
+  String path;
+  String topDirectoryLocation;
+  String collectionName;
 
   public FeatureCollection(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders,
                            FeatureCollectionConfig config) {
     super(parent, name, xlink, flds, accessBuilders, datasetBuilders);
     this.config = config;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getTopDirectoryLocation() {
+    return topDirectoryLocation;
+  }
+
+  public String getCollectionName() {
+    return collectionName;
   }
 }

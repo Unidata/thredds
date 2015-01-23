@@ -300,7 +300,7 @@ public class HtmlWriter {
     }
   }
 
-  void appendSimpleFooter(StringBuilder sb) {
+  public void appendSimpleFooter(StringBuilder sb) {
     sb.append("<h3>");
     if (this.htmlConfig.getInstallName() != null) {
       String installUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl());

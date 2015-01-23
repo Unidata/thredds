@@ -48,7 +48,7 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
-import thredds.servlet.ConfigCatalogHtmlWriter;
+import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.util.RequestForwardUtils;

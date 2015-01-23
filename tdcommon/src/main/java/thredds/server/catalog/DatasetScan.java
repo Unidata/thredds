@@ -69,19 +69,6 @@ import java.util.*;
 public class DatasetScan extends CatalogRef {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetScan.class);
 
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
-
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
-  }
-
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
-    }
-    return scanDir;
-  }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private final DatasetScanConfig config;
@@ -139,6 +126,10 @@ public class DatasetScan extends CatalogRef {
     if (cfilter.atomic)
       fileFilters.addFilter(filter);
   }
+
+  public String getPath() { return config.path; }
+
+  public String getScanLocation() { return config.scanDir; }
 
   DatasetScanConfig getConfig() {
     return config;

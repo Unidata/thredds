@@ -30,43 +30,41 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalog;
+package thredds.core;
 
-import net.jcip.annotations.Immutable;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.builder.DatasetBuilder;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
- * TDS Configuration Catalog
+ * Listen for DataRootHandler configuration events and register any restricted access datasets.
+ *
+ * Extracted from DataRootHandler for use elsewhere. [ERD - 2008-08-29]
  *
  * @author caron
- * @since 1/15/2015
+ * @since 1/23/2015
  */
-@Immutable
-public class ConfigCatalog extends Catalog {
+public class RestrictedAccessConfigListener implements DataRootHandler.ConfigListener {
+  volatile boolean initializing;
 
-  public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
-    super(baseURI, name, flds, datasets);
+  public RestrictedAccessConfigListener() {
+    initializing = false;
   }
 
-  public List<DatasetRoot> getDatasetRoots() {
-    return (List<DatasetRoot>) getLocalFieldAsList(Dataset.DatasetRoots);
+  public void configStart() {
+    this.initializing = true;
   }
 
-  private List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
-    }
-    return new ArrayList(0);
+  public void configEnd() {
+    this.initializing = false;
+  }
+
+  public void configCatalog( Catalog catalog) {
+  }
+
+  public void configDataset( Dataset dataset) {
+    // check for resource control
+    if (dataset.getResourceControl() != null)
+      DatasetHandler.putResourceControl(dataset);
   }
 }
+

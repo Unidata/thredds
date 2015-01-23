@@ -30,13 +30,14 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.servlet;
+package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import thredds.client.catalog.*;
 import thredds.client.catalog.writer.DatasetHtmlWriter;
 import thredds.server.config.HtmlConfig;
 import thredds.server.viewer.dataservice.ViewerService;
+import thredds.servlet.HtmlWriter;
 import thredds.util.ContentType;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.Format;
