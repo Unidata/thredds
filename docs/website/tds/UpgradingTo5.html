@@ -14,7 +14,6 @@
   <li>Java 8 is now required (?)</li>
   <li>Tomcat 7 (servlet 3.0)</li>
 </ul>
-<p>&nbsp;</p>
 <h2>API Changes</h2>
 <h3>Catalogs</h3>
 <ul>
@@ -31,6 +30,7 @@
 <h3>Client Catalogs</h3>
 <ul>
   <li><strong>service</strong> elements may not be nested inside of <strong>dataset</strong> elements, they must be directly contained in the <strong>catalog</strong> element</li>
+  <li><strong>datasetRoot</strong> elements may not be contained inside of <strong>service</strong> elements, they must be directly contained in the <strong>catalog</strong> element</li>
 </ul>
 <h3>DatasetScan</h3>
 <ul>
