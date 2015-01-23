@@ -138,12 +138,10 @@ label.sized{
 	width:52px;
 	display:block;
 	float:left;
-	padding-top:8px;
 }
 
 label.sized_big{
-	width:60px;
+	width:75px;
 	display:block;
 	float:left;
-	padding-top:8px;
 }
