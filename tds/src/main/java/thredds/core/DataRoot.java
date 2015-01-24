@@ -34,7 +34,6 @@ package thredds.core;
 
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
-import thredds.util.PathAliasReplacement;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.HashMap;
@@ -47,7 +46,6 @@ import java.util.Map;
 * @since 1/23/2015
 */
 public class DataRoot {
-
 
   private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
 

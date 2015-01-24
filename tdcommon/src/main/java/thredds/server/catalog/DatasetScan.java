@@ -135,10 +135,6 @@ public class DatasetScan extends CatalogRef {
     return config;
   }
 
-  org.jdom2.Element getNcmlElement() {
-    return (org.jdom2.Element) getLocalField(Dataset.Ncml);
-  }
-
   MFile requestCrawlableDataset(String path) {
     return null;
   }
@@ -168,7 +164,7 @@ public class DatasetScan extends CatalogRef {
     String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
 
     // translate any properties
-    String scanDir = translateAlias(config.scanDir);
+    String scanDir = DataRoot.translateAlias(config.scanDir);
     String dataDirComplete = (dataDirReletive.length() > 1) ? scanDir + "/" + dataDirReletive : scanDir;
 
     // Setup and create catalog builder.

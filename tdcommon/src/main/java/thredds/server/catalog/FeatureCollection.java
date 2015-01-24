@@ -32,13 +32,19 @@
 
 package thredds.server.catalog;
 
+import thredds.catalog.InvCatalogImpl;
+import thredds.client.catalog.Catalog;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dt.GridDataset;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -71,4 +77,21 @@ public class FeatureCollection extends CatalogRef {
   public String getCollectionName() {
     return collectionName;
   }
+
+  public NetcdfFile getNetcdfDataset(String remaining) {
+    return null;
+  }
+
+  public GridDataset getGridDataset(String remaining) {
+    return null;
+  }
+
+  public Catalog makeCatalog(String match, String orgPath, URI catURI) throws IOException {
+    return null;
+  }
+
+  public Catalog makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
+    return null;
+  }
+
 }

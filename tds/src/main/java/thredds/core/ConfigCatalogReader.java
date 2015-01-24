@@ -40,7 +40,6 @@ import thredds.server.catalog.DatasetRoot;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
-import thredds.server.config.AllowableService;
 import thredds.server.config.TdsContext;
 import thredds.servlet.PathMatcher;
 import thredds.servlet.ThreddsConfig;
@@ -73,6 +72,7 @@ public class ConfigCatalogReader {
   private Set<String> staticCatalogNames; // Hash of static catalogs, key = path
   private HashSet<String> idHash = new HashSet<>(); // Hash of ids, to look for duplicates
   private boolean staticCache;
+  private AllowableService allowableService;
 
   void initCatalogs() {
     ArrayList<String> catList = new ArrayList<>();
@@ -84,6 +84,7 @@ public class ConfigCatalogReader {
   }
 
   public void initCatalogs(List<String> configCatalogRoots) {
+    allowableService = new AllowableService();
 
     staticCache = ThreddsConfig.getBoolean("Catalog.cache", true);  // user can turn off static catalog caching
     startupLog.info("DataRootHandler: staticCache= " + staticCache);
@@ -106,7 +107,6 @@ public class ConfigCatalogReader {
   /**
    * Reads a catalog, finds datasetRoot, datasetScan, datasetFmrc, NcML and restricted access datasets
    * <p/>
-   * Only called by synchronized methods.
    *
    * @param path    file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @param recurse if true, look for catRefs in this catalog
@@ -142,7 +142,7 @@ public class ConfigCatalogReader {
       addRoot(p, true);
     }
 
-    List<String> disallowedServices = AllowableService.checkCatalogServices(cat);
+    List<String> disallowedServices = allowableService.getDisallowedServices(cat);
     if (!disallowedServices.isEmpty()) {
       logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
     }
@@ -206,7 +206,6 @@ public class ConfigCatalogReader {
   /**
    * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
    * Look for duplicate Ids (give message). Dont follow catRefs.
-   * Only called by synchronized methods.
    *
    * @param dsList the list of Dataset
    * @return true if the containing catalog should be cached
@@ -219,10 +218,10 @@ public class ConfigCatalogReader {
       Dataset dataset = iter.next();
 
       // look for duplicate ids
-      String id = dataset.getUniqueID();
+      String id = dataset.getID();
       if (id != null) {
         if (idHash.contains(id)) {
-          logCatalogInit.error(ERROR + "Duplicate id on  '" + dataset.getFullName() + "' id= '" + id + "'");
+          logCatalogInit.error(ERROR + "Duplicate id on  '" + dataset.getName() + "' id= '" + id + "'");
         } else {
           idHash.add(id);
         }
@@ -232,7 +231,7 @@ public class ConfigCatalogReader {
         DatasetScan ds = (DatasetScan) dataset;
         Service service = ds.getServiceDefault();
         if (service == null) {
-          logCatalogInit.error(ERROR + "DatasetScan " + ds.getFullName() + " has no default Service - skipping");
+          logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");
           continue;
         }
         if (!addRoot(ds))
@@ -257,7 +256,6 @@ public class ConfigCatalogReader {
     return needsCache;
   }
 
-  // Only called by synchronized methods
   private void initFollowCatrefs(String dirPath, List<Dataset> datasets) throws IOException {
     for (Dataset Dataset : datasets) {
 
@@ -297,13 +295,12 @@ public class ConfigCatalogReader {
     }
   }
 
-  // Only called by synchronized methods
   private boolean addRoot(DatasetScan dscan) {
     // check for duplicates
     String path = dscan.getPath();
 
     if (path == null) {
-      logCatalogInit.error(ERROR + dscan.getFullName() + " missing a path attribute.");
+      logCatalogInit.error(ERROR + dscan.getName() + " missing a path attribute.");
       return false;
     }
 
@@ -314,12 +311,6 @@ public class ConfigCatalogReader {
                 " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog " + dscan.getParentCatalog().getUriString());
       }
 
-      return false;
-    }
-
-    // Check whether DatasetScan is valid before adding.
-    if (!dscan.isValid()) {
-      logCatalogInit.error(ERROR + dscan.getInvalidMessage() + "\n... Dropping this datasetScan [" + path + "].");
       return false;
     }
 
@@ -352,8 +343,6 @@ public class ConfigCatalogReader {
     return null;
   }
 
-
-  // Only called by synchronized methods
   private boolean addRoot(FeatureCollection fc) {
     // check for duplicates
     String path = fc.getPath();
@@ -363,7 +352,7 @@ public class ConfigCatalogReader {
       return false;
     }
 
-    DataRoot droot = (DataRoot) pathMatcher.get(path);
+    DataRoot droot = pathMatcher.get(path);
     if (droot != null) {
       logCatalogInit.error(ERROR + "FeatureCollection already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
               " wanted to use by FeatureCollection Dataset =<" + fc.getName() + ">");
@@ -382,11 +371,10 @@ public class ConfigCatalogReader {
     }
 
     pathMatcher.put(path, droot);
-    logCatalogInit.debug(" added rootPath=<" + path + ">  for feature collection= <" + fc.getFullName() + ">");
+    logCatalogInit.debug(" added rootPath=<" + path + ">  for feature collection= <" + fc.getName() + ">");
     return true;
   }
 
-  // Only called by synchronized methods
   private boolean addRoot(String path, String dirLocation, boolean wantErr) {
     // check for duplicates
     DataRoot droot = pathMatcher.get(path);
@@ -412,7 +400,6 @@ public class ConfigCatalogReader {
     return true;
   }
 
-  // Only called by synchronized methods
   private boolean addRoot(DatasetRoot config, boolean wantErr) {
     String path = config.getPath();
     String location = config.getLocation();

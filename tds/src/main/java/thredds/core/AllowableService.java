@@ -35,44 +35,42 @@ package thredds.core;
 import thredds.client.catalog.*;
 import thredds.servlet.ThreddsConfig;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
- * Enum with the services that can be allowed/disallowed in the ThreddsConfig
- * file. Provides static methods that check if a service declared in a catalog
- * is allowed at server level.
- * LOOK: is this implemented ??
- * @author mhermida
+ * The services that can be allowed/disallowed in the ThreddsConfig.
+ * ThreddsConfig is read at the time the object is instantiated.
  * 
  */
-public enum AllowableService {
+public class AllowableService {
 
-  // LOOK this assumes that ThreddsConfig has been initialized before this class is instantiated !
-  CDMREMOTE(InvService.wms, ThreddsConfig.getBoolean("CdmRemote.allow", true)),
-  NCSS(InvService.ncss, ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true)),
-  WMS(InvService.wms, ThreddsConfig.getBoolean("WMS.allow", false)),
-  WCS(InvService.wcs, ThreddsConfig.getBoolean("WCS.allow", false)),
-  ISO(InvService.iso, ThreddsConfig.getBoolean("NCISO.isoAllow", false)),
-  UDDC(InvService.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow", false)),
-  NCML(InvService.ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow", false));
+  private Map<ServiceType, StandardServices> allowed = new HashMap<>();
 
-  private Boolean allowed;
-  private InvService service;
+  public AllowableService() {  // LOOK not right - need to allow ones we dont know about
+    allowed.put(ServiceType.OPENDAP, StandardServices.opendap);
+    allowed.put(ServiceType.CdmRemote, StandardServices.cdmRemote);
 
-  private AllowableService(InvService service, boolean allowed) {
-    this.allowed = allowed;
-    this.service = service;
+    if (ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true))
+      allowed.put(ServiceType.NetcdfSubset, StandardServices.ncss);
+
+    if (ThreddsConfig.getBoolean("WMS.allow", true))
+      allowed.put(ServiceType.WMS, StandardServices.wms);
+    if (ThreddsConfig.getBoolean("WCS.allow", false))
+      allowed.put(ServiceType.WCS, StandardServices.wcs);
+    if (ThreddsConfig.getBoolean("NCISO.isoAllow", false))
+      allowed.put(ServiceType.ISO, StandardServices.iso);
+    if (ThreddsConfig.getBoolean("NCISO.uddcAllow", false))
+      allowed.put(ServiceType.UDDC, StandardServices.uddc);
+    if (ThreddsConfig.getBoolean("NCISO.ncmlAllow", false))
+      allowed.put(ServiceType.NCML, StandardServices.ncml);
   }
 
-  public boolean isAllowed() {
-    return allowed;
+  public boolean isAllowed(ServiceType type) {
+    return allowed.get(type) != null;
   }
 
-  public InvService getService() {
-    return service;
+  public Service getStandardService(ServiceType type) {
+    return allowed.get(type).getService();
   }
 
   /**
@@ -82,61 +80,27 @@ public enum AllowableService {
    * @param catalog check this catalog
    * @return A list with the declared services in the catalog that are not allowed at server level
    */
-  public static List<String> checkCatalogServices(InvCatalog catalog) {
+  public List<String> getDisallowedServices(Catalog catalog) {
 
     List<String> disallowedServices = new ArrayList<>();
 
-    List<InvService> services = catalog.getServices();
-    for (InvService s : services) {
-      disallowedServices.addAll(checkService(s));
+    for (Service s : catalog.getServices()) {
+      checkService(s, disallowedServices);
     }
+    
     return disallowedServices;
   }
 
-  private static List<String> checkService(InvService service) {
+  private void checkService(Service service, List<String> disallowedServices) {
 
-    List<String> disallowedServices = new ArrayList<>();
-
-    if (service.getServiceType() == ServiceType.COMPOUND) {
-
-      for (InvService s : service.getServices()) {
-        disallowedServices.addAll(checkService(s));
-      }
+    if (service.getType() == ServiceType.Compound) {
+      for (Service nested : service.getNestedServices())
+        checkService(nested, disallowedServices);
 
     } else {
-      if (!isServiceAllowed(service))
+      if (!isAllowed(service.getType()))
         disallowedServices.add(service.getName());
     }
-
-    return disallowedServices;
   }
 
-  private static boolean isServiceAllowed(InvService service) {
-
-    AllowableService as = findAllowableService(service);
-
-    if (as == null)
-      return true;
-
-    return as.isAllowed();
-  }
-
-  private static AllowableService findAllowableService(InvService service) {
-    boolean found = false;
-    List<AllowableService> allServices = Arrays.asList(AllowableService
-            .values());
-    Iterator<AllowableService> it = allServices.iterator();
-    AllowableService as = null;
-    while (!found && it.hasNext()) {
-      as = it.next();
-      if (as.getService().equals(service)) {
-        found = true;
-      }
-    }
-
-    if (found)
-      return as;
-
-    return null;
-  }
 }

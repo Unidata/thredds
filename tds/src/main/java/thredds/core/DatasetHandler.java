@@ -33,6 +33,7 @@
 package thredds.core;
 
 import thredds.client.catalog.*;
+import thredds.inventory.MFile;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
@@ -44,7 +45,7 @@ import thredds.util.TdsPathUtils;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.cache.FileFactory;
 
@@ -79,13 +80,13 @@ public class DatasetHandler {
 
   // resource control
   static private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
-  static private volatile PathMatcher resourceControlMatcher = new PathMatcher(); // path, restrictAccess string for datasetScan
+  static private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
   static private boolean hasResourceControl = false;
 
   static void reinit() {
     ncmlDatasetHash = new HashMap<>();
     resourceControlHash = new HashMap<>();
-    resourceControlMatcher = new PathMatcher();
+    resourceControlMatcher = new PathMatcher<>();
     sourceList = new ArrayList<>();
 
     hasResourceControl = false;
@@ -173,8 +174,8 @@ public class DatasetHandler {
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 
     // look for an feature collection dataset
-    if ((match != null) && (match.dataRoot.getFeatCollection() != null)) {
-      FeatureCollection featCollection = match.dataRoot.getFeatCollection();
+    if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      FeatureCollection featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
       NetcdfFile ncfile = featCollection.getNetcdfDataset(match.remaining);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
@@ -196,13 +197,13 @@ public class DatasetHandler {
       org.jdom2.Element netcdfElem = null; // find ncml if it exists
       if (match.dataRoot != null) {
         doCache = match.dataRoot.isCache();
-        DatasetScan dscan = match.dataRoot.getScan();
-        if (dscan == null) dscan = match.dataRoot.getDatasetRootProxy();
+        DatasetScan dscan = match.dataRoot.getDatasetScan();
+        if (dscan == null) dscan = match.dataRoot.getDatasetRootProxy();  // LOOK
         if (dscan != null)
           netcdfElem = dscan.getNcmlElement();
       }
 
-      File file = thredds.servlet.DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+      MFile file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
       if (file == null)
         throw new FileNotFoundException(reqPath);
 
@@ -245,9 +246,9 @@ public class DatasetHandler {
     if (match != null)
       fullpath = match.dirLocation + match.remaining;
     else {
-      File file = thredds.servlet.DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+      MFile file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
       if (file != null)
-        fullpath = file.getAbsolutePath();
+        fullpath = file.getPath();
     }
     return fullpath;
   }
@@ -270,8 +271,8 @@ public class DatasetHandler {
 
     // look for a feature collection dataset
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
-    if ((match != null) && (match.dataRoot.getFeatCollection() != null)) {
-      return match.dataRoot.getFeatCollection();
+    if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      return match.dataRoot.getFeatureCollection();
     }
 
     return null;
@@ -320,8 +321,8 @@ public class DatasetHandler {
 
     // first look for a grid feature collection
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
-    if ((match != null) && (match.dataRoot.getFeatCollection() != null)) {
-      FeatureCollection featCollection = match.dataRoot.getFeatCollection();
+    if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      FeatureCollection featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
       GridDataset gds = featCollection.getGridDataset(match.remaining);
       if (gds == null) throw new FileNotFoundException(reqPath);

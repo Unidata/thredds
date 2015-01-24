@@ -215,6 +215,10 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (String) flds.get(UrlPath);
   }
 
+  public org.jdom2.Element getNcmlElement() {
+    return (org.jdom2.Element) getLocalField(Dataset.Ncml);
+  }
+
   /////////////////////////////////////////////////////
   // inheritable metadata
 

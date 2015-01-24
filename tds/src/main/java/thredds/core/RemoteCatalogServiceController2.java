@@ -30,7 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalogservice;
+package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -38,12 +38,15 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
+
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.server.catalogservice.CatalogServiceUtils;
+import thredds.server.catalogservice.Command;
+import thredds.server.catalogservice.RemoteCatalogRequest;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
-import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.ThreddsConfig;
 

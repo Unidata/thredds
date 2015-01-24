@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import thredds.client.catalog.*;
+import thredds.inventory.MFile;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.*;
 import thredds.server.config.AllowableService;
@@ -68,7 +69,7 @@ import java.util.*;
 /**
  * The DataRootHandler manages all the "data roots" for a given web application
  * and provides mappings from URLs to catalog and data objects (e.g.,
- * Catalog and CrawlableDataset).
+ * Catalog and MFile).
  * <p/>
  * <p>The "data roots" are read in from one or more trees of config catalogs
  * and are defined by the datasetScan and datasetRoot elements in the config
@@ -260,7 +261,7 @@ public final class DataRootHandler implements InitializingBean {
 
   volatile boolean isReinit = false;
 
-  void initCatalogs() {
+  /* void initCatalogs() {
     ArrayList<String> catList = new ArrayList<>();
     catList.add("catalog.xml"); // always first
     catList.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
@@ -297,7 +298,7 @@ public final class DataRootHandler implements InitializingBean {
   }
 
 
-  /**
+  /*
    * Reads a catalog, finds datasetRoot, datasetScan, datasetFmrc, NcML and restricted access datasets
    * <p/>
    * Only called by synchronized methods.
@@ -306,7 +307,7 @@ public final class DataRootHandler implements InitializingBean {
    * @param recurse if true, look for catRefs in this catalog
    * @param cache   if true, always cache
    * @throws java.io.IOException if reading catalog fails
-   */
+   *
   private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
     path = StringUtils.cleanPath(path);
     File f = this.tdsContext.getConfigFileSource().getFile(path);
@@ -418,7 +419,7 @@ public final class DataRootHandler implements InitializingBean {
 
 	  }
 	  
-  }*/
+  }*
 
   public InvCatalogFactory getCatalogFactory(boolean validate) {
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(validate);
@@ -434,7 +435,7 @@ public final class DataRootHandler implements InitializingBean {
    * @param path            reletive path starting from content root
    * @param catalogFullPath absolute location on disk
    * @return the Catalog, or null if failure
-   */
+   *
   private Catalog readCatalog(InvCatalogFactory factory, String path, String catalogFullPath) {
     URI uri;
     try {
@@ -486,7 +487,7 @@ public final class DataRootHandler implements InitializingBean {
    *
    * @param dsList the list of Dataset
    * @return true if the containing catalog should be cached
-   */
+   *
   private boolean initSpecialDatasets(List<Dataset> dsList) {
     boolean needsCache = false;
 
@@ -729,7 +730,7 @@ public final class DataRootHandler implements InitializingBean {
         return result;
     }
     return location;
-  }
+  }  */
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -752,7 +753,7 @@ public final class DataRootHandler implements InitializingBean {
       path = path.substring(1);
 
     DataRoot dataRoot = (DataRoot) pathMatcher.match(path);
-    return (dataRoot == null) ? null : dataRoot.dirLocation;
+    return (dataRoot == null) ? null : dataRoot.getDirLocation();
   }
 
   /**
@@ -795,11 +796,11 @@ public final class DataRootHandler implements InitializingBean {
       return null;
 
     DataRootMatch match = new DataRootMatch();
-    match.rootPath = dataRoot.path;
+    match.rootPath = dataRoot.getPath();
     match.remaining = spath.substring(match.rootPath.length());
     if (match.remaining.startsWith("/"))
       match.remaining = match.remaining.substring(1);
-    match.dirLocation = dataRoot.dirLocation;
+    match.dirLocation = dataRoot.getDirLocation();
     match.dataRoot = dataRoot;
     return match;
   }
@@ -826,17 +827,17 @@ public final class DataRootHandler implements InitializingBean {
   }
 
   /**
-   * Return the CrawlableDataset to which the given path maps, null if the
+   * Return the MFile to which the given path maps, null if the
    * dataset does not exist or the matching DatasetScan filters out the
-   * requested CrawlableDataset.
+   * requested MFile.
    * <p/>
    * Use this method to check that a data request is requesting an allowed dataset.
    *
    * @param path the request path.
-   * @return the requested CrawlableDataset or null if the requested dataset is not allowed by the matching DatasetScan.
+   * @return the requested MFile or null if the requested dataset is not allowed by the matching DatasetScan.
    * @throws IOException if an I/O error occurs while locating the requested dataset.
    */
-  public CrawlableDataset getCrawlableDataset(String path)
+  private MFile getCrawlableDataset(String path)
           throws IOException {
     if (path.length() > 0) {
       if (path.startsWith("/"))
@@ -847,14 +848,14 @@ public final class DataRootHandler implements InitializingBean {
     if (reqDataRoot == null)
       return null;
 
-    if (reqDataRoot.scan != null)
-      return reqDataRoot.scan.requestCrawlableDataset(path);
+    if (reqDataRoot.getDatasetScan() != null)
+      return reqDataRoot.getDatasetScan().requestCrawlableDataset(path);
 
-    if (reqDataRoot.featCollection != null)
+    if (reqDataRoot.getFeatureCollection() != null)
       return null; // if featCollection exists, bail out and deal with it in caller
 
     // must be a data root
-    if (reqDataRoot.dirLocation != null) {
+    if (reqDataRoot.getDirLocation() != null) {
       if (reqDataRoot.datasetRootProxy == null)
         reqDataRoot.makeProxy();
       return reqDataRoot.datasetRootProxy.requestCrawlableDataset(path);
@@ -864,10 +865,10 @@ public final class DataRootHandler implements InitializingBean {
   }
 
   /**
-   * Return the java.io.File represented by the CrawlableDataset to which the
+   * Return the java.io.File represented by the MFile to which the
    * given path maps. Null is returned if the dataset does not exist, the
    * matching DatasetScan or DataRoot filters out the requested
-   * CrawlableDataset, the CrawlableDataset does not represent a File
+   * MFile, the MFile does not represent a File
    * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs while
    * locating the requested dataset.
    *
@@ -875,7 +876,7 @@ public final class DataRootHandler implements InitializingBean {
    * @return the requested java.io.File or null.
    * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
-  public File getCrawlableDatasetAsFile(String path) {
+  public MFile getCrawlableDatasetAsFile(String path) {
     if (path.length() > 0) {
       if (path.startsWith("/"))
         path = path.substring(1);
@@ -885,10 +886,11 @@ public final class DataRootHandler implements InitializingBean {
     DataRootMatch match = findDataRootMatch(path);
     if (match == null)
       return null;
-    if (match.dataRoot.featCollection != null)
-      return match.dataRoot.featCollection.getFile(match.remaining);
 
-    CrawlableDataset crDs;
+    if (match.dataRoot.getFeatureCollection() != null)
+      return match.dataRoot.getFeatureCollection().getFile(match.remaining);
+
+    MFile crDs;
     try {
       crDs = getCrawlableDataset(path);
     } catch (IOException e) {
@@ -902,43 +904,7 @@ public final class DataRootHandler implements InitializingBean {
     return retFile;
   }
 
-  /**
-   * Return the OPeNDAP URI represented by the CrawlableDataset to which the
-   * given path maps. Null is returned if the dataset does not exist, the
-   * matching DatasetScan or DataRoot filters out the requested
-   * CrawlableDataset, the CrawlableDataset is not a CrawlableDatasetDods,
-   * or an I/O error occurs while locating the requested dataset.
-   *
-   * @param path the request path.
-   * @return the requested OPeNDAP URI or null.
-   * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
-   */
-  public URI getCrawlableDatasetAsOpendapUri(String path) {
-    if (path.length() > 0) {
-      if (path.startsWith("/"))
-        path = path.substring(1);
-    }
-
-    CrawlableDataset crDs;
-    try {
-      crDs = getCrawlableDataset(path);
-    } catch (IOException e) {
-      return null;
-    }
-    if (crDs == null) return null;
-    URI retUri = null;
-    if (crDs instanceof CrawlableDatasetDods)
-      retUri = ((CrawlableDatasetDods) crDs).getUri();
-
-    return retUri;
-  }
-
-  public boolean isProxyDataset(String path) {
-    ProxyDatasetHandler pdh = this.getMatchingProxyDataset(path);
-    return pdh != null;
-  }
-
-  public boolean isProxyDatasetResolver(String path) {
+  private boolean isProxyDatasetResolver(String path) {
     ProxyDatasetHandler pdh = this.getMatchingProxyDataset(path);
     if (pdh == null)
       return false;
@@ -985,249 +951,6 @@ public final class DataRootHandler implements InitializingBean {
     return cat;
   }
 
-//  public CrawlableDataset getProxyDatasetActualDatset( String path)
-//  {
-//    ProxyDatasetHandler pdh = this.getMatchingProxyDataset( path );
-//    if ( pdh == null )
-//      return null;
-//
-//    pdh.getActualDataset( );
-//
-//  }
-
-  /**
-   * @deprecated
-   */
-  public void handleRequestForProxyDatasetResolverCatalog(HttpServletRequest req, HttpServletResponse res)
-          throws IOException {
-    String path = TdsPathUtils.extractPath(req, null);
-    if (!isProxyDatasetResolver(path)) {
-      String resMsg = "Request <" + path + "> not for proxy dataset resolver.";
-      log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
-      return;
-
-    }
-
-    String baseUriString = req.getRequestURL().toString();
-    URI baseURI;
-    try {
-      baseURI = new URI(baseUriString);
-    } catch (URISyntaxException e) {
-      String resMsg = "Request URL <" + baseUriString + "> not a valid URI: " + e.getMessage();
-      log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
-      return;
-    }
-
-    Catalog cat = (Catalog) this.getProxyDatasetResolverCatalog(path, baseURI);
-    if (cat == null) {
-      String resMsg = "Could not generate proxy dataset resolver catalog <" + path + ">.";
-      log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
-      return;
-    }
-
-    // Return catalog as XML response.
-    InvCatalogFactory catFactory = getCatalogFactory(false);
-    String result = catFactory.writeXML(cat);
-
-    res.setContentLength(result.length());
-    res.setContentType(ContentType.xml.getContentHeader());
-    PrintWriter pw = res.getWriter();
-    pw.write(result);
-  }
-
-  /**
-   * DO NOT USE, this is Ethan's attempt at designing a generic way to handle data requests.
-   * <p/>
-   * Only used is in ExampleThreddsServlet.
-   *
-   * @throws IOException
-   * @deprecated DO NOT USE
-   */
-  public void handleRequestForDataset(String path, DataServiceProvider dsp, HttpServletRequest req, HttpServletResponse res)
-          throws IOException {
-    // Can the DataServiceProvider handle the data request given by the path?
-    DataServiceProvider.DatasetRequest dsReq = dsp.getRecognizedDatasetRequest(path, req);
-    String crDsPath;
-    boolean dspCanHandle = false;
-    if (dsReq != null) {
-      String dsPath = dsReq.getDatasetPath();
-      if (dsPath != null) {
-        // Use the path returned by the DataServiceProvider.
-        crDsPath = dsPath;
-        dspCanHandle = true;
-      } else {
-        // DataServiceProvider recognized request path but returned a null dataset path. Hmm?
-        log.warn("handleRequestForDataset(): DataServiceProvider recognized request path <" + path + "> but returned a null dataset path, using request path.");
-        // Use the incoming request path.
-        crDsPath = path;
-      }
-    } else {
-      // DataServiceProvider  did not recognized request path.
-      // Use the incoming request path.
-      crDsPath = path;
-    }
-
-    // Find the CrawlableDataset represented by the request path.
-    CrawlableDataset crDs = this.getCrawlableDataset(crDsPath);
-    if (crDs == null) {
-      // @todo Check if this is a proxy dataset request (not resolver).
-      // Request is not for a known (or allowed) dataset.
-      res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
-      return;
-    }
-
-    if (dspCanHandle) {
-      // Request recognized by DataServiceProvider, handle dataset request.
-      dsp.handleRequestForDataset(dsReq, crDs, req, res);
-
-    } else {
-      // Request not recognized by DataServiceProvider.
-      if (crDs.isCollection()) {
-        // Handle request for a collection dataset.
-        dsp.handleUnrecognizedRequestForCollection(crDs, req, res);
-        return;
-      }
-
-      // Handle request for an atomic dataset.
-      dsp.handleUnrecognizedRequest(crDs, req, res);
-    }
-  }
-
-  /*
-   * Check whether the given path is a request for a catalog. Before checking,
-   * converts paths ending with "/" to end with "/catalog.xml" and converts
-   * paths ending with ".html" to end with ".xml".
-   *
-   * @param path the request path
-   * @return true if the path is a request for a catalog, false otherwise.
-   * @deprecated actually, this is experimental
-   *
-  public boolean isRequestForCatalog(String path) {
-    String workPath = path;
-    if (workPath == null)
-      return false;
-    else if (workPath.endsWith("/")) {
-      workPath = workPath + "catalog.xml";
-    } else if (workPath.endsWith(".html")) {
-      // Change ".html" to ".xml"
-      int len = workPath.length();
-      workPath = workPath.substring(0, len - 4) + "xml";
-    } else if (!workPath.endsWith(".xml")) {
-      // Not a catalog request.
-      return false;
-    }
-
-    boolean hasCatalog = false;
-
-    if (workPath.startsWith("/"))
-      workPath = workPath.substring(1);
-
-    // Check for static catalog.
-    synchronized (this) {
-      if (staticCatalogHash.containsKey(workPath))
-        return true;
-    }
-
-    //----------------------
-    DataRootMatch match = findDataRootMatch(workPath);
-    if (match == null)
-      return false;
-
-//    // look for the fmrc
-//    if ( match.dataRoot.fmrc != null )
-//    {
-//      return match.dataRoot.fmrc.makeCatalog( match.remaining, path, baseURI );
-//    }
-//
-//    // Check that path is allowed, ie not filtered out
-//    try
-//    {
-//      if ( getCrawlableDataset( workPath ) == null )
-//        return null;
-//    }
-//    catch ( IOException e )
-//    {
-//      log.error( "makeDynamicCatalog(): I/O error on request <" + path + ">: " + e.getMessage(), e );
-//      return null;
-//    }
-//
-//    // at this point, its gotta be a DatasetScan, not a DatasetRoot
-//    if ( match.dataRoot.scan == null )
-//    {
-//      log.warn( "makeDynamicCatalog(): No DatasetScan for =" + workPath + " request path= " + path );
-//      return null;
-//    }
-//
-//    DatasetScan dscan = match.dataRoot.scan;
-//    log.debug( "Calling makeCatalogForDirectory( " + baseURI + ", " + path + ")." );
-//    Catalog cat = dscan.makeCatalogForDirectory( path, baseURI );
-//
-//    if ( null == cat )
-//    {
-//      log.error( "makeCatalogForDirectory failed = " + workPath );
-//    }
-//
-//    //----------------------
-//
-//    // Check for proxy dataset resolver catalog.
-//    if ( catalog == null && this.isProxyDatasetResolver( workPath ) )
-//      catalog = (Catalog) this.getProxyDatasetResolverCatalog( workPath, baseURI );
-
-    //----------------------
-
-
-    return hasCatalog;
-  } */
-
-  /**
-   * This looks to see if this is a request for a catalog.
-   * The request must end in ".html" or ".xml"  or "/"
-   * Check to see if a static or dynamic catalog exists for it.
-   * If so, it processes the request completely.
-   * req.getPathInfo() is used for the path (ie ignores context and servlet path)
-   *
-   * @param req the request
-   * @param res the response
-   * @return true if request was handled
-   * @throws IOException      on I/O error
-   * @throws javax.servlet.ServletException on other errors
-   * @deprecated Instead forward() request to
-   */
-  public boolean processReqForCatalog(HttpServletRequest req, HttpServletResponse res)
-          throws IOException, ServletException {
-
-    // LOOK convoluted, clean this up!
-    String catPath = TdsPathUtils.extractPath(req, "catalog/");
-    if (catPath == null)
-      return false;
-
-    // Handle case for root catalog.
-    // ToDo Is this needed? OPeNDAP no longer allows "/thredds/dodsC/catalog.html"
-    if (catPath.equals(""))
-      catPath = "catalog.html";
-
-    if (catPath.endsWith("/"))
-      catPath += "catalog.html";
-
-    if (!catPath.endsWith(".xml") && !catPath.endsWith(".html"))
-      return false;
-
-    // Forward request to the "/catalog" servlet.
-    String path = "/catalog/" + catPath;
-
-    // Handle case for root catalog.
-    // ToDo Is this needed? OPeNDAP no longer allows "/thredds/dodsC/catalog.html"
-    if (catPath.equals("catalog.html") || catPath.equals("catalog.xml"))
-      path = "/" + catPath;
-
-    RequestForwardUtils.forwardRequestRelativeToCurrentContext(path, req, res);
-
-    return true;
-  }
-
   /**
    * If a catalog exists and is allowed (not filtered out) for the given path, return
    * the catalog as an Catalog. Otherwise, return null.
@@ -1251,8 +974,8 @@ public final class DataRootHandler implements InitializingBean {
     boolean reread = false;
     Catalog catalog = staticCatalogHash.get(workPath);
     if (catalog != null) {  // see if its stale
-      DateType expiresDateType = catalog.getExpires();
-      if ((expiresDateType != null) && expiresDateType.getCalendarDate().getMillis() < System.currentTimeMillis())
+      CalendarDate expiresDateType = catalog.getExpires();
+      if ((expiresDateType != null) && expiresDateType.getMillis() < System.currentTimeMillis())
         reread = true;
 
     } else if (!staticCache) {
@@ -1320,12 +1043,12 @@ public final class DataRootHandler implements InitializingBean {
       return null;
 
     // look for the feature Collection
-    if (match.dataRoot.featCollection != null) {
+    if (match.dataRoot.getFeatureCollection() != null) {
       boolean isLatest = path.endsWith("/latest.xml");
       if (isLatest)
-        return match.dataRoot.featCollection.makeLatest(match.remaining, path, baseURI);
+        return match.dataRoot.getFeatureCollection().makeLatest(match.remaining, path, baseURI);
       else
-        return match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
+        return match.dataRoot.getFeatureCollection().makeCatalog(match.remaining, path, baseURI);
     }
 
     // Check that path is allowed, ie not filtered out
@@ -1338,14 +1061,14 @@ public final class DataRootHandler implements InitializingBean {
     }
 
     // at this point, its gotta be a DatasetScan, not a DatasetRoot
-    if (match.dataRoot.scan == null) {
+    if (match.dataRoot.getDatasetScan() == null) {
       log.warn("makeDynamicCatalog(): No DatasetScan for =" + workPath + " request path= " + path);
       return null;
     }
 
     if (path.endsWith("/latest.xml")) return null; // latest is not handled here
 
-    DatasetScan dscan = match.dataRoot.scan;
+    DatasetScan dscan = match.dataRoot.getDatasetScan();
     if (log.isDebugEnabled())
       log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
     Catalog cat = dscan.makeCatalogForDirectory(path, baseURI);
@@ -1355,172 +1078,6 @@ public final class DataRootHandler implements InitializingBean {
     }
 
     return cat;
-  }
-
-  private Catalog makeTDRDynamicCatalog(String path, URI baseURI) {
-    // Make sure this is a tdr catalog request.
-    if (!path.startsWith("tdr"))
-      return null;
-
-    File catFile = this.tdsContext.getConfigFileSource().getFile(path);
-    if (catFile == null)
-      return null;
-    String catalogFullPath = catFile.getPath();
-
-    InvCatalogFactory factory = getCatalogFactory(false); // no validation
-    Catalog cat = readCatalog(factory, path, catalogFullPath);
-    if (cat == null) {
-      log.warn("makeTDRDynamicCatalog(): failed to read tdr catalog <" + catalogFullPath + ">.");
-      return null;
-    }
-
-    /* look for datasetRoots
-  Iterator roots = cat.getDatasetRoots().iterator();
-  while ( roots.hasNext() ) {
-    Property p = (Property) roots.next();
-    addRoot( p.getName(), p.getValue(), false );
-  }  */
-
-    cat.setBaseURI(baseURI);
-    return cat;
-  }
-
-
-  /* public void handleRequestForDataset(String path, DataServiceProvider dsp, HttpServletRequest req, HttpServletResponse res)
-          throws IOException {
-    // Can the DataServiceProvider handle the data request given by the path?
-    DataServiceProvider.DatasetRequest dsReq = dsp.getRecognizedDatasetRequest(path, req);
-    String crDsPath;
-    boolean dspCanHandle = false;
-    if (dsReq != null) {
-      String dsPath = dsReq.getDatasetPath();
-      if (dsPath != null) {
-        // Use the path returned by the DataServiceProvider.
-        crDsPath = dsPath;
-        dspCanHandle = true;
-      } else {
-        // DataServiceProvider recognized request path but returned a null dataset path. Hmm?
-        log.warn("handleRequestForDataset(): DataServiceProvider recognized request path <" + path + "> but returned a null dataset path, using request path.");
-        // Use the incoming request path.
-        crDsPath = path;
-      }
-    } else {
-      // DataServiceProvider  did not recognized request path.
-      // Use the incoming request path.
-      crDsPath = path;
-    }
-
-    // Find the CrawlableDataset represented by the request path.
-    CrawlableDataset crDs = this.findRequestedDataset(crDsPath);
-    if (crDs == null) {
-      // Request is not for a known (or allowed) dataset.
-      res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
-      return;
-    }
-
-    if (dspCanHandle) {
-      // Request recognized by DataServiceProvider, handle dataset request.
-      dsp.handleRequestForDataset(dsReq, crDs, req, res);
-      return;
-    } else {
-      // Request not recognized by DataServiceProvider.
-      if (crDs.isCollection()) {
-        // Handle request for a collection dataset.
-        dsp.handleUnrecognizedRequestForCollection(crDs, req, res);
-        return;
-      }
-
-      // Handle request for an atomic dataset.
-      dsp.handleUnrecognizedRequest(crDs, req, res);
-      return;
-    }
-  }  */
-
-  /**
-   * Process a request for the "latest" dataset. This must be configured
-   * through the datasetScan element. Typically you call if the path ends with
-   * "latest.xml". Actually this is a "resolver" service, that returns a
-   * catalog.xml containing latest dataset.
-   *
-   * @param servlet requesting servlet
-   * @param req     request
-   * @param res     response
-   * @return true if request was processed successfully.
-   * @throws IOException if have I/O trouble writing response.
-   * @deprecated Instead use {@link #processReqForCatalog(HttpServletRequest, HttpServletResponse) processReqForCatalog()} which provides more general proxy dataset handling.
-   */
-  public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException {
-    String orgPath = TdsPathUtils.extractPath(req, null);
-
-    String path = orgPath;
-
-    // strip off the filename
-    int pos = path.lastIndexOf("/");
-    if (pos >= 0) {
-      path = path.substring(0, pos);
-    }
-
-    if (path.equals("/") || path.equals("")) {
-      String resMsg = "No data at root level, '/latest.xml' request not available.";
-      if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
-      return false;
-    }
-
-    // Find DatasetScan with a maximal match.
-    DataRoot dataRoot = findDataRoot(path);
-    if (dataRoot == null) {
-      String resMsg = "No scan root matches requested path <" + path + ">.";
-      log.warn("processReqForLatestDataset(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
-      return false;
-    }
-
-    // its gotta be a DatasetScan, not a DatasetRoot
-    DatasetScan dscan = dataRoot.scan;
-    if (dscan == null) {
-      String resMsg = "Probable conflict between datasetScan and datasetRoot for path <" + path + ">.";
-      log.warn("processReqForLatestDataset(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
-      return false;
-    }
-
-    // Check that latest is allowed
-    if (dscan.getProxyDatasetHandlers() == null) {
-      String resMsg = "No \"addProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
-      log.warn("processReqForLatestDataset(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
-      return false;
-    }
-
-    String reqBase = ServletUtil.getRequestBase(req); // this is the base of the request
-    URI reqBaseURI;
-    try {
-      reqBaseURI = new URI(reqBase);
-    } catch (URISyntaxException e) {
-      String resMsg = "Request base URL <" + reqBase + "> not valid URI (???): " + e.getMessage();
-      log.error("processReqForLatestDataset(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
-      return false;
-    }
-    Catalog cat = dscan.makeLatestCatalogForDirectory(orgPath, reqBaseURI);
-
-    if (null == cat) {
-      String resMsg = "Failed to build response catalog <" + path + ">.";
-      log.error("processReqForLatestDataset(): " + resMsg);
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
-      return false;
-    }
-
-    // Send latest.xml catalog as response.
-    InvCatalogFactory catFactory = getCatalogFactory(false);
-    String catAsString = catFactory.writeXML((Catalog) cat);
-    res.setContentType(ContentType.xml.getContentHeader());
-    res.setStatus(HttpServletResponse.SC_OK);
-    PrintWriter out = res.getWriter();
-    out.print(catAsString);
-    if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): Finished \"" + orgPath + "\".");
-    return true;
   }
 
   /**
@@ -1540,48 +1097,11 @@ public final class DataRootHandler implements InitializingBean {
       return null;
     }
 
-    DatasetScan dscan = dataRoot.scan;
+    DatasetScan dscan = dataRoot.getDatasetScan();
     if (dscan == null) dscan = dataRoot.datasetRootProxy;
     if (dscan == null) return null;
     return dscan.getNcmlElement();
   }
-
-  /*   public boolean isRequestForConfigCatalog(String path) {
-    String catPath = path;
-    if (catPath.endsWith(".html")) {
-      // Change ".html" to ".xml"
-      int len = catPath.length();
-      catPath = catPath.substring(0, len - 4) + "xml";
-    } else if (! catPath.endsWith(".xml")) {
-      // Not a catalog request.
-      return false;
-    }
-
-    if (staticHash.containsKey(catPath)) return true;
-    if (catHasScanHash.get(catPath) != null) return true;
-    return false;
-  }
-
-  public boolean isRequestForGeneratedCatalog(String path) {
-    if (path.endsWith("/")
-            || path.endsWith("/catalog.html")
-            || path.endsWith("/catalog.xml")) {
-      String dsPath = path;
-
-      // strip off the filename
-      int pos = dsPath.lastIndexOf("/");
-      if (pos >= 0)
-        dsPath = dsPath.substring(0, pos);
-
-      // Check that path is allowed.
-      CrawlableDataset crDs = findRequestedDataset(dsPath);
-      if (crDs == null)
-        return false;
-      if (crDs.isCollection())
-        return true;
-    }
-    return false;
-  } */
 
 
   /*
@@ -1633,7 +1153,7 @@ public final class DataRootHandler implements InitializingBean {
           list = new ArrayList<>(staticCatalogHash.keySet());
           Collections.sort(list);
           for (String catPath : list) {
-            Catalog cat = staticCatalogHash.get(catPath);
+            ConfigCatalog cat = staticCatalogHash.get(catPath);
             sbuff.append(" catalog= ").append(catPath).append("; ");
             String filename = StringUtil2.unescape(cat.getCreateFrom());
             sbuff.append(" from= ").append(filename).append("\n");
