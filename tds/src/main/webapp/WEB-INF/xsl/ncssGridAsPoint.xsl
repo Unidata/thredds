@@ -265,7 +265,8 @@
                                         <label class="sized_big">Longitude:</label>
                                         <input onchange="Ncss.buildAccessUrl()" type="text" name="longitude" size="10"/>
                                         <br/>
-                                        <span class="bold">Within Bounding Box:</span>
+                                        <span class="bold">Bounding box, in decimal degrees
+                                            (initial extents are approximate):</span>
                                         <div class="top">
                                             <span>north</span>
                                             <br/>
