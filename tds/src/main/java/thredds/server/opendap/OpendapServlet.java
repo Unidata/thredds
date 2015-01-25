@@ -173,10 +173,10 @@ public class OpendapServlet extends AbstractServlet {
         log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 
-      if (path.endsWith("latest.xml")) {   // LOOK: used ??
+      /* if (path.endsWith("latest.xml")) {   // LOOK: used ??
         DataRootHandler.getInstance().processReqForLatestDataset(this, request, response);
         return;
-      }
+      } */
 
       // Redirect all catalog requests at the root level.
       if (path.equals("/") || path.equals("/catalog.html") || path.equals("/catalog.xml")) {
@@ -184,7 +184,7 @@ public class OpendapServlet extends AbstractServlet {
         return;
       }
 
-      // Make sure catalog requests match a dataRoot before trying to handle.  LOOK: used?
+      /*  Make sure catalog requests match a dataRoot before trying to handle.  LOOK: used?
       if (path.endsWith("/") || path.endsWith("/catalog.html") || path.endsWith("/catalog.xml")) {
         if (!DataRootHandler.getInstance().hasDataRootMatch(path)) {
           response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -195,7 +195,7 @@ public class OpendapServlet extends AbstractServlet {
           log.error("catalog request failed ");
 
         return;
-      }
+      }  */
 
 
       if (rs != null) {

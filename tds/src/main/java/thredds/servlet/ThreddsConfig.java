@@ -82,7 +82,7 @@ public final class ThreddsConfig {
     }
   }
 
-  static List<String> getCatalogRoots() {
+  static public List<String> getCatalogRoots() {
     return Collections.unmodifiableList( catalogRoots);
   }
 

@@ -36,11 +36,10 @@ import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
-import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.server.catalog.ConfigCatalog;
-import thredds.server.catalog.DatasetRoot;
+import thredds.server.catalog.DatasetRootConfig;
 import thredds.server.catalog.DatasetScanConfig;
 
 import java.util.*;
@@ -52,12 +51,12 @@ import java.util.*;
  * @since 1/15/2015
  */
 public class ConfigCatalogBuilder extends CatalogBuilder {
-  protected List<DatasetRoot> roots;
+  protected List<DatasetRootConfig> roots;
 
   protected DatasetBuilder buildOtherDataset(DatasetBuilder parent, Element elem) {
       // this finds datasetRoot in catalogs (unwanted side effect in regular dataset elements)
     if (elem.getName().equals("datasetRoot")) {
-      DatasetRoot root = readDatasetRoot(elem);
+      DatasetRootConfig root = readDatasetRoot(elem);
       if (roots == null) roots = new ArrayList<>();
       roots.add(root);
       return null;
@@ -81,10 +80,10 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     return null;
   }
 
-  private DatasetRoot readDatasetRoot(Element s) {
+  private DatasetRootConfig readDatasetRoot(Element s) {
     String name = s.getAttributeValue("path");
     String value = s.getAttributeValue("location");
-    return new DatasetRoot(name, value);
+    return new DatasetRootConfig(name, value);
   }
 
   @Override

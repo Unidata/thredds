@@ -30,7 +30,8 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalogservice;
+
+package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -43,13 +44,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import thredds.catalog.util.DeepCopyUtils;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
+import thredds.server.catalogservice.CatalogServiceUtils;
+import thredds.server.catalogservice.Command;
+import thredds.server.catalogservice.LocalCatalogRequest;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
-import thredds.servlet.ConfigCatalogHtmlWriter;
-import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.util.RequestForwardUtils;
 
@@ -104,19 +105,19 @@ public class LocalCatalogServiceController2 {
       // Determine path and catalogPath
       String catalogPath = catalogServiceRequest.getPath();
 
-      // Check for matching catalog.
+      // Check for matching catalog. LOOK autowired ??
       DataRootHandler drh = DataRootHandler.getInstance();
 
       Catalog catalog = null;
       String baseUriString = request.getRequestURL().toString();
-      /* try {
-        catalog = drh.getCatalog(catalogPath, new URI(baseUriString));  // LOOK
+      try {
+        catalog = drh.getCatalog(catalogPath, new URI(baseUriString));
       } catch (URISyntaxException e) {
         String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
         log.error("handleRequestInternal(): " + msg);
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return null;
-      } */
+      }
 
       // If no catalog found, handle as a publicDoc request.
       if (catalog == null)
@@ -184,14 +185,14 @@ public class LocalCatalogServiceController2 {
 
       Catalog catalog = null;
       String baseUriString = request.getRequestURL().toString();
-      /* try {
-        catalog = drh.getCatalog(catalogPath, new URI(baseUriString));   // LOOK
+      try {
+        catalog = drh.getCatalog(catalogPath, new URI(baseUriString));
       } catch (URISyntaxException e) {
         String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
         log.error("handleRequestInternal(): " + msg);
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return null;
-      }  */
+      }
 
       // If no catalog found, handle as a publicDoc request.
       if (catalog == null)

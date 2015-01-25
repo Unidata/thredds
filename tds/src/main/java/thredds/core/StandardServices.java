@@ -30,61 +30,42 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.unidata.util.StringUtil2;
+package thredds.core;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import thredds.client.catalog.Service;
+import thredds.client.catalog.ServiceType;
 
 /**
- * TDS Configuration Catalog
+ * Standard TDS services
  *
  * @author caron
- * @since 1/15/2015
+ * @since 1/23/2015
  */
-@Immutable
-public class ConfigCatalog extends Catalog {
+public enum StandardServices {
+  
+  cdmRemote( ServiceType.CdmRemote),
+  cdmrFeature( ServiceType.CdmrFeature),
+  dap4( ServiceType.DAP4),
+  fileServer( ServiceType.HTTPServer),
+  latest( ServiceType.Resolver),
+  ncss( ServiceType.NetcdfSubset),
+  opendap( ServiceType.OPENDAP),
+  wms( ServiceType.WMS),
+  wcs( ServiceType.WCS),
 
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
+  //NGDC addition 5/10/2011
+  ncml( ServiceType.NCML),
+  uddc( ServiceType.UDDC),
+  iso( ServiceType.ISO);
 
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
+  private final Service service;
+  private StandardServices(ServiceType type) {
+    // (String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties
+    this.service = new Service(type.toString(), "/thredds/cdmremote/", type.toString(), null, null, null, null);
   }
 
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
-    }
-    return scanDir;
-  }
-
-  /////////////////////////////////////////////////////////////
-
-  public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
-    super(baseURI, name, flds, datasets);
-  }
-
-  public List<DatasetRootConfig> getDatasetRoots() {
-    return (List<DatasetRootConfig>) getLocalFieldAsList(Dataset.DatasetRoots);
-  }
-
-  private List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
-    }
-    return new ArrayList(0);
+  public Service getService() {
+    return service;
   }
 }

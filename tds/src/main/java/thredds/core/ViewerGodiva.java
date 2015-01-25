@@ -30,61 +30,60 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.unidata.util.StringUtil2;
+package thredds.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import thredds.client.catalog.*;
+import thredds.servlet.ServletUtil;
+import thredds.servlet.ThreddsConfig;
+
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URISyntaxException;
 
 /**
- * TDS Configuration Catalog
- *
- * @author caron
- * @since 1/15/2015
+ * A Viewer for viewing datasets using the built-in Godiva2 client.  The viewer
+ * must be configured in {@code ${tomcat_home}/content/thredds/threddsConfig.xml}, as per
+ * instructions <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/Viewers.html">here</a>.
+ * @author Jon
  */
-@Immutable
-public class ConfigCatalog extends Catalog {
-
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
-
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
-  }
-
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
-    }
-    return scanDir;
-  }
-
-  /////////////////////////////////////////////////////////////
-
-  public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
-    super(baseURI, name, flds, datasets);
-  }
-
-  public List<DatasetRootConfig> getDatasetRoots() {
-    return (List<DatasetRootConfig>) getLocalFieldAsList(Dataset.DatasetRoots);
-  }
-
-  private List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
-    }
-    return new ArrayList(0);
-  }
+public class ViewerGodiva implements thredds.core.Viewer {
+      static private final Logger logger = LoggerFactory.getLogger(ViewerGodiva.class);
+  
+      /**
+       * Returns true if this is a gridded dataset that is accessible via WMS.
+       */
+      @Override
+      public boolean isViewable(Dataset ds)
+      {
+          Access access = ds.getAccess(ServiceType.WMS);
+          return access != null && (ThreddsConfig.getBoolean("WMS.allow", false));
+      }
+  
+      @Override
+      public String getViewerLinkHtml(Dataset ds, HttpServletRequest req)
+      {
+        Access access = ds.getAccess(ServiceType.WMS);
+        if (access == null) return null;
+  
+        URI dataURI = access.getStandardUri();
+        if (dataURI == null) {
+          logger.warn("Godiva2Viewer access URL failed on {}", ds.getName());
+          return null;
+        }
+  
+        try {
+          URI base = new URI( req.getRequestURL().toString());
+          dataURI = base.resolve( dataURI);
+  
+        } catch (URISyntaxException e) {
+          logger.warn("Godiva2Viewer URL=" + req.getRequestURL().toString(), e);
+          return null;
+        }
+  
+        // ToDo Switch to use TdsContext.getContextPath()
+        return "<a href='" + ServletUtil.getContextPath() + "/godiva2/godiva2.html?server="+dataURI.toString()+"'>Godiva2 (browser-based)</a>";
+      }
 }

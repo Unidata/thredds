@@ -34,20 +34,13 @@ package thredds.server.catalog;
 
 import org.junit.Assert;
 import org.junit.Test;
-import thredds.catalog.util.DeepCopyUtils;
 import thredds.client.catalog.*;
-import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.CalendarDate;
 import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -132,8 +125,8 @@ public class TestServerCatalogs {
     CatalogXmlWriter writer = new CatalogXmlWriter();
     System.out.printf("%s%n",  writer.writeXML( cat ));
 
-    List<DatasetRoot> roots = cat.getRoots();
-    for (DatasetRoot root : roots)
+    List<DatasetRootConfig> roots = cat.getDatasetRoots();
+    for (DatasetRootConfig root : roots)
       System.out.printf("DatasetRoot %s -> %s%n", root.path, root.location);
     assert roots.size() == 2;
 

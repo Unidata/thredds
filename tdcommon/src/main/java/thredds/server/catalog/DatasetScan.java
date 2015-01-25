@@ -69,19 +69,6 @@ import java.util.*;
 public class DatasetScan extends CatalogRef {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetScan.class);
 
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
-
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
-  }
-
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
-    }
-    return scanDir;
-  }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private final DatasetScanConfig config;
@@ -140,16 +127,12 @@ public class DatasetScan extends CatalogRef {
       fileFilters.addFilter(filter);
   }
 
+  public String getPath() { return config.path; }
+
+  public String getScanLocation() { return config.scanDir; }
+
   DatasetScanConfig getConfig() {
     return config;
-  }
-
-  org.jdom2.Element getNcmlElement() {
-    return (org.jdom2.Element) getLocalField(Dataset.Ncml);
-  }
-
-  MFile requestCrawlableDataset(String path) {
-    return null;
   }
 
   /////////////////////////////////////////////////////////
@@ -166,7 +149,7 @@ public class DatasetScan extends CatalogRef {
    */
   public Catalog makeCatalogForDirectory(String orgPath, URI catURI) throws IOException {
 
-    // Get the dataset path.
+    // Get the dataset location.
     String dataDirReletive = translatePathToLocation(orgPath);
     if (dataDirReletive == null) {
       String tmpMsg = "makeCatalogForDirectory(): Requesting path <" + orgPath + "> must start with \"" + config.path + "\".";
@@ -177,7 +160,7 @@ public class DatasetScan extends CatalogRef {
     String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
 
     // translate any properties
-    String scanDir = translateAlias(config.scanDir);
+    String scanDir = ConfigCatalog.translateAlias(config.scanDir);
     String dataDirComplete = (dataDirReletive.length() > 1) ? scanDir + "/" + dataDirReletive : scanDir;
 
     // Setup and create catalog builder.
@@ -240,7 +223,7 @@ public class DatasetScan extends CatalogRef {
     return catBuilder.makeCatalog();
   }
 
-  public String translatePathToLocation(String dsPath) {
+  private String translatePathToLocation(String dsPath) {
     if (dsPath == null) return null;
     if (dsPath.length() == 0) return null;
 
@@ -468,7 +451,7 @@ public class DatasetScan extends CatalogRef {
     String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
 
     // translate any properties
-    String scanDir = translateAlias(config.scanDir);
+    String scanDir = ConfigCatalog.translateAlias(config.scanDir);
     String dataDirComplete = (dataDirReletive.length() > 1) ? scanDir + "/" + dataDirReletive : scanDir;
 
     // Setup and create catalog builder.

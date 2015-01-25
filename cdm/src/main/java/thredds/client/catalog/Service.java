@@ -34,6 +34,7 @@ package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +93,22 @@ public class Service {            // (7)
 
   public List<Property> getProperties() {
     return properties == null ? new ArrayList<Property>(0) : properties;
+  }
+
+  /**
+   * See if the service Base is reletive
+   * @return true if the service Base is reletive
+   */
+  public boolean isRelativeBase() {
+    if (getType() == ServiceType.Compound)
+      return true;
+
+    try {
+      URI uri = new java.net.URI(base);
+      return !uri.isAbsolute();
+    } catch (java.net.URISyntaxException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   @Override

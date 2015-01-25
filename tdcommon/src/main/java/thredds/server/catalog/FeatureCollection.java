@@ -32,13 +32,20 @@
 
 package thredds.server.catalog;
 
+import thredds.catalog.InvCatalogImpl;
+import thredds.client.catalog.Catalog;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.MFile;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dt.GridDataset;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -50,10 +57,47 @@ import java.util.Map;
  */
 public class FeatureCollection extends CatalogRef {
   FeatureCollectionConfig config;
+  String path;
+  String topDirectoryLocation;
+  String collectionName;
 
   public FeatureCollection(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders,
                            FeatureCollectionConfig config) {
     super(parent, name, xlink, flds, accessBuilders, datasetBuilders);
     this.config = config;
   }
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getTopDirectoryLocation() {
+    return topDirectoryLocation;
+  }
+
+  public String getCollectionName() {
+    return collectionName;
+  }
+
+  public NetcdfFile getNetcdfDataset(String remaining) {
+    return null;
+  }
+
+  public GridDataset getGridDataset(String remaining) {
+    return null;
+  }
+
+  public Catalog makeCatalog(String match, String orgPath, URI catURI) throws IOException {
+    return null;
+  }
+
+  public Catalog makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
+    return null;
+  }
+
+  public MFile getFileFromRequestPath(String path) {
+    return null;
+  }
+
+
 }

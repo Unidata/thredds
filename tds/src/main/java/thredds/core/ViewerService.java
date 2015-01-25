@@ -30,61 +30,25 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.unidata.util.StringUtil2;
+package thredds.core;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Formatter;
 import java.util.List;
-import java.util.Map;
 
-/**
- * TDS Configuration Catalog
- *
- * @author caron
- * @since 1/15/2015
- */
-@Immutable
-public class ConfigCatalog extends Catalog {
+import javax.servlet.http.HttpServletRequest;
+import thredds.client.catalog.Dataset;
 
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
+public interface ViewerService {
 
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
-  }
-
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
-    }
-    return scanDir;
-  }
-
-  /////////////////////////////////////////////////////////////
-
-  public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
-    super(baseURI, name, flds, datasets);
-  }
-
-  public List<DatasetRootConfig> getDatasetRoots() {
-    return (List<DatasetRootConfig>) getLocalFieldAsList(Dataset.DatasetRoots);
-  }
-
-  private List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
-    }
-    return new ArrayList(0);
-  }
+	public List<Viewer> getViewers();
+	
+	public Viewer getViewer(String viewer);
+	
+	public String getViewerTemplate(String template);
+	
+	public boolean registerViewer(Viewer v);
+	
+	public void showViewers(Formatter sbuff, Dataset dataset, HttpServletRequest req);
+	
 }

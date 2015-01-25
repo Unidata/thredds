@@ -30,61 +30,48 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalog;
+package thredds.core;
 
-import net.jcip.annotations.Immutable;
-import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.unidata.util.StringUtil2;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 
 /**
- * TDS Configuration Catalog
- *
- * @author caron
- * @since 1/15/2015
+ * Interface for plugging in Viewers.
+ * Generally, these are implemented with jnlp files in /content/thredds/view/views/*.jnlp
+ * You can customizing by adding parameters to the jnlp file, eg parm=subst&name=value.
+ * Then all instances of "{param}" will be replaced by subst, and
+ * all instances of "{name}" will be replaced by value, etc.
  */
-@Immutable
-public class ConfigCatalog extends Catalog {
+public interface ViewerLinkProvider extends Viewer {
 
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
+  /**
+   * Get an HTML fragment link to the viewer JNLP file, for this dataset.
+   * Example:
+   * return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
+   *
+   * @param ds  the dataset to view
+   * @param req the request
+   * @return HTML fragment string
+   */
+  public List<ViewerLink> getViewerLinks(Dataset ds, HttpServletRequest req);
 
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
-  }
+  public class ViewerLink {
+    private String title;
+    private String url;
 
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
+    public ViewerLink(String title, String url) {
+      this.title = title;
+      this.url = url;
     }
-    return scanDir;
-  }
 
-  /////////////////////////////////////////////////////////////
-
-  public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
-    super(baseURI, name, flds, datasets);
-  }
-
-  public List<DatasetRootConfig> getDatasetRoots() {
-    return (List<DatasetRootConfig>) getLocalFieldAsList(Dataset.DatasetRoots);
-  }
-
-  private List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
+    public String getTitle() {
+      return title;
     }
-    return new ArrayList(0);
+
+    public String getUrl() {
+      return url;
+    }
   }
 }

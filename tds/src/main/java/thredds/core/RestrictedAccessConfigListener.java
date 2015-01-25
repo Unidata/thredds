@@ -30,61 +30,42 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
+package thredds.core;
+
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.unidata.util.StringUtil2;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
- * TDS Configuration Catalog
+ * Listen for DataRootHandler configuration events and register any restricted access datasets.
+ *
+ * Extracted from DataRootHandler for use elsewhere. [ERD - 2008-08-29]
  *
  * @author caron
- * @since 1/15/2015
+ * @since 1/23/2015
  */
-@Immutable
-public class ConfigCatalog extends Catalog {
+public class RestrictedAccessConfigListener implements DataRootHandler.ConfigListener {
+  volatile boolean initializing;
 
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
-
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
+  public RestrictedAccessConfigListener() {
+    initializing = false;
   }
 
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
-    }
-    return scanDir;
+  public void configStart() {
+    this.initializing = true;
   }
 
-  /////////////////////////////////////////////////////////////
-
-  public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
-    super(baseURI, name, flds, datasets);
+  public void configEnd() {
+    this.initializing = false;
   }
 
-  public List<DatasetRootConfig> getDatasetRoots() {
-    return (List<DatasetRootConfig>) getLocalFieldAsList(Dataset.DatasetRoots);
+  public void configCatalog( Catalog catalog) {
   }
 
-  private List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
-    }
-    return new ArrayList(0);
+  public void configDataset( Dataset dataset) {
+    // check for resource control
+    if (dataset.getResourceControl() != null)
+      DatasetHandler.putResourceControl(dataset);
   }
 }
+
