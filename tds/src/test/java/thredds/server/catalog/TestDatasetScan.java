@@ -57,7 +57,7 @@ public class TestDatasetScan {
 
   @Before
   public void setup() {
-    DatasetScan.addAlias("${cdmUnitTest}", "Q:/cdmUnitTest");
+    ConfigCatalog.addAlias("${cdmUnitTest}", "Q:/cdmUnitTest");
   }
 
   @Test
@@ -67,8 +67,8 @@ public class TestDatasetScan {
     CatalogXmlWriter writer = new CatalogXmlWriter();
     // System.out.printf("%s%n",  writer.writeXML( cat ));
 
-    List<DatasetRoot> roots = cat.getDatasetRoots();
-    for (DatasetRoot root : roots)
+    List<DatasetRootConfig> roots = cat.getDatasetRoots();
+    for (DatasetRootConfig root : roots)
       System.out.printf("DatasetRoot %s -> %s%n", root.path, root.location);
     assert roots.size() == 2;
 

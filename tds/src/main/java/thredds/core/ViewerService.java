@@ -33,39 +33,22 @@
 
 package thredds.core;
 
-import thredds.client.catalog.Catalog;
+import java.util.Formatter;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 import thredds.client.catalog.Dataset;
 
-/**
- * Listen for DataRootHandler configuration events and register any restricted access datasets.
- *
- * Extracted from DataRootHandler for use elsewhere. [ERD - 2008-08-29]
- *
- * @author caron
- * @since 1/23/2015
- */
-public class RestrictedAccessConfigListener implements DataRootHandler.ConfigListener {
-  volatile boolean initializing;
+public interface ViewerService {
 
-  public RestrictedAccessConfigListener() {
-    initializing = false;
-  }
-
-  public void configStart() {
-    this.initializing = true;
-  }
-
-  public void configEnd() {
-    this.initializing = false;
-  }
-
-  public void configCatalog( Catalog catalog) {
-  }
-
-  public void configDataset( Dataset dataset) {
-    // check for resource control
-    if (dataset.getResourceControl() != null)
-      DatasetHandler.putResourceControl(dataset);
-  }
+	public List<Viewer> getViewers();
+	
+	public Viewer getViewer(String viewer);
+	
+	public String getViewerTemplate(String template);
+	
+	public boolean registerViewer(Viewer v);
+	
+	public void showViewers(Formatter sbuff, Dataset dataset, HttpServletRequest req);
+	
 }
-

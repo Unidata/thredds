@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +105,7 @@ public class LocalCatalogServiceController2 {
       // Determine path and catalogPath
       String catalogPath = catalogServiceRequest.getPath();
 
-      // Check for matching catalog.
+      // Check for matching catalog. LOOK autowired ??
       DataRootHandler drh = DataRootHandler.getInstance();
 
       Catalog catalog = null;

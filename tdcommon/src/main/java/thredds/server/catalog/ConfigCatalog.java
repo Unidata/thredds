@@ -36,9 +36,11 @@ import net.jcip.annotations.Immutable;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.DatasetBuilder;
+import ucar.unidata.util.StringUtil2;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,12 +53,28 @@ import java.util.Map;
 @Immutable
 public class ConfigCatalog extends Catalog {
 
+  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
+
+  public static void addAlias(String aliasKey, String actual) {
+    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
+  }
+
+  public static String translateAlias(String scanDir) {
+    for (Map.Entry<String, String> entry : alias.entrySet()) {
+      if (scanDir.contains(entry.getKey()))
+        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
+    }
+    return scanDir;
+  }
+
+  /////////////////////////////////////////////////////////////
+
   public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
     super(baseURI, name, flds, datasets);
   }
 
-  public List<DatasetRoot> getDatasetRoots() {
-    return (List<DatasetRoot>) getLocalFieldAsList(Dataset.DatasetRoots);
+  public List<DatasetRootConfig> getDatasetRoots() {
+    return (List<DatasetRootConfig>) getLocalFieldAsList(Dataset.DatasetRoots);
   }
 
   private List getLocalFieldAsList(String fldName) {

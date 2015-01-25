@@ -30,13 +30,15 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import thredds.client.catalog.*;
 import thredds.server.catalog.ConfigCatalog;
-import thredds.server.catalog.DatasetRoot;
+import thredds.server.catalog.DatasetRootConfig;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
@@ -58,21 +60,39 @@ import java.util.*;
  * @author caron
  * @since 1/23/2015
  */
-public class ConfigCatalogReader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogReader.class);
-  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogReader.class.getName() + ".catalogInit");
+@Component("ConfigCatalogManager")
+public class ConfigCatalogManager {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class);
+  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private final String ERROR = "*** ERROR ";
 
   @Autowired
   private TdsContext tdsContext;
 
-  private PathMatcher<DataRoot> pathMatcher = new PathMatcher<>(); // collection of DataRoot objects
+  @Autowired
+  private PathMatcher<DataRoot> pathMatcher; // collection of DataRoot objects
+
   private HashMap<String, ConfigCatalog> staticCatalogHash; // Hash of static catalogs, key = path
-  private Set<String> staticCatalogNames; // Hash of static catalogs, key = path
-  private HashSet<String> idHash = new HashSet<>(); // Hash of ids, to look for duplicates
-  private boolean staticCache;
-  private AllowableService allowableService;
+  private Set<String> staticCatalogNames;                   // Hash of static catalogs, key = path
+  private HashSet<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
+  private boolean cacheStaticCatalogs;
+  private AllowedServices allowedServices;
+
+  public ConfigCatalog getStaticCatalog(String path) {
+    return staticCatalogHash.get(path);
+  }
+
+  public List<String> getStaticCatalogPaths() {
+    List<String> result = new ArrayList<>();
+    for (String s : staticCatalogNames)
+      result.add(s);
+    return result;
+  }
+
+  public boolean isStaticCatalogNotInCache(String path) {
+    return !cacheStaticCatalogs && staticCatalogNames.contains(path);
+  }
 
   void initCatalogs() {
     ArrayList<String> catList = new ArrayList<>();
@@ -83,11 +103,11 @@ public class ConfigCatalogReader {
     this.initCatalogs(catList);
   }
 
-  public void initCatalogs(List<String> configCatalogRoots) {
-    allowableService = new AllowableService();
+  void initCatalogs(List<String> configCatalogRoots) {
+    allowedServices = new AllowedServices();
 
-    staticCache = ThreddsConfig.getBoolean("Catalog.cache", true);  // user can turn off static catalog caching
-    startupLog.info("DataRootHandler: staticCache= " + staticCache);
+    cacheStaticCatalogs = ThreddsConfig.getBoolean("Catalog.cache", true);  // user can turn off static catalog caching
+    startupLog.info("DataRootHandler: staticCache= " + cacheStaticCatalogs);
 
     this.staticCatalogNames = new HashSet<>();
     this.staticCatalogHash = new HashMap<>();
@@ -102,7 +122,6 @@ public class ConfigCatalogReader {
       }
     }
   }
-
 
   /**
    * Reads a catalog, finds datasetRoot, datasetScan, datasetFmrc, NcML and restricted access datasets
@@ -138,11 +157,11 @@ public class ConfigCatalogReader {
     }
 
     // look for datasetRoots
-    for (DatasetRoot p : cat.getDatasetRoots()) {
+    for (DatasetRootConfig p : cat.getDatasetRoots()) {
       addRoot(p, true);
     }
 
-    List<String> disallowedServices = allowableService.getDisallowedServices(cat);
+    List<String> disallowedServices = allowedServices.getDisallowedServices(cat);
     if (!disallowedServices.isEmpty()) {
       logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
     }
@@ -155,7 +174,7 @@ public class ConfigCatalogReader {
     boolean needsCache = initSpecialDatasets(cat.getDatasets());
 
     // optionally add catalog to cache
-    if (staticCache || cache || needsCache) {
+    if (cacheStaticCatalogs || cache || needsCache) {
       staticCatalogHash.put(path, cat);
       if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog to hash=" + path);
     }
@@ -400,7 +419,7 @@ public class ConfigCatalogReader {
     return true;
   }
 
-  private boolean addRoot(DatasetRoot config, boolean wantErr) {
+  private boolean addRoot(DatasetRootConfig config, boolean wantErr) {
     String path = config.getPath();
     String location = config.getLocation();
 
@@ -414,7 +433,7 @@ public class ConfigCatalogReader {
       return false;
     }
 
-    location = DataRoot.translateAlias(location);
+    location = ConfigCatalog.translateAlias(location);
     File file = new File(location);
     if (!file.exists()) {
       logCatalogInit.error(ERROR + "DataRootConfig path =" + path + " directory= <" + location + "> does not exist");

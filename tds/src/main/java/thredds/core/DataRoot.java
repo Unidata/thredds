@@ -30,14 +30,12 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.core;
 
+import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
-import ucar.unidata.util.StringUtil2;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
 * A DataRoot matches URLs to file directories
@@ -46,21 +44,6 @@ import java.util.Map;
 * @since 1/23/2015
 */
 public class DataRoot {
-
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
-
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
-  }
-
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
-    }
-    return scanDir;
-  }
-
   private String path;          // match this path
   private String dirLocation;   // to this directory
   private DatasetScan scan;     // the DatasetScan that created this (may be null)
@@ -140,5 +123,46 @@ public class DataRoot {
 
   public int hashCode() {
     return path.hashCode();
+  }
+
+  ////////////////
+
+  public String getFileLocationFromRequestPath(String path) {
+
+    if (scan != null)
+      return getFileLocationFromRequestPath(path, scan.getPath(), scan.getScanLocation());
+
+    if (featCollection != null)
+      return getFileLocationFromRequestPath(path, featCollection.getPath(), featCollection.getTopDirectoryLocation());
+    //   return null; // if featCollection exists, bail out and deal with it in caller LOOK why ?
+
+    // must be a datasetRoot
+    return getFileLocationFromRequestPath(path, getPath(), getDirLocation());
+
+  }
+
+  public static String getFileLocationFromRequestPath(String reqPath, String rootPath, String rootLocation) {
+    if (reqPath == null) return null;
+     if (reqPath.length() == 0) return null;
+
+     if (reqPath.startsWith("/"))
+       reqPath = reqPath.substring(1);
+
+     if (!reqPath.startsWith(rootPath))
+       return null;
+
+     // remove the matching part, the rest is the "data directory"
+     String locationReletive = reqPath.substring(rootPath.length());
+     if (locationReletive.startsWith("/"))
+       locationReletive = locationReletive.substring(1);
+
+     if (!locationReletive.endsWith("/"))
+       locationReletive = locationReletive + "/";
+
+        // translate any properties
+    String scanDir = ConfigCatalog.translateAlias(rootLocation); // LOOK we may have already done this
+
+    // put it together
+    return (locationReletive.length() > 1) ? scanDir + "/" + locationReletive : scanDir;
   }
 }

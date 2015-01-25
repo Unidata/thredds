@@ -33,39 +33,57 @@
 
 package thredds.core;
 
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import thredds.client.catalog.*;
+import thredds.servlet.ServletUtil;
+import thredds.servlet.ThreddsConfig;
+
+import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
- * Listen for DataRootHandler configuration events and register any restricted access datasets.
- *
- * Extracted from DataRootHandler for use elsewhere. [ERD - 2008-08-29]
- *
- * @author caron
- * @since 1/23/2015
+ * A Viewer for viewing datasets using the built-in Godiva2 client.  The viewer
+ * must be configured in {@code ${tomcat_home}/content/thredds/threddsConfig.xml}, as per
+ * instructions <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/Viewers.html">here</a>.
+ * @author Jon
  */
-public class RestrictedAccessConfigListener implements DataRootHandler.ConfigListener {
-  volatile boolean initializing;
-
-  public RestrictedAccessConfigListener() {
-    initializing = false;
-  }
-
-  public void configStart() {
-    this.initializing = true;
-  }
-
-  public void configEnd() {
-    this.initializing = false;
-  }
-
-  public void configCatalog( Catalog catalog) {
-  }
-
-  public void configDataset( Dataset dataset) {
-    // check for resource control
-    if (dataset.getResourceControl() != null)
-      DatasetHandler.putResourceControl(dataset);
-  }
+public class ViewerGodiva implements thredds.core.Viewer {
+      static private final Logger logger = LoggerFactory.getLogger(ViewerGodiva.class);
+  
+      /**
+       * Returns true if this is a gridded dataset that is accessible via WMS.
+       */
+      @Override
+      public boolean isViewable(Dataset ds)
+      {
+          Access access = ds.getAccess(ServiceType.WMS);
+          return access != null && (ThreddsConfig.getBoolean("WMS.allow", false));
+      }
+  
+      @Override
+      public String getViewerLinkHtml(Dataset ds, HttpServletRequest req)
+      {
+        Access access = ds.getAccess(ServiceType.WMS);
+        if (access == null) return null;
+  
+        URI dataURI = access.getStandardUri();
+        if (dataURI == null) {
+          logger.warn("Godiva2Viewer access URL failed on {}", ds.getName());
+          return null;
+        }
+  
+        try {
+          URI base = new URI( req.getRequestURL().toString());
+          dataURI = base.resolve( dataURI);
+  
+        } catch (URISyntaxException e) {
+          logger.warn("Godiva2Viewer URL=" + req.getRequestURL().toString(), e);
+          return null;
+        }
+  
+        // ToDo Switch to use TdsContext.getContextPath()
+        return "<a href='" + ServletUtil.getContextPath() + "/godiva2/godiva2.html?server="+dataURI.toString()+"'>Godiva2 (browser-based)</a>";
+      }
 }
-

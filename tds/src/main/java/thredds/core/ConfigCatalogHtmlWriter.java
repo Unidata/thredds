@@ -30,13 +30,13 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import thredds.client.catalog.*;
 import thredds.client.catalog.writer.DatasetHtmlWriter;
 import thredds.server.config.HtmlConfig;
-import thredds.server.viewer.dataservice.ViewerService;
 import thredds.servlet.HtmlWriter;
 import thredds.util.ContentType;
 import ucar.nc2.units.DateType;
@@ -53,7 +53,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * Write HTML representations of a Catalog or Dataset
  *
  * @author caron
  * @since 1/19/2015
@@ -61,8 +61,8 @@ import java.util.List;
 public class ConfigCatalogHtmlWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogHtmlWriter.class);
 
-  // @Autowired
-  private ViewerService viewerService; // LOOK must be switched to use Dataset
+  @Autowired
+  private ViewerService viewerService;
 
   HtmlWriter html;
   HtmlConfig htmlConfig;
@@ -75,28 +75,28 @@ public class ConfigCatalogHtmlWriter {
   }
 
   /**
-    * Write an Catalog to the HttpServletResponse, return the size in bytes of the catalog written to the response.
-    *
-    * @param req            the HttpServletRequest
-    * @param res            the HttpServletResponse.
-    * @param cat            the InvCatalogImpl to write to the HttpServletResponse.
-    * @param isLocalCatalog indicates whether this catalog is local to this server.
-    * @return the size in bytes of the catalog written to the HttpServletResponse.
-    * @throws IOException if problems writing the response.
-    */
-   public int writeCatalog(HttpServletRequest req, HttpServletResponse res, Catalog cat, boolean isLocalCatalog) throws IOException {
-     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
+   * Write an Catalog to the HttpServletResponse, return the size in bytes of the catalog written to the response.
+   *
+   * @param req            the HttpServletRequest
+   * @param res            the HttpServletResponse.
+   * @param cat            the InvCatalogImpl to write to the HttpServletResponse.
+   * @param isLocalCatalog indicates whether this catalog is local to this server.
+   * @return the size in bytes of the catalog written to the HttpServletResponse.
+   * @throws IOException if problems writing the response.
+   */
+  public int writeCatalog(HttpServletRequest req, HttpServletResponse res, Catalog cat, boolean isLocalCatalog) throws IOException {
+    String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
 
-     res.setContentLength(catHtmlAsString.length());
-     res.setContentType(ContentType.html.getContentHeader());
-     if (!req.getMethod().equals("HEAD")) {
-       PrintWriter writer = res.getWriter();
-       writer.write(catHtmlAsString);
-       writer.flush();
-     }
+    res.setContentLength(catHtmlAsString.length());
+    res.setContentType(ContentType.html.getContentHeader());
+    if (!req.getMethod().equals("HEAD")) {
+      PrintWriter writer = res.getWriter();
+      writer.write(catHtmlAsString);
+      writer.flush();
+    }
 
-     return catHtmlAsString.length();
-   }
+    return catHtmlAsString.length();
+  }
 
   /**
    * Write a catalog in HTML, make it look like a file directory.
@@ -217,7 +217,8 @@ public class ConfigCatalogHtmlWriter {
             boolean defaultUseRemoteCatalogService = htmlConfig.getUseRemoteCatalogService(); // read default as set in threddsConfig.xml
             Boolean dsUseRemoteCatalogSerivce = ((CatalogRef) ds).useRemoteCatalogService();  // check to see if catalogRef contains tag that overrides default
             boolean useRemoteCatalogService = defaultUseRemoteCatalogService; // by default, use the option found in threddsConfig.xml
-            if (dsUseRemoteCatalogSerivce == null) dsUseRemoteCatalogSerivce = defaultUseRemoteCatalogService; // if the dataset does not have the useRemoteDataset option set, opt for the default behavior
+            if (dsUseRemoteCatalogSerivce == null)
+              dsUseRemoteCatalogSerivce = defaultUseRemoteCatalogService; // if the dataset does not have the useRemoteDataset option set, opt for the default behavior
 
             // if the default is not the same as what is defined in the catalog, go with the catalog option
             // as the user has explicitly overridden the default
@@ -354,8 +355,8 @@ public class ConfigCatalogHtmlWriter {
     writer.writeHtmlDescription(out, dataset, false, true, false, false, !isLocalCatalog);
 
     // optional access through Viewers
-    //if (isLocalCatalog)
-    //  viewerService.showViewers(sb, dataset, request);
+    if (isLocalCatalog)
+      viewerService.showViewers(out, dataset, request);
 
     out.format("%s\r\n", html.getGoogleTrackingContent());
 

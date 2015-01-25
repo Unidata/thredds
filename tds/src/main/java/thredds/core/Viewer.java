@@ -30,31 +30,38 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalog;
+package thredds.core;
 
-import net.jcip.annotations.Immutable;
+import thredds.client.catalog.Dataset;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * Describe
+ * Interface for plugging in Viewers.
+ * Generally, these are implemented with jnlp files in /content/thredds/view/views/*.jnlp
+ * You can customize by adding parameters to the jnlp file, eg parm=subst&name=value.
+ * Then all instances of "{param}" will be replaced by subst, and
+ * all instances of "{name}" will be replaced by value, etc.
  *
- * @author caron
- * @since 1/15/2015
  */
-@Immutable
-public class DatasetRoot {
-  public final String path;
-  public final String location;
+public interface Viewer {
 
-  public DatasetRoot(String path, String location) {
-    this.path = path;
-    this.location = location;
-  }
+  /**
+   * Is this dataset viewable by me?
+   * @param ds the dataset
+   * @return true if viewable
+   */
+   public boolean isViewable( Dataset ds);
 
-  public String getPath() {
-    return path;
-  }
+  /**
+   * Get an HTML fragment link to the viewer JNLP file, for this dataset.
+   * Example:
+   *   return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
+   *
+   * @param ds the dataset to view
+   * @param req the request
+   * @return HTML fragment string
+   */
+   public String getViewerLinkHtml( Dataset ds, HttpServletRequest req);
 
-  public String getLocation() {
-    return location;
-  }
 }

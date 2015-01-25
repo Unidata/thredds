@@ -35,10 +35,13 @@ package thredds.server.catalog;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.List;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
@@ -71,7 +74,7 @@ public class TestDatasetScanFilter {
     assertTrue( tmpTestDataDir.canRead());
     assertTrue( tmpTestDataDir.canWrite());
 
-    DatasetScan.addAlias("${tmpDir}", tmpTestDataDir.getPath());
+    ConfigCatalog.addAlias("${tmpDir}", tmpTestDataDir.getPath());
 
     File tmpTestDir = TestFileDirUtils.addDirectory(tmpTestDataDir, "testDatafilesInDateTimeNestedDirs");
     assertNotNull(tmpTestDir);
@@ -246,8 +249,14 @@ public class TestDatasetScanFilter {
 
   @Test
   public void testRegexp() throws IOException {
-    TestRegexp.testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}.nc", "PROFILER_wind_06min_20131107_0001.nc", true);
-    TestRegexp.testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}\\.nc", "PROFILER_wind_06min_20131107_0001.nc", true);
-    TestRegexp.testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}\\\\.nc", "PROFILER_wind_06min_20131107_0001.nc", false);
+    testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}.nc", "PROFILER_wind_06min_20131107_0001.nc", true);
+    testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}\\.nc", "PROFILER_wind_06min_20131107_0001.nc", true);
+    testOne("PROFILER_wind_06min_2013110[67]_[0-9]{4}\\\\.nc", "PROFILER_wind_06min_20131107_0001.nc", false);
+  }
+
+  public static void testOne(String ps, String match, boolean expect) {
+    Pattern pattern = Pattern.compile(ps);
+    Matcher matcher = pattern.matcher(match);
+    assertEquals("match " + ps + " against: " + match, expect, matcher.matches() );
   }
 }

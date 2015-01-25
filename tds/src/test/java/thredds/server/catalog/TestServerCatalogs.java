@@ -125,8 +125,8 @@ public class TestServerCatalogs {
     CatalogXmlWriter writer = new CatalogXmlWriter();
     System.out.printf("%s%n",  writer.writeXML( cat ));
 
-    List<DatasetRoot> roots = cat.getDatasetRoots();
-    for (DatasetRoot root : roots)
+    List<DatasetRootConfig> roots = cat.getDatasetRoots();
+    for (DatasetRootConfig root : roots)
       System.out.printf("DatasetRoot %s -> %s%n", root.path, root.location);
     assert roots.size() == 2;
 

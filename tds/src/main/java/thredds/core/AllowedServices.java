@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.core;
 
 import thredds.client.catalog.*;
@@ -38,61 +39,66 @@ import thredds.servlet.ThreddsConfig;
 import java.util.*;
 
 /**
- * The services that can be allowed/disallowed in the ThreddsConfig.
+ * These are the services that the TDS can do.
+ * May be allowed/disallowed in ThreddsConfig.
  * ThreddsConfig is read at the time the object is instantiated.
- * 
+ *
+ * @author caron
+ * @since 1/23/2015
  */
-public class AllowableService {
+public class AllowedServices {
 
-  private Map<ServiceType, StandardServices> allowed = new HashMap<>();
+  private Map<ServiceType, AllowedService> allowed = new HashMap<>();
 
-  public AllowableService() {  // LOOK not right - need to allow ones we dont know about
-    allowed.put(ServiceType.OPENDAP, StandardServices.opendap);
-    allowed.put(ServiceType.CdmRemote, StandardServices.cdmRemote);
+  private class AllowedService {
+    StandardServices ss;
+    boolean allowed;
 
-    if (ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true))
-      allowed.put(ServiceType.NetcdfSubset, StandardServices.ncss);
+    private AllowedService(StandardServices ss, boolean allowed) {
+      this.ss = ss;
+      this.allowed = allowed;
+    }
+  }
 
-    if (ThreddsConfig.getBoolean("WMS.allow", true))
-      allowed.put(ServiceType.WMS, StandardServices.wms);
-    if (ThreddsConfig.getBoolean("WCS.allow", false))
-      allowed.put(ServiceType.WCS, StandardServices.wcs);
-    if (ThreddsConfig.getBoolean("NCISO.isoAllow", false))
-      allowed.put(ServiceType.ISO, StandardServices.iso);
-    if (ThreddsConfig.getBoolean("NCISO.uddcAllow", false))
-      allowed.put(ServiceType.UDDC, StandardServices.uddc);
-    if (ThreddsConfig.getBoolean("NCISO.ncmlAllow", false))
-      allowed.put(ServiceType.NCML, StandardServices.ncml);
+  public AllowedServices() {
+    allowed.put(ServiceType.CdmRemote, new AllowedService(StandardServices.cdmRemote, true));
+    allowed.put(ServiceType.DAP4, new AllowedService(StandardServices.dap4, true));
+    allowed.put(ServiceType.OPENDAP, new AllowedService(StandardServices.opendap, true));
+    allowed.put(ServiceType.Resolver, new AllowedService(StandardServices.latest, true));
+
+    allowed.put(ServiceType.NetcdfSubset, new AllowedService(StandardServices.ncss, ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true)));
+    allowed.put(ServiceType.WMS, new AllowedService(StandardServices.wms, ThreddsConfig.getBoolean("WMS.allow", true)));
+    allowed.put(ServiceType.WCS, new AllowedService(StandardServices.wcs, ThreddsConfig.getBoolean("WCS.allow", true)));
+    allowed.put(ServiceType.ISO, new AllowedService(StandardServices.iso, ThreddsConfig.getBoolean("NCISO.isoAllow", true)));
+    allowed.put(ServiceType.UDDC, new AllowedService(StandardServices.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow", true)));
+    allowed.put(ServiceType.NCML, new AllowedService(StandardServices.ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow", true)));
   }
 
   public boolean isAllowed(ServiceType type) {
-    return allowed.get(type) != null;
+    AllowedService s = allowed.get(type);
+    return s == null || s.allowed;
   }
 
   public Service getStandardService(ServiceType type) {
-    return allowed.get(type).getService();
+    AllowedService s = allowed.get(type);
+    return s == null ? null : s.ss.getService();
   }
 
   /**
-   * Takes an InvCatalog and checks that the services declared in that catalog
+   * TChecks that the services declared in the catalog
    * are allowed at server level in the threddsConfig file
    *
    * @param catalog check this catalog
    * @return A list with the declared services in the catalog that are not allowed at server level
    */
   public List<String> getDisallowedServices(Catalog catalog) {
-
     List<String> disallowedServices = new ArrayList<>();
-
-    for (Service s : catalog.getServices()) {
+    for (Service s : catalog.getServices())
       checkService(s, disallowedServices);
-    }
-    
     return disallowedServices;
   }
 
   private void checkService(Service service, List<String> disallowedServices) {
-
     if (service.getType() == ServiceType.Compound) {
       for (Service nested : service.getNestedServices())
         checkService(nested, disallowedServices);

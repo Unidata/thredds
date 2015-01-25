@@ -40,6 +40,7 @@ import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDataset;
 
@@ -93,5 +94,10 @@ public class FeatureCollection extends CatalogRef {
   public Catalog makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
     return null;
   }
+
+  public MFile getFileFromRequestPath(String path) {
+    return null;
+  }
+
 
 }

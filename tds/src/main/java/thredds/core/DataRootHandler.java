@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.core;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -39,41 +40,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import thredds.client.catalog.*;
+import thredds.filesystem.MFileOS7;
 import thredds.inventory.MFile;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.*;
-import thredds.server.config.AllowableService;
 import thredds.server.config.TdsContext;
 
 import thredds.servlet.PathMatcher;
-import thredds.servlet.ThreddsConfig;
 import thredds.util.*;
 import thredds.util.filesource.FileSource;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
  * The DataRootHandler manages all the "data roots" for a given web application
- * and provides mappings from URLs to catalog and data objects (e.g.,
- * Catalog and MFile).
+ * and provides mappings from URLs to catalog and datasets
  * <p/>
  * <p>The "data roots" are read in from one or more trees of config catalogs
- * and are defined by the datasetScan and datasetRoot elements in the config
- * catalogs.
+ * and are defined by the datasetScan and datasetRoot elements in the config catalogs.
  * <p/>
  * <p> Uses the singleton design pattern.
  *
@@ -127,22 +118,28 @@ public final class DataRootHandler implements InitializingBean {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   @Autowired
   private TdsContext tdsContext;
+
+  @Autowired
+  private PathMatcher pathMatcher;
+
+  @Autowired
+  private ConfigCatalogManager ccManager;
+
   //private final TdsContext tdsContext;
-  private boolean staticCache;
+  //private boolean staticCache;
 
   // @GuardedBy("this") LOOK should be able to access without synchronization
-  private HashMap<String, ConfigCatalog> staticCatalogHash; // Hash of static catalogs, key = path
-  private Set<String> staticCatalogNames; // Hash of static catalogs, key = path
+  //private HashMap<String, ConfigCatalog> staticCatalogHash; // Hash of static catalogs, key = path
+  //private Set<String> staticCatalogNames; // Hash of static catalogs, key = path
 
   // @GuardedBy("this")
-  private HashSet<String> idHash = new HashSet<>(); // Hash of ids, to look for duplicates
+  //private HashSet<String> idHash = new HashSet<>(); // Hash of ids, to look for duplicates
 
   //  PathMatcher is "effectively immutable"; use volatile for visibilty
-  private volatile PathMatcher pathMatcher = new PathMatcher(); // collection of DataRoot objects
+  // private volatile PathMatcher pathMatcher = new PathMatcher(); // collection of DataRoot objects
 
   private List<ConfigListener> configListeners = new ArrayList<>();
 
-  private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<>();
 
   /**
    * Constructor.
@@ -159,7 +156,8 @@ public final class DataRootHandler implements InitializingBean {
   //Set method must be called so annotation at method level rather than property level
   @Resource(name = "dataRootLocationAliasExpanders")
   public void setDataRootLocationAliasExpanders(Map<String, String> aliases) {
-    dataRootLocationAliasExpanders = PathAliasReplacementImpl.makePathAliasReplacements(aliases);
+    for (Map.Entry<String, String> entry : aliases.entrySet())
+      ConfigCatalog.addAlias(entry.getKey(), entry.getValue());
   }
 
   //////////////////////////////////////////////
@@ -175,11 +173,11 @@ public final class DataRootHandler implements InitializingBean {
     if (fileSource != null) {
       File file = fileSource.getFile("");
       if (file != null)
-        dataRootLocationAliasExpanders.add(new PathAliasReplacementImpl("content", StringUtils.cleanPath(file.getPath())));
+        ConfigCatalog.addAlias("content", StringUtils.cleanPath(file.getPath())); // LOOK
     }
 
-    //this.contentPath = this.tdsContext.
-    this.initCatalogs();
+    ccManager = new ConfigCatalogManager();
+    ccManager.initCatalogs();
 
     this.makeDebugActions();
     DatasetHandler.makeDebugActions();
@@ -187,35 +185,6 @@ public final class DataRootHandler implements InitializingBean {
     //Set the instance
     DataRootHandler.setInstance(this);
   }
-
- /*  private void getExtraCatalogs(List<String> extraList) {
-    // if there are some roots in ThreddsConfig, then dont read extraCatalogs.txt
-    ThreddsConfig.getCatalogRoots(extraList);
-    if (extraList.size() > 0)
-      return;
-
-    // see if extraCatalogs.txt exists
-    File file = this.tdsContext.getConfigFileSource().getFile("extraCatalogs.txt");
-    if (file != null && file.exists()) {
-
-      try {
-        FileInputStream fin = new FileInputStream(file);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
-        while (true) {
-          String line = reader.readLine();
-          if (line == null) break;
-          line = line.trim();
-          if (line.length() == 0) continue;
-          if (line.startsWith("#")) continue; // Skip comment lines.
-          extraList.add(line);
-        }
-        fin.close();
-
-      } catch (IOException e) {
-        logCatalogInit.error(ERROR+"getExtraCatalogs ", e);
-      }
-    }
-  } */
 
   public boolean registerConfigListener(ConfigListener cl) {
     if (cl == null) return false;
@@ -227,9 +196,6 @@ public final class DataRootHandler implements InitializingBean {
     if (cl == null) return false;
     return configListeners.remove(cl);
   }
-
-  // @TODO Should pull the init construction of hashes and such out of synchronization and only synchronize the change over to the constructed hashes. (How would that work with ConfigListeners?)
-  // @TODO This method is synchronized seperately from actual initialization which means that requests in between the two calls will fail.
 
   /**
    * Reinitialize lists of static catalogs, data roots, dataset Ids.
@@ -248,10 +214,11 @@ public final class DataRootHandler implements InitializingBean {
 
     // Empty all config catalog information.
     pathMatcher = new PathMatcher();
-    idHash = new HashSet<>();
+    //idHash = new HashSet<>();
 
     DatasetHandler.reinit(); // NcML datasets
-    initCatalogs();
+    ccManager = new ConfigCatalogManager();
+    ccManager.initCatalogs();
 
     isReinit = false;
 
@@ -827,18 +794,16 @@ public final class DataRootHandler implements InitializingBean {
   }
 
   /**
-   * Return the MFile to which the given path maps, null if the
-   * dataset does not exist or the matching DatasetScan filters out the
-   * requested MFile.
-   * <p/>
-   * Use this method to check that a data request is requesting an allowed dataset.
+   * Return the the MFile to which the given path maps.
+   * Null is returned if the dataset does not exist, the
+   * matching DatasetScan or DataRoot filters out the requested MFile, the MFile does not represent a File
+   * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs
    *
    * @param path the request path.
-   * @return the requested MFile or null if the requested dataset is not allowed by the matching DatasetScan.
-   * @throws IOException if an I/O error occurs while locating the requested dataset.
+   * @return the requested java.io.File or null.
+   * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
-  private MFile getCrawlableDataset(String path)
-          throws IOException {
+  public MFile getFileFromRequestPath(String path) {
     if (path.length() > 0) {
       if (path.startsWith("/"))
         path = path.substring(1);
@@ -848,63 +813,17 @@ public final class DataRootHandler implements InitializingBean {
     if (reqDataRoot == null)
       return null;
 
-    if (reqDataRoot.getDatasetScan() != null)
-      return reqDataRoot.getDatasetScan().requestCrawlableDataset(path);
+    String location = reqDataRoot.getFileLocationFromRequestPath(path);
 
-    if (reqDataRoot.getFeatureCollection() != null)
-      return null; // if featCollection exists, bail out and deal with it in caller
-
-    // must be a data root
-    if (reqDataRoot.getDirLocation() != null) {
-      if (reqDataRoot.datasetRootProxy == null)
-        reqDataRoot.makeProxy();
-      return reqDataRoot.datasetRootProxy.requestCrawlableDataset(path);
-    }
-
-    return null;
-  }
-
-  /**
-   * Return the java.io.File represented by the MFile to which the
-   * given path maps. Null is returned if the dataset does not exist, the
-   * matching DatasetScan or DataRoot filters out the requested
-   * MFile, the MFile does not represent a File
-   * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs while
-   * locating the requested dataset.
-   *
-   * @param path the request path.
-   * @return the requested java.io.File or null.
-   * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
-   */
-  public MFile getCrawlableDatasetAsFile(String path) {
-    if (path.length() > 0) {
-      if (path.startsWith("/"))
-        path = path.substring(1);
-    }
-
-    // hack in the fmrc for fileServer
-    DataRootMatch match = findDataRootMatch(path);
-    if (match == null)
-      return null;
-
-    if (match.dataRoot.getFeatureCollection() != null)
-      return match.dataRoot.getFeatureCollection().getFile(match.remaining);
-
-    MFile crDs;
     try {
-      crDs = getCrawlableDataset(path);
+      return new MFileOS7(location);
     } catch (IOException e) {
-      return null;
+      return null;  // LOOK would happen if file does not exist
     }
-    if (crDs == null) return null;
-    File retFile = null;
-    if (crDs instanceof CrawlableDatasetFile)
-      retFile = ((CrawlableDatasetFile) crDs).getFile();
-
-    return retFile;
   }
 
-  private boolean isProxyDatasetResolver(String path) {
+  // LOOK WTF ??
+  /* private boolean isProxyDatasetResolver(String path) {
     ProxyDatasetHandler pdh = this.getMatchingProxyDataset(path);
     if (pdh == null)
       return false;
@@ -949,7 +868,7 @@ public final class DataRootHandler implements InitializingBean {
     Catalog cat = scan.makeProxyDsResolverCatalog(path, baseURI);
 
     return cat;
-  }
+  }  */
 
   /**
    * If a catalog exists and is allowed (not filtered out) for the given path, return
@@ -972,17 +891,17 @@ public final class DataRootHandler implements InitializingBean {
 
     // Check for static catalog.
     boolean reread = false;
-    Catalog catalog = staticCatalogHash.get(workPath);
+    Catalog catalog = ccManager.getStaticCatalog(workPath);
     if (catalog != null) {  // see if its stale
       CalendarDate expiresDateType = catalog.getExpires();
       if ((expiresDateType != null) && expiresDateType.getMillis() < System.currentTimeMillis())
         reread = true;
 
-    } else if (!staticCache) {
-      reread = staticCatalogNames.contains(workPath); // see if we know if its a static catalog
+    } else {
+      reread = ccManager.isStaticCatalogNotInCache(workPath); // see if we know if its a static catalog
     }
 
-    // its a static catalog that needs to be read
+    /* its a static catalog that needs to be read
     if (reread) {
       File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
       if (catFile != null) {
@@ -1005,22 +924,23 @@ public final class DataRootHandler implements InitializingBean {
       } else {
         logCatalogInit.error(ERROR + "Static catalog does not exist that we expected = " + workPath);
       }
-    }
+    }  */
 
-    // if ((catalog != null) && catalog.getBaseURI() == null) { for some reason you have to keep setting - is someone setting to null ?
+    // LOOK is this needd ??
+    /* if ((catalog != null) && catalog.getBaseURI() == null) { for some reason you have to keep setting - is someone setting to null ?
     if (catalog != null) {
       // this is the first time we actually know an absolute, external path for the catalog, so we set it here
       // LOOK however, this causes a possible thread safety problem
       catalog.setBaseURI(baseURI);
-    }
+    } */
 
     // Check for dynamic catalog.
     if (catalog == null)
       catalog = makeDynamicCatalog(workPath, baseURI);
 
     // Check for proxy dataset resolver catalog.
-    if (catalog == null && this.isProxyDatasetResolver(workPath))
-      catalog = (Catalog) this.getProxyDatasetResolverCatalog(workPath, baseURI);
+    //if (catalog == null && this.isProxyDatasetResolver(workPath))
+    //  catalog = (Catalog) this.getProxyDatasetResolverCatalog(workPath, baseURI);
 
     return catalog;
   }
@@ -1051,7 +971,7 @@ public final class DataRootHandler implements InitializingBean {
         return match.dataRoot.getFeatureCollection().makeCatalog(match.remaining, path, baseURI);
     }
 
-    // Check that path is allowed, ie not filtered out
+    /* Check that path is allowed, ie not filtered out LOOK
     try {
       if (getCrawlableDataset(workPath) == null)
         return null;
@@ -1064,7 +984,7 @@ public final class DataRootHandler implements InitializingBean {
     if (match.dataRoot.getDatasetScan() == null) {
       log.warn("makeDynamicCatalog(): No DatasetScan for =" + workPath + " request path= " + path);
       return null;
-    }
+    } */
 
     if (path.endsWith("/latest.xml")) return null; // latest is not handled here
 
@@ -1079,30 +999,6 @@ public final class DataRootHandler implements InitializingBean {
 
     return cat;
   }
-
-  /**
-   * Try to match the given path with all available data roots. If match, then see if there is an NcML document associated
-   * with the path.
-   *
-   * @param path the reletive path, ie req.getServletPath() + req.getPathInfo()
-   * @return the NcML (as a JDom element) assocated assocated with this path, or null if no dataroot matches, or no associated NcML.
-   */
-  public org.jdom2.Element getNcML(String path) {
-    if (path.startsWith("/"))
-      path = path.substring(1);
-
-    DataRoot dataRoot = findDataRoot(path);
-    if (dataRoot == null) {
-      if (log.isDebugEnabled()) log.debug("_getNcML no DatasetScan for =" + path);
-      return null;
-    }
-
-    DatasetScan dscan = dataRoot.getDatasetScan();
-    if (dscan == null) dscan = dataRoot.datasetRootProxy;
-    if (dscan == null) return null;
-    return dscan.getNcmlElement();
-  }
-
 
   /*
    * ***********************************************************************
@@ -1147,15 +1043,14 @@ public final class DataRootHandler implements InitializingBean {
 
     act = new DebugController.Action("showStatic", "Show static catalogs") {
       public void doAction(DebugController.Event e) {
-        ArrayList<String> list;
         StringBuilder sbuff = new StringBuilder();
         synchronized (DataRootHandler.this) {
-          list = new ArrayList<>(staticCatalogHash.keySet());
+          List<String> list = ccManager.getStaticCatalogPaths();
           Collections.sort(list);
           for (String catPath : list) {
-            ConfigCatalog cat = staticCatalogHash.get(catPath);
+            ConfigCatalog cat = ccManager.getStaticCatalog(catPath);
             sbuff.append(" catalog= ").append(catPath).append("; ");
-            String filename = StringUtil2.unescape(cat.getCreateFrom());
+            String filename = StringUtil2.unescape(cat.getUriString());
             sbuff.append(" from= ").append(filename).append("\n");
           }
         }
@@ -1170,10 +1065,10 @@ public final class DataRootHandler implements InitializingBean {
           Iterator iter = pathMatcher.iterator();
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
-            e.pw.print(" <b>" + ds.path + "</b>");
-            String url = DataRootHandler.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.path + "/";
-            String type = (ds.scan == null) ? "root" : "scan";
-            e.pw.println(" for " + type + " directory= <a href='" + url + "'>" + ds.dirLocation + "</a> ");
+            e.pw.print(" <b>" + ds.getPath() + "</b>");
+            String url = DataRootHandler.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";
+            String type = (ds.getDatasetScan() == null) ? "root" : "scan";
+            e.pw.println(" for " + type + " directory= <a href='" + url + "'>" + ds.getDirLocation() + "</a> ");
           }
         }
       }
@@ -1188,16 +1083,16 @@ public final class DataRootHandler implements InitializingBean {
           boolean ok = true;
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
-            if ((ds.dirLocation == null)) continue;
+            if ((ds.getDirLocation() == null)) continue;
 
             try {
-              File f = new File(ds.dirLocation);
+              File f = new File(ds.getDirLocation());
               if (!f.exists()) {
-                e.pw.print("MISSING on dir = " + ds.dirLocation + " for path = " + ds.path + "\n");
+                e.pw.print("MISSING on dir = " + ds.getDirLocation() + " for path = " + ds.getPath() + "\n");
                 ok = false;
               }
             } catch (Throwable t) {
-              e.pw.print("ERROR on dir = " + ds.dirLocation + " for path = " + ds.path + "\n");
+              e.pw.print("ERROR on dir = " + ds.getDirLocation() + " for path = " + ds.getPath() + "\n");
               e.pw.print(t.getMessage() + "\n");
               ok = false;
             }

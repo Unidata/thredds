@@ -30,42 +30,48 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
 package thredds.core;
 
-import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 /**
- * Listen for DataRootHandler configuration events and register any restricted access datasets.
- *
- * Extracted from DataRootHandler for use elsewhere. [ERD - 2008-08-29]
- *
- * @author caron
- * @since 1/23/2015
+ * Interface for plugging in Viewers.
+ * Generally, these are implemented with jnlp files in /content/thredds/view/views/*.jnlp
+ * You can customizing by adding parameters to the jnlp file, eg parm=subst&name=value.
+ * Then all instances of "{param}" will be replaced by subst, and
+ * all instances of "{name}" will be replaced by value, etc.
  */
-public class RestrictedAccessConfigListener implements DataRootHandler.ConfigListener {
-  volatile boolean initializing;
+public interface ViewerLinkProvider extends Viewer {
 
-  public RestrictedAccessConfigListener() {
-    initializing = false;
-  }
+  /**
+   * Get an HTML fragment link to the viewer JNLP file, for this dataset.
+   * Example:
+   * return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
+   *
+   * @param ds  the dataset to view
+   * @param req the request
+   * @return HTML fragment string
+   */
+  public List<ViewerLink> getViewerLinks(Dataset ds, HttpServletRequest req);
 
-  public void configStart() {
-    this.initializing = true;
-  }
+  public class ViewerLink {
+    private String title;
+    private String url;
 
-  public void configEnd() {
-    this.initializing = false;
-  }
+    public ViewerLink(String title, String url) {
+      this.title = title;
+      this.url = url;
+    }
 
-  public void configCatalog( Catalog catalog) {
-  }
+    public String getTitle() {
+      return title;
+    }
 
-  public void configDataset( Dataset dataset) {
-    // check for resource control
-    if (dataset.getResourceControl() != null)
-      DatasetHandler.putResourceControl(dataset);
+    public String getUrl() {
+      return url;
+    }
   }
 }
-

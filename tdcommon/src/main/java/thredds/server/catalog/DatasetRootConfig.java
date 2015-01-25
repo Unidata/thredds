@@ -30,42 +30,31 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.server.catalog;
 
-package thredds.core;
-
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
+import net.jcip.annotations.Immutable;
 
 /**
- * Listen for DataRootHandler configuration events and register any restricted access datasets.
- *
- * Extracted from DataRootHandler for use elsewhere. [ERD - 2008-08-29]
+ * Describe
  *
  * @author caron
- * @since 1/23/2015
+ * @since 1/15/2015
  */
-public class RestrictedAccessConfigListener implements DataRootHandler.ConfigListener {
-  volatile boolean initializing;
+@Immutable
+public class DatasetRootConfig {
+  public final String path;
+  public final String location;
 
-  public RestrictedAccessConfigListener() {
-    initializing = false;
+  public DatasetRootConfig(String path, String location) {
+    this.path = path;
+    this.location = location;
   }
 
-  public void configStart() {
-    this.initializing = true;
+  public String getPath() {
+    return path;
   }
 
-  public void configEnd() {
-    this.initializing = false;
-  }
-
-  public void configCatalog( Catalog catalog) {
-  }
-
-  public void configDataset( Dataset dataset) {
-    // check for resource control
-    if (dataset.getResourceControl() != null)
-      DatasetHandler.putResourceControl(dataset);
+  public String getLocation() {
+    return location;
   }
 }
-

@@ -30,6 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.core;
 
 import thredds.client.catalog.*;
@@ -60,7 +61,8 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * CDM Datasets.
+ * Access to CDM Datasets as NetcdfFile or GridDataset.
+ *
  * 1) if dataset with ncml, open that
  * 2) if datasetScan with ncml, wrap
  *
@@ -198,12 +200,12 @@ public class DatasetHandler {
       if (match.dataRoot != null) {
         doCache = match.dataRoot.isCache();
         DatasetScan dscan = match.dataRoot.getDatasetScan();
-        if (dscan == null) dscan = match.dataRoot.getDatasetRootProxy();  // LOOK
+        // if (dscan == null) dscan = match.dataRoot.getDatasetRootProxy();  // no ncml possible in getDatasetRootProxy
         if (dscan != null)
           netcdfElem = dscan.getNcmlElement();
       }
 
-      MFile file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+      MFile file = DataRootHandler.getInstance().getFileFromRequestPath(reqPath);
       if (file == null)
         throw new FileNotFoundException(reqPath);
 
@@ -246,7 +248,7 @@ public class DatasetHandler {
     if (match != null)
       fullpath = match.dirLocation + match.remaining;
     else {
-      MFile file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+      MFile file = DataRootHandler.getInstance().getFileFromRequestPath(reqPath);
       if (file != null)
         fullpath = file.getPath();
     }

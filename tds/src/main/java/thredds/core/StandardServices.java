@@ -30,13 +30,14 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.core;
 
 import thredds.client.catalog.Service;
 import thredds.client.catalog.ServiceType;
 
 /**
- * standard TDS services
+ * Standard TDS services
  *
  * @author caron
  * @since 1/23/2015
