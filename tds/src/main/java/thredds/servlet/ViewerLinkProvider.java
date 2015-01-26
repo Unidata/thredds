@@ -43,33 +43,35 @@ import java.util.List;
  * You can customizing by adding parameters to the jnlp file, eg parm=subst&name=value.
  * Then all instances of "{param}" will be replaced by subst, and
  * all instances of "{name}" will be replaced by value, etc.
- *
  */
-public interface ViewerLinkProvider extends Viewer
-{
+public interface ViewerLinkProvider extends Viewer {
 
   /**
    * Get an HTML fragment link to the viewer JNLP file, for this dataset.
    * Example:
-   *   return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
+   * return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
    *
-   * @param ds the dataset to view
+   * @param ds  the dataset to view
    * @param req the request
    * @return HTML fragment string
    */
-   public List<ViewerLink> getViewerLinks( InvDatasetImpl ds, HttpServletRequest req);
+  public List<ViewerLink> getViewerLinks(InvDatasetImpl ds, HttpServletRequest req);
 
-  public class ViewerLink
-  {
+  public class ViewerLink {
     private String title;
     private String url;
 
-    public ViewerLink( String title, String url) {
+    public ViewerLink(String title, String url) {
       this.title = title;
       this.url = url;
     }
 
-    public String getTitle() { return title; }
-    public String getUrl() { return url; }
+    public String getTitle() {
+      return title;
+    }
+
+    public String getUrl() {
+      return url;
+    }
   }
 }

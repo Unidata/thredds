@@ -49,7 +49,7 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Jul 18, 2007
  */
-public class H4header {
+public class    H4header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   static private final byte[] head = {0x0e, 0x03, 0x13, 0x01};
@@ -759,7 +759,6 @@ public class H4header {
         for (int fld = 0; fld < vh.nfields; fld++) {
           Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
           short type = vh.fld_type[fld];
-          int nbytes = vh.fld_isize[fld];
           short nelems = vh.fld_order[fld];
           H4type.setDataType(type, m);
           if (nelems > 1)
@@ -767,7 +766,7 @@ public class H4header {
           else
             m.setIsScalar();
 
-          m.setSPobject(new Minfo(vh.fld_offset[fld], nbytes, nelems));
+          m.setSPobject(new Minfo(vh.fld_offset[fld]));
           s.addMemberVariable(m);
         }
 
@@ -789,13 +788,10 @@ public class H4header {
   // member info
 
   static class Minfo {
-    short nelems;
-    int offset, nbytes;
+    int offset;
 
-    Minfo(int offset, int nbytes, short nelems) {
+    Minfo(int offset) {
       this.offset = offset;
-      this.nbytes = nbytes;
-      this.nelems = nelems;
     }
   }
 
@@ -1683,7 +1679,8 @@ public class H4header {
 
     public String detail() {
       return super.detail() + " xdim=" + xdim + " ydim=" + ydim + " nelems=" + nelems +
-          " nt_ref=" + nt_ref + " interlace=" + interlace + " compress=" + compress;
+          " nt_ref=" + nt_ref + " interlace=" + interlace + " compress=" +
+          compress + " compress_ref=" + compress_ref;
     }
   }
 
@@ -1709,7 +1706,6 @@ public class H4header {
     short rank, nt_ref;
     int[] shape;
     short[] nt_ref_scale;
-    List<Dimension> dims;
 
     TagSDDimension(short code) throws IOException {
       super(code);

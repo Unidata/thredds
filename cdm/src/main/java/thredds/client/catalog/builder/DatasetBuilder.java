@@ -69,12 +69,12 @@ public class DatasetBuilder {
     }
   }
 
-  DatasetBuilder parent;
-  String name;
-  Map<String, Object> flds = new HashMap<>(10);
+  protected DatasetBuilder parent;
+  protected String name;
+  protected Map<String, Object> flds = new HashMap<>(10);
 
-  List<AccessBuilder> accessBuilders;
-  List<DatasetBuilder> datasetBuilders;
+  protected List<AccessBuilder> accessBuilders;
+  protected List<DatasetBuilder> datasetBuilders;
 
   public DatasetBuilder(DatasetBuilder parent) {
     this.parent = parent;
@@ -105,6 +105,31 @@ public class DatasetBuilder {
 
   public Dataset makeDataset(DatasetNode parent) {
     return new Dataset(parent, name, flds, accessBuilders, datasetBuilders);
+  }
+
+  public void transferMetadata( Dataset from, boolean inherit) {
+    if (inherit)
+      inheritMetadata(flds, from);
+
+    Map<String, Object> fromFlds = from.getFlds();
+    for (Map.Entry<String, Object> entry : fromFlds.entrySet()) {
+      flds.put(entry.getKey(), entry.getValue());
+    }
+
+    // LOOK do tmi
+  }
+
+  private void inheritMetadata( Map<String, Object> flds, Dataset from) {
+
+    Dataset fromParent = from.getParentDataset();
+    if (fromParent == null) return;
+    // depth first, so closer parents override; LOOK need to add to list
+    inheritMetadata( flds, fromParent);
+
+    Map<String, Object> fromFlds = fromParent.getFlds();
+    for (Map.Entry<String, Object> entry : fromFlds.entrySet()) {
+      flds.put(entry.getKey(), entry.getValue());
+    }
   }
 
 

@@ -8,7 +8,7 @@
 <body>
 <h1>Configuring TDS with DatasetScan</h1>
 <hr>
-<p>The <strong>datasetScan</strong> element allows you to serve all files on your server from a directory tree. The files must be homogenous enough that the same metadata can be applied to all of them.</p>
+<p>The <strong>datasetScan</strong> element allows you to serve all files in a directory tree. The files must be homogenous enough that the same metadata can be applied to all of them.</p>
 
 <h2>Example</h2>
 
@@ -94,12 +94,11 @@
   </li>
   <li>Each datasetScan element must reference a service element (whether directly, as above, or inherited).</li>
   <li>Because the TDS uses the set of all given path values to map URLs to
-    datasets, each path value MUST be unique across all config catalogs on
-    a given TDS installation.
-  </li>
+    datasets, <em><strong>each path value MUST be unique across all config catalogs on
+  a given TDS installation</strong></em>. </li>
 
 </ol>
-[Workshop: <a href="#sample1">Sample config catalog 1</a>.]<br>
+[<a href="#sample1">Sample config catalog 1</a>]<br>
 
 
 <h2>Inherited Metadata</h2>
@@ -130,9 +129,9 @@
 <h2><a name="Including_Only_the_Desired_Files"></a>Including Only the Desired Files</h2>
 
 
-<p>A <em>datasetScan</em> element can specify which files and directories it will include with a <em>filter</em> element (see
-  <a href="../catalog/InvCatalogServerSpec.html">spec</a>
-  for more details). When no filter element is given, all files and
+<p>A <em>datasetScan</em> element can specify which files and directories it will include with a <em>filter</em> element (also see
+  <a href="../catalog/InvCatalogServerSpec.html">server catalog spec</a>
+  for  details). When no filter element is given, all files and
   directories are included in the generated catalog(s). Adding a <strong>filter</strong>
   element to your datasetScan element allows you to include (and/or exclude)
   the files and directories as you desire. For instance, the following
@@ -156,7 +155,7 @@
   directories (collection datasets) as well by using the <em><strong>atomic</strong></em> and <em><strong>collection</strong></em> attributes. For instance, the
   additional
   selector in this filter element means that only directories that don't start with
-  "CONUS" will be cataloged:</p>
+  "CONUS" will be cataloged (since the default value of <strong>atomic</strong> is true, we have to explicitly set it to false if we only want to filter directories):</p>
 
 
 <pre>
@@ -167,32 +166,23 @@
 &lt;/filter&gt;
 </pre>
 
-<p>Its a good idea to always include a filter element, so that if stray
+<p>Its a good idea to always use a filter element with explicit includes, so that if stray
   files accidentally get into your data directories, they wont generate
-  erroneous catalog entries. A good choice for this datasetScan would be something like:</p>
+  erroneous catalog entries. This is also known as <em>whitelisting</em>.</p>
+<p>[<a href="#sample2">Sample config catalog 2</a>]</p>
+<p>Complicated matching can be done with regular expressions, eg:</p>
 
-<pre>
-&lt;filter&gt;
-  &lt;include wildcard="*.grib1"/&gt;
-  &lt;include wildcard="*.grib2"/&gt;
-  &lt;exclude wildcard="*.gbx9"/&gt;
+<pre>&lt;filter&gt;
+  &lt;include regExp=&quot;PROFILER_.*_2013110[67]_[0-9]{4}\.nc"/&gt;<strong></strong>
 &lt;/filter&gt;
 </pre>
 
-<p>[Workshop: <a href="#sample2">Sample config catalog 2</a>.]</p>
-
-
-<h2><a name="Generating_IDs"></a>Generating IDs</h2>
-
-
-<p>All generated datasets are given an ID. The IDs are simply the path
-  of the dataset appended to the datasetScan path value or, if one
-  exists, the ID of the datasetScan element. For the example above, the file
-  "c:/data/grib2/data1.grib1" would result in a dataset with the ID
-  "grib2/data1.grib1". By adding an ID of "my/data/model" to the datasetScan
-  element, the resulting ID would change to "my/data/model/data1.grib1".</p>
-
-
+<p>A few gotchas to remember:</p>
+<ul>
+  <li>to match any number of characters, use &quot;.*&quot;, not &quot;*&quot;</li>
+  <li>in the above, we use a &quot;\&quot; to escape the &quot;.&quot; character, to require a literal &quot;.&quot; character. Note that only one backslash is neeeded. (Inside a Java String, one needs to use &quot;\\&quot;, but not here in the catalog).</li>
+</ul>
+<p>[<a href="#sample3">Sample config catalog 3</a>]</p>
 <h2><a name="Naming_Datasets"></a>Naming Datasets</h2>
 
 If no namer
@@ -266,37 +256,23 @@ So, when cataloged, this dataset would end up as something like this:<br>
   are to be sorted in reverse
   order:</p>
 <pre>&lt;sort&gt;<br>  &lt;lexigraphicByName increasing="false" /&gt;<br>&lt;/sort&gt;</pre>
-<p>Notes:</p>
-<ol>
-  <li>The sort is done before renaming.</li>
-</ol>
+<p>Note that the  sort is done before renaming.</p>
 
 <h2><a name="Adding_Proxy_Datasets"></a>Adding a Link to the &quot;Latest&quot; Dataset</h2>
-<p>For real-time data you may want to have a special link that points to the &quot;latest&quot; data in the collection. Here, latest is simple the last filename is a sorted list by name, so its only the latest if the time stamp is in the filename and the name sort sorts correctly by time.</p>
+<p>For real-time data you may want to have a special link that points to the &quot;latest&quot; data in the collection. Here, latest is simply means the last filename in a  list sorted by name, so its only the latest if the time stamp is in the filename and the name  sorts correctly by time.</p>
 <p>The simplest way to enable this is to add the attribute <em>addLatest=&quot;true&quot;</em> to the <strong>datasetScan</strong> element. In this case, the default values are used:  <strong>name</strong>  =
 "latest.xml",  <strong>top</strong> = "true", and  <strong>serviceName</strong> = "latest".</p>
 
-The <strong>addProxies</strong> element allows more control over how latest is displayed. The <strong>simpleLatest</strong> element adds a &quot;latest&quot; dataset
-which proxies the existing dataset whose name is lexicographically
-greatest (which finds the latest dataset assuming a timestamp is part
-of the dataset name). The <strong>latestComplete</strong> element behaves similarly to <strong>simpleLatest</strong>
-except that the proxied dataset does not include any datasets that have
-been modified more recently than a given limit, e.g., you could specify
-you want the most recent (lexicographically) dataset that hasn't been
-modified for 60 minutes. Both the simpleLatest and latestComplete
-elements must point to an existing service.<br>
-
-
-<p>So, the datasetScan might
-  look like this:</p>
+<p>The <strong>addProxies</strong> element allows more control over how latest is displayed. The <strong>simpleLatest</strong> element allows you to change the default values <strong>(name, top, serviceName</strong>). The <strong>latestComplete</strong> element adds the ability to exclude files which have changed within a specified amount of time, eg to exclude files that are still being written.</p>
+<p>Example:</p>
 
 
 <pre>
 &lt;service name="latest" type="Resolver" base="" /&gt;
 &lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver" &gt;
   &lt;addProxies&gt;
-    &lt;simpleLatest /&gt;
-    &lt;latestComplete name="latestComplete.xml" top="true" serviceName="latest" lastModifiedLimit="60" /&gt;
+    &lt;simpleLatest/&gt;
+    &lt;latestComplete name="<strong>latestComplete.xml</strong>" top="true" serviceName="latest" lastModifiedLimit="60000" /&gt;
   &lt;/addProxies&gt;
 &lt;/datasetScan&gt;
 </pre>
@@ -305,8 +281,7 @@ elements must point to an existing service.<br>
 <p>The <strong>latestComplete</strong> element includes a <strong>name</strong> attribute which provides the name of the proxy dataset, the
   <strong>serviceName</strong> attribute that references the service used by the proxy dataset, the <strong>top</strong>
   attribute which indicates if the proxy dataset should appear at the top
-  or bottom of the list of datasets in this collection, and the <strong>lastModifiedLimit</strong> which feeds into the algorithm which determines which dataset
-  is being proxied.</p>
+  or bottom of the list of datasets in this collection, and the <strong>lastModifiedLimit</strong> which sets a time period  in millisecs which the dataset must not have been modified..</p>
 
 
 <p>The <strong>simpleLatest</strong> element allows for the same attributes as the <strong>latestComplete</strong> element minus the
@@ -314,9 +289,10 @@ elements must point to an existing service.<br>
   "latest.xml", the <strong>top</strong> attribute defaults to "true", and the <strong>serviceName</strong> attribute defaults to "latest".</p>
 
 
-<p>The results would be something like: </p>
+<p>While you wouldnt put two latest datasest in the same scan, the example shows both: </p>
 
 <pre>
+&lt;service name="latest" type="Resolver" base="" /&gt;
 &lt;dataset name="GRIB2 Data" ID="testdata"&gt;
   <strong>&lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</strong>
   <strong>&lt;dataset name="latest.xml" serviceName="latest" urlPath="latest.xml" /&gt;</strong>
@@ -326,27 +302,8 @@ elements must point to an existing service.<br>
 </pre>
 
 
-<p>More details are available in the <a href="../catalog/InvCatalogServerSpec.html#addProxies_Element">Server-side InvCatalog specification</a>
+<p>More details are available in the <a href="../catalog/InvCatalogServerSpec.html#addProxies_Element">Server-side Catalog specification</a>
   document.</p>
-
-
-<h2><a name="Adding_Dataset_Size_Information"></a>Adding Dataset Size Information</h2>
-
-
-<p>The <strong>addDatasetSize</strong> element indicates that file size metadata should be added to all atomic datasets. Adding to the above example</p>
-
-
-<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt;<br>&nbsp; &lt;addDatasetSize /&gt;<br>&lt;/datasetScan&gt;</pre>
-
-
-<p>results in the addition of a dataSize element to each atomic dataset:</p>
-
-
-<pre>&lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br>  &lt;dataset name="data1.grib1" urlPath="data1.grib1"&gt;<br>    <strong>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;dataset name="data2.grib1" urlPath="data2.grib1"&gt;<br><strong>
-  &lt;dataSize units="Mbytes"&gt;4.961&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;catalogRef xlink:href="subdir/catalog.xml" xlink:title="subdir" /&gt;<br>&lt;/dataset&gt;<br></pre>
-<p>[Workshop: <a href="#sample3">Sample config catalog 3</a>.]</p>
-
-
 <h2><a name="addTimeCoverage"></a>Adding <em>timeCoverage</em> Elements</h2>
 
 
@@ -386,8 +343,8 @@ elements must point to an existing service.<br>
 
 
 <pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage
-  datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_</strong><strong>([0-9]{2})</strong><strong>([0-9]{2}).grib1$"<br>
-  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br> duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
+    datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_</strong><strong>([0-9]{2})</strong><strong>([0-9]{2}).grib1$"
+    startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br> duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
 
 
 <p>results in the following timeCoverage element:</p>
@@ -406,12 +363,12 @@ elements must point to an existing service.<br>
 
 <p><a name="sample1"></a>Basic catalog:</p>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>  &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
-<p><a name="sample2"></a>Catalog with filtering added:</p>
+<p><a name="sample2"></a>Catalog with wildcard <strong>filter</strong> element:</p>
 
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;<br></pre>
-<p><a name="sample3"></a>Catalog with dataset size added:<br>
+<p><a name="sample3"></a>Catalog with  <strong>filter</strong> and <strong>addTimeCoverage</strong> elements using <a href="http://www.regular-expressions.info/">regular expressions</a>:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>    &lt;sort&gt;<br>      &lt;lexicographicByName increasing="false" /&gt;<br>    &lt;/sort&gt;<br>    &lt;addDatasetSize/&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include regExp=&quot;PROFILER_wind_06min_2013110[67]_[0-9]{4}\.nc&quot;/&gt;<br>    &lt;/filter&gt;<br>    &lt;addTimeCoverage<br>          datasetNameMatchPattern=&quot;PROFILER_wind_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$&quot;<br>          startTimeSubstitutionPattern=&quot;$1-$2-$3T$4:$5:00&quot; duration=&quot;1 hour&quot;/&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">This document is maintained by Unidata and was

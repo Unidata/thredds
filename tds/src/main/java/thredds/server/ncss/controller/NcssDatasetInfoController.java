@@ -55,12 +55,14 @@ import ucar.unidata.geoloc.LatLonRect;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 @Controller
 @Scope("request")
 class NcssDatasetInfoController extends AbstractNcssController {
+
   @Autowired
   private NcssShowFeatureDatasetInfo ncssShowDatasetInfo;
 
@@ -71,28 +73,21 @@ class NcssDatasetInfoController extends AbstractNcssController {
           value = {"/ncss/**/dataset.html", "/ncss/**/dataset.xml",
                   "/ncss/**/pointDataset.html", "/ncss/**/pointDataset.xml"},
           params = {"!var"})
-  void getDatasetDescription(HttpServletRequest req, HttpServletResponse res)
-          throws IOException, TransformerException, JDOMException {
-    if (!req.getParameterMap().isEmpty()) {
-      //This is a 400
-      throw new UnsupportedOperationException("Invalid info request.");
-    }
+  void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
+    if (!req.getParameterMap().isEmpty())
+      throw new IllegalArgumentException("Invalid info request.");
 
     // the forms and dataset description
     String path = req.getServletPath();
     boolean wantXML = path.endsWith("/dataset.xml") || path.endsWith("/pointDataset.xml");
     boolean showPointForm = path.endsWith("/pointDataset.html");
-    String datasetPath =  getDatasetPath(path);
+    String datasetPath = getDatasetPath(path);
 
-    FeatureDataset fd = null;
-    try {
-      fd = datasetService.findDatasetByPath(req, res, datasetPath);
-
+    try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
       if (fd == null)
-        throw new UnsupportedOperationException("Feature Type not supported");
+        throw new FileNotFoundException("Could not find Dataset "+datasetPath);
 
       String strResponse = ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
-
       res.setContentLength(strResponse.length());
 
       if (wantXML)
@@ -101,9 +96,6 @@ class NcssDatasetInfoController extends AbstractNcssController {
         res.setContentType(ContentType.html.getContentHeader());
 
       writeResponse(strResponse, res);
-
-    } finally {
-      if (fd != null) fd.close();
     }
   }
 
@@ -111,39 +103,34 @@ class NcssDatasetInfoController extends AbstractNcssController {
   void getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {
 
     String path = req.getServletPath();
-    String datasetPath =  getDatasetPath(path);
-      FeatureDataset fd = null;
-      try {
-        fd = datasetService.findDatasetByPath(req, res, datasetPath);
+    String datasetPath = getDatasetPath(path);
+    try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
 
-        if (fd == null)
-          throw new UnsupportedOperationException("Feature Type not supported");
+      if (fd == null)
+        throw new FileNotFoundException("Could not find Dataset "+datasetPath);
 
-        if (fd.getFeatureType() != FeatureType.STATION)
-          throw new UnsupportedOperationException("Station list request is only supported for Station features");
+      if (fd.getFeatureType() != FeatureType.STATION)
+        throw new UnsupportedOperationException("Station list request is only supported for Station features");
 
-        FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, buildDatasetUrl(datasetPath));
+      FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, buildDatasetUrl(datasetPath));
 
-        String[] stnsList = new String[]{};
-        if (params.getStns() != null)
-          stnsList = params.getStns().toArray(stnsList);
-        else
-          stnsList = null;
+      String[] stnsList = new String[]{};
+      if (params.getStns() != null)
+        stnsList = params.getStns().toArray(stnsList);
+      else
+        stnsList = null;
 
-        LatLonRect llrect = null;
-        if (params.getNorth() != null && params.getSouth() != null && params.getEast() != null && params.getWest() != null)
-          llrect = new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
+      LatLonRect llrect = null;
+      if (params.getNorth() != null && params.getSouth() != null && params.getEast() != null && params.getWest() != null)
+        llrect = new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
 
-        Document doc = xmlWriter.makeStationCollectionDocument(llrect, stnsList);
-        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-        String infoString = fmt.outputString(doc);
+      Document doc = xmlWriter.makeStationCollectionDocument(llrect, stnsList);
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      String infoString = fmt.outputString(doc);
 
-        res.setContentType(ContentType.xml.getContentHeader());
-        writeResponse(infoString, res);
-
-      } finally {
-        if (fd != null) fd.close();
-      }
+      res.setContentType(ContentType.xml.getContentHeader());
+      writeResponse(infoString, res);
+    }
   }
 
   private String buildDatasetUrl(String path) {
@@ -165,7 +152,6 @@ class NcssDatasetInfoController extends AbstractNcssController {
    * Writes out the responseStr to the response object
    */
   private void writeResponse(String responseStr, HttpServletResponse response) throws IOException {
-
     PrintWriter pw = response.getWriter();
     pw.write(responseStr);
     pw.flush();

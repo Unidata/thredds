@@ -34,6 +34,8 @@ package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,16 +48,16 @@ import java.util.List;
 public class Service {            // (7)
   private final String name;
   private final String base;
-  private final ServiceType type;
+  private final String typeS;
   private final String desc;
   private final String suffix;
   private final List<Service> nestedServices;
   private final List<Property> properties;
 
-  public Service(String name, String base, ServiceType type, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
+  public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
     this.name = name;
     this.base = base;
-    this.type = type;
+    this.typeS = typeS;
     this.desc = desc;
     this.suffix = suffix;
     this.nestedServices = nestedServices;
@@ -70,8 +72,11 @@ public class Service {            // (7)
     return base;
   }
 
+  public String getServiceTypeName() {
+    return typeS;
+  }
   public ServiceType getType() {
-    return type;
+    return ServiceType.getServiceTypeIgnoreCase(typeS);
   }
 
   public String getDesc() {
@@ -83,10 +88,69 @@ public class Service {            // (7)
   }
 
   public List<Service> getNestedServices() {
-    return nestedServices;
+    return nestedServices == null ? new ArrayList<Service>(0) : nestedServices;
   }
 
   public List<Property> getProperties() {
-    return properties;
+    return properties == null ? new ArrayList<Property>(0) : properties;
+  }
+
+  /**
+   * See if the service Base is reletive
+   * @return true if the service Base is reletive
+   */
+  public boolean isRelativeBase() {
+    if (getType() == ServiceType.Compound)
+      return true;
+
+    try {
+      URI uri = new java.net.URI(base);
+      return !uri.isAbsolute();
+    } catch (java.net.URISyntaxException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
+  }
+
+  @Override
+  public String toString() {
+    return "Service{" +
+            "name='" + name + '\'' +
+            ", base='" + base + '\'' +
+            ", typeS='" + typeS + '\'' +
+            ", desc='" + desc + '\'' +
+            ", suffix='" + suffix + '\'' +
+            ", nestedServices=" + nestedServices +
+            ", properties=" + properties +
+            '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Service service = (Service) o;
+
+    if (base != null ? !base.equals(service.base) : service.base != null) return false;
+    if (desc != null ? !desc.equals(service.desc) : service.desc != null) return false;
+    if (name != null ? !name.equals(service.name) : service.name != null) return false;
+    if (nestedServices != null ? !nestedServices.equals(service.nestedServices) : service.nestedServices != null) return false;
+    if (properties != null ? !properties.equals(service.properties) : service.properties != null) return false;
+    if (suffix != null ? !suffix.equals(service.suffix) : service.suffix != null) return false;
+    if (typeS != null ? !typeS.equals(service.typeS) : service.typeS != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (base != null ? base.hashCode() : 0);
+    result = 31 * result + (typeS != null ? typeS.hashCode() : 0);
+    result = 31 * result + (desc != null ? desc.hashCode() : 0);
+    result = 31 * result + (suffix != null ? suffix.hashCode() : 0);
+    result = 31 * result + (nestedServices != null ? nestedServices.hashCode() : 0);
+    result = 31 * result + (properties != null ? properties.hashCode() : 0);
+    return result;
   }
 }

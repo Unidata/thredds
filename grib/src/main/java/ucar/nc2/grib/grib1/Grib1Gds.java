@@ -615,6 +615,8 @@ public abstract class Grib1Gds {
     parallels (bit 3 set to zero in Code table 8). The first point in each row shall be positioned at the meridian indicated by
     octets 14–16 and the last shall be positioned at the meridian indicated by octets 21–23. The grid points along each
     parallel shall be evenly spaced in longitude.
+
+    // see E:/ecmwf/ICMGGECE3_000000.grb  (1/14/2015)
    */
   public static class GaussianLatLon extends LatLon {
     int nparellels;

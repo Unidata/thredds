@@ -142,7 +142,7 @@ public interface MCollection extends AutoCloseable {
 
 
   ////////////////////////////////////////////////////
-  // ability to pass arbitrary information to users of the collection manager.
+  // ability to pass arbitrary information to users of the mcollection .
 
   public Object getAuxInfo(String key);
   public void putAuxInfo(String key, Object value);

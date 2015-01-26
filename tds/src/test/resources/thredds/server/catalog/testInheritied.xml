@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="THREDDS Server Default Catalog : You must change this to fit your server!"
+        xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <service name="all" base="" serviceType="compound">
+    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
+    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="wms" serviceType="WMS" base="/thredds/wms/" />
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+  </service>
+
+  <featureCollection featureType="GRIB1" name="NMME GFDL Ensembles" harvest="true" path="ensembles/nmme_gfdl">
+    <serviceName>all</serviceName>
+    <collection name="nmme_gfdl" spec="/home/users/rhs/NMME/GFDL/**/.*grb$"/>
+    <tdm rewrite="test"/>
+  </featureCollection>
+
+  <dataset name="test" urlPath="test" ID="test">
+    <metadata inheritied="true"/>
+  </dataset>
+
+<!--
+  <gribConfig datasetTypes="TwoD Best LatestFile Files" />
+
+ <catalogRef xlink:title="UAF Clean Catalog" xlink:href="CleanCatalog.xml" name=""/>
+
+  <catalogRef xlink:title="My Data" xlink:href="MyData.xml" name=""/>
+  <catalogRef xlink:title="CLIVAR r1" xlink:href="clivar_tas_zg_r1_cc.xml" name=""/>
+  <catalogRef xlink:title="CLIVAR r2" xlink:href="clivar_tas_zg_r2_cc.xml" name=""/>
+  <catalogRef xlink:title="CLIVAR r3" xlink:href="clivar_tas_zg_r3_cc.xml" name=""/>
+  <catalogRef xlink:title="CLIVAR wo vars" xlink:href="clivar_tas_zg_r1.xml" name=""/>
+  <catalogRef xlink:title="Test Avg" xlink:href="testavg.xml" name=""/>
+  <catalogRef name="" xlink:href="rean_mon.xml" xlink:title="Rean Mon" />
+-->
+</catalog>

@@ -43,7 +43,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -301,7 +300,7 @@ public class HtmlWriter {
     }
   }
 
-  private void appendSimpleFooter(StringBuilder sb) {
+  public void appendSimpleFooter(StringBuilder sb) {
     sb.append("<h3>");
     if (this.htmlConfig.getInstallName() != null) {
       String installUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl());

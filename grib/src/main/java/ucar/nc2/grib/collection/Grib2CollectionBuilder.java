@@ -96,7 +96,6 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         MFile mfile = iter.next();
         Grib2Index index;
 
-
         try {
           if (GribIosp.debugGbxIndexOnly) {
              index = (Grib2Index) GribIndex.open(false, mfile);

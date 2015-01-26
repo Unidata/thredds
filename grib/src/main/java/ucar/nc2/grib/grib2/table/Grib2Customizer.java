@@ -437,6 +437,10 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     return getTableValue("4.5", id);
   }
 
+  public boolean isLayer(Grib2Pds pds) {
+    return !(pds.getLevelType2() == 255 || pds.getLevelType2() == 0);
+  }
+
   // Table 4.5
   @Override
   public String getLevelNameShort(int id) {

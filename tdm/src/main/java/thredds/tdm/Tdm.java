@@ -38,10 +38,10 @@ package thredds.tdm;
 import org.apache.http.auth.*;
 import org.apache.http.client.CredentialsProvider;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;

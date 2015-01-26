@@ -100,6 +100,11 @@ public interface CF {
   public static final String STANDARD_PARALLEL = "standard_parallel";
   public static final String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
 
+  // vertical coordinate
+  public static final String atmosphere_ln_pressure_coordinate = "atmosphere_ln_pressure_coordinate";
+
+  public static final String formula_terms = "formula_terms";
+
   // standard_names
   public static final String TIME = "time";                               // valid; time, obs time
   public static final String TIME_REFERENCE = "forecast_reference_time";  // the "data time", the time of the analysis from which the forecast was made.

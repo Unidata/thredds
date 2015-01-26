@@ -25,7 +25,7 @@
                     dateFormatMark="#GFS_Global_2p5deg_#yyyyMMdd_HHmm"
                     timePartition="day"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow">
+        <tdm rewrite="test" rescan="0 0/15 * * * ? *" >
           <manage deleteAfter="52 days" />
         </tdm>
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>

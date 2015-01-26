@@ -24,8 +24,8 @@
 
    <metadata xlink:href="http://dataportal.ucar.edu/metadata/acd/model-eval-data/solve/solve1.dc" metadataType="ADN"/>
 
-   <metadata xlink:href="http://dataportal.ucar.edu/metadata/acd/model-eval-data/solve/solve1.dc" metadataType="DIF"
-	xmlns:d="DIF" />
+   <!-- ignores the xmlns:d="DIF" if no content -->
+   <metadata xlink:href="http://dataportal.ucar.edu/metadata/acd/model-eval-data/solve/solve1.dc" metadataType="DIF" xmlns:d="DIF" />
 
    <metadata xlink:href="DifTest.xml" metadataType="THREDDS"/>
 

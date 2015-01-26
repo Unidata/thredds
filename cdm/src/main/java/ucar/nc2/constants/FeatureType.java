@@ -135,7 +135,7 @@ public enum FeatureType {
   /**
    * Find the FeatureType that matches this name.
    *
-   * @param name find FeatureType with this name.
+   * @param name find FeatureType with this name, case insensitive.
    * @return FeatureType or null if no match.
    */
   public static FeatureType getType(String name) {

@@ -34,6 +34,9 @@ package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Client catalog name/value pair
  *
@@ -53,8 +56,31 @@ public class Property {
   public String getName() {
     return name;
   }
-
   public String getValue() {
     return value;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Property property = (Property) o;
+    if (!name.equals(property.name)) return false;
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
+
+  // first one override
+  public static List<Property> removeDups(List<Property> org) {
+    List<Property> result = new ArrayList<>(org.size());
+    for (Property p : org) {
+      if (!result.contains(p))  // O(n**2)
+        result.add(p);
+    }
+    return result;
   }
 }

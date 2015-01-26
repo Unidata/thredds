@@ -91,10 +91,10 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         // add Variables, GeospatialCoverage, TimeCoverage
         GridDataset gds = fmrc.getDataset2D(null);
         if (null != gds) {
-          localState.vars = MetadataExtractor.extractVariables(this, gds);
-          localState.coverage = MetadataExtractor.extractGeospatial(gds);
-          localState.dateRange = MetadataExtractor.extractCalendarDateRange(gds);
-        }
+            localState.vars = MetadataExtractor.extractVariables(this, gds);
+            localState.coverage = MetadataExtractor.extractGeospatial(gds);
+            localState.dateRange = MetadataExtractor.extractCalendarDateRange(gds);
+          }
         localState.lastProtoChange = System.currentTimeMillis();
       }
 

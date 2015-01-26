@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Read in the <featureCollection></featureCollection> element
+ * Read in the <featureCollection> element
  *
  * @author caron
  * @since 11/11/13

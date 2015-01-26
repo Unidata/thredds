@@ -140,6 +140,9 @@ public abstract class Grib2Gds {
 
   public abstract void testHorizCoordSys(Formatter f);
 
+  public void testScanMode(Formatter f) {
+  }
+
   // number of points along nx, adjusted for thin grid
   public int getNx() {
     if (nptsInLine == null || nx > 0) return nx;
@@ -389,6 +392,18 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       lastOctet = 73;
     }
 
+    public void testScanMode(Formatter f) {
+      float scale = getScale();
+      float firstLat = getOctet4(47) * scale;
+      float lastLat = getOctet4(56) * scale;
+      float dLat = getOctet4(68) * scale;       // may be pos or neg
+      if (GribUtils.scanModeYisPositive(scanMode)) {
+        if (firstLat > lastLat) f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, dLat, firstLat, lastLat);
+      } else {
+        if (firstLat < lastLat) f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, dLat, firstLat, lastLat);
+      }
+    }
+
     protected void finish() {
       super.finish();
 
@@ -492,6 +507,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       double endy = cs.starty + (getNy() - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
     }
+
   }
 
   /*
@@ -628,6 +644,18 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
       lastOctet = 73;
     }
 
+    public void testScanMode(Formatter f) {
+      float scale = scale6;
+      float firstLat = getOctet4(39) * scale;
+      float lastLat = getOctet4(52) * scale;
+      float dY = getOctet4(69) * scale;       // may be pos or neg
+      if (GribUtils.scanModeYisPositive(scanMode)) {
+        if (firstLat > lastLat) f.format("  **Mercator scan mode=%d dY=%f lat=(%f,%f)%n", scanMode, dY, firstLat, lastLat);
+      } else {
+        if (firstLat < lastLat) f.format("  **Mercator scan mode=%d dY=%f lat=(%f,%f)%n", scanMode, dY, firstLat, lastLat);
+      }
+    }
+
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
@@ -749,6 +777,16 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
 
       projCenterFlag = getOctet(64);
       scanMode = getOctet(65);
+    }
+
+    public void testScanMode(Formatter f) {
+      float scale = scale6;
+      float dY = getOctet4(60) * scale;       // may be pos or neg
+      if (GribUtils.scanModeYisPositive(scanMode)) {
+        if (dY < 0) f.format("  **PS scan mode=%d dY=%f%n", scanMode, dY);
+      } else {
+        if (dY > 0) f.format("  **PS scan mode=%d dY=%f%n", scanMode, dY);
+      }
     }
 
     @Override
@@ -899,6 +937,16 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
       latin2 = getOctet4(70) * scale6;
       latSouthPole = getOctet4(74) * scale6;
       lonSouthPole = getOctet4(78) * scale6;
+    }
+
+    public void testScanMode(Formatter f) {
+      float scale = scale6;
+      float dY = getOctet4(60) * scale;       // may be pos or neg
+      if (GribUtils.scanModeYisPositive(scanMode)) {
+        if (dY < 0) f.format("  **LC scan mode=%d dY=%f%n", scanMode, dY);
+      } else {
+        if (dY > 0) f.format("  **LC scan mode=%d dY=%f%n", scanMode, dY);
+      }
     }
 
     @Override
@@ -1501,7 +1549,6 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
     public void testHorizCoordSys(Formatter f) {
     }
-
   }
 
 }

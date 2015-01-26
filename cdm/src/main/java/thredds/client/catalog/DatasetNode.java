@@ -52,7 +52,7 @@ public class DatasetNode {
   protected DatasetNode(DatasetNode parent, String name, Map<String, Object> flds, List<DatasetBuilder> datasetBuilders) {
     this.parent = parent;
     this.name = name;
-    this.flds = flds;
+    this.flds = flds; // LOOK Collections.unmodifiableMap(flds);
 
     if (datasetBuilders != null && datasetBuilders.size() > 0) {
       List<Dataset> datasets = new ArrayList<>(datasetBuilders.size());
@@ -60,6 +60,11 @@ public class DatasetNode {
         datasets.add (dsb.makeDataset(this));
       flds.put(Dataset.Datasets, Collections.unmodifiableList(datasets));
     }
+  }
+
+    // do not use after building
+  public Map<String, Object> getFlds() {
+    return flds;
   }
 
   public DatasetNode getParent() {

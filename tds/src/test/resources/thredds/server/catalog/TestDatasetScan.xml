@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="TDS Unit Test Server"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="all" base="" serviceType="compound">
+    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
+    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+  </service>
+
+  <datasetRoot path="localContent" location="content/testdata/"/>
+  <datasetRoot path="cdmUnitTest" location="${cdmUnitTest}"/>
+
+  <datasetScan name="Test Scan Filter wildcards" ID="testGridScan" path="testGridScan" location="${tmpDir}">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+    <filter>
+      <include wildcard="*.nc"/>
+    </filter>
+  </datasetScan>
+
+  <datasetScan name="Test Scan Filter Regexp" ID="testGridScanReg" path="testGridScanReg" location="${tmpDir}">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+    <filter>
+      <include regExp="PROFILER_wind_06min_2013110[67]_[0-9]{4}\.nc"/>
+    </filter>
+  </datasetScan>
+
+  <datasetScan name="Test Scan Exclude directory" ID="testExclude" path="testExclude" location="${tmpDir}">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+    <filter>
+      <include regExp="PROFILER_wind_06min_2013110[67]_[0-9]{4}\.nc"/>
+      <exclude regExp="20131106" atomic="false" collection="true"/>
+    </filter>
+  </datasetScan>
+
+  <dataset name="Test dataset scan nested dirs">
+    <metadata inherited="true">
+      <documentation type="summary">The NOAA Profiler Network (NPN), consisting of 35 unmanned Doppler Radar sites
+        located in 18 central US states and Alaska, provides vertical wind profile data. Some of the sites are also
+        equipped with RASS temperature profilers.
+      </documentation>
+      <documentation xlink:href="http://www.arm.gov/xds/static/wpdn.stm" xlink:title="NWS/NOAA information"/>
+      <keyword>profiler</keyword>
+      <keyword>WPDN</keyword>
+      <timeCoverage>
+        <end>present</end>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </metadata>
+
+    <datasetScan name="6 minute" collectionType="TimeSeries" harvest="true" ID="NWS/NPN/6min"
+                 path="station/profiler/wind/06min" location="${cdmUnitTest}/ncss/point_features/windProfilers">
+      <metadata inherited="true">
+        <documentation type="summary">Six minute average data.</documentation>
+        <serviceName>all</serviceName>
+      </metadata>
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addTimeCoverage
+          datasetNameMatchPattern="PROFILER_wind_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
+          startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
+    </datasetScan>
+  </dataset>
+
+  <!-- test NcML in datasetScan -->
+  <datasetScan name="ModifyDatasetScan" ID="ModifyDatasetScan" path="ModifyDatasetScan" location="${cdmUnitTest}/tds/">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+
+    <filter>
+      <include wildcard="*.nc" collection="false"/>
+      <exclude wildcard="/*" collection="true"/>
+    </filter>
+
+    <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true">
+      <attribute name="name" value="value"/>
+      <variable name="Temperature" orgName="T"/>
+      <variable name="ReletiveHumidity" orgName="rh">
+        <attribute name="long_name" value="relatively humid"/>
+        <attribute name="units" value="percent (%)"/>
+        <remove type="attribute" name="description"/>
+      </variable>
+    </ncml:netcdf>
+
+  </datasetScan>
+
+</catalog>
+

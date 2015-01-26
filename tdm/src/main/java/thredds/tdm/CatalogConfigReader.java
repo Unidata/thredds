@@ -4,10 +4,11 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import thredds.catalog.parser.jdom.FeatureCollectionReader;
-import thredds.catalog.parser.jdom.InvCatalogFactory10;
+
+import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionSpecParser;
+import thredds.server.catalog.builder.FeatureCollectionConfigBuilder;
 import thredds.util.AliasHandler;
 
 import java.io.File;
@@ -27,13 +28,13 @@ public class CatalogConfigReader {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogConfigReader.class);
   static private final boolean debug = false;
 
-  private final Set<String> staticCatalogHash = new HashSet<String>();
   private final List<FeatureCollectionConfig> fcList = new ArrayList<>();
 
   public List<FeatureCollectionConfig> getFcList() {
     return fcList;
   }
 
+  Formatter errlog = new Formatter();
   private AliasHandler aliasHandler;
 
   public CatalogConfigReader(Resource catR, AliasHandler aliasHandler) throws IOException {
@@ -68,6 +69,7 @@ public class CatalogConfigReader {
     }
     Element root = doc.getRootElement();
 
+
     // find direct fc elements
     try {
       List<Element> fcElems = new ArrayList<>();
@@ -75,22 +77,24 @@ public class CatalogConfigReader {
       for (Element fcElem : fcElems) {
         String name = "";
         try {
-          FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(fcElem);
-          name = config.collectionName;
+          FeatureCollectionConfigBuilder configBuilder = new FeatureCollectionConfigBuilder(errlog);
+          FeatureCollectionConfig config = configBuilder.readConfig(fcElem);
+          if (!configBuilder.fatalError) {
+            name = config.collectionName;
 
-          // check spec
-          config.spec = aliasHandler.replaceAlias(config.spec);
-          Formatter errlog = new Formatter();
-          CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
-          Path rootPath = Paths.get(specp.getRootDir());
-          if (!Files.exists(rootPath)) {
-            System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.collectionName, catFile.getPath());
-            log.error("Root path {} does not exist fc='{}' from catalog={}", rootPath.getFileName(), config.collectionName, catFile.getPath());
-            continue;
+            // check spec
+            config.spec = aliasHandler.replaceAlias(config.spec);
+            CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+            Path rootPath = Paths.get(specp.getRootDir());
+            if (!Files.exists(rootPath)) {
+              System.out.printf("Root path %s does not exist fc='%s' from catalog=%s %n", rootPath.getFileName(), config.collectionName, catFile.getPath());
+              log.error("Root path {} does not exist fc='{}' from catalog={}", rootPath.getFileName(), config.collectionName, catFile.getPath());
+              continue;
+            }
+
+            fcList.add(config);
+            if (debug) System.out.printf("Added  fc='%s' from catalog=%s%n", config.collectionName, catFile.getPath());
           }
-
-          fcList.add(config);
-          if (debug) System.out.printf("Added  fc='%s' from catalog=%s%n", config.collectionName, catFile.getPath());
 
         } catch (Throwable e) {
           e.printStackTrace();
@@ -108,7 +112,7 @@ public class CatalogConfigReader {
       List<Element> catrefElems = new ArrayList<>();
       findCatalogRefs(root, catrefElems);
       for (Element catrefElem : catrefElems) {
-        String href = catrefElem.getAttributeValue("href", InvCatalogFactory10.xlinkNS);
+        String href = catrefElem.getAttributeValue("href", Catalog.xlinkNS);
         File refCat = new File(catFile.getParent(), href);
         Resource catRnested = new FileSystemResource(refCat);
         if (!catRnested.exists()) {
@@ -127,7 +131,7 @@ public class CatalogConfigReader {
   }
 
   private void findFeatureCollections(Element parent, String name, List<Element> fcElems) {
-    List<Element> elist = parent.getChildren("featureCollection", InvCatalogFactory10.defNS);
+    List<Element> elist = parent.getChildren("featureCollection", Catalog.defNS);
     if (name == null)
       fcElems.addAll(elist);
     else {
@@ -136,137 +140,15 @@ public class CatalogConfigReader {
           fcElems.add(elem);
       }
     }
-    for (Element child : parent.getChildren("dataset", InvCatalogFactory10.defNS))
+    for (Element child : parent.getChildren("dataset", Catalog.defNS))
       findFeatureCollections(child, name, fcElems);
   }
 
   private void findCatalogRefs(Element parent, List<Element> catrefElems) {
-    List<Element> elist = parent.getChildren("catalogRef", InvCatalogFactory10.defNS);
+    List<Element> elist = parent.getChildren("catalogRef", Catalog.defNS);
     catrefElems.addAll(elist);
 
-    for (Element child : parent.getChildren("dataset", InvCatalogFactory10.defNS))
+    for (Element child : parent.getChildren("dataset", Catalog.defNS))
       findCatalogRefs(child, catrefElems);
   }
-
-
-  /* private void initCatalog(Resource catR, boolean recurse) throws IOException {
-
-    // make sure we dont already have it
-    String path = catR.getURI().toString();
-    if (staticCatalogHash.contains(path)) { // This method only called by synchronized methods.
-      log.warn("initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
-      return;
-    }
-    staticCatalogHash.add(path);
-
-    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
-    factory.setDataRootLocationAliasExpanders(aliasExpanders);
-
-    InvCatalogImpl cat = readCatalog(factory, catR);
-    if (cat == null) {
-      log.warn("initCatalog(): failed to read catalog <" + catR + ">.");
-      return;
-    }
-
-    // look for featureCollections
-    initSpecialDatasets(cat.getDatasets());
-
-    if (recurse) {
-      try {
-        File catFile = catR.getFile();
-        if (catFile.exists()) {
-          initFollowCatrefs(catFile, cat.getDatasets());
-        }
-      } catch (IOException ioe) {
-        // never mind - not a File
-      }
-    }
-  }
-
-  // read the catalog
-  private InvCatalogImpl readCatalog(InvCatalogFactory factory, Resource catR) throws IOException {
-    InputStream ios = catR.getInputStream();
-    InvCatalogImpl cat = null;
-    try {
-      cat = factory.readXML(ios, catR.getURI());
-
-      StringBuilder sbuff = new StringBuilder();
-      if (!cat.check(sbuff)) {
-        log.error("readCatalog(): invalid catalog -- " + sbuff.toString());
-        return null;
-      }
-      log.info("readCatalog(): valid catalog -- " + sbuff.toString());
-
-    } catch (Throwable t) {
-      String msg = (cat == null) ? "null catalog" : cat.getLog();
-      log.error("readCatalog(): Exception on catalog=" + catR + " " + t.getMessage() + "\n log=" + msg, t);
-      return null;
-
-    } finally {
-      if (ios != null) {
-        try {
-          ios.close();
-        } catch (IOException e) {
-          log.error("readCatalog(): error closing" + catR);
-        }
-      }
-    }
-
-    return cat;
-  }
-
-   * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
-   * Look for duplicate Ids (give message). Dont follow catRefs.
-   * Only called by synchronized methods.
-   *
-   * @param dsList the list of InvDatasetImpl
-  private void initSpecialDatasets(List<InvDataset> dsList) {
-
-    for (InvDataset invds : dsList) {
-      InvDatasetImpl invDataset = (InvDatasetImpl) invds;
-
-      if (invDataset instanceof InvDatasetFeatureCollection) {
-        InvDatasetFeatureCollection fc = (InvDatasetFeatureCollection) invDataset;
-        //fcList.add(fc);
-      }
-
-      // recurse
-      if (!(invDataset instanceof InvCatalogRef)) {
-        initSpecialDatasets(invDataset.getDatasets());
-      }
-    }
-
-  }
-
-  private void initFollowCatrefs(File catFile, List<InvDataset> datasets) throws IOException {
-    for (InvDataset invDataset : datasets) {
-
-      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFeatureCollection)) {
-
-        InvCatalogRef catref = (InvCatalogRef) invDataset;
-        String href = catref.getXlinkHref();
-        if (log.isDebugEnabled()) log.debug("  catref.getXlinkHref=" + href);
-
-        // Check that catRef is relative
-        if (!href.startsWith("http:")) {
-          // Clean up relative URLs that start with "./"
-          if (href.startsWith("./")) {
-            href = href.substring(2);
-          }
-
-          File refCat = new File(catFile.getParent(), href);
-          Resource catR = new FileSystemResource(refCat);
-          if (!catR.exists()) {
-            log.error("Reletive catalog {} does not exist", catR);
-            continue;
-          }
-          initCatalog(catR, true);
-        }
-
-      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFeatureCollection)) {
-        // recurse through nested datasets
-        initFollowCatrefs(catFile, invDataset.getDatasets());
-      }
-    }
-  }   */
 }

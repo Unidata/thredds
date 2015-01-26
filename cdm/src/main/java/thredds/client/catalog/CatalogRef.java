@@ -68,6 +68,12 @@ public class CatalogRef extends Dataset {
     this.isRead = isRead;
   }
 
+  // only present for server catalogs, put here as convenience
+  // return Boolean, so can tell if its been set or not.
+  public Boolean useRemoteCatalogService() {
+    return (Boolean) flds.get(UseRemoteCatalogService);
+  }
+
   /**
    * @return Xlink reference as a URI, resolved
    */

@@ -20,6 +20,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
@@ -77,7 +78,7 @@ public class Grib2ReportPanel extends ReportPanel {
         doDrsSummary(f, dcm, useIndex, eachFile, extra);
         break;
       case gdsSummary:
-        doGdsSummary(f, dcm, useIndex);
+        doGdsSummary(f, dcm, extra);
         break;
       case pdsSummary:
         doPdsSummary(f, dcm, useIndex);
@@ -844,42 +845,50 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doGdsSummary(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
+  private void doGdsSummary(Formatter f, MCollection dcm, boolean extra) throws IOException {
     f.format("Show Unique GDS Templates%n");
-    CounterOfInt templateSet = new CounterOfInt("template");
-    CounterOfInt scanCodeSet = new CounterOfInt("scanMode");
-    CounterOfString scanCodeDiff = new CounterOfString("scanModeDifference");
+    Counters counters = new Counters();
+    counters.add(new CounterOfInt("template"));
+    counters.add(new CounterOfInt("scanMode"));
+    counters.add(new CounterOfString("scanModeDifference"));
 
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
-      doGdsSummary(f, mfile, templateSet, scanCodeSet, scanCodeDiff);
+      doGdsSummary(f, mfile, counters, extra);
     }
 
-    templateSet.show(f);
-    scanCodeSet.show(f);
-    scanCodeDiff.show(f);
+    counters.show(f);
   }
 
-  private void doGdsSummary(Formatter f, MFile mf, CounterOfInt templateSet, CounterOfInt scanCodeSet, CounterOfString scanCodeDiff) throws IOException {
+  private void doGdsSummary(Formatter f, MFile mf, Counters counters, boolean extra) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
     Map<Integer, Grib2SectionGridDefinition> gdssMap = new HashMap<>();
     for (Grib2SectionGridDefinition gdss : index.getGds()) {
       gdssMap.put(gdss.hashCode(), gdss);
+
+      ucar.nc2.grib.grib2.Grib2Gds gds = gdss.getGDS();
+      gds.testScanMode(f);
+
+      int template = gdss.getGDSTemplateNumber();
+      int scanMode = gds.getScanMode();
+      if (extra && GribUtils.scanModeYisPositive(scanMode)) {
+        f.format("    template %d with Ypos%n", template);
+      }
     }
 
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
       Grib2SectionGridDefinition gdss = gr.getGDSsection();
-
-      templateSet.count(gdss.getGDSTemplateNumber());
-      scanCodeSet.count(gr.getScanMode());
-
       Grib2SectionGridDefinition gdssIndex = gdssMap.get(gdss.hashCode());
       ucar.nc2.grib.grib2.Grib2Gds gdsIndex = gdssIndex.getGDS();
+
+      counters.count("template", gdss.getGDSTemplateNumber());
+      counters.count("scanMode", gr.getScanMode());
       if (gdsIndex.getScanMode() != gr.getScanMode()) {
-        scanCodeDiff.count(mf.getName());
+        counters.countS("scanModeDifference", mf.getName());
       }
+
     }
   }
 

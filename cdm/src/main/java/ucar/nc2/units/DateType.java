@@ -35,10 +35,6 @@ package ucar.nc2.units;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Calendar;
-import java.util.TimeZone;
-
-//import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
@@ -63,14 +59,6 @@ import ucar.nc2.time.CalendarPeriod;
  */
 
 public class DateType {
-  /**
-   * For bean editing, public by accident.
-   */
-  static public String hiddenProperties() {
-    return "text blank present";
-  }
-
-  /////////////////////////////////////////////////////
   private String text, format, type;
   private boolean isPresent, isBlank;
   private final CalendarDate date;
@@ -126,7 +114,6 @@ public class DateType {
    * @param type   type of date, or null
    * @throws java.text.ParseException if error parsing text
    */
-  @Deprecated
   public DateType(String text, String format, String type) throws java.text.ParseException {
 
     text = (text == null) ? "" : text.trim();
@@ -297,8 +284,9 @@ public class DateType {
    *
    * @param type type of Date
    */
-  public void setType(String type) {
+  public DateType setType(String type) {
     this.type = type;
+    return this;
   }
 
   /**

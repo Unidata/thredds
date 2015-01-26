@@ -34,6 +34,7 @@
 package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -996,18 +997,15 @@ public class Grib2DataReader2 {
 
   // Rearrange the data array using the scanning mode.
   // LOOK: not handling scanMode generally
-  // LOOK It appears that this handles x but noy y (!); ?? Probably correcting for it in the y coordinate, eg Dy
   // LOOK might be wrong for a quasi regular (thin) grid ??
   private void scanningModeCheck(float[] data, int scanMode, int Xlength) {
     // Mode  0  +x, -y, adjacent x, adjacent rows same dir
     // Mode  64 +x, +y, adjacent x, adjacent rows same dir
-    if ((scanMode == 0) || (scanMode == 64))
+    if ((scanMode == 0) || (scanMode == 64))  // dont flip Y - handle it in the HorizCoordSys
       return;
 
-      // Mode  128 -x, -y, adjacent x, adjacent rows same dir
-      // Mode  192 -x, +y, adjacent x, adjacent rows same dir
-      // change -x to +x ie east to west -> west to east
-    if ((scanMode == 128) || (scanMode == 192)) {
+    // change -x to +x ie east to west -> west to east
+    if (!GribUtils.scanModeXisPositive(scanMode)) {
       float tmp;
       int mid = Xlength / 2;
       for (int index = 0; index < data.length; index += Xlength) {
@@ -1020,17 +1018,17 @@ public class Grib2DataReader2 {
       return;
     }
 
-    // else
-    // scanMode == 16, 80, 144, 208 adjacent rows scan opposite dir
-    float tmp;
-    int mid = Xlength / 2;
-    for (int index = 0; index < data.length; index += Xlength) {
-      int row = index / Xlength;
-      if (row % 2 != 0) {  // odd numbered row, calculate reverse index
-        for (int idx = 0; idx < mid; idx++) {
-          tmp = data[index + idx];
-          data[index + idx] = data[index + Xlength - idx - 1];
-          data[index + Xlength - idx - 1] = tmp;
+    if (!GribUtils.scanModeSameDirection(scanMode)) {
+      float tmp;
+      int mid = Xlength / 2;
+      for (int index = 0; index < data.length; index += Xlength) {
+        int row = index / Xlength;
+        if (row % 2 != 0) {  // odd numbered row, calculate reverse index
+          for (int idx = 0; idx < mid; idx++) {
+            tmp = data[index + idx];
+            data[index + idx] = data[index + Xlength - idx - 1];
+            data[index + Xlength - idx - 1] = tmp;
+          }
         }
       }
     }

@@ -1464,85 +1464,6 @@ public final class DataRootHandler implements InitializingBean {
     return cat;
   }
 
-  private InvCatalogImpl makeTDRDynamicCatalog(String path, URI baseURI) {
-    // Make sure this is a tdr catalog request.
-    if (!path.startsWith("tdr"))
-      return null;
-
-    File catFile = this.tdsContext.getConfigFileSource().getFile(path);
-    if (catFile == null)
-      return null;
-    String catalogFullPath = catFile.getPath();
-
-    InvCatalogFactory factory = getCatalogFactory(false); // no validation
-    InvCatalogImpl cat = readCatalog(factory, path, catalogFullPath);
-    if (cat == null) {
-      log.warn("makeTDRDynamicCatalog(): failed to read tdr catalog <" + catalogFullPath + ">.");
-      return null;
-    }
-
-    /* look for datasetRoots
-  Iterator roots = cat.getDatasetRoots().iterator();
-  while ( roots.hasNext() ) {
-    InvProperty p = (InvProperty) roots.next();
-    addRoot( p.getName(), p.getValue(), false );
-  }  */
-
-    cat.setBaseURI(baseURI);
-    return cat;
-  }
-
-
-  /* public void handleRequestForDataset(String path, DataServiceProvider dsp, HttpServletRequest req, HttpServletResponse res)
-          throws IOException {
-    // Can the DataServiceProvider handle the data request given by the path?
-    DataServiceProvider.DatasetRequest dsReq = dsp.getRecognizedDatasetRequest(path, req);
-    String crDsPath;
-    boolean dspCanHandle = false;
-    if (dsReq != null) {
-      String dsPath = dsReq.getDatasetPath();
-      if (dsPath != null) {
-        // Use the path returned by the DataServiceProvider.
-        crDsPath = dsPath;
-        dspCanHandle = true;
-      } else {
-        // DataServiceProvider recognized request path but returned a null dataset path. Hmm?
-        log.warn("handleRequestForDataset(): DataServiceProvider recognized request path <" + path + "> but returned a null dataset path, using request path.");
-        // Use the incoming request path.
-        crDsPath = path;
-      }
-    } else {
-      // DataServiceProvider  did not recognized request path.
-      // Use the incoming request path.
-      crDsPath = path;
-    }
-
-    // Find the CrawlableDataset represented by the request path.
-    CrawlableDataset crDs = this.findRequestedDataset(crDsPath);
-    if (crDs == null) {
-      // Request is not for a known (or allowed) dataset.
-      res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
-      return;
-    }
-
-    if (dspCanHandle) {
-      // Request recognized by DataServiceProvider, handle dataset request.
-      dsp.handleRequestForDataset(dsReq, crDs, req, res);
-      return;
-    } else {
-      // Request not recognized by DataServiceProvider.
-      if (crDs.isCollection()) {
-        // Handle request for a collection dataset.
-        dsp.handleUnrecognizedRequestForCollection(crDs, req, res);
-        return;
-      }
-
-      // Handle request for an atomic dataset.
-      dsp.handleUnrecognizedRequest(crDs, req, res);
-      return;
-    }
-  }  */
-
   /**
    * Process a request for the "latest" dataset. This must be configured
    * through the datasetScan element. Typically you call if the path ends with
@@ -1556,8 +1477,7 @@ public final class DataRootHandler implements InitializingBean {
    * @throws IOException if have I/O trouble writing response.
    * @deprecated Instead use {@link #processReqForCatalog(HttpServletRequest, HttpServletResponse) processReqForCatalog()} which provides more general proxy dataset handling.
    */
-  public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
-          throws IOException {
+  public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException {
     String orgPath = TdsPathUtils.extractPath(req, null);
 
     String path = orgPath;
@@ -1569,7 +1489,7 @@ public final class DataRootHandler implements InitializingBean {
     }
 
     if (path.equals("/") || path.equals("")) {
-      String resMsg = "No data at root level, \"/latest.xml\" request not available.";
+      String resMsg = "No data at root level, '/latest.xml' request not available.";
       if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;

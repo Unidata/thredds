@@ -267,10 +267,10 @@
 
                                     <div id="areaInput" class="clear">
                                         <div id="spatialSubset">
-
                                             <!-- lat/lon subsetting -->
                                             <div id="latlonSubset" class="absoluteTopLeft borderLightGrey">
-                                                <span class="bold">Bounding Box (decimal degrees):</span>
+                                                <span class="bold">Bounding box, in decimal degrees
+                                                    (initial extents are approximate):</span>
                                                 <div class="top">
                                                     <span>north</span>
                                                     <br/>
@@ -318,7 +318,7 @@
 
                                             <!-- coordinate subsetting -->
                                             <div id="coordinateSubset" class="hidden absoluteTopLeft borderLightGrey">
-                                                <span class="bold">Bounding Box (projection coordinates):</span>
+                                                <span class="bold">Bounding box, in projection coords:</span>
                                                 <div class="top">
                                                     <span>maxy</span>
                                                     <br/>
@@ -366,6 +366,8 @@
                                     </div>
 
                                     <br clear="all"/>
+                                    <br clear="all"/>
+
                                     <div class="borderLightGrey">
                                         <span class="bold">Horizontal Stride:</span>
                                         <input onchange="Ncss.buildAccessUrl()" type="text" name="horizStride" size="5"
@@ -385,20 +387,22 @@
                                             <div id="temporalSubsetWithStride">
                                                 <!-- Time range -->
                                                 <div id="timeRangeSubset" class="absoluteTopLeft borderLightGrey">
-                                                    <label class="sized">Starting:</label>
+                                                    <label class="sized">Start:</label>
                                                     <input onchange="Ncss.buildAccessUrl()" type="text"
                                                            name="time_start" size="21"
                                                            value="{gridForm/TimeSpan/begin}"/>
                                                     <input onchange="Ncss.buildAccessUrl()" type="hidden"
                                                            disabled="disabled" name="dis_time_start" size="21"
                                                            value="{gridForm/TimeSpan/begin}"/>
-                                                    <label class="sized">Ending:</label>
+                                                    <br/>
+                                                    <label class="sized">End:</label>
                                                     <input onchange="Ncss.buildAccessUrl()" type="text" name="time_end"
                                                            size="21"
                                                            value="{gridForm/TimeSpan/end}"/>
                                                     <input onchange="Ncss.buildAccessUrl()" type="hidden"
                                                            disabled="disabled" name="dis_time_end" size="21"
                                                            value="{gridForm/TimeSpan/end}"/>
+                                                    <br/>
                                                     <label class="sized">Stride:</label>
                                                     <input onchange="Ncss.buildAccessUrl()" type="text"
                                                            name="timeStride" size="5" value="1"/>

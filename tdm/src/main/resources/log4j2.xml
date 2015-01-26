@@ -75,16 +75,6 @@
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFeatureCollection" level="info" additivity="false">
-      <!-- appender-ref ref="consoleLogger"/ -->
-      <appender-ref ref="fileLogger"/>
-    </logger>
-
-    <logger name="thredds.catalog.InvDatasetFcGrib" level="info" additivity="false">
-      <!-- appender-ref ref="consoleLogger"/ -->
-      <appender-ref ref="fileLogger"/>
-    </logger>
-
     <logger name="httpclient" level="warn" additivity="false">
       <appender-ref ref="fileLogger"/>
     </logger>

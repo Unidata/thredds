@@ -297,10 +297,9 @@ public class DatasetHtmlWriter {
 
         out.format("<li><em>Vocabulary</em> [");
         if (t.getVocabUri() != null) {
-          URI uri = t.getVocabUri();
-          String vocabLink = resolveRelativeUrls
-                  ? makeHrefResolve(ds, uri.toString(), t.getVocabulary())
-                  : makeHref(uri.toString(), t.getVocabulary());
+          ThreddsMetadata.UriResolved uri = t.getVocabUri();
+          String vocabLink = resolveRelativeUrls ? makeHref(uri.resolved.toString(), t.getVocabulary())
+                                                 : makeHref(uri.href, t.getVocabulary());
           out.format(vocabLink);
         } else {
           out.format(StringUtil2.quoteHtmlContent(t.getVocabulary()));
@@ -325,7 +324,8 @@ public class DatasetHtmlWriter {
     }
     if (ds.getVariableMapLink() != null) {
       out.format("<h3>Variables:</h3>\n");
-      out.format("<ul><li>" + makeHref(ds.getVariableMapLink().toString(), "VariableMap") + "</li></ul>\n");
+      ThreddsMetadata.UriResolved uri = ds.getVariableMapLink();
+      out.format("<ul><li>" + makeHref(uri.resolved.toASCIIString(), "VariableMap") + "</li></ul>\n");
     }
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
