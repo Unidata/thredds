@@ -26,7 +26,7 @@ dependencies {
   compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion
 
   // plug-in
-  runtime (group: 'EDS', name: 'threddsIso', version: "2.2.4-SNAPSHOT")
+  runtime (group: 'EDS', name: 'threddsIso', version: "2.2.4")
 
   // ncss
   // JSR 303 with Hibernate Validator
@@ -37,7 +37,7 @@ dependencies {
   }
 
   // wms
-  compile (group: 'uk.ac.rdg.resc', name: 'ncwms', version: "1.2.tds.4.5.4-SNAPSHOT") {
+  compile (group: 'uk.ac.rdg.resc', name: 'ncwms', version: "1.2.tds.4.5.4") {
     exclude group: 'commons-logging'
     exclude group: 'edu.ucar'
     exclude group: 'joda-time'
