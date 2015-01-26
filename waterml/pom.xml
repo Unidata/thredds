@@ -45,6 +45,27 @@
             <groupId>org.n52.sensorweb</groupId>
             <artifactId>52n-oxf-xmlbeans</artifactId>
             <version>1.12</version>
+            <exclusions>
+                <!-- Xerces comes with Java 1.6+ -->
+                <!-- This SHOULD be okay, but see http://stackoverflow.com/questions/11677572 -->
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>2.6.0</version>
+            <exclusions>
+                <!--  STAX comes with Java 1.6+ -->
+                <exclusion>
+                    <groupId>stax</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
