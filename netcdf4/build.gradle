@@ -1,9 +1,3 @@
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'netcdf4'
-    }
-}
-
 dependencies {
     compile project(':cdm')
     compile libraries["jna"]

@@ -1,4 +1,5 @@
 apply plugin: 'shadow'
+
 /* jar {
   manifest {
     attributes 'Implementation-Title': 'visadCdm'

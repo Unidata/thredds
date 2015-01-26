@@ -2,9 +2,3 @@ dependencies {
     compile libraries["joda-time"]
     compile libraries["jcip-annotations"]
 }
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'udunits'
-    }
-}

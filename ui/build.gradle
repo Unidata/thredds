@@ -1,6 +1,8 @@
 apply plugin: 'shadow'
 
+import com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer
 import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import org.codehaus.groovy.runtime.NioGroovyMethods
 
 import java.util.jar.JarEntry
@@ -16,6 +18,7 @@ dependencies {
     compile project(":opendap")
     compile project(":waterml")
     compile project(":httpservices")
+    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     compile libraries["ehcache-core"]
     compile libraries["jdom2"]
@@ -34,14 +37,6 @@ dependencies {
 
     compile libraries["slf4j-api"]
     runtime libraries["slf4j-jdk14"]
-    runtime libraries["jcl-over-slf4j"]
-    // TODO: testCompile cdm:test-jar
-}
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'toolsUI'
-    }
 }
 
 //////////////////////////////////////////////////////////
@@ -83,18 +78,34 @@ shadow {
 
     jar {
         manifest {
+            attributes 'Implementation-Title': 'toolsUI'
             attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
         }
     }
 
+    transformer(ManifestResourceTransformer) {
+        mainClass = 'ucar.nc2.ui.ToolsUI'
+    }
     transformer(AppendingTransformer) {
         resource = 'META-INF/spring.handlers'
     }
     transformer(AppendingTransformer) {
         resource = 'META-INF/spring.schemas'
     }
+    transformer(ServiceFileTransformer) {}
 }
 
+// It's possible to test web start files locally before deploying them.
+// 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,
+// such as /thredds/ui/build.
+// 2. Comment-out the 'Codebase' manifest attribute in the top-level build.gradle.
+// 3. Run this task.
+// 4. Open the 2 JNLP files that were copied to webdir. Remove the "codebase" and "href" attributes from the top-level
+// "jnlp" element.
+// 5. You may also need to white-list web starts from the local file system. Go to Java Control Panel->Security->
+// Edit Site List... and add the entry "file:/".
+// 6. Change to webdir and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
+// but I couldn't get that working (and there was no error feedback).
 task releaseWebstart(dependsOn: jar) << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {

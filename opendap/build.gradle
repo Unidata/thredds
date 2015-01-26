@@ -3,6 +3,7 @@ apply plugin: 'war'
 dependencies {
     compile project(':cdm')
     compile project(':httpservices')
+    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     providedCompile libraries["javax.servlet-api"]
     compile libraries["jdom2"]
@@ -13,5 +14,4 @@ dependencies {
 
     compile libraries["slf4j-api"]
     testRuntime libraries["slf4j-jdk14"]
-    runtime libraries["jcl-over-slf4j"]
 }
