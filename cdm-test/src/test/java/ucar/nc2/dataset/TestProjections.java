@@ -79,7 +79,7 @@ public class TestProjections {
 
             {testDir + "Eumetsat.VerticalPerspective.grb", "SpaceViewPerspective_Projection", "Pixel_scene_type", MSGnavigation.class, testPoint},
 
-            {TestDir.cdmUnitTestDir + "formats/hdf4/eos/modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf",
+            {testDir + "sinusoidal/MOD13Q1.A2008033.h12v04.005.2008051065305.hdf",
                     "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/Projection",
                     "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NDVI",
                     Sinusoidal.class, testPoint},

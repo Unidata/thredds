@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Standard Vertical Transforms</title>
+  <link href="../cdm.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<h1>Standard Vertical Transforms </h1>
+<hr width="100%" />
+<p>This page documents the<em><strong> vertical coordinate transforms</strong></em> that are standard in  CDM. These follow the <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings">CF-1.0 Convention</a>, where they are called <em><strong>Dimensionless Vertical Coordinates</strong></em>. The purpose of a vertical transform is to define a function  to calculate the pressure or height coordinate of each grid point in a data variable. This typically creates a 3D vertical coordinate, one which varies at each grid point. The dimensionless vertical coordinate in contrast, is 1 dimensional, and thus easier to work with and smaller to store in the file.</p>
+<p>To follow CF, typically one adds transform information to the vertical coordinate, for example:</p>
+<pre>double s_rho(s_rho=20);<br />  :long_name = &quot;S-coordinate at RHO-points&quot;;<br />  :valid_min = -1.0; // double<br />  :valid_max = 0.0; // double
+<br />  :standard_name = &quot;ocean_s_coordinate&quot;;<br />  :positive = &quot;up&quot;;<br />  :formula_terms = &quot;s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc&quot;;<br /></pre>
+<p>This example is a CF <em><strong>ocean_s_coordinate</strong></em> vertical coordinate. The formula terms, explained in the <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#dimensionless-v-coord">CF doc</a>, point to variables in the same file, which the calculation needs:</p>
+<pre>Definition:
+  z(n,k,j,i) = eta(n,j,i)*(1+s(k)) + depth_c*s(k) +  (depth(j,i)-depth_c)*C(k)  </pre>
+<p> So in this example, anywhere you see s(k) in the definition, one uses the variable s_rho in the calculation. Similarly for the rest:</p>
+<pre>
+Definition term		actual variable name
+---------------		-------------------
+s 					s_rho 
+eta 					zeta 
+depth 				h 
+a 					theta_s 
+b 					theta_b 
+depth_c 				hc</pre>
+<p>All of these variables must exist in your file, and be the proper dimension etc, as spelled out in the CF doc. Note that the file writer must construct the <strong>formula_terms</strong> attribute with the correct variable names. The CDM, as well as other software that implements this part of the CF spec, will use the above information to calculate the 3D vertical coordinate. </p>
+<p> This 3D vertical coordinate can be obtained in the CDM library  by opening the file as a <strong>NetcdfDataset</strong>, and examining the <strong>CoordinateSystem</strong> attached to each <strong>VariableDS</strong>. Look through the transforms from <strong>CoordinateSystem.getCoordinateTransforms()</strong> for the vertical transform (class<strong> ucar.nc2.dataset.VerticalCT</strong>). For performance, the actual work is not done until you call  <strong>VerticalTransform vy = VerticalCT.makeVerticalTransform(), </strong>and then <strong>VerticalTransform.getCoordinateArray()</strong> to get the 3D coordinate array. </p>
+<p><strong>To summarize, in order for CF Vertical transforms to work in the CDM, you must:</strong></p>
+<ol>
+  <li><strong>Add the <em>standard_name, positive, </em>and <em>formula_terms</em> attributes to the vertical ccoordinate.</strong></li>
+  <li><strong>Add to your file all the variables required by the transform definition.</strong></li>
+  <li><strong>If you are writing your own software that needs the 3D pressure/height values, follow the above steps to retrieve the 3D vertical coordinate.</strong></li>
+</ol>
+<h3>Resources</h3>
+<ul>
+  <li>Standard vertical transforms are documented on this page. You can also<a href="../tutorial/CoordTransBuilder.html"> implement your own</a>. </li>
+  <li>You may also be interested in <a href="StandardCoordinateTransforms.html">Standard Horizontal Coordinate Transforms</a>.</li>
+  <li><a href="CoordinateAttributes.html">The CDM _Coordinate Conventions</a></li>
+</ul>
+<h2>Standard Vertical Transforms</h2>
+<p>Required attributes are in bold, optional in bold italics. Attribute names follow the <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings">CF Conventions</a> Appendix D
+(Vertical Transforms) and Appendix F (Grid Mappings). See that document for details on the meanings of the formula terms. </p>
+<p>These are examples of placing the Coordinate Transform parameters on the corresponding vertical coordinate (required by CF). If you are using CF Conventions,
+  you do not have to add the <strong>_Coordinate</strong> attributes, as they will be added automatically in the CoordSysBuilder.</p>
+<h3>atmosphere_ln_pressure_coordinate</h3>
+<blockquote>
+  <pre>
+  double levCoord(levCoord=26);<br />     :long_name = &quot;log pressure levels&quot;;
+     :units = &quot;&quot;;<br />     :positive = &quot;down&quot;;<br />     :<strong>standard_name</strong> = &quot;atmosphere_ln_pressure_coordinate&quot;;<br />     :<strong>formula_terms</strong> = &quot;p0: P0 lev: levCoord&quot;;
+  </pre>
+  <p>atmosphere_ln_pressure_coordinate transform only works in CF Conventions.</p>
+</blockquote>
+<h3>atmosphere_hybrid_height_coordinate</h3>
+<blockquote>
+  <pre>
+  double lev(lev=26);<br />     :long_name = &quot;hybrid hybrid height coordinate&quot;;
+     :units = &quot;m&quot;;<br />     :positive = &quot;up&quot;;<br />     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_height_coordinate&quot;;<br />     :<strong>formula_terms</strong> = &quot;a: varA b: varB orog: orography&quot;;<br />     :_CoordinateAxisType = &quot;GeoZ&quot;;<br />     :_CoordinateZisPositive = &quot;up;
+
+     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br />     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
+</pre>
+</blockquote>
+<h3>atmosphere_hybrid_sigma_pressure_coordinate</h3>
+<blockquote>
+  <pre>
+  double lev(lev=26);<br />     :long_name = &quot;hybrid level at midpoints (1000*(A+B))&quot;;
+     :units = &quot;&quot;;<br />     :positive = &quot;down&quot;;<br />     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_sigma_pressure_coordinate&quot;;<br />     :<strong>formula_terms</strong> = &quot;a: hyam b: hybm p0: P0 ps: PS&quot;;<br />     :_CoordinateAxisType = &quot;GeoZ&quot;;<br />     :_CoordinateZisPositive = &quot;down;
+
+     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br />     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
+</pre>
+  <p> or<br />
+  </p>
+  <pre>
+  double lev(lev=26);<br />     :long_name = &quot;hybrid level at midpoints (1000*(A+B))&quot;;
+     :units = &quot;&quot;;<br />     :positive = &quot;down&quot;;<br />     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_sigma_pressure_coordinate&quot;;<br />     :<strong>formula_terms</strong> = &quot;ap: hyam b: hybm p0: P0&quot;;<br />     :_CoordinateAxisType = &quot;GeoZ&quot;;<br />     :_CoordinateZisPositive = &quot;down;
+
+     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br />     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
+</pre>
+</blockquote>
+<h3>atmosphere_sigma_coordinate</h3>
+<blockquote>
+  <pre>   float level(level=2);<br />     :units = &quot;&quot;;<br />     :long_name = &quot;sigma at layer midpoints&quot;;<br />     :positive = &quot;down&quot;;
+     :<strong>standard_name</strong> = &quot;atmosphere_sigma_coordinate&quot;;<br />     :<strong>formula_terms</strong> = &quot;sigma: level ps: PS ptop: PTOP&quot;;<br />     :_CoordinateAxisType = &quot;GeoZ&quot;;<br />     :_CoordinateZisPositive = &quot;down&quot;;<br />     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br />     :<strong>_CoordinateAxes</strong> = &quot;level&quot;;<br />
+</pre>
+</blockquote>
+<h3>ocean_s_coordinate</h3>
+<blockquote>
+  <pre>
+  double s_rho(s_rho=20);<br />     :long_name = &quot;S-coordinate at RHO-points&quot;;<br />     :units = &quot;&quot;;
+     :positive = &quot;up&quot;;
+     :<strong>standard_name</strong> = &quot;ocean_s_coordinate&quot;;<br />     :<strong>formula_terms</strong> = &quot;s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc&quot;;<br />     :_CoordinateAxisType = &quot;GeoZ&quot;;<br />     :_CoordinateZisPositive = &quot;up&quot;; <br />     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br />     :<strong>_CoordinateAxes</strong> = &quot;s_rho&quot;;
+</pre>
+</blockquote>
+<h3>ocean_s_coordinate_g1</h3>
+<blockquote>
+  <pre>
+    char OceanSG1_Transform_s_rho;<br />     :<strong>standard_name</strong> = &quot;ocean_s_coordinate_g1&quot;;<br />     :<strong>formula_terms</strong> = &quot;s: s_rho C: Cs_r eta: zeta depth: h depth_c: hc&quot;;<br />     :height_formula = &quot;height(x,y,z) =  depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z) + eta(x,y)*(1+(depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z))/depth([n],x,y))&quot;;
+     :Eta_variableName = &quot;zeta&quot;;<br />     :S_variableName = &quot;s_rho&quot;;<br />     :Depth_variableName = &quot;h&quot;;<br />     :Depth_c_variableName = &quot;hc&quot;;<br />     :c_variableName = &quot;Cs_r&quot;;</pre>
+  Note that <strong>standard_name</strong> and <strong>formula_terms</strong> are the only attributes needed. The other are added for extra readability. </blockquote>
+<h3>ocean_s_coordinate_g2</h3>
+<blockquote>
+  <pre>   char OceanSG2_Transform_s_rho;<br />     :<strong>standard_name</strong> = &quot;ocean_s_coordinate_g2&quot;;<br />     :<strong>formula_terms</strong> = &quot;s: s_rho C: Cs_r eta: zeta depth: h depth_c: hc&quot;;<br />     :height_formula = &quot;height(x,y,z) = eta(x,y) + (eta(x,y) + depth([n],x,y)) * ((depth_c*s(z) + depth([n],x,y)*C(z))/(depth_c+depth([n],x,y)))&quot;;<br />     :Eta_variableName = &quot;zeta&quot;;<br />     :S_variableName = &quot;s_rho&quot;;<br />     :Depth_variableName = &quot;h&quot;;<br />     :Depth_c_variableName = &quot;hc&quot;;<br />     :c_variableName = &quot;Cs_r&quot;;</pre>
+  Note that <strong>standard_name</strong> and <strong>formula_terms</strong> are the only attributes needed. The other are added for extra readability. </blockquote>
+<h3>ocean_sigma_coordinate</h3>
+<blockquote>
+  <pre>
+   float zpos(zpos=22);<br />     :long_name = &quot;Sigma Layer&quot;;<br />     :units = &quot;&quot;;<br />     :positive = &quot;up&quot;;
+     :<strong>standard_name</strong> = &quot;ocean_sigma_coordinate&quot;;<br />     :<strong>formula_terms</strong> = &quot;sigma: zpos eta: elev depth: depth&quot;;<br />     :_CoordinateAxisType = &quot;GeoZ&quot;;<br />     :_CoordinateZisPositive = &quot;up&quot;;<br />     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br />     :<strong>_CoordinateAxes</strong> = &quot;zpos&quot;;
+
+</pre>
+</blockquote>
+<h3>explicit_field</h3>
+<blockquote>
+  <pre>
+  char ExplicitField;
+    :<strong>standard_name</strong> = &quot;explicit_field&quot;;  // canonical transform name
+    :<strong>existingDataField</strong> = &quot;ght_hybr&quot;;  // must be a 3 or 4D pressure / height / geopotential height field<br />    :<strong>_CoordinateTransformType</strong> = &quot;vertical&quot;; // unambiguouly identifies it as vertical transform<br />    :<strong>_CoordinateAxes</strong> = &quot;hybr&quot;; // attach transform to any coord sys with the &quot;hbyr&quot; axis.</pre>
+  <p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate. </p>
+</blockquote>
+<h2>Using Vertical Transforms</h2>
+<blockquote>
+  <pre> public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
+  GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + &quot;conventions/cf/ccsm2.nc&quot;); 
+  GridDatatype grid = gds.findGridDatatype(&quot;T&quot;);
+  GridCoordSystem gcs = grid.getCoordinateSystem();
+
+  VerticalTransform vt = gcs.getVerticalTransform();
+  CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
+  for (int t=0; t&lt;taxis.getSize(); t++) {
+    System.out.printf(&quot;vert coord for time = %s%n&quot;, taxis.getTimeDate(t));
+    ArrayDouble.D3 ca = vt.getCoordinateArray(t);
+	   doSomething(ca);
+  }
+}</pre>
+</blockquote>
+<hr width="100%" />
+<address>
+<img src="../nc.gif" width="64" height="64" alt="" /> This document was last updated January 2015
+</address>
+</body>
+</html>

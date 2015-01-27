@@ -12,9 +12,6 @@
 <h1>_Coordinate Attribute Convention (Reference) </h1>
 
 <p>&nbsp;</p>
-
-<p>&nbsp;</p>
-
 <p><img src="../images/CoordSys.png" width="610" height="341" alt=""></p>
 <blockquote>
   <blockquote>
@@ -51,9 +48,38 @@
 </ul>
 <h3>Contents</h3>
 <ol>
+  <li><a href="#summary">Summary of the CDM _Coordinate Conventions</a></li>
   <li><a href="#CoordinateAttributes">Coordinate Attributes Definition</a></li>
   <li><span class="CDL"><a href="#Rules">Summary of Rules for Processing Coordinate Attributes</a></span></li>
 </ol>
+<hr>
+<h2>Summary<a name="summary"></a> of the CDM _Coordinate Conventions:</h2>
+<p>A Transform is defined by creating a Coordinate Transform Variable (see <a href="../tutorial/CoordinateAttributes.html#Example4">Example</a> and <a href="CoordinateAttributes.html">Reference</a>). The attributes of the Coordinate Transform Variable become the parameters of the transform. A variable is
+  a Coordinate Transform Variable if one (or both) of these is true: </p>
+<ol>
+  <li>It has a <strong>_CoordinateTransformType</strong> or <strong>_CoordinateAxisTypes</strong> attribute.</li>
+  <li>It is listed in a <strong>_CoordinateTransforms</strong> attribute from any variable in the file.</li>
+</ol>
+<p>Any Variable can be a Coordinate Transform Variable, as it is just a container for attributes, i.e. the data values of the Variable are not used by the
+  transform. It is common to use a vertical coordinate to be a Coordinate Transform Variable. Using a <em>dummy variable</em> (with no useful data in it) is
+  also common. The example here are done with dummy variables.</p>
+<p>The CF CoordSysBuilder will add the <strong>_CoordinateTransformType</strong> attribute upon recognizing a standard_name, so adding that is optional if you
+  are using CF Conventions. CF also requires that you use the vertical coordinate as the Coordinate Transform Variable, so that the transform will be added to
+  any Coordinate System that uses that vertical coordinate. The CF CoordSysBuilder will thus add the <strong>_CoordinateAxes =
+    &quot;vertCoordName&quot;</strong> attribute to indicate this.</p>
+<p>A Transform is defined by creating a Coordinate Transform Variable (see <a href="../tutorial/CoordinateAttributes.html#Example4">Example</a> and <a href="CoordinateAttributes.html">Reference</a>). The attributes of the Coordinate Transform Variable become the parameters of the transform. A variable is
+  a Coordinate Transform Variable if one (or both) of these is true: </p>
+<ol>
+  <li>It has a <strong>_CoordinateTransformType</strong> or <strong>_CoordinateAxisTypes</strong> attribute.</li>
+  <li>It is listed in a <strong>_CoordinateTransforms</strong> attribute from any variable in the file.</li>
+</ol>
+<p>Any Variable can be a Coordinate Transform Variable, as it is just a container for attributes, i.e. the data values of the Variable are not used by the
+  transform. It is common to use a vertical coordinate to be a Coordinate Transform Variable. Using a <em>dummy variable</em> (with no useful data in it) is
+  also common. The example here are done with dummy variables.</p>
+<p>The CF CoordSysBuilder will add the <strong>_CoordinateTransformType</strong> attribute upon recognizing a standard_name, so adding that is optional if you
+  are using CF Conventions. CF also requires that you use the vertical coordinate as the Coordinate Transform Variable, so that the transform will be added to
+  any Coordinate System that uses that vertical coordinate. The CF CoordSysBuilder will thus add the <strong>_CoordinateAxes =
+    &quot;vertCoordName&quot;</strong> attribute to indicate this.</p>
 <hr>
 <h2>Coordinate Attributes Definition <a name="CoordinateAttributes" id="CoordinateAttributes"></a></h2>
 
@@ -320,8 +346,7 @@
 </table>
 <hr WIDTH="100%">
 <address>
-  <img src="../nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb
-  24 2008
+  <img src="../nc.gif" width="64" height="64" alt=""> This document last updated on Jan 2015
 </address>
 <p>&nbsp;</p>
 </body>

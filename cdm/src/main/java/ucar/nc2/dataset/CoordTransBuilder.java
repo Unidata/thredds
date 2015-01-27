@@ -62,13 +62,13 @@ public class CoordTransBuilder {
     registerTransform(CF.ALBERS_CONICAL_EQUAL_AREA, AlbersEqualArea.class);
     registerTransform(CF.AZIMUTHAL_EQUIDISTANT, AzimuthalEquidistant.class);
     registerTransform("flat_earth", FlatEarth.class);
+    registerTransform(CF.GEOSTATIONARY, Geostationary.class);
     registerTransform(CF.LAMBERT_AZIMUTHAL_EQUAL_AREA, LambertAzimuthal.class);
     registerTransform(CF.LAMBERT_CONFORMAL_CONIC , LambertConformalConic.class);
     registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA , LambertCylindricalEqualArea.class);
     registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs visad.jar
     registerTransform(CF.MERCATOR, Mercator.class);
     registerTransform("MSGnavigation", MSGnavigation.class);
-    registerTransform("geostationary", Geostationary.class);
     registerTransform(CF.ORTHOGRAPHIC, Orthographic.class);
     registerTransform(CF.POLAR_STEREOGRAPHIC, PolarStereographic.class);
     registerTransform("polyconic", PolyconicProjection.class); // ghansham@sac.isro.gov.in 1/8/2012
@@ -77,8 +77,8 @@ public class CoordTransBuilder {
     registerTransform(CF.SINUSOIDAL, Sinusoidal.class);
     registerTransform(CF.STEREOGRAPHIC, Stereographic.class);
     registerTransform(CF.TRANSVERSE_MERCATOR, TransverseMercator.class);
-    registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
     registerTransform("UTM", UTM.class);
+    registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
 
     // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class); // DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
     registerTransform("atmosphere_hybrid_height_coordinate", VAtmHybridHeight.class);

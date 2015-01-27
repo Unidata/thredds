@@ -62,13 +62,14 @@
 <blockquote>
   <p>Information from the GRIB record, in particular the PDS (Product Definition Section) is used to group GRIB records into CDM Variables containing multidimensional arrays. This is done by creating a &quot;CDM hashcode&quot; of each record, and then combining all records with the same hashcode into one variable. The CDM makes certain choices on how to do this, that may need to be overriden for a partitcular dataset. Currently most of these setting ar per dataset, and cannot be applied at a finer granularity, with the exception of <strong>intvFilter</strong>, which applies to specific Variables.</p>
   <p><strong>useGenType</strong>: GRIB-2 only. Control whether generating type (octet 12) is used in the CDM hashcode. If true, records with different generating types will create different variables. Default is false. Set this to true if, in the same dataset, you have records with the same discipline-category-parameter but with different generating types that should be made into diffeerent variables. By default, different generating types will be ignored.</p>
-  <pre> &lt;pdsHash&gt;
-   &lt;useGenType&gt;true&lt;/useGenType&gt;
- &lt;/pdsHash&gt;
-</pre>
+  <pre>&lt;gribConfig&gt;
+  &lt;pdsHash&gt;
+    &lt;useGenType&gt;true&lt;/useGenType&gt;
+  &lt;/pdsHash&gt;
+&lt;/gribConfig&gt;</pre>
   <p><strong>useTableVersion</strong>: GRIB-1 only. Control whether table version (octet 4) is used in the CDM hashcode. If true, records with different table versions will create different variables. Default is false.   Set this to true if, in the same dataset, you have records with the same parameter number but with different table versions that should be made into different variables. By default, different table versions will be ignored.</p>
   <pre> &lt;pdsHash&gt;
-   &lt;<strong>useTableVersion</strong>&gt;false&lt;/<strong>useTableVersion</strong>&gt;
+   &lt;<strong>useTableVersion</strong>&gt;true&lt;/<strong>useTableVersion</strong>&gt;
  &lt;/pdsHash&gt;</pre>
   <p><strong>intvMerge</strong>:  GRIB-1 and GRIB-2. Control whether time intervals are merged. If false, seperate variables are created for each time interval length.  Default is true, which will generate &quot;mixed interval variables&quot; if a variable has records of different interval lengths.</p>
   <pre> &lt;pdsHash&gt;
@@ -76,7 +77,7 @@
  &lt;/pdsHash&gt;</pre>
   <p><strong>useCenter</strong>: GRIB-1 only. Control whether center (octet 5) and subcenter (octet 26, if &gt; 0) is used in the CDM hashcode when the parameter number &gt; 127.  Default is false. Set this to true if, in the same dataset, you have records with the same parameter from different centers that should be made into different variables. By default, different centers will be ignored.</p>
   <pre> &lt;pdsHash&gt;
-   &lt;<strong>useCenter</strong>&gt;false&lt;/<strong>useCenter</strong>&gt;
+   &lt;<strong>useCenter</strong>&gt;true&lt;/<strong>useCenter</strong>&gt;
  &lt;/pdsHash&gt;
 </pre>
 </blockquote>
