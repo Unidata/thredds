@@ -52,11 +52,6 @@ subprojects {
         options.compilerArgs = ['-Xlint:-options']
     }
 
-    tasks.withType(Test) {
-        // Don't abort the build on test failure.
-        ignoreFailures = true
-    }
-
     // FIXME: Extend these to all Jar subtypes (e.g. War)?
     //Could I then add additional attributes in subproject build scripts?
     jar {

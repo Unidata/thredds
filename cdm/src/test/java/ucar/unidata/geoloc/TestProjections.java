@@ -187,6 +187,39 @@ public class TestProjections extends TestCase {
                .getClassName());
   }
 
+  // must have x within +/- xMax, y within +/- yMax
+  public void testProjectionProjMax(ProjectionImpl proj, double xMax,
+                                    double yMax) {
+      java.util.Random r = new java.util.Random((long) this.hashCode());
+      ProjectionPointImpl startP = new ProjectionPointImpl();
+      for (int i = 0; i < NTRIALS; i++) {
+          double x = xMax * (2 * r.nextDouble() - 1);
+          double y = yMax * (2 * r.nextDouble() - 1);
+          startP.setLocation(x, y);
+          try {
+              LatLonPoint ll = proj.projToLatLon(startP);
+              ProjectionPoint endP = proj.latLonToProj(ll);
+              if (show) {
+                  System.out.println("start  = " + startP);
+                  System.out.println("interL  = " + ll);
+                  System.out.println("end  = " + endP);
+              }
+              assert Misc.closeEnough(startP.getX(), endP.getX(),
+                      5.0e-4) : " failed start= " + startP.getX() + " end = "
+                      + endP.getX() + "; x,y=" + startP;
+              assert Misc.closeEnough(startP.getY(), endP.getY(),
+                      5.0e-4) : " failed start= " + startP.getY() + " end = "
+                      + endP.getY() + "; x,y=" + startP;
+          } catch (IllegalArgumentException e) {
+              System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
+              continue;
+          }
+      }
+      if (show)
+          System.out.println("Tested " + NTRIALS + " pts for projection " + proj
+                  .getClassName());
+  }
+
   public void testLC() {
     testProjection(new LambertConformal());
     LambertConformal lc = new LambertConformal();
@@ -271,7 +304,7 @@ public class TestProjections extends TestCase {
   }
 
   public void testFlatEarth() {
-    testProjectionLonMax(new FlatEarth(), 180, 80);
+    testProjectionProjMax(new FlatEarth(), 5000, 5000);
     FlatEarth p = new FlatEarth();
     FlatEarth p2 = (FlatEarth) p.constructCopy();
     assert p.equals(p2);
