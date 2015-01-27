@@ -84,9 +84,13 @@ public class DLwriterController {
     difDir = contentPath + "/dif/";
 
     File file = new File(adnDir);
-    file.mkdirs();
+    if(!file.mkdirs())
+        logServerStartup.warn("Error creating directory: " + file.getPath());
+
     file = new File(difDir);
-    file.mkdirs();
+    if(!file.mkdirs())
+        logServerStartup.warn("Error creating directory: " + file.getPath());
+
     logServerStartup.info("DLwriterServlet.init() - done: ");
   }
 

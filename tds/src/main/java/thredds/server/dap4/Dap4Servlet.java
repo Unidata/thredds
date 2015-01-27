@@ -4,28 +4,12 @@
 
 package thredds.server.dap4;
 
-import dap4.ce.CEConstraint;
-import dap4.ce.parser.*;
-import dap4.core.dmr.*;
-import dap4.core.dmr.parser.Dap4Parser;
-import dap4.core.util.*;
-import dap4.dap4shared.*;
 import dap4.servlet.*;
-import org.xml.sax.SAXException;
-import thredds.servlet.DataRootHandler;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ThreddsConfig;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.constants.CDM;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.*;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 
 public class Dap4Servlet extends DapServlet
 {
@@ -83,7 +67,8 @@ public class Dap4Servlet extends DapServlet
     {
         addCommonHeaders(drq);
         OutputStream out = drq.getOutputStream();
-        PrintWriter pw = new PrintWriter(out);
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(out,
+                CDM.utf8Charset));
         pw.println("Capabilities page not yet supported");
         pw.flush();
     }
