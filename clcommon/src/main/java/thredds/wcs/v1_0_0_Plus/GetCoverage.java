@@ -242,7 +242,7 @@ public class GetCoverage extends WcsRequest
 
     LatLonRect requestLatLonRect = new LatLonRect( minll, maxll );
 
-    LatLonRect covLatLonRect = gcs.getLatLonBoundingBox();
+//    LatLonRect covLatLonRect = gcs.getLatLonBoundingBox();
 //    if ( ! requestLatLonRect.containedIn( covLatLonRect))
 //    {
 //      log.error( "genRequestLatLonBoundingBox(): BBOX <" + bbox + "> not contained in coverage BBOX <"+ covLatLonRect.toString2()+">.");
