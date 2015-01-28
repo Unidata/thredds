@@ -227,12 +227,16 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     CoordinateAxis t = cs.getTaxis();
     CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
 
-    // A runtime axis must be one-dimensional
-    if (rt != null && !(rt instanceof CoordinateAxis1D)) {
-      if (sbuff != null) {
-        sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
-      }
-      return false;
+    // A runtime axis must be scalar or one-dimensional
+    if (rt != null) {
+      if (rt.isScalar()) // for the moment ignore
+        rt = null;
+      else if (!(rt instanceof CoordinateAxis1D)) {
+          if (sbuff != null) {
+            sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
+          }
+          return false;
+        }
     }
 
     // If time axis is two-dimensional...
@@ -427,8 +431,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     ensembleAxis = (CoordinateAxis1D) cs.findAxis(AxisType.Ensemble);
     if (null != ensembleAxis) coordAxes.add(ensembleAxis);
 
-    CoordinateAxis1D rtAxis = (CoordinateAxis1D) cs.findAxis(AxisType.RunTime);
-    if (null != rtAxis) {
+    CoordinateAxis rtAxis = cs.findAxis(AxisType.RunTime);
+    if (null != rtAxis && !rtAxis.isScalar()) {
       try {
         if (rtAxis instanceof CoordinateAxis1DTime)
           runTimeAxis = (CoordinateAxis1DTime) rtAxis;
