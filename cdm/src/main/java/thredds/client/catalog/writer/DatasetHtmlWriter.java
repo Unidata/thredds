@@ -121,11 +121,11 @@ public class DatasetHtmlWriter {
       out.format(" <li><em>CatalogRef: </em>%s</li>%n", makeHref(href, null));
     }
 
-    out.format("</ul>\n");
+    out.format("</ul>%n");
 
     java.util.List<Documentation> docs = ds.getDocumentation();
     if (docs.size() > 0) {
-      out.format("<h3>Documentation:</h3>\n<ul>\n");
+      out.format("<h3>Documentation:</h3>%n<ul>%n");
       for (Documentation doc : docs) {
         String type = (doc.getType() == null) ? "" : "<strong>" + StringUtil2.quoteHtmlContent(doc.getType()) + ":</strong> ";
         String inline = doc.getInlineContent();
@@ -135,12 +135,12 @@ public class DatasetHtmlWriter {
           out.format(" <li>%s %s</li>%n", type, makeHref(doc.getXlinkHref(), doc.getXlinkTitle()));
         }
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }  
 
     java.util.List<Access> access = ds.getAccess();
     if (access.size() > 0) {
-      out.format("<h3>Access:</h3>\n<ol>\n");
+      out.format("<h3>Access:</h3>%n<ol>%n");
       for (Access a : access) {
         Service s = a.getService();
         String urlString = resolveRelativeUrls || datasetEvents
@@ -180,52 +180,52 @@ public class DatasetHtmlWriter {
         }
         out.format(" <li> <b>%s:</b>%s</li>%n", s.getType().toString(), makeHref(fullUrlString, urlString));
       }
-      out.format("</ol>\n");
+      out.format("</ol>%n");
     }
 
     java.util.List<ThreddsMetadata.Contributor> contributors = ds.getContributors();
     if (contributors.size() > 0) {
-      out.format("<h3>Contributors:</h3>\n<ul>\n");
+      out.format("<h3>Contributors:</h3>%n<ul>%n");
       for (ThreddsMetadata.Contributor t : contributors) {
         String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil2.quoteHtmlContent(t.getRole()) + ")</strong> ";
         out.format(" <li>%s %s</li>%n", StringUtil2.quoteHtmlContent(t.getName()), role);
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }
 
     java.util.List<ThreddsMetadata.Vocab> keywords = ds.getKeywords();
     if (keywords.size() > 0) {
-      out.format("<h3>Keywords:</h3>\n<ul>\n");
+      out.format("<h3>Keywords:</h3>%n<ul>%n");
       for (ThreddsMetadata.Vocab t : keywords) {
         String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
         out.format(" <li>%s %s</li>%n", StringUtil2.quoteHtmlContent(t.getText()), vocab);
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }
 
     java.util.List<DateType> dates = ds.getDates();
     if (dates.size() > 0) {
-      out.format("<h3>Dates:</h3>\n<ul>\n");
+      out.format("<h3>Dates:</h3>%n<ul>%n");
       for (DateType d : dates) {
         String type = (d.getType() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(d.getType()) + ")</strong> ";
         out.format(" <li>%s %s</li>%n", StringUtil2.quoteHtmlContent(d.getText()), type);
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }
 
     java.util.List<ThreddsMetadata.Vocab> projects = ds.getProjects();
     if (projects.size() > 0) {
-      out.format("<h3>Projects:</h3>\n<ul>\n");
+      out.format("<h3>Projects:</h3>%n<ul>%n");
       for (ThreddsMetadata.Vocab t : projects) {
         String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
         out.format(" <li>%s %s</li>%n", StringUtil2.quoteHtmlContent(t.getText()), vocab);
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }
 
     java.util.List<ThreddsMetadata.Source> creators = ds.getCreators();
     if (creators.size() > 0) {
-      out.format("<h3>Creators:</h3>\n<ul>\n");
+      out.format("<h3>Creators:</h3>%n<ul>%n");
       for (ThreddsMetadata.Source t : creators) {
         out.format(" <li><strong>%s</strong><ul>%n", StringUtil2.quoteHtmlContent(t.getName()));
         out.format(" <li><em>email: </em>%s</li>%n", StringUtil2.quoteHtmlContent(t.getEmail()));
@@ -235,14 +235,14 @@ public class DatasetHtmlWriter {
                   : makeHref(t.getUrl(), null);
           out.format(" <li> <em>%s</em></li>%n", newUrl);
         }
-        out.format(" </ul></li>\n");
+        out.format(" </ul></li>%n");
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }
 
     java.util.List<ThreddsMetadata.Source> publishers = ds.getPublishers();
     if (publishers.size() > 0) {
-      out.format("<h3>Publishers:</h3>\n<ul>\n");
+      out.format("<h3>Publishers:</h3>%n<ul>%n");
       for (ThreddsMetadata.Source t : publishers) {
         out.format(" <li><strong>%s</strong><ul>%n", StringUtil2.quoteHtmlContent(t.getName()));
         out.format(" <li><em>email: </em>%s%n", StringUtil2.quoteHtmlContent(t.getEmail()));
@@ -252,9 +252,9 @@ public class DatasetHtmlWriter {
                   : makeHref(t.getUrl(), null);
           out.format(" <li> <em>%s</em></li>%n", urlLink);
         }
-        out.format(" </ul>\n");
+        out.format(" </ul>%n");
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }
  
      /*
@@ -292,7 +292,7 @@ public class DatasetHtmlWriter {
       */
     java.util.List<ThreddsMetadata.VariableGroup> vars = ds.getVariables();
     if (vars.size() > 0) {
-      out.format("<h3>Variables:</h3>\n<ul>\n");
+      out.format("<h3>Variables:</h3>%n<ul>%n");
       for (ThreddsMetadata.VariableGroup t : vars) {
 
         out.format("<li><em>Vocabulary</em> [");
@@ -304,7 +304,7 @@ public class DatasetHtmlWriter {
         } else {
           out.format(StringUtil2.quoteHtmlContent(t.getVocabulary()));
         }
-        out.format("]:\n<ul>\n");
+        out.format("]:%n<ul>%n");
 
         java.util.List<ThreddsMetadata.Variable> vlist = t.getVariableList();
         if (vlist.size() > 0) {
@@ -323,16 +323,16 @@ public class DatasetHtmlWriter {
       out.format("</ul>%n");
     }
     if (ds.getVariableMapLink() != null) {
-      out.format("<h3>Variables:</h3>\n");
+      out.format("<h3>Variables:</h3>%n");
       ThreddsMetadata.UriResolved uri = ds.getVariableMapLink();
-      out.format("<ul><li>" + makeHref(uri.resolved.toASCIIString(), "VariableMap") + "</li></ul>\n");
+      out.format("<ul><li>" + makeHref(uri.resolved.toASCIIString(), "VariableMap") + "</li></ul>%n");
     }
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
     if (gc != null) {
-      out.format("<h3>GeospatialCoverage:</h3>\n<ul>\n");
+      out.format("<h3>GeospatialCoverage:</h3>%n<ul>%n");
       if (gc.isGlobal())
-        out.format(" <li><em> Global </em>\n");
+        out.format(" <li><em> Global </em>%n");
 
       out.format(" <li><em> Longitude: </em> %s</li>%n", rangeString(gc.getEastWestRange()));
       out.format(" <li><em> Latitude: </em> %s</li>%n", rangeString(gc.getNorthSouthRange()));
@@ -342,18 +342,18 @@ public class DatasetHtmlWriter {
 
       java.util.List<ThreddsMetadata.Vocab> nlist = gc.getNames();
       if ((nlist != null) && (nlist.size() > 0)) {
-        out.format(" <li><em>  Names: </em> <ul>\n");
+        out.format(" <li><em>  Names: </em> <ul>%n");
         for (ThreddsMetadata.Vocab elem : nlist) {
           out.format(" <li>%s</li>%n", StringUtil2.quoteHtmlContent(elem.getText()));
         }
-        out.format(" </ul>\n");
+        out.format(" </ul>%n");
       }
-      out.format(" </ul>\n");
+      out.format(" </ul>%n");
     }
 
     DateRange tc = ds.getTimeCoverage();
     if (tc != null) {
-      out.format("<h3>TimeCoverage:</h3>\n<ul>\n");
+      out.format("<h3>TimeCoverage:</h3>%n<ul>%n");
       DateType start = tc.getStart();
       if (start != null)
         out.format(" <li><em>  Start: </em> %s</li>%n", start.toString());
@@ -368,7 +368,7 @@ public class DatasetHtmlWriter {
       if (resolution != null) {
         out.format(" <li><em>  Resolution: </em> %s</li>%n", StringUtil2.quoteHtmlContent(resolution.toString()));
       }
-      out.format(" </ul>\n");
+      out.format(" </ul>%n");
     }
 
     java.util.List<ThreddsMetadata.MetadataOther> metadata = ds.getMetadataOther();
@@ -388,10 +388,10 @@ public class DatasetHtmlWriter {
                   : makeHref(m.getXlinkHref(), title);
           out.format(" <li> %s</li>%n", mdLink);
         } //else {
-        //out.format(" <li> <pre>"+m.getMetadataType()+" "+m.getContentObject()+"</pre>\n");
+        //out.format(" <li> <pre>"+m.getMetadataType()+" "+m.getContentObject()+"</pre>%n");
         //}
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }
 
     java.util.List<Property> propsOrg = ds.getProperties();
@@ -401,7 +401,7 @@ public class DatasetHtmlWriter {
         props.add(p);
     }
     if (props.size() > 0) {
-      out.format("<h3>Properties:</h3>\n<ul>\n");
+      out.format("<h3>Properties:</h3>%n<ul>%n");
       for (Property p : props) {
         if (p.getName().equals("attachments")) { // LOOK whats this ?
           String attachLink = resolveRelativeUrls
@@ -412,7 +412,7 @@ public class DatasetHtmlWriter {
           out.format(" <li>%s = \"%s\"</li>%n", StringUtil2.quoteHtmlContent(p.getName()), StringUtil2.quoteHtmlContent(p.getValue()));
         }
       }
-      out.format("</ul>\n");
+      out.format("</ul>%n");
     }
 
     if (complete) out.format("</body></html>");

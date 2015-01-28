@@ -261,7 +261,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
   }
 
   private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
-    long start = 0;
 
     switch (fdp.getFeatureType()) {
       case POINT:
@@ -432,7 +431,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     NetcdfFile ncfile = fdp.getNetcdfFile(); // LOOK will fail
     NcStreamWriter ncWriter = new NcStreamWriter(ncfile, absPath);
     //WritableByteChannel wbc = Channels.newChannel(out);
-    long size = ncWriter.sendHeader(out);
+    ncWriter.sendHeader(out);
     NcStream.writeVInt(out, 0);
 
     out.flush();
