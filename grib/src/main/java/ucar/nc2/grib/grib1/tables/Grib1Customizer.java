@@ -72,6 +72,7 @@ public class Grib1Customizer implements GribTables {
   static public Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
     if (center == 7) return new NcepTables(tables);
     else if (center == 9) return new NcepRfcTables(tables);
+    else if (center == 34) return new JmaTables(tables);
     else if (center == 57) return new AfwaTables(tables);
     else if (center == 58) return new FnmocTables(tables);
     else if (center == 60) return new NcarTables(tables);
@@ -216,7 +217,7 @@ public class Grib1Customizer implements GribTables {
 
   static private Map<Integer, GribLevelType> wmoTable3;  // shared by all instances
 
-  private GribLevelType getLevelType(int code) {
+  protected GribLevelType getLevelType(int code) {
     GribLevelType result = wmoTable3.get(code);
     if (result == null)
       result = new GribLevelType(code, "unknownLayer"+code, null, "unknownLayer"+code, null, false, false);

@@ -78,6 +78,11 @@ public class Grib1SectionBitMap {
     // octet 1-3 (length of section)
     int length = GribNumbers.uint3(raf);
 
+    // seeing a -1, bail out
+    if (length <= 6 || length > 10e6) {   // look max  ??
+      return null;
+    }
+
     // octet 4 unused bits
     raf.read();   // unused
 

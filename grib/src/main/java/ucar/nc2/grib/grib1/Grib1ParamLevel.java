@@ -38,6 +38,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 /**
  * Level information contained in a particular PDS.
+ * WMO Table 3
  *
  * @author caron
  * @since 1/13/12
@@ -49,7 +50,6 @@ public class Grib1ParamLevel {
   private final int levelType; // code Table 3 (octet 10)
   private final float value1;
   private final float value2;
-
 
   /**
    * Allows center specific parsing
@@ -217,8 +217,6 @@ public class Grib1ParamLevel {
         value1 = pds1112;
         value2 = GribNumbers.MISSING;
         break;
-
-      // note NCEP level 236 can use default
     }
   }
 
