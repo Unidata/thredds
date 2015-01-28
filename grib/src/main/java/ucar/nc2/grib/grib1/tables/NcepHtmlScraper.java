@@ -179,7 +179,7 @@ public class NcepHtmlScraper {
   void parseTableA() throws IOException {
     String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html";
     String base = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/";
-    File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\ON388.TableA.htm");
+//    File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\ON388.TableA.htm");
     //Document doc = Jsoup.parse(input, "UTF-8", base);
     //System.out.printf("%s%n", doc);
     Document doc = Jsoup.parse(new URL(source), 10 * 1000);
