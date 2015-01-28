@@ -210,8 +210,6 @@ public class ArrayFloat extends Array {
   public void setDouble(int index, double value) { storage[index] = (float) value; }
 
   public float getFloat(int index) {
-    if (index >= storage.length)
-      System.out.println("HEY");
     return storage[index];
   }
   public void setFloat(int index, float value) { storage[index] = value;}
