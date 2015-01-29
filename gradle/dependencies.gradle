@@ -36,7 +36,7 @@ libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "3.2.12.RELEASE"
+versions["spring"] = "4.1.6.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
