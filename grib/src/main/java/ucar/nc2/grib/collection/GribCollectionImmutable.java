@@ -544,7 +544,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public Coordinate getCoordinate(int index) {
       if (index >= coordIndex.size())
-        System.out.println("HEY");
+        System.out.println("HEY GribCollectionImmutable");
       int grpIndex = coordIndex.get(index);
       return group.coords.get(grpIndex);
     }

@@ -33,6 +33,7 @@ last edited 08/26/2014
 4. Git (ONLY IF THIS IS STABLE RELEASE)
   - go to github thredds repo, "settings"
   - change "Default branch" to the released version
+  - ie, default branch == stable release
 
 5. put thredds.war on conan ftp  (best to do from ssh)
   - cd /web/ftp/pub/thredds/{version}
@@ -46,7 +47,7 @@ last edited 08/26/2014
 
 6. build cdm locally
     git fetch
-    git checkout "v{release}"
+    git checkout "v{release}"  (note that this is the tagged release)
     cd {github/thredds}
     mvn clean install
 
@@ -68,6 +69,8 @@ last edited 08/26/2014
 
 8. put tdm onto conan ftp (version 4.5 and above)
     cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/{version}/current/tdm-{version}.jar
+    also copy over md5 and sha1
+    rename all to remove minor version (eg tdm-4.5.4.jar -> tdm-4.5.jar)
 
 9. CDM has additional targets that are handled by gradle builds
   - modify build.gradle in top directory to use the correct version

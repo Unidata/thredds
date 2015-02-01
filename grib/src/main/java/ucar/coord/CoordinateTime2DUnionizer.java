@@ -35,7 +35,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
       CoordinateTimeAbstract timesPrev = timeMap.get(coordT2D.getRuntime(runIdx));
       if (timesPrev != null)
-        System.out.println("HEY");
+        System.out.println("HEY CoordinateTime2DUnionizer");
       timeMap.put(coordT2D.getRuntime(runIdx), times);   // later partitions will override LOOK could check how many times there are and choose larger
     }
   }

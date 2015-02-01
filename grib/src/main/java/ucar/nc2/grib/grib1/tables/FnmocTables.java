@@ -93,7 +93,7 @@ public class FnmocTables extends Grib1Customizer {
     </entry>
    */
   private Map<Integer, String> readGenProcess(String path) {
-    try (InputStream is =  GribResourceReader.getInputStream(path)) {
+    try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.error("Cant find FNMOC gen process table = " + path);
         return null;
@@ -126,55 +126,16 @@ public class FnmocTables extends Grib1Customizer {
 
 
   /// levels
-  @Override
-  protected VertCoord.VertUnit makeVertUnit(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt != null) ? lt  : super.makeVertUnit(code);
-  }
-
-  @Override
-  public String getLevelNameShort(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelNameShort(code) : lt.getAbbrev();
-  }
-
-  @Override
-  public String getLevelDescription(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelDescription(code) : lt.getDesc();
-  }
-
-  @Override
-  public String getLevelUnits(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelUnits(code) : lt.getUnits();
-  }
-
-  @Override
-  public boolean isLayer(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.isLayer(code) : lt.isLayer();
-  }
-
-  @Override
-  public boolean isPositiveUp(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.isPositiveUp(code) : lt.isPositiveUp();
-  }
-
-  @Override
-  public String getLevelDatum(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelDatum(code) : lt.getDatum();
-  }
-
-  private GribLevelType getLevelType(int code) {
-    if (code < 199) return null;
+  protected GribLevelType getLevelType(int code) {
+    if (code < 199) return super.getLevelType(code);   // WTF ??
     if (levelTypesMap == null)
       levelTypesMap = readFnmocTable3("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml");
     if (levelTypesMap == null)
-      return null;
-    return levelTypesMap.get(code);
+      return super.getLevelType(code);
+
+    GribLevelType levelType = levelTypesMap.get(code);
+    if (levelType != null) return levelType;
+    return super.getLevelType(code);
   }
 
   /*

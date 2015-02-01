@@ -49,7 +49,7 @@ import ucar.unidata.geoloc.*;
  */
 
 public class Geostationary extends ProjectionImpl {
-  private static final String NAME = "geostationary";
+  private static final String NAME = CF.GEOSTATIONARY;
   GEOSTransform navigation = null;
 
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,

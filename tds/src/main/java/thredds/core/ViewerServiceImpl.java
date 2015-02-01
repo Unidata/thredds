@@ -55,7 +55,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
 
-@Service
+// @Service
 public class ViewerServiceImpl implements ViewerService {
   private static Logger logger = LoggerFactory.getLogger(ViewerServiceImpl.class);
 

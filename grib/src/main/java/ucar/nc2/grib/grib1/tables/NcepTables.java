@@ -215,59 +215,19 @@ public class NcepTables extends Grib1Customizer {
   }
 
   /// levels
-
-  @Override
-  protected VertCoord.VertUnit makeVertUnit(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt != null) ? lt : super.makeVertUnit(code);
-  }
-
-  @Override
-  public String getLevelNameShort(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelNameShort(code) : lt.getAbbrev();
-  }
-
-  @Override
-  public String getLevelDescription(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelDescription(code) : lt.getDesc();
-  }
-
-  @Override
-  public String getLevelUnits(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelUnits(code) : lt.getUnits();
-  }
-
-  @Override
-  public boolean isLayer(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.isLayer(code) : lt.isLayer();
-  }
-
-  @Override
-  public boolean isPositiveUp(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.isPositiveUp(code) : lt.isPositiveUp();
-  }
-
-  @Override
-  public String getLevelDatum(int code) {
-    GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelDatum(code) : lt.getDatum();
-  }
-
-  private GribLevelType getLevelType(int code) {
+  protected GribLevelType getLevelType(int code) {
     if (code < 129)
-      return null; // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
+      return super.getLevelType(code); // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
 
     if (levelTypesMap == null)
       levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");
     if (levelTypesMap == null)
-      return null;
+      return super.getLevelType(code);
 
-    return levelTypesMap.get(code);
+    GribLevelType levelType = levelTypesMap.get(code);
+    if (levelType != null) return levelType;
+
+    return super.getLevelType(code);
   }
 
 

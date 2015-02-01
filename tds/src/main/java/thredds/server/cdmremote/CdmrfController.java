@@ -164,8 +164,8 @@ public class CdmrfController {
 		}		
 
 		// absolute path of the dataset endpoint
-		String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();		
-		String path = getPathForDataset(req);		
+		String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
+		String path = getPathForDataset(req);
 		
 		FeatureDatasetPoint fdp = fdps.findFeatureDatasetPointByPath(req, res, path);	
 		CdmrfStreamFactory.getInstance(tdsContext).headerStream(absPath, res, fdp, query);
@@ -185,8 +185,7 @@ public class CdmrfController {
 		}		
 
 		// absolute path of the dataset endpoint
-		String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();		
-		String path = getPathForDataset(req);		
+		String path = getPathForDataset(req);
 		
 		FeatureDatasetPoint fdp = fdps.findFeatureDatasetPointByPath(req, res, path);	
 		CdmrfStreamFactory.getInstance(tdsContext).dataStream(req, res, fdp, path, query);

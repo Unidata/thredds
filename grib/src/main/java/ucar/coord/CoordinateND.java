@@ -205,7 +205,7 @@ public class CoordinateND<T> {
         }
         int trackIdx = workingSAbuilder.calcIndex(currIndex);
         if (trackIdx >= track.length)
-          System.out.println("HEY");
+          System.out.println("HEY CoordinateND trackIdx >= track.length");
         track[trackIdx] = oldTrackValue;
       }
 
@@ -233,8 +233,8 @@ public class CoordinateND<T> {
 
         int count = 0;
         Map<Object, Integer> currValMap = new HashMap<>();
-        if  (curr.getValues() == null)
-          System.out.println("HEY");
+        if (curr.getValues() == null)
+          System.out.println("HEY CoordinateND curr.getValues() == null");
         for (Object val : curr.getValues()) currValMap.put(val, count++);
 
         count = 0;
@@ -262,7 +262,7 @@ public class CoordinateND<T> {
         for (Object val : curr.getValues()) {
           boolean ok = curr.getIndex((CoordinateTime2D.Time2D) val, index2D);
           if (!ok)
-            System.out.println("HEY");   // LOOK
+            System.out.println("HEY CoordinateND !ok");   // LOOK
           currValMap.put(val, index2D[1]); // want the time index
         }
 

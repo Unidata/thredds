@@ -216,5 +216,19 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("B: not visible on spock")
+  @Test
+  public void testJma() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds628-redo", "test/ds628.0", FeatureCollectionType.GRIB1,
+            "B:/rdavm/ds628.0/anl_land/**/.*gbx9", null, null, null, null, null);
+    // config.gribConfig.setOption("timeUnit", "1 minute");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
 
 }

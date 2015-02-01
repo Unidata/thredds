@@ -88,7 +88,7 @@ import ucar.unidata.geoloc.ProjectionImpl;
 public class Geostationary extends AbstractCoordTransBuilder {
 
     public String getTransformName() {
-      return "Geostationary";
+      return CF.GEOSTATIONARY;
     }
 
     public TransformType getTransformType() {

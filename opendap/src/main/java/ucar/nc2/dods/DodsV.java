@@ -307,6 +307,11 @@ class DodsV implements Comparable {
     }
   }
 
+  @Override
+  public String toString() {
+    return bt.getLongName();
+  }
+
   //String getName() { return bt == null ? " root" : bt.getEncodedName(); }
 
   String getClearName() { return bt == null ? "root" : bt.getClearName(); }

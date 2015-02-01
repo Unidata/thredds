@@ -261,11 +261,15 @@ public class Grib1Record {
     } else {
       int bits = 0;   // have to count the bits to see how many data values are stored
       byte[] bm = bitmap.getBitmap(raf);
-      for (byte b : bm) {
-         short s = DataType.unsignedByteToShort(b);
-         bits += Long.bitCount(s);
-       }
-      info.ndataPoints = bits;
+      if (bm == null) {
+        info.ndataPoints = info.nPoints;
+      } else {
+        for (byte b : bm) {
+          short s = DataType.unsignedByteToShort(b);
+          bits += Long.bitCount(s);
+        }
+        info.ndataPoints = bits;
+      }
     }
 
     return info;

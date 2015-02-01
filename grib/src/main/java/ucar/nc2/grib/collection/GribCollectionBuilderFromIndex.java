@@ -257,7 +257,7 @@ message Group {
       readVariable(group, p.getVariables(i));
 
     // assign names, units to coordinates
-    //CalendarDate firstRef = null;
+    // CalendarDate firstRef = null;
     int reftimeCoord = 0;
     int timeCoord = 0;
     int ensCoord = 0;

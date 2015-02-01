@@ -63,8 +63,7 @@ public class GribLevelType implements VertCoord.VertUnit {
     this.isLayer = false;
   }
 
-  public GribLevelType(int code, String desc, String abbrev, String units, String datum,
-                       boolean isPositiveUp, boolean isLayer) {
+  public GribLevelType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer) {
     this.code = code;
     this.desc = desc;
     this.abbrev = abbrev;

@@ -95,13 +95,13 @@ public class WcsRequestParser
     if ( operation.equals( Request.Operation.GetCapabilities ) )
     {
       String sectionsParam = ServletUtil.getParameterIgnoreCase( req, "Sections" );
-      String updateSequenceParam = ServletUtil.getParameterIgnoreCase( req, "UpdateSequence" );
-      String acceptFormatsParam = ServletUtil.getParameterIgnoreCase( req, "AccpetFormats" );
+//      String updateSequenceParam = ServletUtil.getParameterIgnoreCase( req, "UpdateSequence" );
+//      String acceptFormatsParam = ServletUtil.getParameterIgnoreCase( req, "AcceptFormats" );
 
       if ( sectionsParam != null )
       {
         String[] sectionArray = sectionsParam.split( "," );
-        sections = new ArrayList<GetCapabilities.Section>( sectionArray.length );
+        sections = new ArrayList<>( sectionArray.length );
         for ( String curSection : sectionArray )
         {
           sections.add( GetCapabilities.Section.valueOf( curSection ) );
@@ -139,11 +139,10 @@ public class WcsRequestParser
 
   private static List<String> splitCommaSeperatedList( String identifiers )
   {
-    List<String> idList = new ArrayList<String>();
+    List<String> idList = new ArrayList<>();
     String[] idArray = identifiers.split( ",");
-    for ( int i = 0; i < idArray.length; i++ )
-    {
-      idList.add( idArray[i].trim());
+    for (String anIdArray : idArray) {
+      idList.add(anIdArray.trim());
     }
     return idList;
   }

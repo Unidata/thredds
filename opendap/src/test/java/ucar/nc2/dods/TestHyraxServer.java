@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -30,34 +30,30 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package ucar.nc2.dods;
 
-package ucar.nc2.grib.grib1.tables;
+import org.junit.Ignore;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Variable;
 
-import ucar.nc2.grib.GribLevelType;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 /**
- * NCAR (center 60) overrides
+ * Describe
  *
  * @author caron
- * @since 8/29/13
+ * @since 1/28/2015
  */
-public class NcarTables extends Grib1Customizer {
+public class TestHyraxServer {
 
-  NcarTables(Grib1ParamTables tables) {
-    super(60, tables);
-  }
+  @Ignore("server not running")
+  @org.junit.Test
+  public void testGrid() throws IOException, InvalidRangeException {
+    try (DODSNetcdfFile dodsfile = TestDODSRead.openAbs("http://data.nodc.noaa.gov/opendap/pathfinder/Version5.0_Climatologies/Monthly/Day/month01_day.hdf")) {
 
-  // from http://rda.ucar.edu/docs/formats/grib/gribdoc/
-  @Override
-  public String getSubCenterName(int subcenter) {
-    switch (subcenter) {
-      case 1: return "CISL/SCD/Data Support Section";
-      case 2: return "NCAR Command Language";
-      case 3: return "ESSL/MMM/WRF Model";
-      default: return "unknown";
+      // should test that we get grids
+      // see note1 in DODNetcdfFile
     }
   }
 }

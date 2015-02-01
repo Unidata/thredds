@@ -137,6 +137,33 @@ public class TestGribMisc {
      // Robert.C.Lipschutz@noaa.gov
      // we are setting the value of scanMode to 64, which per GRIB2 Table 3.4 indicates "points scan in the +j direction", and so filling
      // the data arrays from south to north.
+    /*
+    Hi Bob:
+
+    You might think that if scanmode = 64, one should just invert the grids. As it turns out, on all projections except for latlon (that i have sample of),
+    the right thing to do is to ignore the flipping, because the coordinate system (the asignment of lat,lon calues to each grid point) correctly adjusts
+    for it. So its just on latlon grids that this issue arises.
+
+    So on your file:
+
+     C:/Users/caron/Downloads/grid174_scanmode_64_example.grb2
+
+      latlon scan mode=64 dLat=0.125000 lat=(89.938004,-89.938004)
+
+    Now, the only other example of a latlon Grid that I seem to have with scan mode 64 is
+
+     Q:/cdmUnitTest/tds/ncep/SREF_PacificNE_0p4_ensprod_20120213_2100.grib2
+
+        latlon scan 64 lat=(10.000000 , 50.000000)
+
+    its over the pacific and much harder to tell if its flipped, but im guessing not. Note that its lat range is consistent with scan mode 64.
+
+    Im loath to generalize from a sample size of 2. Do you have a sample of GRIB2 files with various encodings? Perhaps I could test them to see if we
+    can guess when to flip or not.
+
+    thanks,
+    John
+     */
      String filename = TestDir.cdmUnitTestDir + "formats/grib2/grid174_scanmode_64_example.grb2";
 
      try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {

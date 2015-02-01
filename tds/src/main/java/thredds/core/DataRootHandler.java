@@ -71,8 +71,8 @@ import java.util.*;
  * @author caron
  * @since 1/23/2015
  */
-@Component("DataRootHandler")
-@DependsOn("CdmInit")
+// @Component("DataRootHandler")
+// @DependsOn("CdmInit")
 public final class DataRootHandler implements InitializingBean {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");

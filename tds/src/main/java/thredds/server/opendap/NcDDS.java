@@ -39,6 +39,8 @@ import ucar.ma2.DataType;
 
 import opendap.servers.*;
 import opendap.dap.BaseType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import java.util.*;
 
@@ -58,17 +60,18 @@ public class NcDDS extends ServerDDS {
 
   //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordinate variables
   // Track various subsets of the variables
-  private Hashtable<String, Variable> coordvars = new Hashtable<>(50);
-  private Vector<Variable> ddsvars = new Vector<>(50);   // list of currently active variables
-  private Hashtable<String, Variable> gridarrays = new Hashtable<>(50);
-  private Hashtable<String, Variable> used = new Hashtable<>(50);
-  private Variable findVariable(String name)
-  {
-      for (Variable v: ddsvars) {
-          if(v.getFullName().equals(name)) return v;
-      }
-      return null;
+  private Map<String, Variable> coordvars = new HashMap<>(50);
+  private List<Variable> ddsvars = new ArrayList<>(50);   // list of currently active variables
+  private Map<String, Variable> gridarrays = new HashMap<>(50);
+  private Map<String, Variable> used = new HashMap<>(50);
+
+  private Variable findVariable(String name) {
+    for (Variable v : ddsvars) {
+      if (v.getFullName().equals(name)) return v;
+    }
+    return null;
   }
+
   /**
    * Constructor
    *
@@ -76,63 +79,68 @@ public class NcDDS extends ServerDDS {
    * @param ncfile create DDS from this
    */
   public NcDDS(String name, NetcdfFile ncfile) {
-     super((name));
-  // dup the variable set
-    for (Object o : ncfile.getVariables()) {
-      Variable v = (Variable) o;
-      ddsvars.add(v);
-    }
+    super((name));
+
+    if (ncfile instanceof NetcdfDataset)
+      createFromDataset((NetcdfDataset) ncfile);
+    else
+      createFromFile(ncfile);
+  }
+
+  private void createFromFile(NetcdfFile ncfile) {
+    // dup the variable set
+    ddsvars = new ArrayList<>(ncfile.getVariables());
 
     // get coordinate variables
     for (Object o : ncfile.getDimensions()) {
       Dimension dim = (Dimension) o;
       Variable cv = findVariable(dim.getShortName());
       if ((cv != null) && cv.isCoordinateVariable()) {
-        coordvars.put(dim.getShortName(),cv);
+        coordvars.put(dim.getShortName(), cv);
         if (log.isDebugEnabled())
           log.debug(" NcDDS adding coordinate variable " + cv.getFullName() + " for dimension " + dim.getShortName());
       }
     }
 
-     // collect grid array variables and set of used (in grids) coordinate variables
-     for (Variable v : ddsvars) {
-            boolean isgridarray = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
-            if(!isgridarray) continue;
-            List<Dimension> dimset = v.getDimensions();
-            int rank = dimset.size();
-            for(int i=0;isgridarray && i<rank;i++) {
-                Dimension dim = dimset.get(i);
-                if (dim.getShortName() == null)
-                    isgridarray = false;
-                 else {
-                     Variable gv = coordvars.get(dim.getShortName());
-                     if (gv == null)
-                        isgridarray = false;
-                }
-   	        if(HANDLE_DUP_DIM_GRIDS) {
-                    // Check for duplicate dims
-                    for(int j=i+1;isgridarray && j<rank;j++) {
-                        if(dimset.get(j) == dim)
-                            isgridarray = false;
-		    }
-                }
-            }
-            if(isgridarray)   {
-                gridarrays.put(v.getFullName(),v);
-              for (Dimension dim : dimset) {
-                Variable gv = coordvars.get(dim.getShortName());
-                if (gv != null)
-                  used.put(gv.getFullName(), gv);
-              }
-            }
-     }
-     // remove the used coord vars from ddsvars (wrong for now; keep so that coord vars are top-level also)
-     // for(Variable v: used.values()) ddsvars.remove(v);
+    // collect grid array variables and set of used (in grids) coordinate variables
+    for (Variable v : ddsvars) {
+      boolean isgridarray = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
+      if (!isgridarray) continue;
+      List<Dimension> dimset = v.getDimensions();
+      int rank = dimset.size();
+      for (int i = 0; isgridarray && i < rank; i++) {
+        Dimension dim = dimset.get(i);
+        if (dim.getShortName() == null)
+          isgridarray = false;
+        else {
+          Variable gv = coordvars.get(dim.getShortName());
+          if (gv == null)
+            isgridarray = false;
+        }
+        if (HANDLE_DUP_DIM_GRIDS) {
+          // Check for duplicate dims
+          for (int j = i + 1; isgridarray && j < rank; j++) {
+            if (dimset.get(j) == dim)
+              isgridarray = false;
+          }
+        }
+      }
+      if (isgridarray) {
+        gridarrays.put(v.getFullName(), v);
+        for (Dimension dim : dimset) {
+          Variable gv = coordvars.get(dim.getShortName());
+          if (gv != null)
+            used.put(gv.getFullName(), gv);
+        }
+      }
+    }
+    // remove the used coord vars from ddsvars (wrong for now; keep so that coord vars are top-level also)
+    // for(Variable v: used.values()) ddsvars.remove(v);
 
     // Create the set of variables
     for (Object o1 : ddsvars) {
       Variable cv = (Variable) o1;
-      BaseType bt = null;
+      BaseType bt;
 
       if (false && cv.isCoordinateVariable()) {
         if ((cv.getDataType() == DataType.CHAR))
@@ -141,7 +149,59 @@ public class NcDDS extends ServerDDS {
           bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
       }
       //if (bt == null)
-        bt = createVariable(ncfile, cv);
+      bt = createVariable(ncfile, cv);
+      addVariable(bt);
+    }
+  }
+
+  // take advantage of the work already done by NetcdfDataset
+  private void createFromDataset(NetcdfDataset ncd) {
+        // get coordinate variables, disjunct from variables
+    for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
+      coordvars.put(axis.getShortName(), axis);
+    }
+
+    // dup the variable set
+    ddsvars = new ArrayList<>(50);
+
+    // collect grid array variables and set of coordinate variables used in grids
+    for (Variable v : ncd.getVariables()) {
+      if (coordvars.containsKey(v.getShortName())) continue;  // skip coordinate variables
+      ddsvars.add(v);
+
+      boolean isgridarray = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
+      if (!isgridarray) continue;
+      List<Dimension> dimset = v.getDimensions();
+      int rank = dimset.size();
+      for (int i = 0; isgridarray && i < rank; i++) {
+        Dimension dim = dimset.get(i);
+        if (dim.getShortName() == null)
+          isgridarray = false;
+        else {
+          Variable gv = coordvars.get(dim.getShortName());
+          if (gv == null)
+            isgridarray = false;
+        }
+      }
+      if (isgridarray) {
+        gridarrays.put(v.getFullName(), v);
+        for (Dimension dim : dimset) {
+          Variable gv = coordvars.get(dim.getShortName());
+          if (gv != null)
+            used.put(gv.getFullName(), gv);
+        }
+      }
+    }
+
+        // Create the set of coordinates
+    for (Variable cv : ncd.getCoordinateAxes()) {
+      BaseType bt = createVariable(ncd, cv);
+      addVariable(bt);
+    }
+
+    // Create the set of variables
+    for (Variable cv : ddsvars) {
+      BaseType bt = createVariable(ncd, cv);
       addVariable(bt);
     }
   }
@@ -200,21 +260,21 @@ public class NcDDS extends ServerDDS {
     boolean isGrid = (gridarrays.get(v.getFullName()) != null);
     NcSDArray arr = new NcSDArray(v, createScalarVariable(ncfile, v));
     if (isGrid) {
-         // isgrid == true
-        ArrayList<BaseType> list = new ArrayList<>();
-        list.add(arr); // Array is first element in the list
-        List<Dimension> dimset = v.getDimensions();
-        for (Dimension dim : dimset) {
-          Variable v1 = used.get(dim.getShortName());
-          assert (v1 != null);
-          BaseType bt = null;
-          if ((v1.getDataType() == DataType.CHAR))
-            bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
-          else
-            bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
-          list.add(bt);
-        }
-        return new NcSDGrid(v.getShortName(), list);
+      ArrayList<BaseType> list = new ArrayList<>();
+      list.add(arr); // Array is first element in the list
+      List<Dimension> dimset = v.getDimensions();
+      for (Dimension dim : dimset) {
+        Variable v1 = used.get(dim.getShortName());
+        assert (v1 != null);
+        BaseType bt;
+        if ((v1.getDataType() == DataType.CHAR))
+          bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
+        else
+          bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
+        list.add(bt);
+      }
+      return new NcSDGrid(v.getShortName(), list);
+
     } else
       return arr;
   }

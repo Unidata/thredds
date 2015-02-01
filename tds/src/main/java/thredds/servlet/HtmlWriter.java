@@ -602,8 +602,7 @@ public class HtmlWriter {
     sb.append("</tr>");
 
     // Recursively render the datasets
-    boolean shade = false;
-    shade = doDatasets(cat, cat.getDatasets(), sb, shade, 0, isLocalCatalog);
+    doDatasets(cat, cat.getDatasets(), sb, false, 0, isLocalCatalog);
 
     // Render the page footer
     sb.append("</table>\r\n");

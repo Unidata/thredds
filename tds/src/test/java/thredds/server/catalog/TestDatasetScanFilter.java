@@ -49,7 +49,6 @@ import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.inventory.MFile;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
-import ucar.unidata.util.TestRegexp;
 
 
 public class TestDatasetScanFilter {

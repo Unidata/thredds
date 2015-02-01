@@ -234,15 +234,12 @@ public class ControllerOS implements MController {
 
  // traversal of one directory
   private static class Traversal {
-    File dir; // top directory
     List<File> fileList;  // list of files
     Iterator<File> subdirIterator;  // list of subdirs
     boolean leavesAreDone = false;   // when all the files are done, start on the subdirs
 
     Traversal(File dir) {
-      this.dir = dir;
-
-      fileList = new ArrayList<File>();
+      fileList = new ArrayList<>();
       if (dir == null) return;  // LOOK WHY
       if (dir.listFiles() == null) return;
 

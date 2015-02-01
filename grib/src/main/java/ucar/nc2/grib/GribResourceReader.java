@@ -44,7 +44,6 @@ import java.util.regex.*;
  * Static methods to read resource files.
  *
  * @author caron 07/28/14
- * @author Jeff McWhirter  02/07/2007
  * @version 2.0
  */
 

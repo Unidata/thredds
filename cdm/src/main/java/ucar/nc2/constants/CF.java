@@ -62,6 +62,7 @@ public interface CF {
   // grid mapping names
   public final static String ALBERS_CONICAL_EQUAL_AREA = "albers_conical_equal_area";
   public final static String AZIMUTHAL_EQUIDISTANT = "azimuthal_equidistant";
+  public final static String GEOSTATIONARY = "geostationary";
   public final static String LAMBERT_AZIMUTHAL_EQUAL_AREA = "lambert_azimuthal_equal_area";
   public final static String LAMBERT_CONFORMAL_CONIC = "lambert_conformal_conic";
   public final static String LAMBERT_CYLINDRICAL_EQUAL_AREA = "lambert_cylindrical_equal_area";

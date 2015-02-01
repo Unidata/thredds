@@ -77,7 +77,7 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public String getUnit() {
-    return vunit.getUnits();
+    return vunit == null ? null : vunit.getUnits();
   }
 
   public VertCoord.VertUnit getVertUnit() {
