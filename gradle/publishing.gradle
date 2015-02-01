@@ -1,0 +1,22 @@
+subprojects {
+    apply plugin: 'maven-publish'
+
+    // Finds this project's Java software component, if any.
+    // This component is added when the Java plugin is applied.
+    def javaSoftwareComponent = components.findByName("java")
+
+    if (javaSoftwareComponent) {  // Groovy truth! Equivalent to: "javaSoftwareComponent != null"
+        publishing {
+            publications {
+                // Creates a maven publication named after the project. This will also generate several tasks:
+                //   generatePomFileFor$namePublication
+                //   publish$namePublicationToMavenLocal
+                //   publishToMavenLocal
+                //   publish
+                "$name"(MavenPublication) {
+                    from javaSoftwareComponent
+                }
+            }
+        }
+    }
+}
