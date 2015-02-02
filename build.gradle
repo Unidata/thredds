@@ -82,6 +82,8 @@ subprojects {
 // Pulls contents into this script. Subprojects inherit the properties and methods defined by their parent.
 apply from: "gradle/dependencies.gradle"
 
+apply from: "gradle/testing.gradle"
+
 apply from: "gradle/publishing.gradle"
 
 task wrapper(type: Wrapper) {
