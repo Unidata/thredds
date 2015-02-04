@@ -2,3 +2,8 @@ dependencies {
     compile libraries["joda-time"]
     compile libraries["jcip-annotations"]
 }
+
+// Re-enable test task for this subproject.
+// It (and all other subproject test tasks) were originally disabled in /gradle/testing.gradle.
+test.setEnabled true
+

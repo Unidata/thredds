@@ -16,7 +16,11 @@ dependencies {
     testRuntime libraries["slf4j-jdk14"]
 }
 
-test{
+test {
+    // Re-enable test task for this subproject.
+    // It (and all other subproject test tasks) were originally disabled in /gradle/testing.gradle.
+    setEnabled true
+
     // Causes JUnit to throw an exception: "No tests found in ucar.nc2.util.UnitTestCommon"
     exclude 'ucar/nc2/util/UnitTestCommon.class'
 }

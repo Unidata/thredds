@@ -1,3 +1,5 @@
+apply from: "$rootDir/gradle/integTesting.gradle"
+
 dependencies {
     testCompile project(":cdm")
     testRuntime project(":clcommon")
@@ -17,4 +19,52 @@ dependencies {
     testCompile libraries["com.eclipsesource.restfuse"]
 
     testRuntime libraries["slf4j-jdk14"]
+}
+
+//ext {
+//    tomcatStopPort = 8081
+//    tomcatStopKey = 'stopKey'
+//}
+//
+////task integrationTomcatRun(type: com.bmuschko.gradle.tomcat.tasks.TomcatRun) {
+//tomcatRun {
+//    stopPort = tomcatStopPort
+//    stopKey = tomcatStopKey
+//    daemon = true
+//}
+//
+////task integrationTomcatStop(type: com.bmuschko.gradle.tomcat.tasks.TomcatStop) {
+//tomcatStop {
+//    stopPort = tomcatStopPort
+//    stopKey = tomcatStopKey
+//}
+//
+//task integrationTest(type: Test) {
+//    include 'thredds/server/catalog/TestTdsLocal.class'
+////    dependsOn integrationTomcatRun
+//    dependsOn tomcatRun
+////    finalizedBy integrationTomcatStop
+//    finalizedBy tomcatStop
+//    shouldRunAfter test
+//
+//    doFirst {
+//        "Before integ test"
+//    }
+//    doLast {
+//        "After integ test"
+//    }
+//}
+//
+//check.dependsOn integrationTest
+//
+//test {
+//    exclude 'thredds/server/catalog/TestTdsLocal.class'
+//}
+
+sourceSets {
+    integrationTest {
+        java {
+            include 'thredds/server/catalog/TestTdsLocal.java'
+        }
+    }
 }

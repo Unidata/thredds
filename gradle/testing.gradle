@@ -1,6 +1,11 @@
 subprojects {
-    // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
     apply plugin: "java"
+
+    // Disable tests globally for now.
+    // For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
+    test.setEnabled false
+
+    // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
     apply plugin: "jacoco"
 
     jacocoTestReport.dependsOn test
