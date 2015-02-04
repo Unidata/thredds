@@ -44,11 +44,10 @@ dependencies {
     tomcat libraries["tomcat-embed-jasper"]
 }
 
-ext {
-    tomcatHttpPort = 8081
-    tomcatAjpPort = 8010
-    tomcatStopPort = 8006
-    tomcatStopKey = "STOP"
+tomcat {
+    httpPort = 8081
+    ajpPort = 8010
+    stopPort = 8006
 }
 
 task integrationTomcatRun(type: com.bmuschko.gradle.tomcat.tasks.TomcatRun) {
@@ -63,23 +62,17 @@ task integrationTomcatRun(type: com.bmuschko.gradle.tomcat.tasks.TomcatRun) {
     webAppClasspath = project(":tds").tasks.getByName("war").classpath
     webAppSourceDirectory = project(":tds").webAppDir
 
-    httpPort = tomcatHttpPort
-    ajpPort = tomcatAjpPort
-    stopPort = tomcatStopPort
-    stopKey = tomcatStopKey
-
     contextPath = 'thredds'
 
     doFirst {
+        def contentRoot = 'C:\\Users\\cwardgar\\dev\\tools\\apache-tomcat-8.0.12\\content'
+        println "Content root: $contentRoot"
+        System.setProperty 'tds.content.root.path', contentRoot
+
         def mainOutputDir = project.sourceSets.main.output.classesDir
         if (mainOutputDir) {
             classesDirectory = mainOutputDir
         }
-
-        println "httpPort: $httpPort"
-        println "ajpPort: $ajpPort"
-        println "stopPort: $stopPort"
-        println "stopKey: $stopKey"
 
         println "===sourceSets.integrationTest.allSource==="
         sourceSets.integrationTest.allSource.srcDirs.each {
@@ -114,14 +107,6 @@ task integrationTomcatRun(type: com.bmuschko.gradle.tomcat.tasks.TomcatRun) {
 
 task integrationTomcatStop(type: com.bmuschko.gradle.tomcat.tasks.TomcatStop) {
     onlyIf { !sourceSets.integrationTest.allSource.empty }
-
-    stopPort = tomcatStopPort
-    stopKey = tomcatStopKey
-
-    doFirst {
-        println "stopPort: $stopPort"
-        println "stopKey: $stopKey"
-    }
 }
 
 test.testLogging.setShowStandardStreams(true)
@@ -130,16 +115,10 @@ task integrationTest(type: Test, dependsOn: jar) {
     dependsOn integrationTomcatRun
     finalizedBy integrationTomcatStop
 
-//    def contentRoot =  '/share/testdata/cdmUnitTest/it/content'
-//    def contentRoot = project(":tds").webAppDir.toString() + "\\WEB-INF\\altContent\\startup"
-    def contentRoot = 'C:\\Users\\cwardgar\\dev\\tools\\apache-tomcat-8.0.12\\content'
-    println "Content root: $contentRoot"
-    systemProperty 'tds.content.root.path', contentRoot
-
     testClassesDir = sourceSets.integrationTest.output.classesDir
-//    logging.captureStandardOutput(LogLevel.INFO)
     classpath = sourceSets.integrationTest.runtimeClasspath
     maxParallelForks = 1
+
     reports {
         html.destination = project.file("$project.buildDir/reports/integration-tests/")
         junitXml.destination = project.file("$project.buildDir/integration-test-results/")
