@@ -52,6 +52,21 @@ import java.util.List;
 public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Parameter> {
   public final int discipline, category, number;
   public final String name, unit, abbrev, desc;
+  public final Float fill, missing;
+
+  public Grib2Parameter(int discipline, int category, int number, String name,
+                        String unit, String abbrev, String desc, float fill,
+                        float missing) {
+    this.discipline = discipline;
+    this.category = category;
+    this.number = number;
+    this.name = name.trim();
+    this.abbrev = abbrev;
+    this.unit = Util.cleanUnit(unit);
+    this.desc = desc;
+    this.fill = fill;
+    this.missing = missing;
+  }
 
   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc) {
     this.discipline = discipline;
@@ -61,6 +76,8 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     this.abbrev = abbrev;
     this.unit = Util.cleanUnit(unit);
     this.desc = desc;
+    this.fill = null;
+    this.missing = Float.NaN;
   }
 
   public Grib2Parameter(Grib2Parameter from, String name, String unit) {
@@ -72,6 +89,8 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
 
     this.name = name.trim();
     this.unit = Util.cleanUnit(unit);
+    this.fill = null;
+    this.missing = Float.NaN;
   }
 
   public String getId() {
@@ -128,6 +147,16 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
   }
 
   @Override
+  public Float getMissing() {
+    return missing;
+  }
+
+  @Override
+  public Float getFill() {
+    return fill;
+  }
+
+  @Override
   public String toString() {
     return "Grib2Parameter{" +
             "discipline=" + discipline +
@@ -137,6 +166,8 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
             ", unit='" + unit + '\'' +
             ", abbrev='" + abbrev + '\'' +
             ", desc='" + desc + '\'' +
+            ", fill='" + fill + '\'' +
+            ", missing='" + missing + '\'' +
             '}';
   }
 

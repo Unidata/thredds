@@ -359,7 +359,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       String desc = makeVariableLongName(vindex);
       v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
       v.addAttribute(new Attribute(CDM.UNITS, makeVariableUnits(vindex)));
-      v.addAttribute(new Attribute(CDM.MISSING_VALUE, Float.NaN));
 
       GribTables.Parameter gp = getParameter(vindex);
       if (gp != null) {
@@ -367,6 +366,11 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           v.addAttribute(new Attribute(CDM.DESCRIPTION, gp.getDescription()));
         if (gp.getAbbrev() != null)
           v.addAttribute(new Attribute(CDM.ABBREV, gp.getAbbrev()));
+        v.addAttribute(new Attribute(CDM.MISSING_VALUE, gp.getMissing()));
+        if (gp.getFill() != null)
+          v.addAttribute(new Attribute(CDM.FILL_VALUE, gp.getFill()));
+      } else {
+        v.addAttribute(new Attribute(CDM.MISSING_VALUE, Float.NaN));
       }
 
       // horiz coord system

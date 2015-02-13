@@ -135,6 +135,16 @@ public class Grib1Parameter implements GribTables.Parameter {
     return null;
   }
 
+  @Override
+  public Float getFill() {
+    return null;
+  }
+
+  @Override
+  public Float getMissing() {
+    return Float.NaN;
+  }
+
   public String getCFname() {
     return cfName;
   }
