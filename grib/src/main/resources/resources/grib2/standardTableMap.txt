@@ -15,3 +15,7 @@
 #
 # center 40 (KMA)
 40;     -1; -1; -1; -1;   kma; korea met
+#
+# MRMS coming from NCEP
+# center 161 (US NOAA OAR), subcenter 0, discipline 209
+161;	0; -1; -1; -1; mrms; mrms
