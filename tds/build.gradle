@@ -74,3 +74,13 @@ task printProps << {
     println System.properties['java.version'];
     for (prop in System.properties.propertyNames()) printf("%s = %s%n", prop, System.properties[prop])
 }
+
+
+buildscript {
+    dependencies {
+        classpath libraries["gretty"]
+    }
+}
+
+// Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
+apply plugin: 'org.akhikhl.gretty'

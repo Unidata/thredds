@@ -1,5 +1,3 @@
-apply from: "$rootDir/gradle/integTesting.gradle"
-
 dependencies {
     testCompile project(":cdm")
     testRuntime project(":clcommon")
@@ -21,50 +19,32 @@ dependencies {
     testRuntime libraries["slf4j-jdk14"]
 }
 
-//ext {
-//    tomcatStopPort = 8081
-//    tomcatStopKey = 'stopKey'
-//}
-//
-////task integrationTomcatRun(type: com.bmuschko.gradle.tomcat.tasks.TomcatRun) {
-//tomcatRun {
-//    stopPort = tomcatStopPort
-//    stopKey = tomcatStopKey
-//    daemon = true
-//}
-//
-////task integrationTomcatStop(type: com.bmuschko.gradle.tomcat.tasks.TomcatStop) {
-//tomcatStop {
-//    stopPort = tomcatStopPort
-//    stopKey = tomcatStopKey
-//}
-//
-//task integrationTest(type: Test) {
-//    include 'thredds/server/catalog/TestTdsLocal.class'
-////    dependsOn integrationTomcatRun
-//    dependsOn tomcatRun
-////    finalizedBy integrationTomcatStop
-//    finalizedBy tomcatStop
-//    shouldRunAfter test
-//
-//    doFirst {
-//        "Before integ test"
-//    }
-//    doLast {
-//        "After integ test"
-//    }
-//}
-//
-//check.dependsOn integrationTest
-//
-//test {
-//    exclude 'thredds/server/catalog/TestTdsLocal.class'
-//}
 
-sourceSets {
-    integrationTest {
-        java {
-            include 'thredds/server/catalog/TestTdsLocal.java'
-        }
+buildscript {
+    dependencies {
+        classpath libraries["gretty"]
     }
+}
+
+apply plugin: 'org.akhikhl.gretty'
+
+gretty {
+    servletContainer = 'tomcat7'
+    httpPort = 8081
+    contextPath = '/thredds'
+
+    // Overlay the "tds" webapp onto this project's webapp.
+    // This is how we're able to have tds integration tests outside of the tds project.
+    // See http://akhikhl.github.io/gretty-doc/Web-app-overlays.html
+    overlay ':tds'
+
+    integrationTestTask = 'integrationTest' // The name of an existing gradle task.
+
+    def contentRoot = 'C:\\Users\\cwardgar\\dev\\tools\\apache-tomcat-8.0.12\\content'
+    systemProperty 'tds.content.root.path', contentRoot
+}
+
+// Gretty will start the webapp before this task and shut it down afterward.
+task integrationTest(type: Test, dependsOn: 'test') {
+    include 'thredds/server/catalog/TestTdsLocal.class'
 }

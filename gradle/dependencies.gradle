@@ -78,21 +78,6 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
-////////////////////////////////////////// Integration Testing //////////////////////////////////////////
-
-versions["tomcat"] = "7.0.57"
-
-libraries["tomcat-embed-core"] = "org.apache.tomcat.embed:tomcat-embed-core:${versions["tomcat"]}"
-
-libraries["tomcat-embed-logging-juli"] = "org.apache.tomcat.embed:tomcat-embed-logging-juli:${versions["tomcat"]}"
-
-libraries["tomcat-embed-jasper"] =
-        dependencies.create("org.apache.tomcat.embed:tomcat-embed-jasper:${versions["tomcat"]}") {
-    exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
-}
-
-libraries["gradle-tomcat-plugin"] = 'com.bmuschko:gradle-tomcat-plugin:2.0'
-
 ////////////////////////////////////////// Other //////////////////////////////////////////
 
 // See https://github.com/coverity/coverity-security-library
@@ -172,6 +157,8 @@ libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.1.Fina
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.5-SNAPSHOT"
+
+libraries["gretty"] = "org.akhikhl.gretty:gretty:1.1.8"
 
 
 //////////////////////// Global transitive dependency replacements and exclusions ////////////////////////

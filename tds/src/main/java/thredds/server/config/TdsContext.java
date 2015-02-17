@@ -298,7 +298,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       if (base != null) {
         this.tomcatLogDir = new File(base, "logs").getCanonicalFile();
         if (!this.tomcatLogDir.exists()) {
-          String msg = "'catalina.base' directory not found";
+          String msg = "'catalina.base' directory not found: " + this.tomcatLogDir;
           logServerStartup.error("TdsContext.init(): " + msg);
         }
       } else {
