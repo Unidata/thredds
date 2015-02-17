@@ -40,11 +40,25 @@ gretty {
 
     integrationTestTask = 'integrationTest' // The name of an existing gradle task.
 
+    // By default, this field is 'false', which causes Gretty to start the embedded Tomcat process with a non-blocking
+    // entropy source. It is intended to make startup faster.
+    // See http://wiki.apache.org/tomcat/HowTo/FasterStartUp#Entropy_Source and http://goo.gl/NnJtpZ
+    //
+    // However, setting the "java.security.egd" system property as described in the Tomcat doc causes an error
+    // message when running tests on Windows: https://bz.apache.org/bugzilla/show_bug.cgi?id=56139
+    //
+    // Making this field 'true' prevents Gretty from setting that property, and thus avoids the error message.
+    // It turns out to have negligible effect on startup time, at least in this integration testing context.
+    //
+    // Also, a comment in the bug report mentions that this issue has been fixed as of Tomcat 7.0.53.
+    // However, it is actually still present as of 7.0.55
+    secureRandom = true
+
     def contentRoot = 'C:\\Users\\cwardgar\\dev\\tools\\apache-tomcat-8.0.12\\content'
     systemProperty 'tds.content.root.path', contentRoot
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test, dependsOn: 'test') {
-    include 'thredds/server/catalog/TestTdsLocal.class'
+//    include 'thredds/server/catalog/TestTdsLocal.class'
 }
