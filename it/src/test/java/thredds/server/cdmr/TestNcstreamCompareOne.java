@@ -54,7 +54,7 @@ public class TestNcstreamCompareOne {
   // http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/grib2/SingleRecordNbits0.grib2?req=header
      String problemFile = TestNcstreamCompareWithFiles.contentRoot + "/grib2/SingleRecordNbits0.grib2";
      String name = StringUtil2.substitute(problemFile.substring(TestNcstreamCompareWithFiles.contentRoot.length()), "\\", "/");
-     String remote = TestWithLocalServer.server + TestNcstreamCompareWithFiles.urlPath + name;
-    TestNcstreamCompareWithFiles.compareDatasets(problemFile, remote);
+     String remote = TestWithLocalServer.withPath(TestNcstreamCompareWithFiles.urlPath + name);
+     TestNcstreamCompareWithFiles.compareDatasets(problemFile, remote);
    }
 }

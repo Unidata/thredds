@@ -13,10 +13,12 @@ dependencies {
     testCompile libraries["joda-time"]
     testCompile libraries["httpcore"]
     testCompile libraries["httpclient"]
+    testCompile libraries["commons-lang3"]
 
     testCompile libraries["com.eclipsesource.restfuse"]
 
-    testRuntime libraries["slf4j-jdk14"]
+    // Unlike the other subprojects, we do not need to add an SLF4J binding to testRuntime;
+    // we're overlaying tds (see below), so we're already getting the binding that it declares.
 }
 
 
@@ -54,11 +56,17 @@ gretty {
     // However, it is actually still present as of 7.0.55
     secureRandom = true
 
-    def contentRoot = 'C:\\Users\\cwardgar\\dev\\tools\\apache-tomcat-8.0.12\\content'
+//    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
+    def contentRoot = 'Q:/cdmUnitTest/it/content'
+
     systemProperty 'tds.content.root.path', contentRoot
+    systemProperty 'tds.dir.cdmUnitTest', 'Q:/cdmUnitTest'
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test, dependsOn: 'test') {
 //    include 'thredds/server/catalog/TestTdsLocal.class'
+//    include 'thredds/TestEncoding.class'
+
+    systemProperty 'unidata.testdata.path', 'Q:'
 }

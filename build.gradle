@@ -51,7 +51,7 @@ subprojects {
     }
 
     // FIXME: Extend these to all Jar subtypes (e.g. War)?
-    //Could I then add additional attributes in subproject build scripts?
+    // Could I then add additional attributes in subproject build scripts?
     jar {
         manifest {
             attributes 'Implementation-Title': project.name,
@@ -87,5 +87,5 @@ apply from: "gradle/testing.gradle"
 apply from: "gradle/publishing.gradle"
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
+    gradleVersion = '2.3'
 }

@@ -87,6 +87,7 @@ task releaseDocs(dependsOn: javadoc) << {
 configurations {
     // Define a custom configuration and fill it with our test code's runtime dependencies.
     testArtifacts.extendsFrom testRuntime
+    testArtifacts.exclude(module: "slf4j-jdk14")  // Exclude the slf4j binding.
 }
 
 task testJar(type: Jar, dependsOn: testClasses,
