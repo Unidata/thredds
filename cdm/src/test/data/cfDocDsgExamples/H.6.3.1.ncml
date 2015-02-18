@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- See http://cfconventions.org/Data/cf-convetions/cf-conventions-1.6/build/cf-conventions.html#Example%20H.6.3.1 -->
+<!-- See http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#Example%20H.6.3.1 -->
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
     <!-- The lengths of each trajectory's profiles:
         _1_	_2_	_3_	_4_	_5_
