@@ -56,17 +56,30 @@ gretty {
     // However, it is actually still present as of 7.0.55
     secureRandom = true
 
-//    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
-    def contentRoot = 'Q:/cdmUnitTest/it/content'
+    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
+//    def contentRoot = 'Q:/cdmUnitTest/it/content'
 
     systemProperty 'tds.content.root.path', contentRoot
-    systemProperty 'tds.dir.cdmUnitTest', 'Q:/cdmUnitTest'
+//    systemProperty 'tds.dir.cdmUnitTest', 'Q:/cdmUnitTest'
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test, dependsOn: 'test') {
-//    include 'thredds/server/catalog/TestTdsLocal.class'
-//    include 'thredds/TestEncoding.class'
+    include 'thredds/server/catalog/TestTdsLocal.class'
+    include 'thredds/TestEncoding.class'
 
-    systemProperty 'unidata.testdata.path', 'Q:'
+//    systemProperty 'unidata.testdata.path', 'Q:'
+}
+
+// We want to modify the "appBeforeIntegrationTest" task, but it (like all Gretty tasks) won't be added to the
+// project until after evaluation: http://goo.gl/qlFXTD
+// So, our modification must also occur after evaluation.
+afterEvaluate {
+    appBeforeIntegrationTest {
+        doFirst {
+            // tomcatBaseDir is the working directory for embedded tomcat. We want to write our logs there as well.
+            File tomcatBaseDir = launcherConfig.baseDir
+            gretty.logDir = new File(tomcatBaseDir, "logs").absolutePath
+        }
+    }
 }
