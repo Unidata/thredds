@@ -29,6 +29,11 @@ buildscript {
 }
 
 apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+}
 
 gretty {
     servletContainer = 'tomcat7'
@@ -71,15 +76,44 @@ task integrationTest(type: Test, dependsOn: 'test') {
 //    systemProperty 'unidata.testdata.path', 'Q:'
 }
 
-// We want to modify the "appBeforeIntegrationTest" task, but it (like all Gretty tasks) won't be added to the
-// project until after evaluation: http://goo.gl/qlFXTD
+task integrationTestReport(type: JacocoReport) {
+    // executionData must be closure, because appBeforeIntegrationTest is not defined yet.
+    // We must pass jacoco.destinationFile, not appBeforeIntegrationTest itself,
+    // because otherwise JacocoReport would translate task argument to closure and Project.files(...)
+    // (which is used internally by executionData) is not able to resolve recursive closures.
+    executionData { tasks.appBeforeIntegrationTest.jacoco.destinationFile }
+
+    // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
+    // However, the spread-dot operator has given us a list. We use the spread operator to convert:
+    // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
+    sourceSets(*(rootProject.subprojects*.sourceSets.main))
+
+    reports {
+        html.destination = reporting.file("jacoco/integrationTest/html")
+    }
+}
+
+// We want to modify the "appBeforeIntegrationTest" and "appAfterIntegrationTest" tasks, but like all Gretty tasks,
+// they won't be added to the project until after evaluation: http://goo.gl/qlFXTD
 // So, our modification must also occur after evaluation.
 afterEvaluate {
     appBeforeIntegrationTest {
+        // "jacoco" extension is created automatically for all AppBeforeIntegrationTest tasks
+        // and has type org.gradle.testing.jacoco.plugins.JacocoTaskExtension
+        jacoco {
+            append = false
+            destinationFile = new File(buildDir, 'jacoco/integrationTest.exec')
+        }
+
         doFirst {
             // tomcatBaseDir is the working directory for embedded tomcat. We want to write our logs there as well.
             File tomcatBaseDir = launcherConfig.baseDir
             gretty.logDir = new File(tomcatBaseDir, "logs").absolutePath
         }
+    }
+
+    appAfterIntegrationTest {
+        // reports should be generated only after integration tests
+        finalizedBy tasks.integrationTestReport
     }
 }
