@@ -172,7 +172,8 @@ public class H5header {
       debugOut = debugPS;
 
     long actualSize = raf.length();
-    memTracker = new MemTracker(actualSize);  // LOOK WTF ??
+
+    if (debugTracker) memTracker = new MemTracker(actualSize);  // LOOK WTF ??
 
     // find the superblock - no limits on how far in
     boolean ok = false;
@@ -194,7 +195,7 @@ public class H5header {
     raf.order(RandomAccessFile.LITTLE_ENDIAN);
 
     long superblockStart = raf.getFilePointer() - 8;
-    memTracker.add("header", 0, superblockStart);
+    if (debugTracker) memTracker.add("header", 0, superblockStart);
 
     // superblock version
     byte versionSB = raf.readByte();
@@ -288,7 +289,7 @@ public class H5header {
       debugOut.println(" driver BlockAddress= 0x" + Long.toHexString(driverBlockAddress));
       debugOut.println();
     }
-    memTracker.add("superblock", superblockStart, raf.getFilePointer());
+    if (debugTracker) memTracker.add("superblock", superblockStart, raf.getFilePointer());
 
     // look for file truncation
     long fileSize = raf.length();
@@ -340,7 +341,7 @@ public class H5header {
       debugOut.println();
     }
 
-    memTracker.add("superblock", superblockStart, raf.getFilePointer());
+    if (debugTracker) memTracker.add("superblock", superblockStart, raf.getFilePointer());
 
     if (baseAddress != superblockStart) {
       baseAddress = superblockStart;
@@ -1407,11 +1408,7 @@ public class H5header {
     }
 
     if (vinfo.isChunked) {// make the data btree, but entries are not read in
-      vinfo.btree = new DataBTree(this, dataAddress, v.getShape(), vinfo.storageSize);
-
-      // This causes a massive slowdown when reading a dataset.
-      // See https://github.com/Unidata/thredds/issues/97
-//      vinfo.btree.setMemTracker(memTracker);
+      vinfo.btree = new DataBTree(this, dataAddress, v.getShape(), vinfo.storageSize, memTracker);
 
       if (vinfo.isChunked) {  // add an attribute describing the chunk size
         List<Integer> chunksize = new ArrayList<>();
@@ -4255,7 +4252,7 @@ public class H5header {
       if (debugSymbolTable)
         debugOut.println("<-- end readSymbolTableEntry position=" + raf.getFilePointer());
 
-      memTracker.add("SymbolTableEntry", filePos, posData + 16);
+      if (debugTracker) memTracker.add("SymbolTableEntry", filePos, posData + 16);
     }
 
     public int getSize() {

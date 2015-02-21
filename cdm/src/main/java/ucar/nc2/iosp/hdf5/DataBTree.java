@@ -33,7 +33,7 @@ public class DataBTree {
 
   private final H5header h5;
   private final RandomAccessFile raf;
-  private MemTracker memTracker;
+  private final MemTracker memTracker;
 
   private final long rootNodeAddress;
   private final Tiling tiling;
@@ -41,21 +41,19 @@ public class DataBTree {
 
   private Variable owner;
 
-  DataBTree(H5header h5, long rootNodeAddress, int[] varShape, int[] storageSize) throws IOException {
+  DataBTree(H5header h5, long rootNodeAddress, int[] varShape, int[] storageSize, MemTracker memTracker) throws IOException {
     this.h5 = h5;
     this.raf = h5.raf;
     this.rootNodeAddress = rootNodeAddress;
     this.tiling = new Tiling(varShape, storageSize);
     this.ndimStorage = storageSize.length;
+    this.memTracker = memTracker;
+
     wantType = 1;
   }
 
   void setOwner(Variable owner) {
     this.owner = owner;
-  }
-
-  public void setMemTracker(MemTracker memTracker) {
-    this.memTracker = memTracker;
   }
 
   // used by H5tiledLayoutBB
