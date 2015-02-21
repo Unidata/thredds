@@ -1407,7 +1407,11 @@ public class H5header {
     }
 
     if (vinfo.isChunked) {// make the data btree, but entries are not read in
-      vinfo.btree = new DataBTree(this, dataAddress, v.getShape(), vinfo.storageSize, memTracker);
+      vinfo.btree = new DataBTree(this, dataAddress, v.getShape(), vinfo.storageSize);
+
+      // This causes a massive slowdown when reading a dataset.
+      // See https://github.com/Unidata/thredds/issues/97
+//      vinfo.btree.setMemTracker(memTracker);
 
       if (vinfo.isChunked) {  // add an attribute describing the chunk size
         List<Integer> chunksize = new ArrayList<>();
