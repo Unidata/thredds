@@ -1,18 +1,6 @@
 allprojects {
     group = "edu.ucar"
     version = '4.6.0-SNAPSHOT'
-}
-
-subprojects {
-    apply plugin: 'java'
-
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
-
-    // Unlike Maven, Gradle places CLASS files and resources in different directories by default.
-    // This is a problem for IntelliJ: when running an application from the IDE, it expects everything to be in the
-    // same directory. To fix, we're configuring resources to be copied to the same directory as CLASS files.
-    processResources.destinationDir = compileJava.destinationDir
 
     // TODO: Add to dependencies.gradle.
     repositories {
@@ -32,6 +20,24 @@ subprojects {
         repositories {
             jcenter()
         }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+
+    // Unlike Maven, Gradle places CLASS files and resources in different directories by default.
+    // This is a problem for IntelliJ: when running an application from the IDE, it expects everything to be in the
+    // same directory. To fix, we're configuring resources to be copied to the same directory as CLASS files.
+    processResources.destinationDir = compileJava.destinationDir
+
+    // TODO: Only cdm, ncIdv, tdm, ui, and visad use the shadow plugin, so we shouldn't be adding it as
+    // a buildscript-dependency to all subprojects. We should break out the common stuff to /gradle/shadow.gradle
+    // and then apply that script only to those 5.
+    buildscript {
         dependencies {
             // Also, this needs to be declared in /gradle/dependencies.gradle
             classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
