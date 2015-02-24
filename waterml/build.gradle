@@ -1,3 +1,7 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/testing.gradle"
+
 // TODO: Add to dependencies.gradle
 repositories {
     maven {
@@ -22,5 +26,5 @@ dependencies {
 }
 
 // Re-enable test task for this subproject.
-// It (and all other subproject test tasks) were originally disabled in /gradle/testing.gradle.
+// It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
 test.setEnabled true

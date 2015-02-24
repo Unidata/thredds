@@ -1,13 +1,15 @@
-apply plugin: 'shadow'
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/testing.gradle"
 
-import com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-import org.codehaus.groovy.runtime.NioGroovyMethods
-
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import java.util.jar.JarOutputStream
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath libraries["shadow"]
+    }
+}
 
 dependencies {
     compile project(":cdm")
@@ -40,7 +42,7 @@ dependencies {
 }
 
 // Re-enable test task for this subproject.
-// It (and all other subproject test tasks) were originally disabled in /gradle/testing.gradle.
+// It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
 test.setEnabled true
 
 //////////////////////////////////////////////////////////
@@ -54,6 +56,12 @@ ext {
 
     jarsContainingDuplicateEntries = ['xmlbeans-2.6.0.jar']
 }
+
+apply plugin: 'shadow'
+
+import com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 
 shadow {
     outputFile = file("${destinationDir}/${toolsUIjar}")
@@ -223,6 +231,11 @@ task showDependencies << {
         println " " + file
     }
 }
+
+import org.codehaus.groovy.runtime.NioGroovyMethods
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
 
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate

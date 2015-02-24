@@ -1,4 +1,15 @@
-apply plugin: 'shadow'
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+
+dependencies {
+    compile project(':cdm')
+    compile project(':grib')
+
+    compile libraries["visad"]
+    compile libraries["guava"]
+
+    compile libraries["slf4j-api"]
+}
 
 /* jar {
   manifest {
@@ -51,17 +62,6 @@ apply plugin: 'shadow'
   }
 
 } */
-
-dependencies {
-    compile project(':cdm')
-    compile project(':grib')
-
-    compile libraries["visad"]
-    compile libraries["guava"]
-
-    compile libraries["slf4j-api"]
-    testRuntime libraries["slf4j-jdk14"]
-}
 
 //shadow {
 //    outputFile = file("${destinationDir}/visadCdm-${version}.jar")

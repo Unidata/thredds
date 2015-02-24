@@ -1,49 +1,28 @@
-subprojects {
-    apply plugin: "java"
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply plugin: "java"
 
-    // Disable tests globally for now.
-    // For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
-    test.setEnabled false
-
-    // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
-    apply plugin: "jacoco"
-
-    jacocoTestReport.dependsOn test
-    test.finalizedBy jacocoTestReport
+dependencies {
+    testCompile libraries["junit"]  // All subprojects use JUnit for their tests.
 }
 
+// Disable tests globally for now.
+// For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
+test.setEnabled false
+
+// The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
 apply plugin: "jacoco"
 
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
-    description = 'Generates an aggregate report from all subprojects'
-    dependsOn subprojects.test
+jacocoTestReport.dependsOn test
+test.finalizedBy jacocoTestReport
 
-    // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
-    // However, the spread-dot operator has given us a list. We use the spread operator to convert:
-    // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
-    sourceSets(*(subprojects*.sourceSets.main))
+gradle.projectsEvaluated {
+    jacocoTestReport {
+        // Source sets are added by the java plugin, and not all subprojects have that applied. ":dap4" is one.
+        Collection<Project> projectsWithSourceSets = subprojects.findAll { it.hasProperty("sourceSets") }
 
-    // Some subprojects won't actually generate executionData. However, it's hard to know which before execution phase.
-    executionData = files(subprojects.jacocoTestReport.executionData)
-
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-    }
-
-    // JacocoReport will be skipped if ANY of its executionData are non-existent, so we must filter out those
-    // that didn't get created during test execution.
-    // See https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac#file-build-gradle
-    onlyIf = {
-        true
-    }
-    doFirst {
-        executionData = files(executionData.findAll { it.exists() })
-
-        // Skip task if NO executionData exists. This is how JacocoReport ought to work in the first place.
-        if ( !executionData.any( { it.exists() } ) ) {
-            throw new StopExecutionException("No execution data found for $name.")
-        }
+        // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
+        // However, the spread-dot operator has given us a list. We use the spread operator to convert:
+        // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
+        sourceSets(*(projectsWithSourceSets*.sourceSets*.main))
     }
 }

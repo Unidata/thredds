@@ -1,8 +1,10 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+
 dependencies {
     compile project(':dap4:d4core')
     compile project(':httpservices')
 
     compile libraries["httpclient"]
     compile libraries["httpcore"]
-    testRuntime libraries["slf4j-jdk14"]
 }

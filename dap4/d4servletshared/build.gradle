@@ -1,3 +1,5 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
 apply plugin: 'war'
 
 dependencies {
@@ -10,5 +12,4 @@ dependencies {
     providedCompile libraries["javax.servlet-api"]
     compile libraries["jcip-annotations"]
     compile libraries["slf4j-api"]
-    testRuntime libraries["slf4j-jdk14"]
 }

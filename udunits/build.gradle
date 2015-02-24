@@ -1,9 +1,15 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/testing.gradle"
+
 dependencies {
     compile libraries["joda-time"]
     compile libraries["jcip-annotations"]
+
+    // udunits doesn't do any logging.
 }
 
 // Re-enable test task for this subproject.
-// It (and all other subproject test tasks) were originally disabled in /gradle/testing.gradle.
+// It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
 test.setEnabled true
 

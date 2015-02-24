@@ -1,3 +1,6 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/testing.gradle"
 apply plugin: 'war'
 
 dependencies {
@@ -77,6 +80,9 @@ task printProps << {
 
 
 buildscript {
+    repositories {
+        jcenter()
+    }
     dependencies {
         classpath libraries["gretty"]
     }

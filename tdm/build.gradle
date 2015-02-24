@@ -1,5 +1,14 @@
-apply plugin: 'shadow'
-import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath libraries["shadow"]
+    }
+}
 
 dependencies {
     compile project(':httpservices')
@@ -16,6 +25,9 @@ dependencies {
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-core"]
 }
+
+apply plugin: 'shadow'
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
 
 shadow {
     outputFile = file("${destinationDir}/tdms-${version}.jar")

@@ -1,3 +1,7 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/testing.gradle"
+
 dependencies {
     testCompile project(":cdm")
     testRuntime project(":clcommon")
@@ -23,6 +27,9 @@ dependencies {
 
 
 buildscript {
+    repositories {
+        jcenter()
+    }
     dependencies {
         classpath libraries["gretty"]
     }
@@ -83,10 +90,10 @@ task integrationTestReport(type: JacocoReport) {
     // (which is used internally by executionData) is not able to resolve recursive closures.
     executionData { tasks.appBeforeIntegrationTest.jacoco.destinationFile }
 
-    // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
-    // However, the spread-dot operator has given us a list. We use the spread operator to convert:
-    // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
-    sourceSets(*(rootProject.subprojects*.sourceSets.main))
+//    // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
+//    // However, the spread-dot operator has given us a list. We use the spread operator to convert:
+//    // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
+//    sourceSets(*(rootProject.subprojects*.sourceSets.main))
 
     reports {
         html.destination = reporting.file("jacoco/integrationTest/html")

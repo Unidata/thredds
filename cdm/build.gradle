@@ -1,3 +1,7 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/testing.gradle"
+
 dependencies {
     compile project(':udunits')
     compile project(':httpservices')
@@ -18,7 +22,7 @@ dependencies {
 
 test {
     // Re-enable test task for this subproject.
-    // It (and all other subproject test tasks) were originally disabled in /gradle/testing.gradle.
+    // It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
     setEnabled true
 
     // Causes JUnit to throw an exception: "No tests found in ucar.nc2.util.UnitTestCommon"

@@ -1,3 +1,6 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+
 dependencies {
     compile project(':cdm')
     compile libraries["protobuf-java"]
@@ -9,5 +12,4 @@ dependencies {
     compile libraries["guava"]
 
     compile libraries["slf4j-api"]
-    testRuntime libraries["slf4j-jdk14"]
 }
