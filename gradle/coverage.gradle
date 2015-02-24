@@ -1,21 +1,18 @@
 // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
-//apply plugin: "java"
 apply plugin: "jacoco"
 
 gradle.projectsEvaluated {
     // Will apply to "jacocoTestReport", ":it:integrationTestReport", ":jacocoRootReport", etc.
     tasks.withType(JacocoReport) {
-        // Include this "test" task and all subproject "test" tasks, if any.
-        dependsOn getTasksByName("test", true)
-        //    dependsOn subprojects*.tasks.withType(Test)
+        // Include all Test tasks from this project and any subprojects.
+        dependsOn allprojects*.tasks*.withType(Test)
 
         // Source sets are added by the java plugin, and not all subprojects have that applied. ":dap4" is one.
-        Collection<Project> projectsWithSourceSets = subprojects.findAll { it.hasProperty("sourceSets") }
+        Collection<Project> projectsWithSourceSets = rootProject.subprojects.findAll { it.hasProperty("sourceSets") }
+        List<SourceSet> mainSourceSets = projectsWithSourceSets*.sourceSets*.main
 
-        // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
-        // However, the spread-dot operator has given us a list. We use the spread operator to convert:
-        // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
-        sourceSets(*(projectsWithSourceSets*.sourceSets*.main))
+        sourceDirectories = files(mainSourceSets*.allSource*.srcDirs)
+        classDirectories = files(mainSourceSets*.output)
 
         reports {
             xml.enabled = true

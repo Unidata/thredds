@@ -7,6 +7,12 @@ dependencies {
     // TODO: Add an slf4j binding ("slf4j-jdk14") if none is present, but only if "slf4j-api" is declared.
 }
 
-// Disable tests globally for now.
-// For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
-test.setEnabled false
+tasks.withType(Test) {
+    // Disable tests globally for now.
+    // For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
+    setEnabled false
+
+    if (!System.env.'TRAVIS') {
+        ignoreFailures true
+    }
+}

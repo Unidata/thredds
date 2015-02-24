@@ -29,17 +29,15 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     // So, assign an empty collection temporarily.
     executionData = files()
 
-    // JacocoReport will be skipped if ANY of its executionData are non-existent, so we must filter out those
-    // that didn't get created during test execution.
-    // See https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac#file-build-gradle
-    outputs.upToDateWhen { false }
+//    // JacocoReport will be skipped if ANY of its executionData are non-existent, so we must filter out those
+//    // that didn't get created during test execution.
+//    // See https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac#file-build-gradle
+//    outputs.upToDateWhen { false }
 
     doFirst {
-        // Jacoco reports are added by the jacoco plugin, and not all subprojects have that applied.
-        Collection<Project> projectsWithJacoco = subprojects.findAll { it.hasProperty("jacocoTestReport") }
-
         // Add all subproject executionData that actually exists.
-        Collection<File> allExecutionData = projectsWithJacoco*.jacocoTestReport*.executionData*.files.flatten()
+        Collection<Task> jacocoReportTasks = subprojects*.tasks*.withType(JacocoReport).flatten()
+        Collection<File> allExecutionData = jacocoReportTasks*.executionData*.files.flatten()
         executionData = files(allExecutionData.findAll { it.exists() })
 
         // Skip task if NO executionData exists. This is how JacocoReport ought to work in the first place.
