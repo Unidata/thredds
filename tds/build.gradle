@@ -1,6 +1,7 @@
 apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/testing.gradle"
+apply from: "$rootDir/gradle/coverage.gradle"
 apply plugin: 'war'
 
 dependencies {
@@ -78,15 +79,6 @@ task printProps << {
     for (prop in System.properties.propertyNames()) printf("%s = %s%n", prop, System.properties[prop])
 }
 
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath libraries["gretty"]
-    }
-}
 
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
 apply plugin: 'org.akhikhl.gretty'

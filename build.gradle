@@ -3,46 +3,31 @@ allprojects {
     version = '4.6.0-SNAPSHOT'
 }
 
-// Pulls contents into this script. Subprojects inherit the properties and methods defined by their parent.
-apply from: "$rootDir/gradle/dependencies.gradle"
+// Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
+// exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.
+// Thus, as long as we declare all plugins here, no child needs its own buildscript block. See
+// http://forums.gradle.org/gradle/topics/how_do_i_include_buildscript_block_from_external_gradle_script#reply_9303244
+buildscript {
+    apply from: "$rootDir/gradle/dependencies.gradle"
 
-apply from: "$rootDir/gradle/publishing.gradle"
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath libraries["gretty"]
+        classpath libraries["shadow"]
+    }
 }
 
-
-
-// Have to evaluate the child projects before we can refer to their "test" and "jacocoTestReport" tasks below.
-evaluationDependsOnChildren()
-
-apply plugin: "jacoco"
+apply from: "$rootDir/gradle/coverage.gradle"
 
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     description = 'Generates an aggregate report from all subprojects'
-    dependsOn getTasksByName("test", true)  // All subproject test tasks.
-//    dependsOn subprojects*.tasks.withType(Test)
-
-    // Source sets are added by the java plugin, and not all subprojects have that applied. ":dap4" is one.
-    Collection<Project> projectsWithSourceSets = subprojects.findAll { it.hasProperty("sourceSets") }
-
-    // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
-    // However, the spread-dot operator has given us a list. We use the spread operator to convert:
-    // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
-    sourceSets(*(projectsWithSourceSets*.sourceSets*.main))
 
     // We won't know which subprojects generate executionData until the execution phase.
-    // However, the JacocoReport ctor will throw an exception if we leave this null.
+    // However, the JacocoReport constructor will throw an exception if we leave this null.
     // So, assign an empty collection temporarily.
     executionData = files()
-
-    reports {
-        html.enabled = true
-        html.destination "${buildDir}/reports/jacoco"
-        xml.enabled = true
-        csv.enabled = false
-    }
 
     // JacocoReport will be skipped if ANY of its executionData are non-existent, so we must filter out those
     // that didn't get created during test execution.
@@ -63,3 +48,5 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
         }
     }
 }
+
+apply plugin: "base"  // Gives us the "clean" task for removing jacocoRootReport's output.

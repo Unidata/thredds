@@ -15,10 +15,6 @@ repositories {
     }
 }
 
-// Due to a Gradle limitation, we cannot setup our buildscript repositories here as well:
-// http://forums.gradle.org/gradle/topics/how_do_i_include_buildscript_block_from_external_gradle_script#reply_9303244
-// Those will have to be defined in each subproject, which will mean some duplication.
-
 //================================================ Dependencies ================================================//
 
 ext {

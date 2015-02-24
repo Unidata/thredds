@@ -1,15 +1,6 @@
 apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/java.gradle"
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath libraries["shadow"]
-    }
-}
-
 dependencies {
     compile project(':httpservices')
     compile project(':cdm')

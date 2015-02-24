@@ -2,27 +2,11 @@ apply from: "$rootDir/gradle/dependencies.gradle"
 apply plugin: "java"
 
 dependencies {
-    testCompile libraries["junit"]  // All subprojects use JUnit for their tests.
+    testCompile libraries["junit"]
+
+    // TODO: Add an slf4j binding ("slf4j-jdk14") if none is present, but only if "slf4j-api" is declared.
 }
 
 // Disable tests globally for now.
 // For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
 test.setEnabled false
-
-// The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
-apply plugin: "jacoco"
-
-jacocoTestReport.dependsOn test
-test.finalizedBy jacocoTestReport
-
-gradle.projectsEvaluated {
-    jacocoTestReport {
-        // Source sets are added by the java plugin, and not all subprojects have that applied. ":dap4" is one.
-        Collection<Project> projectsWithSourceSets = subprojects.findAll { it.hasProperty("sourceSets") }
-
-        // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
-        // However, the spread-dot operator has given us a list. We use the spread operator to convert:
-        // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
-        sourceSets(*(projectsWithSourceSets*.sourceSets*.main))
-    }
-}

@@ -1,6 +1,7 @@
 apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/testing.gradle"
+apply from: "$rootDir/gradle/coverage.gradle"
 
 dependencies {
     testCompile project(":cdm")
@@ -26,21 +27,7 @@ dependencies {
 }
 
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath libraries["gretty"]
-    }
-}
-
 apply plugin: 'org.akhikhl.gretty'
-apply plugin: 'jacoco'
-
-jacoco {
-    toolVersion = "0.7.1.201405082137"
-}
 
 gretty {
     servletContainer = 'tomcat7'
@@ -76,32 +63,27 @@ gretty {
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
-task integrationTest(type: Test, dependsOn: 'test') {
+task integrationTest(type: Test) {
     include 'thredds/server/catalog/TestTdsLocal.class'
     include 'thredds/TestEncoding.class'
 
 //    systemProperty 'unidata.testdata.path', 'Q:'
 }
 
-task integrationTestReport(type: JacocoReport) {
+task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
     // executionData must be closure, because appBeforeIntegrationTest is not defined yet.
     // We must pass jacoco.destinationFile, not appBeforeIntegrationTest itself,
     // because otherwise JacocoReport would translate task argument to closure and Project.files(...)
     // (which is used internally by executionData) is not able to resolve recursive closures.
     executionData { tasks.appBeforeIntegrationTest.jacoco.destinationFile }
 
-//    // The signature of the method we're calling is: void sourceSets(SourceSet... sourceSets)
-//    // However, the spread-dot operator has given us a list. We use the spread operator to convert:
-//    // http://docs.groovy-lang.org/latest/html/documentation/#_spreading_method_arguments
-//    sourceSets(*(rootProject.subprojects*.sourceSets.main))
-
     reports {
         html.destination = reporting.file("jacoco/integrationTest/html")
     }
 }
 
-// We want to modify the "appBeforeIntegrationTest" and "appAfterIntegrationTest" tasks, but like all Gretty tasks,
-// they won't be added to the project until after evaluation: http://goo.gl/qlFXTD
+// We want to modify the "appBeforeIntegrationTest" task, but like all Gretty tasks,
+// it won't be added to the project until after evaluation: http://goo.gl/qlFXTD
 // So, our modification must also occur after evaluation.
 afterEvaluate {
     appBeforeIntegrationTest {
@@ -117,10 +99,5 @@ afterEvaluate {
             File tomcatBaseDir = launcherConfig.baseDir
             gretty.logDir = new File(tomcatBaseDir, "logs").absolutePath
         }
-    }
-
-    appAfterIntegrationTest {
-        // reports should be generated only after integration tests
-        finalizedBy tasks.integrationTestReport
     }
 }

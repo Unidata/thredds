@@ -1,15 +1,7 @@
 apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/testing.gradle"
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath libraries["shadow"]
-    }
-}
+apply from: "$rootDir/gradle/coverage.gradle"
 
 dependencies {
     compile project(":cdm")
