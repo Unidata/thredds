@@ -47,6 +47,7 @@ import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.protocol.*;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -57,7 +58,7 @@ import org.apache.http.entity.StringEntity;
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.net.*;
 import java.util.*;
 
@@ -530,12 +531,13 @@ public class HTTPSession implements AutoCloseable
     {
         int status = 0;
         try {
-            try (HTTPMethod m = HTTPFactory.Put(url);) {
-                m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
+            try (HTTPMethod m = HTTPFactory.Put(url)) {
+                m.setRequestContent(new StringEntity(content,
+                        ContentType.create("application/text", "UTF-8")));
                 status = m.execute();
             }
-        } catch (UnsupportedEncodingException uee) {
-            throw new HTTPException(uee);
+        } catch (UnsupportedCharsetException uce) {
+            throw new HTTPException(uce);
         }
         return status;
     }

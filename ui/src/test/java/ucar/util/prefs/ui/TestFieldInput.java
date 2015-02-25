@@ -69,11 +69,11 @@ public class TestFieldInput {
       public void propertyChange(PropertyChangeEvent evt) {
         System.out.println("Text TestFieldInput: old val= <"+evt.getOldValue()+"> new val= <"+evt.getNewValue()+">");
         if (count == 0) {
-          assert ((String) evt.getOldValue()).equals("defValue") : "<"+evt.getOldValue()+">";
-          assert ((String) evt.getNewValue()).equals("better value") : "<"+evt.getNewValue()+">";
+          assert (evt.getOldValue()).equals("defValue") : "<"+evt.getOldValue()+">";
+          assert (evt.getNewValue()).equals("better value") : "<"+evt.getNewValue()+">";
         } else if (count == 1) {
-          assert ((String) evt.getOldValue()).equals("better value") : "<"+evt.getOldValue()+">";
-          assert ((String) evt.getNewValue()).equals("best value") : "<"+evt.getNewValue()+">";
+          assert (evt.getOldValue()).equals("better value") : "<"+evt.getOldValue()+">";
+          assert (evt.getNewValue()).equals("best value") : "<"+evt.getNewValue()+">";
         }
         count++;
       }
@@ -116,7 +116,7 @@ public class TestFieldInput {
      }
     });
     d.finish();
-    d.show();
+    d.setVisible(true);
 
     node.put("text", "best value");
     node.putInt("int", 6666);

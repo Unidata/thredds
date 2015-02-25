@@ -92,7 +92,7 @@ public class DilbertComic {
       f.getContentPane().add(new JLabel(im));
       f.pack();
       f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      f.show();
+      f.setVisible(true);
     }
   }
 }
