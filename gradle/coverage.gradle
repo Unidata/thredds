@@ -1,6 +1,11 @@
 // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
 apply plugin: "jacoco"
 
+tasks.withType(Test) {
+    // Add the execution data that Jacoco generates as a task output.
+    outputs.file jacoco.destinationFile
+}
+
 gradle.projectsEvaluated {
     // Will apply to "jacocoTestReport", ":it:integrationTestReport", ":jacocoRootReport", etc.
     tasks.withType(JacocoReport) {

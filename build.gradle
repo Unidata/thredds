@@ -21,24 +21,33 @@ buildscript {
 
 apply from: "$rootDir/gradle/coverage.gradle"
 
+evaluationDependsOnChildren()
+
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     description = 'Generates an aggregate report from all subprojects'
+
+    Closure isExtendedByJacoco = { Task task -> task.enabled && task.extensions.findByType(JacocoTaskExtension) }
+    Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
+    Collection<File> exeData = tasksExtendedByJacoco*.jacoco*.destinationFile
 
     // We won't know which subprojects generate executionData until the execution phase.
     // However, the JacocoReport constructor will throw an exception if we leave this null.
     // So, assign an empty collection temporarily.
-    executionData = files()
+    executionData = files(exeData)
 
 //    // JacocoReport will be skipped if ANY of its executionData are non-existent, so we must filter out those
 //    // that didn't get created during test execution.
 //    // See https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac#file-build-gradle
 //    outputs.upToDateWhen { false }
 
+    onlyIf {
+        println "Yay?"
+        println executionData.any { it.exists() }
+        executionData.any { it.exists() }
+    }
     doFirst {
         // Add all subproject executionData that actually exists.
-        Collection<Task> jacocoReportTasks = subprojects*.tasks*.withType(JacocoReport).flatten()
-        Collection<File> allExecutionData = jacocoReportTasks*.executionData*.files.flatten()
-        executionData = files(allExecutionData.findAll { it.exists() })
+        executionData = files(executionData.findAll { it.exists() })
 
         // Skip task if NO executionData exists. This is how JacocoReport ought to work in the first place.
         if (executionData.isEmpty()) {
