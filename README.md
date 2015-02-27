@@ -31,9 +31,9 @@ are available from Unidata's Maven repositories
 
 Copyright and licensing information can be found here
 
-* http://www.unidata.ucar.edu/software/netcdf/copyright.html  (???????)
+* http://www.unidata.ucar.edu/software/netcdf/copyright.html
 
-as well as in the COPYRIGHT file accompanying the software. (??????)
+as well as in the LICENSE.txt file accompanying the software.
 
 More details on each of these can be found below.
 
