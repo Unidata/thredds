@@ -188,18 +188,24 @@ public class HTTPAuthStore implements Serializable
     }
 
     //////////////////////////////////////////////////
-    // Class variables
+    // Class variables    
 
     static public boolean TESTING = false;
-    //Coverity[FB.SI_INSTANCE_BEFORE_FINALS_ASSIGNED]
-    static public HTTPAuthStore DEFAULTS = new HTTPAuthStore(true);
+
+    static protected HTTPAuthStore default;
+
+    static {
+	default = new HTTPAuthStore(true);
+    }
+
+    static public synchronized getDefault() {return default;}
 
     //////////////////////////////////////////////////
     // Instance variables
 
-    protected List<Entry> rows;
     protected boolean isdefault;
-    protected HTTPAuthStore defaults;
+
+    protected List<Entry> rows;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -212,39 +218,13 @@ public class HTTPAuthStore implements Serializable
     public HTTPAuthStore(boolean isdefault)
     {
         this.isdefault = isdefault;
-        if(!isdefault) this.defaults = HTTPAuthStore.DEFAULTS;
-
         this.rows = new ArrayList<Entry>();
-
         if(isdefault) {
-            // For back compatibility, check some system properties
+ 	    // For back compatibility, check key/trust store flags
             // and add appropriate entries
-            // 1. ESG keystore support
-            String kpath = System.getProperty("keystore");
-            if(kpath != null) {
-                String tpath = System.getProperty("truststore");
-                String kpwd = System.getProperty("keystorepassword");
-                String tpwd = System.getProperty("truststorepassword");
-                kpath = kpath.trim();
-                if(tpath != null) tpath = tpath.trim();
-                if(kpwd != null) kpwd = kpwd.trim();
-                if(tpwd != null) tpwd = tpwd.trim();
-                if(kpath.length() == 0) kpath = null;
-                if(tpath != null && tpath.length() == 0) tpath = null;
-                if(kpwd != null && kpwd.length() == 0) kpwd = null;
-                if(tpwd != null && tpwd.length() == 0) tpwd = null;
-
-                CredentialsProvider creds = new HTTPSSLProvider(kpath, kpwd, tpath, tpwd);
-                try {
-                    AuthScope scope = new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthPolicy.SSL);
-                    insert(new Entry(ANY_PRINCIPAL, scope, creds));
-                } catch (HTTPException he) {
-                    log.error("HTTPAuthStore: could not insert default SSL data");
-                }
-            }
+   	    HTTPSession.setGlobalKeyStore();
         }
     }
-
 
     //////////////////////////////////////////////////
     // API
@@ -345,10 +325,10 @@ public class HTTPAuthStore implements Serializable
     search(String principal, AuthScope scope)
     {
         List<Entry> matches;
-        if(defaults == null)
+        if(default == null)
             matches = new ArrayList<Entry>();
         else
-            matches = defaults.search(principal, scope);
+            matches = default.search(principal, scope);
 
         if(scope == null || rows.size() == 0)
             return matches;
