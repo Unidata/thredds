@@ -192,13 +192,13 @@ public class HTTPAuthStore implements Serializable
 
     static public boolean TESTING = false;
 
-    static protected HTTPAuthStore default;
+    static protected HTTPAuthStore DEFAULT;
 
     static {
-	default = new HTTPAuthStore(true);
+	    DEFAULT = new HTTPAuthStore(true);
     }
 
-    static public synchronized getDefault() {return default;}
+    static public synchronized HTTPAuthStore getDefault() {return DEFAULT;}
 
     //////////////////////////////////////////////////
     // Instance variables
@@ -325,10 +325,10 @@ public class HTTPAuthStore implements Serializable
     search(String principal, AuthScope scope)
     {
         List<Entry> matches;
-        if(default == null)
+        if(DEFAULT == null)
             matches = new ArrayList<Entry>();
         else
-            matches = default.search(principal, scope);
+            matches = DEFAULT.search(principal, scope);
 
         if(scope == null || rows.size() == 0)
             return matches;
