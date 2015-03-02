@@ -79,7 +79,7 @@ public class TestField {
       });
 
     d.finish();
-    d.show();
+    d.setVisible(true);
 
     assert gotEvent1 == 0;
     tf.setEditValue("better value");

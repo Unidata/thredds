@@ -33,7 +33,6 @@
 
 package thredds.server.opendap;
 
-import junit.framework.TestCase;
 import opendap.dap.BaseType;
 import opendap.servers.*;
 import opendap.servlet.AsciiWriter;
@@ -228,7 +227,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
             }
         }
         if(!pass)
-            junit.framework.Assert.assertTrue("TestCeParser", pass);
+            org.junit.Assert.assertTrue("TestCeParser", pass);
     }
 
 

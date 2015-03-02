@@ -73,6 +73,10 @@ public interface GribTables {
     public String getDescription();
 
     public String getId();
+
+    public Float getFill();
+
+    public Float getMissing();
   }
 
 

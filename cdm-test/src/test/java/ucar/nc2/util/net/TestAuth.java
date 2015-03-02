@@ -323,7 +323,7 @@ public class TestAuth extends UnitTestCommon
 
         System.err.println("*** Testing: Cache Invalidation");
         // Clear the cache and the global authstore
-        HTTPAuthStore.DEFAULTS.clear();
+        HTTPAuthStore.getDefault().clear();
         HTTPCachingProvider.clearCache();
         for(AuthDataBasic data : basictests) {
             // Do each test with a bad password to cause cache invalidation
@@ -376,7 +376,7 @@ public class TestAuth extends UnitTestCommon
         if(IGNORE) return; //ignore
         System.err.println("*** Testing: Digest Policy");
         // Clear the cache and the global authstore
-        HTTPAuthStore.DEFAULTS.clear();
+        HTTPAuthStore.getDefault().clear();
         HTTPCachingProvider.clearCache();
         HTTPSession.debugHeaders(true);
 

@@ -32,15 +32,13 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
-import org.junit.*;
 import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.io.*;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /** Test nc2 dods in the JUnit framework. */
 

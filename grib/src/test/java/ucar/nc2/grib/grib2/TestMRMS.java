@@ -1,8 +1,3 @@
-CDM Validator Version @VERSION.MINOR@   Build Date = @BUILDTIME@
-
-See http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.0/cdmValidator.html
-
----------------------------------------------------------------------------------------------------------------------
 /*
  * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,3 +30,32 @@ See http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.0/cdmValidator.html
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package ucar.nc2.grib.grib2;
+
+import org.junit.Assert;
+import org.junit.Test;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+
+import java.io.IOException;
+
+
+public class TestMRMS {
+    static final String testfile = "../grib/src/test/data/MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2.gz";
+
+    @Test
+    public void checkVariable() throws IOException {
+        NetcdfFile nc = NetcdfFile.open(testfile);
+        Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
+        Assert.assertNotNull(var);
+
+        Attribute att = var.findAttribute("missing_value");
+        Assert.assertNotNull(att);
+        Assert.assertEquals(-99., att.getNumericValue().doubleValue(), 1e-6);
+
+        att = var.findAttribute("_FillValue");
+        Assert.assertNotNull(att);
+        Assert.assertEquals(-999., att.getNumericValue().doubleValue(), 1e-6);
+    }
+}

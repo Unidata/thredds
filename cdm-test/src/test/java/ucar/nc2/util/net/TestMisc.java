@@ -40,8 +40,6 @@ import ucar.nc2.util.UnitTestCommon;
 
 import java.net.URI;
 
-import static junit.framework.Assert.assertTrue;
-
 public class TestMisc extends UnitTestCommon
 {
 

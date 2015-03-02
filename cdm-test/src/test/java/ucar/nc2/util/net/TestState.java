@@ -38,11 +38,7 @@ import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.*;
 import java.nio.charset.Charset;
-
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Test the proper state transitions of HTTPSession

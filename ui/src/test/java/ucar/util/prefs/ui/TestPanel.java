@@ -107,7 +107,7 @@ public class TestPanel {
     Field.Int iu = pp.addIntField("testIU", "number of times to barf", 2);
 
     preferenceDialog.finish();
-    preferenceDialog.show();
+    preferenceDialog.setVisible(true);
 
     store.putInt("myInt", 42);
     assert (store.getInt("myInt", 43) == 42);
@@ -206,7 +206,7 @@ public class TestPanel {
 
     PrefPanel.Dialog d = tp.makeDialog();
     d.finish();
-    d.show();
+    d.setVisible(true);
   }
 
 

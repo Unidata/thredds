@@ -598,6 +598,16 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     public String getAbbrev() {
       return null;
     }
+
+    @Override
+    public Float getFill() {
+      return null;
+    }
+
+    @Override
+    public Float getMissing() {
+      return Float.NaN;
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////

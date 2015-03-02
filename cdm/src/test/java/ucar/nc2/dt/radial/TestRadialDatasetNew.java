@@ -1,8 +1,3 @@
-CDM Validator Version @VERSION.MINOR@   Build Date = @BUILDTIME@
-
-See http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.0/cdmValidator.html
-
----------------------------------------------------------------------------------------------------------------------
 /*
  * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,3 +30,59 @@ See http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.0/cdmValidator.html
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package ucar.nc2.dt.radial;
+
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import ucar.nc2.dt.*;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
+/** Test radial datasets in the JUnit framework. */
+
+@RunWith(Parameterized.class)
+public class TestRadialDatasetNew {
+
+    @Parameterized.Parameters(name="{0}")
+    public static Collection params() {
+        Object[][] data = new Object[][] {
+                {"nids/N0R_20041119_2147",
+                        CalendarDate.of(null, 2004, 11, 19, 21, 47, 44),
+                        CalendarDate.of(null, 2004, 11, 19, 21, 47, 44)},
+                {"dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1",
+                        CalendarDate.of(null, 2002, 5, 11, 1, 58, 15).add(573, CalendarPeriod.Field.Millisec),
+                        CalendarDate.of(null, 2002, 5, 11, 1, 59, 5).add(687, CalendarPeriod.Field.Millisec)}
+        };
+        return Arrays.asList(data);
+    }
+
+    @Parameterized.Parameter
+    public String filename;
+
+    @Parameterized.Parameter(value=1)
+    public CalendarDate start;
+
+    @Parameterized.Parameter(value=2)
+    public CalendarDate end;
+
+    @Test
+    public void testDates() throws IOException {
+        String fullpath = TestDir.cdmLocalTestDataDir + filename;
+        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(
+                FeatureType.RADIAL, fullpath, null, new StringBuilder());
+
+        Assert.assertEquals(start, rds.getCalendarDateStart());
+        Assert.assertEquals(end, rds.getCalendarDateEnd());
+    }
+}

@@ -8,7 +8,7 @@ jdk:
 
 script:
   # Need to add back d4tests, eventually cdm-test
-  - ./gradlew --info :cdm:test :udunits:test :ui:test :waterml:test
+  - ./gradlew --info :cdm:test :grib:test :udunits:test :ui:test :waterml:test
 
 cache:
   directories:
