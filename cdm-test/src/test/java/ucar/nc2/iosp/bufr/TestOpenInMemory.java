@@ -4,6 +4,7 @@ import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -13,9 +14,8 @@ import java.io.IOException;
 public class TestOpenInMemory {
 
   @Test
-
   public void testOpen() throws Exception {
-    scanBufrFile("C:/work/BUFR_99990223.bin");
+    scanBufrFile(TestDir.cdmUnitTestDir+"formats/bufr/userExamples/BUFR_99990223.bin");
   }
 
   private boolean scanBufrFile(String filename) throws IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
@@ -30,7 +30,6 @@ public class TestOpenInMemory {
           try( NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes,  "ucar.nc2.iosp.bufr.BufrIosp2")) {
             NetcdfDataset ncd = new NetcdfDataset(ncfile);
           }
-
         }
       }
     return true;

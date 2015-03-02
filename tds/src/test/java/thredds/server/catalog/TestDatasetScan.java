@@ -65,7 +65,7 @@ public class TestDatasetScan {
 
   @Test
   public void testMakeCatalog() throws IOException {
-    String filePath = "C:/dev/github/thredds46/tds/src/test/content/thredds/catalog.xml";
+    String filePath = "../tds/src/test/content/thredds/catalog.xml";
     ConfigCatalog cat = TestServerCatalogs.open("file:" + filePath);
     CatalogXmlWriter writer = new CatalogXmlWriter();
     // System.out.printf("%s%n",  writer.writeXML( cat ));
