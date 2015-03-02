@@ -251,7 +251,7 @@ public class TristateCheckBox extends JCheckBox {
     };
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.pack();
-    frame.show();
+    frame.setVisible(true);
   }
 }
 

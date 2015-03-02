@@ -1,0 +1,8 @@
+subprojects {
+    // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
+    apply plugin: "java"
+    apply plugin: "jacoco"
+
+    jacocoTestReport.dependsOn test
+    check.dependsOn jacocoTestReport
+}

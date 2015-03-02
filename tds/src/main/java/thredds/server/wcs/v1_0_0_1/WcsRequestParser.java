@@ -131,7 +131,7 @@ public class WcsRequestParser
 
         // Parse the "coverage" parameter (null, or csv String).
         String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
-        List<String> coverageIdList = null;
+        List<String> coverageIdList;
         if ( coverageIdListParam != null )
           coverageIdList = splitCommaSeperatedList( coverageIdListParam );
         else
@@ -242,11 +242,6 @@ public class WcsRequestParser
     double[] maxP = new double[2];
     try
     {
-      double minx = Double.parseDouble( bboxSplit[0] );
-      double miny = Double.parseDouble( bboxSplit[1] );
-      double maxx = Double.parseDouble( bboxSplit[2] );
-      double maxy = Double.parseDouble( bboxSplit[3] );
-
       minP[0] = Double.parseDouble( bboxSplit[0] );
       minP[1] = Double.parseDouble( bboxSplit[1] );
       maxP[0] = Double.parseDouble( bboxSplit[2] );

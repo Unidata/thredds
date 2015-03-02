@@ -42,9 +42,9 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.unidata.test.util.TestDir;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TestGribEnsembles {
 

@@ -38,7 +38,14 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
+import java.awt.image.DataBuffer;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 /**
  * Reads the data from one grib2 record.
@@ -108,6 +115,9 @@ public class Grib2DataReader2 {
         break;
       case 40:
         data = getData40(raf, (Grib2Drs.Type40) gdrs);
+        break;
+      case 41:
+        data = getData41(raf, (Grib2Drs.Type0) gdrs);
         break;
       case 50002:
         data = getData50002(raf, (Grib2Drs.Type50002) gdrs);
@@ -825,7 +835,66 @@ public class Grib2DataReader2 {
 
   }
 
-    // by jkaehler@meteomatics.com
+  // Loosely based on code by earl.barker.ctr AT us.af.mil, but moved from
+  // anceient version of Grib support.
+  // Code taken from esupport ticket ZVT-415274
+  public float[] getData41(RandomAccessFile raf, Grib2Drs.Type0 gdrs) throws IOException {
+    int nb = gdrs.numberOfBits;
+    int D = gdrs.decimalScaleFactor;
+    float DD = (float) java.lang.Math.pow((double) 10, (double) D);
+    float R = gdrs.referenceValue;
+    int E = gdrs.binaryScaleFactor;
+    float EE = (float) java.lang.Math.pow( 2.0, (double) E);
+
+    // LOOK: can # datapoints differ from bitmap and data ?
+    // dataPoints are number of points encoded, it could be less than the
+    // totalNPoints in the grid record if bitMap is used, otherwise equal
+    float[] data = new float[totalNPoints];
+
+    // no data to decode, set to reference value
+    if (nb == 0) {
+      Arrays.fill(data, R);
+      return data;
+    }
+
+    //  Y * 10**D = R + (X1 + X2) * 2**E
+    //   E = binary scale factor
+    //   D = decimal scale factor
+    //   R = reference value
+    //   X1 = 0
+    //   X2 = scaled encoded value
+    //   data[ i ] = (R + ( X1 + X2) * EE)/DD ;
+
+    byte[] buf = new byte[dataLength - 5];
+    raf.readFully(buf);
+    InputStream in = new ByteArrayInputStream(buf);
+    BufferedImage image = ImageIO.read(in);
+
+    if (nb != image.getColorModel().getPixelSize())
+      log.debug("PNG pixel size disagrees with grib number of bits: ",
+              image.getColorModel().getPixelSize(), nb);
+
+    DataBuffer db = image.getRaster().getDataBuffer();
+    if (bitmap == null) {
+      for (int i = 0; i < dataNPoints; i++) {
+//        data[i] = (R + imageData[i] * EE) / DD;
+        data[i] = (R + db.getElem(i) * EE) / DD;
+      }
+    } else {
+      for (int bitPt = 0, dataPt = 0; bitPt < totalNPoints; bitPt++) {
+        if ((bitmap[bitPt / 8] & GribNumbers.bitmask[bitPt % 8]) != 0) {
+//          data[i] = (R + imageData[i] * EE) / DD;
+          data[bitPt] = (R + db.getElem(dataPt++) * EE) / DD;
+        } else {
+          data[bitPt] = staticMissingValue;
+        }
+      }
+    }
+
+    return data;
+  }
+
+  // by jkaehler@meteomatics.com
   // ported from https://github.com/erdc-cm/grib_api/blob/master/src/grib_accessor_class_data_g1second_order_general_extended_packing.c
   public float[] getData50002(RandomAccessFile raf, Grib2Drs.Type50002 gdrs) throws IOException {
 

@@ -61,7 +61,7 @@ shadow {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
-task releaseCdm(dependsOn: ['shadow']) << {
+task releaseCdm(dependsOn: ['shadowJar']) << {
     if (project.hasProperty("ftpdir")) {
         // println "destinationDir= " + ${destinationDir}
         println "copy " + ncIdvJar + " to " + ftpdir

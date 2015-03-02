@@ -50,6 +50,7 @@ public abstract class Grib2Drs {
   public static Grib2Drs factory(int template, RandomAccessFile raf) throws IOException {
     switch (template) {
       case 0:
+      case 41:
         return new Type0(raf);
       case 2:
         return new Type2(raf);

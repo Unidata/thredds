@@ -358,20 +358,20 @@ public class SuperComboBox extends JPanel {
 
   private void showPulldownMenu() {
     if (pulldown.isShowing())
-      pulldown.hide();
+      pulldown.setVisible(false);
     else {
       Dimension d = new Dimension(getWidth(), height);
       pulldown.setSize(d);
       Point p = text.getLocationOnScreen();
       p.y += text.getHeight();
       pulldown.setLocation(p);
-      pulldown.show();
+      pulldown.setVisible(true);
     }
   }
 
   private void hidePulldownMenu() {
     if (pulldown.isShowing()) {
-      pulldown.hide();
+      pulldown.setVisible(false);
       //System.out.println("hidePulldownMenu");
     }
   }

@@ -37,7 +37,7 @@ import ucar.nc2.*;
 
 import java.io.*;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /** Test nc2 dods in the JUnit framework.
  * Dataset {

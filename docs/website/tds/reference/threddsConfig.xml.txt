@@ -54,6 +54,17 @@
 
   </htmlSetup>
 
+  <!-- 
+    The <TdsUpdateConfig> element controls if and how the TDS checks
+    for updates. The default is for the TDS to check for the current
+    stable and development release versions, and to log that information
+    in the TDS serverStartup.log file as INFO entries.
+
+  <TdsUpdateConfig>
+     <logVersionInfo>true</logVersionInfo>
+  </TdsUpdateConfig>
+  -->
+
   <!--
    The <CORS> element controls Cross-Origin Resource Sharing (CORS).
    CORS is a way to allow a website (such as THREDDS) to open up access

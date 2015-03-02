@@ -1,5 +1,3 @@
-apply from: "gradle/dependencies.gradle"
-
 allprojects {
     group = "edu.ucar"
     version = '4.6.0-SNAPSHOT'
@@ -80,6 +78,13 @@ subprojects {
         }
     }
 }
+
+// Pulls contents into this script. Subprojects inherit the properties and methods defined by their parent.
+apply from: "gradle/dependencies.gradle"
+
+apply from: "gradle/testing.gradle"
+
+apply from: "gradle/publishing.gradle"
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'

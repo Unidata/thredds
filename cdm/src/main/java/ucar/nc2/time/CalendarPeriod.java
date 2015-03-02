@@ -79,7 +79,7 @@ public class CalendarPeriod {
 
     if (udunit.equals("second") || udunit.equals("sec")) {
       return Field.Second;
-    } else if (udunit.equals("millisec") || udunit.equals("msec")) {
+    } else if (udunit.equals("millisecond") || udunit.equals("millisec") || udunit.equals("msec")) {
       return Field.Millisec;
     } else if (udunit.equals("minute") || udunit.equals("min")) {
       return Field.Minute;
