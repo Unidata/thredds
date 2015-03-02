@@ -17,16 +17,16 @@ public class TestPathMatcher {
       
   @Test
   public void tester() {
-    PathMatcher m = new PathMatcher();
-    m.put("/thredds/dods/test/longer", null);
-    m.put("/thredds/dods/test", null);
-    m.put("/thredds/dods/tester", null);
-    m.put("/thredds/dods/short", null);
-    m.put("/actionable", null);
-    m.put("myworld", null);
-    m.put("mynot", null);
-    m.put("ncmodels", null);
-    m.put("ncmodels/bzipped", null);
+    PathMatcher<Integer> m = new PathMatcher<>();
+    m.put("/thredds/dods/test/longer", 1);
+    m.put("/thredds/dods/test", 2);
+    m.put("/thredds/dods/tester", 3);
+    m.put("/thredds/dods/short", 4);
+    m.put("/actionable", 5);
+    m.put("myworld", 6);
+    m.put("mynot", 7);
+    m.put("ncmodels", 8);
+    m.put("ncmodels/bzipped", 9);
 
 
     doit(m, "nope", false);

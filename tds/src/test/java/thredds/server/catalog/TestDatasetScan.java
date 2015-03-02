@@ -41,10 +41,13 @@ import thredds.client.catalog.writer.CatalogXmlWriter;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Describe
@@ -57,7 +60,7 @@ public class TestDatasetScan {
 
   @Before
   public void setup() {
-    ConfigCatalog.addAlias("${cdmUnitTest}", "Q:/cdmUnitTest");
+    ConfigCatalog.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);
   }
 
   @Test
@@ -109,9 +112,9 @@ public class TestDatasetScan {
 
     CatalogXmlWriter writer = new CatalogXmlWriter();
     if (showCats) System.out.printf("%n%s%n", writer.writeXML(scanCat));
-    assert scanCat.getDatasets().size() == 1;
+    assertEquals(1, scanCat.getDatasets().size());
     Dataset root = scanCat.getDatasets().get(0);
-    assert root.getDatasets().size() == 2;
+    assertEquals(3, root.getDatasets().size());
 
     // directories get reverse sorted
     List<Dataset> list = root.getDatasets();
@@ -125,7 +128,7 @@ public class TestDatasetScan {
 
     assert scanCat.getDatasets().size() == 1;
     root = scanCat.getDatasets().get(0);
-    assert root.getDatasets().size() == 2;
+    assertEquals(3, root.getDatasets().size());
 
     // files get reverse sorted
     list = root.getDatasets();
@@ -153,13 +156,13 @@ public class TestDatasetScan {
 
     CatalogXmlWriter writer = new CatalogXmlWriter();
     if (showCats) System.out.printf("%n%s%n", writer.writeXML(scanCat));
-    assert scanCat.getDatasets().size() == 1;
+    assertEquals(1, scanCat.getDatasets().size());
     Dataset root = scanCat.getDatasets().get(0);
-    assert root.getDatasets().size() == 2;
+    assertEquals(3, root.getDatasets().size());
 
     List<Dataset> list = root.getDatasets();
-    Dataset ds0 = list.get(0);
-    Dataset ds1 = list.get(1);
+    Dataset ds0 = list.get(1);  // first one is latest
+    Dataset ds1 = list.get(2);
 
     DateRange dr0 = ds0.getTimeCoverage();
     assert dr0 != null;
