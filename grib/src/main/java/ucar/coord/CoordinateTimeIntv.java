@@ -142,6 +142,10 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   ////////////////////////////////////////
 
+  public CoordinateTimeIntv makeBestFromComplete() {
+    return this;
+  }
+
   /* make the union of all the offsets from base date
   public CoordinateTimeIntv makeBestTimeCoordinate(List<Double> runOffsets) {
     Set<TimeCoord.Tinv> values = new HashSet<>();

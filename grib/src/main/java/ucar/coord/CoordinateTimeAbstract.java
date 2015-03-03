@@ -120,7 +120,7 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
 
   ////////////////////////////////////////
-  // public abstract CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets);
+  public abstract CoordinateTimeAbstract makeBestFromComplete();
 
   public abstract CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal);
 

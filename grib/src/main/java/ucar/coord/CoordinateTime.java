@@ -122,6 +122,11 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   ////////////////////////////////////////////////
 
+  public CoordinateTime makeBestFromComplete() {
+    return this;
+  }
+
+
   /* public CoordinateTime makeBestTimeCoordinate(List<Double> runOffsets) {
     Set<Integer> values = new HashSet<>();
     for (double runOffset : runOffsets) {

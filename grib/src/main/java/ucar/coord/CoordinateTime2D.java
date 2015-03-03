@@ -476,6 +476,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   ///////////////////////////////////////////////////////////////////////////////////////
 
+  public CoordinateTime makeBestFromComplete() {
+    throw new UnsupportedOperationException();
+  }
+
   public CoordinateTimeAbstract makeBestTimeCoordinate(CoordinateRuntime master) {
     if (isTimeInterval) {
       return makeBestTimeIntv(master);

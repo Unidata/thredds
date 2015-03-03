@@ -176,7 +176,7 @@ abstract class GribPartitionBuilder  {
     result.makeHorizCS();
 
     if (ds2D.gctype != GribCollectionImmutable.Type.TP)
-      makeDatasetBest(ds2D);
+      makeDatasetBest(ds2D, false);
 
     // ready to write the index file
     writeIndex(result, errlog);
@@ -481,8 +481,8 @@ abstract class GribPartitionBuilder  {
     }
   } */
 
-  private void makeDatasetBest(GribCollectionMutable.Dataset ds2D) throws IOException {
-    GribCollectionMutable.Dataset dsBest = result.makeDataset(GribCollectionImmutable.Type.Best);
+  private void makeDatasetBest(GribCollectionMutable.Dataset ds2D, boolean isComplete) throws IOException {
+    GribCollectionMutable.Dataset dsBest = result.makeDataset(isComplete ? GribCollectionImmutable.Type.BestComplete : GribCollectionImmutable.Type.Best);
 
     int npart = result.getPartitionSize();
 
@@ -498,6 +498,7 @@ abstract class GribPartitionBuilder  {
         if (coord instanceof CoordinateRuntime) continue; // skip it
         if (coord instanceof CoordinateTime2D) {
           CoordinateTimeAbstract best = ((CoordinateTime2D)coord).makeBestTimeCoordinate(result.masterRuntime);
+          if (!isComplete) best = best.makeBestFromComplete();
           sharer.addCoordinate(best);
           map2DtoBest.put(coord, best);
         } else {
