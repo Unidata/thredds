@@ -157,7 +157,6 @@ public class Level2VolumeScan {
           // see if its locked - another thread is writing it
           FileLock lock = null;
           try (FileInputStream fstream = new FileInputStream(uncompressedFile)) {
-            ;
             //lock = fstream.getChannel().lock(0, 1, true); // wait till its unlocked
 
             while (true) { // loop waiting for the lock
