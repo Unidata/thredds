@@ -107,7 +107,7 @@ public class TestGribCollections {
 
   @Test
   public void testGC_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_1200.grib2.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 23229 : count.nread; // 23229 22909
@@ -116,7 +116,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib2() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 94352 : count.nread;  // 93052 ??
@@ -159,7 +159,7 @@ public class TestGribCollections {
 
     long start = System.currentTimeMillis();
     // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;
@@ -186,7 +186,7 @@ public class TestGribCollections {
 
     long start = System.currentTimeMillis();
     // String filename = "B:/rdavm/ds083.2/grib1/ds083.2_Aggregation-grib1.ncx3";
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46.ncx3";
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3";
     try (GridDataset gds = GridDataset.open(filename)) {
       GridDatatype gdt = gds.findGridByName("Best/Latent_heat_net_flux_surface_Mixed_intervals_Average");
       assert gdt != null;

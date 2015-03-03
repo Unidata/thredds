@@ -485,8 +485,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   }
 
   private CoordinateTimeAbstract makeBestTime(CoordinateRuntime master) {
-    // make unique set of coordinates
-    Set<Integer> values = new HashSet<>();
+    // make complete, unique set of coordinates
+    Set<Integer> values = new HashSet<>();  // complete set of values
     for (int runIdx=0; runIdx<nruns; runIdx++) {   // use times array, passed into constructor, with original inventory, if possible
       CoordinateTime timeCoord = (times == null) ?  (CoordinateTime)  getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
       for (Integer offset : timeCoord.getOffsetSorted())
@@ -494,7 +494,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
     List<Integer> offsetSorted = new ArrayList<>(values.size());
     for (Object val : values) offsetSorted.add( (Integer) val);
-    Collections.sort(offsetSorted);
+    Collections.sort(offsetSorted);   // complete set of values
 
     // fast lookup of offset val in the result CoordinateTime
     Map<Integer, Integer> map = new HashMap<>();
@@ -513,7 +513,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
     assert masterIdx >= nruns;
 
-    // now for each coordinate, use the latest runtime
+    // now for each coordinate, use the latest runtime available
     int[] time2runtime = new int[ offsetSorted.size()];
     for (int runIdx=0; runIdx<nruns; runIdx++) {
       CoordinateTime timeCoord = (times == null) ? (CoordinateTime) getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);

@@ -39,6 +39,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.ArrayDouble;
+import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -70,16 +71,6 @@ public class TestGribCollectionCoordinates {
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
-
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
-            TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/.*gbx9", null, null, null, "file", null);
-    // config.gribConfig.setOption("timeUnit", "1 minute");
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
   @AfterClass
@@ -115,6 +106,17 @@ public class TestGribCollectionCoordinates {
   // check that all time variables are coordinates (TwoD PofP was not eliminating unused coordinates after merging)
   @Test
   public void testExtraCoordinates() throws IOException {
+
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/.*gbx9", null, null, null, "file", null);
+    // config.gribConfig.setOption("timeUnit", "1 minute");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+
     boolean ok = true;
 
     try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/namAlaska22.ncx3")) {
@@ -153,12 +155,45 @@ public class TestGribCollectionCoordinates {
               }
           }
         }
-
       }
     }
 
     assert ok;
   }
+
+  // make sure Best refrence times always increase
+  @Test
+  public void testBestReferenceMonotonic() throws IOException {
+    boolean ok = true;
+
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3")) {
+      Group best = ds.findGroup("Best");
+      for (Variable vds : best.getVariables()) {
+        String stdname = ds.findAttValueIgnoreCase(vds, "standard_name", "no");
+        if (!stdname.equalsIgnoreCase("forecast_reference_time")) continue;
+
+        System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
+        assert vds instanceof CoordinateAxis1D : vds.getFullName();
+        CoordinateAxis1D axis = (CoordinateAxis1D) vds;
+
+        // test that values are monotonic
+        double last = Double.NaN;
+        for (int i = 0; i < axis.getSize(); i++) {
+          double val = axis.getCoordValue(i);
+          if (i > 0 && (val < last)) {
+            System.out.printf("  %s(%d) == %f < %f%n", vds.getFullName(), i, val, last);
+            ok = false;
+          }
+          last = val;
+        }
+      }
+    }
+
+    assert ok;
+
+
+  }
+
 
 
 }

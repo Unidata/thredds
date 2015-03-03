@@ -176,7 +176,7 @@ abstract class GribPartitionBuilder  {
     result.makeHorizCS();
 
     if (ds2D.gctype != GribCollectionImmutable.Type.TP)
-      makeDatasetBest(ds2D, errlog);
+      makeDatasetBest(ds2D);
 
     // ready to write the index file
     writeIndex(result, errlog);
@@ -481,7 +481,7 @@ abstract class GribPartitionBuilder  {
     }
   } */
 
-  private void makeDatasetBest(GribCollectionMutable.Dataset ds2D, Formatter f) throws IOException {
+  private void makeDatasetBest(GribCollectionMutable.Dataset ds2D) throws IOException {
     GribCollectionMutable.Dataset dsBest = result.makeDataset(GribCollectionImmutable.Type.Best);
 
     int npart = result.getPartitionSize();
@@ -491,16 +491,7 @@ abstract class GribPartitionBuilder  {
       GribCollectionMutable.GroupGC groupB = dsBest.addGroupCopy(group2D);  // make copy of group, add to Best dataset
       groupB.isTwoD = false;
 
-      /* CoordinateRuntime rtc = null;
-      for (Coordinate coord : group2D.coords)
-       if (coord.getType() == Coordinate.Type.runtime) {
-         assert rtc == null; // test theres a single runtime coordinate HEY why is this true ??
-         rtc = (CoordinateRuntime) coord;
-       }
-      assert rtc != null;
-      List<Double> runOffset = rtc.getOffsetsInTimeUnits(); */
-
-      // for each 2Dtime, create the best time coordinates
+      // for each time2D, create the best time coordinates
       HashMap<Coordinate, CoordinateTimeAbstract> map2DtoBest = new HashMap<>(); // associate 2D coord with best
       CoordinateUniquify sharer = new CoordinateUniquify();
       for (Coordinate coord : group2D.coords) {
@@ -520,7 +511,6 @@ abstract class GribPartitionBuilder  {
         // copy vi2d and add to groupB
         PartitionCollectionMutable.VariableIndexPartitioned vip = result.makeVariableIndexPartitioned(groupB, vi2d, npart);
         vip.finish();
-        // vip.twot = null; // non-null only for 2D
 
         // set shared coordinates
         List<Coordinate> newCoords = new ArrayList<>();

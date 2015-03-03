@@ -128,7 +128,7 @@ public class TestGrib2CoordsMatch {
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly Grib/indexOnlyShow"));
-    String filename = "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_1200.grib2.ncx3";
+    String filename = "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx3";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
@@ -143,7 +143,7 @@ public class TestGrib2CoordsMatch {
       float r = ((float) took) / count.nread;
       System.out.printf("%n   that took %d secs total, %f msecs per record%n", took / 1000, r);
 
-      assert count.nread == 130;
+      assert count.nread == 186;
       assert count.nmiss == 0;
       assert count.nerrs == 0;
     }
@@ -191,22 +191,22 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/GFS_Global_onedeg_20120911_0000.grib2.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     //assert count.nread == 22909;                                    // 0/2535/23229 or 150/2535/22909
    // assert count.nmiss == 2535;
     //assert count.nerrs == 150;
 
-    assert count.nread == 23229;
-    assert count.nmiss == 2535;
+    assert count.nread == 33994;
+    assert count.nmiss == 0;
     assert count.nerrs == 0;
    }
 
   @Test
   @Ignore("test takes 45 minutes on jenkins - turn off for now")
   public void testPofG() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_onedeg/gfsOnedeg_46-gfs_onedeg.ncx3");
+    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3");
 
     // that took 2497 secs total, 26.835802 msecs per record total == 671/10296/93052
 
