@@ -21,37 +21,42 @@ buildscript {
 
 apply from: "$rootDir/gradle/coverage.gradle"
 
-evaluationDependsOnChildren()
-
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     description = 'Generates an aggregate report from all subprojects'
 
-    Closure isExtendedByJacoco = { Task task -> task.enabled && task.extensions.findByType(JacocoTaskExtension) }
-    Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
-    Collection<File> exeData = tasksExtendedByJacoco*.jacoco*.destinationFile
+    // By default, JacocoReport will be skipped if ANY of its executionData are non-existent: http://goo.gl/pHuwyg
+    // This is a problem: we don't know which executionData we have until configuration time. So, we're temporarily
+    // assigning an empty collection (leaving it null causes an exception), and assigning the real values later.
+    executionData = files()
 
-    // We won't know which subprojects generate executionData until the execution phase.
-    // However, the JacocoReport constructor will throw an exception if we leave this null.
-    // So, assign an empty collection temporarily.
-    executionData = files(exeData)
+    // Causes jacocoRootReport to always be executed. This is necessary because JacocoReport uses executionData as one
+    // of its Inputs, and by assigning an empty collection above, the normal UP-TO-DATE machinery has been subverted.
+    // As a result, jacocoRootReport can't properly determine when subprojects have generated new coverage data
+    // (it thinks its executionData Inputs are always UP-TO-DATE). We'll try to detect those changes manually below.
+    outputs.upToDateWhen { false }  // Evaluated at configuration time (onlyIf is evaluated at execution time)
 
-//    // JacocoReport will be skipped if ANY of its executionData are non-existent, so we must filter out those
-//    // that didn't get created during test execution.
-//    // See https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac#file-build-gradle
-//    outputs.upToDateWhen { false }
-
-    onlyIf {
-        println "Yay?"
-        println executionData.any { it.exists() }
-        executionData.any { it.exists() }
-    }
     doFirst {
-        // Add all subproject executionData that actually exists.
-        executionData = files(executionData.findAll { it.exists() })
+        Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
+        Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
+        Collection<File> exeData = tasksExtendedByJacoco*.jacoco*.destinationFile
+
+        // Add all subproject executionData that actually exist.
+        executionData = files(exeData.findAll { it.exists() })
 
         // Skip task if NO executionData exists. This is how JacocoReport ought to work in the first place.
         if (executionData.isEmpty()) {
-            throw new StopExecutionException("No execution data found for $name.")
+            throw new StopExecutionException("SKIPPING $name: no execution data found.")
+        }
+
+        boolean allOutputsExist = outputs.files.every { it.exists() }
+        boolean anyJacocoTaskDidWork = tasksExtendedByJacoco.any { it.didWork }
+
+        // Skip task if all outputs exist (previously generated) and no Jacoco tasks did any work (meaning that the
+        // Inputs didn't change). This manual UP-TO-DATE checking is certainly inferior to Gradle's built-in machinery
+        // (this doesn't detect modifications to outputs, for example), but it's good enough given the circumstances.
+        // The long-term solution may be to reimplement JacocoReport with the troublesome elements removed.
+        if (allOutputsExist && !anyJacocoTaskDidWork) {
+            throw new StopExecutionException("SKIPPING $name: outputs already exist and no Jacoco tasks did work.")
         }
     }
 }

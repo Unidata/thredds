@@ -64,7 +64,7 @@ gretty {
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test) {
-    setEnabled true
+//    setEnabled true
 
     include 'thredds/server/catalog/TestTdsLocal.class'
     include 'thredds/TestEncoding.class'
@@ -89,6 +89,8 @@ task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
 // So, our modification must also occur after evaluation.
 afterEvaluate {
     appBeforeIntegrationTest {
+        onlyIf { tasks.integrationTest.enabled }
+
         // "jacoco" extension is created automatically for all AppBeforeIntegrationTest tasks
         // and has type org.gradle.testing.jacoco.plugins.JacocoTaskExtension
         jacoco {
@@ -101,5 +103,9 @@ afterEvaluate {
             File tomcatBaseDir = launcherConfig.baseDir
             gretty.logDir = new File(tomcatBaseDir, "logs").absolutePath
         }
+    }
+
+    appAfterIntegrationTest {
+        onlyIf { tasks.integrationTest.enabled }
     }
 }
