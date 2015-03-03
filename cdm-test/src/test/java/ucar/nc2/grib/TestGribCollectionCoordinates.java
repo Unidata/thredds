@@ -34,28 +34,22 @@ package ucar.nc2.grib;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
+import ucar.ma2.ArrayDouble;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.dataset.*;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-import java.util.Formatter;
 
 /**
  * Describe
@@ -67,7 +61,7 @@ public class TestGribCollectionCoordinates {
   private static CollectionUpdateType updateMode = CollectionUpdateType.always;
 
   @BeforeClass
-  static public void before() {
+  static public void before() throws IOException {
     GribIosp.debugIndexOnlyCount = 0;
     GribCollectionImmutable.countGC = 0;
     PartitionCollectionImmutable.countPC = 0;
@@ -76,6 +70,16 @@ public class TestGribCollectionCoordinates {
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
+
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/.*gbx9", null, null, null, "file", null);
+    // config.gribConfig.setOption("timeUnit", "1 minute");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
   @AfterClass
@@ -108,28 +112,53 @@ public class TestGribCollectionCoordinates {
 
   /////////////////////////////////////////////////////////
 
-  // TwoD PofP are not eliminating unused coordinates after merging
-  @Ignore("B: not visible on spock")
+  // check that all time variables are coordinates (TwoD PofP was not eliminating unused coordinates after merging)
   @Test
   public void testExtraCoordinates() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
-            "B:/idd/namAlaska22/.*gbx9", null, null, null, "file", null);
-    // config.gribConfig.setOption("timeUnit", "1 minute");
+    boolean ok = true;
 
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.nocheck, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-
-    try (NetcdfDataset ds =  NetcdfDataset.openDataset("B:/idd/namAlaska22/namAlaska22.ncx3")) {
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/namAlaska22.ncx3")) {
       for (Variable vds : ds.getVariables()) {
         String stdname = ds.findAttValueIgnoreCase(vds, "standard_name", "no");
-        if (stdname.equalsIgnoreCase("time")) {
-          System.out.printf(" %s == %s%n", vds.getShortName(), vds.getClass().getName());
-          assert vds instanceof CoordinateAxis;
+        if (!stdname.equalsIgnoreCase("time")) continue;
+
+        System.out.printf(" %s == %s%n", vds.getFullName(), vds.getClass().getName());
+        assert vds instanceof CoordinateAxis : vds.getFullName();
+
+        // test that zero Intervals are removed
+        if (vds instanceof CoordinateAxis1D) {
+          CoordinateAxis1D axis = (CoordinateAxis1D) vds;
+          if (axis.isInterval()) {
+            for (int i = 0; i < axis.getSize(); i++) {
+              double[] bound = axis.getCoordBounds(i);
+              if (bound[0] == bound[1]) {
+                System.out.printf("%s(%d) = [%f,%f]%n", vds.getFullName(), i, bound[0], bound[1]);
+                ok = false;
+              }
+            }
+          }
+
+        } else if (vds instanceof CoordinateAxis2D) {
+          CoordinateAxis2D axis2 = (CoordinateAxis2D) vds;
+          if (axis2.isInterval()) {
+            ArrayDouble.D3 bounds = axis2.getCoordBoundsArray();
+            for (int i = 0; i < axis2.getShape(0); i++)
+              for (int j = 0; j < axis2.getShape(1); j++) {
+                double start = bounds.get(i, j, 0);
+                double end = bounds.get(i, j, 1);
+                if (start == end) {
+                  System.out.printf("%s(%d,%d) = [%f,%f]%n", vds.getFullName(), i, j, start, end);
+                  ok = false;
+                }
+              }
+          }
         }
+
       }
     }
+
+    assert ok;
   }
+
+
 }

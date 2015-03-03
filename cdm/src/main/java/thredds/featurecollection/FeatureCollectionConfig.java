@@ -487,7 +487,7 @@ public class FeatureCollectionConfig {
       for (Element intvElem : intvElems) {
         if (intvFilter == null) intvFilter = new GribIntvFilter();
         String excludeZero = intvElem.getAttributeValue("excludeZero");
-        if (excludeZero != null) intvFilter.isZeroExcluded = true;
+        if (excludeZero != null) setExcludeZero( !excludeZero.equals("false"));
         String intvLengthS = intvElem.getAttributeValue("intvLength");
         if (intvLengthS == null) continue;
         int intvLength = Integer.parseInt(intvLengthS);
@@ -680,7 +680,7 @@ public class FeatureCollectionConfig {
 
   static public class GribIntvFilter {
     public List<GribIntvFilterParam> filter;
-    public boolean isZeroExcluded;
+    public boolean isZeroExcluded = true; // default is true 3/2/2015
 
     public boolean isZeroExcluded() {
       return isZeroExcluded;
@@ -700,15 +700,15 @@ public class FeatureCollectionConfig {
      */
 
     // true means use, false means discard
-    public boolean filterOk(int id, int hasLength, int prob) {
+    public boolean filterOk(int id, int intvLength, int prob) {
+      if (intvLength == 0 && isZeroExcluded()) return false;
       if (filter == null) return true;
-      if (hasLength == 0 && isZeroExcluded()) return false;
       for (GribIntvFilterParam param : filter) {
         boolean needProb = (param.prob != Integer.MIN_VALUE); // filter uses prob
         boolean hasProb = (prob != Integer.MIN_VALUE); // record has prob
         boolean isMine = !needProb || hasProb && (param.prob == prob);
         if (param.id == id && isMine) { // first match in the filter list is used
-          if (param.intvLength != hasLength)
+          if (param.intvLength != intvLength)
             return false; // remove the ones whose intervals dont match
         }
       }

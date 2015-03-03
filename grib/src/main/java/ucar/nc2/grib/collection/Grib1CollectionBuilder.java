@@ -86,7 +86,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     Counter statsAll = new Counter(); // debugging
 
     logger.debug(" dcm={}", dcm);
-    FeatureCollectionConfig.GribIntvFilter intvMap = gribConfig.intvFilter;
 
     // place each record into its group
     int totalRecords = 0;
@@ -116,7 +115,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
             cust = Grib1Customizer.factory(gr, null);
             cust.setTimeUnitConverter(gribConfig.getTimeUnitConverter());
           }
-          if (intvMap != null && filterOut(gr, intvMap)) {
+          if (filterIntervals(gr, gribConfig.intvFilter)) {
             statsAll.filter++;
             continue; // skip
           }
@@ -162,7 +161,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   }
 
       // true means remove
-  private boolean filterOut(Grib1Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
+  private boolean filterIntervals(Grib1Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
     Grib1SectionProductDefinition pdss = gr.getPDSsection();
     Grib1ParamTime ptime = gr.getParamTime(cust);
     if (!ptime.isInterval()) return false;
@@ -171,15 +170,11 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     if (intv == null) return false;
     int haveLength = intv[1] - intv[0];
 
-    // HACK
-    if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
-      if ((intv[0] == 0) && (intv[1] == 0)) {
-        //f.format(" FILTER INTV [0, 0] %s%n", gr);
-        return true;
-      }
-      return false;
+    // discard zero length intervals (default)
+    if (haveLength == 0 && (intvFilter == null || intvFilter.isZeroExcluded()))
+      return true;
 
-    } else if (intvFilter.hasFilter()) {
+    if (intvFilter != null && intvFilter.hasFilter()) {
       int center = pdss.getCenter();
       int subcenter = pdss.getSubCenter();
       int version = pdss.getTableVersion();
@@ -188,6 +183,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
       return !intvFilter.filterOk(id, haveLength, Integer.MIN_VALUE);
     }
+
     return false;
   }
 

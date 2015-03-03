@@ -104,23 +104,23 @@
       phrase &quot;mixed_intervals&quot; is added to the variable name.</p>
   <p>Generally, the CDM places the coordinate value at the end of the interval, for example the time interval (0,6) will have a coordinate value 6. The CDM
     looks for unique intervals in constructing the variable. This implies that the coordinate values are not always unique, but the coordinate bounds pair are
-    always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em>.</p>
+    always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em> or <em>CoordinateAxis2D.isInterval()</em></p>
   <p>NCEP GRIB2 model output, at least, has some issues that we are slowing learning how best to deal with. Currently there are two situations which the user
     can fix:</p>
   <ol>
-    <li><strong>excludeZero</strong>: One can choose to ignore (0,0) intervals. One sees these in NCEP model output, apparently they are initialization records, probably miscoded (they should be time points, not intervals).</li>
-    <li><strong>intvLength</strong>: One can choose that certain parameters use only selected intervals. This is helpful when the parameter has redundant mixed levels, which can be
+    <li><strong>excludeZero</strong>: <em>By default, intervals of length 0 are ignored</em>. You can choose not to ignore zero length intervals. (One sees (0,0) intervals these in NCEP model output, apparently  initialization records, possibly miscoded.)</li>
+    <li><strong>intvLength</strong>:  <em>By default, intervals of all lengths (except 0) are used. </em> You can choose that certain parameters use only selected intervals. This is helpful when the parameter has redundant mixed levels, which can be
       derived from the set of intervals of a fixed size . For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12) intervals are all present, and so
       other intervals (0,6), (0, 9), (0,12) can be ignored. </li>
   </ol>
   <p>Here are examples using NcML:</p>
   <blockquote>
-    <pre>  &lt;gribConfig&gt;<br/><strong>1)</strong> &lt;intvFilter excludeZero=&quot;true&quot;/&gt;<br/><strong>2)</strong> &lt;intvFilter intvLength=&quot;3&quot;&gt;<br/>     &lt;variable id=&quot;0-1-8&quot;/&gt;<br/>     &lt;variable id=&quot;0-1-10&quot;/&gt;<br/>   &lt;/intvFilter&gt;<br/> &lt;/gribConfig&gt;</pre>
+    <pre>  &lt;gribConfig&gt;<br/><strong>1)</strong> &lt;intvFilter excludeZero=&quot;false&quot;/&gt;<br/><strong>2)</strong> &lt;intvFilter intvLength=&quot;3&quot;&gt;<br/>     &lt;variable id=&quot;0-1-8&quot;/&gt;<br/>     &lt;variable id=&quot;0-1-10&quot;/&gt;<br/>   &lt;/intvFilter&gt;<br/> &lt;/gribConfig&gt;</pre>
   </blockquote>
 </blockquote>
 <ol>
-  <li>Ignore any 0 length time intervals. </li>
-  <li>For variables 0-1-8 and 0-1-10, only include records with time interval length = 3. This will simplify those variables so that they only contain only 3 hour intervals, instead of a mixture of intervals.</li>
+  <li>Do not ignore  0 length time intervals. </li>
+  <li>For variables 0-1-8 and 0-1-10, only include records with time interval length = 3. This will simplify those variables so that they only contain  3 hour intervals, instead of a mixture of intervals.</li>
 </ol>
 <blockquote>
   <p>Also see <a href="../../../netcdf-java/reference/formats/GribFiles.html#intvFilter">CDM docs</a>.</p>
@@ -319,7 +319,7 @@
 </blockquote>
 <hr />
 <address>
-<img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Nov 2014
+<img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Mar 2015
 </address>
 <p>&nbsp;</p>
 </body>
