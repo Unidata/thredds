@@ -155,10 +155,8 @@ public class Level2VolumeScan {
 
         if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
           // see if its locked - another thread is writing it
-          FileInputStream fstream = null;
           FileLock lock = null;
-          try {
-            fstream = new FileInputStream(uncompressedFile);
+          try (FileInputStream fstream = new FileInputStream(uncompressedFile)) {
             //lock = fstream.getChannel().lock(0, 1, true); // wait till its unlocked
 
             while (true) { // loop waiting for the lock
@@ -177,7 +175,6 @@ public class Level2VolumeScan {
 
           } finally {
             if (lock != null) lock.release();
-            if (fstream != null) fstream.close();
           }
           uraf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFile.getPath());
 
