@@ -81,7 +81,7 @@ public class Grib2ReportPanel extends ReportPanel {
         doGdsSummary(f, dcm, extra);
         break;
       case pdsSummary:
-        doPdsSummary(f, dcm, useIndex);
+        doPdsSummary(f, dcm, eachFile);
         break;
       case pdsProblems:
         doPdsProblems(f, dcm, useIndex);
@@ -538,7 +538,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////////
 
-  private void doPdsSummary(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
+  private void doPdsSummary(Formatter f, MCollection dcm, boolean eachFile) throws IOException {
     Counters countersAll = new Counters();
     countersAll.add(new CounterOfInt("template"));
     countersAll.add(new CounterOfInt("timeUnit"));
@@ -550,13 +550,19 @@ public class Grib2ReportPanel extends ReportPanel {
     countersAll.add(new CounterOfInt("levelScale"));
     countersAll.add(new CounterOfInt("nExtraCoords"));
 
-      for (MFile mfile : dcm.getFilesSorted()) {
-        f.format(" %s%n", mfile.getPath());
-        doPdsSummary(f, mfile, countersAll);
+    for (MFile mfile : dcm.getFilesSorted()) {
+      f.format("---%s%n", mfile.getPath());
+      doPdsSummary(f, mfile, countersAll);
+
+      if (eachFile) {
+        countersAll.show(f);
+        countersAll.reset();
       }
+    }
 
     f.format("PdsSummary - all files%n");
-    countersAll.show(f);
+    if (!eachFile)
+      countersAll.show(f);
   }
 
   private void doPdsSummary(Formatter f, MFile mf, Counters counters) throws IOException {
@@ -598,11 +604,11 @@ public class Grib2ReportPanel extends ReportPanel {
 
       int ptype = pds.getGenProcessType();
       counters.count("genProcessType", ptype);
-      if (firstPtype < 0) firstPtype = ptype;
+      /* if (firstPtype < 0) firstPtype = ptype;
       else if (firstPtype != ptype && !shutup) {
         f.format(" getGenProcessType differs in %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), ptype);
         shutup = true;
-      }
+      } */
       counters.count("genProcessId", pds.getGenProcessId());
 
       if (pds.getLevelScale1() > 127) {
@@ -740,42 +746,32 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private void doDrsSummary(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     f.format("Show Unique DRS Templates%n");
-    CounterOfInt template = new CounterOfInt("DRS template");
-    CounterOfInt bitmapRepeat = new CounterOfInt("BMS indicator");
-    CounterOfInt prob = new CounterOfInt("DRS template 40 signed problem");
-    CounterOfInt nbitsC = new CounterOfInt("Number of Bits");
+    Counters countersAll = new Counters();
+    countersAll.add(new CounterOfInt("DRS_template"));
+    countersAll.add(new CounterOfInt("BMS indicator"));
+    countersAll.add(new CounterOfInt("DRS template 40 signed problem"));
+    countersAll.add(new CounterOfInt("Number_of_Bits"));
 
     for (MFile mfile : dcm.getFilesSorted()) {
-      if (eachFile) {
-        template.reset();
-        bitmapRepeat.reset();
-        if (extra) prob.reset();
-      }
 
       f.format("------- %s%n", mfile.getPath());
       if (useIndex)
-        doDrsSummaryIndex(f, mfile, extra, template, bitmapRepeat, prob);
+        doDrsSummaryIndex(f, mfile, extra, countersAll);
       else
-        doDrsSummaryScan(f, mfile, extra, template, bitmapRepeat, prob, nbitsC);
+        doDrsSummaryScan(f, mfile, extra, countersAll);
 
       if (eachFile) {
-        template.show(f);
-        bitmapRepeat.show(f);
-        if (!useIndex) nbitsC.show(f);
-        if (extra) prob.show(f);
+        countersAll.show(f);
         f.format("%n");
+        countersAll.reset();
       }
     }
 
-    if (!eachFile) {
-      template.show(f);
-      bitmapRepeat.show(f);
-      if (!useIndex) nbitsC.show(f);
-      if (extra) prob.show(f);
-    }
+    if (!eachFile)
+      countersAll.show(f);
   }
 
-  private void doDrsSummaryIndex(Formatter f, MFile mf, boolean extra, CounterOfInt templateC, CounterOfInt bitmapRepeat, CounterOfInt probC) throws IOException {
+  private void doDrsSummaryIndex(Formatter f, MFile mf, boolean extra, Counters counters) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
     long messageSum = 0;
@@ -787,20 +783,20 @@ public class Grib2ReportPanel extends ReportPanel {
       for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
         Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
         int template = drss.getDataTemplate();
-        templateC.count(template);
+        counters.count("DRS_template", template);
         messageSum += gr.getIs().getMessageLength();
         nrecords++;
 
         //Grib2SectionBitMap bms = gr.getBitmapSection();
-        bitmapRepeat.count(gr.repeat);
+        counters.count("BMS indicator", gr.repeat);
 
         if (extra && template == 40) {  // expensive
           Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
           if (drs40 != null) {
             if (drs40.hasSignedProblem())
-              probC.count(1);
+              counters.count("DRS template 40 signed problem", 1);
             else
-              probC.count(0);
+              counters.count("DRS template 40 signed problem", 0);
           }
         }
       }
@@ -810,35 +806,34 @@ public class Grib2ReportPanel extends ReportPanel {
     }
   }
 
-  private void doDrsSummaryScan(Formatter f, MFile mf, boolean extra, CounterOfInt templateC, CounterOfInt bitmapRepeat, CounterOfInt probC, CounterOfInt nbitsC) throws IOException {
+  private void doDrsSummaryScan(Formatter f, MFile mf, boolean extra, Counters counters) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(mf.getPath(), "r");
     Grib2RecordScanner scan = new Grib2RecordScanner(raf);
     while (scan.hasNext()) {
       ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
-      doDrsSummary(gr, raf, extra, templateC, bitmapRepeat, probC, nbitsC);
+      doDrsSummary(gr, raf, extra, counters);
     }
     raf.close();
   }
 
-  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, CounterOfInt templateC,
-                            CounterOfInt bitmapRepeat, CounterOfInt probC, CounterOfInt nbitsC) throws IOException {
+  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, Counters counters) throws IOException {
     Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
     int template = drss.getDataTemplate();
-    templateC.count(template);
+    counters.count("DRS_template", template);
 
     //Grib2SectionBitMap bms = gr.getBitmapSection();
-    bitmapRepeat.count(gr.repeat);
+    counters.count("BMS indicator", gr.repeat);
 
     GribData.Info info = gr.getBinaryDataInfo(raf);
-    nbitsC.count(info.numberOfBits);
+    counters.count("Number_of_Bits", info.numberOfBits);
 
     if (extra && template == 40) {  // expensive
       Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
       if (drs40 != null) {
         if (drs40.hasSignedProblem())
-          probC.count(1);
+          counters.count("DRS template 40 signed problem", 1);
         else
-          probC.count(0);
+          counters.count("DRS template 40 signed problem", 0);
       }
     }
   }

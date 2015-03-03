@@ -32,17 +32,12 @@
 
 package ucar.nc2.ui.grib;
 
-import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionAbstract;
-import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.collection.Grib2Iosp;
-import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.NcepLocalTables;
@@ -1438,6 +1433,10 @@ public class Grib2CollectionPanel extends JPanel {
       return pds.getForecastTime();
     }
 
+    public final int getGenProcessType() {
+      return pds.getGenProcessType();
+    }
+
     public final String getFile() {
       int fno = gr.getFile();
       return fileList.get(fno).getName();
@@ -1617,6 +1616,7 @@ public class Grib2CollectionPanel extends JPanel {
         props.add(new PropertyDescriptor("file", cl, "getFile", null));
         props.add(new PropertyDescriptor("forecastDate", cl, "getForecastDate", null));
         props.add(new PropertyDescriptor("forecastTime", cl, "getForecastTime", null));
+        props.add(new PropertyDescriptor("processType", cl, "getGenProcessType", null));
         props.add(new PropertyDescriptor("header", cl, "getHeader", null));
         props.add(new PropertyDescriptor("level", cl, "getLevel", null));
         props.add(new PropertyDescriptor("refDate", cl, "getRefDate", null));
