@@ -178,6 +178,7 @@ libraries["gretty"] = "org.akhikhl.gretty:gretty:1.1.8"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:0.8"
 
+libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 

@@ -16,6 +16,7 @@ buildscript {
     dependencies {
         classpath libraries["gretty"]
         classpath libraries["shadow"]
+        classpath libraries["coveralls-gradle-plugin"]
     }
 }
 
@@ -33,7 +34,7 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     // of its Inputs, and by assigning an empty collection above, the normal UP-TO-DATE machinery has been subverted.
     // As a result, jacocoRootReport can't properly determine when subprojects have generated new coverage data
     // (it thinks its executionData Inputs are always UP-TO-DATE). We'll try to detect those changes manually below.
-    outputs.upToDateWhen { false }  // Evaluated at configuration time (onlyIf is evaluated at execution time)
+    outputs.upToDateWhen { false }  // Evaluated at configuration time (onlyIf{} is evaluated at execution time)
 
     doFirst {
         Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
@@ -59,6 +60,19 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
             throw new StopExecutionException("SKIPPING $name: outputs already exist and no Jacoco tasks did work.")
         }
     }
+}
+
+apply plugin: "com.github.kt3k.coveralls"
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+    dependsOn jacocoRootReport
+}
+
+coveralls {
+    jacocoReportPath = tasks.jacocoRootReport.reports.xml.destination
+    sourceDirs = tasks.jacocoRootReport.sourceDirectories
 }
 
 apply plugin: "base"  // Gives us the "clean" task for removing jacocoRootReport's output.
