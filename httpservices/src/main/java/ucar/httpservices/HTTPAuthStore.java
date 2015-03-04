@@ -325,7 +325,7 @@ public class HTTPAuthStore implements Serializable
     search(String principal, AuthScope scope)
     {
         List<Entry> matches;
-        if(DEFAULT == null)
+        if(isdefault || DEFAULT == null)
             matches = new ArrayList<Entry>();
         else
             matches = DEFAULT.search(principal, scope);
