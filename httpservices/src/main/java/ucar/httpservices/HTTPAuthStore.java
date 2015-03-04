@@ -192,14 +192,19 @@ public class HTTPAuthStore implements Serializable
 
     static public boolean TESTING = false;
     //Coverity[FB.SI_INSTANCE_BEFORE_FINALS_ASSIGNED]
-    static public HTTPAuthStore DEFAULTS = new HTTPAuthStore(true);
+    static public HTTPAuthStore DEFAULT;
+
+    static {
+        DEFAULT = new HTTPAuthStore(true);
+    }
+
+    static public synchronized HTTPAuthStore getDefault() {return DEFAULT;}
 
     //////////////////////////////////////////////////
     // Instance variables
 
     protected List<Entry> rows;
     protected boolean isdefault;
-    protected HTTPAuthStore defaults;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -212,8 +217,6 @@ public class HTTPAuthStore implements Serializable
     public HTTPAuthStore(boolean isdefault)
     {
         this.isdefault = isdefault;
-        if(!isdefault) this.defaults = HTTPAuthStore.DEFAULTS;
-
         this.rows = new ArrayList<Entry>();
 
         if(isdefault) {
@@ -345,10 +348,10 @@ public class HTTPAuthStore implements Serializable
     search(String principal, AuthScope scope)
     {
         List<Entry> matches;
-        if(defaults == null)
+        if(isdefault || DEFAULT == null)
             matches = new ArrayList<Entry>();
         else
-            matches = defaults.search(principal, scope);
+            matches = DEFAULT.search(principal, scope);
 
         if(scope == null || rows.size() == 0)
             return matches;
