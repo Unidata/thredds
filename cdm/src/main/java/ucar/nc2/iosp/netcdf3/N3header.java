@@ -32,20 +32,15 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
+import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.unidata.io.RandomAccessFile;
+
+import java.util.*;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 
 /**
@@ -253,7 +248,7 @@ public class N3header {
       var.setDataType(dataType);
 
       // size and beginning data position in file
-      long vsize = raf.readInt();
+      long vsize = (long) raf.readInt();
       long begin = useLongOffset ? raf.readLong() : (long) raf.readInt();
 
       if (fout != null) {
@@ -564,8 +559,7 @@ public class N3header {
     // null terminates
     int count = 0;
     while (count < nelems) {
-      if (b[count] == 0)
-        break;
+      if (b[count] == 0) break;
       count++;
     }
 

@@ -124,15 +124,12 @@ public final class DataFormatType {
     /**
      * Return the DataFormatType name.
      */
-    @Override
     public String toString() { return name; }
 
      /** Override Object.hashCode() to be consistent with this equals. */
-     @Override
     public int hashCode() { return name.hashCode(); }
 
      /** DataFormatType with same name are equal. */
-     @Override
     public boolean equals(Object o) {
        if (this == o) return true;
        if (!(o instanceof DataFormatType)) return false;

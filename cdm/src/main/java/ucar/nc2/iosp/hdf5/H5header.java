@@ -33,21 +33,23 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import ucar.nc2.constants.CDM;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Misc;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.nc2.*;
+import ucar.nc2.iosp.netcdf4.Nc4;
+import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.Layout;
+import ucar.nc2.iosp.LayoutRegular;
+import ucar.ma2.*;
+
+import java.util.*;
+import java.text.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.*;
 import java.nio.charset.Charset;
-import java.util.*;
-
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.iosp.Layout;
-import ucar.nc2.iosp.LayoutRegular;
-import ucar.nc2.iosp.netcdf3.N3iosp;
-import ucar.nc2.iosp.netcdf4.Nc4;
-import ucar.nc2.util.Misc;
-import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Read all of the metadata of an HD5 file.
@@ -1057,7 +1059,7 @@ public class H5header {
     while (values.hasNext()) {
       int ival;
       if (dataType == DataType.ENUM1)
-        ival = DataType.unsignedByteToShort(values.nextByte());
+        ival = (int) DataType.unsignedByteToShort(values.nextByte());
       else if (dataType == DataType.ENUM2)
         ival = DataType.unsignedShortToInt(values.nextShort());
       else
@@ -1771,7 +1773,6 @@ public class H5header {
       return null;
     }  */
 
-    @Override
     public String toString() {
       StringBuilder buff = new StringBuilder();
       buff.append("dataPos=").append(dataPos).append(" datatype=").append(typeInfo);
@@ -1916,7 +1917,6 @@ public class H5header {
       this.byteSize = byteSize;
     }
 
-    @Override
     public String toString() {
       StringBuilder buff = new StringBuilder();
       buff.append("hdfType=").append(hdfType).append(" byteSize=").append(byteSize).append(" dataType=").append(dataType);
@@ -2022,7 +2022,6 @@ public class H5header {
       return (parent == null) ? name : parent.getName() + "/" + name;
     }
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append(getName());
@@ -2108,7 +2107,6 @@ public class H5header {
       return address;
     }
 
-    @Override
     public String getName() {
       return who;
     }
@@ -2452,7 +2450,6 @@ public class H5header {
     /**
      * Message name.
      */
-    @Override
     public String toString() {
       return name + "(" + num + ")";
     }
@@ -2524,7 +2521,7 @@ public class H5header {
         header_length = 8;
 
       } else {
-        type = raf.readByte();
+        type = (short) raf.readByte();
         size = DataType.unsignedShortToInt(raf.readShort());
         //if (size > Short.MAX_VALUE)
         //  System.out.println("HEY");
@@ -2644,12 +2641,10 @@ public class H5header {
       return header_length + size;
     }
 
-    @Override
     public int compareTo(Object o) {
       return type - ((HeaderMessage) o).type;
     }
 
-    @Override
     public String toString() {
       return "message type = " + mtype + "; " + messData;
     }
@@ -2717,7 +2712,6 @@ public class H5header {
     int[] dimLength, maxLength; // , permute;
     // boolean isPermuted;
 
-    @Override
     public String getName() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("(");
@@ -2726,7 +2720,6 @@ public class H5header {
       return sbuff.toString();
     }
 
-    @Override
     public String toString() {
       Formatter sbuff = new Formatter();
       sbuff.format(" ndims=%d flags=%x type=%d ", ndims, flags, type);
@@ -2790,7 +2783,6 @@ public class H5header {
       if (debug1) debugOut.println("   Group btreeAddress=" + btreeAddress + " nameHeapAddress=" + nameHeapAddress);
     }
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append(" btreeAddress=").append(btreeAddress);
@@ -2798,7 +2790,6 @@ public class H5header {
       return sbuff.toString();
     }
 
-    @Override
     public String getName() {
       return Long.toString(btreeAddress);
     }
@@ -2810,7 +2801,6 @@ public class H5header {
     byte version, flags;
     long maxCreationIndex = -2, fractalHeapAddress, v2BtreeAddress, v2BtreeAddressCreationOrder = -2;
 
-    @Override
     public String toString() {
       Formatter f = new Formatter();
       f.format("   GroupNew fractalHeapAddress=%d v2BtreeAddress=%d ", fractalHeapAddress, v2BtreeAddress);
@@ -2851,7 +2841,6 @@ public class H5header {
       if (debug1) debugOut.println("   MessageGroupNew version= " + version + " flags = " + flags + this);
     }
 
-    @Override
     public String getName() {
       return Long.toString(fractalHeapAddress);
     }
@@ -2863,7 +2852,6 @@ public class H5header {
     byte flags;
     short maxCompactValue = -1, minDenseValue = -1, estNumEntries = -1, estLengthEntryName = -1;
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("   MessageGroupInfo ");
@@ -2892,7 +2880,6 @@ public class H5header {
       if (debug1) debugOut.println("   MessageGroupInfo version= " + version + " flags = " + flags + this);
     }
 
-    @Override
     public String getName() {
       return "";
     }
@@ -2906,7 +2893,6 @@ public class H5header {
     String linkName, link;
     long linkAddress;
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("   MessageLink ");
@@ -2956,7 +2942,6 @@ public class H5header {
         debugOut.println("   MessageLink version= " + version + " flags = " + Integer.toBinaryString(flags) + this);
     }
 
-    @Override
     public String getName() {
       return linkName;
     }
@@ -2994,7 +2979,6 @@ public class H5header {
     // array (10)
     int[] dim;
 
-    @Override
     public String toString() {
       Formatter f = new Formatter();
       f.format(" datatype= %d", type);
@@ -3020,7 +3004,6 @@ public class H5header {
       return f.toString();
     }
 
-    @Override
     public String getName() {
       DataType dtype = getNCtype(type, byteSize);
       if (dtype != null)
@@ -3162,7 +3145,7 @@ public class H5header {
 
       } else if (type == 10) { // array
         if (debug1) debugOut.print("   type 10(array) lengths= ");
-        int ndims = raf.readByte();
+        int ndims = (int) raf.readByte();
         if (version < 3) raf.skipBytes(3);
 
         dim = new int[ndims];
@@ -3262,7 +3245,6 @@ public class H5header {
       if (debug1) debugOut.println(this);
     }
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("   FillValueOld size= ").append(size).append(" value=");
@@ -3270,7 +3252,6 @@ public class H5header {
       return sbuff.toString();
     }
 
-    @Override
     public String getName() {
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
@@ -3318,7 +3299,6 @@ public class H5header {
       if (debug1) debugOut.println(this);
     }
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("   FillValue version= ").append(version).append(" spaceAllocateTime = ").append(spaceAllocateTime).append(" fillWriteTime=").append(fillWriteTime).append(" hasFillValue= ").append(hasFillValue);
@@ -3327,7 +3307,6 @@ public class H5header {
       return sbuff.toString();
     }
 
-     @Override
     public String getName() {
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
@@ -3344,7 +3323,6 @@ public class H5header {
     int[] chunkSize;  // only for chunked, otherwise must use Dataspace
     int dataSize;
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append(" type= ").append(+type).append(" (");
@@ -3377,7 +3355,6 @@ public class H5header {
       return sbuff.toString();
     }
 
-    @Override
     public String getName() {
       StringBuilder sbuff = new StringBuilder();
       switch (type) {
@@ -3470,7 +3447,6 @@ public class H5header {
       return filters;
     }
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("   MessageFilter filters=\n");
@@ -3479,7 +3455,6 @@ public class H5header {
       return sbuff.toString();
     }
 
-    @Override
     public String getName() {
       StringBuilder sbuff = new StringBuilder();
       for (Filter f : filters)
@@ -3519,7 +3494,6 @@ public class H5header {
       return (id < filterName.length) ? filterName[id] : "StandardFilter " + id;
     }
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("   Filter id= ").append(id).append(" flags = ").append(flags).append(" nValues=").append(nValues).append(" name= ").append(name).append(" data = ");
@@ -3559,7 +3533,6 @@ public class H5header {
 
     long dataPos; // pointer to the attribute data section, must be absolute file position
 
-    @Override
     public String toString() {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append("   Name= ").append(name);
@@ -3575,7 +3548,6 @@ public class H5header {
       return sbuff.toString();
     }
 
-    @Override
     public String getName() {
       return name;
     }
@@ -3649,13 +3621,11 @@ public class H5header {
     short maxCreationIndex = -1;
     long fractalHeapAddress = -2, v2BtreeAddress = -2, v2BtreeAddressCreationOrder = -2;
 
-    @Override
     public String getName() {
       long btreeAddress = (v2BtreeAddressCreationOrder > 0) ? v2BtreeAddressCreationOrder : v2BtreeAddress;
       return Long.toString(btreeAddress);
     }
 
-    @Override
     public String toString() {
       Formatter f = new Formatter();
       f.format("   MessageAttributeInfo ");
@@ -3746,12 +3716,10 @@ public class H5header {
       comment = readString(raf);
     }
 
-    @Override
     public String toString() {
       return comment;
     }
 
-    @Override
     public String getName() {
       return comment;
     }
@@ -3769,12 +3737,10 @@ public class H5header {
       secs = raf.readInt();
     }
 
-    @Override
     public String toString() {
       return new Date(secs * 1000).toString();
     }
 
-    @Override
     public String getName() {
       return toString();
     }
@@ -3791,12 +3757,10 @@ public class H5header {
       if (debug1) debugOut.println("   MessageLastModifiedOld=" + datemod);
     }
 
-    @Override
     public String toString() {
       return datemod;
     }
 
-    @Override
     public String getName() {
       return toString();
     }
@@ -3812,7 +3776,6 @@ public class H5header {
       if (debug1) debugOut.println("   Continue offset=" + offset + " length=" + length);
     }
 
-    @Override
     public String getName() {
       return "";
     }
@@ -3828,7 +3791,6 @@ public class H5header {
       if (debug1) debugOut.println("   ObjectReferenceCount=" + refCount);
     }
 
-    @Override
     public String getName() {
       return Integer.toString(refCount);
     }
@@ -4267,7 +4229,6 @@ public class H5header {
   public List<DataObject> getDataObjects() {
     ArrayList<DataObject> result = new ArrayList<DataObject>(addressMap.values());
     Collections.sort( result, new java.util.Comparator<DataObject>() {
-      @Override
       public int compare(DataObject o1, DataObject o2) {
         // return (int) (o1.address - o2.address);
         return (o1.address<o2.address ? -1 : (o1.address==o2.address ? 0 : 1));
@@ -4324,7 +4285,6 @@ public class H5header {
         debugOut.println("   read HeapIdentifier from ByteBuffer=" + this);
     }
 
-    @Override
     public String toString() {
       return " nelems=" + nelems + " heapAddress=" + heapAddress + " index=" + index;
     }
@@ -4788,7 +4748,6 @@ There is _no_ datatype information stored for these sort of selections currently
         this.end = end;
       }
 
-      @Override
       public int compareTo(Object o1) {
         Mem m = (Mem) o1;
         return (int) (start - m.start);

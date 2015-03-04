@@ -32,32 +32,35 @@
  */
 package ucar.nc2;
 
-import java.io.*;
-import java.net.URI;
-import java.net.URL;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
-import java.nio.channels.WritableByteChannel;
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.imageio.spi.ServiceRegistry;
-
-import ucar.ma2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.util.Indent;
+import ucar.nc2.util.EscapeStrings;
+import ucar.ma2.*;
+import ucar.nc2.util.rc.RC;
+import ucar.unidata.io.UncompressInputStream;
+import ucar.unidata.io.InMemoryRandomAccessFile;
+import ucar.unidata.io.bzip2.CBZip2InputStream;
+import ucar.nc2.util.DiskCache;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.IO;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
-import ucar.nc2.util.*;
-import ucar.nc2.util.rc.RC;
-import ucar.unidata.io.InMemoryRandomAccessFile;
-import ucar.unidata.io.UncompressInputStream;
-import ucar.unidata.io.bzip2.CBZip2InputStream;
+import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.IospHelper;
 import ucar.unidata.util.StringUtil2;
+
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.GZIPInputStream;
+import java.net.URL;
+import java.net.URI;
+import java.io.*;
+import java.nio.channels.WritableByteChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+import javax.imageio.spi.ServiceRegistry;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
@@ -934,7 +937,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    *
    * @throws java.io.IOException if error when closing
    */
-  @Override
   public synchronized void close() throws java.io.IOException {
     if (cache != null) {
       //unlocked = true;
@@ -956,7 +958,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Public by accident.
    * Optional file caching.
    */
-  @Override
   public void setFileCache(ucar.nc2.util.cache.FileCache cache) {
     this.cache = cache;
   }
@@ -985,7 +986,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    *
    * @return location URL or file pathname.
    */
-  @Override
   public String getLocation() {
     return location;
   }
@@ -1350,7 +1350,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /**
    * CDL representation of Netcdf header info, non strict
    */
-  @Override
   public String toString() {
     Formatter f = new Formatter();
     writeCDL(f, new Indent(2), false);
@@ -1486,7 +1485,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws java.io.IOException if error
    * @deprecated use NetcdfFile.open( location) or NetcdfDataset.openFile( location)
    */
-  @Deprecated
   public NetcdfFile(String filename) throws IOException {
     this.location = filename;
     this.importProperties = Collections.<String, Object>emptyMap();
@@ -1504,7 +1502,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws java.io.IOException if error
    * @deprecated use NetcdfFile.open( http:location) or NetcdfDataset.openFile( http:location)
    */
-  @Deprecated
   public NetcdfFile(URL url) throws IOException {
     this.location = url.toString();
     this.importProperties = Collections.<String, Object>emptyMap();
@@ -2181,7 +2178,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    * @deprecated use readSection(), flatten=false no longer supported
    */
-  @Deprecated
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
     if (!flatten)
       throw new UnsupportedOperationException("NetdfFile.read(String variableSection, boolean flatten=false)");
