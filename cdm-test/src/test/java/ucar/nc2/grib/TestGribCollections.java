@@ -110,8 +110,9 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_1200.grib2.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 23229 : count.nread; // 23229 22909
-    assert count.nmiss == 0;
+    assert count.nread == 29567 : count.nread;
+    assert count.nmiss == 596;
+    assert count.nerrs == 0;
   }
 
   @Test
@@ -119,8 +120,9 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 94352 : count.nread;  // 93052 ??
-    assert count.nmiss == 0;
+    assert count.nread == 176638 : count.nread;
+    assert count.nmiss == 5023;
+    assert count.nerrs == 0;
   }
 
   //// ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx3 has lots of missing records
