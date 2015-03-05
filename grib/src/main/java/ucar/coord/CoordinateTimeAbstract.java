@@ -56,8 +56,8 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
   protected final CalendarPeriod timeUnit;   // time duration, based on code
   protected final String periodName;         // used to create the udunit
-  protected final CalendarDate refDate;
-  protected final int[] time2runtime;
+  protected final CalendarDate refDate;      // used to create the udunit
+  protected final int[] time2runtime;        // for each time, which runtime is used; index into master runtime
 
   protected String name = "time";
 
@@ -120,7 +120,31 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
 
   ////////////////////////////////////////
-  // public abstract CoordinateTimeAbstract makeBestTimeCoordinate(List<Double> runOffsets);
+
+  /**
+   * Implements coverting a "complete best" to a "monotonic best".
+   * The reftime is not allowed to decrease
+   * @return "monotonic best" CoordinateTimeAbstract, based on this one, which is a "complete best"
+   */
+  public CoordinateTimeAbstract makeBestFromComplete() {
+    int[] best = new int[time2runtime.length];
+    int last = -1;
+    int count = 0;
+    for (int i=0; i<time2runtime.length; i++) {
+      int time = time2runtime[i];
+      if (time >= last) {
+        last = time;
+        best[i] = time;
+        count++;
+      } else {
+        best[i] = -1;
+      }
+    }
+    return makeBestFromComplete(best, count);
+  }
+
+  protected abstract CoordinateTimeAbstract makeBestFromComplete(int[] best, int n);
+
 
   public abstract CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal);
 

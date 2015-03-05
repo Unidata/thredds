@@ -122,6 +122,23 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   ////////////////////////////////////////////////
 
+  protected CoordinateTimeAbstract makeBestFromComplete(int[] best, int n) {
+    List<Integer> offsetSortedBest = new ArrayList<>(offsetSorted.size());
+    int[] time2runtimeBest = new int[n];
+    int count = 0;
+    for (int i=0; i<best.length; i++) {
+      int time = best[i];
+      if (time >= 0) {
+        time2runtimeBest[count] = time;
+        offsetSortedBest.add(offsetSorted.get(i));
+        count++;
+      }
+    }
+
+    return new CoordinateTime(code, timeUnit, refDate, offsetSortedBest, time2runtimeBest);
+  }
+
+
   /* public CoordinateTime makeBestTimeCoordinate(List<Double> runOffsets) {
     Set<Integer> values = new HashSet<>();
     for (double runOffset : runOffsets) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -30,26 +30,32 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/*
- * This file is part of the "Java-DAP" project, a Java implementation
- * of the OPeNDAP Data Access Protocol.
- *
- * Copyright (c) 2007 OPeNDAP, Inc.
- *
- * This library is free software; you can redistribute it and*or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- */
+package ucar.nc2.grib.grib2;
 
+import org.junit.Assert;
+import org.junit.Test;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+
+import java.io.IOException;
+
+
+public class TestMRMS {
+    static final String testfile = "../grib/src/test/data/MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2.gz";
+
+    @Test
+    public void checkVariable() throws IOException {
+        NetcdfFile nc = NetcdfFile.open(testfile);
+        Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
+        Assert.assertNotNull(var);
+
+        Attribute att = var.findAttribute("missing_value");
+        Assert.assertNotNull(att);
+        Assert.assertEquals(-99., att.getNumericValue().doubleValue(), 1e-6);
+
+        att = var.findAttribute("_FillValue");
+        Assert.assertNotNull(att);
+        Assert.assertEquals(-999., att.getNumericValue().doubleValue(), 1e-6);
+    }
+}

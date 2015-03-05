@@ -87,7 +87,6 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     Counter statsAll = new Counter(); // debugging
 
     logger.debug(" dcm={}", dcm);
-    FeatureCollectionConfig.GribIntvFilter intvMap = gribConfig.intvFilter;
 
     // place each record into its group
     int totalRecords = 0;
@@ -117,7 +116,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
             this.cust = Grib2Customizer.factory(gr);
             cust.setTimeUnitConverter(gribConfig.getTimeUnitConverter());
           }
-          if (filterOut(gr, intvMap)) {
+          if (filterIntervals(gr, gribConfig.intvFilter)) {
             statsAll.filter++;
             continue; // skip
           }
@@ -167,7 +166,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   // true means remove
-  private boolean filterOut(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
+  private boolean filterIntervals(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter) {
     // hack a whack - filter out records with unknown time units
     int timeUnit = gr.getPDS().getTimeUnit();
     if (Grib2Utils.getCalendarPeriod(timeUnit) == null) {
@@ -175,21 +174,16 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       return true;
     }
 
-    if (intvFilter == null) return false;
-
     int[] intv = cust.getForecastTimeIntervalOffset(gr);
-    if (intv == null) return false;
+    if (intv == null) return false;   // not an interval
     int haveLength = intv[1] - intv[0];
 
-    // HACK
-    if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
-      if ((intv[0] == 0) && (intv[1] == 0)) {
-        //f.format(" FILTER INTV [0, 0] %s%n", gr);
-        return true;
-      }
-      return false;
+        // discard zero length intervals (default)
+    if (haveLength == 0 && (intvFilter == null || intvFilter.isZeroExcluded()))
+      return true;
 
-    } else if (intvFilter.hasFilter()) {
+    // HACK
+    if (intvFilter != null && intvFilter.hasFilter()) {
       int discipline = gr.getIs().getDiscipline();
       Grib2Pds pds = gr.getPDS();
       int category = pds.getParameterCategory();
@@ -205,6 +199,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       // true means use, false means discard
       return !intvFilter.filterOk(id, haveLength, prob);
     }
+
     return false;
   }
 

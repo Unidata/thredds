@@ -149,6 +149,7 @@ public class CoordinateSharer<T> {
       for (Coordinate coord : runtimeBuilders) unionCoords.add(coord);
 
       // try to regularize any time2D
+      HashSet<CoordinateTime2D> coord2Dset = new HashSet<>();
       for (Coordinate coord : time2DBuilders) {
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
         CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(coord2D.isTimeInterval(), coord2D.getTimeUnit(), coord2D.getCode(), true);
@@ -156,11 +157,15 @@ public class CoordinateSharer<T> {
         unionizer.finish();
         CoordinateTime2D result = (CoordinateTime2D) unionizer.getCoordinate();  // this tests for orthogonal and regular
         if (result.isOrthogonal() || result.isRegular()) {
-          // LOOK its possible that result is a duplicate CoordinateTime2D. should check
-          unionCoords.add(result); // use the new one
+          if (!coord2Dset.contains(result)) { // its possible that result is a duplicate CoordinateTime2D.
+            unionCoords.add(result); // use the new one
+            coord2Dset.add(result);
+          }
           swap.put(coord, result); // track old, new swap
-        } else {                  // use the old one
-          unionCoords.add(coord);
+
+        } else {
+          unionCoords.add(coord2D); // use the old one
+          coord2Dset.add(coord2D);
         }
       }
     }

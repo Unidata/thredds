@@ -122,6 +122,11 @@ public abstract class ReportPanel extends JPanel {
         c.show(f);
     }
 
+    public void reset () {
+      for (Counter c : counters)
+        c.reset();
+    }
+
     public void count(String name, int value) {
       CounterOfInt counter = (CounterOfInt) map.get(name);
       counter.count(value);
@@ -156,6 +161,7 @@ public abstract class ReportPanel extends JPanel {
     public void show(Formatter f);
     public String getName();
     public void addTo(Counter sub);
+    public void reset();
   }
 
 
@@ -216,6 +222,10 @@ public abstract class ReportPanel extends JPanel {
 
     public CounterOfString(String name) {
       this.name = name;
+    }
+
+    public void reset() {
+      set = new HashMap<>();
     }
 
     public void count(String value) {

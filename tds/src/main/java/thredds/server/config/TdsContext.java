@@ -37,6 +37,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -51,6 +53,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetScan;
 import thredds.inventory.CollectionUpdater;
@@ -65,9 +68,11 @@ import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -157,6 +162,9 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   @Autowired
   private CorsConfig corsConfig;
 
+  @Autowired
+  private TdsUpdateConfig tdsUpdateConfig;
+  
   private ServletContext servletContext;
 
   private TdsContext() {
@@ -238,6 +246,12 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       this.corsConfig = corsConfig;
   }
 
+  public TdsUpdateConfig getTdsUpdateConfig() { return tdsUpdateConfig; }
+
+  public void setTdsUpdateConfig(TdsUpdateConfig tdsUpdateConfig) {
+      this.tdsUpdateConfig = tdsUpdateConfig;
+  }
+  
   /*
    * Release tdsContext resources
    * (non-Javadoc)
@@ -398,12 +412,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     // LOOK Remove Log4jWebConfigurer,initLogging - depends on log4g v1, we are using v2 JC 9/2/2013
     // Log4jWebConfigurer.initLogging( servletContext );
     logServerStartup.info("TdsContext version= " + getVersionInfo());
-
-    // log the latest stable and development version information
-    Map<String, String> latestVersionInfo = getLatestVersionInfo();
-    for (Map.Entry entry : latestVersionInfo.entrySet()) {
-      logServerStartup.info("TdsContext latest " + entry.getKey() + " version = " + entry.getValue());
-    }
     logServerStartup.info("TdsContext intialized logging in " + logDir.getPath());
 
     // read in persistent user-defined params from threddsConfig.xml
@@ -470,7 +478,17 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     tdsConfigMapper.setHtmlConfig(this.htmlConfig);
     tdsConfigMapper.setWmsConfig(this.wmsConfig);
     tdsConfigMapper.setCorsConfig(this.corsConfig);
+    tdsConfigMapper.setTdsUpdateConfig(this.tdsUpdateConfig);
     tdsConfigMapper.init(this);
+    
+    // check and log the latest stable and development version information
+    // only if it is OK according to the threddsConfig file.
+    if (this.tdsUpdateConfig.isLogVersionInfo()) {
+      Map<String, String> latestVersionInfo = getLatestVersionInfo(); 
+      for (Map.Entry entry : latestVersionInfo.entrySet()) {
+        logServerStartup.info("TdsContext latest " + entry.getKey() + " version = " + entry.getValue());
+      }
+    }
   }
 
   /**
@@ -538,11 +556,16 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
    * version numbers (i.e. 4.5.2)
    */
   private Map<String, String> getLatestVersionInfo() {
+    int conTimeOut = 1; // http connection timeout in seconds
+    int socTimeOut = 1; // http socket timeout in seconds
     Map<String, String> latestVersionInfo = new HashMap<>();
 
     String versionUrl = "http://www.unidata.ucar.edu/software/thredds/latest.xml";
-
     HttpClient httpclient = new DefaultHttpClient();
+    final HttpParams httpParameters = httpclient.getParams();
+    
+    HttpConnectionParams.setConnectionTimeout(httpParameters, conTimeOut * 1000);
+    HttpConnectionParams.setSoTimeout(httpParameters, socTimeOut * 1000);
     HttpGet request = new HttpGet(versionUrl);
     request.setHeader("User-Agent", "TDS_" + getVersionInfo().replace(" ", ""));
 
@@ -565,9 +588,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
             String verStr = versionElement.getAttribute("value");
             latestVersionInfo.put(verType, verStr);
           }
-        }
-      }
-
+        } 
+      } 
     } catch (IOException e) {
       logServerStartup.warn("TdsContext - Could not get latest version information from Unidata.");
     } catch (ParserConfigurationException e) {

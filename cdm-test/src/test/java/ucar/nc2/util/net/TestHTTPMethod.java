@@ -34,13 +34,10 @@ package ucar.nc2.util.net;
 
 import ucar.httpservices.*;
 
-import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.InputStream;
-
-import static junit.framework.Assert.assertTrue;
 
 public class TestHTTPMethod extends UnitTestCommon
 {

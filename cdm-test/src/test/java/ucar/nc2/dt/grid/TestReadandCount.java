@@ -216,9 +216,9 @@ public class TestReadandCount {
   }
 
   static public void doOne( String dir, String name, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
-    System.out.println("test read GridDataset = " + dir + name);
-
+    System.out.printf("test read GridDataset= %s%s%n", dir, name);
     ucar.nc2.dt.grid.GridDataset gridDs = GridDataset.open(dir + name);
+    System.out.printf(" location= %s%n%n", gridDs.getLocation());
 
     int countGrids = gridDs.getGrids().size();
     int countCoordAxes = gridDs.getNetcdfDataset().getCoordinateAxes().size();

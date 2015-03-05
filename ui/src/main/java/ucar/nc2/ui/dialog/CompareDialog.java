@@ -48,7 +48,7 @@ import java.awt.event.ActionListener;
  * @author John Caron
  */
 public class CompareDialog extends JDialog {
-  public enum HowMuch {All, varOnly}
+  public enum HowMuch {All, varOnly, varNameOnly}
 
   public static class Data {
     public HowMuch howMuch;
@@ -86,7 +86,7 @@ public class CompareDialog extends JDialog {
   }
 
   private void okButtonActionPerformed(ActionEvent e) {
-    HowMuch howMuch = all.isSelected() ? HowMuch.All : HowMuch.varOnly;
+    HowMuch howMuch = all.isSelected() ? HowMuch.All : (varOnly.isSelected() ? HowMuch.varOnly : HowMuch.varNameOnly);
     Data data =  new Data((String) datasetCombo.getSelectedItem(), howMuch, showCompare.isSelected(), showDetails.isSelected(), readData.isSelected());
     firePropertyChange("OK", null, data);
     setVisible(false);
@@ -125,6 +125,7 @@ public class CompareDialog extends JDialog {
     datasetCombo = new JComboBox();
     cancelButton = new JButton();
     okButton = new JButton();
+    varNameOnly = new JRadioButton();
 
     //======== this ========
     setTitle("Compare current dataset with another dataset");
@@ -205,6 +206,9 @@ public class CompareDialog extends JDialog {
           }
         });
 
+        //---- varNameOnly ----
+        varNameOnly.setText("Variable names only");
+
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
         contentPanelLayout.setHorizontalGroup(
@@ -229,11 +233,13 @@ public class CompareDialog extends JDialog {
                     .addGroup(contentPanelLayout.createSequentialGroup()
                       .addComponent(all)
                       .addGap(18, 18, 18)
-                      .addComponent(varOnly))))
+                      .addComponent(varOnly)
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                      .addComponent(varNameOnly))))
                 .addComponent(buttonBar, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 779, GroupLayout.PREFERRED_SIZE))
               .addContainerGap())
             .addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup()
-              .addContainerGap(600, Short.MAX_VALUE)
+              .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
               .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
               .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
@@ -251,7 +257,8 @@ public class CompareDialog extends JDialog {
               .addGap(20, 20, 20)
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(all)
-                .addComponent(varOnly))
+                .addComponent(varOnly)
+                .addComponent(varNameOnly))
               .addGap(18, 18, 18)
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(showCompare)
@@ -276,6 +283,7 @@ public class CompareDialog extends JDialog {
     ButtonGroup buttonGroup1 = new ButtonGroup();
     buttonGroup1.add(all);
     buttonGroup1.add(varOnly);
+    buttonGroup1.add(varNameOnly);
     // JFormDesigner - End of component initialization  //GEN-END:initComponents
   }
 
@@ -294,5 +302,6 @@ public class CompareDialog extends JDialog {
   private JComboBox datasetCombo;
   private JButton cancelButton;
   private JButton okButton;
+  private JRadioButton varNameOnly;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

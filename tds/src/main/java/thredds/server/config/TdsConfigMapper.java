@@ -54,7 +54,8 @@ class TdsConfigMapper
   private HtmlConfig htmlConfig;
   private WmsConfig wmsConfig;
   private CorsConfig corsConfig;
-
+  private TdsUpdateConfig tdsUpdateConfig;
+  
   void setTdsServerInfo( TdsServerInfo tdsServerInfo ) {
     this.tdsServerInfo = tdsServerInfo;
   }
@@ -69,6 +70,10 @@ class TdsConfigMapper
 
   void setCorsConfig( CorsConfig corsConfig ) {
       this.corsConfig = corsConfig;
+  }
+  
+  void setTdsUpdateConfig(TdsUpdateConfig tdsUpdateConfig) {
+      this.tdsUpdateConfig = tdsUpdateConfig;
   }
 
   enum ServerInfoMappings
@@ -169,38 +174,66 @@ class TdsConfigMapper
     }
   }
 
-    enum CorsConfigMappings
+  enum CorsConfigMappings
+  {
+    CORS_ENABLED("CORS.enabled", null, "false"),
+    CORS_MAXIMUM_AGE("CORS.maxAge", null, "1728000"),
+    CORS_ALLOWED_METHODS("CORS.allowedMethods", null, "GET"),
+    CORS_ALLOWED_HEADERS("CORS.allowedHeaders", null, "Authorization"),
+    CORS_ALLOWED_ORIGIN("CORS.allowedOrigin", null, "*");
+
+    private String key;
+    private String alternateKey;
+    private String defaultValue;
+
+    CorsConfigMappings( String key, String alternateKey,
+                       String defaultValue )
     {
-        CORS_ENABLED("CORS.enabled", null, "false"),
-        CORS_MAXIMUM_AGE("CORS.maxAge", null, "1728000"),
-        CORS_ALLOWED_METHODS("CORS.allowedMethods", null, "GET"),
-        CORS_ALLOWED_HEADERS("CORS.allowedHeaders", null, "Authorization"),
-        CORS_ALLOWED_ORIGIN("CORS.allowedOrigin", null, "*");
+        if ( key == null )
+            throw new IllegalArgumentException( "The key may not be null." );
 
-        private String key;
-        private String alternateKey;
-        private String defaultValue;
-
-        CorsConfigMappings( String key, String alternateKey,
-                           String defaultValue )
-        {
-            if ( key == null )
-                throw new IllegalArgumentException( "The key may not be null." );
-
-            this.key = key;
-            this.alternateKey = alternateKey;
-            this.defaultValue = defaultValue;
-        }
-
-        String getDefaultValue() {
-            return this.defaultValue;
-        }
-
-        String getValueFromThreddsConfig() {
-            return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
-        }
+        this.key = key;
+        this.alternateKey = alternateKey;
+        this.defaultValue = defaultValue;
     }
 
+    String getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    String getValueFromThreddsConfig() {
+        return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
+    }
+  }
+
+  enum TdsUpdateConfigMappings {
+    TDSUPDAATE_LOGVERSIONINFO("TdsUpdateConfig.logVersionInfo", null, "true");
+
+    private String key;
+    private String alternateKey;
+    private String defaultValue;
+  
+    TdsUpdateConfigMappings( String key, String alternateKey, String defaultValue ) {
+      if ( key == null ) {
+       throw new IllegalArgumentException( "The key may not be null." );
+      }
+        
+      this.key = key;
+      this.alternateKey = alternateKey;
+      this.defaultValue = defaultValue;
+
+    } 
+        
+    String getDefaultValue() {
+      return this.defaultValue;
+    }
+        
+    String getValueFromThreddsConfig() {
+      return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
+    }
+  }
+
+    
   private static String getValueFromThreddsConfig( String key, String alternateKey, String defaultValue)
   {
     String value = ThreddsConfig.get( key, null );
@@ -217,6 +250,7 @@ class TdsConfigMapper
     setupHtmlConfig( tdsContext );
     setupWmsConfig();
     setupCorsConfig();
+    setupTdsUpdateConfig();
   }
 
   private void setupServerInfo()
@@ -285,16 +319,21 @@ class TdsConfigMapper
       this.wmsConfig.setMaxImageHeight( Integer.parseInt( WmsConfigMappings.WMS_MAXIMUM_IMAGE_HEIGHT.getDefaultValue() ) );
     }
   }
-    private void setupCorsConfig()
+  
+  private void setupCorsConfig()
     {
-        this.corsConfig.setEnabled( Boolean.parseBoolean( CorsConfigMappings.CORS_ENABLED.getValueFromThreddsConfig() ) );
-        try {
-            this.corsConfig.setMaxAge( Integer.parseInt(CorsConfigMappings.CORS_MAXIMUM_AGE.getValueFromThreddsConfig() ) );
-        } catch ( NumberFormatException e ) {
-            this.corsConfig.setMaxAge( Integer.parseInt(CorsConfigMappings.CORS_MAXIMUM_AGE.getDefaultValue() ) );
-        }
-        this.corsConfig.setAllowedHeaders( CorsConfigMappings.CORS_ALLOWED_HEADERS.getValueFromThreddsConfig() );
-        this.corsConfig.setAllowedMethods( CorsConfigMappings.CORS_ALLOWED_METHODS.getValueFromThreddsConfig() );
-        this.corsConfig.setAllowedOrigin( CorsConfigMappings.CORS_ALLOWED_ORIGIN.getValueFromThreddsConfig() );
+    this.corsConfig.setEnabled( Boolean.parseBoolean( CorsConfigMappings.CORS_ENABLED.getValueFromThreddsConfig() ) );
+    try {
+        this.corsConfig.setMaxAge( Integer.parseInt(CorsConfigMappings.CORS_MAXIMUM_AGE.getValueFromThreddsConfig() ) );
+    } catch ( NumberFormatException e ) {
+        this.corsConfig.setMaxAge( Integer.parseInt(CorsConfigMappings.CORS_MAXIMUM_AGE.getDefaultValue() ) );
     }
+    this.corsConfig.setAllowedHeaders( CorsConfigMappings.CORS_ALLOWED_HEADERS.getValueFromThreddsConfig() );
+    this.corsConfig.setAllowedMethods( CorsConfigMappings.CORS_ALLOWED_METHODS.getValueFromThreddsConfig() );
+    this.corsConfig.setAllowedOrigin( CorsConfigMappings.CORS_ALLOWED_ORIGIN.getValueFromThreddsConfig() );
+  }
+  
+  private void setupTdsUpdateConfig() {
+      this.tdsUpdateConfig.setLogVersionInfo(Boolean.parseBoolean(TdsUpdateConfigMappings.TDSUPDAATE_LOGVERSIONINFO.getValueFromThreddsConfig()));
+  }
 }

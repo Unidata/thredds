@@ -65,7 +65,7 @@ public class CompareNetcdf2 {
   }
 
   static public boolean compareLists(List org, List copy, Formatter f) {
-    return checkContains("org", org, copy, f) && checkContains("copy", copy, org, f);
+    return checkContains("first", org, copy, f) && checkContains("second", copy, org, f);
   }
 
 

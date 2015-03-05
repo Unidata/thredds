@@ -32,6 +32,7 @@
 
 package ucar.nc2.iosp.grib;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
@@ -132,6 +133,7 @@ public class TestGribMisc {
     }
   }
 
+  @Ignore("NCEP may be miscoding. Withdraw uit test until we have more info")
   @Test
    public void testScanMode() throws IOException, InvalidRangeException {
      // Robert.C.Lipschutz@noaa.gov
@@ -141,7 +143,7 @@ public class TestGribMisc {
     Hi Bob:
 
     You might think that if scanmode = 64, one should just invert the grids. As it turns out, on all projections except for latlon (that i have sample of),
-    the right thing to do is to ignore the flipping, because the coordinate system (the asignment of lat,lon calues to each grid point) correctly adjusts
+    the right thing to do is to ignore the flipping, because the coordinate system (the assignment of lat,lon values to each grid point) correctly adjusts
     for it. So its just on latlon grids that this issue arises.
 
     So on your file:

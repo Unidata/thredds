@@ -24,8 +24,7 @@ public class TestRadarServer {
             {"/radar/radarCollections.xml"},
             {"/radarServer/nexrad/level2/IDD/dataset.xml"},
             {"/radarServer/nexrad/level2/IDD/stations.xml"},
-            {"/radarServer/nexrad/level2/IDD?stn=KDGX2&time_start=2014-06-05T12:47:17&time_end=2014-06-05T16:07:17"},
-            {"/radarServer/nexrad/level2/IDD/dataset.xml"},
+            {"/radarServer/nexrad/level2/IDD?stn=KDGX&time_start=2014-06-05T12:47:17&time_end=2014-06-05T16:07:17"},
             {"/radarServer/nexrad/level3/IDD/stations.xml"},
             {"/radarServer/terminal/level3/IDD/stations.xml"},
     });

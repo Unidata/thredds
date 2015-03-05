@@ -86,7 +86,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     TP,                // PC: Multiple Runtime Single Time Partition   [nruns, 1]
     TwoD,              // PC: TwoD time partition                      [nruns, ntimes]
     Best,              // PC: Best time partition                      [ntimes]
-    Analysis}          // PC: Analysis only time partition (not done)   [ntimes]
+    BestComplete,      // PC: Best complete time partition             [ntimes]
+    Analysis}          // PC: Analysis only time partition (not done)  [ntimes]
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2

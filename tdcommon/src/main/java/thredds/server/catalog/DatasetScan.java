@@ -306,8 +306,9 @@ public class DatasetScan extends CatalogRef {
     }
 
     private boolean accept(MFile mfile) {
-      if (mfile.isDirectory()) return dirFilters.accept(mfile);
-      return fileFilters.accept(mfile);
+      if (mfile.isDirectory())
+        return dirFilters == null || dirFilters.accept(mfile);
+      return fileFilters == null || fileFilters.accept(mfile);
     }
 
     public MFile next() {
