@@ -109,7 +109,8 @@ public class TestReadAndCountDods {
   }
 
   public void utestProblem() throws Exception {
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/DGEX/Alaska_12km/files/latest.xml", 23, 11, 13, 8);
+    TestReadandCount.doOne("thredds:resolve:http://thredds-dev.ucar.edu/thredds/",
+            "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
   }
 
 }

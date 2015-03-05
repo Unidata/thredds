@@ -250,12 +250,18 @@ public class DatasetViewer extends JPanel {
     NetcdfFile compareFile = null;
     try {
       compareFile = NetcdfDataset.openFile(data.name, null);
-
       Formatter f = new Formatter();
+
       CompareNetcdf2 cn = new CompareNetcdf2(f, data.showCompare, data.showDetails, data.readData);
       if (data.howMuch == CompareDialog.HowMuch.All)
         cn.compare(ds, compareFile);
-      else {
+
+      else if (data.howMuch == CompareDialog.HowMuch.varNameOnly) {
+        f.format(" First file = %s%n", ds.getLocation());
+        f.format(" Second file= %s%n", compareFile.getLocation());
+        CompareNetcdf2.compareLists(getVariableNames(ds), getVariableNames(compareFile), f);
+
+      } else {
         NestedTable nested = nestedTableList.get(0);
         Variable org = getCurrentVariable(nested.table);
         if (org == null) return;
@@ -285,6 +291,13 @@ public class DatasetViewer extends JPanel {
             eek.printStackTrace();
         }
     }
+  }
+
+  private List<String> getVariableNames(NetcdfFile nc) {
+    List<String> result = new ArrayList<>();
+    for (Variable v : nc.getVariables())
+      result.add(v.getFullName());
+    return result;
   }
 
   ////////////////////////////////////////////////
