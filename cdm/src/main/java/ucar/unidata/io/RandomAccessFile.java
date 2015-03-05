@@ -48,6 +48,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 
 
 /**
@@ -1509,16 +1510,29 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Read a String of known length.
+   * Read a String of known length using UTF-8 encoding.
    *
    * @param nbytes number of bytes to read
    * @return String wrapping the bytes.
    * @throws IOException if an I/O error occurs.
    */
   public String readString(int nbytes) throws IOException {
+    return readString(nbytes, CDM.utf8Charset);
+  }
+
+  /**
+   * Read a String of known length.
+   *
+   * @param nbytes number of bytes to read
+   * @param charset the encoding
+   * @return String wrapping the bytes.
+   * @throws IOException if an I/O error occurs.
+   */
+  public String readString(int nbytes, final Charset charset)
+      throws IOException {
     byte[] data = new byte[nbytes];
     readFully(data);
-    return new String(data, CDM.utf8Charset);
+    return new String(data, charset);
   }
 
   /**

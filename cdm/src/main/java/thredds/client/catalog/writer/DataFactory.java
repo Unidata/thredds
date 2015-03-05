@@ -518,7 +518,8 @@ public class DataFactory {
         // these are the file types we can read
         if ((DataFormatType.BUFR == format) || (DataFormatType.GINI == format) || (DataFormatType.GRIB1 == format)
                 || (DataFormatType.GRIB2 == format) || (DataFormatType.HDF5 == format) || (DataFormatType.NCML == format)
-                || (DataFormatType.NETCDF == format) || (DataFormatType.NEXRAD2 == format) || (DataFormatType.NIDS == format)) {
+                || (DataFormatType.NETCDF == format) || (DataFormatType.NETCDH == format) || (DataFormatType.NEXRAD2 == format) 
+                || (DataFormatType.NIDS == format)) {
           access = tryAccess;
         }
       }

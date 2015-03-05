@@ -34,10 +34,12 @@ package ucar.nc2.iosp.netcdf3;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.util.*;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * Netcdf header reading and writing for version 3 file format.
@@ -52,6 +54,7 @@ public class N3header {
 
   static final byte[] MAGIC = new byte[]{0x43, 0x44, 0x46, 0x01};
   static final byte[] MAGIC_LONG = new byte[]{0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the variable offset value
+  static final byte[] MAGIC_NETCDH = new byte[]{0x43, 0x44, 0x48, 0x01}; // Uniplot files
   static final int MAGIC_DIM = 10;
   static final int MAGIC_VAR = 11;
   static final int MAGIC_ATT = 12;
@@ -62,7 +65,7 @@ public class N3header {
     byte[] b = new byte[4];
     raf.readFully(b);
     for (int i = 0; i < 3; i++)
-      if (b[i] != MAGIC[i])
+      if (b[i] != MAGIC[i] && b[i] != MAGIC_NETCDH[i])
         return false;
     return ((b[3] == 1) || (b[3] == 2));
   }
@@ -92,6 +95,10 @@ public class N3header {
 
   private long globalAttsPos = 0; // global attributes start here - used for update
 
+  private Charset valueCharset = CDM.utf8Charset;
+
+  private boolean isNetCDH = false;
+
   /* Notes
     - dimensions are signed or unsigned ? in java, must be signed, so are limited to 2^31, not 2^32
     " Each fixed-size variable and the data for one record's worth of a single record variable are limited in size to a little less
@@ -118,14 +125,29 @@ public class N3header {
 
     // netcdf magic number
     long pos = 0;
-    raf.order(RandomAccessFile.BIG_ENDIAN);
     raf.seek(pos);
 
     byte[] b = new byte[4];
     raf.readFully(b);
-    for (int i = 0; i < 3; i++)
-      if (b[i] != MAGIC[i])
-        throw new IOException("Not a netCDF file "+raf.getLocation());
+
+    isNetCDH = false;
+    for (int i = 0; i < 3; i++) {
+      if (b[i] != MAGIC[i] && b[i] != MAGIC_NETCDH[i])
+        throw new IOException("Not a netCDF/netCDH file " + raf.getLocation());
+      if (i == 2 && b[i] == MAGIC_NETCDH[i])
+        isNetCDH = true;
+    }
+
+    Object valueCharsetProperty = ncfile.getImportProperty(AbstractIOServiceProvider.PROP_VALUE_CHARSET);
+    if (valueCharsetProperty instanceof Charset)
+      this.valueCharset = (Charset) valueCharsetProperty;
+    else if (isNetCDH)
+      // Uniplot writes in ISO-8859-1
+      this.valueCharset = Charset.forName("ISO-8859-1");
+
+    int byteOrder = isNetCDH ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+    raf.order(byteOrder);
+
     if ((b[3] != 1) && (b[3] != 2))
       throw new IOException("Not a netCDF file "+raf.getLocation());
     useLongOffset = (b[3] == 2);
@@ -333,6 +355,10 @@ public class N3header {
 
   }
 
+  public boolean isNetCDH() {
+    return isNetCDH;
+  }
+
   long calcFileSize() {
     if (udim != null)
       return recStart + recsize * numrecs;
@@ -438,7 +464,7 @@ public class N3header {
 
       if (type == 2) {
         if (fout != null) fout.format(" begin read String val pos= %d%n", raf.getFilePointer());
-        String val = readString();
+        String val = readString(valueCharset);
         if (val == null) val = "";
         if (fout != null) fout.format(" end read String val pos= %d%n", raf.getFilePointer());
         att = new Attribute(name, val);
@@ -514,8 +540,13 @@ public class N3header {
     return 0;
   }
 
-  // read a string = (nelems, byte array), then skip to 4 byte boundary
   private String readString() throws IOException {
+    // all strings are considered to be UTF-8 unicode for default
+    return readString(CDM.utf8Charset);
+  }
+
+  // read a string = (nelems, byte array), then skip to 4 byte boundary
+  private String readString(Charset charset) throws IOException {
     int nelems = raf.readInt();
     byte[] b = new byte[nelems];
     raf.readFully(b);
@@ -531,7 +562,8 @@ public class N3header {
       count++;
     }
 
-    return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode.
+    final String s = new String(b, 0, count, charset != null ? charset : CDM.utf8Charset);
+    return s;
   }
 
   // skip to a 4 byte boundary in the file
@@ -614,7 +646,7 @@ public class N3header {
     int want = sizeHeader(largeFile);
     if (want > dataStart)
       return false;
-    
+
     writeHeader(0, largeFile, true, fout);
     return true;
   }
@@ -683,7 +715,7 @@ public class N3header {
           raf.writeLong(pos);
         else {
           if (pos > Integer.MAX_VALUE)
-            throw new IllegalArgumentException("Variable starting pos="+pos+" may not exceed "+ Integer.MAX_VALUE);          
+            throw new IllegalArgumentException("Variable starting pos="+pos+" may not exceed "+ Integer.MAX_VALUE);
           raf.writeInt((int) pos);
         }
 
@@ -1083,7 +1115,7 @@ public class N3header {
       int type = raf.readInt();
 
       if (type == 2) {
-        readString();
+        readString(valueCharset);
       } else {
         int nelems = raf.readInt();
         DataType dtype = getDataType(type);

@@ -960,6 +960,9 @@ public String NC_check_name(String name) {
 
   @Override
   public String getFileTypeId() {
+    if (header.isNetCDH()) {
+      return DataFormatType.NETCDH.getDescription();
+    }
     return DataFormatType.NETCDF.getDescription();
   }
 

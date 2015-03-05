@@ -37,7 +37,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
-import ucar.nc2.EnumTypedef;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.Layout;
@@ -50,6 +49,7 @@ import java.util.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.*;
+import java.nio.charset.Charset;
 
 /**
  * Read all of the metadata of an HD5 file.
@@ -153,10 +153,15 @@ public class H5header {
   private java.io.PrintWriter debugOut = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
   private MemTracker memTracker;
 
+  private Charset valueCharset = CDM.utf8Charset;
+
   H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) {
     this.ncfile = ncfile;
     this.raf = myRaf;
     this.h5iosp = h5iosp;
+    Object valueCharsetProperty = ncfile.getImportProperty(ucar.nc2.iosp.AbstractIOServiceProvider.PROP_VALUE_CHARSET);
+    if (valueCharsetProperty instanceof Charset)
+      this.valueCharset = (Charset) valueCharsetProperty;
   }
 
   public byte getSizeOffsets() {
@@ -1150,7 +1155,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
+    return new String(b, 0, count, valueCharset);
   }
 
   private String convertString(byte[] b, int start, int len) throws UnsupportedEncodingException {
@@ -1160,7 +1165,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, start, count - start, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
+    return new String(b, start, count - start, valueCharset); // all strings are considered to be UTF-8 unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, DataType dataType, Array values) {
@@ -1246,7 +1251,7 @@ public class H5header {
         // LOOK EnumTypedef enumTypedef = ncfile.getRootGroup().findEnumeration( mdt.enumTypeName);
         EnumTypedef enumTypedef = v.getEnumTypedef();
         if (enumTypedef != null)
-          data = convertEnums( enumTypedef, data); 
+          data = convertEnums( enumTypedef, data);
       }
     }
 
@@ -4563,7 +4568,7 @@ There is _no_ datatype information stored for these kind of selections currently
         hos.add(o);
         count++;
 
-        if (countBytes + 16 >= sizeBytes) break; // ran off the end, must be done
+        if (countBytes+16 >= sizeBytes) break; // ran off the end, must be done
       }
 
       if (debugDetail) debugOut.println("-- endGlobalHeap position=" + raf.getFilePointer());
@@ -4632,7 +4637,7 @@ There is _no_ datatype information stored for these kind of selections currently
     public String getString(int offset) {
       int count = 0;
       while (heap[offset + count] != 0) count++;
-      return new String(heap, offset, count, CDM.utf8Charset);
+      return new String(heap, offset, count, valueCharset);
     }
 
   } // LocalHeap
@@ -4664,7 +4669,7 @@ There is _no_ datatype information stored for these kind of selections currently
     while (raf.readByte() != 0) count++;
 
     raf.seek(filePos);
-    String result = raf.readString(count);
+    String result = raf.readString(count, valueCharset);
     raf.readByte(); // skip the zero byte! nn
     return result;
   }
@@ -4691,7 +4696,7 @@ There is _no_ datatype information stored for these kind of selections currently
     count += padding(count, 8);
     raf.seek(filePos + count);
 
-    return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
+    return new String(s, valueCharset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4702,7 +4707,7 @@ There is _no_ datatype information stored for these kind of selections currently
    * @throws java.io.IOException on io error
    */
   private String readStringFixedLength(int size) throws IOException {
-    return raf.readString(size);
+    return raf.readString(size, valueCharset); 
   }
 
   long readLength() throws IOException {

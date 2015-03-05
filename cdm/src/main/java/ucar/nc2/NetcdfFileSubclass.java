@@ -38,6 +38,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * To allow subclassing of NetcdfFile.
@@ -59,7 +60,11 @@ public class NetcdfFileSubclass extends NetcdfFile {
   }
 
   public NetcdfFileSubclass(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
-    super(spi, raf, location, cancelTask);
+    this(spi, raf, location, cancelTask, null);
+  }
+  
+  public NetcdfFileSubclass(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask, Map<String, Object> importProperties) throws IOException {
+    super(spi, raf, location, cancelTask, importProperties);
     if (raf == null) this.location = location;
   }
 

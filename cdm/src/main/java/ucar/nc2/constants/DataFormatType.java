@@ -52,6 +52,7 @@ public enum DataFormatType {
   NCML("NcML"),
   NETCDF("NetCDF"),
   NETCDF4("NetCDF-4"),
+  NETCDH("NetCDH"),
   NEXRAD2(null),
   NIDS(null),
 

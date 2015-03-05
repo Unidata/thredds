@@ -44,6 +44,7 @@ import ucar.unidata.util.Format;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.util.Formatter;
 
 /**
@@ -67,6 +68,16 @@ import java.util.Formatter;
  */
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
+  /**
+   * Property key for the value charset property. Expected value class:
+   * {@link Charset}
+   * 
+   * @see NetcdfFile#getImportProperty(String)
+   * @see open
+   * @see open
+   */
+  public static final String PROP_VALUE_CHARSET = "ValueCharset";
+  
   /**
    * Subclasses that use AbstractIOServiceProvider.open(...) or .close()
    * should use this (instead of their own private variable).

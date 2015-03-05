@@ -421,11 +421,52 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * @throws IOException if error
    */
   static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
+    return open(location, buffer_size, cancelTask, iospMessage, null);
+  }
+
+  /**
+   * Open an existing file (read only), with option of cancelling, setting the
+   * RandomAccessFile buffer size for efficiency, with an optional special
+   * object for the iosp.
+   *
+   * @param location
+   *          location of file. This may be a
+   *          <ol>
+   *          <li>local netcdf-3 filename (with a file: prefix or no prefix)
+   *          <li>remote netcdf-3 filename (with an http: prefix)
+   *          <li>local netcdf-4 filename (with a file: prefix or no prefix)
+   *          <li>local hdf-5 filename (with a file: prefix or no prefix)
+   *          <li>local iosp filename (with a file: prefix or no prefix)
+   *          </ol>
+   *          http://thredds.ucar.edu/thredds/fileServer/grib/NCEP/GFS/
+   *          Alaska_191km/files/GFS_Alaska_191km_20130416_0600.grib1 If file
+   *          ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will
+   *          uncompress/unzip and write to new file without the suffix, then
+   *          use the uncompressed file. It will look for the uncompressed file
+   *          before it does any of that. Generally it prefers to place the
+   *          uncompressed file in the same directory as the original file. If
+   *          it does not have write permission on that directory, it will use
+   *          the directory defined by ucar.nc2.util.DiskCache class.
+   * @param buffer_size
+   *          RandomAccessFile buffer size, if <= 0, use default size
+   * @param cancelTask
+   *          allow task to be cancelled; may be null.
+   * @param iospMessage
+   *          special iosp tweaking (sent before open is called), may be null
+   * @param importProperties
+   *          Map with provider specific import properties (currently supported:
+   *          {@link AbstractIOServiceProvider#PROP_VALUE_CHARSET} for netcdf3 and hdf5 file
+   *          format)
+   * @return NetcdfFile object, or null if cant find IOServiceProver
+   * @throws IOException
+   *           if error
+   */
+  static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage, Map<String, Object> importProperties) throws IOException {
 
     ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
 
     try {
-      return open(raf, location, cancelTask, iospMessage);
+      return open(raf, location, cancelTask, iospMessage, importProperties);
     } catch (Throwable t) {
       raf.close();
       throw new IOException(t);
@@ -485,6 +526,38 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * @throws IllegalAccessException if class is not accessible
    */
   static public NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask, Object iospMessage)
+      throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+    return open(location, iospClassName, bufferSize, cancelTask, iospMessage, null);
+  }
+
+  /**
+   * Open an existing file (read only), specifying which IOSP is to be used.
+   *
+   * @param location
+   *          location of file
+   * @param iospClassName
+   *          fully qualified class name of the IOSP class to handle this file
+   * @param bufferSize
+   *          RandomAccessFile buffer size, if <= 0, use default size
+   * @param cancelTask
+   *          allow task to be cancelled; may be null.
+   * @param iospMessage
+   *          special iosp tweaking (sent before open is called), may be null
+   * @param importProperties
+   *          Map with provider specific import properties (currently supported:
+   *          {@link AbstractIOServiceProvider#PROP_VALUE_CHARSET} for netcdf3 and hdf5 file
+   *          format)
+   * @return NetcdfFile object, or null if cant find IOServiceProver
+   * @throws IOException
+   *           if read error
+   * @throws ClassNotFoundException
+   *           cannat find iospClassName in thye class path
+   * @throws InstantiationException
+   *           if class cannot be instantiated
+   * @throws IllegalAccessException
+   *           if class is not accessible
+   */
+  static public NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask, Object iospMessage, Map<String, Object> importProperties)
           throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
@@ -508,7 +581,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
       bufferSize = default_buffersize;
     ucar.unidata.io.RandomAccessFile raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, bufferSize);
 
-    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
+    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask, importProperties);
 
     // send after iosp is opened
     if (iospMessage != null)
@@ -713,7 +786,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance();
 
-    return new NetcdfFile(spi, raf, name, null);
+    return new NetcdfFile(spi, raf, name, null, null);
   }
 
   /**
@@ -726,7 +799,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    */
   public static NetcdfFile openInMemory(String name, byte[] data) throws IOException {
     ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
-    return open(raf, name, null, null);
+    return open(raf, name, null, null, null);
   }
 
   /**
@@ -759,7 +832,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   }
 
   public static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask,
-                                 Object iospMessage) throws IOException {
+      Object iospMessage) throws IOException {
+    return open(raf, location, cancelTask, iospMessage, null);
+  }
+  
+  public static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask,
+                                 Object iospMessage, Map<String, Object> importProperties) throws IOException {
 
     IOServiceProvider spi = null;
     if (debugSPI) System.out.println("NetcdfFile try to open = " + location);
@@ -819,7 +897,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     if (log.isDebugEnabled())
       log.debug("Using IOSP " + spi.getClass().getName());
 
-    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
+    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask, importProperties);
 
     // send iospMessage after iosp is opened
     if (iospMessage != null)
@@ -840,6 +918,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   protected List<Variable> variables;
   protected List<Dimension> dimensions;
   protected List<Attribute> gattributes;
+  private final Map<String, Object> importProperties;
+
+  public Object getImportProperty(String key) {
+    return importProperties.get(key);
+  }
 
   /**
    * Close all resources (files, sockets, etc) associated with this file.
@@ -1409,8 +1492,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    */
   public NetcdfFile(String filename) throws IOException {
     this.location = filename;
+    this.importProperties = Collections.<String, Object>emptyMap();
     ucar.unidata.io.RandomAccessFile raf = ucar.unidata.io.RandomAccessFile.acquire(filename);
-    //ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.MMapRandomAccessFile(filename, "r");
     this.spi = SPFactory.getServiceProvider();
     spi.open(raf, this, null);
     finish();
@@ -1425,6 +1508,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    */
   public NetcdfFile(URL url) throws IOException {
     this.location = url.toString();
+    this.importProperties = Collections.<String, Object>emptyMap();
     ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.http.HTTPRandomAccessFile(location);
     this.spi = SPFactory.getServiceProvider();
     spi.open(raf, this, null);
@@ -1455,6 +1539,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     if (iospParam != null) spi.sendIospMessage(iospParam);
 
     this.location = location;
+    this.importProperties = Collections.<String, Object>emptyMap();
     ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
 
     try {
@@ -1514,10 +1599,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * @param location   location of data
    * @throws IOException if I/O error
    */
-  protected NetcdfFile(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  protected NetcdfFile(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask, Map<String, Object> importProperties) throws IOException {
 
     this.spi = spi;
     this.location = location;
+    this.importProperties = importProperties != null ? importProperties : Collections.<String, Object>emptyMap();
 
     if (debugSPI) System.out.println("NetcdfFile uses iosp = " + spi.getClass().getName());
 
@@ -1579,6 +1665,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
   protected NetcdfFile(IOServiceProvider spi, String location) {
     this.spi = spi;
     this.location = location;
+    this.importProperties = Collections.<String, Object>emptyMap();
   }
 
   /**
@@ -1586,6 +1673,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * Use NetcdfFileSubclass to access this constructor
    */
   protected NetcdfFile() {
+    this.importProperties = Collections.<String, Object>emptyMap();
   }
 
   /**
@@ -1596,6 +1684,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    */
   protected NetcdfFile(NetcdfFile ncfile) {
     this.location = ncfile.getLocation();
+    this.importProperties = Collections.<String, Object>emptyMap();
     this.id = ncfile.getId();
     this.title = ncfile.getTitle();
     this.spi = ncfile.spi;
@@ -2431,7 +2520,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
    * @return synthetic name
    */
   protected String makeFullNameWithString(Group parent, String name) {
-    name = makeValidPathName(name); // escape for use in full name  
+    name = makeValidPathName(name); // escape for use in full name
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, null);
     sbuff.append(name);
