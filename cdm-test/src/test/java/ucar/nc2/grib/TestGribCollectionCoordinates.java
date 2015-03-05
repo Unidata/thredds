@@ -106,7 +106,6 @@ public class TestGribCollectionCoordinates {
   // check that all time variables are coordinates (TwoD PofP was not eliminating unused coordinates after merging)
   @Test
   public void testExtraCoordinates() throws IOException {
-
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/.*gbx9", null, null, null, "file", null);
@@ -115,7 +114,6 @@ public class TestGribCollectionCoordinates {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
 
     boolean ok = true;
 
@@ -161,9 +159,16 @@ public class TestGribCollectionCoordinates {
     assert ok;
   }
 
-  // make sure Best refrence times always increase
+  // make sure Best reftimes always increase
   @Test
-  public void testBestReferenceMonotonic() throws IOException {
+  public void testBestReftimeMonotonic() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("gfs_2p5deg", "test/gfs_2p5deg", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null,  null, "file", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+
     boolean ok = true;
 
     try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3")) {
@@ -190,8 +195,6 @@ public class TestGribCollectionCoordinates {
     }
 
     assert ok;
-
-
   }
 
 

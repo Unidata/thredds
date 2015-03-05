@@ -142,8 +142,20 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   ////////////////////////////////////////
 
-  public CoordinateTimeIntv makeBestFromComplete() {
-    return this;
+  protected CoordinateTimeIntv makeBestFromComplete(int[] best, int n) {
+    List<TimeCoord.Tinv> timeIntervalsBest = new ArrayList<>(timeIntervals.size());
+    int[] time2runtimeBest = new int[n];
+    int count = 0;
+    for (int i=0; i<best.length; i++) {
+      int time = best[i];
+      if (time >= 0) {
+        time2runtimeBest[count] = time;
+        timeIntervalsBest.add(timeIntervals.get(i));
+        count++;
+      }
+    }
+
+    return new CoordinateTimeIntv(code, timeUnit, refDate, timeIntervalsBest, time2runtimeBest);
   }
 
   /* make the union of all the offsets from base date

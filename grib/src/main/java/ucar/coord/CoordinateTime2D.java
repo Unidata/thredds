@@ -476,7 +476,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   ///////////////////////////////////////////////////////////////////////////////////////
 
-  public CoordinateTime makeBestFromComplete() {
+  protected CoordinateTimeAbstract makeBestFromComplete(int[] best, int n) {
     throw new UnsupportedOperationException();
   }
 
