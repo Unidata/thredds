@@ -64,7 +64,7 @@ gretty {
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test) {
-//    setEnabled true
+    setEnabled true
 
     include 'thredds/server/catalog/TestTdsLocal.class'
     include 'thredds/TestEncoding.class'

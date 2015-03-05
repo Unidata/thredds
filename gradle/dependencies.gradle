@@ -24,6 +24,14 @@ ext {
     libraries = [:]
 }
 
+////////////////////////////////////////// Plugins //////////////////////////////////////////
+
+libraries["gretty"] = "org.akhikhl.gretty:gretty:1.1.8"
+
+libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:0.8"
+
+libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
+
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
 versions["spring"] = "3.2.12.RELEASE"
@@ -173,12 +181,6 @@ libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.1.Fina
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.5-SNAPSHOT"
-
-libraries["gretty"] = "org.akhikhl.gretty:gretty:1.1.8"
-
-libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:0.8"
-
-libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 

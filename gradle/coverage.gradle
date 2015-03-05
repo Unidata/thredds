@@ -12,9 +12,8 @@ gradle.projectsEvaluated {
         // Include all Test tasks from this project and any subprojects.
         dependsOn allprojects*.tasks*.withType(Test)
 
-        // Source sets are added by the java plugin, and not all subprojects have that applied. ":dap4" is one.
-        Collection<Project> projectsWithSourceSets = rootProject.subprojects.findAll { it.hasProperty("sourceSets") }
-        List<SourceSet> mainSourceSets = projectsWithSourceSets*.sourceSets*.main
+        Collection<Project> javaProjects = rootProject.subprojects.findAll { it.pluginManager.hasPlugin("java") }
+        List<SourceSet> mainSourceSets = javaProjects*.sourceSets*.main
 
         sourceDirectories = files(mainSourceSets*.allSource*.srcDirs)
         classDirectories = files(mainSourceSets*.output)
