@@ -34,10 +34,10 @@
 package ucar.unidata.geoloc.projection;
 
 
+import com.google.common.math.DoubleMath;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
-
 import ucar.unidata.util.SpecialMathFunction;
 
 /**
@@ -286,13 +286,15 @@ public class TransverseMercator extends ProjectionImpl {
     if (o == null || getClass() != o.getClass()) return false;
 
     TransverseMercator that = (TransverseMercator) o;
+    double tolerance = 1e-6;
 
-    if (Double.compare(that.earthRadius, earthRadius) != 0) return false;
-    if (Double.compare(that.falseEasting, falseEasting) != 0) return false;
-    if (Double.compare(that.falseNorthing, falseNorthing) != 0) return false;
-    if (Double.compare(that.lat0, lat0) != 0) return false;
-    if (Double.compare(that.lon0, lon0) != 0) return false;
-    if (Double.compare(that.scale, scale) != 0) return false;
+    if (DoubleMath.fuzzyCompare(that.earthRadius,   earthRadius,   tolerance) != 0) return false;
+    if (DoubleMath.fuzzyCompare(that.falseEasting,  falseEasting,  tolerance) != 0) return false;
+    if (DoubleMath.fuzzyCompare(that.falseNorthing, falseNorthing, tolerance) != 0) return false;
+    if (DoubleMath.fuzzyCompare(that.lat0,          lat0,          tolerance) != 0) return false;
+    if (DoubleMath.fuzzyCompare(that.lon0,          lon0,          tolerance) != 0) return false;
+    if (DoubleMath.fuzzyCompare(that.scale,         scale,         tolerance) != 0) return false;
+
     if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
     if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
 
