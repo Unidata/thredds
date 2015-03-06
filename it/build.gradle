@@ -26,6 +26,7 @@ dependencies {
     // we're overlaying tds (see below), so we're already getting the binding that it declares.
 }
 
+test.enabled = false  // We're doing integrationTest instead.
 
 apply plugin: 'org.akhikhl.gretty'
 

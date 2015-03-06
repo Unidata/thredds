@@ -6,20 +6,20 @@ dependencies {
 }
 
 tasks.withType(Test) {
-    // Disable tests globally for now.
-    // For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
-    setEnabled false
+//    // Disable tests globally for now.
+//    // For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
+//    setEnabled false
 
     if (!System.env['TRAVIS']) {
         ignoreFailures true
     }
 
-    // rootTestReport will include the results of this test.
-    // Parent projects are evaluated before their children, so this should be available.
-    rootProject.rootTestReport.reportOn it
-
-    // Generate a root report if there are any subproject reports.
-    finalizedBy rootProject.rootTestReport
+//    // rootTestReport will include the results of this test.
+//    // Parent projects are evaluated before their children, so this should be available.
+//    rootProject.rootTestReport.reportOn it
+//
+//    // Generate a root report if there are any subproject reports.
+//    finalizedBy rootProject.rootTestReport
 }
 
 // Add an SLF4J binding to testRuntime, if necessary.
