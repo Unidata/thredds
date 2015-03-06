@@ -20,9 +20,16 @@ buildscript {
     }
 }
 
+// This task needn't be invoked directly; all subproject Test tasks are finalizedBy it.
+task rootTestReport(type: TestReport, group: 'Build') {
+    description = 'Generates an aggregate test report'
+    destinationDir = file("$buildDir/reports/allTests")
+    // The results to report on will be added by each subproject in testing.gradle.
+}
+
 apply from: "$rootDir/gradle/coverage.gradle"
 
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+task rootJacocoReport(type: JacocoReport, group: 'Coverage reports') {
     description = 'Generates an aggregate report from all subprojects'
 
     // By default, JacocoReport will be skipped if ANY of its executionData are non-existent: http://goo.gl/pHuwyg
@@ -30,9 +37,9 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     // assigning an empty collection (leaving it null causes an exception), and assigning the real values later.
     executionData = files()
 
-    // Causes jacocoRootReport to always be executed. This is necessary because JacocoReport uses executionData as one
+    // Causes rootJacocoReport to always be executed. This is necessary because JacocoReport uses executionData as one
     // of its Inputs, and by assigning an empty collection above, the normal UP-TO-DATE machinery has been subverted.
-    // As a result, jacocoRootReport can't properly determine when subprojects have generated new coverage data
+    // As a result, rootJacocoReport can't properly determine when subprojects have generated new coverage data
     // (it thinks its executionData Inputs are always UP-TO-DATE). We'll try to detect those changes manually below.
     outputs.upToDateWhen { false }  // Evaluated at configuration time (onlyIf{} is evaluated at execution time)
 
@@ -76,12 +83,12 @@ apply plugin: "com.github.kt3k.coveralls"
 tasks.coveralls {
     group = 'Coverage reports'
     description = 'Uploads the aggregated coverage report to Coveralls'
-    dependsOn jacocoRootReport
+    dependsOn rootJacocoReport
 
     // This task logs the entire coveralls.io JSON payload (~27 MB) to the INFO log level. We don't want to see it.
     logging.level = LogLevel.LIFECYCLE
 
-    // tasks.jacocoRootReport.sourceDirectories won't be ready until the very end of the evaluation phase. So, to avoid
+    // tasks.rootJacocoReport.sourceDirectories won't be ready until the very end of the evaluation phase. So, to avoid
     // grabbing "unfinished" properties, we'll just configure this task at execution time. That's okay for this task
     // because it doesn't declare any Inputs or Outputs and therefore can never be considered UP-TO-DATE.
     doFirst {
@@ -94,10 +101,10 @@ tasks.coveralls {
 
         // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
         coveralls {
-            jacocoReportPath = tasks.jacocoRootReport.reports.xml.destination
-            sourceDirs = tasks.jacocoRootReport.sourceDirectories.files.collect { it.getPath() }
+            jacocoReportPath = tasks.rootJacocoReport.reports.xml.destination
+            sourceDirs = tasks.rootJacocoReport.sourceDirectories.files.collect { it.getPath() }
         }
     }
 }
 
-apply plugin: "base"  // Gives us the "clean" task for removing jacocoRootReport's output.
+apply plugin: "base"  // Gives us the "clean" task for removing rootJacocoReport's output.

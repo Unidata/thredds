@@ -15,4 +15,11 @@ tasks.withType(Test) {
     if (!System.env.'TRAVIS') {
         ignoreFailures true
     }
+
+    // rootTestReport will include the results of this test.
+    // Parent projects are evaluated before their children, so this should be available.
+    rootProject.rootTestReport.reportOn it
+
+    // Generate a root report if there are any subproject reports.
+    finalizedBy rootProject.rootTestReport
 }
