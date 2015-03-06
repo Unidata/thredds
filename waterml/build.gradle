@@ -23,7 +23,6 @@ dependencies {
 
     compile libraries["guava"]
     compile libraries["joda-time"]
-    testRuntime libraries["slf4j-jdk14"]
 }
 
 // Re-enable test task for this subproject.

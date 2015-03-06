@@ -25,5 +25,4 @@ dependencies {
     testCompile libraries["jdom2"]
 
     testCompile libraries["slf4j-api"]
-    testRuntime libraries["slf4j-jdk14"]
 }

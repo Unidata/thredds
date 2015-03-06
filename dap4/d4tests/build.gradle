@@ -18,5 +18,4 @@ dependencies {
 
     testCompile libraries["javax.servlet-api"]
     testCompile libraries["slf4j-api"]
-    testRuntime libraries["slf4j-jdk14"]
 }

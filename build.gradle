@@ -33,8 +33,8 @@ task rootJacocoReport(type: JacocoReport, group: 'Coverage reports') {
     description = 'Generates an aggregate report from all subprojects'
 
     // By default, JacocoReport will be skipped if ANY of its executionData are non-existent: http://goo.gl/pHuwyg
-    // This is a problem: we don't know which executionData we have until configuration time. So, we're temporarily
-    // assigning an empty collection (leaving it null causes an exception), and assigning the real values later.
+    // This is a problem: we don't know which data we have until execution time. So, we're temporarily assigning an
+    // empty collection (leaving it null causes an exception), and assigning the real values later.
     executionData = files()
 
     // Causes rootJacocoReport to always be executed. This is necessary because JacocoReport uses executionData as one
@@ -107,4 +107,4 @@ tasks.coveralls {
     }
 }
 
-apply plugin: "base"  // Gives us the "clean" task for removing rootJacocoReport's output.
+apply plugin: "base"  // Gives us the "clean" task for removing buildDir.

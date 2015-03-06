@@ -3,8 +3,6 @@ apply plugin: "java"
 
 dependencies {
     testCompile libraries["junit"]
-
-    // TODO: Add an slf4j binding ("slf4j-jdk14") if none is present, but only if "slf4j-api" is declared.
 }
 
 tasks.withType(Test) {
@@ -12,7 +10,7 @@ tasks.withType(Test) {
     // For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
     setEnabled false
 
-    if (!System.env.'TRAVIS') {
+    if (!System.env['TRAVIS']) {
         ignoreFailures true
     }
 
@@ -22,4 +20,18 @@ tasks.withType(Test) {
 
     // Generate a root report if there are any subproject reports.
     finalizedBy rootProject.rootTestReport
+}
+
+// Add an SLF4J binding to testRuntime, if necessary.
+afterEvaluate {
+    if (testRuntimeHasDepNamed("slf4j-api")) {
+        if (!testRuntimeHasDepNamed("slf4j-jdk14") && !testRuntimeHasDepNamed("log4j-slf4j-impl")) {
+            dependencies.testRuntime libraries["slf4j-jdk14"]  // Default binding.
+        }
+    }
+}
+
+boolean testRuntimeHasDepNamed(String depName) {
+    // Groovy truth: empty collections are coerced to false.
+    configurations.testRuntime.allDependencies.findAll { it.name == depName }
 }
