@@ -316,8 +316,8 @@ class FmrcDataset {
 
       // some additional global attributes
       Group root = result.getRootGroup();
-      if (root.findAttributeIgnoreCase(CDM.CONVENTIONS) == null) // only add if convention not already there
-        root.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.4, " + _Coordinate.Convention));
+      // if (root.findAttributeIgnoreCase(CDM.CONVENTIONS) == null) // only add if convention not already there
+      root.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.4, " + _Coordinate.Convention));
       root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
       root.addAttribute(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
       root.addAttribute(new Attribute("location", "Proto "+fmrcInv.getName()));
