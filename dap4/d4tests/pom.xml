@@ -126,6 +126,7 @@
 		      <exclude>src/test/java/dap4/test/TestHyrax.java</exclude>
 		      <exclude>src/test/java/dap4/test/TestSerial.java</exclude>
 		      <exclude>src/test/java/dap4/test/TestDap4All.java</exclude>
+<!-- temporary until jenkins problem is fixed --><exclude>src/test/java/dap4/test/TestCDMClient.java</exclude>
 	        </excludes>
           </configuration>
         </execution>
