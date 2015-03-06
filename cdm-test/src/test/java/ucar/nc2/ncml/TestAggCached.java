@@ -14,7 +14,7 @@ import java.util.EnumSet;
 import java.util.Formatter;
 
 /**
- * Test caching of NetcdfDataset in context of agggregation
+ * Test caching of NetcdfDataset in context of aggregation
  *
  * @author John
  * @since 9/11/13
