@@ -65,6 +65,7 @@ abstract class GribCollectionBuilderFromIndex {
   protected abstract void readGds(GribCollectionProto.Gds p);
   protected abstract GribTables makeCustomizer() throws IOException;
   protected abstract String getLevelNameShort(int levelCode);
+  protected abstract int getVersion();
 
   protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, org.slf4j.Logger logger) {
     this.logger = logger;
@@ -90,11 +91,11 @@ abstract class GribCollectionBuilderFromIndex {
       }
 
       gc.version = raf.readInt();
-      boolean versionOk = gc.version >= Grib2CollectionWriter.version;
+      boolean versionOk = gc.version >= getVersion();
       if (!versionOk) {
         logger.warn("GribCollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
-        throw new IllegalStateException();   // temp debug
-        // return false;
+        // throw new IllegalStateException();   // temp debug
+        return false;
       }
 
       // these are the variable records

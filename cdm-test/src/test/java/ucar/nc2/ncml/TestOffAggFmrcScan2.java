@@ -75,7 +75,7 @@ public class TestOffAggFmrcScan2 {
     ncfile.close();
   }
 
-  @Ignore("Cant use Fmrc on GRIB")
+  //@Ignore("Cant use Fmrc on GRIB")
   @Test
   public void testOpenNomads() throws Exception {
     String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/nomads/";
