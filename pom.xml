@@ -963,7 +963,7 @@
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
     <edu.wisc.version>2011-08-22</edu.wisc.version>
-	<uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.4</uk.ac.rdg.resc.ncwms.version>
+	<uk.ac.rdg.resc.ncwms.version>1.2.tds.4.5.5</uk.ac.rdg.resc.ncwms.version>
 
     <eds.threddsIso.version>2.2.4</eds.threddsIso.version>
 
