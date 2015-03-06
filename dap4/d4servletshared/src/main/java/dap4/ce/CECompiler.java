@@ -89,7 +89,6 @@ public class CECompiler
         // Convert field references in the filter
         // and canonicalize the comparisons
         compilefilter((DapSequence) var, ast.filter);
-        ast.toString();
         // add filter
         ce.setFilter(var, ast.filter);
     }

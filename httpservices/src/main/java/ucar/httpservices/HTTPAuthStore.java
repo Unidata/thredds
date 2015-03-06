@@ -198,6 +198,7 @@ public class HTTPAuthStore implements Serializable
 	    DEFAULT = new HTTPAuthStore(true);
     }
 
+    //COVERITY[GUARDED_BY_VIOLATION]
     static public synchronized HTTPAuthStore getDefault() {return DEFAULT;}
 
     //////////////////////////////////////////////////
@@ -441,6 +442,7 @@ public class HTTPAuthStore implements Serializable
             SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
 
             // Create Cipher
+            //Coverity[RISKY_CRYPTO]
             Cipher desCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             desCipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
