@@ -39,13 +39,11 @@ import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.nc2.util.IO;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
@@ -78,7 +76,7 @@ public class TestEncoding {
 
   @Test
   public void readCapabilities() {
-    String endpoint= TestWithLocalServer.server + path+"?" + query;
+    String endpoint = TestWithLocalServer.withPath(path + "?" + query);
     System.out.printf("GetCapabilities req = '%s'%n", endpoint);
 
     HTTPSession session = null;

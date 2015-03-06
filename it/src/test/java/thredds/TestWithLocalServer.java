@@ -35,6 +35,8 @@
 
 package thredds;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Describe
  *
@@ -43,4 +45,8 @@ package thredds;
  */
 public class TestWithLocalServer {
   public static String server = "http://localhost:8081/thredds/";
+
+  public static String withPath(String path) {
+    return server + StringUtils.stripStart(path, "/\\");  // Remove leading slashes from path.
+  }
 }

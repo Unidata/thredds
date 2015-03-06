@@ -7,12 +7,12 @@ import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
 import ucar.nc2.util.IO;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
@@ -33,7 +33,7 @@ public class TestRadarServer {
   String xmlEncoding = "application/xml;charset=UTF-8";
   String path;
   public TestRadarServer(String path) {
-    this.path = TestWithLocalServer.server + path;
+    this.path = TestWithLocalServer.withPath(path);
   }
 
   @org.junit.Test

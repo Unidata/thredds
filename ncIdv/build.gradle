@@ -1,4 +1,5 @@
-apply plugin: 'shadow'
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
 
 dependencies {
     compile project(":cdm")
@@ -22,6 +23,8 @@ ext {
     }
     destinationDir = 'build/libs/'
 }
+
+apply plugin: 'shadow'
 
 shadow {
     outputFile = file("${destinationDir}/${ncIdvJar}")

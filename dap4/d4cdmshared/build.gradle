@@ -1,6 +1,8 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+
 dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4shared')
     compile project(':cdm')
-    testRuntime libraries["slf4j-jdk14"]
 }

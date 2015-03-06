@@ -50,7 +50,7 @@ public class TestSanity {
 
   @Test
   public void testStrings() throws IOException, InvalidRangeException {
-    String url = TestWithLocalServer.server + "/dodsC/scanLocal/testWrite.nc";
+    String url = TestWithLocalServer.withPath("/dodsC/scanLocal/testWrite.nc");
     NetcdfDataset dodsfile = null;
     try {
 

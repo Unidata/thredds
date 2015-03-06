@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
-import thredds.catalog.InvCatalogImpl;
 import thredds.client.catalog.Catalog;
 import ucar.nc2.util.IO;
 
@@ -55,7 +54,7 @@ public class TestCatalogMapping {
       assert cat != null;
 
     }  else {
-      catPath = TestWithLocalServer.server + catPath;
+      catPath = TestWithLocalServer.withPath(catPath);
       System.out.printf("Open html page %s%n", catPath);
       IO.readURLcontentsWithException(catPath);
     }

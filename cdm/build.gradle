@@ -1,3 +1,8 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/testing.gradle"
+apply from: "$rootDir/gradle/coverage.gradle"
+
 dependencies {
     compile project(':udunits')
     compile project(':httpservices')
@@ -16,7 +21,11 @@ dependencies {
     testRuntime libraries["slf4j-jdk14"]
 }
 
-test{
+test {
+    // Re-enable test task for this subproject.
+    // It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
+    setEnabled true
+
     // Causes JUnit to throw an exception: "No tests found in ucar.nc2.util.UnitTestCommon"
     exclude 'ucar/nc2/util/UnitTestCommon.class'
 }
@@ -83,6 +92,7 @@ task releaseDocs(dependsOn: javadoc) << {
 configurations {
     // Define a custom configuration and fill it with our test code's runtime dependencies.
     testArtifacts.extendsFrom testRuntime
+    testArtifacts.exclude(module: "slf4j-jdk14")  // Exclude the slf4j binding.
 }
 
 task testJar(type: Jar, dependsOn: testClasses,

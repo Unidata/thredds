@@ -45,7 +45,7 @@ public class TestTdsLocal {
 
   public static Catalog open(String catalogName) {
     if (catalogName == null) catalogName = "/catalog.xml";
-    String catalogPath = TestWithLocalServer.server + catalogName;
+    String catalogPath = TestWithLocalServer.withPath(catalogName);
     System.out.println("\n open= "+catalogPath);
 
     try {

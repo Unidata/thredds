@@ -1,8 +1,18 @@
-subprojects {
-    // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
-    apply plugin: "java"
-    apply plugin: "jacoco"
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply plugin: "java"
 
-    jacocoTestReport.dependsOn test
-    check.dependsOn jacocoTestReport
+dependencies {
+    testCompile libraries["junit"]
+
+    // TODO: Add an slf4j binding ("slf4j-jdk14") if none is present, but only if "slf4j-api" is declared.
+}
+
+tasks.withType(Test) {
+    // Disable tests globally for now.
+    // For subprojects that are okay to test, re-enable their individual test tasks in their build scripts.
+    setEnabled false
+
+    if (!System.env.'TRAVIS') {
+        ignoreFailures true
+    }
 }
