@@ -20,12 +20,13 @@ buildscript {
     }
 }
 
-//// This task needn't be invoked directly; all subproject Test tasks are finalizedBy it.
-//task rootTestReport(type: TestReport, group: 'Build') {
-//    description = 'Generates an aggregate test report'
-//    destinationDir = file("$buildDir/reports/allTests")
-//    // The results to report on will be added by each subproject in testing.gradle.
-//}
+// This task needn't be invoked directly; all subproject Test tasks are finalizedBy it.
+task rootTestReport(type: TestReport, group: 'Build') {
+    description = 'Generates an aggregate test report'
+    destinationDir = file("$buildDir/reports/allTests")
+
+    // Much of the configuration of this task is done by subprojects in testing.gradle.
+}
 
 apply from: "$rootDir/gradle/coverage.gradle"
 
