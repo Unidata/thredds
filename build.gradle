@@ -20,12 +20,27 @@ buildscript {
     }
 }
 
-// This task needn't be invoked directly; all subproject Test tasks are finalizedBy it.
+// In order to refer to subprojects' Test tasks below, those subprojects must be evaluated first.
+evaluationDependsOnChildren()
+
 task rootTestReport(type: TestReport, group: 'Build') {
     description = 'Generates an aggregate test report'
     destinationDir = file("$buildDir/reports/allTests")
 
-    // Much of the configuration of this task is done by subprojects in testing.gradle.
+    Collection<Task> subprojectTestTasks = subprojects*.tasks*.withType(Test).flatten()
+
+    // All Test tasks will be finalized by this task. As a result, this task needn't be invoked directly.
+    subprojectTestTasks*.finalizedBy it
+
+    // We could also do "reportOn subprojectTestTasks" here, but that would cause this task to be dependent on all
+    // subproject Tests. So, we couldn't do something like ":grib:test" and expect only GRIB tests to run because:
+    //     ":grib:test" --finalizedBy--> ":rootTestReport" --dependsOn--> "all_subproject_Tests"
+    // In other words, all subproject tests would get run, no matter what.
+    // Passing File arguments to reportOn() instead doesn't create that dependency.
+    reportOn subprojectTestTasks*.binResultsDir
+
+    // Wait until all Test tasks have run. This creates a task *ordering*, not a dependency.
+    mustRunAfter subprojectTestTasks
 }
 
 apply from: "$rootDir/gradle/coverage.gradle"

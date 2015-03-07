@@ -13,18 +13,6 @@ tasks.withType(Test) {
     if (!System.env['TRAVIS']) {
         ignoreFailures true
     }
-
-    // Instead of creating a hard dependency (i.e. rootTestReport DEPENDS on "it"), we just create an ordering.
-    // As a result, "it" doesn't actually need to execute in order for rootTestReport to execute.
-    rootProject.rootTestReport.mustRunAfter it
-
-    // rootTestReport will include the results of this test.
-    // Parent projects are evaluated before their children, so this should be available.
-    // Pass a file to reportOn() instead of the "it" task instance; this'll avoid creating a dependency.
-    rootProject.rootTestReport.reportOn it.binResultsDir
-
-    // Generate a root report if there are any subproject reports.
-    finalizedBy rootProject.rootTestReport
 }
 
 // Add an SLF4J binding to testRuntime, if necessary.
