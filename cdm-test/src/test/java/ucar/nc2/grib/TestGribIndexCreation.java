@@ -169,29 +169,27 @@ public class TestGribIndexCreation {
   public void testRdvamds083p2() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2", FeatureCollectionType.GRIB1,
-//            "B:/rdavm/ds083.2/grib1/**/.*gbx9",
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/**/.*gbx9",
             null, null, null, "directory", null);
-    config.gribConfig.unionRuntimeCoord = true;
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.testIndexOnly, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  @Test
-  public void testRdvamds083p2_1999() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2", FeatureCollectionType.GRIB1,
-//            "B:/rdavm/ds083.2/grib1/**/.*gbx9",
-            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/1999/**/.*gbx9",
-            null, null, null,  "directory", null);
     config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
+
+  /* @Test
+  public void testRdvamds083p2_1999() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/1999/** /.*gbx9",
+            null, null, null,  "directory", null);
+    config.gribConfig.unionRuntimeCoord = true;
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  } */
 
   @Test
   public void testRdvamds627p0() throws IOException {

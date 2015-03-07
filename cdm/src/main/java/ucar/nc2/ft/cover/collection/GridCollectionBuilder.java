@@ -30,22 +30,23 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ft.grid.collection;
+package ucar.nc2.ft.cover.collection;
 
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
-import thredds.inventory.partition.DirectoryPartition;
-import thredds.inventory.partition.TimePartition;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft.grid.impl.CoverageCSFactory;
+import ucar.nc2.ft.cover.CoverageCS;
+import ucar.nc2.ft.cover.impl.CoverageCSFactory;
+import ucar.nc2.ft.cover.impl.CoverageDatasetImpl;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * Describe
@@ -59,44 +60,30 @@ public class GridCollectionBuilder {
 
     long start = System.currentTimeMillis();
 
+    List<CoverageDatasetImpl> collection = new ArrayList<>();
+
     Formatter errlog = new Formatter();
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
-    Path rootPath = Paths.get(specp.getRootDir());
-
+    System.out.printf("specp=%s%n", specp);
     boolean changed = false;
 
-    if (config.ptype == FeatureCollectionConfig.PartitionType.none) {
+    try (CollectionAbstract dcm = new CollectionPathMatcher(config, specp, logger)) {
+      for (MFile file : dcm.getFilesSorted()) {
+        System.out.printf(" %s == %s == ", file.getPath(), dcm.extractDate(file));
 
-      try (CollectionAbstract dcm = new CollectionPathMatcher(config, specp, logger)) {
-        for (MFile file : dcm.getFilesSorted()) {
-          System.out.printf("%s == %s == ", file.getPath(), dcm.extractDate(file));
-
-          try (NetcdfDataset ds = NetcdfDataset.openDataset(file.getPath())){
-            System.out.printf("%s%n", CoverageCSFactory.describe(errlog, ds));
+        try (NetcdfDataset ds = NetcdfDataset.openDataset(file.getPath())){
+          System.out.printf("%s%n", CoverageCSFactory.describe(errlog, ds));
+          CoverageDatasetImpl cds = new CoverageDatasetImpl(ds, errlog);
+          if (cds.getType() == null) {
+            System.out.printf(" **Error classifying: %s%n", errlog);
+          } else if (cds.getType() != CoverageCS.Type.Grid) {
+            System.out.printf(" **NOT A GRID %s%n", ds.getLocation());
+          } else {
+            collection.add(cds);
           }
         }
       }
-
-    } /* else if (config.ptype == FeatureCollectionConfig.PartitionType.timePeriod) {
-
-      try (TimePartition tp = new TimePartition(config, specp, logger)) {
-        changed = updateTimePartition(isGrib1, tp, updateType, logger);
-      }
-
-    } /* else {
-
-      // LOOK assume wantSubdirs makes it into a Partition. Isnt there something better ??
-      if (specp.wantSubdirs()) {  // its a partition
-
-        try (DirectoryPartition dpart = new DirectoryPartition(config, rootPath, true, new GribCdmIndex(logger), logger)) {
-          dpart.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-          changed = updateDirectoryCollectionRecurse(isGrib1, dpart, config, updateType, logger);
-        }
-
-      } else { // otherwise its a leaf directory
-        changed = updateLeafCollection(isGrib1, config, updateType, true, logger, rootPath);
-      }
-    } */
+    }
 
     long took = System.currentTimeMillis() - start;
     logger.info("updateGribCollection {} changed {} took {} msecs", config.collectionName, changed, took);
