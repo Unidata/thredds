@@ -150,7 +150,7 @@ public class Parameter implements java.io.Serializable {
       }
       if (valueD != null) {
         for (int i = 0; i < valueD.length; i++) {
-          result += (int) 1000 * valueD[i];
+          result += 1000 * valueD[i];
         }
       }
       hashCode = result;
@@ -187,7 +187,7 @@ public class Parameter implements java.io.Serializable {
   ///////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Copy constructir, with new name.
+   * Copy constructor, with new name.
    *
    * @param name name of new Parameter.
    * @param from copy values from here.

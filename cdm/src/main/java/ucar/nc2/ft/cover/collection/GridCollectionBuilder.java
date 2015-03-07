@@ -40,7 +40,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.cover.CoverageCS;
 import ucar.nc2.ft.cover.impl.CoverageCSFactory;
 import ucar.nc2.ft.cover.impl.CoverageDatasetImpl;
+import ucar.nc2.ft.cover.impl.CoverageIndexWriter;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -85,9 +87,19 @@ public class GridCollectionBuilder {
       }
     }
 
+    if (collection.size() > 0) {
+      writeIndex(collection.get(0));
+    }
+
     long took = System.currentTimeMillis() - start;
     logger.info("updateGribCollection {} changed {} took {} msecs", config.collectionName, changed, took);
     return changed;
+  }
+
+  private void writeIndex(CoverageDatasetImpl cds) throws IOException {
+    CoverageIndexWriter writer = new CoverageIndexWriter();
+    File idxFile = new File("C:/temp/testCovIndex.ncx3");
+    writer.writeIndex("name", idxFile, null, cds);
   }
 
   public static void main(String[] args) throws IOException {
