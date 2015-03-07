@@ -11,6 +11,7 @@ import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
@@ -38,6 +39,11 @@ public class TestGribIndexCreation {
     // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
+
+    // make sure that the indexes are created with the data files
+    DiskCache2 diskCache = GribIndexCache.getDiskCache2();
+    diskCache.setNeverUseCache(true);
+    diskCache.setAlwaysUseCache(false);
   }
 
   @AfterClass
