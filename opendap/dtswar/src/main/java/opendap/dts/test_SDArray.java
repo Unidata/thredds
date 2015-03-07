@@ -115,6 +115,8 @@ public class test_SDArray extends SDArray {
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
 
+        if(specialO == null)
+            throw new IOException("Null test engine");
         testEngine te = (testEngine) specialO;
 
         te.newLoadTestArray(datasetName, this);
