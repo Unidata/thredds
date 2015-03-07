@@ -36,8 +36,10 @@ import org.junit.Test;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
+import ucar.nc2.Attribute;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -120,6 +122,20 @@ public class TestFmrc {
     doOne(TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml", 41, 6, 10, 4, "u", 15, 11, 39);     //*/
   }
 
+  @Test
+  public void testConventionsAttribute() throws Exception {
+    String path = TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml";
+    Formatter errlog = new Formatter();
+    Fmrc fmrc = Fmrc.open(path, errlog);
+    assert (fmrc != null) : errlog;
+
+    try (ucar.nc2.dt.GridDataset gridDs = fmrc.getDataset2D(null)) {
+      NetcdfDataset ncd = (NetcdfDataset) gridDs.getNetcdfFile();
+      Attribute att = ncd.findGlobalAttribute(CDM.CONVENTIONS);
+      assert att != null;
+      System.out.printf("%s%n", att);
+    }
+  }
 
   static void doOne(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes,
                     String gridName, int nruns, int ntimes, int nbest) throws Exception {
@@ -136,90 +152,86 @@ public class TestFmrc {
     System.out.println("2D dataset");
     Formatter errlog = new Formatter();
     Fmrc fmrc = Fmrc.open(pathname, errlog);
-    if (fmrc == null) {
-      System.out.printf("Fmrc failed to open %s%n", pathname);
-      System.out.printf("errlog= %s%n", errlog.toString());
-      return;
-    }
+    assert (fmrc != null) : errlog;
 
-    ucar.nc2.dt.GridDataset gridDs = fmrc.getDataset2D(null);
-    NetcdfDataset ncd = (NetcdfDataset) gridDs.getNetcdfFile();
+    try (ucar.nc2.dt.GridDataset gridDs = fmrc.getDataset2D(null)) {
+      NetcdfDataset ncd = (NetcdfDataset) gridDs.getNetcdfFile();
 
-    int countGrids = gridDs.getGrids().size();
-    int countCoordAxes = ncd.getCoordinateAxes().size();
-    int countCoordSys = ncd.getCoordinateSystems().size();
+      int countGrids = gridDs.getGrids().size();
+      int countCoordAxes = ncd.getCoordinateAxes().size();
+      int countCoordSys = ncd.getCoordinateSystems().size();
 
-    // count vertical axes
-    int countVertCooordAxes = 0;
-    List axes = ncd.getCoordinateAxes();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis = (CoordinateAxis) axes.get(i);
-      AxisType t = axis.getAxisType();
-      if ((t == AxisType.GeoZ) || (t == AxisType.Height) || (t == AxisType.Pressure))
-        countVertCooordAxes++;
-    }
+      // count vertical axes
+      int countVertCooordAxes = 0;
+      List axes = ncd.getCoordinateAxes();
+      for (int i = 0; i < axes.size(); i++) {
+        CoordinateAxis axis = (CoordinateAxis) axes.get(i);
+        AxisType t = axis.getAxisType();
+        if ((t == AxisType.GeoZ) || (t == AxisType.Height) || (t == AxisType.Pressure))
+          countVertCooordAxes++;
+      }
 
-    if (showCount) {
-      System.out.println(" grids=" + countGrids + ((ngrids < 0) ? " *" : ""));
-      System.out.println(" coordSys=" + countCoordSys + ((ncoordSys < 0) ? " *" : ""));
-      System.out.println(" coordAxes=" + countCoordAxes + ((ncoordAxes < 0) ? " *" : ""));
-      System.out.println(" vertAxes=" + countVertCooordAxes + ((nVertCooordAxes < 0) ? " *" : ""));
-    }
+      if (showCount) {
+        System.out.println(" grids=" + countGrids + ((ngrids < 0) ? " *" : ""));
+        System.out.println(" coordSys=" + countCoordSys + ((ncoordSys < 0) ? " *" : ""));
+        System.out.println(" coordAxes=" + countCoordAxes + ((ncoordAxes < 0) ? " *" : ""));
+        System.out.println(" vertAxes=" + countVertCooordAxes + ((nVertCooordAxes < 0) ? " *" : ""));
+      }
 
-    for (ucar.nc2.dt.GridDataset.Gridset gridset1 : gridDs.getGridsets()) {
-      gridset1.getGeoCoordSystem();
-    }
+      for (ucar.nc2.dt.GridDataset.Gridset gridset1 : gridDs.getGridsets()) {
+        gridset1.getGeoCoordSystem();
+      }
 
-    GridDatatype grid = gridDs.findGridDatatype(gridName);
-    assert (grid != null) : "Cant find grid " + gridName;
+      GridDatatype grid = gridDs.findGridDatatype(gridName);
+      assert (grid != null) : "Cant find grid " + gridName;
 
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    CoordinateAxis1DTime runtime = gcs.getRunTimeAxis();
-    assert (runtime != null) : "Cant find runtime for " + gridName;
-    CoordinateAxis time = gcs.getTimeAxis();
-    assert (time != null) : "Cant find time for " + gridName;
-    assert (time.getRank() == 2) : "Time should be 2D " + gridName;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      CoordinateAxis1DTime runtime = gcs.getRunTimeAxis();
+      assert (runtime != null) : "Cant find runtime for " + gridName;
+      CoordinateAxis time = gcs.getTimeAxis();
+      assert (time != null) : "Cant find time for " + gridName;
+      assert (time.getRank() == 2) : "Time should be 2D " + gridName;
 
-    if (showCount) {
-      System.out.println(" runtimes=" + runtime.getSize());
-      System.out.println(" ntimes=" + time.getDimension(1).getLength());
-    }
+      if (showCount) {
+        System.out.println(" runtimes=" + runtime.getSize());
+        System.out.println(" ntimes=" + time.getDimension(1).getLength());
+      }
 
-    if (ngrids >= 0)
-      assert ngrids == countGrids : "Grids " + ngrids + " != " + countGrids;
-    //if (ncoordSys >= 0)
-    //  assert ncoordSys == countCoordSys : "CoordSys " + ncoordSys + " != " + countCoordSys;
+      if (ngrids >= 0)
+        assert ngrids == countGrids : "Grids " + ngrids + " != " + countGrids;
+      //if (ncoordSys >= 0)
+      //  assert ncoordSys == countCoordSys : "CoordSys " + ncoordSys + " != " + countCoordSys;
 
-    if (ncoordAxes >= 0) { //  && (ncoordAxes != countCoordAxes)) {
-      for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
-        System.out.printf("axis= %s%n", axis.getNameAndDimensions());
-        if (axis.getShortName().startsWith("layer_between")) {
-          CoordinateAxis1D axis1 = (CoordinateAxis1D) axis;
-          Array data = axis.read();
-          NCdumpW.printArray(data);
-          Formatter f = new Formatter();
-          f.format("%n bounds1=");
-          showArray(f, axis1.getBound1());
-          f.format("%n bounds2=");
-          showArray(f, axis1.getBound2());
-          System.out.printf("%s%n", f);
+      if (ncoordAxes >= 0) { //  && (ncoordAxes != countCoordAxes)) {
+        for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
+          System.out.printf("axis= %s%n", axis.getNameAndDimensions());
+          if (axis.getShortName().startsWith("layer_between")) {
+            CoordinateAxis1D axis1 = (CoordinateAxis1D) axis;
+            Array data = axis.read();
+            NCdumpW.printArray(data);
+            Formatter f = new Formatter();
+            f.format("%n bounds1=");
+            showArray(f, axis1.getBound1());
+            f.format("%n bounds2=");
+            showArray(f, axis1.getBound2());
+            System.out.printf("%s%n", f);
+          }
         }
       }
+
+      if (ncoordAxes >= 0)
+        assert ncoordAxes == countCoordAxes : "CoordAxes " + ncoordAxes + " != " + countCoordAxes;
+      if (nVertCooordAxes >= 0)
+        assert nVertCooordAxes == countVertCooordAxes : "VertAxes " + nVertCooordAxes + " != " + countVertCooordAxes;
+
+      if (nruns >= 0)
+        assert runtime.getSize() == nruns : runtime.getSize() + " != " + nruns;
+      if (nruns >= 0)
+        assert time.getDimension(0).getLength() == nruns : " nruns should be " + nruns;
+      if (ntimes >= 0)
+        assert time.getDimension(1).getLength() == ntimes : " ntimes should be " + ntimes + " actual " + time.getDimension(1).getLength();
+
     }
-
-    if (ncoordAxes >= 0)
-      assert ncoordAxes == countCoordAxes : "CoordAxes " + ncoordAxes + " != " + countCoordAxes;
-    if (nVertCooordAxes >= 0)
-      assert nVertCooordAxes == countVertCooordAxes : "VertAxes " + nVertCooordAxes + " != " + countVertCooordAxes;
-
-    if (nruns >= 0)
-      assert runtime.getSize() == nruns : runtime.getSize() + " != " + nruns;
-    if (nruns >= 0)
-      assert time.getDimension(0).getLength() == nruns : " nruns should be " + nruns;
-    if (ntimes >= 0)
-      assert time.getDimension(1).getLength() == ntimes : " ntimes should be " + ntimes+" actual "+time.getDimension(1).getLength();
-
-    gridDs.close();
   }
 
   static void showArray(Formatter f, double[] array) {

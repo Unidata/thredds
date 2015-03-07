@@ -61,7 +61,7 @@ import java.util.*;
  * @since 2/21/14
  */
 abstract class GribPartitionBuilder  {
-  protected static final int version = 1;
+  protected static final int version = 2;
 
   ////////////////////////
 

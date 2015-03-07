@@ -58,16 +58,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordSysBuilderIF;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.DatasetConstructor;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.StructureDS;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -316,7 +307,9 @@ class FmrcDataset {
 
       // some additional global attributes
       Group root = result.getRootGroup();
-      root.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.4, " + _Coordinate.Convention));
+      Attribute orgConv =  root.findAttributeIgnoreCase(CDM.CONVENTIONS);
+      String convAtt = CoordSysBuilder.buildConventionAttribute("CF-1.4", (orgConv == null ? null : orgConv.getStringValue()));
+      root.addAttribute(new Attribute(CDM.CONVENTIONS, convAtt));
       root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
       root.addAttribute(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
       root.addAttribute(new Attribute("location", "Proto "+fmrcInv.getName()));
