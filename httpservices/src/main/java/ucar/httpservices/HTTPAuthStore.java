@@ -222,29 +222,7 @@ public class HTTPAuthStore implements Serializable
         if(isdefault) {
             // For back compatibility, check some system properties
             // and add appropriate entries
-            // 1. ESG keystore support
-            String kpath = System.getProperty("keystore");
-            if(kpath != null) {
-                String tpath = System.getProperty("truststore");
-                String kpwd = System.getProperty("keystorepassword");
-                String tpwd = System.getProperty("truststorepassword");
-                kpath = kpath.trim();
-                if(tpath != null) tpath = tpath.trim();
-                if(kpwd != null) kpwd = kpwd.trim();
-                if(tpwd != null) tpwd = tpwd.trim();
-                if(kpath.length() == 0) kpath = null;
-                if(tpath != null && tpath.length() == 0) tpath = null;
-                if(kpwd != null && kpwd.length() == 0) kpwd = null;
-                if(tpwd != null && tpwd.length() == 0) tpwd = null;
-
-                CredentialsProvider creds = new HTTPSSLProvider(kpath, kpwd, tpath, tpwd);
-                try {
-                    AuthScope scope = new AuthScope(ANY_HOST, ANY_PORT, ANY_REALM, HTTPAuthPolicy.SSL);
-                    insert(new Entry(ANY_PRINCIPAL, scope, creds));
-                } catch (HTTPException he) {
-                    log.error("HTTPAuthStore: could not insert default SSL data");
-                }
-            }
+   	    HTTPSession.setGlobalKeyStore();
         }
     }
 
