@@ -37,7 +37,7 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.grid.impl.CoverageCSFactory;
+import ucar.nc2.ft.cover.impl.CoverageCSFactory;
 
 import java.io.File;
 import java.io.IOException;

@@ -150,7 +150,6 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     String dir;
     int scourSecs, maxAgeSecs;
 
-
     // Nj22 disk cache
     dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "/cache/cdm/" ).getPath());
     boolean alwaysUse = ThreddsConfig.getBoolean("DiskCache.alwaysUse", false);

@@ -1,0 +1,61 @@
+option java_package = "ucar.nc2.ft.cover.impl";
+option java_outer_classname = "CoverageProto";
+
+message Attribute {
+  required string name = 1;
+  required uint32 dataType = 2;  // ucar.ma2.DataType ordinal
+  optional bool unsigned = 3 [default = false];
+
+  required uint32 len = 4;
+  optional bytes data = 5; // not needed if len == 0
+  repeated string sdata = 6; // used for string data
+}
+
+message Coverage {
+  required string name = 1; // short name
+  required uint32 dataType = 2; // ucar.ma2.DataType ordinal
+  optional bool unsigned = 3 [default = false];
+  repeated Attribute atts = 4;
+
+  optional uint32 axisType = 10;  // ucar.nc2.constants.AxisType ordinal
+}
+
+message CoordTransform {
+  enum Type {
+    HORIZ = 0;
+    VERT = 1;
+  }
+  required Type type = 1;
+  required string name = 2;
+  repeated Attribute atts = 3;
+}
+
+message CoverageCS {
+  required string name = 1;
+  repeated CoordTransform transforms = 3;
+  repeated Coverage coords = 4;
+}
+
+message CoverageSet {
+  required string name = 1; // short name
+  required CoverageCS cs = 2;
+  repeated Coverage coverages = 3;
+}
+
+message MFile {
+  required string filename = 1;           // reletive to topDir
+  required uint64 lastModified = 2;
+  required uint32 index = 3;             // the records use this number
+  optional uint64 length = 4 [default = 0];
+}
+
+message GridCollection {
+  required string name = 1;         // must be unique - index filename is name.ncx
+  required string topDir = 2;       // MFile, Partition filenames are reletive to this
+  repeated MFile mfiles = 3;
+
+  repeated CoverageSet csets = 4;
+}
+
+//  cd c:/dev/github/thredds/cdm/src/main/java
+//  protoc --proto_path=. --java_out=. ucar/nc2/ft/cover/impl/coverage.proto
