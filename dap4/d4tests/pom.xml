@@ -107,9 +107,7 @@
           <include>**/TestNc4Iosp.java</include>
           <include>**/TestServlet.java</include>
           <include>**/TestServletConstraints.java</include>
-<!-- temporarily disable until jna problem fixed
           <include>**/TestCDMClient.java</include>
--->
           <include>**/TestConstraints.java</include>
           <include>**/TestDSR.java</include>
         </includes>
