@@ -170,12 +170,14 @@ public class SerialWriter
 
         case Opaque:
             ByteBuffer opaquedata = (ByteBuffer) value;
+            int pos = opaquedata.position();
             // the data may be at an offset in the buffer
             int size = opaquedata.remaining(); // should be limit - pos
             buf = ByteBuffer.allocate(size + COUNTSIZE)
                     .order(order);
             buf.putLong(size);
             buf.put(opaquedata);
+            opaquedata.position(pos);
             break;
 
         case Enum: // handled by getPrimitiveType() above
