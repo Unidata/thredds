@@ -87,6 +87,7 @@
     <em><strong>readMetadata</strong></em> element indicates that all the metadata from the referenced dataset will be read in. The
   <em><strong>explicit</strong></em> element indicates that only the metadata explictly declared in the NcML file will be used.  
   <LI>An optional iospParam element. 
+  The NcML inside this element is passed directly to the IOSP. If an <strong>iospParam</strong> attribute is used, the attribute is used instead.
   <LI>The <I><strong>netcdf</strong></I> element may contain any number
     (including 0) of elements <I><strong>group, variable</strong></I>, <I><strong>dimension</strong></I>, <I>or<strong> attribute</strong></I> that can appear
     in any order. If you use readMetadata, you can remove specific elements with the <em><strong>remove</strong></em> element.
@@ -719,7 +720,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <hr WIDTH="100%">
 <p>&nbsp;</p>
 <address>
-  <img src="nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Oct 2014.
+  <img src="nc.gif" width="64" height="64" alt=""> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Mar 2015.
 </address>
 <p>&nbsp;</p>
 </BODY>

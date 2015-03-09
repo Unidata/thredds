@@ -30,14 +30,16 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.catalog.builder;
+package thredds.featurecollection;
 
 import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 import thredds.client.catalog.Catalog;
-import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionAbstract;
+import thredds.util.PathAliasReplacement;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
@@ -55,8 +57,8 @@ public class FeatureCollectionConfigBuilder {
     this.errlog = errlog;
   }
 
-  /* input is xml file with just the <featureCollection>
-  public FeatureCollectionConfig getConfigFromSnippet(String filename) {
+  // input is xml file with just the <featureCollection>
+  public FeatureCollectionConfig readConfigFromFile(String filename) {
 
     org.jdom2.Document doc;
     try {
@@ -67,7 +69,7 @@ public class FeatureCollectionConfigBuilder {
       return null;
     }
 
-    return readFeatureCollection(doc.getRootElement());
+    return readConfig(doc.getRootElement());
   }
 
 
@@ -76,8 +78,8 @@ public class FeatureCollectionConfigBuilder {
    *
    * @param catalogAndPath catalog filename, or catalog#featureName
    * @return FeatureCollectionConfig or null
-   *
-  public FeatureCollectionConfig readFeatureCollection(String catalogAndPath) {
+   */
+  public FeatureCollectionConfig readConfigFromCatalog(String catalogAndPath) {
     String catFilename;
     String fcName = null;
 
@@ -103,7 +105,7 @@ public class FeatureCollectionConfigBuilder {
       List<Element> fcElems = new ArrayList<>();
       findFeatureCollection(doc.getRootElement(), fcName, fcElems);
       if (fcElems.size() > 0)
-        return readFeatureCollection(fcElems.get(0));
+        return readConfig(fcElems.get(0));
 
     } catch (IllegalStateException e) {
       e.printStackTrace();
@@ -124,7 +126,7 @@ public class FeatureCollectionConfigBuilder {
     }
     for (Element child : parent.getChildren("dataset", Catalog.defNS))
       findFeatureCollection(child, name, fcElems);
-  }  */
+  }
 
   public FeatureCollectionConfig readConfig(Element featureCollectionElement) {
     String name = featureCollectionElement.getAttributeValue("name");
@@ -148,7 +150,7 @@ public class FeatureCollectionConfigBuilder {
     collectionName = CollectionAbstract.cleanName(collectionName != null ? collectionName : name);
 
     String spec = collElem.getAttributeValue("spec");
-    // String spec = expandAliasForCollectionSpec(collElem.getAttributeValue("spec")); // LOOK
+      spec = expandAliasForCollectionSpec(spec);
     String timePartition = collElem.getAttributeValue("timePartition");
     String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
     String olderThan = collElem.getAttributeValue("olderThan");
@@ -233,6 +235,19 @@ public class FeatureCollectionConfigBuilder {
     String deleteAfter = updateElem.getAttributeValue("deleteAfter");
 
     return new FeatureCollectionConfig.UpdateConfig(startup, rewrite, recheckAfter, rescan, trigger, deleteAfter);
+  }
+
+  private String expandAliasForCollectionSpec(String location) {
+    if (replace != null) {
+      String result = replace.replaceIfMatch(location);
+      if (result != null) return result;
+    }
+    return location;
+  }
+
+  static private PathAliasReplacement replace;
+  static public void setPathAliasReplacement(PathAliasReplacement _replace) {
+    replace = _replace;
   }
 
 }

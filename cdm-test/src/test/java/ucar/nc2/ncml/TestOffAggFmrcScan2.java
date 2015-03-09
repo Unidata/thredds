@@ -50,7 +50,6 @@ import java.io.IOException;
 
 public class TestOffAggFmrcScan2 {
 
-  // Disable for now - Variable name (time1_bounds) must be unique within Group
   @Ignore("Cant use Fmrc on GRIB")
   @Test
   public void testOpen() throws Exception {
@@ -75,7 +74,7 @@ public class TestOffAggFmrcScan2 {
     ncfile.close();
   }
 
-  //@Ignore("Cant use Fmrc on GRIB")
+  @Ignore("Cant use Fmrc on GRIB")
   @Test
   public void testOpenNomads() throws Exception {
     String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/nomads/";

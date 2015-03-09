@@ -170,6 +170,7 @@ public class NcssController extends AbstractNcssController {
       netcdfResult = gds.getResponseFile(req, res, params, version);
     } catch (Exception e) {
       handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+      return;
     }
 
     // filename download attachment
