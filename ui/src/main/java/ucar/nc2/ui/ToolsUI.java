@@ -5021,8 +5021,6 @@ public class ToolsUI extends JPanel {
       if (bounds.y < 0) bounds.x = 0;
       viewerWindow.setBounds(bounds);
     }
-
-
     boolean process(Object o) {
       String command = (String) o;
       boolean err = false;

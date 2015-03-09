@@ -208,13 +208,10 @@ public class CoverageCSImpl implements CoverageCS {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
-
   @Override
   public Subset getSubset() {
     return new SubsetImpl();
   }
-
-
 
   static class SubsetImpl implements Subset {
     int level = -1;

@@ -46,6 +46,7 @@ import ucar.nc2.dataset.TransformType;
 import ucar.nc2.ft.cover.Coverage;
 import ucar.nc2.ft.cover.CoverageCS;
 import ucar.nc2.ft.cover.CoverageDataset;
+import ucar.nc2.ft.cover.collection.CoverageProto;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
