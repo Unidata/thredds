@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<featureCollection featureType="GRIB1" name="GFS_CONUS_80km" path="gribCollection/GFS_CONUS_80km"
+                   xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">
+
+  <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
+  <update startup="true" trigger="allow"/>
+  <tdm rewrite="test" rescan="0 0/5 * * * ? *" />
+  <gribConfig datasetTypes="Best LatestFile Files"/>
+</featureCollection>

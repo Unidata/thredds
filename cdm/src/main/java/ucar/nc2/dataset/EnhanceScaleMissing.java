@@ -33,7 +33,7 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.Array;
-import ucar.nc2.ft.grid.IsMissingEvaluator;
+import ucar.ma2.IsMissingEvaluator;
 
 import java.io.IOException;
 

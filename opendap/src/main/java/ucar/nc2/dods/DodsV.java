@@ -332,8 +332,10 @@ class DodsV implements Comparable {
   DataType getDataType() {
     if (bt == null)
         throw new IllegalStateException("DodsV.bt  == null");
-    if (bt instanceof DGrid) DODSNetcdfFile.convertToNCType( elemType);
-    return DODSNetcdfFile.convertToNCType( bt);
+    if (bt instanceof DGrid)
+        return DODSNetcdfFile.convertToNCType( elemType);
+    else
+        return DODSNetcdfFile.convertToNCType( bt);
   }
 
   int[] getShape() {

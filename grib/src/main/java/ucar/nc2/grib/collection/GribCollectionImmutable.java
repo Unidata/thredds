@@ -840,6 +840,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public void showIndex(Formatter f) {
     showIndexFile(f);
     f.format("Class (%s)%n", getClass().getName());
+    f.format(" version %d%n", info.version);
     f.format("%s%n%n", toString());
     f.format("%s%n%n", info.toString());
 

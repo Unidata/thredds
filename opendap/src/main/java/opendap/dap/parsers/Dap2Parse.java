@@ -198,6 +198,8 @@ public abstract class Dap2Parse
     datasetbody(Dap2Parse state, Object name, Object decls)
             throws ParseException
     {
+        if(ddsobject == null)
+            throw new ParseException("No DDS object to which it attach decls");
         ddsobject.setEncodedName((String) name);
         for(Object o : (List<Object>) decls) {
             ddsobject.addVariable((BaseType) o);
@@ -215,7 +217,8 @@ public abstract class Dap2Parse
             throws ParseException
     {
         try {
-
+            if(dasobject == null)
+                throw new ParseException("No DAS for attributes");
             for(Object o : (List<Object>) attrlist) {
                 if(o instanceof Attribute) {
                     Attribute a = (Attribute) o;
@@ -232,6 +235,8 @@ public abstract class Dap2Parse
                     throw new Exception("attribute body: unknown object: " + o);
             }
 
+        } catch (ParseException pe) {
+            throw pe;
         } catch (Exception e) {
             throw new ParseException(e);
         }

@@ -50,7 +50,6 @@ import java.io.IOException;
 
 public class TestOffAggFmrcScan2 {
 
-  // Disable for now - Variable name (time1_bounds) must be unique within Group
   @Ignore("Cant use Fmrc on GRIB")
   @Test
   public void testOpen() throws Exception {

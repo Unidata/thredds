@@ -35,14 +35,22 @@
 
 package ucar.nc2.grib.collection;
 
+import com.beust.jcommander.*;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfigBuilder;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
@@ -51,6 +59,8 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
@@ -59,6 +69,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,6 +83,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class GribCdmIndex implements IndexReader {
   static public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
+  static private final Logger classLogger = LoggerFactory.getLogger(GribCdmIndex.class);
+
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -290,7 +304,7 @@ public class GribCdmIndex implements IndexReader {
   // used by Tdm (indirectly by InvDatasetFcGrib)
 
   /**
-   * update all the different Grib Collelction variants collection as needed
+   * update all the different Grib Collection variants collection as needed
    * @return true if the collection was updated
    * @throws IOException
    */
@@ -875,7 +889,7 @@ public class GribCdmIndex implements IndexReader {
     builder.createPartitionedIndex(CollectionUpdateType.nocheck, new Formatter());
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main3(String[] args) throws IOException {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
 
     /*
@@ -909,6 +923,88 @@ public class GribCdmIndex implements IndexReader {
     // boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.test, logger);
     System.out.printf("changed = %s%n", changed);
+  }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private static class CommandLine {
+    @Parameter(names = {"-fc", "--featureCollection"}, description = "Input XML file containing <featureCollection> root element", required = true)
+    public File inputFile;
+
+    @Parameter(names = {"-update", "--CollectionUpdateType"}, description = "Collection Update Type")
+    public CollectionUpdateType updateType = CollectionUpdateType.always;
+
+    @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+    public boolean help = false;
+
+    public class CollectionUpdateTypeConverter implements IStringConverter<CollectionUpdateType> {
+      @Override
+      public CollectionUpdateType convert(String value) {
+        return CollectionUpdateType.valueOf(value);
+      }
+    }
+
+    private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
+      // Display parameters in this order in the usage information.
+      private final List<String> orderedParamNames = Arrays.asList("--featureCollection", "--CollectionUpdateType", "--help");
+
+      @Override
+      public int compare(ParameterDescription p0, ParameterDescription p1) {
+        int index0 = orderedParamNames.indexOf(p0.getLongestName());
+        int index1 = orderedParamNames.indexOf(p1.getLongestName());
+        assert index0 >= 0 : "Unexpected parameter name: " + p0.getLongestName();
+        assert index1 >= 0 : "Unexpected parameter name: " + p1.getLongestName();
+
+        return Integer.compare(index0, index1);
+      }
+    }
+
+    private final JCommander jc;
+
+    public CommandLine(String progName, String[] args) throws ParameterException {
+      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName);           // Displayed in the usage information.
+
+      // Set the ordering of parameters in the usage information.
+      jc.setParameterDescriptionComparator(new ParameterDescriptionComparator());
+    }
+
+    public void printUsage() {
+      jc.usage();
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    String progName = GribCdmIndex.class.getName();
+
+    try {
+      CommandLine cmdLine = new CommandLine(progName, args);
+
+      if (cmdLine.help) {
+        cmdLine.printUsage();
+        return;
+      }
+
+      Formatter errlog = new Formatter();
+      try {
+        FeatureCollectionConfigBuilder reader = new FeatureCollectionConfigBuilder(errlog);
+        String location = cmdLine.inputFile.getAbsolutePath();
+        FeatureCollectionConfig config = reader.readConfigFromFile(location);
+        boolean changed = GribCdmIndex.updateGribCollection(config, cmdLine.updateType, classLogger);
+        System.out.printf("changed = %s%n", changed);
+
+      } catch (Exception e) {
+        System.out.printf("%s = %s %n", e.getClass().getName(), e.getMessage());
+        String err = errlog.toString();
+        if (err.length() > 0)
+          System.out.printf(" errlog=%s%n", err);
+        // e.printStackTrace();
+      }
+
+    } catch (ParameterException e) {
+      System.err.println(e.getMessage());
+      System.err.printf("Try \"%s --help\" for more information.%n", progName);
+    }
   }
 
 }

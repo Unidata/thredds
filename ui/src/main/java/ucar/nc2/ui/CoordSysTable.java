@@ -37,7 +37,7 @@ import ucar.ma2.*;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.grid.impl.CoverageCSFactory;
+import ucar.nc2.ft.cover.impl.CoverageCSFactory;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;

@@ -120,7 +120,7 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 176638 : count.nread;
+    assert count.nread == 172166 : count.nread;
     assert count.nmiss == 5023;
     assert count.nerrs == 0;
   }
@@ -141,8 +141,8 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 37188 : count.nread;
-    assert count.nmiss == 816;
+    assert count.nread == 36216 : count.nread;
+    assert count.nmiss == 771;
     assert count.nerrs == 0;
   }
 
@@ -151,8 +151,8 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx3");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 51838 : count.nread;
-    assert count.nmiss == 1126;
+    assert count.nread == 50864 : count.nread;
+    assert count.nmiss == 1081;
     assert count.nerrs == 0;
   }
 

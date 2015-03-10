@@ -93,6 +93,11 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     this.config = config;
   }
 
+  protected int getVersion() {
+    return Grib1CollectionWriter.version;
+  }
+
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // reading
 

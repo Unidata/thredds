@@ -41,7 +41,7 @@ import ucar.unidata.util.StringUtil2;
 import java.util.*;
 
 /**
- * Beans for FeatureCollection configuration
+ * FeatureCollection configuration
  *
  * @author caron
  * @since Mar 30, 2010
@@ -122,8 +122,7 @@ public class FeatureCollectionConfig {
   }
 
   public boolean isTrigggerOk() {
-    if (updateConfig.triggerOk) return true;
-    return (tdmConfig != null) && tdmConfig.triggerOk;
+    return updateConfig.triggerOk || (tdmConfig != null) && tdmConfig.triggerOk;
   }
 
   @Override

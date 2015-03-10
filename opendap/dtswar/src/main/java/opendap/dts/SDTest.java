@@ -200,16 +200,19 @@ public class SDTest {
             parse_options(args);
 
             System.out.println("...........................................");
-
+            ServerDDS myDDS = null;
             File fin = new File(DDSFile);
-            FileInputStream fp_in = new FileInputStream(fin);
-            DataInputStream dds_source = new DataInputStream(fp_in);
+            try (
+                FileInputStream fp_in = new FileInputStream(fin);
+                DataInputStream dds_source = new DataInputStream(fp_in);
+            ) {
 
-            test_ServerFactory sfactory = new test_ServerFactory();
-            ServerDDS myDDS = new ServerDDS("bogus", sfactory);
+                test_ServerFactory sfactory = new test_ServerFactory();
+                myDDS = new ServerDDS("bogus", sfactory);
 
-            if (Debug) System.out.println("Parsing DDS...");
-            myDDS.parse(dds_source);
+                if(Debug) System.out.println("Parsing DDS...");
+                myDDS.parse(dds_source);
+            } // end try with resource
 
             if (Debug) System.out.println("Printing DDS...");
             myDDS.print(System.out);
@@ -220,15 +223,17 @@ public class SDTest {
             CEEvaluator ce = new CEEvaluator(myDDS);
 
             File fout = new File("a.out");
-            FileOutputStream fp_out = new FileOutputStream(fout);
-            DataOutputStream sink = new DataOutputStream(fp_out);
+            try (
+                FileOutputStream fp_out = new FileOutputStream(fout);
+                DataOutputStream sink = new DataOutputStream(fp_out);
+            ) {
 
-            if (Debug) System.out.println("Parsing Constraint Expression: " + ConstraintExpression);
-            ce.parseConstraint(ConstraintExpression,null);
+                if(Debug) System.out.println("Parsing Constraint Expression: " + ConstraintExpression);
+                ce.parseConstraint(ConstraintExpression, null);
 
-            if (Debug) System.out.println("Attempting to send data...");
-            ce.send(myDDS.getEncodedName(), sink, null);
-
+                if(Debug) System.out.println("Attempting to send data...");
+                ce.send(myDDS.getEncodedName(), sink, null);
+            }
 
 //            print_SDDS(myDDS, true);
             myDDS.printConstrained(System.out);

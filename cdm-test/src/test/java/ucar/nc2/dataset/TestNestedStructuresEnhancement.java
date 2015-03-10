@@ -51,7 +51,7 @@ import java.io.IOException;
  * @author caron
  * @since Jul 5, 2008
  */
-public class TestNestedConvert {
+public class TestNestedStructuresEnhancement {
 
   @Test
   public void testNestedTable() throws IOException, InvalidRangeException {

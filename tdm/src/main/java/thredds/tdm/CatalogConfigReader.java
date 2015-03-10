@@ -8,7 +8,7 @@ import org.springframework.core.io.Resource;
 import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionSpecParser;
-import thredds.server.catalog.builder.FeatureCollectionConfigBuilder;
+import thredds.featurecollection.FeatureCollectionConfigBuilder;
 import thredds.util.AliasHandler;
 
 import java.io.File;

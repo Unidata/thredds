@@ -32,7 +32,6 @@
  */
 package ucar.ma2;
 
-import ucar.nc2.ft.grid.IsMissingEvaluator;
 import ucar.nc2.util.Misc;
 
 /**

@@ -37,7 +37,6 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -50,7 +49,7 @@ public class PathAliasReplacementImpl implements PathAliasReplacement {
   private static boolean debug = false;
 
   public static List<PathAliasReplacement> makePathAliasReplacements(Map<String, String> aliases) {
-    List<PathAliasReplacement> result = new ArrayList<PathAliasReplacement>();
+    List<PathAliasReplacement> result = new ArrayList<>();
 
     for (Map.Entry<String, String> entry : aliases.entrySet()) {
       String value = entry.getValue();

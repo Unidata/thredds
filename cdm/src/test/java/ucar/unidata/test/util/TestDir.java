@@ -1,5 +1,7 @@
 package ucar.unidata.test.util;
 
+import thredds.featurecollection.FeatureCollectionConfigBuilder;
+import thredds.util.PathAliasReplacementFromMap;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
@@ -65,6 +67,11 @@ public class TestDir {
    * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
    */
   public static String cdmLocalTestDataDir = "../cdm/src/test/data/";
+
+  /**
+   * cdm-test data directory (distributed with code but depends on data not in github)
+   */
+  public static String cdmTestDataDir = "../cdm-test/src/test/data/";
 
   /**
    * Temporary data directory (for writing temporary data).
@@ -163,6 +170,9 @@ public class TestDir {
     String d4ts = System.getProperty(dap4TestServerPropName);
     if(d4ts != null && d4ts.length() > 0)
       	dap4TestServer = d4ts;
+
+    PathAliasReplacementFromMap replace = new PathAliasReplacementFromMap("${cdmUnitTest}", cdmUnitTestDir);
+    FeatureCollectionConfigBuilder.setPathAliasReplacement(replace);
   }
 
   static public void showMem(String where) {

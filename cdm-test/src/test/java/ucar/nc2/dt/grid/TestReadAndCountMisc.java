@@ -51,13 +51,13 @@ public class TestReadAndCountMisc {
   @Test
   public void testTestServer() throws Exception {
     TestReadandCount.doOne("thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/",
-            "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
+            "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 40, 9, 11, 7);
   }
 
   @Test
   public void testDevServer() throws Exception {
     TestReadandCount.doOne("thredds:resolve:http://thredds-dev.unidata.ucar.edu/thredds/",
-            "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
+            "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 40, 9, 11, 7);
   }
 
 }

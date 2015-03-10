@@ -308,7 +308,6 @@ public class TestIntervalsTimeCoords2D {
   };
 
   static int[][] bounds4 = {
-          {0, 0},
           {0, 1},
           {0, 2},
           {1, 2},

@@ -63,7 +63,9 @@ public class CollectionPathMatcher extends CollectionAbstract {
     this.config = config;
     this.wantSubdirs = specp.wantSubdirs();
     setRoot(specp.getRootDir());
-    setDateExtractor(config.getDateExtractor());
+    DateExtractor extract = config.getDateExtractor();
+    if (extract != null && !(extract instanceof DateExtractorNone))
+      setDateExtractor(extract);
 
     //if (specp.getFilter() != null)
     //  setStreamFilter(new StreamFilter(specp.getFilter()));

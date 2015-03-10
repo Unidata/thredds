@@ -284,8 +284,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   }
 
   /**
-   * Breakup list of Convention names in teh COnvention attribute in CF compliant way.
-   * @param convAttValue original value of COnvention attribute
+   * Breakup list of Convention names in the Convention attribute in CF compliant way.
+   * @param convAttValue original value of Convention attribute
    * @return  list of Convention names
    */
   static public List<String> breakupConventionNames(String convAttValue) {
@@ -311,6 +311,37 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       }
     }
     return names;
+  }
+
+  /**
+   * Build a list of Conventions
+   * @param mainConv this is the main convention
+   * @param convAtts list of others, onbly use "extra" Conventions
+   * @return comma separated list of Conventions
+   */
+  static public String buildConventionAttribute(String mainConv, String... convAtts) {
+    List<String> result = new ArrayList<>();
+    result.add(mainConv);
+    for (String convs : convAtts) {
+      if (convs == null) continue;
+      List<String> ss = breakupConventionNames(convs); // may be a list
+      for (String s : ss) {
+        if (matchConvention(s) == null)  // only add extra ones, not ones that compete with mainConv
+          result.add(s);
+      }
+    }
+
+    // now form comma separated result
+    boolean start = true;
+    Formatter f = new Formatter();
+    for (String s : result) {
+      if (start)
+        f.format("%s", s);
+      else
+        f.format(", %s", s);
+      start = false;
+    }
+    return f.toString();
   }
 
   /**

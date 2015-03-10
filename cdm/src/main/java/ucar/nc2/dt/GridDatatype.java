@@ -36,7 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.ft.grid.IsMissingEvaluator;
+import ucar.ma2.IsMissingEvaluator;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.LatLonRect;
 

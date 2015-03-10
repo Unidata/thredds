@@ -60,6 +60,7 @@
         <li><a href="#log4jAppender">log4j:ERROR Attempted to append to closed appender named [foobar]</a></li>
         <li><a href="#javaUtilPrefs">Couldn't flush system prefs: java.util.prefs.BackingStoreException:
             /etc/.java/.systemPrefs/org create failed</a></li>
+        <li><a href="#SizeLimitExceededException">FAIL - Deploy Upload Failed: the request was rejected because its size (xxx) exceeds the configured maximum (yyy)</a></li>
     </ul>
   </li>
 </ul>
@@ -527,6 +528,18 @@ Jul 11, 2011 2:22:12 PM org.apache.catalina.core.StandardContext start SEVERE: C
   <p>The log4j.xml file has 2 loggers with the same name, that uses the appender &quot;foobar&quot;. You must delete one
     of the loggers.</p>
 </blockquote>
+<hr width="50%" align="left">
+<p><strong>Q: <a name="SizeLimitExceededException" id="SizeLimitExceededException"></a>What does this error mean: &quot;FAIL - Deploy Upload Failed, Exception: org.apache.tomcat.util.http.fileupload.FileUploadBase$SizeLimitExceededException: the request was rejected because its size (xxx) exceeds the configured maximum (yyy)&quot; ?</strong></p>
+  <blockquote>
+    <p>You are using the Tomcat Manager, which limits the size of the thredds.war file that can be uploaded. You can install the war file directly into the tomcat webapps directory, or you can change the manager configuration:</p>
+    <pre>cd ${tomcat}/webapps/manager/WEB-INF/
+vi web.xml
+
+change  &lt;max-file-size&gt; and  &lt;max-request-size&gt; to be larger than xxx.
+
+you must restart tomcat for this to take effect.
+  </pre>
+  </blockquote>
 
 <hr>
 <h2>Tomcat</h2>

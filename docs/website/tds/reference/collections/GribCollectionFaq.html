@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>GRIB Feature Collections FAQ</title>
+  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<h1>GRIB Feature Collections FAQ</h1>
+<hr/>
+<p><strong>Q: How do I control where the index files are written?</strong></p>
+<blockquote>
+  <p>In <strong>${tomcat}/content/thredds/threddsConfig.xml</strong>, add or change the <strong>&lt;GribIndex&gt;</strong> element:</p>
+<pre>
+&lt;GribIndex&gt;
+  &lt;alwaysUse&gt;true&lt;/alwaysUse&gt;
+  &lt;dir&gt;/my/directory/&lt;/dir&gt;
+&lt;/GribIndex&gt;
+</pre>
+  <p>This will make all indices be written to <strong>/my/directory/</strong>. <a href="http://www.unidata.ucar.edu/software/thredds/v4.6/tds/reference/ThreddsConfigXMLFile.html#GribIndexWriting">Details</a>. </p>
+  <p>To do it from your Java program:</p>
+  <pre> // place cdm indices somewhere other than default
+ GribIndexCache.setDiskCache2(DiskCache2 dc); 
+
+ // optional object caching for performance
+ ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
+ GribCdmIndex.initDefaultCollectionCache(100, 200, -1);</pre>
+</blockquote>
+<hr/>
+<p><strong>Q: How do I control  the way the collection is divided up?</strong></p>
+<blockquote>
+  <p>By default, the collection will be time partitioned by directory. To change this, add a <strong>timePartition</strong> attribute on the <strong>collection</strong> element:</p>
+  <pre>  &lt;featureCollection name=&quot;NCEP GFS model&quot; featureType=&quot;GRIB1&quot; path=&quot;test/all&quot;&gt;<br />    &lt;metadata inherited=&quot;true&quot;&gt;<br />      &lt;serviceName&gt;all&lt;/serviceName&gt;<br />      &lt;dataFormat&gt;GRIB-1&lt;/<u></u>dataFormat&gt;<br />    &lt;/metadata&gt;<br />    &lt;collection name=&quot;gfs&quot; spec=&quot;/data/GFS/**/.*\<u></u>.grb$&quot; timePartition=&quot;file&quot;/&gt;<br />  &lt;/featureCollection&gt;</pre>
+  <p>The possible values are:</p>
+  <ol>
+    <li><strong>none:</strong> all files are scanned in and a single collection level index is built.</li>
+    <li><strong>directory:</strong> each directory is a time partition<strong>. </strong></li>
+    <li><strong>file: </strong>each file is a time partition.</li>
+    <li>&lt;time unit&gt;: the files are divided into partitions based on the given time unit.  </li>
+  </ol>
+  <p>There are a number of requirements that you must understand for each type. <a href="Partitions.html">Details</a>. </p>
+</blockquote>
+<hr/>
+<p><strong>Q: Can I use NcML inside the featureCollection?</strong></p>
+<blockquote>
+  <p>Not currently, please send us your use cases so we can evaluate  feasibility.</p>
+</blockquote>
+<hr />
+<p>&nbsp;</p>
+<hr width="100%"/>
+<address>
+  <img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Mar 2015
+</address>
+</body>
+</html>

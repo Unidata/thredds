@@ -168,6 +168,7 @@ public class TestGrib1CoordsMatch {
   public void testRdavmDs083p2() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp.ncx3";
     File fileInCache = GribIndexCache.getExistingFileOrCache(filename);
+    assert fileInCache != null;
     TestGribCollections.Count count = read( fileInCache.getPath());
 
     // that took 63 secs total, 1.471143 msecs per record total == 4624/33718/43248

@@ -36,6 +36,7 @@
   <li><a href="PointFeatures.html">Point Collections</a></li>
   <li><a href="GribCollections.html">GRIB Collections</a> </li>
   <li><a href="GribConfig.html">GRIB specific configuration</a></li>
+  <li><a href="GribCollectionFaq.html">GRIB Collection FAQs</a></li>
 </ul>
 <p>Also see:</p>
 <ul>
@@ -47,16 +48,16 @@
 that can be used inside of a <strong>dataset</strong> element can be used inside of a <strong>featureCollection</strong> element.</p>
 
 <h4>Example 1: Simple case using defaults:</h4>
-<pre>1) &lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;GRIB2&quot; path=&quot;grib/NCEP/NAM/Polar_90km&quot;&gt;
-2)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_.*\.grib2$&quot;/&gt;
+<pre>1) &lt;featureCollection name=&quot;NCEP Polar Sterographic&quot; featureType=&quot;GRIB2&quot; path=&quot;grib/NCEP/NAM/Polar_90km&quot;&gt;
+2)   &lt;collection name=&quot;NCEP-NAM-Polar_90km&quot; spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_.*\.grib2$&quot;/&gt;
    &lt;/featureCollection&gt;
 </pre>
 <ol>
-  <li>A GRIB2 Feature Collection dataset is defined, with the &quot;human readable&quot; name of  <em>NCEP-NAM-Polar_90km</em>. Its URL path(s) will look like <em>http://server/thredds/&lt;service&gt;/grib/NCEP/NAM/Polar_90km/...</em> The Dataset ID is automatically set to the path, so that its dataset page will be <em>http://server/thredds/catalog/grib/NCEP/NAM/Polar_90km/catalog.xml?dataset=grib/NCEP/NAM/Polar_90km</em>/...</li>
-  <li>Defines the files in the collection as any files in the directory <em>/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/</em> which match the  regular expression <em>&quot;NAM_Polar_90km_.*\.grib2$</em>&quot; . In this case, it means any filename starting with <em>&quot;NAM_Polar_90km_&quot;</em> and ending with &quot;<em>.grib2</em>&quot;. </li>
+  <li>A GRIB2 Feature Collection dataset is defined, with the &quot;human readable&quot; name of &quot;NCEP Polar Sterographic&quot;. Its URL path(s) will look like <em>http://server/thredds/&lt;service&gt;/grib/NCEP/NAM/Polar_90km/...</em> The Dataset ID is automatically set to the path, so that its dataset page will be <em>http://server/thredds/catalog/grib/NCEP/NAM/Polar_90km/catalog.xml?dataset=grib/NCEP/NAM/Polar_90km</em>/...</li>
+  <li>Defines the files in the collection as any files in the directory <em>/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/</em> which match the  regular expression <em>&quot;NAM_Polar_90km_.*\.grib2$</em>&quot; . In this case, it means any filename starting with <em>&quot;NAM_Polar_90km_&quot;</em> and ending with &quot;<em>.grib2</em>&quot;. The collection name is &quot;NCEP-NAM-Polar_90km&quot;, which is used for index file names etc.</li>
 </ol>
 <h4>Example 2: More fully specify the options explicitly:</h4>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB2&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
+<pre>&lt;featureCollection name=&quot;NCEP NAM Alaska(11km)&quot; featureType=&quot;GRIB2&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
   &lt;metadata inherited=&quot;true&quot;&gt;<br />1)  &lt;serviceName&gt;GribServices&lt;/serviceName&gt;
 2)  &lt;documentation type=&quot;summary&quot;&gt;NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid&lt;/documentation&gt;<br />  &lt;/metadata&gt;
 
@@ -100,7 +101,7 @@ Here is an example
     &lt;keyword&gt;surface observations&lt;/keyword&gt;
    &lt;/metadata&gt;
  
-3) &lt;collection spec=&quot;/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$&quot; /&gt;
+3) &lt;collection name=&quot;metars&quot; spec=&quot;/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$&quot; /&gt;
 4) &lt;update startup=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot;/&gt;
 5) &lt;protoDataset choice=&quot;Penultimate&quot; /&gt;
 6) &lt;pointConfig datasetTypes=&quot;cdmrFeature Files&quot;/&gt;
@@ -167,8 +168,8 @@ The XML Schema for the <em>collection</em> element:
 </ol>
 <h3>Date Extractor<a name="dateExtractor" id="dateExtractor"></a></h3>
 
-<p>Feature Collections need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a
-  date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
+<p>Feature Collections sometimes need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a
+  date extractor in the specification string or include a dateFormatMark attribute, if a lexical sort  by filename will not give a correct date sort.</p>
 
 <p>1. If the date is in the filename only, you can use the <a href="CollectionSpecification.html">collection specification</a> string, aka a <strong><em>spec</em></strong>:</p>
 <blockquote>
