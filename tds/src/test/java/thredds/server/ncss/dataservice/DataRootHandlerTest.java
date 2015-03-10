@@ -3,6 +3,7 @@ package thredds.server.ncss.dataservice;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -11,11 +12,13 @@ import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.controller.AbstractNcssController;
 import thredds.servlet.DataRootHandler;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.List;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"}, loader=MockTdsContextLoader.class)
+@Category(NeedsCdmUnitTest.class)
 public class DataRootHandlerTest {
 
   @SpringJUnit4ParameterizedClassRunner.Parameters

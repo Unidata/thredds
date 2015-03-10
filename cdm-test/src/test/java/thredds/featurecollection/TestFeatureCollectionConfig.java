@@ -4,11 +4,13 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import thredds.inventory.filter.WildcardMatchOnName;
 import ucar.nc2.time.CalendarDate;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -97,6 +99,7 @@ public class TestFeatureCollectionConfig {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testFeatureCollectionReader() throws IOException, JDOMException {
     File configFile = new File(TestDir.cdmUnitTestDir+"tds/config/fnmoc.xml");
     org.jdom2.Document doc;

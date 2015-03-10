@@ -21,10 +21,6 @@ dependencies {
 }
 
 test {
-    // Re-enable test task for this subproject.
-    // It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
-    setEnabled true
-
     // Causes JUnit to throw an exception: "No tests found in ucar.nc2.util.UnitTestCommon"
     exclude 'ucar/nc2/util/UnitTestCommon.class'
 }
@@ -99,7 +95,13 @@ task testJar(type: Jar, dependsOn: testClasses,
     from sourceSets.test.output.getAsFileTree().matching {
         include 'ucar/nc2/TestLocal.class'
         include 'ucar/nc2/util/UnitTestCommon.class'
+
+        // All 3 of these are included in the same source file: ucar/unidata/test/Diff.java
+        // Also, 2 of the class names aren't capitalized. Ugh.
         include 'ucar/unidata/test/Diff.class'
+        include 'ucar/unidata/test/fileInfo.class'
+        include 'ucar/unidata/test/node.class'
+
         include 'ucar/unidata/test/ma2/TestMa2Utils.class'
         include 'ucar/unidata/test/ma2/TestStructureArray.class'
         include 'ucar/unidata/test/util/CompareNetcdf.class'

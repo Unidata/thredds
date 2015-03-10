@@ -37,6 +37,7 @@ package thredds.server.ncss.controller.point;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -54,6 +55,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.exception.FeaturesNotFoundException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.util.ContentType;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import static org.junit.Assert.assertTrue;
 
@@ -66,6 +68,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestStationFCController {
 
   @Autowired

@@ -10,7 +10,6 @@ dependencies {
     testCompile project(":httpservices")
     testRuntime project(":opendap")
     testRuntime project(":visad")
-    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     testRuntime libraries["jaxen"]
     testCompile libraries["jdom2"]
@@ -65,8 +64,6 @@ gretty {
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test) {
-    setEnabled true
-
     include 'thredds/server/catalog/TestTdsLocal.class'
     include 'thredds/TestEncoding.class'
 

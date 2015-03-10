@@ -34,13 +34,11 @@ package ucar.nc2.grib.grib2;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+
 import java.io.IOException;
 
-@Category(NeedsCdmUnitTest.class)
 public class TestDataTemplate {
     // Tests reading data using template 5.41
     @Test

@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -67,6 +68,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 /**
  * @author marcos
@@ -75,6 +77,7 @@ import ucar.unidata.geoloc.LatLonRect;
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@Category(NeedsCdmUnitTest.class)
 public class SpatialSubsettingTest {
 
 	@Autowired

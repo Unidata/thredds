@@ -34,6 +34,7 @@ package thredds.inventory;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -42,12 +43,11 @@ import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Formatter;
 import java.util.List;
 
@@ -60,6 +60,7 @@ import java.util.List;
 public class TestDcm {
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testScan() throws IOException {
     // count scanned files
     Formatter f = new Formatter(System.out);

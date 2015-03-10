@@ -1,6 +1,7 @@
 package thredds.metadata;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDatasetImpl;
@@ -11,6 +12,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.thredds.MetadataExtractorAcdd;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateRange;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -26,6 +28,7 @@ import static org.junit.Assert.assertEquals;
  * @author caron
  * @since 11/1/13
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestMetadataExtractor {
 
   @Test

@@ -13,15 +13,4 @@ dependencies {
     compile libraries["bzip2"]
     compile libraries["guava"]
     compile libraries["slf4j-api"]
-    testCompile project(path: ':cdm', configuration: 'testArtifacts')
-}
-
-// Re-enable test task for this subproject.
-// It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
-test.setEnabled true
-
-test.outputs.upToDateWhen { false }  // Tests weren't being run when I changed included/excluded categories.
-
-test.useJUnit {
-    excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
 }

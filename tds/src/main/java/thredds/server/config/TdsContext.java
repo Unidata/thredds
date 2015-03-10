@@ -53,7 +53,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetScan;
 import thredds.inventory.CollectionUpdater;
@@ -68,11 +67,9 @@ import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -344,9 +341,10 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       this.contentDirSource = new BasicDescendantFileSource(StringUtils.cleanPath(this.contentDirectory.getAbsolutePath()));
       this.contentDirectory = this.contentDirSource.getRootDirectory();
     } else {
-      String tmpMsg = "Content directory not a directory";
-      logServerStartup.error("TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]");
-      throw new IllegalStateException(tmpMsg);
+      String message = String.format(
+              "TdsContext.init(): Content directory is not a directory: %s", this.contentDirectory.getAbsolutePath());
+      logServerStartup.error(message);
+      throw new IllegalStateException(message);
     }
     ServletUtil.setContentPath(this.contentDirSource.getRootDirectoryPath());
 

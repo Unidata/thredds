@@ -57,7 +57,7 @@ import ucar.nc2.time.CalendarPeriod;
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class DefaultDateRangeTests {
+public class DefaultDateRangeTest {
 
 	private NcssParamsBean requestParams;
 	
@@ -84,7 +84,8 @@ public class DefaultDateRangeTests {
 		});
 	}
 	
-	public DefaultDateRangeTests(long expectedDuration, String time, String time_start, String time_end, String time_duration){
+	public DefaultDateRangeTest(long expectedDuration, String time, String time_start, String time_end, String
+          time_duration){
 		durationInSeconds = expectedDuration;
 		requestParams = new NcssParamsBean();
 		requestParams.setTime(time);

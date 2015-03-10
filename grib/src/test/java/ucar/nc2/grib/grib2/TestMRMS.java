@@ -40,7 +40,6 @@ import ucar.nc2.Variable;
 
 import java.io.IOException;
 
-
 public class TestMRMS {
     static final String testfile = "../grib/src/test/data/MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2.gz";
 

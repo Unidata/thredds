@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -14,9 +15,11 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.dt.GridDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"}, loader=MockTdsContextLoader.class)
+@Category(NeedsCdmUnitTest.class)
 public class DatasetHandlerAdapterTest {
 
 	private String pathInfo;

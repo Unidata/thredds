@@ -31,13 +31,10 @@
  */
 package thredds.server.ncss.controller.grid;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -46,11 +43,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.exception.RequestTooLargeException;
 import thredds.server.ncss.params.NcssParamsBean;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author mhermida
@@ -58,7 +59,8 @@ import thredds.server.ncss.params.NcssParamsBean;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class GridRequestExceptionTest2 {
+@Category(NeedsCdmUnitTest.class)
+public class GridRequestException2Test {
 
 	@Autowired
 	private NcssController featureDatasetController;
