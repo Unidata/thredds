@@ -42,104 +42,66 @@
   <li>Collections in the millions of records are now feasible. Java 7 NIO2 package is used to efficiently scan directories. </li>
 </ul>
 <h3>Version 4.6</h3>
-<p>The GRIB Collections framework has been  rewritten in CDM version 4.6, in order to handle large collections efficiently. Oh wait we already did that in 4.5. Sorry, it wasnt  good enough.</p>
+<p>The GRIB Collections framework has been  rewritten in CDM version 4.6, in order to handle very large collections efficiently. Oh wait we already did that in 4.5. Sorry, it wasnt  good enough.</p>
 <ul>
   <li>Collection index files now use the suffix <strong>ncx3</strong>. These will be rewritten first time you access the files. The <strong>gbx9</strong> files do NOT need to be rewritten, which is good because those are the slow ones.</li>
-  <li>TimePartition can now be set to <strong>directory</strong> (default), <strong>file, timePeriod </strong>or<strong> none</strong>. Details <a href="Partitions.html">here</a>.</li>
+  <li>TimePartition can now be set to <strong>directory</strong> (default), <strong>file, </strong>a time period<strong>, </strong>or<strong> none</strong>. Details <a href="Partitions.html">here</a>.</li>
   <li>Multiple reference times are handled more efficiently, eg only one index file typically needs to be written.</li>
-  <li>How do you set the disk cache for GRIB collections in 4.6?</li>
-  <pre> // place cdm indices somewhere other than default
- GribIndexCache.setDiskCache2(DiskCache2 dc); 
-
- // optional object caching for performance
- ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
- GribCdmIndex.initDefaultCollectionCache(100, 200, -1);</pre>
   <li>DefaultServices. One can use the service name &quot;DefaultServices&quot; to use the default services for that Feature Type. (IN PROGRESS)
     <ul>
       <li> If you dont specify the service name, DefaultServices is used as the default.</li>
       <li>DefaultServices use all  enabled services appropriate to that <a href="../../../netcdf-java/reference/FeatureDatasets/Overview.html">Feature Type</a>.</li>
     </ul>
   </li>
-  <li>Global attributes promoted to dataset properties in the catalog
+  <li>Global attributes promoted to dataset properties in the catalog</li>
+  <li>Internal changes:
     <ul>
-      <li></li>
+    <li>Internal memory use has been reduced.</li>
+    <li>Runtime objects are now immutable, which makes caching possible.</li>
+    <li>RandomAccessFiles are kept in a seperate pool, so they can be ccached independent of the Collection objects.</li>
     </ul>
   </li>
 </ul>
-<p>For background, please read:</p>
+<p>Also see:</p>
 <ul>
   <li><a href="FeatureCollections.html">Feature Collection</a> overview</li>
-  <li><a href="../../../netcdf-java/reference/formats/GribFiles.html">CDM GRIB Collection Processing</a></li>
   <li><a href="GribConfig.html">GRIB specific configuration</a></li>
+  <li><a href="GribCollectionFaq.html">GRIB Collection FAQs</a></li>
+  <li><a href="../../../netcdf-java/reference/formats/GribFiles.html">CDM GRIB Collection Processing</a></li>
 </ul>
 <hr/>
-<h2>Example 1:</h2>
-<pre>1) &lt;featureCollection name=&quot;GFS-Puerto_Rico_191km&quot; featureType=&quot;GRIB1&quot; path=&quot;fmrc/NCEP/GFS/Puerto_Rico_191km&quot;&gt;
-2)   &lt;metadata inherited=&quot;true&quot;&gt;
-3)     &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
-       &lt;documentation type=&quot;summary&quot;&gt;NCEP GFS Model : AWIPS 205 (L) Grid. National - Puerto Rico (polar stereographic).
-         Model runs are made at 0Z, with analysis and forecasts every 12 hours out 10 days.
-       &lt;/documentation&gt;
-     &lt;/metadata&gt;
-4)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$&quot;&gt;
-5)   &lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt;
-6)   &lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
-7)   &lt;gribConfig datasetTypes=&quot;TwoD Latest Best&quot; /&gt;
-   &lt;/featureCollection&gt;</pre>
+<h2>Example 1 (timePartition=&quot;none&quot;):</h2>
+<pre>1)&lt;featureCollection&#32;featureType=&quot;GRIB1&quot;&#32;name=&quot;rdavm&#32;partition none&quot;&#32;path=&quot;gribCollection/none&quot;&gt;<br />2)&#32;&lt;metadata&#32;inherited=&quot;true&quot;&gt;<br />3)&#32;&#32;&lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;  &lt;!--not used --&gt;
+    &lt;serviceName&gt;all&lt;/serviceName&gt;<br />&#32;&#32;&#32;&#32;&lt;dataType&gt;Grid&lt;/dataType&gt;<br />&#32;&#32; &lt;/metadata&gt;<br /><br />4)&#32;&lt;collection&#32;name=&quot;ds083.2-none&quot;&#32;
+5)		spec=&quot;Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1&quot;&#32;
+6)		timePartition=&quot;none&quot;/&gt;
+<br />7)   &lt;update startup=&quot;never&quot; trigger=&quot;allow&quot;/&gt; 
+8)   &lt;tdm rewrite=&quot;test&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;<br />9)   &lt;gribConfig datasetTypes=&quot;TwoD Latest Best&quot; /&gt;<br />&lt;/featureCollection&gt;</pre>
 <ol>
-  <li>A featureCollection must have a <em>name, a featureType</em> and a <em>path</em> (do <strong>not</strong> set an <em>ID</em> attribute<em>)</em>. It's best to make the name short but descriptive, and it must be unique across all collections on your TDS.
-  Note that the <strong>featureType</strong> attribute must now equal <em>GRIB1</em> or <em>GRIB2</em>, not plain <em>GRIB</em>.</li>
-  <li>A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
-  <li>The collection must consist of either GRIB-1 or GRIB-2 files. You no longer need set the dataFormat element to indicate which, as it is specified in the featureType, and will be added automatically.</li>
-  <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset.</li>
-  <li>This <em>update</em> element tells the TDS to use the existing indices, and to rrread them only when an external trigger is sent. This is the default behavior as of 4.5.4.</li>
-  <li><a href="GribConfig.html"></a>The collection of files change, and this <em>tdm</em> element tells the TDM to test every 15 minutes if the collection has changed, and to rewrite the indices and and send a trigger to the TDS when it has changed.</li>
+  <li>A <strong>featureCollection</strong> must have a <em>name, a featureType</em> and a <em>path</em> (do <strong>not</strong> set an <em>ID</em> attribute<em>)</em>. Note that the <strong>featureType</strong> attribute must now equal <em>GRIB1</em> or <em>GRIB2</em>, not plain <em>GRIB</em>.</li>
+  <li>A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default <strong>service</strong>.</li>
+  <li>The collection must consist of either GRIB-1 or GRIB-2 files (not both). You no longer should set the <strong>dataFormat</strong> element to indicate which, as it is specified in the featureType, and will be added automatically.</li>
+  <li>The collection <strong>name</strong> should be short but descriptive,  it must be unique across all collections on your TDS, and should not change.</li>
+  <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset. </li>
+  <li>The <a href="Partitions.html">partitionType</a> is <strong>none</strong>.</li>
+  <li>This <strong>update</strong> element tells the TDS to use the existing indices, and to read them only when an external trigger is sent. This is the default behavior as of 4.5.4.</li>
+  <li>This <strong>tdm</strong> element tells the <a href="TDM.html">TDM</a> to test every 15 minutes if the collection has changed, and to rewrite the indices and and send a trigger to the TDS when it has changed.</li>
   <li><a href="GribConfig.html">GRIB specific configuration</a>. </li>
 </ol>
 <h3>Resulting Datasets:</h3>
 
-<p>The above example generates one collection dataset, and one dataset for each reference time in the collection, which become nested datasets in the
-  catalog:</p>
-<pre>&lt;dataset name=&quot;GFS-Puerto_Rico_191km&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt;
-   &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_191km/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
-&lt;/dataset&gt;
-</pre>
-or, simplifying:
-<pre>1) &lt;dataset name=&quot;GFS-Puerto_Rico_191km&quot;  urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt; 
-2)   &lt;dataset name=&quot;GFS_Puerto_Rico_191km_20111122_0000.grib1&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/files/GFS_Puerto_Rico_191km_20111122_0000.grib1&quot;/&gt;
-     &lt;dataset name=&quot;GFS_Puerto_Rico_191km_20111121_0000.grib1&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/files/GFS_Puerto_Rico_191km_20111121_0000.grib1&quot;/&gt;
-      ...
-  &lt;/dataset&gt;</pre>
-<ol>
-  <li>The collection dataset</li>
-  <li>The individual reference times in the collection. In this case each file contains a single reference time, so these are synonomous with the files. We strongly recommend that practice where possible.</li>
-</ol>
-<p>So the datasets that are generated from a Grib Collection with <strong>name</strong> and <strong>path</strong> :</p>
-<table width="546" border="1">
-  <tr>
-    <th width="129" scope="col">dataset</th>
-    <th width="105" scope="col">catalogRef</th>
-    <th width="105" scope="col">name</th>
-    <th width="179" scope="col">path</th>
-  </tr>
-  <tr>
-    <td>collection</td>
-    <td>&nbsp;</td>
-    <td>name</td>
-    <td>path/<em>collection</em></td>
-  </tr>
-  <tr>
-    <td>individual files</td>
-    <td>path/<em>files/catalog.xml</em></td>
-    <td>filename</td>
-    <td>path/<em>files</em>/filename</td>
-  </tr>
-</table>
+<p>The above example generates a TwoD and Best  dataset for the entire collection, a reference to the latest datset, as well as one dataset for each reference time in the collection, which become nested datasets in the
+  catalog. These datsets are named by their index files, in the form <strong>&lt;collection-name&gt;.&lt;referenceTime&gt;.ncx3</strong>, eg GFS-Puerto_Rico-20141110-000000.ncx3</p>
+<p>The simplified catalog is:</p>
+<pre>  &lt;dataset name=&quot;NCEP GFS Puerto_Rico (191km)&quot;&gt;<br />    &lt;metadata inherited=&quot;true&quot;&gt;<br />      &lt;serviceName&gt;VirtualServices&lt;/serviceName&gt;<br />      &lt;dataType&gt;GRID&lt;/dataType&gt;<br />      &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br />    &lt;/metadata&gt;<br />    &lt;dataset name=&quot;Full Collection (Reference / Forecast Time) Dataset&quot; ID=&quot;fmrc/NCEP/GFS/Puerto_Rico/TwoD&quot; urlPath=&quot;fmrc/NCEP/GFS/Puerto_Rico/TwoD&quot;&gt;<br />      &lt;documentation type=&quot;summary&quot;&gt;Two time dimensions: reference and forecast; full access to all GRIB records&lt;/documentation&gt;<br />    &lt;/dataset&gt;<br />    &lt;dataset name=&quot;Best NCEP GFS Puerto_Rico (191km) Time Series&quot; ID=&quot;fmrc/NCEP/GFS/Puerto_Rico/Best&quot; urlPath=&quot;fmrc/NCEP/GFS/Puerto_Rico/Best&quot;&gt;<br />      &lt;documentation type=&quot;summary&quot;&gt;Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time&lt;/documentation&gt;<br />    &lt;/dataset&gt;<br />    &lt;dataset name=&quot;Latest Collection for NCEP GFS Puerto_Rico (191km)&quot; urlPath=&quot;latest.xml&quot;&gt;<br />      &lt;serviceName&gt;latest&lt;/serviceName&gt;<br />    &lt;/dataset&gt;<br />    &lt;catalogRef xlink:href=&quot;/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-000000.ncx3/catalog.xml&quot; /&gt;<br />    &lt;catalogRef xlink:href=&quot;/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-060000.ncx3/catalog.xml&quot; /&gt;<br />    &lt;catalogRef xlink:href=&quot;/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-120000.ncx3/catalog.xml&quot; /&gt;<br />  &lt;/dataset&gt;<br /></pre>
+<p>The catalogRefs are links to virtual datasets, formed from the collection of records for the specified reference time, and independent of which file stores them.</p>
 <hr/>
-<h2>Example 2 (Time Partition):</h2>
+<h2>Example 2 (timePartition=&quot;directory&quot;):</h2>
 
-<p>For  large datasets, use a time partition for efficiency. Example:</p>
-<pre>&lt;featureCollection name=&quot;NAM-Polar90&quot; featureType=&quot;GRIB&quot; path=&quot;grib/NCEP/NAM/Polar90&quot;&gt;
+<p>Now suppose that we modify the above example and use timePartition=&quot;directory&quot;:</p>
+<pre>&lt;featureCollection&#32;featureType=&quot;GRIB1&quot;&#32;name=&quot;rdavm&#32;partition&#32;directory&quot;&#32;path=&quot;gribCollection/pofp&quot;&gt;<br />&#32;&#32;&lt;metadata&#32;inherited=&quot;true&quot;&gt;<br />&#32;&#32;&#32;&#32;&lt;serviceName&gt;all&lt;/serviceName&gt;<br />&#32;&#32;&#32;&#32;&lt;dataType&gt;Grid&lt;/dataType&gt;<br />&#32;&#32;&lt;/metadata&gt;<br /><br />&#32;&#32;&lt;collection&#32;name=&quot;ds083.2-directory&quot;&#32;spec=&quot;Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1&quot;&#32;timePartition=&quot;directory&quot;/&gt;<br />&#32;&#32;&lt;update&#32;startup=&quot;test&quot;&#32;/&gt;<br />&#32;&#32;&lt;gribConfig&#32;datasetTypes=&quot;TwoD&#32;Latest&#32;Best&quot;&#32;/&gt;<br />&lt;/featureCollection&gt;
+
+&lt;featureCollection name=&quot;NAM-Polar90&quot; featureType=&quot;GRIB&quot; path=&quot;grib/NCEP/NAM/Polar90&quot;&gt;
    &lt;metadata inherited=&quot;true&quot;&gt;
      &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
    &lt;/metadata&gt;

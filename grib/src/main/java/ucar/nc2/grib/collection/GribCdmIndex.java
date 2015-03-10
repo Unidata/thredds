@@ -304,7 +304,7 @@ public class GribCdmIndex implements IndexReader {
   // used by Tdm (indirectly by InvDatasetFcGrib)
 
   /**
-   * update all the different Grib Collelction variants collection as needed
+   * update all the different Grib Collection variants collection as needed
    * @return true if the collection was updated
    * @throws IOException
    */
