@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<featureCollection xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+                   name="GSD HRRR CONUS 3km surface" featureType="GRIB2" harvest="true" path="grib/HRRR/CONUS_3km/surface">
+
+  <collection name="GSD_HRRR_CONUS_3km_surface"
+              spec="${cdmUnitTest}/gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2"
+              timePartition="file"
+              dateFormatMark="#HRRR_CONUS_3km_surface_#yyyyMMddHHmm"
+              olderThan="5 min"/>
+
+  <tdm rewrite="test" rescan="0 0/15 * * * ? *"/>
+  <gribConfig>
+    <option name="timeUnit" value="1 minute" />
+  </gribConfig>
+</featureCollection>
