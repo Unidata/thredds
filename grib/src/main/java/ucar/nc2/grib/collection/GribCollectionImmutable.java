@@ -48,7 +48,6 @@ import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1Variable;
-import ucar.nc2.grib.grib2.Grib2Variable;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -771,25 +770,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   ///////////////
 
-  public void showStatus(Formatter f, boolean summaryOnly) {
-    if (summaryOnly) {
-      Dataset ds = getDatasetCanonical();
-      if (ds == null) return;
-      for (GroupGC g : ds.groups) {
-        int nrecords = 0, ndups = 0, nmissing = 0;
-        for (VariableIndex v : g.variList) {
-          nrecords += v.nrecords;
-          ndups += v.ndups;
-          nmissing += v.nmissing;
-        }
-        f.format(" Group %s total nrecords=%d", g.getDescription(), nrecords);
-        if (nrecords == 0) nrecords = 1;
-        f.format(", ndups=%d (%f)", ndups, ((float)ndups/nrecords));
-        f.format(", nmiss=%d (%f)%n", nmissing, ((float)nmissing/nrecords));
-      }
-      return;
-    }
-
+  public void showStatus(Formatter f) {
     showIndexFile(f);
     f.format("Class (%s)%n", getClass().getName());
     f.format("%s%n%n", info.toString());
@@ -822,6 +803,38 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         f.format("  %d: %s%n", index, fileMap.get(index));
       f.format("%n");
     }
+  }
+
+  public void showStatusSummary(Formatter f, String type) {
+    Dataset ds = getDatasetCanonical();
+    if (ds == null) return;
+
+    if (type.equalsIgnoreCase("csv")) {
+      for (GroupGC g : ds.groups) {
+        int nrecords = 0, ndups = 0, nmissing = 0;
+        for (VariableIndex v : g.variList) {
+          nrecords += v.nrecords;
+          ndups += v.ndups;
+          nmissing += v.nmissing;
+        }
+        if (nrecords == 0) nrecords = 1;
+        f.format("%s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, g.getDescription(), nrecords,  ndups, ((float)ndups/nrecords), nmissing, ((float)nmissing/nrecords));
+      }
+    } else {
+      for (GroupGC g : ds.groups) {
+        int nrecords = 0, ndups = 0, nmissing = 0;
+        for (VariableIndex v : g.variList) {
+          nrecords += v.nrecords;
+          ndups += v.ndups;
+          nmissing += v.nmissing;
+        }
+        f.format(" Group %s total nrecords=%d", g.getDescription(), nrecords);
+        if (nrecords == 0) nrecords = 1;
+        f.format(", ndups=%d (%f)", ndups, ((float)ndups/nrecords));
+        f.format(", nmiss=%d (%f)%n", nmissing, ((float)nmissing/nrecords));
+      }
+    }
+
   }
 
   public void showIndexFile(Formatter f) {

@@ -51,6 +51,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
@@ -188,7 +189,30 @@ public class CollectionController  {
       String uriParam = Escape.uriParam(fc.getCollectionName());
       String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + uriParam;
       pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
-      pw.printf("<pre>%s</pre>%n", fc.showStatusShort());
+      pw.printf("<pre>%s</pre>%n", fc.showStatusShort("txt"));
+    }
+    return null;
+  }
+
+  @RequestMapping(value={"/collection/showStatus.csv"})
+  protected ModelAndView handleCollectionStatusCsv(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    res.setContentType(ContentType.csv.getContentHeader());
+    PrintWriter pw = res.getWriter();
+
+   // get sorted list of collections
+    List<InvDatasetFeatureCollection> fcList = DataRootHandler.getInstance().getFeatureCollections();
+    Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
+      public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
+        int compareType = o1.getConfig().type.toString().compareTo(o1.getConfig().type.toString());
+        if (compareType != 0) return compareType;
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+
+    pw.printf("%s, %s, %s, %s, %s, %s, %s, %s%n", "collection", "type", "group", "nrecords", "ndups", "%", "nmiss", "%");
+    for (InvDatasetFeatureCollection fc : fcList) {
+      if (fc.getConfig().type != FeatureCollectionType.GRIB1 && fc.getConfig().type != FeatureCollectionType.GRIB2) continue;
+      pw.printf("%s", fc.showStatusShort("csv"));
     }
     return null;
   }
