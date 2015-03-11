@@ -233,7 +233,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   public void showStatus(Formatter f) {
     try {
       checkState();
-      _showStatus(f, false);
+      _showStatus(f, false, null);
 
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(5000);
@@ -242,11 +242,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     }
   }
 
-  public String showStatusShort() {
+  public String showStatusShort(String type) {
     Formatter f = new Formatter();
     try {
       checkState();
-      _showStatus(f, true);
+      _showStatus(f, true, type);
 
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(5000);
@@ -257,7 +257,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return f.toString();
   }
 
-  protected void _showStatus(Formatter f, boolean summaryOnly) throws IOException {
+  protected void _showStatus(Formatter f, boolean summaryOnly, String type) throws IOException {
   }
 
   // localState is synched, may be directly changed
