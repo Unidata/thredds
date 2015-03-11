@@ -644,7 +644,10 @@ public class Dap4Parser extends Dap4ParserBody
                     // We need to look in the underlying full dmr to locate the dimension
                     dim = (DapDimension) var.getGroup().findByFQN(nameorsize.value, DapSort.DIMENSION);
                 } else
-                    dim = (DapDimension) var.getGroup().findByFQN(nameorsize.value, DapSort.DIMENSION);
+		    DapGroup grp = var.getGroup();
+		    if(grp == null)
+			throw new ParseException("Variable has no group");
+                    dim = (DapDimension) grp.findByFQN(nameorsize.value, DapSort.DIMENSION);
             } else {// Size only is given; presume a number; create unique anonymous dimension
                 String ssize = nameorsize.value.trim();
                 if(ssize.equals("*"))

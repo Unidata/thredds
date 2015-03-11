@@ -89,7 +89,8 @@ public class test_SDGrid extends SDGrid {
      */
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
-
+        if(specialO == null)
+            throw new IOException("Null test engine");
         testEngine te = (testEngine) specialO;
 
         te.loadTestGrid(datasetName, this);

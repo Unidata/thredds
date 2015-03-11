@@ -101,7 +101,8 @@ public class test_SDSequence extends SDSequence {
      */
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
-
+        if(specialO == null)
+            throw new IOException("Null test engine");
         boolean retVal, addRow = false;
         Vector rv = null;
 
