@@ -2,14 +2,17 @@ package ucar.nc2.jni.netcdf;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
-import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.iosp.netcdf4.Nc4;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileSubclass;
+import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Variable;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -22,6 +25,7 @@ import java.util.Formatter;
  * @author caron
  * @since 7/3/12
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestNc4IospReading {
   private boolean showCompareResults = true;
   private int countNotOK = 0;

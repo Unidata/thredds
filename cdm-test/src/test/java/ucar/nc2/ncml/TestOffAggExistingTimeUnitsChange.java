@@ -33,27 +33,29 @@
 
 package ucar.nc2.ncml;
 
-import ucar.ma2.InvalidRangeException;
+import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
-
-import junit.framework.TestCase;
-import ucar.nc2.util.Misc;
-import ucar.unidata.test.util.TestDir;
 
 /**
  * Test aggregation where timeUnitsChange='true'
  *
  * @author caron
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
   public TestOffAggExistingTimeUnitsChange( String name) {

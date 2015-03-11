@@ -36,18 +36,14 @@ package ucar.nc2.ncml;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
+import org.junit.experimental.categories.Category;
+import ucar.nc2.NetcdfFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.StringReader;
-import java.io.IOException;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcScan2 {
 
   @Ignore("Cant use Fmrc on GRIB")

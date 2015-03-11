@@ -33,19 +33,21 @@
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.PrintWriter;
-import java.util.Date;
-
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.util.Date;
+
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcGrib extends TestCase {
   private boolean showValues = false;
 

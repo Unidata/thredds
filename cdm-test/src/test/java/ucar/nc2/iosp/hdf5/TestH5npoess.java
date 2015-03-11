@@ -34,21 +34,23 @@ package ucar.nc2.iosp.hdf5;
 
 import org.junit.AfterClass;
 import org.junit.Test;
-import ucar.ma2.InvalidRangeException;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.util.DebugFlagsImpl;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-
-import ucar.nc2.util.DebugFlagsImpl;
-import ucar.unidata.test.util.TestDir;
 
 /**
  * @author caron
  * @since Jul 18, 2007
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestH5npoess {
 
   @AfterClass
@@ -56,6 +58,7 @@ public class TestH5npoess {
     H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
   }
 
+  // FIXME: This is a crappy test; it doesn't fail when the file can't be read.
   @Test
   public void test1() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));

@@ -35,19 +35,20 @@ package ucar.nc2.iosp.hdf5;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.*;
 
 /**
  * Test nc2 read JUnit framework.
  */
-
-
+@Category(NeedsCdmUnitTest.class)
 public class TestH5Vlength {
   File tempFile;
   PrintStream out;

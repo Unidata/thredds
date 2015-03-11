@@ -34,12 +34,14 @@ package ucar.nc2.iosp.grib;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -50,6 +52,7 @@ import java.io.IOException;
  * @author caron
  * @since 11/1/11
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribMisc {
 
   @Test

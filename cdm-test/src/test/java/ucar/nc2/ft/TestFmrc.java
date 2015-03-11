@@ -33,7 +33,7 @@
 package ucar.nc2.ft;
 
 import org.junit.Test;
-
+import org.junit.experimental.categories.Category;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
@@ -48,6 +48,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.Formatter;
@@ -60,6 +61,7 @@ import java.util.List;
  * @author caron
  * @since Feb 25, 2010
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestFmrc {
   private static String datadir = TestDir.cdmUnitTestDir + "ft/fmrc/";
   private static boolean showCount = true;

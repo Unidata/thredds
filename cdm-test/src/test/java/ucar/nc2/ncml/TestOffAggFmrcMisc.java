@@ -32,10 +32,12 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.StringReader;
@@ -46,8 +48,7 @@ import java.io.StringReader;
  * @author caron
  * @since Nov 6, 2009
  */
-
-
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcMisc {
   String location = TestDir.cdmUnitTestDir +"ft/fmrc/efine/";
 

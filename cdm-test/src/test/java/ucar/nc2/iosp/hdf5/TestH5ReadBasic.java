@@ -32,13 +32,15 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.*;
 
 /** Test nc2 read JUnit framework. */
-
+@Category(NeedsCdmUnitTest.class)
 public class TestH5ReadBasic {
 
   @org.junit.Test

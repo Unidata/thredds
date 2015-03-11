@@ -32,12 +32,14 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -48,6 +50,7 @@ import java.io.IOException;
  * TestSuite that runs all the sample testsNew
  *
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestH5 {
   public static boolean dumpFile = false;
   public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";

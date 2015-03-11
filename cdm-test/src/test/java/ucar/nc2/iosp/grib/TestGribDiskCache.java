@@ -33,9 +33,11 @@
 package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.util.DiskCache2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -46,6 +48,7 @@ import java.io.File;
  * @author caron
  * @since 2/16/12
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribDiskCache {
 
   @Test

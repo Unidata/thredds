@@ -34,14 +34,13 @@
 package ucar.nc2.geotiff;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.nc2.ft.point.TestCFPointDatasets;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.FileFilter;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
@@ -56,8 +55,10 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class TestGeotiffRead {
-  static public String topdir = TestDir.cdmUnitTestDir + "/formats/geotiff/";
+  static public File topdir = new File(TestDir.cdmUnitTestDir + "/formats/geotiff/");
 
+  // Even if this class is being excluded due to the NeedsCdmUnitTest annotation, JUnit still calls this method.
+  // So, it mustn't throw an exception. Instead, when cdmUnitTest/ isn't available, it'll return an empty list.
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
@@ -67,6 +68,14 @@ public class TestGeotiffRead {
     return result;
   }
 
+  // If cdmUnitTest/ is available, we should not be getting an empty list of files.
+  @Category(NeedsCdmUnitTest.class)
+  public static class GetAllFilesTest {
+    @Test
+    public void notEmpty() {
+      assert !getTestParameters().isEmpty() : "No test datasets found in " + topdir;
+    }
+  }
 
   String filename;
 
@@ -74,9 +83,10 @@ public class TestGeotiffRead {
     this.filename = filename;
   }
 
+  // Will not run when we have an empty list of parameters, and thus cannot be used to indicate failure to find the
+  // expected datasets. That's why we need GetAllFilesTest.
   @Test
   public void testRead() throws IOException {
-
     try (GeoTiff geotiff = new GeoTiff(filename)) {
       geotiff.read();
       geotiff.showInfo(new PrintWriter(System.out));

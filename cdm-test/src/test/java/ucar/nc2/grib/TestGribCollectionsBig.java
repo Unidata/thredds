@@ -35,6 +35,7 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
@@ -43,6 +44,7 @@ import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -56,6 +58,7 @@ import java.util.Formatter;
  * @author John
  * @since 10/13/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribCollectionsBig {
   String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
   // String topdir =  "B:/rdavm";  // use for local windows to get around samba bug
@@ -116,20 +119,15 @@ public class TestGribCollectionsBig {
 
   @Test
   public void testTP() throws IOException {
-    try {
-      TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx3");
+    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008" +
+            ".ncx3");
 
-      // roberto:
-      // jenkins:  that took 32 secs total, 0.077869 msecs per record
-      System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
+    // roberto:
+    // jenkins:  that took 32 secs total, 0.077869 msecs per record
+    System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
-      assert count.nread == 837408 : count.nread;
-      assert count.nmiss == 0;
-
-    } catch (Throwable t) {
-      t.printStackTrace();
-    }
-
+    assert count.nread == 837408 : count.nread;
+    assert count.nmiss == 0;
   }
 
   @Test

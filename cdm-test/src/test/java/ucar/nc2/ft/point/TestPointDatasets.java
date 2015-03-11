@@ -34,6 +34,7 @@
 package ucar.nc2.ft.point;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.DataType;
@@ -47,6 +48,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.*;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -63,6 +65,7 @@ import java.util.*;
  * @since Dec 16, 2008
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestPointDatasets {
 
   public static List<Object[]> getAllFilesInDirectory(String topdir, FileFilter filter) {

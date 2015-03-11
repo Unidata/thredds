@@ -1,6 +1,7 @@
 package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.NCdumpW;
@@ -8,6 +9,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.io.IOException;
  * @author caron
  * @since 1/7/14
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestScanMode {
 
   @Test

@@ -38,20 +38,22 @@ package ucar.nc2.iosp.grib;
  */
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.Dimension;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
-import ucar.unidata.test.util.TestDir;
-
-
+@Category(NeedsCdmUnitTest.class)
 public class TestGribMiscCoordinates {
 
   // 4.2 used to add the vert coord transform, for GRIB 1 when the getVerticalPressureLevels() was set.
   // But how do we associate it with a surface pressure variable ???
+  @Test
   public void testHybrid1() throws IOException {
 
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1";  // BAD FILE removed 5/28/2014

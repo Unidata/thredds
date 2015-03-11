@@ -1,9 +1,11 @@
 package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.io.IOException;
  * @author caron
  * @since 9/10/12
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGridCoords {
 
   @Test

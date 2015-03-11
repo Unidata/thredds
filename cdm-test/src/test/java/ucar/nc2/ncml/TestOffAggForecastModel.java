@@ -32,16 +32,22 @@
  */
 package ucar.nc2.ncml;
 
-import java.io.IOException;
-import java.io.File;
-import java.io.StringReader;
-
 import org.junit.Test;
-import ucar.ma2.*;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggForecastModel {
   private int nruns = 15;
   private int nfore = 11;

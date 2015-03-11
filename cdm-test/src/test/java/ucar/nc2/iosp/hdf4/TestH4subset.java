@@ -33,22 +33,24 @@
 package ucar.nc2.iosp.hdf4;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.ma2.*;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.iosp.hdf5.TestH5;
+import ucar.nc2.util.TestSubsettingUtils;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import ucar.nc2.iosp.hdf5.TestH5;
-import ucar.nc2.util.TestSubsettingUtils;
 
 /**
  * @author caron
  * @since Jan 1, 2008
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestH4subset {
   static private String dirName = TestH5.testDir;
   static private int nt = 3;

@@ -267,10 +267,12 @@ public class TestDir {
     }
   }
 
+  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
     return actOnAll( dirName, ff, act, true);
   }
 
+  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static int actOnAllParameterized(String dirName, FileFilter ff, Collection<Object[]> filenames) throws IOException {
     return actOnAll( dirName, ff, new ListAction(filenames), true);
   }
@@ -297,6 +299,7 @@ public class TestDir {
    * @return count
    * @throws IOException on IO error
    */
+  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static int actOnAll(String dirName, FileFilter ff, Act act, boolean recurse) throws IOException {
     int count = 0;
 
@@ -331,10 +334,12 @@ public class TestDir {
   }
 
   ////////////////////////////////////////////////////////////////////////////
+  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static int readAllDir(String dirName, FileFilter ff) throws IOException {
     return actOnAll(dirName, ff, new ReadAllVariables());
   }
-  
+
+  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   public static void readAll(String filename) throws IOException {
     ReadAllVariables act = new ReadAllVariables();
     act.doAct(filename);
@@ -401,9 +406,20 @@ public class TestDir {
 
   ////////////////////////////////////////////////////
 
-  public static List<Object[]> getAllFilesInDirectory(String topdir, FileFilter filter) {
+  /**
+   * Returns all of the files in {@code topDir} that satisfy {@code filter}.
+   *
+   * @param topDir  a directory.
+   * @param filter  a file filter.
+   * @return  the files. An empty list will be returned if {@code topDir == null || !topDir.exists()}.
+   */
+  public static List<Object[]> getAllFilesInDirectory(File topDir, FileFilter filter) {
+    if (topDir == null || !topDir.exists()) {
+      return Collections.emptyList();
+    }
+
     List<File> files = new ArrayList<>();
-    File topDir = new File(topdir);
+
     for (File f : topDir.listFiles()) {
       if (filter != null && !filter.accept(f)) continue;
       files.add( f);
@@ -418,6 +434,4 @@ public class TestDir {
 
     return result;
   }
-
-
 }

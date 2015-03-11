@@ -33,10 +33,11 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
-import ucar.nc2.NCdumpW;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.cache.FileCacheIF;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -47,6 +48,7 @@ import java.io.IOException;
  * @author caron
  * @since 3/5/2015
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestAggNested {
 
   @Test

@@ -33,11 +33,13 @@
 package ucar.nc2.iosp.hdf5;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
@@ -47,7 +49,7 @@ import java.util.List;
 /**
  * Test netcdf-4 reading of misc files
  */
-
+@Category(NeedsCdmUnitTest.class)
 public class TestN4reading {
   public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
 

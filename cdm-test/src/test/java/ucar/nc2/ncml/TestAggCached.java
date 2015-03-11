@@ -1,12 +1,13 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.Formatter;
  * @author John
  * @since 9/11/13
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestAggCached {
 
   @Test

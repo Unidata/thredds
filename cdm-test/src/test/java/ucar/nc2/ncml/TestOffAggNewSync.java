@@ -32,20 +32,19 @@
  */
 package ucar.nc2.ncml;
 
-import java.io.IOException;
-import java.io.File;
-import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
-
 import org.junit.Test;
-import ucar.nc2.*;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggNewSync {
 
   String dataDir = TestDir.cdmUnitTestDir + "formats/gini/";
