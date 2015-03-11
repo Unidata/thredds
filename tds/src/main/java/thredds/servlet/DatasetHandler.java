@@ -319,7 +319,8 @@ public class DatasetHandler {
       InvDatasetFeatureCollection featCollection = match.dataRoot.getFeatCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFeatureCollection= " + featCollection);
       GridDataset gds = featCollection.getGridDataset(match.remaining);
-      if (gds == null) throw new FileNotFoundException(reqPath);
+      if (gds == null)
+        throw new FileNotFoundException(reqPath);
       return gds;
     }
 
