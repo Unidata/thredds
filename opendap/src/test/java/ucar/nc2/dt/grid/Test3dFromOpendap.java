@@ -32,45 +32,46 @@
  */
 package ucar.nc2.dt.grid;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.dt.GridCoordSystem;
 
-public class Test3dFromOpendap extends TestCase {
+public class Test3dFromOpendap {
 
+  @Test
   public void test3D() throws Exception {
-    GridDataset dataset = GridDataset.open("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
+    try (GridDataset dataset = GridDataset.open("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
 
-    GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
-    assert null != grid;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 4;
+      GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
+      assert null != grid;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
 
-    GeoGrid grid_section = grid.subset(null, null, null, 1, 10, 10);
+      GeoGrid grid_section = grid.subset(null, null, null, 1, 10, 10);
 
-    Array data = grid_section.readDataSlice(0, -1, -1, -1);
-    assert data.getRank() == 3;
-    // assert data.getShape()[0] == 6 : data.getShape()[0];
-    assert data.getShape()[1] == 43 : data.getShape()[1];
-    assert data.getShape()[2] == 62 : data.getShape()[2];
+      Array data = grid_section.readDataSlice(0, -1, -1, -1);
+      assert data.getRank() == 3;
+      // assert data.getShape()[0] == 6 : data.getShape()[0];
+      assert data.getShape()[1] == 43 : data.getShape()[1];
+      assert data.getShape()[2] == 62 : data.getShape()[2];
 
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      float val = ii.getFloatNext();
-      if (grid_section.isMissingData(val)) {
-        if (!Float.isNaN(val)) {
-          System.out.println(" got not NaN at =" + ii);
-        }
-        int[] current = ii.getCurrentCounter();
-        if ((current[1] > 0) && (current[2] > 1)) {
-          System.out.println(" got missing at =" + ii);
-          System.out.println(current[1] + " " + current[2]);
+      IndexIterator ii = data.getIndexIterator();
+      while (ii.hasNext()) {
+        float val = ii.getFloatNext();
+        if (grid_section.isMissingData(val)) {
+          if (!Float.isNaN(val)) {
+            System.out.println(" got not NaN at =" + ii);
+          }
+          int[] current = ii.getCurrentCounter();
+          if ((current[1] > 0) && (current[2] > 1)) {
+            System.out.println(" got missing at =" + ii);
+            System.out.println(current[1] + " " + current[2]);
+          }
         }
       }
-    }
 
-    dataset.close();
+    }
   }
 
 }

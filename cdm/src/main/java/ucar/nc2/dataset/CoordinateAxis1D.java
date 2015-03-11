@@ -68,7 +68,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
   private boolean wasRead = false; // have the data values been  read
-  private boolean wasCalcRegular = false; // have we checked if the data is regularly spaced ?
   private boolean wasBoundsDone = false; // have we created the bounds arrays if exists ?
   private boolean isInterval = false; // is this an interval coordinates - then should use bounds
   private boolean isAscending;
@@ -80,6 +79,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
   // defer making until asked, use makeBounds()
   private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
   private double[] bound1, bound2; // may be contiguous or not
+
+  private boolean wasCalcRegular = false; // have we checked if the data is regularly spaced ?
+  private boolean isRegular = false;
+  private double start, increment;
 
   /**
    * Create a 1D coordinate axis from an existing Variable
@@ -193,6 +196,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
       }
       result.names = new_names;
     }
+
+    result.wasCalcRegular = false;
+    result.calcIsRegular();
 
     return result;
   }
@@ -659,8 +665,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   ///////////////////////////////////////////////////////////////////////////////
   // check if Regular
-  private boolean isRegular = false;
-  private double start, increment;
 
   /**
    * Get starting value if isRegular()

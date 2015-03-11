@@ -97,7 +97,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     CoordinateAxis1DTime s = (CoordinateAxis1DTime) super.section(r);
     List<CalendarDate> cdates = getCalendarDates();
 
-    List<CalendarDate> cdateSection = new ArrayList<CalendarDate>(cdates.size());
+    List<CalendarDate> cdateSection = new ArrayList<>(cdates.size());
     for (int i = r.first(), j = 0; i <= r.last(); i += r.stride(), ++j) {
       cdateSection.add(cdates.get(i));
     }
