@@ -33,12 +33,14 @@
 package ucar.nc2.dt.grid;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.List;
@@ -52,6 +54,7 @@ import static org.junit.Assert.assertTrue;
  * @author caron
  * @since May 28, 2009
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestCFWriter {
 
   @Test

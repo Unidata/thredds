@@ -35,6 +35,7 @@ package ucar.nc2.dt.grid;
 
 import junit.framework.TestCase;
 
+import org.junit.experimental.categories.Category;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.Section;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -42,10 +43,12 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestGridVerticalTransforms extends TestCase {
 
   public TestGridVerticalTransforms(String name) {

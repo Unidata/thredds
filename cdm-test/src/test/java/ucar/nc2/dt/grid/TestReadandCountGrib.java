@@ -32,8 +32,10 @@
  */
 package ucar.nc2.dt.grid;
 
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import java.util.List;
 /** Check opening grib datasets - local files*/
 
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestReadandCountGrib {
 
   @Parameterized.Parameters

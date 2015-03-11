@@ -34,28 +34,29 @@
 package ucar.nc2.dataset;
 
 import org.junit.Test;
-import ucar.nc2.*;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.geoloc.vertical.*;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
-import ucar.ma2.ArrayDouble;
+import ucar.nc2.Dimension;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.units.SimpleUnit;
+import ucar.unidata.geoloc.vertical.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
-
-import junit.framework.TestCase;
-import ucar.unidata.test.util.TestDir;
+import java.util.List;
 
 /**
  * test vertical transforms.
  *
  * @author caron
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestTransforms {
   private String testDir= TestDir.cdmUnitTestDir + "transforms/";
 

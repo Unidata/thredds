@@ -32,10 +32,12 @@
  */
 package ucar.nc2.dt.grid;
 
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.ArrayList;
@@ -48,6 +50,7 @@ import java.util.List;
  * @since 3/10/2015
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestUrlForms {
 
   private static String testfile = TestDir.cdmUnitTestDir + "conventions/avhrr/amsr-avhrr-v2.20040729.nc";

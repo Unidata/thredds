@@ -34,11 +34,13 @@ package ucar.nc2.dt.radial;
 
 import junit.framework.*;
 
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -47,7 +49,7 @@ import java.util.List;
 import java.util.Date;
 
 /** Test radial datasets in the JUnit framework. */
-
+@Category(NeedsCdmUnitTest.class)
 public class TestRadialDataset extends TestCase {
   // private RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
   private String topDir = TestDir.cdmUnitTestDir + "formats/";

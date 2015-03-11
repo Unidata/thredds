@@ -32,7 +32,9 @@
  */
 package ucar.nc2.dt.grid;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.writer.DataFactory;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
@@ -49,6 +51,7 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import ucar.nc2.constants.FeatureType;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.PrintWriter;
@@ -59,6 +62,7 @@ import java.util.List;
 public class TestSubset {
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testRegular() throws Exception {
     ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc");
 
@@ -95,6 +99,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testGrib() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib1/AVN.wmo");
 
@@ -116,6 +121,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testWRF() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
 
@@ -155,6 +161,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testMSG() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
@@ -223,7 +230,9 @@ public class TestSubset {
     dataset.close();
   }
 
-  public void utestDODS2() throws Exception {
+  @Test
+  @Ignore("Bad URL, as of 2015/03/11.")
+  public void testDODS2() throws Exception {
     String threddsURL = "http://lead.unidata.ucar.edu:8080/thredds/dqcServlet/latestOUADAS?adas";
     DataFactory.Result result = new DataFactory().openFeatureDataset(threddsURL, null);
     assert result.featureDataset != null;
@@ -255,6 +264,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void test2D() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc");
 
@@ -372,6 +382,7 @@ public class TestSubset {
 
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testLatLonSubset() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
     //GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_20060305_1200.grib2");
@@ -398,6 +409,7 @@ public class TestSubset {
 
   // longitude subsetting (CoordAxis1D regular)
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testLatLonSubset2() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2");
     GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1"); // "Pressure_Surface");
@@ -433,6 +445,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testGiniSubsetStride() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/WEST-CONUS_4km_IR_20070216_1500.gini");
     GeoGrid grid = dataset.findGridByName("IR");
@@ -535,7 +548,9 @@ public class TestSubset {
     dataset.close();
   }
 
-  public void utestFMRCSubset() throws Exception {
+  @Test
+  @Ignore("Does this dataset exist on a public server?")
+  public void testFMRCSubset() throws Exception {
     GridDataset dataset = GridDataset.open("dods://localhost:8080/thredds/dodsC/data/cip/fmrcCase1/CIPFMRCCase1_best.ncd");
     GeoGrid grid = dataset.findGridByName("Latitude__90_to_+90");
     assert null != grid;
@@ -553,6 +568,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testVerticalAxis() throws Exception {
     //String url="dods://www.gri.msstate.edu/rsearch_data/nopp/bora_feb.nc";
     //String varName = "temp";
@@ -588,6 +604,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testBBSubsetVP() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
     GridDataset dataset = GridDataset.open(filename);
@@ -618,6 +635,7 @@ public class TestSubset {
 
   // x,y in meters
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testBBSubsetUnits() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "ncml/testBBSubsetUnits.ncml");
     System.out.println("file= " + dataset.getLocation());
@@ -652,6 +670,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testAggByteGiniSubsetStride() throws Exception {
     GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/gini/giniAggByte.ncml"); // R:\testdata2\satellite\gini
     System.out.printf("Test %s%n", dataset.getLocation());
@@ -701,7 +720,9 @@ public class TestSubset {
     dataset.close();
   }
 
-  public void utestBBSubsetVP2() throws Exception {
+  @Test
+  @Ignore("Does this file exist in a shared location?")
+  public void testBBSubsetVP2() throws Exception {
     String filename = "C:/Documents and Settings/caron/My Documents/downloads/MSG2-SEVI-MSGCLAI-0000-0000-20070522114500.000000000Z-582760.grb";
     GridDataset dataset = GridDataset.open(filename);
     GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
@@ -834,7 +855,8 @@ public class TestSubset {
 
   }
 
-  public void utestScaleOffset() throws Exception {
+  @Test
+  public void testScaleOffset() throws Exception {
     GridDataset dataset = GridDataset.open("http://esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.oisst.v2/sst.wkmean.1990-present.nc");
     GeoGrid grid = dataset.findGridByName("sst");
     assert null != grid;
@@ -869,7 +891,9 @@ public class TestSubset {
     dataset.close();
   }
 
-  public void utestScaleOffset2() throws Exception {   // keeps failing on nomads URL
+  @Test
+  @Ignore("Keeps failing on nomads URL.")
+  public void testScaleOffset2() throws Exception {
     GridDataset dataset = GridDataset.open("dods://nomads.ncdc.noaa.gov/thredds/dodsC/cr20sixhr/air.1936.nc");
     GeoGrid grid = dataset.findGridByName("air");
     assert null != grid;
@@ -909,6 +933,8 @@ public class TestSubset {
     dataset.close();
   }
 
+  @Test
+  @Ignore("Does this file exist in a shared location?")
   public void testAaron() throws Exception{
   // different scale/offset in aggregation
        GridDataset dataset = GridDataset.open("G:/work/braekel/dataset.ncml" );

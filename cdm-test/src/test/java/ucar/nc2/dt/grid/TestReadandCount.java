@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.constants.CDM;
@@ -39,6 +40,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ import java.io.ByteArrayInputStream;
 /** Count geogrid objects - sanity check when anything changes. */
 
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestReadandCount {
   private static final boolean show = false, showCount = true;
   private static String griddir = TestDir.cdmUnitTestDir +"conventions/";

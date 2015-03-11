@@ -34,17 +34,19 @@
 package ucar.nc2.dt.trajectory;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.experimental.categories.Category;
+import ucar.ma2.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
-import ucar.nc2.constants.FeatureType;
-import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * A description
@@ -52,6 +54,7 @@ import java.io.File;
  * @author edavis
  * @since Feb 22, 2005T22:33:51 PM
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestFloat10TrajectoryObsDataset
 {
   private TrajectoryObsDataset me;

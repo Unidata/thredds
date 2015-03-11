@@ -34,11 +34,13 @@
 package ucar.nc2.dt.grid;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.ArrayList;
@@ -52,9 +54,8 @@ import static org.junit.Assert.assertTrue;
  * @author caron
  * @since 7/30/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestCFWriter2 {
-
-
   @Test
   public void testSubset() throws Exception {
     String fileIn = TestDir.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
@@ -131,5 +132,4 @@ public class TestCFWriter2 {
       assertTrue(subsetSize < totalSize);
     }
   }
-
 }

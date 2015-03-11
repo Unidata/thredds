@@ -34,20 +34,22 @@
 package ucar.nc2.dt.trajectory;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.Range;
+import ucar.ma2.StructureData;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
 import ucar.nc2.dt.*;
-import ucar.ma2.Range;
-import ucar.ma2.Array;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * A description
@@ -55,6 +57,7 @@ import java.util.Iterator;
  * @author edavis
  * @since Feb 11, 2005T2:33:51 PM
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestRafTrajectoryObsDataset
 {
   private TrajectoryObsDataset me;
