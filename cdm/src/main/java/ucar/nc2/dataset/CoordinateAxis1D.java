@@ -194,6 +194,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
       result.names = new_names;
     }
 
+    result.wasCalcRegular = false;
+    result.calcIsRegular();
+
     return result;
   }
 
