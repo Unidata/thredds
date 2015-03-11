@@ -32,19 +32,21 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.*;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.io.IOException;
-
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author caron
  * @since Jan 19, 2008
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestStructureSubset extends TestCase {
 
   NetcdfFile ncfile;

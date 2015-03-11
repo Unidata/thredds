@@ -36,6 +36,7 @@ package ucar.nc2.dataset;
 
 
 import junit.framework.*;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -47,6 +48,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -62,6 +64,7 @@ public class TestCoordinates extends TestCase {
     super(name);
   }
 
+  @Category(NeedsCdmUnitTest.class)
   public void testAlias() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
@@ -76,7 +79,7 @@ public class TestCoordinates extends TestCase {
 
 
   // test offset only gets applied once
-
+  @Category(NeedsCdmUnitTest.class)
   public void testWrapOnce() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ncml/coords/testCoordScaling.ncml";
     System.out.printf("%s%n", filename);

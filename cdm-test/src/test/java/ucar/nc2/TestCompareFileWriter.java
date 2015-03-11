@@ -33,13 +33,16 @@
 package ucar.nc2;
 
 import org.junit.Test;
-import java.io.*;
-import java.util.*;
-
+import org.junit.experimental.categories.Category;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-/** test FileWriting, then reading back and comparing to original. */
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
+/** test FileWriting, then reading back and comparing to original. */
+@Category(NeedsCdmUnitTest.class)
 public class TestCompareFileWriter {
 
   public ArrayList files;

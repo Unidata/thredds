@@ -34,12 +34,14 @@
 package ucar.nc2.dataset;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -49,6 +51,7 @@ import java.io.IOException;
  *
  * @author caron
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestConventions  {
 
   @Test

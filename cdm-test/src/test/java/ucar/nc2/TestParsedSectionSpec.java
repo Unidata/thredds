@@ -1,9 +1,11 @@
 package ucar.nc2;
 
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -38,6 +40,7 @@ public class TestParsedSectionSpec extends TestCase {
     ncfile.close();
   }
 
+  @Category(NeedsCdmUnitTest.class)
   public void testGroupAndMembers() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/netcdf4/compound/simple_nc4.nc4");
     Variable v = ncfile.findVariable("grp1/data");
@@ -59,7 +62,7 @@ public class TestParsedSectionSpec extends TestCase {
     ncfile.close();
   }
 
-
+  @Category(NeedsCdmUnitTest.class)
   public void testEscaping() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "ncml/escapeNames.ncml");
     Group g = ncfile.findGroup("group.name");
@@ -87,6 +90,7 @@ public class TestParsedSectionSpec extends TestCase {
     ncfile.close();
   }
 
+  @Category(NeedsCdmUnitTest.class)
   public void testEscaping2() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "ncml/escapeNames.ncml");
     Group g = ncfile.findGroup("group(name");

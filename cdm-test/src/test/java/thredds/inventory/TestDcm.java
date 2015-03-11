@@ -57,10 +57,10 @@ import java.util.List;
  * @author caron
  * @since 6/20/11
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestDcm {
 
   @Test
-  @Category(NeedsCdmUnitTest.class)
   public void testScan() throws IOException {
     // count scanned files
     Formatter f = new Formatter(System.out);

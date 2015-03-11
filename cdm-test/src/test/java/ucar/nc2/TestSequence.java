@@ -32,12 +32,13 @@
 
 package ucar.nc2;
 
-import java.io.PrintWriter;
-import java.io.IOException;
-
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
 
 /**
  * Describe
@@ -45,6 +46,7 @@ import ucar.unidata.test.util.TestDir;
  * @author caron
  * @since Nov 10, 2009
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestSequence {
 
   @Test

@@ -13,9 +13,9 @@ dependencies {
 tasks.withType(Test) {
 //    outputs.upToDateWhen { false }  // Tests weren't being run when I changed included/excluded categories.
 
-//    useJUnit {
-//        excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
-//    }
+    useJUnit {
+        excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+    }
 
     if (!System.env['TRAVIS']) {
         ignoreFailures true

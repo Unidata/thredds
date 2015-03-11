@@ -32,41 +32,49 @@
  */
 package ucar.nc2.dataset;
 
-import java.io.*;
-
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.util.DiskCache2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-/** Test writing and reading back. */
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
+/** Test writing and reading back. */
+@Category(NeedsCdmUnitTest.class)
 public class TestJustRead {
   private boolean show = false;
 
   @Test
   public void testReadConventionFiles() throws Exception {
-    readAllDir( TestDir.cdmUnitTestDir + "conventions");
+    List<String> filesRead = readAllDir( TestDir.cdmUnitTestDir + "conventions", new LinkedList<String>());
+    assert !filesRead.isEmpty() : String.format(
+            "No files read in \"%s\". Is cdmUnitTestDir accessible?", TestDir.cdmUnitTestDir +  "conventions");
   }
 
-  void readAllDir(String dirName) throws Exception {
-    System.out.println("---------------Reading directory "+dirName);
-    File allDir = new File( dirName);
+  // Returns files read.
+  private List<String> readAllDir(String dirName, List<String> filesRead) throws Exception {
+    File allDir = new File(dirName);
     File[] allFiles = allDir.listFiles();
 
-    if(allFiles != null)
-        for (int i = 0; i < allFiles.length; i++) {
-          String name = allFiles[i].getAbsolutePath();
-          if (name.endsWith(".nc"))
-            doOne(name);
+    if (allFiles != null) {
+      for (File file : allFiles) {
+        String path = file.getAbsolutePath();
+        if (file.isDirectory()) {
+          readAllDir(path, filesRead);
+        } else if (path.endsWith(".nc")) {
+          filesRead.add(path);
+          doOne(path);
+        } else {
+          // Not a directory or NetCDF file. Do nothing.
         }
-
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
-      if (f.isDirectory())
-        readAllDir(allFiles[i].getAbsolutePath());
+      }
     }
 
+    return filesRead;
   }
 
   @Test
@@ -78,9 +86,8 @@ public class TestJustRead {
   }
 
   private void doOne(String filename) throws Exception {
-    System.out.println("  read dataset with convention parsing= "+filename);
-    NetcdfDataset ncDataset = NetcdfDataset.openDataset( filename, true, null);
-    if (show) ncDataset.writeNcML( System.out, null);
-    ncDataset.close();
+    try (NetcdfDataset ncDataset = NetcdfDataset.openDataset(filename, true, null)) {
+      if (show) ncDataset.writeNcML(System.out, null);
+    }
   }
 }
