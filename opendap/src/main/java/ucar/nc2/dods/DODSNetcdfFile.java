@@ -957,9 +957,9 @@ if(OLDGROUPCODE) {
                         mapV = addVariable(parentGroup, parentStructure, map);
                         makeCoordinateVariable(parentGroup, mapV, map.data);
 
-                    } else if (!mapV.isCoordinateVariable()) { // workaround for Grid HDF4 wierdness (see note 1 below)
-                        makeCoordinateVariable(parentGroup, mapV, map.data);
-                    }
+                    } //else if (!mapV.isCoordinateVariable()) { // workaround for Grid HDF4 wierdness (see note 1 below)
+                      //  makeCoordinateVariable(parentGroup, mapV, map.data);
+                    //}
                 }
 
                 return new DODSGrid(this, parentGroup, parentStructure, dodsShortName, dodsV);
