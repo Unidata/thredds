@@ -89,7 +89,8 @@ public class test_SDInt16 extends SDInt16 {
      */
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
-
+        if(specialO == null)
+            throw new IOException("Null test engine");
         testEngine te = (testEngine) specialO;
 
         setValue(te.nextInt16());
