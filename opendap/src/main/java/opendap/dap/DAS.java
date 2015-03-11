@@ -144,11 +144,11 @@ public class DAS extends AttributeTable
 
     public boolean parse(String text) throws ParseException,DAP2Exception
     {
-        DapParser parser = new DapParser(factory);
+        Dap2Parser parser = new Dap2Parser(factory);
         int result = parser.dasparse(text,this);
-        if(result == Dapparse.DapERR)
+        if(result == Dap2Parse.DapERR)
             throw parser.getERR();
-        return (result == Dapparse.DapDAS ? true : false);
+        return (result == Dap2Parse.DapDAS ? true : false);
     }
 
     /**
