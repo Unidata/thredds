@@ -93,12 +93,30 @@ task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
     }
 }
 
-// We want to modify the "appBeforeIntegrationTest" task, but like all Gretty tasks,
-// it won't be added to the project until after evaluation: http://goo.gl/qlFXTD
-// So, our modification must also occur after evaluation.
+import org.gradle.api.internal.changedetection.TaskArtifactStateRepository
+import org.gradle.api.internal.changedetection.TaskArtifactState
+
+// We want to modify the "appBeforeIntegrationTest" and "appAfterIntegrationTest" tasks, but like all Gretty tasks,
+// they won't be added to the project until after evaluation: http://goo.gl/qlFXTD
+// So, our modifications must also occur after evaluation.
 afterEvaluate {
+    // This task starts the embedded Tomcat server. It's expensive to do.
     appBeforeIntegrationTest {
-        onlyIf { tasks.integrationTest.enabled }
+        // We're trying hard to only execute appBeforeIntegrationTest if integrationTest will execute.
+        // We won't execute if integrationTest is disabled--that's simple.
+        // We also won't execute if integrationTest is considered UP-TO-DATE. That's much harder to determine, and we
+        // had to dig into internal Gradle APIs to find that info. Expect this to break in the future.
+        // There are still other cases where integrationTest execution could be skipped that we don't or can't check
+        // (e.g. one of its onlyIf()s returns false), but those situations are rare.
+        onlyIf {
+            Task task = tasks.integrationTest
+            if (!task.enabled) {
+                return false;
+            }
+
+            TaskArtifactState state = task.services.get(TaskArtifactStateRepository).getStateFor(task)
+            return !state.isUpToDate([])
+        }
 
         // "jacoco" extension is created automatically for all AppBeforeIntegrationTest tasks
         // and has type org.gradle.testing.jacoco.plugins.JacocoTaskExtension
@@ -119,7 +137,9 @@ afterEvaluate {
         }
     }
 
+    // This task stops the embedded Tomcat server.
     appAfterIntegrationTest {
-        onlyIf { tasks.integrationTest.enabled }
+        // Only run if appBeforeIntegrationTest did work.
+        onlyIf { tasks.appBeforeIntegrationTest.getDidWork() }
     }
 }
