@@ -68,6 +68,17 @@ task integrationTest(type: Test) {
     include 'thredds/TestEncoding.class'
 
 //    systemProperty 'unidata.testdata.path', 'Q:'
+
+    doLast {
+        // Remove the system properties that Gretty added in AppBeforeIntegrationTestTask.integrationTestTask().
+        // org.gradle.api.internal.changedetection.changes.DefaultTaskArtifactStateRepository.TaskArtifactStateImpl.afterTask()
+        // seems to indicate that input/output snapshots are taken AFTER a task is executed, whereas snapshot checking
+        // occurs BEFORE. So, in order for the UP-TO-DATE machinery to work properly, we must undo the changes to
+        // input that Gretty made during the execution phase.
+        // TODO: Can I find anything more authoritive vis-a-vis snapshot time? Ask at the Gradle forums?
+        // TODO: Open an issue--or even a pull request--for this problem on the Gretty Github.
+        systemProperties.keySet().removeAll { it.startsWith("gretty.") }
+    }
 }
 
 task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
@@ -92,8 +103,13 @@ afterEvaluate {
         // "jacoco" extension is created automatically for all AppBeforeIntegrationTest tasks
         // and has type org.gradle.testing.jacoco.plugins.JacocoTaskExtension
         jacoco {
+            // appBeforeIntegrationTest.exec gets larger every run if we don't do this. That breaks UP-TO-DATE
+            // checking. LOOK: The Test tasks have "true" here, yet I don't notice the undesirable behavior. Why?
             append = false
-            destinationFile = new File(buildDir, 'jacoco/integrationTest.exec')
+
+            // Don't use the same name as our integration task's execution data.
+            // That data may be useless (is it?), but overwriting it during execution foils UP-TO-DATE checking.
+            // destinationFile = new File(buildDir, 'jacoco/integrationTest.exec')
         }
 
         doFirst {
