@@ -298,42 +298,13 @@ public abstract class Grib1Gds {
 
   protected int hashCode = 0;
 
-  /*
-  Code Table Code table 3.2 - Shape of the Earth (3.2)
-      0: Earth assumed spherical with radius = 6 367 470.0 m
-      1: Earth assumed spherical with radius specified (in m) by data producer
-      2: Earth assumed oblate spheroid with size as determined by IAU in 1965 (major axis = 6 378 160.0 m, minor axis = 6 356 775.0 m, f = 1/297.0)
-      3: Earth assumed oblate spheroid with major and minor axes specified (in km) by data producer
-      4: Earth assumed oblate spheroid as defined in IAG-GRS80 model (major axis = 6 378 137.0 m, minor axis = 6 356 752.314 m, f = 1/298.257 222 101)
-      5: Earth assumed represented by WGS84 (as used by ICAO since 1998)
-      6: Earth assumed spherical with radius of 6 371 229.0 m
-      7: Earth assumed oblate spheroid with major or minor axes specified (in m) by data producer
-      8: Earth model assumed spherical with radius of 6 371 200 m, but the horizontal datum of the resulting
-         latitude/longitude field is the WGS84 reference frame
-  */
   protected Earth getEarth() {
-    switch (earthShape) {
-      case 0:
+    boolean isEarthShapeIsSpherical = ((resolution & GribNumbers.bitmask[1]) == 0);
+
+    if (isEarthShapeIsSpherical)
         return new Earth(6367470.0);
-      case 1:
-        return new Earth(earthRadius);
-      case 2:
+    else
         return EarthEllipsoid.IAU;
-      case 3:
-        return new EarthEllipsoid("Grib2 Type 3", -1, majorAxis, minorAxis, 0);
-      case 4:
-        return EarthEllipsoid.IAG_GRS80;
-      case 5:
-        return EarthEllipsoid.WGS84;
-      case 6:
-        return new Earth(6371229.0);
-      case 7:
-        return new EarthEllipsoid("Grib2 Type 37", -1, majorAxis * 1000, minorAxis * 1000, 0);
-      case 8:
-        return new Earth(6371200.0);
-      default:
-        return new Earth();
-    }
   }
 
   /*
