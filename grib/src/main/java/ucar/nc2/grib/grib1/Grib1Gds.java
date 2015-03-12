@@ -147,7 +147,7 @@ public abstract class Grib1Gds {
 
   public int template;
   protected int nx, ny;
-  public int scanMode, resolution;
+  public int scanMode, resolution;    // LOOK problem is if these differ for records in the same collection, since we only store one Gds.
   protected int lastOctet;
 
   protected Grib1Gds(int template) {
@@ -236,6 +236,14 @@ public abstract class Grib1Gds {
         return new Earth(6367470.0);
     else
         return EarthEllipsoid.IAU;
+  }
+
+  public int getEarthShape() {
+    return getEarthShapeIsSpherical(resolution) ? 0 : 1;
+  }
+
+  public boolean getUVisReletive() {
+    return getUVisReletive(resolution);
   }
 
   public int getResolution() {

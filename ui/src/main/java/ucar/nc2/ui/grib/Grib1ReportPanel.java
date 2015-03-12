@@ -82,6 +82,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   @Override
   protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+
     switch ((Report) option) {
       case checkTables:
         doCheckTables(f, dcm, useIndex);
@@ -248,6 +249,9 @@ public class Grib1ReportPanel extends ReportPanel {
     countersAll.add(new CounterOfInt("param"));
     countersAll.add(new CounterOfInt("timeUnit"));
     countersAll.add(new CounterOfInt("vertCoord"));
+    countersAll.add(new CounterOfInt("earthShape"));
+    countersAll.add(new CounterOfString("uvIsReletive"));
+
     countersAll.add(new CounterOfInt("vertCoordInGDS"));
     countersAll.add(new CounterOfInt("predefined"));
     countersAll.add(new CounterOfInt("thin"));
@@ -305,6 +309,7 @@ public class Grib1ReportPanel extends ReportPanel {
   private void doScanIssues(ucar.nc2.grib.grib1.Grib1Record gr, Formatter fm, String path, boolean extraInfo, Counters counters) throws IOException {
 
     Grib1SectionGridDefinition gdss = gr.getGDSsection();
+    Grib1Gds gds = gdss.getGDS();
     Grib1SectionProductDefinition pds = gr.getPDSsection();
     String table = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
     counters.countS("table version", table);
@@ -312,6 +317,8 @@ public class Grib1ReportPanel extends ReportPanel {
     counters.count("timeUnit", pds.getTimeRangeIndicator());
     counters.count("vertCoord", pds.getLevelType());
     counters.countS("referenceDate", pds.getReferenceDate().toString());
+    counters.count("earthShape", gds.getEarthShape());
+    counters.countS("uvIsReletive", gds.getUVisReletive() ? "true" : "false");
 
     if (gdss.isThin()) {
       if (extraInfo) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), path);
