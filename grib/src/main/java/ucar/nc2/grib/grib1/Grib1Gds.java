@@ -79,6 +79,44 @@ public abstract class Grib1Gds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
   public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
 
+  /*
+  Code table 6 – Data representation type
+  Code figure Meaning
+ *  0 Latitude/longitude grid – equidistant cylindrical or Plate Carrée projection
+ *  1 Mercator projection
+    2 Gnomonic projection
+ *  3 Lambert conformal, secant or tangent, conic or bi-polar, projection
+ *  4 Gaussian latitude/longitude grid
+ *  5 Polar stereographic projection
+    6 Universal Transverse Mercator (UTM) projection
+    7 Simple polyconic projection
+    8 Albers equal-area, secant or tangent, conic or bi-polar, projection
+    9 Miller’s cylindrical projection
+ *  10 Rotated latitude/longitude grid
+    11–12 Reserved
+    13 Oblique Lambert conformal, secant or tangent, conic or bi-polar, projection
+    14 Rotated Gaussian latitude/longitude grid
+    15–19 Reserved
+    20 Stretched latitude/longitude grid
+    21–23 Reserved
+    24 Stretched Gaussian latitude/longitude grid
+    25–29 Reserved
+    30 Stretched and rotated latitude/longitude grids
+    31–33 Reserved
+    34 Stretched and rotated Gaussian latitude/longitude grids
+    35–49 Reserved
+ ^  50 Spherical harmonic coefficients
+    51–59 Reserved
+    60 Rotated spherical harmonic coefficients
+    61–69 Reserved
+    70 Stretched spherical harmonics
+    71–79 Reserved
+    80 Stretched and rotated spherical harmonic coefficients
+    81–89 Reserved
+    90 Space view, perspective or orthographic
+    91–191 Reserved
+    192–254 Reserved for local use
+   */
   public static Grib1Gds factory(int template, byte[] data) {
     switch (template) {
       case 0:
@@ -108,8 +146,6 @@ public abstract class Grib1Gds {
   protected int[] nptsInLine; // thin grids, else null
 
   public int template;
-  public float earthRadius, majorAxis, minorAxis;
-  public int earthShape;
   protected int nx, ny;
   public int scanMode, resolution;
   protected int lastOctet;
@@ -149,7 +185,7 @@ public abstract class Grib1Gds {
     return nptsInLine;
   }
 
-  public void setNptsInLine(int[] nptsInLine) {
+  void setNptsInLine(int[] nptsInLine) {
     this.nptsInLine = nptsInLine;
   }
 
@@ -173,14 +209,38 @@ public abstract class Grib1Gds {
     return GribNumbers.int4(getOctet(start), getOctet(start + 1), getOctet(start + 2), getOctet(start + 3));
   }
 
-  /* protected float getScaledValue(int start) {
-    int scaleFactor = getOctet(start);
-    int scaleValue = getOctet4(start + 1);
-    if (scaleFactor != 0)
-      return (float) (scaleValue / Math.pow(10, scaleFactor));
+  /*
+  Code table 7 – Resolution and component flags
+  Bit Value Meaning
+    1 0     Direction increments not given
+      1     Direction increments given
+    2 0     Earth assumed spherical with radius 6367.47 km
+      1     Earth assumed oblate spheroidal with size as determined by IAU in 1965 (6378.160 km, 6356.775 km, f = 1/297.0)
+  3–4       Reserved
+    5 0     Resolved u- and v-components of vector quantities relative to easterly and northerly directions
+      1     Resolved u- and v-components of vector quantities relative to the defined grid in the direction of increasing x and y (or i and j) coordinates respectively
+   6–8 0    Reserved – set to zero */
+
+  static private boolean getDirectionIncrementsGiven(int resolution) {
+    return ((resolution & GribNumbers.bitmask[0]) != 0);
+  }
+  static private boolean getEarthShapeIsSpherical(int resolution) {
+    return ((resolution & GribNumbers.bitmask[1]) == 0);
+  }
+  static private boolean getUVisReletive(int resolution) {
+    return ((resolution & GribNumbers.bitmask[1]) != 0);
+  }
+
+  protected Earth getEarth() {
+    if (getEarthShapeIsSpherical(resolution))
+        return new Earth(6367470.0);
     else
-      return (float) scaleValue;
-  } */
+        return EarthEllipsoid.IAU;
+  }
+
+  public int getResolution() {
+    return resolution;
+  }
 
   public boolean isLatLon() {
     return false;
@@ -198,10 +258,6 @@ public abstract class Grib1Gds {
    */
   public int getScanMode() {
     return scanMode;
-  }
-
-  public int getResolution() {
-    return resolution;
   }
 
   public int getNxRaw() {
@@ -259,10 +315,6 @@ public abstract class Grib1Gds {
   public String toString() {
     final StringBuilder sb = new StringBuilder("Grib1Gds{");
     sb.append(" template=").append(template);
-    sb.append(", earthRadius=").append(earthRadius);
-    sb.append(", majorAxis=").append(majorAxis);
-    sb.append(", minorAxis=").append(minorAxis);
-    sb.append(", earthShape=").append(earthShape);
     sb.append(", nx=").append(nx);
     sb.append(", ny=").append(ny);
     sb.append(", scanMode=").append(scanMode);
@@ -301,44 +353,6 @@ public abstract class Grib1Gds {
   protected int hashCode = 0;
 
   /*
-  Code Table Code table 3.2 - Shape of the Earth (3.2)
-      0: Earth assumed spherical with radius = 6 367 470.0 m
-      1: Earth assumed spherical with radius specified (in m) by data producer
-      2: Earth assumed oblate spheroid with size as determined by IAU in 1965 (major axis = 6 378 160.0 m, minor axis = 6 356 775.0 m, f = 1/297.0)
-      3: Earth assumed oblate spheroid with major and minor axes specified (in km) by data producer
-      4: Earth assumed oblate spheroid as defined in IAG-GRS80 model (major axis = 6 378 137.0 m, minor axis = 6 356 752.314 m, f = 1/298.257 222 101)
-      5: Earth assumed represented by WGS84 (as used by ICAO since 1998)
-      6: Earth assumed spherical with radius of 6 371 229.0 m
-      7: Earth assumed oblate spheroid with major or minor axes specified (in m) by data producer
-      8: Earth model assumed spherical with radius of 6 371 200 m, but the horizontal datum of the resulting
-         latitude/longitude field is the WGS84 reference frame
-  */
-  protected Earth getEarth() {
-    switch (earthShape) {
-      case 0:
-        return new Earth(6367470.0);
-      case 1:
-        return new Earth(earthRadius);
-      case 2:
-        return EarthEllipsoid.IAU;
-      case 3:
-        return new EarthEllipsoid("Grib2 Type 3", -1, majorAxis, minorAxis, 0);
-      case 4:
-        return EarthEllipsoid.IAG_GRS80;
-      case 5:
-        return EarthEllipsoid.WGS84;
-      case 6:
-        return new Earth(6371229.0);
-      case 7:
-        return new EarthEllipsoid("Grib2 Type 37", -1, majorAxis * 1000, minorAxis * 1000, 0);
-      case 8:
-        return new Earth(6371200.0);
-      default:
-        return new Earth();
-    }
-  }
-
-  /*
     Grid definition –   latitude/longitude grid (or equidistant cylindrical, or Plate Carrée)
     Octet No. Contents
     7–8 Ni – number of points along a parallel
@@ -362,7 +376,7 @@ public abstract class Grib1Gds {
   public static class LatLon extends Grib1Gds {
     public float la1, lo1, la2, lo2, deltaLon, deltaLat;
 
-    public LatLon(int template) {
+    protected LatLon(int template) {
       super(template);
     }
 
@@ -371,7 +385,7 @@ public abstract class Grib1Gds {
 
       la1 = getOctet3(11) * scale3;
       lo1 = getOctet3(14) * scale3;
-      resolution = getOctet(17);
+      resolution = getOctet(17);    // Resolution and component flags (see Code table 7)
       la2 = getOctet3(18) * scale3;
       lo2 = getOctet3(21) * scale3;
 
@@ -710,7 +724,7 @@ Grid definition –   polar stereographic
 
       la1 = getOctet3(11) * scale3;
       lo1 = getOctet3(14) * scale3;
-      resolution =  getOctet(17);
+      resolution =  getOctet(17); // Resolution and component flags (see Code table 7)
       lov = getOctet3(18) * scale3;
 
       dX = getOctet3(21) * scale3;
@@ -809,8 +823,7 @@ Grid definition –   polar stereographic
       if (earth.isSpherical()) {
         proj = new Stereographic(latOrigin, lov, scale);
       } else {
-        proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(
-                latOrigin, lov, scale, lad, 0.0, 0.0, earth);
+        proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(latOrigin, lov, scale, lad, 0.0, 0.0, earth);
       }
 
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
@@ -869,7 +882,7 @@ Grid definition –   polar stereographic
 
       la1 = getOctet3(11) * scale3;
       lo1 = getOctet3(14) * scale3;
-      resolution =  getOctet(17);
+      resolution =  getOctet(17); // Resolution and component flags (see Code table 7)
       lov = getOctet3(18) * scale3;
 
       dX = getOctet3(21) * scale3;
@@ -882,6 +895,8 @@ Grid definition –   polar stereographic
       latin2 = getOctet3(32) * scale3;
       latSouthPole = getOctet3(35) * scale3;
       lonSouthPole = getOctet3(38) * scale3;
+
+      lastOctet = 42;
     }
 
     @Override
@@ -969,8 +984,7 @@ Grid definition –   polar stereographic
       if (earth.isSpherical()) {
         proj = new ucar.unidata.geoloc.projection.LambertConformal(latin1, lov, latin1, latin2, 0.0, 0.0, earth.getEquatorRadius() * .001);
       } else {
-        proj = new ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse(
-                latin1, lov, latin1, latin2, 0.0, 0.0, earth);
+        proj = new ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse(latin1, lov, latin1, latin2, 0.0, 0.0, earth);
       }
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
@@ -1023,7 +1037,7 @@ Grid definition –   polar stereographic
 
       la1 = getOctet3(11) * scale3;
       lo1 = getOctet3(14) * scale3;
-      resolution = getOctet(47);
+      resolution =  getOctet(17); // Resolution and component flags (see Code table 7)
       la2 = getOctet3(18) * scale3;
       lo2 = getOctet3(21) * scale3;
       latin = getOctet3(24) * scale3;
@@ -1102,6 +1116,7 @@ Grid definition –   polar stereographic
     public GdsHorizCoordSys makeHorizCoordSys() {
       // put longitude origin at first point - doesnt actually matter
       // param par standard parallel (degrees). cylinder cuts earth at this latitude.
+      // LOOK dont have an elipsoidal Mercator projection
       Earth earth = getEarth();
       ucar.unidata.geoloc.projection.Mercator proj = new ucar.unidata.geoloc.projection.Mercator(lo1, latin, 0, 0, earth.getEquatorRadius() * .001);
 

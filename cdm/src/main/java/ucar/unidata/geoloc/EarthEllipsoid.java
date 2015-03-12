@@ -59,7 +59,7 @@ public class EarthEllipsoid extends Earth {
    */
   public static final EarthEllipsoid Airy1830 = new EarthEllipsoid("Airy 1830", 7001, 6377563.396, 299.3249646);
 
-
+  // From Grib1: IAU in 1965 (6378.160 km, 6356.775 km, f = 1/297.0)
   // From Grib2: 2 oblate spheroid with size as determined by IAU in 1965 (major axis = 6 378 160.0 m, minor axis = 6 356 775.0 m, f = 1/297.0)
   public static final EarthEllipsoid IAU = new EarthEllipsoid("IAU 1965", -1, 6378160.0, 297.0);
 
