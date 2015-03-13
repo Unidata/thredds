@@ -8,7 +8,25 @@
 <body>
 <h2>Memory use in the TDS</h2>
 <h3>FileCache</h3>
-<p>From   <a href="https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/showCaches">https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/showCaches</a> 50 files are shown, (all GFS_Global_0p5deg).</p>
+<p>If found in cache, check to see if lastModifed, eject if so. On open, lock, on close, unlock.</p>
+<ul>
+  <li><strong>RandomAccessFile</strong></li>
+  <li><strong>NetcdfFile</strong>: uses RandomAccessFile.acquire().</li>
+  <li><strong>GridNetcdf: </strong>not used</li>
+  <li><strong>RadialDataSweepAdapter</strong>: not used</li>
+  <li><strong>FeatureDatasetImpl</strong>: not used</li>
+  <li><strong>CoverageDatasetImpl</strong>: not used</li>
+  <li><strong>GribCollectionImmutable</strong>: not used</li>
+</ul>
+<h3>FileCacheGuava
+</h3>
+<ul>
+  <li><strong>GribCdmIndex</strong>: 
+  Partitions use this to open component <strong>ncx3</strong> files, keep object in cache for reuse. Data files are always opened/closed as needed, through the RAF cache. Top partition object is kept in memory. No RAF is kept locked.</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+From   <a href="https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/showCaches">https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/showCaches</a> 50 files are shown, (all GFS_Global_0p5deg).
 <p>From MAT, it appears each dataset is holding on to 5.345M. total = 267M</p>
 <p>150 variables, each data variable has a GridVariable, size = 14K. 150 * 14 = 2.1 M (so about half)</p>
 <p>each GridVariable has an array of GribGridRecord, 216 bytes apiece, 60 * 216 = 13K</p>

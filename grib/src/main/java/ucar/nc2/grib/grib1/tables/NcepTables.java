@@ -40,6 +40,8 @@ import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.grib1.Grib1ParamTime;
+import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,10 +71,10 @@ public class NcepTables extends Grib1Customizer {
     super(center, tables);
   }
 
+  ////////////// time types ////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/table5.html
   @Override
   public GribStatType getStatType(int timeRangeIndicator) {
-    if (timeRangeIndicator < 128) return super.getStatType(timeRangeIndicator);
 
     switch (timeRangeIndicator) {
       case 128:
@@ -92,13 +94,58 @@ public class NcepTables extends Grib1Customizer {
       case 136:
         return GribStatType.StandardDeviation;
       default:
-        return null;
+        return super.getStatType(timeRangeIndicator);
     }
+  }
+
+    /////////////////// local time types
+  @Override
+  public Grib1ParamTime getParamTime(Grib1SectionProductDefinition pds) {
+    int p1 = pds.getTimeValue1();  // octet 19
+    int p2 = pds.getTimeValue2();  // octet 20
+    int timeRangeIndicator = pds.getTimeRangeIndicator(); // octet 21
+    int n = pds.getNincluded();
+
+    int start = 0;
+    int end = 0;
+    int forecastTime = 0;
+    boolean isInterval = false;
+
+    switch (timeRangeIndicator) {
+
+      case 128:
+      case 129:
+      case 130:
+      case 131:
+      case 137:
+      case 138:
+      case 139:
+      case 140:
+        isInterval = true;
+        start = p1;
+        end = p2;
+        break;
+
+      case 132:
+      case 133:
+      case 134:
+      case 135:
+      case 136:
+        forecastTime = p1;
+        start = p1;
+        end = (n > 0) ? p1 + (n-1) * p2 : p1;  // LOOK ??
+        isInterval = (n > 0);
+        break;
+
+      default:
+        return super.getParamTime(pds);
+    }
+
+    return new Grib1ParamTime(this, timeRangeIndicator, isInterval, start, end, forecastTime);
   }
 
   @Override
   public String getTimeTypeName(int timeRangeIndicator) {
-    if (timeRangeIndicator < 128) return super.getTimeTypeName(timeRangeIndicator);
 
     switch (timeRangeIndicator) {
       case 128:
@@ -165,11 +212,11 @@ public class NcepTables extends Grib1Customizer {
         return "Average of forecast averages at 12 hour intervals, period = (RT + P1) to (RT + P2)";
 
       default:
-        return null;
+        return super.getTimeTypeName(timeRangeIndicator);
     }
   }
 
-  // genProcess
+  //////////////////////////////////////////// genProcess
 
   @Override
   public String getGeneratingProcessName(int genProcess) {
@@ -214,7 +261,7 @@ public class NcepTables extends Grib1Customizer {
     }
   }
 
-  /// levels
+  ///////////////////////////////////////// levels
   protected GribLevelType getLevelType(int code) {
     if (code < 129)
       return super.getLevelType(code); // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)

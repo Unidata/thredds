@@ -108,32 +108,6 @@ last edited 08/26/2014
   - Git Fetch
   - Checkout <new branch>
 
-=========================
-
-Configuration files
-
-- kept in git repo thredds/TdsConfig
-
-- each machine has their own subdirectory:
-  - idd : common to all idd servers
-  - rdavm : at CISL/DSS
-  - remotetest : opendap/netcdf C test server
-  - thredds : mlode
-  - threddsDev : lead (both test and dev at this point)
-
-- to build the config:
-   ./build.py [remotetest thredds]
-
-   This will build config.zip files (and wget scripts) for all of the subdirectories.
-   You can optionally pass one or more subdirectories to only build for them.
-   This script runs on Python 2.7 as well as >= 3.2.
-   Note <subdir>/build.info is used for this script.
-
-- to make changes to config files:
- - edit thredds/TdsConfig/*
- - run build.py
- - copy and unzip config.zip to (root)/content/thredds, or use the fetch.sh (wget) that is also generated, from the client
-
 
 ==========================
 REVIEW IN PROCESS

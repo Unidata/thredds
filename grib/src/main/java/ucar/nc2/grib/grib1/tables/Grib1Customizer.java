@@ -136,7 +136,7 @@ public class Grib1Customizer implements GribTables {
   // code table 5
   public String getTimeTypeName(int timeRangeIndicator) {
     if (timeRangeIndicator < 0) return null;
-    return Grib1WmoTimeType.getTimeTypeName(timeRangeIndicator);
+    return Grib1ParamTime.getTimeTypeName(timeRangeIndicator);
   }
 
   @Override

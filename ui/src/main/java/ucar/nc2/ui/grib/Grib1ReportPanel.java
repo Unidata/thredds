@@ -247,7 +247,7 @@ public class Grib1ReportPanel extends ReportPanel {
     countersAll.add(new CounterOfString("referenceDate"));
     countersAll.add(new CounterOfString("table version"));
     countersAll.add(new CounterOfInt("param"));
-    countersAll.add(new CounterOfInt("timeUnit"));
+    countersAll.add(new CounterOfInt("timeRangeIndicator"));
     countersAll.add(new CounterOfInt("vertCoord"));
     countersAll.add(new CounterOfInt("earthShape"));
     countersAll.add(new CounterOfString("uvIsReletive"));
@@ -314,7 +314,7 @@ public class Grib1ReportPanel extends ReportPanel {
     String table = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
     counters.countS("table version", table);
     counters.count("param", pds.getParameterNumber());
-    counters.count("timeUnit", pds.getTimeRangeIndicator());
+    counters.count("timeRangeIndicator", pds.getTimeRangeIndicator());
     counters.count("vertCoord", pds.getLevelType());
     counters.countS("referenceDate", pds.getReferenceDate().toString());
     counters.count("earthShape", gds.getEarthShape());
