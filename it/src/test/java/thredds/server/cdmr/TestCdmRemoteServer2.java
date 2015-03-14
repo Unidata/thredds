@@ -32,9 +32,8 @@
  */
 package thredds.server.cdmr;
 
-import java.io.IOException;
-
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.*;
 import thredds.client.catalog.writer.CatalogCrawler;
 import thredds.client.catalog.writer.DataFactory;
@@ -47,7 +46,11 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
+import java.io.IOException;
+
+@Category(NeedsCdmUnitTest.class)
 public class TestCdmRemoteServer2 {
 
   @Test

@@ -1,6 +1,7 @@
 package thredds.server.catalog;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.writer.DataFactory;
@@ -12,6 +13,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
@@ -21,6 +23,7 @@ import java.io.IOException;
  * @author caron
  * @since Sep 24, 2010
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestTdsFmrc {
 
   String catalog = "/catalog/testNAMfmrc/catalog.xml";

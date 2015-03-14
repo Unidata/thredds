@@ -33,13 +33,15 @@
 package thredds.server.catalog;
 
 import org.junit.Test;
-import thredds.catalog.*;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.List;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestTdsDatasetScan {
 
   @Test

@@ -36,7 +36,9 @@
 package thredds.server.cdmr;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -47,6 +49,7 @@ import java.io.IOException;
  * @author caron
  * @since 10/21/13
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestNcstreamCompareOne {
 
   @Test

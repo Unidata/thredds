@@ -64,8 +64,8 @@ gretty {
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test) {
-    include 'thredds/server/catalog/TestTdsLocal.class'
-    include 'thredds/TestEncoding.class'
+    // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
+    exclude 'thredds/tds/**'
 
 //    systemProperty 'unidata.testdata.path', 'Q:'
 

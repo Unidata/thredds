@@ -34,18 +34,21 @@
 package thredds.server.opendap;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
 /**
  * @author john
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestSanity {
 
   @Test

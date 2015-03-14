@@ -40,6 +40,7 @@ import com.eclipsesource.restfuse.annotation.Context;
 import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
@@ -55,6 +56,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -65,6 +67,7 @@ import static com.eclipsesource.restfuse.Assert.assertBadRequest;
 import static com.eclipsesource.restfuse.Assert.assertOk;
 
 @RunWith(HttpJUnitRunner.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestTdsDodsServer {
   private static URLEncoder encoder = new URLEncoder();
 

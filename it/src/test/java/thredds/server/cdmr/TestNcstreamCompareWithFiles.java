@@ -4,6 +4,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
@@ -15,6 +16,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -27,6 +29,7 @@ import java.util.Formatter;
 import java.util.List;
 
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestNcstreamCompareWithFiles {
   static String contentRoot = TestDir.cdmUnitTestDir + "formats";
   static String urlPath = "cdmremote/scanCdmUnitTests/formats";

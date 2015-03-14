@@ -37,11 +37,13 @@ package thredds;
 
 import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
@@ -58,6 +60,7 @@ import java.util.Collection;
  * @since 11/7/13
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestEncoding {
 
   @Parameterized.Parameters
