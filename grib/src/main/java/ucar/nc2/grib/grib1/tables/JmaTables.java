@@ -97,7 +97,7 @@ public class JmaTables extends Grib1Customizer {
       case 132:
         forecastTime = p1;
         start = p1;
-        end = (n > 0) ? p1 + (n-1) * p2 : p1;  // LOOK ??
+        end = (n > 0) ? p1 + (n - 1) * p2 : p1;  // LOOK ??
         isInterval = (n > 0);
         break;
 
@@ -150,12 +150,12 @@ public class JmaTables extends Grib1Customizer {
         return new Grib1ParamLevel(this, levelType, GribNumbers.MISSING, GribNumbers.MISSING);
 
       case 100:
-         return new Grib1ParamLevel(this, levelType, pds1112, GribNumbers.MISSING);
+        return new Grib1ParamLevel(this, levelType, pds1112, GribNumbers.MISSING);
 
       case 213:
-         return new Grib1ParamLevel(this, levelType, pds1112, GribNumbers.MISSING);
+        return new Grib1ParamLevel(this, levelType, pds1112, GribNumbers.MISSING);
 
-       default:
+      default:
         return new Grib1ParamLevel(this, pds);
     }
   }
@@ -169,11 +169,51 @@ public class JmaTables extends Grib1Customizer {
 
   static private void makeLevelTypesMap() {
     levelTypesMap = new HashMap<>(10);
-                // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
+    // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
     levelTypesMap.put(100, new GribLevelType(100, "Isobaric Surface", "isobaric_surface_low", "hPa", null, false, false));   // 3D
     levelTypesMap.put(211, new GribLevelType(211, "Entire soil", "entire_soil", "", null, false, false));
     levelTypesMap.put(212, new GribLevelType(212, "The bottom of land surface model", "bottom_of_model", "", null, false, false));
     levelTypesMap.put(213, new GribLevelType(213, "Underground layer number of land surface model", "underground_layer", "layer", null, false, false));   // 3D
-   }
+  }
+
+  //////////////////// gen process
+  private static Map<Integer, String> genProcessMap;
+
+  @Override
+  public String getGeneratingProcessName(int genProcess) {
+    if (genProcessMap == null) makeGenProcessMap();
+    return genProcessMap.get(genProcess);
+  }
+
+  static private void makeGenProcessMap() {
+    genProcessMap = new HashMap<>(100);
+    genProcessMap.put(0, "Undefined (not to specify generating process)");
+    genProcessMap.put(1, "Global Spectral Model (GSM8803_T63L16)");
+    genProcessMap.put(2, "Global Spectral Model (GSM8903_T106L21)");
+    genProcessMap.put(3, "Global Spectral Model (GSM9603_T213L30)");
+    genProcessMap.put(4, "Global Spectral Model (GSM0103_T213L40) ");
+    genProcessMap.put(21, "One-week EPS (GSM0103_T106L40)");
+    genProcessMap.put(31, "Regional Spectral Model (RSM0103)");
+    genProcessMap.put(32, "Mesoscale Model (MSM0103)");
+    genProcessMap.put(51, "One-month EPS (GSM9603_T63L30)");
+    genProcessMap.put(52, "One-month EPS (GSM9603_T106L40)");
+    genProcessMap.put(53, "One-month EPS (GSM0603C_TL159L40)");
+    genProcessMap.put(70, "Seasonal EPS (GSM0103_T63L40)");
+    genProcessMap.put(71, "Seasonal EPS (GSM0502C_TL95L40)");
+    genProcessMap.put(90, "Sea surface wind correction");
+    genProcessMap.put(101, "NOAA-AVHRR analysis data");
+    genProcessMap.put(102, "VISSR grid point data (for cloudiness, TBB etc.)");
+    genProcessMap.put(103, "Long-wave radiation data");
+    genProcessMap.put(104, "GMS data (sea surface temperature)");
+    genProcessMap.put(105, "Snow/ice area data");
+    genProcessMap.put(106, "Global solar radiation");
+    genProcessMap.put(141, "Sea surface temperature analysis (average for dekad or ten days)");
+    genProcessMap.put(142, "Sea surface temperature analysis");
+    genProcessMap.put(143, "Ocean current analysis");
+    genProcessMap.put(144, "Global ocean wave model");
+    genProcessMap.put(150, "Regional ocean wave model");
+    genProcessMap.put(200, "Volcaninc ash prediction");
+    genProcessMap.put(201, "Japanese 55-year Reanalysis (JRA-55)");
+  }
 
 }

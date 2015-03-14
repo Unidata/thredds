@@ -330,9 +330,9 @@ public final class Grib1SectionProductDefinition {
 
   public void showPds(Grib1Customizer cust, Formatter f) {
 
-    f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
-    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName( getSubCenter()));
-    f.format("                 Table Version : %d%n", getTableVersion());
+    f.format("5           Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
+    f.format("26       Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName( getSubCenter()));
+    f.format("4                Table Version : %d%n", getTableVersion());
 
     Grib1Parameter parameter = cust.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
     if (parameter != null) {
@@ -345,24 +345,28 @@ public final class Grib1SectionProductDefinition {
       f.format("               Parameter %d not found%n", getParameterNumber());
     }
 
-    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), cust.getGeneratingProcessName(getGenProcess()));
+    f.format("6      Generating Process Type : (%d) %s%n", getGenProcess(), cust.getGeneratingProcessName(getGenProcess()));
+    f.format("7              Grid Definition : (%d) %n", getGridDefinition());
+    f.format("8                         Flag : (%d) %n", getFlag());
 
-    f.format("                Reference Time : %s%n", getReferenceDate());
-    f.format("                    Time Units : (%d) %s%n", getTimeUnit(), getCalendarPeriodAsString());
+    f.format("13-17           Reference Time : %s%n", getReferenceDate());
+    f.format("18                  Time Units : (%d) %s%n", getTimeUnit(), getCalendarPeriodAsString());
     Grib1ParamTime ptime = cust.getParamTime(this);;
-    f.format("          Time Range Indicator : (%d) %s%n", getTimeRangeIndicator(), ptime.getTimeTypeName());
-    f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
-    f.format("                   Time 2 (P2) : %d%n", getTimeValue2());
+    f.format("19                 Time 1 (P1) : %d%n", getTimeValue1());
+    f.format("20                 Time 2 (P2) : %d%n", getTimeValue2());
+    f.format("21        Time Range Indicator : (%d) %s%n", getTimeRangeIndicator(), ptime.getTimeTypeName());
+    f.format("22-23           N in statistic : (%d)%n", getNincluded());
+    f.format("24                   N missing : (%d)%n", getNmissing());
     f.format("                   Time  coord : %s%n", ptime.getTimeCoord());
     Grib1ParamLevel plevel = cust.getParamLevel(this);
-    f.format("                    Level Type : (%d) %s%n", getLevelType(), plevel.getNameShort());
+    f.format("10                  Level Type : (%d) %s%n", getLevelType(), plevel.getNameShort());
     f.format("             Level Description : %s%n", plevel.getDescription());
     f.format("                 Level Value 1 : %f%n", plevel.getValue1());
     f.format("                 Level Value 2 : %f%n", plevel.getValue2());
-    f.format("               Grid Definition : %d%n", getGridDefinition());
+    f.format("27-28     Decimal Scale Factor : %d%n", getDecimalScale());
+
     f.format("                    GDS Exists : %s%n", gdsExists());
     f.format("                    BMS Exists : %s%n", bmsExists());
-    f.format("          Decimal Scale Factor : %d%n", getDecimalScale());
   }
 
  ////////////////////////////////////////////////////////

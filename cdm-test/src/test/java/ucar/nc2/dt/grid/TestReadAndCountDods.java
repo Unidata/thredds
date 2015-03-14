@@ -42,7 +42,7 @@ import java.util.List;
 
 @RunWith(Parameterized.class)
 public class TestReadAndCountDods {
-  static String base = "thredds:resolve:http://thredds.ucar.edu/thredds/";
+  static String base = "thredds:resolve:http://thredds-dev.unidata.ucar.edu/thredds/";
 
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
