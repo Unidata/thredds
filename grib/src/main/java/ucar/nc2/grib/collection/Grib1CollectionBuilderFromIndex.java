@@ -96,6 +96,9 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
   protected int getVersion() {
     return Grib1CollectionWriter.version;
   }
+  protected int getMinVersion() {
+    return Grib1CollectionWriter.minVersion;
+  }
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////

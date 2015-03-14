@@ -164,13 +164,16 @@ public class FeatureCollectionConfig {
   }
 
   public void show(Formatter f) {
-    f.format("FeatureCollectionConfig name ='%s' collectionName='%s' type='%s'%n", name, collectionName, type);
-    f.format("  spec='%s'%n", spec);
+    f.format("FeatureCollectionConfig name= '%s' collectionName= '%s' type= '%s'%n", name, collectionName, type);
+    f.format("  spec= '%s'%n", spec);
     if (dateFormatMark != null)
-      f.format("  dateFormatMark ='%s'%n", dateFormatMark);
+      f.format("  dateFormatMark='%s'%n", dateFormatMark);
     if (olderThan != null)
-      f.format("  olderThan =%s%n", olderThan);
-    f.format("  timePartition =%s%n", ptype);
+      f.format("  olderThan= %s%n", olderThan);
+    if (ptype == PartitionType.timePeriod)
+      f.format("  timePartition= %s %n", timePeriod);
+    else
+      f.format("  timePartition= %s%n", ptype);
 
     if (type != null) {
       switch (type) {
@@ -179,12 +182,12 @@ public class FeatureCollectionConfig {
           gribConfig.show(f);
           break;
         case FMRC:
-          f.format("  fmrcConfig =%s%n", fmrcConfig);
+          f.format("  fmrcConfig= %s%n", fmrcConfig);
           break;
         case Point:
         case Station:
         case Station_Profile:
-          f.format("  pointConfig =%s%n", pointConfig);
+          f.format("  pointConfig= %s%n", pointConfig);
           break;
       }
     }
@@ -616,7 +619,7 @@ public class FeatureCollectionConfig {
     }
 
     public void show(Formatter f) {
-      f.format("GribConfig ");
+      f.format("GribConfig= ");
       if (useGenType != useGenTypeDef) f.format(" useGenType=%s", useGenType);
       if (useTableVersion != useTableVersionDef) f.format(" useTableVersion=%s", useTableVersion);
       if (intvMerge != intvMergeDef) f.format(" intvMerge=%s", intvMerge);

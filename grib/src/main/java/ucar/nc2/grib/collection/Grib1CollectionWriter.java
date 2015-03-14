@@ -61,6 +61,7 @@ import java.util.Set;
 class Grib1CollectionWriter extends GribCollectionWriter {
 
   public static final String MAGIC_START = "Grib1Collectio2Index";  // was Grib1CollectionIndex
+  protected static final int minVersion = 1;
   protected static final int version = 2;
 
   protected final MCollection dcm; // may be null, when read in from index
