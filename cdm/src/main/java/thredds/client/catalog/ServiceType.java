@@ -45,7 +45,7 @@ public enum ServiceType {
   CdmrFeature,   //
   Compound,      //
   DAP4,          //
-  DODS,          //
+  DODS,          // deprecated
   File,         //
   FTP,          //
   GRIDFTP,     //

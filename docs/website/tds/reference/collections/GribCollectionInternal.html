@@ -8,7 +8,18 @@
 
 <body>
 <h2>Grib Collection Implementation Notes</h2>
-
+<p>3/14/2015</p>
+<p>Heap Dump of tds-dev</p>
+<p>Ran out of memory because restarting TDS doesnt clear memory - must restart Tomcat.</p>
+<p>InvDatasetFcGGrib holding 8.8M - ~500K bytes. Look at largest:</p>
+<pre>
+InvDatasetFcGGrib 	8844K
+ InvDatsetImpl    	6500
+   datasets: ArrayList of 2873 catalogRefs RTMA consuming 2700 bytes each. likely a file partition should be time or directory ??
+             put indirection - catalogRef for &quot;Partitions&quot; so dont keep in topCatalog
+ Grib2Partion	  	    2016
+</pre>
+<pre>&nbsp;</pre>
 <p>6/15/2012</p>
 
 <h3>Index</h3>
