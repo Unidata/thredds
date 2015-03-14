@@ -230,5 +230,17 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("B: not visible on spock")
+  @Test
+  public void testRDAds628p1_fcst_surf125_var() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds628p1_fcst_surf125_var", "rdavm/ds628p1_fcst_surf125_var", FeatureCollectionType.GRIB1,
+            "B:/rdavm/ds628.1_fcst_surf125_var/fcst_surf125_var\\..*195812$", null, null, null, null, null);
+    // config.gribConfig.setOption("timeUnit", "1 minute");
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
 
 }

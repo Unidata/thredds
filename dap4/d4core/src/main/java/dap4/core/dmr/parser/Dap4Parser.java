@@ -643,8 +643,12 @@ public class Dap4Parser extends Dap4ParserBody
                 if(isdatadmr) {
                     // We need to look in the underlying full dmr to locate the dimension
                     dim = (DapDimension) var.getGroup().findByFQN(nameorsize.value, DapSort.DIMENSION);
-                } else
-                    dim = (DapDimension) var.getGroup().findByFQN(nameorsize.value, DapSort.DIMENSION);
+                } else {
+                    DapGroup grp = var.getGroup();
+                    if(grp == null)
+                        throw new ParseException("Variable has no group");
+                    dim = (DapDimension) grp.findByFQN(nameorsize.value, DapSort.DIMENSION);
+                }
             } else {// Size only is given; presume a number; create unique anonymous dimension
                 String ssize = nameorsize.value.trim();
                 if(ssize.equals("*"))
@@ -755,10 +759,10 @@ public class Dap4Parser extends Dap4ParserBody
     void leavevariable()
         throws ParseException
     {
-            //DapVariable var = getVariableScope();
-            //if(isdatadmr)
-            //    validateVar(var);
-            scopestack.pop();
+        //DapVariable var = getVariableScope();
+        //if(isdatadmr)
+        //    validateVar(var);
+        scopestack.pop();
     }
 
     void
@@ -880,7 +884,7 @@ public class Dap4Parser extends Dap4ParserBody
             // Pull the top variable scope
             DapVariable parent = (DapVariable) searchScope(DapSort.ATOMICVARIABLE, DapSort.STRUCTURE, DapSort.SEQUENCE);
             if(parent == null)
-                throw new ParseException("Variable has no parent: "+var);
+                throw new ParseException("Variable has no parent: " + var);
             parent.addMap(map);
         } catch (DapException de) {
             throw new ParseException(de);

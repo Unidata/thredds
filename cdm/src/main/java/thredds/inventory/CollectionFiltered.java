@@ -30,52 +30,55 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.grib;
+package thredds.inventory;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.unidata.test.util.TestDir;
+import ucar.nc2.util.CloseableIterator;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * test GribCdmIndex.main
+ * A decorator to filter an MCollection
  *
  * @author caron
- * @since 3/9/2015
+ * @since 3/12/2015
  */
-@RunWith(Parameterized.class)
-public class TestGribCdmIndexMain {
+public class CollectionFiltered extends CollectionAbstract {
+  private MCollection org;
+  private MFileFilter filter;
 
-  @Parameterized.Parameters
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>();
-
-    // file partition
-    result.add(new Object[]{TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/gfs80fc.xml"});
-
-    // timeUnit option
-    result.add(new Object[]{TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/hrrrConus3surface.xml"});
-
-    return result;
+  public CollectionFiltered(String name, MCollection org, MFileFilter filter) {
+    super(name, null);
+    this.org = org;
+    this.filter = filter;
+    setRoot( org.getRoot());
   }
 
-
-  ///////////////////////////////////////
-
-  String[] args;
-
-  public TestGribCdmIndexMain(String fc) {
-    args = new String[2];
-    args[0] = "--featureCollection";
-    args[1] = fc;
+  @Override
+  public void close() {
+    org.close();
   }
 
-  @Test
-  public void testCreateIndex() throws Exception {
-    GribCdmIndex.main(args);
+  @Override
+  public Iterable<MFile> getFilesSorted() throws IOException {
+    List<MFile> list = new ArrayList<>(100);
+    try (CloseableIterator<MFile> iter = getFileIterator()) {
+      while (iter.hasNext()) {
+        list.add(iter.next());
+      }
+    }
+    if (hasDateExtractor()) {
+      Collections.sort(list, new DateSorter());  // sort by date
+    } else {
+      Collections.sort(list);                    // sort by name
+    }
+    return list;
+  }
+
+  @Override
+  public CloseableIterator<MFile> getFileIterator() throws IOException {
+    return new MFileIterator(org.getFileIterator(), filter);
   }
 }

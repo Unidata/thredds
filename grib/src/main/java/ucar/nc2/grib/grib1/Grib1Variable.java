@@ -119,8 +119,8 @@ public class Grib1Variable {
       if (pds.getTableVersion() != pds2.getTableVersion()) return false;
     }
 
-    Grib1ParamTime ptime = new Grib1ParamTime(cust, pds);
-    Grib1ParamTime ptime2 = new Grib1ParamTime(cust, pds2);
+    Grib1ParamTime ptime = cust.getParamTime(pds);
+    Grib1ParamTime ptime2 = cust.getParamTime(pds2);
     if (ptime.isInterval() != ptime2.isInterval()) return false;
     if (ptime.isInterval()) {
       if (!intvMerge) {
@@ -150,7 +150,7 @@ public class Grib1Variable {
     if (useTableVersion)
       result += result * 31 + pds.getTableVersion();
 
-    Grib1ParamTime ptime = new Grib1ParamTime(cust, pds);
+    Grib1ParamTime ptime = cust.getParamTime(pds);
     if (ptime.isInterval()) {
       if (!intvMerge) result += result * 31 + ptime.getIntervalSize();  // create new variable for each interval size
       if (ptime.getStatType() != null) result += result * 31 + ptime.getStatType().ordinal(); // create new variable for each stat type

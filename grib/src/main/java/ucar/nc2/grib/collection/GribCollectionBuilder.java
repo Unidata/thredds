@@ -148,6 +148,8 @@ abstract class GribCollectionBuilder {
     List<MFile> files = new ArrayList<>();
     List<? extends Group> groups = makeGroups(files, false, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
+    if (allFiles.size() == 0)
+      throw new IllegalArgumentException("No files in this collection ="+name);
 
     // create the master runtimes, classify the result
     boolean allTimesAreOne = true;
@@ -165,6 +167,7 @@ abstract class GribCollectionBuilder {
     List<Long> sortedList = new ArrayList<>();
     for (Long cd : allDates) sortedList.add(cd);
     Collections.sort(sortedList);
+
     if (sortedList.size() == 1)
       this.type = GribCollectionImmutable.Type.SRC;
     else if (allTimesAreOne)

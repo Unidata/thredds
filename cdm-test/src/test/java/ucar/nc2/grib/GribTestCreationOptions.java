@@ -32,50 +32,52 @@
  */
 package ucar.nc2.grib;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.unidata.test.util.TestDir;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * test GribCdmIndex.main
+ * Describe
  *
  * @author caron
- * @since 3/9/2015
+ * @since 3/11/2015
  */
-@RunWith(Parameterized.class)
-public class TestGribCdmIndexMain {
-
-  @Parameterized.Parameters
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>();
-
-    // file partition
-    result.add(new Object[]{TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/gfs80fc.xml"});
-
-    // timeUnit option
-    result.add(new Object[]{TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/hrrrConus3surface.xml"});
-
-    return result;
-  }
-
-
-  ///////////////////////////////////////
-
-  String[] args;
-
-  public TestGribCdmIndexMain(String fc) {
-    args = new String[2];
-    args[0] = "--featureCollection";
-    args[1] = fc;
-  }
+public class GribTestCreationOptions {
 
   @Test
-  public void testCreateIndex() throws Exception {
-    GribCdmIndex.main(args);
+  public void testTimeUnitOption() throws Exception {
+    String config = TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/hrrrConus3surface.xml";
+    GribCdmIndex.main(new String[] {"--featureCollection", config} );
+
+    /*
+<featureCollection xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+                   name="GSD HRRR CONUS 3km surface" featureType="GRIB2" harvest="true" path="grib/HRRR/CONUS_3km/surface">
+
+  <collection name="GSD_HRRR_CONUS_3km_surface"
+              spec="${cdmUnitTest}/gribCollections/hrrr/HRRR_CONUS_3km_20141010_0000.grib2"
+              timePartition="file"
+              dateFormatMark="#HRRR_CONUS_3km_surface_#yyyyMMddHHmm"
+              olderThan="5 min"/>
+
+  <tdm rewrite="test" rescan="0 0/15 * * * ? *"/>
+  <gribConfig>
+    <option name="timeUnit" value="1 minute" />
+  </gribConfig>
+</featureCollection>
+     */
+
+    String dataset = TestDir.cdmUnitTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2";
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(dataset)) {
+      Variable v = ds.findVariable("Dewpoint_temperature_height_above_ground");
+      Assert.assertNotNull("Dewpoint_temperature_height_above_ground", v);
+      Dimension d = v.getDimension(0);
+      Assert.assertEquals(57, d.getLength());
+    }
+
   }
+
 }

@@ -153,6 +153,19 @@ public class Grib2CollectionPanel extends JPanel {
       }
     });
 
+    varPopup.addAction("Extract GribRecords to File", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List<Grib2RecordBean> allRecords = new ArrayList<>();
+        List list = param2BeanTable.getSelectedBeans();
+        for (Object bean : list) {
+          Grib2ParameterBean param = (Grib2ParameterBean) bean;
+          allRecords.addAll( param.records);
+        }
+        if (allRecords.size() > 0)
+          writeToFile(allRecords);
+      }
+    });
+
     Class useClass = Grib2RecordBean.class;
     record2BeanTable = new BeanTable(useClass, (PreferencesExt) prefs.node(useClass.getName()), false,
             useClass.getName(), "from Grib2Input.getRecords()", null);
@@ -770,7 +783,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  private void writeToFile(List beans) {
+  private void writeToFile(List<Grib2RecordBean> beans) {
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -784,8 +797,7 @@ public class Grib2CollectionPanel extends JPanel {
       int n = 0;
       MFile curr = null;
 
-      for (Object o : beans) {
-        Grib2RecordBean bean = (Grib2RecordBean) o;
+      for (Grib2RecordBean bean : beans) {
         MFile mfile = fileList.get(bean.gr.getFile());
         if (curr == null || curr != mfile) {
           if (raf != null) raf.close();

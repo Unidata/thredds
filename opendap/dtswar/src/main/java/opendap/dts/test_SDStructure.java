@@ -90,7 +90,8 @@ public class test_SDStructure extends SDStructure {
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
 
-
+        if(specialO == null)
+            throw new IOException("Null test engine");
         for (int i = 0; i < elementCount(false); i++) {
             ServerMethods sm = (ServerMethods) getVar(i);
             if (sm.isProject())

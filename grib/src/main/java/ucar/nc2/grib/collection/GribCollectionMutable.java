@@ -515,7 +515,7 @@ public class GribCollectionMutable implements AutoCloseable {
         this.tableVersion = pds.getTableVersion();
         this.parameter = pds.getParameterNumber();
         this.levelType = pds.getLevelType();
-        Grib1ParamTime ptime = new Grib1ParamTime(cust, pds);
+        Grib1ParamTime ptime = cust.getParamTime(pds);
         if (ptime.isInterval()) {
           this.intvType = pds.getTimeRangeIndicator();
         } else {

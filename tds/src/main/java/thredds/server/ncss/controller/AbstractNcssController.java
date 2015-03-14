@@ -42,6 +42,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import thredds.server.ncss.exception.NcssException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -101,38 +102,28 @@ public class AbstractNcssController {
     ////////////////////////////////////////////////////////
     // Exception handlers
 
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NcssException.class)
-    public ResponseEntity<String> handle(NcssException e) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-
-        return new ResponseEntity<>(ExceptionUtils.getStackTrace(e), responseHeaders, HttpStatus.BAD_REQUEST);
+    public void handle(NcssException e) {
+     logger.debug("NcssException", e);
     }
 
+    @ResponseStatus(value=HttpStatus.NOT_FOUND, reason="Unknown Dataset")
     @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<String> handle(FileNotFoundException e) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-
-        return new ResponseEntity<>(ExceptionUtils.getStackTrace(e), responseHeaders, HttpStatus.NOT_FOUND);
+    public void handle(FileNotFoundException e) {
+      logger.debug("Not Found", e);
     }
 
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UnsupportedOperationException.class)
-    public ResponseEntity<String> handle(UnsupportedOperationException e) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-
-        return new ResponseEntity<>(ExceptionUtils.getStackTrace(e), responseHeaders, HttpStatus.BAD_REQUEST);
+    public void handle(UnsupportedOperationException e) {
+      logger.debug("UnsupportedOperationException", e);
     }
 
+    @ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<String> handle(Throwable t) {
-        logger.error("Uncaught exception", t);
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-
-        return new ResponseEntity<>(ExceptionUtils.getStackTrace(t), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+    public void handle(Throwable t) {
+      logger.error("Uncaught exception", t);
     }
 
     public static String getNCSSServletPath() {

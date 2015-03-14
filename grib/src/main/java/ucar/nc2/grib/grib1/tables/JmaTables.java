@@ -34,8 +34,10 @@ package ucar.nc2.grib.grib1.tables;
 
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
+import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
 import java.util.Collections;
@@ -43,8 +45,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Describe
+ * Local tables for JMA (center 34)
  *
+ * @see "http://rda.ucar.edu/datasets/ds628.0/docs/JRA-55.grib_20130319.xlsx"
  * @author caron
  * @since 1/27/2015
  */
@@ -57,7 +60,83 @@ public class JmaTables extends Grib1Customizer {
     super(34, tables);
   }
 
-  /// levels
+  /////////////////// local time types
+  @Override
+  public Grib1ParamTime getParamTime(Grib1SectionProductDefinition pds) {
+    int p1 = pds.getTimeValue1();  // octet 19
+    int p2 = pds.getTimeValue2();  // octet 20
+    int timeRangeIndicator = pds.getTimeRangeIndicator(); // octet 21
+    int n = pds.getNincluded();
+
+    int start = 0;
+    int end = 0;
+    int forecastTime = 0;
+    boolean isInterval = false;
+
+    switch (timeRangeIndicator) {
+
+      /* 129: Temporal variance of N forecasts; each product has valid time ranging between reference time + P1 and reference time + P2;
+         products have reference times at intervals of 24 hours, beginning at the given reference time;
+         unit of measurement is square of that in Code Table 2 */  // LOOK
+      /* 131: Temporal variance of N forecasts; valid time of the first product ranges between R + P1 and R + P2,
+          where R is reference time given in octets 13 to 17, then subsequent products have valid time range at interval of P2 - P1;
+          thus all N products cover continuous time span; products have reference times at intervals of P2 - P1, beginning at the given reference time;
+          unit of measurement is square of that in Code Table 2 */ // LOOK
+
+      case 129:
+      case 131:
+        isInterval = true;
+        start = p1;
+        end = p2;
+        break;
+
+      /* Temporal variance of N uninitialized analyses (P1 = 0) or instantaneous forecasts (P1 > 0);
+          each product has valid time at the reference time + P1;
+          products have reference times at intervals of P2, beginning at the given reference time;
+          unit of measurement is square of that in Code Table 2 */ // LOOK
+      case 132:
+        forecastTime = p1;
+        start = p1;
+        end = (n > 0) ? p1 + (n-1) * p2 : p1;  // LOOK ??
+        isInterval = (n > 0);
+        break;
+
+      default:
+        return super.getParamTime(pds);
+    }
+
+    return new Grib1ParamTime(this, timeRangeIndicator, isInterval, start, end, forecastTime);
+  }
+
+  @Override
+  public String getTimeTypeName(int timeRangeIndicator) {
+    switch (timeRangeIndicator) {
+      case 129:
+        return "Temporal variance of N forecasts at 24 hour intervals";
+      case 131:
+        return "Temporal variance of N forecasts at intervals of P1 - P2";
+      case 132:
+        return "Temporal variance of N uninitialized analyses (P1 = 0) or instantaneous forecasts (P1 > 0)";
+
+      default:
+        return super.getTimeTypeName(timeRangeIndicator);
+    }
+  }
+
+  @Override
+  public GribStatType getStatType(int timeRangeIndicator) {
+    switch (timeRangeIndicator) {
+      case 129:
+      case 131:
+      case 132:
+        return GribStatType.Variance;
+      default:
+        return super.getStatType(timeRangeIndicator);
+    }
+  }
+
+
+  ///////////////////// levels
   @Override
   public Grib1ParamLevel getParamLevel(Grib1SectionProductDefinition pds) {
     int levelType = pds.getLevelType();

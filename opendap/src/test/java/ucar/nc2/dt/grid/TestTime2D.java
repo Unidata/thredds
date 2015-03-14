@@ -30,52 +30,39 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.grib;
+package ucar.nc2.dt.grid;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.unidata.test.util.TestDir;
-
-import java.util.ArrayList;
-import java.util.List;
+import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 
 /**
- * test GribCdmIndex.main
+ * Describe
  *
  * @author caron
- * @since 3/9/2015
+ * @since 3/11/2015
  */
-@RunWith(Parameterized.class)
-public class TestGribCdmIndexMain {
-
-  @Parameterized.Parameters
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>();
-
-    // file partition
-    result.add(new Object[]{TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/gfs80fc.xml"});
-
-    // timeUnit option
-    result.add(new Object[]{TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/hrrrConus3surface.xml"});
-
-    return result;
-  }
-
-
-  ///////////////////////////////////////
-
-  String[] args;
-
-  public TestGribCdmIndexMain(String fc) {
-    args = new String[2];
-    args[0] = "--featureCollection";
-    args[1] = fc;
-  }
+public class TestTime2D {
 
   @Test
-  public void testCreateIndex() throws Exception {
-    GribCdmIndex.main(args);
+  public void testTime2D() throws Exception {
+    try (NetcdfFile dataset = NetcdfDataset.openDataset("dods://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/GFS/Pacific_40km/TwoD")) {
+
+      Variable v = dataset.findVariable(null, "Pressure_surface");
+      assert null != v;
+      assert v.getRank() == 4;
+
+      // bug is that
+      //   float Pressure_surface(reftime1=478, time=478, y=300, x=369);
+      // should be
+      // float Pressure_surface(reftime1=478, time=41, y=300, x=369);
+
+      // dont rely on exact lengths - check check equals
+      Dimension reftime = v.getDimension(0);
+      Dimension time = v.getDimension(1);
+      Assert.assertNotEquals(reftime.getLength(), time.getLength());
+    }
   }
+
 }

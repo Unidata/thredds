@@ -402,8 +402,10 @@ public class Grib1Iosp extends GribIosp {
 
 
     String timeTypeName = cust.getTimeTypeName(vindex.getIntvType());
-    if ( timeTypeName != null && timeTypeName.length() != 0)
-      v.addAttribute(new Attribute(CDM.TIME_INTERVAL, timeTypeName));
+    if ( timeTypeName != null && timeTypeName.length() != 0) {
+      v.addAttribute(new Attribute("Grib1_Interval_Type", vindex.getIntvType()));
+      v.addAttribute(new Attribute("Grib1_Interval_Name", timeTypeName));
+    }
 
     if (vindex.getEnsDerivedType() >= 0)
       v.addAttribute(new Attribute("Grib1_Ensemble_Derived_Type", vindex.getEnsDerivedType()));

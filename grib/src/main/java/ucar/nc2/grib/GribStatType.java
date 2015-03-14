@@ -43,7 +43,7 @@ import ucar.nc2.constants.CF;
  * @since 1/17/12
  */
 public enum GribStatType {
-  Average, Accumulation, Maximum, Minimum, DifferenceFromEnd, RootMeanSquare, StandardDeviation, Covariance, DifferenceFromStart, Ratio;
+  Average, Accumulation, Maximum, Minimum, DifferenceFromEnd, RootMeanSquare, StandardDeviation, Covariance, DifferenceFromStart, Ratio, Variance;
 
      // (code table 4.10) Statistical process used to calculate the processed field from the field at each time increment during the time range
     public static GribStatType getStatTypeFromGrib2(int grib2StatCode) {
@@ -73,7 +73,7 @@ public enum GribStatType {
       }
     }
 
-  public static String getStatTypeDescription(GribStatType statType) {
+  /* public static String getStatTypeDescription(GribStatType statType) {
     switch (statType) {
       case Average:
         return "Average";
@@ -98,8 +98,7 @@ public enum GribStatType {
       default:
         return "UnknownIntervalType-" + statType;
     }
-  }
-
+  } */
 
   public static int getStatTypeNumber(String  name) {
     if (name.startsWith("Average")) return 0;
@@ -112,6 +111,7 @@ public enum GribStatType {
     if (name.startsWith("Covariance")) return 7;
     if (name.startsWith("Difference (Value at the start")) return 8;
     if (name.startsWith("Ratio")) return 9;
+    if (name.startsWith("Variance")) return 10;
     return -1;
   }
 
@@ -134,7 +134,9 @@ public enum GribStatType {
         return CF.CellMethods.maximum;
       case StandardDeviation:
         return CF.CellMethods.standard_deviation;
-      default:
+      case Variance:
+         return CF.CellMethods.variance;
+       default:
         return null;
     }
   }

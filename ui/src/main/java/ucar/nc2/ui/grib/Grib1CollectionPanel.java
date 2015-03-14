@@ -280,6 +280,12 @@ public class Grib1CollectionPanel extends JPanel {
 
   ///////////////////////////////////////////////////////////////////////////
 
+  public void closeOpenFiles() throws IOException {
+    record1BeanTable.clearBeans();
+    param1BeanTable.clearBeans();
+    gds1Table.clearBeans();
+  }
+
   public void save() {
     gds1Table.saveState(false);
     param1BeanTable.saveState(false);

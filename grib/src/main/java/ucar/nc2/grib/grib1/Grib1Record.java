@@ -154,7 +154,7 @@ public class Grib1Record {
 
   private Grib1ParamTime ptime;
   public Grib1ParamTime getParamTime(Grib1Customizer cust) {
-    if (ptime == null) ptime = new Grib1ParamTime(cust, pdss);
+    if (ptime == null) ptime = cust.getParamTime(pdss);
     return ptime;
   }
 

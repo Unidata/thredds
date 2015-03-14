@@ -91,7 +91,8 @@ public class test_SDInt32 extends SDInt32 {
      */
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
-
+        if(specialO == null)
+            throw new IOException("Null test engine");
         testEngine te = (testEngine) specialO;
 
         setValue(te.nextInt32());

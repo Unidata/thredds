@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in Java
 
@@ -55,7 +55,7 @@ import static opendap.dap.parsers.Dap2Parser.Lexer.*;
 public class Dap2Parser extends Dap2Parse
 {
     /** Version number for the Bison executable that generated this parser.  */
-  public static final String bisonVersion = "3.0.2";
+  public static final String bisonVersion = "3.0";
 
   /** Name of the skeleton that generated this parser.  */
   public static final String bisonSkeleton = "lalr1.java";
@@ -235,7 +235,7 @@ public class Dap2Parser extends Dap2Parse
       yyDebugStream.println (s);
   }
 
-  private final class YYStack {
+  static private final class YYStack {
     private int[] stateStack = new int[16];
     
     private Object[] valueStack = new Object[16];
@@ -344,19 +344,6 @@ public class Dap2Parser extends Dap2Parse
     return yyerrstatus_ == 0;
   }
 
-  /** Compute post-reduction state.
-   * @param yystate   the current state
-   * @param yysym     the nonterminal to push on the stack
-   */
-  private int yy_lr_goto_state_ (int yystate, int yysym)
-  {
-    int yyr = yypgoto_[yysym - yyntokens_] + yystate;
-    if (0 <= yyr && yyr <= yylast_ && yycheck_[yyr] == yystate)
-      return yytable_[yyr];
-    else
-      return yydefgoto_[yysym - yyntokens_];
-  }
-
   private int yyaction (int yyn, YYStack yystack, int yylen) throws ParseException
   {
     Object yyval;
@@ -379,713 +366,713 @@ public class Dap2Parser extends Dap2Parse
       {
           case 6:
   if (yyn == 6)
-    /* "dap2.y":99  */ /* lalr1.java:489  */
+    /* "dap2.y":99  */ /* lalr1.java:480  */
     {unrecognizedresponse(parsestate); return YYABORT;};
   break;
     
 
   case 7:
   if (yyn == 7)
-    /* "dap2.y":104  */ /* lalr1.java:489  */
+    /* "dap2.y":104  */ /* lalr1.java:480  */
     {tagparse(parsestate,SCAN_DATASET);};
   break;
     
 
   case 8:
   if (yyn == 8)
-    /* "dap2.y":108  */ /* lalr1.java:489  */
+    /* "dap2.y":108  */ /* lalr1.java:480  */
     {tagparse(parsestate,SCAN_ATTR);};
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "dap2.y":112  */ /* lalr1.java:489  */
+    /* "dap2.y":112  */ /* lalr1.java:480  */
     {tagparse(parsestate,SCAN_ERROR);};
   break;
     
 
   case 10:
   if (yyn == 10)
-    /* "dap2.y":117  */ /* lalr1.java:489  */
+    /* "dap2.y":117  */ /* lalr1.java:480  */
     {datasetbody(parsestate,((yystack.valueAt (5-(4)))),((yystack.valueAt (5-(2)))));};
   break;
     
 
   case 11:
   if (yyn == 11)
-    /* "dap2.y":122  */ /* lalr1.java:489  */
+    /* "dap2.y":122  */ /* lalr1.java:480  */
     {yyval=declarations(parsestate,null,null);};
   break;
     
 
   case 12:
   if (yyn == 12)
-    /* "dap2.y":123  */ /* lalr1.java:489  */
+    /* "dap2.y":123  */ /* lalr1.java:480  */
     {yyval=declarations(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 13:
   if (yyn == 13)
-    /* "dap2.y":130  */ /* lalr1.java:489  */
+    /* "dap2.y":130  */ /* lalr1.java:480  */
     {yyval=makebase(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
 
   case 14:
   if (yyn == 14)
-    /* "dap2.y":132  */ /* lalr1.java:489  */
+    /* "dap2.y":132  */ /* lalr1.java:480  */
     {if((yyval=makestructure(parsestate,((yystack.valueAt (7-(5)))),((yystack.valueAt (7-(6)))),((yystack.valueAt (7-(3))))))==null) {return YYABORT;}};
   break;
     
 
   case 15:
   if (yyn == 15)
-    /* "dap2.y":134  */ /* lalr1.java:489  */
+    /* "dap2.y":134  */ /* lalr1.java:480  */
     {if((yyval=makesequence(parsestate,((yystack.valueAt (6-(5)))),((yystack.valueAt (6-(3))))))==null) {return YYABORT;}};
   break;
     
 
   case 16:
   if (yyn == 16)
-    /* "dap2.y":137  */ /* lalr1.java:489  */
+    /* "dap2.y":137  */ /* lalr1.java:480  */
     {if((yyval=makegrid(parsestate,((yystack.valueAt (11-(10)))),((yystack.valueAt (11-(5)))),((yystack.valueAt (11-(8))))))==null) {return YYABORT;}};
   break;
     
 
   case 17:
   if (yyn == 17)
-    /* "dap2.y":139  */ /* lalr1.java:489  */
+    /* "dap2.y":139  */ /* lalr1.java:480  */
     {dapsemanticerror(parsestate,EBADTYPE,"Unrecognized type"); return YYABORT;};
   break;
     
 
   case 18:
   if (yyn == 18)
-    /* "dap2.y":144  */ /* lalr1.java:489  */
+    /* "dap2.y":144  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_BYTE;};
   break;
     
 
   case 19:
   if (yyn == 19)
-    /* "dap2.y":145  */ /* lalr1.java:489  */
+    /* "dap2.y":145  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_INT16;};
   break;
     
 
   case 20:
   if (yyn == 20)
-    /* "dap2.y":146  */ /* lalr1.java:489  */
+    /* "dap2.y":146  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_UINT16;};
   break;
     
 
   case 21:
   if (yyn == 21)
-    /* "dap2.y":147  */ /* lalr1.java:489  */
+    /* "dap2.y":147  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_INT32;};
   break;
     
 
   case 22:
   if (yyn == 22)
-    /* "dap2.y":148  */ /* lalr1.java:489  */
+    /* "dap2.y":148  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_UINT32;};
   break;
     
 
   case 23:
   if (yyn == 23)
-    /* "dap2.y":149  */ /* lalr1.java:489  */
+    /* "dap2.y":149  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_FLOAT32;};
   break;
     
 
   case 24:
   if (yyn == 24)
-    /* "dap2.y":150  */ /* lalr1.java:489  */
+    /* "dap2.y":150  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_FLOAT64;};
   break;
     
 
   case 25:
   if (yyn == 25)
-    /* "dap2.y":151  */ /* lalr1.java:489  */
+    /* "dap2.y":151  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_URL;};
   break;
     
 
   case 26:
   if (yyn == 26)
-    /* "dap2.y":152  */ /* lalr1.java:489  */
+    /* "dap2.y":152  */ /* lalr1.java:480  */
     {yyval=(Object)SCAN_STRING;};
   break;
     
 
   case 27:
   if (yyn == 27)
-    /* "dap2.y":156  */ /* lalr1.java:489  */
+    /* "dap2.y":156  */ /* lalr1.java:480  */
     {yyval=arraydecls(parsestate,null,null);};
   break;
     
 
   case 28:
   if (yyn == 28)
-    /* "dap2.y":157  */ /* lalr1.java:489  */
+    /* "dap2.y":157  */ /* lalr1.java:480  */
     {yyval=arraydecls(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 29:
   if (yyn == 29)
-    /* "dap2.y":161  */ /* lalr1.java:489  */
+    /* "dap2.y":161  */ /* lalr1.java:480  */
     {yyval=arraydecl(parsestate,null,((yystack.valueAt (3-(2)))));};
   break;
     
 
   case 30:
   if (yyn == 30)
-    /* "dap2.y":162  */ /* lalr1.java:489  */
+    /* "dap2.y":162  */ /* lalr1.java:480  */
     {yyval=arraydecl(parsestate,null,((yystack.valueAt (4-(3)))));};
   break;
     
 
   case 31:
   if (yyn == 31)
-    /* "dap2.y":163  */ /* lalr1.java:489  */
+    /* "dap2.y":163  */ /* lalr1.java:480  */
     {yyval=arraydecl(parsestate,((yystack.valueAt (5-(2)))),((yystack.valueAt (5-(4)))));};
   break;
     
 
   case 32:
   if (yyn == 32)
-    /* "dap2.y":165  */ /* lalr1.java:489  */
+    /* "dap2.y":165  */ /* lalr1.java:480  */
     {dapsemanticerror(parsestate,EDIMSIZE,"Illegal dimension declaration"); return YYABORT;};
   break;
     
 
   case 33:
   if (yyn == 33)
-    /* "dap2.y":169  */ /* lalr1.java:489  */
+    /* "dap2.y":169  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
 
   case 34:
   if (yyn == 34)
-    /* "dap2.y":171  */ /* lalr1.java:489  */
+    /* "dap2.y":171  */ /* lalr1.java:480  */
     {dapsemanticerror(parsestate,EDDS,"Illegal dataset declaration"); return YYABORT;};
   break;
     
 
   case 35:
   if (yyn == 35)
-    /* "dap2.y":174  */ /* lalr1.java:489  */
+    /* "dap2.y":174  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
 
   case 36:
   if (yyn == 36)
-    /* "dap2.y":177  */ /* lalr1.java:489  */
+    /* "dap2.y":177  */ /* lalr1.java:480  */
     {attributebody(parsestate,((yystack.valueAt (3-(2)))));};
   break;
     
 
   case 37:
   if (yyn == 37)
-    /* "dap2.y":179  */ /* lalr1.java:489  */
+    /* "dap2.y":179  */ /* lalr1.java:480  */
     {dapsemanticerror(parsestate,EDAS,"Illegal DAS body"); return YYABORT;};
   break;
     
 
   case 38:
   if (yyn == 38)
-    /* "dap2.y":183  */ /* lalr1.java:489  */
+    /* "dap2.y":183  */ /* lalr1.java:480  */
     {yyval=attrlist(parsestate,null,null);};
   break;
     
 
   case 39:
   if (yyn == 39)
-    /* "dap2.y":184  */ /* lalr1.java:489  */
+    /* "dap2.y":184  */ /* lalr1.java:480  */
     {yyval=attrlist(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
 
   case 40:
   if (yyn == 40)
-    /* "dap2.y":188  */ /* lalr1.java:489  */
+    /* "dap2.y":188  */ /* lalr1.java:480  */
     {yyval=null;};
   break;
     
 
   case 41:
   if (yyn == 41)
-    /* "dap2.y":190  */ /* lalr1.java:489  */
+    /* "dap2.y":190  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_BYTE);};
   break;
     
 
   case 42:
   if (yyn == 42)
-    /* "dap2.y":192  */ /* lalr1.java:489  */
+    /* "dap2.y":192  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_INT16);};
   break;
     
 
   case 43:
   if (yyn == 43)
-    /* "dap2.y":194  */ /* lalr1.java:489  */
+    /* "dap2.y":194  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_UINT16);};
   break;
     
 
   case 44:
   if (yyn == 44)
-    /* "dap2.y":196  */ /* lalr1.java:489  */
+    /* "dap2.y":196  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_INT32);};
   break;
     
 
   case 45:
   if (yyn == 45)
-    /* "dap2.y":198  */ /* lalr1.java:489  */
+    /* "dap2.y":198  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_UINT32);};
   break;
     
 
   case 46:
   if (yyn == 46)
-    /* "dap2.y":200  */ /* lalr1.java:489  */
+    /* "dap2.y":200  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_FLOAT32);};
   break;
     
 
   case 47:
   if (yyn == 47)
-    /* "dap2.y":202  */ /* lalr1.java:489  */
+    /* "dap2.y":202  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_FLOAT64);};
   break;
     
 
   case 48:
   if (yyn == 48)
-    /* "dap2.y":204  */ /* lalr1.java:489  */
+    /* "dap2.y":204  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_STRING);};
   break;
     
 
   case 49:
   if (yyn == 49)
-    /* "dap2.y":206  */ /* lalr1.java:489  */
+    /* "dap2.y":206  */ /* lalr1.java:480  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_URL);};
   break;
     
 
   case 50:
   if (yyn == 50)
-    /* "dap2.y":207  */ /* lalr1.java:489  */
+    /* "dap2.y":207  */ /* lalr1.java:480  */
     {yyval=attrset(parsestate,((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
 
   case 51:
   if (yyn == 51)
-    /* "dap2.y":209  */ /* lalr1.java:489  */
+    /* "dap2.y":209  */ /* lalr1.java:480  */
     {dapsemanticerror(parsestate,EDAS,"Illegal attribute"); return YYABORT;};
   break;
     
 
   case 52:
   if (yyn == 52)
-    /* "dap2.y":213  */ /* lalr1.java:489  */
+    /* "dap2.y":213  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_BYTE);};
   break;
     
 
   case 53:
   if (yyn == 53)
-    /* "dap2.y":215  */ /* lalr1.java:489  */
+    /* "dap2.y":215  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_BYTE);};
   break;
     
 
   case 54:
   if (yyn == 54)
-    /* "dap2.y":218  */ /* lalr1.java:489  */
+    /* "dap2.y":218  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_INT16);};
   break;
     
 
   case 55:
   if (yyn == 55)
-    /* "dap2.y":220  */ /* lalr1.java:489  */
+    /* "dap2.y":220  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_INT16);};
   break;
     
 
   case 56:
   if (yyn == 56)
-    /* "dap2.y":223  */ /* lalr1.java:489  */
+    /* "dap2.y":223  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_UINT16);};
   break;
     
 
   case 57:
   if (yyn == 57)
-    /* "dap2.y":225  */ /* lalr1.java:489  */
+    /* "dap2.y":225  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_UINT16);};
   break;
     
 
   case 58:
   if (yyn == 58)
-    /* "dap2.y":228  */ /* lalr1.java:489  */
+    /* "dap2.y":228  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_INT32);};
   break;
     
 
   case 59:
   if (yyn == 59)
-    /* "dap2.y":230  */ /* lalr1.java:489  */
+    /* "dap2.y":230  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_INT32);};
   break;
     
 
   case 60:
   if (yyn == 60)
-    /* "dap2.y":233  */ /* lalr1.java:489  */
+    /* "dap2.y":233  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_UINT32);};
   break;
     
 
   case 61:
   if (yyn == 61)
-    /* "dap2.y":234  */ /* lalr1.java:489  */
+    /* "dap2.y":234  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_UINT32);};
   break;
     
 
   case 62:
   if (yyn == 62)
-    /* "dap2.y":237  */ /* lalr1.java:489  */
+    /* "dap2.y":237  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_FLOAT32);};
   break;
     
 
   case 63:
   if (yyn == 63)
-    /* "dap2.y":238  */ /* lalr1.java:489  */
+    /* "dap2.y":238  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_FLOAT32);};
   break;
     
 
   case 64:
   if (yyn == 64)
-    /* "dap2.y":241  */ /* lalr1.java:489  */
+    /* "dap2.y":241  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_FLOAT64);};
   break;
     
 
   case 65:
   if (yyn == 65)
-    /* "dap2.y":242  */ /* lalr1.java:489  */
+    /* "dap2.y":242  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_FLOAT64);};
   break;
     
 
   case 66:
   if (yyn == 66)
-    /* "dap2.y":245  */ /* lalr1.java:489  */
+    /* "dap2.y":245  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_STRING);};
   break;
     
 
   case 67:
   if (yyn == 67)
-    /* "dap2.y":246  */ /* lalr1.java:489  */
+    /* "dap2.y":246  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_STRING);};
   break;
     
 
   case 68:
   if (yyn == 68)
-    /* "dap2.y":250  */ /* lalr1.java:489  */
+    /* "dap2.y":250  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_URL);};
   break;
     
 
   case 69:
   if (yyn == 69)
-    /* "dap2.y":251  */ /* lalr1.java:489  */
+    /* "dap2.y":251  */ /* lalr1.java:480  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_URL);};
   break;
     
 
   case 70:
   if (yyn == 70)
-    /* "dap2.y":255  */ /* lalr1.java:489  */
+    /* "dap2.y":255  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
 
   case 71:
   if (yyn == 71)
-    /* "dap2.y":259  */ /* lalr1.java:489  */
+    /* "dap2.y":259  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
 
   case 72:
   if (yyn == 72)
-    /* "dap2.y":260  */ /* lalr1.java:489  */
+    /* "dap2.y":260  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
 
   case 73:
   if (yyn == 73)
-    /* "dap2.y":271  */ /* lalr1.java:489  */
+    /* "dap2.y":271  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (3-(2)))); yyval=((yystack.valueAt (3-(3)))); yyval=null;};
   break;
     
 
   case 74:
   if (yyn == 74)
-    /* "dap2.y":276  */ /* lalr1.java:489  */
+    /* "dap2.y":276  */ /* lalr1.java:480  */
     {errorbody(parsestate,((yystack.valueAt (7-(2)))),((yystack.valueAt (7-(3)))),((yystack.valueAt (7-(4)))),((yystack.valueAt (7-(5)))));};
   break;
     
 
   case 75:
   if (yyn == 75)
-    /* "dap2.y":279  */ /* lalr1.java:489  */
+    /* "dap2.y":279  */ /* lalr1.java:480  */
     {yyval=null;};
   break;
     
 
   case 76:
   if (yyn == 76)
-    /* "dap2.y":279  */ /* lalr1.java:489  */
+    /* "dap2.y":279  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (4-(3))));};
   break;
     
 
   case 77:
   if (yyn == 77)
-    /* "dap2.y":280  */ /* lalr1.java:489  */
+    /* "dap2.y":280  */ /* lalr1.java:480  */
     {yyval=null;};
   break;
     
 
   case 78:
   if (yyn == 78)
-    /* "dap2.y":280  */ /* lalr1.java:489  */
+    /* "dap2.y":280  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (4-(3))));};
   break;
     
 
   case 79:
   if (yyn == 79)
-    /* "dap2.y":281  */ /* lalr1.java:489  */
+    /* "dap2.y":281  */ /* lalr1.java:480  */
     {yyval=null;};
   break;
     
 
   case 80:
   if (yyn == 80)
-    /* "dap2.y":281  */ /* lalr1.java:489  */
+    /* "dap2.y":281  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (4-(3))));};
   break;
     
 
   case 81:
   if (yyn == 81)
-    /* "dap2.y":282  */ /* lalr1.java:489  */
+    /* "dap2.y":282  */ /* lalr1.java:480  */
     {yyval=null;};
   break;
     
 
   case 82:
   if (yyn == 82)
-    /* "dap2.y":282  */ /* lalr1.java:489  */
+    /* "dap2.y":282  */ /* lalr1.java:480  */
     {yyval=((yystack.valueAt (4-(3))));};
   break;
     
 
   case 83:
   if (yyn == 83)
-    /* "dap2.y":288  */ /* lalr1.java:489  */
+    /* "dap2.y":288  */ /* lalr1.java:480  */
     {yyval=dapdecode(parsestate.lexstate,((yystack.valueAt (1-(1)))));};
   break;
     
 
   case 84:
   if (yyn == 84)
-    /* "dap2.y":289  */ /* lalr1.java:489  */
+    /* "dap2.y":289  */ /* lalr1.java:480  */
     {yyval=strdup("alias");};
   break;
     
 
   case 85:
   if (yyn == 85)
-    /* "dap2.y":290  */ /* lalr1.java:489  */
+    /* "dap2.y":290  */ /* lalr1.java:480  */
     {yyval=strdup("array");};
   break;
     
 
   case 86:
   if (yyn == 86)
-    /* "dap2.y":291  */ /* lalr1.java:489  */
+    /* "dap2.y":291  */ /* lalr1.java:480  */
     {yyval=strdup("attributes");};
   break;
     
 
   case 87:
   if (yyn == 87)
-    /* "dap2.y":292  */ /* lalr1.java:489  */
+    /* "dap2.y":292  */ /* lalr1.java:480  */
     {yyval=strdup("byte");};
   break;
     
 
   case 88:
   if (yyn == 88)
-    /* "dap2.y":293  */ /* lalr1.java:489  */
+    /* "dap2.y":293  */ /* lalr1.java:480  */
     {yyval=strdup("dataset");};
   break;
     
 
   case 89:
   if (yyn == 89)
-    /* "dap2.y":294  */ /* lalr1.java:489  */
+    /* "dap2.y":294  */ /* lalr1.java:480  */
     {yyval=strdup("data");};
   break;
     
 
   case 90:
   if (yyn == 90)
-    /* "dap2.y":295  */ /* lalr1.java:489  */
+    /* "dap2.y":295  */ /* lalr1.java:480  */
     {yyval=strdup("error");};
   break;
     
 
   case 91:
   if (yyn == 91)
-    /* "dap2.y":296  */ /* lalr1.java:489  */
+    /* "dap2.y":296  */ /* lalr1.java:480  */
     {yyval=strdup("float32");};
   break;
     
 
   case 92:
   if (yyn == 92)
-    /* "dap2.y":297  */ /* lalr1.java:489  */
+    /* "dap2.y":297  */ /* lalr1.java:480  */
     {yyval=strdup("float64");};
   break;
     
 
   case 93:
   if (yyn == 93)
-    /* "dap2.y":298  */ /* lalr1.java:489  */
+    /* "dap2.y":298  */ /* lalr1.java:480  */
     {yyval=strdup("grid");};
   break;
     
 
   case 94:
   if (yyn == 94)
-    /* "dap2.y":299  */ /* lalr1.java:489  */
+    /* "dap2.y":299  */ /* lalr1.java:480  */
     {yyval=strdup("int16");};
   break;
     
 
   case 95:
   if (yyn == 95)
-    /* "dap2.y":300  */ /* lalr1.java:489  */
+    /* "dap2.y":300  */ /* lalr1.java:480  */
     {yyval=strdup("int32");};
   break;
     
 
   case 96:
   if (yyn == 96)
-    /* "dap2.y":301  */ /* lalr1.java:489  */
+    /* "dap2.y":301  */ /* lalr1.java:480  */
     {yyval=strdup("maps");};
   break;
     
 
   case 97:
   if (yyn == 97)
-    /* "dap2.y":302  */ /* lalr1.java:489  */
+    /* "dap2.y":302  */ /* lalr1.java:480  */
     {yyval=strdup("sequence");};
   break;
     
 
   case 98:
   if (yyn == 98)
-    /* "dap2.y":303  */ /* lalr1.java:489  */
+    /* "dap2.y":303  */ /* lalr1.java:480  */
     {yyval=strdup("string");};
   break;
     
 
   case 99:
   if (yyn == 99)
-    /* "dap2.y":304  */ /* lalr1.java:489  */
+    /* "dap2.y":304  */ /* lalr1.java:480  */
     {yyval=strdup("structure");};
   break;
     
 
   case 100:
   if (yyn == 100)
-    /* "dap2.y":305  */ /* lalr1.java:489  */
+    /* "dap2.y":305  */ /* lalr1.java:480  */
     {yyval=strdup("uint16");};
   break;
     
 
   case 101:
   if (yyn == 101)
-    /* "dap2.y":306  */ /* lalr1.java:489  */
+    /* "dap2.y":306  */ /* lalr1.java:480  */
     {yyval=strdup("uint32");};
   break;
     
 
   case 102:
   if (yyn == 102)
-    /* "dap2.y":307  */ /* lalr1.java:489  */
+    /* "dap2.y":307  */ /* lalr1.java:480  */
     {yyval=strdup("url");};
   break;
     
 
   case 103:
   if (yyn == 103)
-    /* "dap2.y":308  */ /* lalr1.java:489  */
+    /* "dap2.y":308  */ /* lalr1.java:480  */
     {yyval=strdup("code");};
   break;
     
 
   case 104:
   if (yyn == 104)
-    /* "dap2.y":309  */ /* lalr1.java:489  */
+    /* "dap2.y":309  */ /* lalr1.java:480  */
     {yyval=strdup("message");};
   break;
     
 
   case 105:
   if (yyn == 105)
-    /* "dap2.y":310  */ /* lalr1.java:489  */
+    /* "dap2.y":310  */ /* lalr1.java:480  */
     {yyval=strdup("program");};
   break;
     
 
   case 106:
   if (yyn == 106)
-    /* "dap2.y":311  */ /* lalr1.java:489  */
+    /* "dap2.y":311  */ /* lalr1.java:480  */
     {yyval=strdup("program_type");};
   break;
     
 
 
-/* "Dap2Parser.java":1089  */ /* lalr1.java:489  */
+/* "Dap2Parser.java":1076  */ /* lalr1.java:480  */
         default: break;
       }
 
@@ -1095,7 +1082,14 @@ public class Dap2Parser extends Dap2Parse
     yylen = 0;
 
     /* Shift the result of the reduction.  */
-    int yystate = yy_lr_goto_state_ (yystack.stateAt (0), yyr1_[yyn]);
+    yyn = yyr1_[yyn];
+    int yystate = yypgoto_[yyn - yyntokens_] + yystack.stateAt (0);
+    if (0 <= yystate && yystate <= yylast_
+        && yycheck_[yystate] == yystack.stateAt (0))
+      yystate = yytable_[yystate];
+    else
+      yystate = yydefgoto_[yyn - yyntokens_];
+
     yystack.push (yystate, yyval);
     return YYNEWSTATE;
   }
@@ -1885,7 +1879,7 @@ private static final short yycheck_[] = yycheck_init();
 
 /* User implementation code.  */
 /* Unqualified %code blocks.  */
-/* "dap2.y":26  */ /* lalr1.java:1066  */
+/* "dap2.y":26  */ /* lalr1.java:1064  */
 
  
     /**
@@ -1919,9 +1913,9 @@ private static final short yycheck_[] = yycheck_init();
 
     public String getURL() {return this.url;}
 
-/* "Dap2Parser.java":1923  */ /* lalr1.java:1066  */
+/* "Dap2Parser.java":1917  */ /* lalr1.java:1064  */
 
 }
 
-/* "dap2.y":314  */ /* lalr1.java:1070  */
+/* "dap2.y":314  */ /* lalr1.java:1068  */
 
