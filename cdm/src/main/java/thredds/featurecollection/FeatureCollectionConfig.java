@@ -512,7 +512,7 @@ public class FeatureCollectionConfig {
 
       Element pdsHashElement = configElem.getChild("pdsHash", ns);
       useGenType = readValue(pdsHashElement, "useGenType", ns, useGenTypeDef);
-      useTableVersion = readValue(pdsHashElement, "useTableVersion", ns, useTableVersionDef);  // LOOK maybe default should be false ??
+      useTableVersion = readValue(pdsHashElement, "useTableVersion", ns, useTableVersionDef);
       intvMerge = readValue(pdsHashElement, "intvMerge", ns, intvMergeDef);
       useCenter = readValue(pdsHashElement, "useCenter", ns, useCenterDef);
     }
@@ -539,6 +539,10 @@ public class FeatureCollectionConfig {
     public void setExcludeZero(boolean val) {
       if (intvFilter == null) intvFilter = new GribIntvFilter();
       intvFilter.isZeroExcluded = val;
+    }
+
+    public void setUseTableVersion(boolean val) {
+      useTableVersion = val;
     }
 
     public void setIntervalLength(int intvLength, String varId) {

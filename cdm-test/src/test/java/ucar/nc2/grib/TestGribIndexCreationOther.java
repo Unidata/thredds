@@ -243,4 +243,17 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("B: not visible on spock")
+  @Test
+  public void testRDAds131() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("testRDAds131", "rdavm/testRDAds131", FeatureCollectionType.GRIB1,
+            "B:/rdavm/ds131.1/sflxfg_mean/.*grib$", null, null, null, null, null);
+    config.gribConfig.setUseTableVersion(true);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
 }

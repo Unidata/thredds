@@ -35,6 +35,7 @@ package ucar.nc2.ui.grib;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.CoordinateAxisTimeHelper;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
@@ -43,6 +44,8 @@ import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -815,6 +818,19 @@ public class Grib1CollectionPanel extends JPanel {
 
     public CalendarDate getReferenceDate() {
       return pds.getReferenceDate();
+    }
+
+    public CalendarDate getForecastDate() {
+      CalendarPeriod period = GribUtils.getCalendarPeriod(pds.getTimeUnit());
+      CalendarDateUnit unit = CalendarDateUnit.of(null, period.getField(), getReferenceDate());
+      int timeCoord;
+      if (ptime.isInterval()) {
+        int[] intv = ptime.getInterval();
+        timeCoord = intv[1];
+      } else {
+        timeCoord = ptime.getForecastTime();
+      }
+      return unit.makeCalendarDate( period.getValue() * timeCoord);
     }
 
     public int getTimeValue1() {

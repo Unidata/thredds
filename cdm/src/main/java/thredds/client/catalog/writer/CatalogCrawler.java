@@ -37,6 +37,7 @@ import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Indent;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -57,28 +58,17 @@ public class CatalogCrawler {
     all_direct,                  // return all direct datasets, ie that have an access URL
     first_direct,                // return first dataset in each collection of direct datasets
     random_direct,               // return one random dataset in each collection of direct datasets
-    random_direct_middle         // return one random dataset in each collection of direct datasets
+    random_direct_middle,        // return one random dataset in each collection of direct datasets
+    random_direct_max           // return max random datasets in entire catalog
   }
 
   private Filter filter = null;
+  private int max = -1;
   private Type type = Type.all;
   private Listener listen;
 
   private Random random;
-  private int countCatrefs;
-
-  /**
-   * Constructor.
-   *
-   * @param type            CatalogCrawler.USE_XXX constant: When you get to a dataset containing leaf datasets,
-   *                        do all, only the first, or a randomly chosen one.
-   * @param skipDatasetScan if true, dont recurse into DatasetScan elements. This is
-   *                        useful if you are looking only for collection level metadata.
-   * @param listen          this is called for each dataset.
-   */
-  public CatalogCrawler(int type, boolean skipDatasetScan, Listener listen) {
-    this(Type.values()[type], new FilterDatasetScan(skipDatasetScan), listen);
-  }
+  private int countCatrefs = 0;
 
   /**
    * Constructor.
@@ -87,8 +77,9 @@ public class CatalogCrawler {
    * @param filter dont process this dataset or its descendants. may be null
    * @param listen each dataset gets passed to the listener
    */
-  public CatalogCrawler(Type type, Filter filter, Listener listen) {
+  public CatalogCrawler(Type type, int max, Filter filter, Listener listen) {
     this.type = type;
+    this.max = max;
     this.filter = filter;
     this.listen = listen;
 
@@ -104,19 +95,22 @@ public class CatalogCrawler {
    * @param task    user can cancel the task (may be null)
    * @param out     send status messages to here (may be null)
    * @param context caller can pass this object in (used for thread safety)
-   * @return number of catalog references opened and crawled
+   * @return number of catalogs (this + catrefs) opened and crawled
    */
   public int crawl(String catUrl, CancelTask task, PrintWriter out, Object context) throws IOException {
+
     CatalogBuilder catFactory = new CatalogBuilder();
     Catalog cat = catFactory.buildFromLocation(catUrl);
     boolean isValid = !catFactory.hasFatalError();
-
     if (out != null) {
       out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
       out.println(" validation output=\n" + catFactory.getErrorMessage());
     }
+    if (out != null)
+      out.println("***CATALOG " + cat.getBaseURI());
+
     if (isValid)
-      return crawl(cat, task, out, context);
+      return crawl(cat, task, out, context, new Indent(2));
     return 0;
   }
 
@@ -130,17 +124,10 @@ public class CatalogCrawler {
    * @param context caller can pass this object in (used for thread safety)
    * @return number of catalog references opened and crawled
    */
-  public int crawl(Catalog cat, CancelTask task, PrintWriter out, Object context) throws IOException {
-
-    if (out != null)
-      out.println("***CATALOG " + cat.getBaseURI());
-    countCatrefs = 0;
+  public int crawl(Catalog cat, CancelTask task, PrintWriter out, Object context, Indent indent) throws IOException {
 
     for (Dataset ds : cat.getDatasets()) {
-      if (type == Type.all)
-        crawlDataset(ds, task, out, context, true);
-      else
-        crawlDirectDatasets(ds, task, out, context, true);
+      crawlDataset(ds, true, task, out, context, indent);
       if ((task != null) && task.isCancel()) break;
     }
 
@@ -148,138 +135,105 @@ public class CatalogCrawler {
   }
 
   /**
-   * Crawl this dataset recursively, return all datasets
+   * Crawl this dataset recursively.
    *
    * @param ds      the dataset
+   * @param isTop   is the top dataset
    * @param task    user can cancel the task (may be null)
    * @param out     send status messages to here (may be null)
    * @param context caller can pass this object in (used for thread safety)
+   * @param indent print indentation
    */
-  public void crawlDataset(Dataset ds, CancelTask task, PrintWriter out, Object context, boolean release) throws IOException {
-    boolean isCatRef = (ds instanceof CatalogRef);
-    if (filter != null && filter.skipAll(ds)) {
-      //if (isCatRef && release) ds.release();
+  private void crawlDataset(Dataset ds, boolean isTop, CancelTask task, PrintWriter out, Object context, Indent indent) throws IOException {
+    if (filter != null && filter.skipAll(ds))
+      return;
+
+    if (ds instanceof CatalogRef) {
+      CatalogRef catref = (CatalogRef) ds;
+      if (out != null) out.printf("%s**CATREF %s (%s)%n", indent, catref.getURI(), ds.getName());
+      countCatrefs++;
+
+      if (!listen.getCatalogRef(catref, context))
+        return;
+
+      Catalog cat = readCatref(catref, out, indent);
+      if (cat == null)
+        return;
+
+      crawl(cat, task, out, context, indent.incr());
+      indent.decr();
       return;
     }
 
-    boolean isDataScan = ds.findProperty("DatasetScan") != null;
-
-    if (isCatRef) {
-      CatalogRef catref = (CatalogRef) ds;
-      if (out != null)
-        out.println(" **CATREF " + catref.getURI() + " (" + ds.getName() + ") ");
-      countCatrefs++;
-
-      if (!listen.getCatalogRef(catref, context)) {
-        //if (release) catref.release();
-        return;
-      }
+    if (isTop) {
+      if (type == Type.all || ds.hasAccess())
+        listen.getDataset(ds, context);
     }
 
-    if (!isCatRef || isDataScan)
-      listen.getDataset(ds, context);
-
-    // recurse - depth first
-    List<Dataset> dlist = null;
-    if (isCatRef) {
-      CatalogRef catref = (CatalogRef) ds;
-      CatalogBuilder builder = new CatalogBuilder();
-      Catalog nested = builder.buildFromCatref(catref);
-      if (nested != null) dlist = nested.getDatasets();
-      //if (!isDataScan)
-      //  listen.getDataset(catref.getProxyDataset(), context); // wait till a catref is read, so all metadata is there !
-    } else {
-      dlist = ds.getDatasets();
-    }
-
-    if (dlist != null) {
-      for (Dataset dds : dlist) {
-        crawlDataset(dds, task, out, context, release);
-        if ((task != null) && task.isCancel())
-          break;
-      }
-    }
-
-    /* if (isCatRef && release) {
-      CatalogRef catref = (CatalogRef) ds;
-      catref.release();
-    } */
-
-  }
-
-  /**
-   * Crawl this dataset recursively. Only send back direct datasets
-   *
-   * @param ds      the dataset
-   * @param task    user can cancel the task (may be null)
-   * @param out     send status messages to here (may be null)
-   * @param context caller can pass this object in (used for thread safety)
-   */
-  public void crawlDirectDatasets(Dataset ds, CancelTask task, PrintWriter out, Object context, boolean release) {
-    boolean isCatRef = (ds instanceof CatalogRef);
-    if (filter != null && filter.skipAll(ds)) {
-      // if (isCatRef && release) ((CatalogRef) ds).release();
-      return;
-    }
-
-    if (isCatRef) {
-      CatalogRef catref = (CatalogRef) ds;
-      if (out != null)
-        out.println(" **CATREF " + catref.getURI() + " (" + ds.getName() + ") ");
-      countCatrefs++;
-
-      if (!listen.getCatalogRef(catref, context)) {
-        // if (release) catref.release();
-        return;
-      }
-    }
-
-    // get datasets with data access ("leaves")
-    List<Dataset> dlist = ds.getDatasets();
-    List<Dataset> leaves = new ArrayList<>();
-    for (Dataset dds : dlist) {
-      if (dds.hasAccess())
-        leaves.add(dds);
-    }
-
-    if (leaves.size() > 0) {
-      if (type == Type.first_direct) {
-        Dataset dds = leaves.get(0);
+    if (type == Type.all) {
+      for (Dataset dds : ds.getDatasets()) {
         listen.getDataset(dds, context);
+        crawlDataset(dds, false, task, out, context, indent.incr());
+        indent.decr();
+        if ((task != null) && task.isCancel()) break;
+      }
 
-      } else if (type == Type.random_direct) {
-        listen.getDataset(chooseRandom(leaves), context);
+    } else {
 
-      } else if (type == Type.random_direct_middle) {
-        listen.getDataset(chooseRandomNotFirstOrLast(leaves), context);
+      // get datasets with data access ("leaves")
+      List<Dataset> dlist = ds.getDatasets();
+      List<Dataset> leaves = new ArrayList<>();
+      for (Dataset dds : dlist) {
+        if (dds.hasAccess())
+          leaves.add(dds);
+      }
 
-      } else { // do all of them
-        for (Dataset dds : leaves) {
+      if (leaves.size() > 0) {
+        if (type == Type.first_direct) {
+          Dataset dds = leaves.get(0);
           listen.getDataset(dds, context);
-          if ((task != null) && task.isCancel()) break;
+
+        } else if (type == Type.random_direct) {
+          listen.getDataset(chooseRandom(leaves), context);
+
+        } else if (type == Type.random_direct_middle) {
+          listen.getDataset(chooseRandomNotFirstOrLast(leaves), context);
+
+        } else { // do all of them
+          for (Dataset dds : leaves) {
+            listen.getDataset(dds, context);
+            if ((task != null) && task.isCancel()) break;
+          }
         }
       }
     }
 
     // recurse
-    for (Dataset dds : dlist) {
-      if (dds.hasNestedDatasets())
-        crawlDirectDatasets(dds, task, out, context, release);
-      if ((task != null) && task.isCancel())
-        break;
+    for (Dataset dds : ds.getDatasets()) {
+      if (dds.hasNestedDatasets() || (dds instanceof CatalogRef)) {
+        crawlDataset(dds, false, task, out, context, indent.incr());
+        indent.decr();
+      }
+
+      if ((task != null) && task.isCancel()) break;
     }
-
-     /* if (out != null) {
-      int took = (int) (System.currentTimeMillis() - start);
-      out.println(" ** " + ds.getName() + " took " + took + " msecs\n");
-    } */
-
-    /* if (ds instanceof CatalogRef && release) {
-      CatalogRef catref = (CatalogRef) ds;
-      catref.release();
-    }  */
-
   }
+
+  private Catalog readCatref(CatalogRef catref, PrintWriter out, Indent indent) {
+    CatalogBuilder builder = new CatalogBuilder();
+    try {
+      Catalog cat = builder.buildFromCatref(catref);
+      if (builder.hasFatalError() || cat == null) {
+        if (out != null) out.printf("%sError reading catref %s err=%s%n", indent, catref.getName(), builder.getErrorMessage());
+        return null;
+      }
+      return cat;
+    } catch (IOException e) {
+      if (out != null) out.printf("%sError reading catref %s err=%s%n", indent,catref.getName(), e.getMessage());
+    }
+    return null;
+  }
+
 
   private Dataset chooseRandom(List datasets) {
     int index = random.nextInt(datasets.size());

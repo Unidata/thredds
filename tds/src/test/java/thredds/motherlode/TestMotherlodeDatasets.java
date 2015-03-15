@@ -60,15 +60,15 @@ import ucar.httpservices.HTTPSession;
  */
 @RunWith(Parameterized.class)
 public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
-  public static String server = "http://thredds-dev.ucar.edu/thredds";
+  public static String server = "http://thredds-dev.unidata.ucar.edu/thredds";
 
   @Parameterized.Parameters
- 	public static Collection<Object[]> getTestParameters(){
+ 	public static Collection<Object[]> getTestParameters() {
  		return Arrays.asList(new Object[][]{
             {"/idd/modelsNcep.xml", CatalogCrawler.Type.random_direct, false},
-            {"/idd/modelsFnmoc.xml", CatalogCrawler.Type.random_direct, false},
-            {"/modelsHrrr.xml", CatalogCrawler.Type.random_direct, false},
-            {"/testDatasets.xml", CatalogCrawler.Type.random_direct, false},
+           // {"/idd/modelsFnmoc.xml", CatalogCrawler.Type.random_direct, false},
+           // {"/modelsHrrr.xml", CatalogCrawler.Type.random_direct, false},
+           // {"/testDatasets.xml", CatalogCrawler.Type.random_direct, false},
     });
  	}
 
@@ -99,45 +99,29 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   }
 
   private class FilterDataset implements CatalogCrawler.Filter {
-
     @Override
     public boolean skipAll(Dataset ds) {
-      if (skipDatasetScan && (ds instanceof CatalogRef) && ds.findProperty("DatasetScan") != null) return true;
-      return false;
+      return skipDatasetScan && (ds instanceof CatalogRef) && ds.findProperty("DatasetScan") != null;
     }
   }
 
   @Test
   public void crawl() throws IOException {
     out.println("Read " + catUrl);
-
-    CatalogBuilder catFactory = new CatalogBuilder();
-    Catalog cat = catFactory.buildFromLocation(catUrl);
-    boolean isValid = !catFactory.hasFatalError();
-
-    if (!isValid) {
-      System.out.println("***Catalog invalid= " + catUrl + " validation output=\n" + catFactory.getErrorMessage());
-      out.println("***Catalog invalid= " + catUrl + " validation output=\n" + catFactory.getErrorMessage());
-      return;
-    }
-    out.println("catalog <" + cat.getName() + "> is valid");
-    out.println(" validation output=\n" + catFactory.getErrorMessage());
-
     countDatasets = 0;
     countNoAccess = 0;
     countNoOpen = 0;
     int countCatRefs = 0;
-    CatalogCrawler crawler = new CatalogCrawler(type, new FilterDataset(), this);
+    CatalogCrawler crawler = new CatalogCrawler(type, 0, new FilterDataset(), this);
     long start = System.currentTimeMillis();
     try {
-      countCatRefs = crawler.crawl(cat, null, verbose ? out : null, null);
+      countCatRefs = crawler.crawl(catUrl, null, verbose ? out : null, null);
 
     } finally {
       int took = (int) (System.currentTimeMillis() - start) / 1000;
 
       out.println("***Done " + catUrl + " took = " + took + " secs\n" +
               "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
-
     }
 
     assert countNoAccess == 0;
@@ -148,17 +132,13 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   public void getDataset(Dataset ds, Object context) {
     countDatasets++;
 
-    ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
-    if (gc == null)
-      out.printf("   GeospatialCoverage NULL id = %s%n", ds.getId());
-
     NetcdfDataset ncd = null;
     try {
       Formatter log = new Formatter();
       ncd = tdataFactory.openDataset(ds, false, null, log);
 
       if (ncd == null) {
-        out.printf("**** failed= %s err=%s%n", ds.getName(), log);
+        // out.printf("**** failed= %s err=%s%n", ds.getName(), log);
         countNoAccess++;
 
       } else {
@@ -168,7 +148,11 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
         if (n == 0)
           out.printf("  # Grids == 0 id = %s%n", ds.getId());
         else if (verbose)
-          out.printf("   %d %s OK%n", n, gds.getLocationURI());
+          out.printf("     OK ngrids=%d %s%n", n, gds.getLocationURI());
+
+        ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+        if (gc == null)
+          out.printf("   GeospatialCoverage NULL id = %s%n", ds.getId());
 
         if (compareCdm)
           compareCdm(ds, ncd);

@@ -275,7 +275,7 @@ public class ToolsUI extends JPanel {
 
     // nested-2 tab - grib
     //gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
-    gribTabPane.addTab("CdmIndex2", new JLabel("CdmIndex2"));
+    gribTabPane.addTab("CdmIndex3", new JLabel("CdmIndex3"));
     gribTabPane.addTab("CdmIndexReport", new JLabel("CdmIndexReport"));
     gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
@@ -469,8 +469,8 @@ public class ToolsUI extends JPanel {
       c = gribCdmIndexPanel; */
 
         break;
-      case "CdmIndex2":
-        cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx2"));
+      case "CdmIndex3":
+        cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx3"));
         c = cdmIndex2Panel;
 
         break;

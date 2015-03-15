@@ -401,7 +401,7 @@ public class TestAll extends TestCase
       public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
 
     };
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, null, listener );
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, 0, null, listener );
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
@@ -553,7 +553,7 @@ public class TestAll extends TestCase
       public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
 
     };
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct, null, listener );
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct, 0, null, listener );
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     PrintWriter out = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
@@ -757,7 +757,7 @@ public class TestAll extends TestCase
       public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
       
     };
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct, null, listener );
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct, 0, null, listener );
 
     for ( String curCat : catList )
     {

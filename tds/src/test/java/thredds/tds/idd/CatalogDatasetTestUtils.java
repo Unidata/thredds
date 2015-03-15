@@ -91,7 +91,7 @@ public class CatalogDatasetTestUtils
                 return true;
             }
         };
-        CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct_middle, null, listener );
+        CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.random_direct_middle, 0, null, listener );
 
         int numDs = crawler.crawl( catalogUrl, null, psStatusMsg, null );
         psStatusMsg.close();
