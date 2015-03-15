@@ -151,7 +151,8 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
             throws ServletException
     {
         super.init();
-        DapLog.info(getClass().getName() + " initialization start");
+        org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
+        logServerStartup.info(getClass().getName() + " initialization start");
         try {
             this.svcinfo = new ServletInfo(this);
         } catch (Exception ioe) {
