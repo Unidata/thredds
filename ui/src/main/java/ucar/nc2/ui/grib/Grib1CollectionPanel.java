@@ -152,17 +152,20 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Complete Grib1 Record", new AbstractAction() {
+    varPopup.addAction("Show Complete Grib1 Record(s)", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
-        if (bean != null) {
+        infoPopup3.setText("");
+        List list = record1BeanTable.getSelectedBeans();
+        for (Object beano : list) {
+          RecordBean bean = (RecordBean) beano;
+
           Formatter f = new Formatter();
           String filename = fileList.get(bean.gr.getFile()).getPath();
           showCompleteRecord(cust, bean.gr, filename, f);
-          infoPopup3.setText(f.toString());
-          infoPopup3.gotoTop();
-          infoWindow3.show();
+          infoPopup3.appendLine(f.toString());
         }
+        infoPopup3.gotoTop();
+        infoWindow3.show();
       }
     });
 

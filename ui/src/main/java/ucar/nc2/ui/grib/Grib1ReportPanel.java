@@ -50,6 +50,7 @@ import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.ui.ReportPanel;
@@ -71,6 +72,8 @@ public class Grib1ReportPanel extends ReportPanel {
     checkTables, showLocalParams, summary, rename, checkRename, showEncoding// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
 
+  private Grib1Customizer cust = null;
+
   public Grib1ReportPanel(PreferencesExt prefs) {
     super(prefs);
   }
@@ -82,6 +85,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   @Override
   protected void doReport(Formatter f, Object option, MCollection dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+    cust = null;
 
     switch ((Report) option) {
       case checkTables:
@@ -245,6 +249,7 @@ public class Grib1ReportPanel extends ReportPanel {
   private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extraInfo) throws IOException {
     Counters countersAll = new Counters();
     countersAll.add(new CounterOfString("referenceDate"));
+    countersAll.add(new CounterOfString("timeCoord"));
     countersAll.add(new CounterOfString("table version"));
     countersAll.add(new CounterOfInt("param"));
     countersAll.add(new CounterOfInt("timeRangeIndicator"));
@@ -317,6 +322,11 @@ public class Grib1ReportPanel extends ReportPanel {
     counters.count("timeRangeIndicator", pds.getTimeRangeIndicator());
     counters.count("vertCoord", pds.getLevelType());
     counters.countS("referenceDate", pds.getReferenceDate().toString());
+
+    if (cust == null) cust = Grib1Customizer.factory(gr, null);
+
+    Grib1ParamTime ptime = cust.getParamTime(pds);;
+    counters.countS("timeCoord", ptime.getTimeCoord());
     counters.count("earthShape", gds.getEarthShape());
     counters.countS("uvIsReletive", gds.getUVisReletive() ? "true" : "false");
 

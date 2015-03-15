@@ -16,7 +16,7 @@
 <h3>Tomcat Install</h3>
 <ol>
   <li>Create a dedicated user and group for running Tomcat who does not have root privileges.</li>
-  <li>As this user, download and install the<a href="http://tomcat.apache.org/download-70.cgi"> latest version of Tomcat 7</a></li>
+  <li>As this user, download and install the<a href="http://tomcat.apache.org/download-70.cgi"> latest version of Tomcat 7</a>. <strong>You must use a version of Tomcat &gt;= 7.0.43</strong>.</li>
    <li>In <strong>${tomcat_home}/bin</strong> create a <strong>setenv.sh</strong> shell script, and set the values of <strong>JAVA_HOME, </strong>and<strong> CATALINA_BASE and CONTENT_ROOT</strong>. These each have to be customized to your installation. For example:
      <pre>
 #!/bin/sh
@@ -31,6 +31,8 @@ Also in <strong>setenv.sh, </strong>set <strong>CATALINA_OPTS</strong>, for exam
 <pre>
 # modify these if you wish, or use as is
 NORMAL="-Xmx4g -Xms512m -server&quot;
+
+# no longer needed in Java 8
 MAX_PERM_GEN=&quot;-XX:MaxPermSize=256m&quot;
 
 # just use these as specified

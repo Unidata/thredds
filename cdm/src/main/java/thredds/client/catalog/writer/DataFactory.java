@@ -58,9 +58,13 @@ public class DataFactory {
   static public final String PROTOCOL = "thredds";
   static public final String SCHEME = PROTOCOL + ":";
 
-  static private boolean preferCdm = true;
+  static private ServiceType[] preferAccess;
+
   static public void setPreferCdm(boolean prefer) {
-    preferCdm = prefer;
+    preferAccess = prefer ? new ServiceType[] {ServiceType.CdmRemote} : null;
+  }
+  static public void setPreferAccess(ServiceType... prefer) {
+    preferAccess = prefer;
   }
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -497,8 +501,17 @@ public class DataFactory {
     if (accessList.size() == 0)
       return null;
 
+    Access access = null;
+    if (preferAccess != null) {
+      for (ServiceType type : preferAccess) {
+        access = findAccessByServiceType(accessList, type);
+        if (access != null) break;
+      }
+    }
+
     // the order indicates preference
-    Access access = findAccessByServiceType(accessList, ServiceType.CdmRemote);
+    if (access == null)
+      access = findAccessByServiceType(accessList, ServiceType.CdmRemote);
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.DODS);
     if (access == null)

@@ -586,7 +586,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *                    <li>OpenDAP dataset URL (with a dods:, dap4:, or http: prefix).
    *                    <li>NcML file or URL if the location ends with ".xml" or ".ncml"
    *                    <li>NetCDF file through an HTTP server (http: prefix)
-   *                    <li>thredds dataset (thredds: prefix), see ThreddsDataFactory.openDataset(String location, ...));
+   *                    <li>thredds dataset (thredds: prefix), see DataFactory.openDataset(String location, ...));
    *                    </ol>
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  allow task to be cancelled; may be null.

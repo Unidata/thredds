@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Upgrading To TDS 4.5</title>
+  <link rel="stylesheet" href="tds.css" type="text/css">
+</head>
+<body>
+<h1><img alt="Unidata" src="images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS 4.6</h1>
+
+<hr>
+<h2>New Requirement</h2>
+<ul>
+  <li>Java 7 is  required</li>
+  <li>Tomcat version 7.0.43 or greater</li>
+  <p>&nbsp;</p>
+</ul>
+<h2>GRIB Feature Collection Changes</h2>
+<ol>
+  <li>New indexes (.<strong>ncx3</strong>) will be written the first time GRIB files are accessed. You may delete the older indices (<strong>ncx</strong>, <strong>ncx2</strong>) if you like. The <strong>gbx9</strong> indices can stay, althoug deleting them will allow a few minor improvements to be made.</li>
+</ol>
+<p>For complete information, see <a href="reference/collections/GribCollections.html">GRIB Collections</a> and <a href="reference/collections/TDM.html">TDM</a>.</p>
+<h2>&nbsp;</h2>
+<h2>New Features in version 4.6</h2>
+<ul>
+</ul>
+<h2>API changes</h2>
+<h3>Client Catalog API</h3>
+<blockquote>
+  <p>The catalog processing classes in <strong>thredds.catalog</strong> package has been replaced by <strong>thredds.client.catalog</strong> everywhere on the client. If you are using  <strong>thredds.catalog</strong>  in your code, please switch to <strong>thredds.catalog</strong>.<strong>client</strong>, as it is takes less memory and is better performant. The old package is still available in the <strong>compatibility.jar</strong>, which you will need to sperately include in your classpath if needed.</p>
+</blockquote>
+<p>&nbsp;</p>
+<h3>Internal changes</h3>
+<ul>
+  <li></li>
+</ul>
+<p>&nbsp;</p>
+<hr>
+
+<address>
+  <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
+  last updated Mar 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  support</a>.
+</address>
+
+</body>
+</html>
