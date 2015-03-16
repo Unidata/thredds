@@ -46,6 +46,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
 public class TestCdmRemoteServer2 {
@@ -95,7 +96,7 @@ public class TestCdmRemoteServer2 {
   @Test
   public void testUrlReading() throws IOException {
     Catalog cat = TestTdsLocal.open("catalog/scanCdmUnitTests/formats/netcdf3/catalog.xml");
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, null, new CatalogCrawler.Listener() {
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, 0, null, new CatalogCrawler.Listener() {
 
       @Override
       public void getDataset(Dataset dd, Object context) {
@@ -114,7 +115,7 @@ public class TestCdmRemoteServer2 {
     });
     long start = System.currentTimeMillis();
     try {
-      crawler.crawl(cat, null, null, null);
+      crawler.crawl(cat, null, null, null, new Indent(2));
     } finally {
       long took = (System.currentTimeMillis() - start);
       System.out.format("***Done " + cat + " took = " + took + " msecs%n");

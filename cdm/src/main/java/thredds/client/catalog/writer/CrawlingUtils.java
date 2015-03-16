@@ -30,7 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.crawl;
+package thredds.client.catalog.writer;
 
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -53,7 +53,7 @@ import java.util.Random;
  * @author caron
  * @since 3/14/2015
  */
-public class Util {
+public class CrawlingUtils {
 
   // read a 2D slice out all the variables in the dataset, report stats
   // Its a Runnable, so you can put it into a Thread for mulithreaded testing

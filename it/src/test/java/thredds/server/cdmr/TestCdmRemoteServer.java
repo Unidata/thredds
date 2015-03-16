@@ -42,6 +42,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
 import java.io.IOException;
@@ -98,7 +99,7 @@ public class TestCdmRemoteServer {
 
   public void utestUrlReading() throws IOException {
     Catalog cat = TestTdsLocal.open(null);
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, null, new CatalogCrawler.Listener() {
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.Type.all_direct, 0, null, new CatalogCrawler.Listener() {
 
       @Override
       public void getDataset(Dataset dd, Object context) {
@@ -116,7 +117,7 @@ public class TestCdmRemoteServer {
     });
     long start = System.currentTimeMillis();
     try {
-      crawler.crawl(cat, null, null, null);
+      crawler.crawl(cat, null, null, null, new Indent(2));
     } finally {
       long took = (System.currentTimeMillis() - start);
       System.out.format("***Done " + cat + " took = " + took + " msecs%n");

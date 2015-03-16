@@ -32,12 +32,8 @@
  */
 package ucar.nc2.thredds.server;
 
-import thredds.catalog.ServiceType;
-import thredds.client.catalog.writer.DataFactory;
-import thredds.crawl.Util;
-import ucar.nc2.thredds.ThreddsDataFactory;
+import thredds.client.catalog.writer.CrawlingUtils;
 import ucar.nc2.ui.widget.StopButton;
-import ucar.nc2.dods.DODSNetcdfFile;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -78,16 +74,16 @@ public class TestTDSdataset {
     //DataFactory.setPreferAccess(thredds.client.catalog.ServiceType.DODS, thredds.client.catalog.ServiceType.OPENDAP);
 
     int nthreads = 1;
-    List<Util.TDSdatasetReader> ta = new ArrayList<>();
+    List<CrawlingUtils.TDSdatasetReader> ta = new ArrayList<>();
     for (int i = 0; i < nthreads; i++)
-      ta.add(new Util.TDSdatasetReader(Integer.toString(i), dataset, null, showDetail));
+      ta.add(new CrawlingUtils.TDSdatasetReader(Integer.toString(i), dataset, null, showDetail));
 
     /* frame.getContentPane().add(main);
     frame.pack();
     frame.setLocation(40, 300);
     frame.setVisible(true);  */
 
-    for (Util.TDSdatasetReader runner : ta) {
+    for (CrawlingUtils.TDSdatasetReader runner : ta) {
       Thread t = new Thread(runner);
       t.start();
     }
