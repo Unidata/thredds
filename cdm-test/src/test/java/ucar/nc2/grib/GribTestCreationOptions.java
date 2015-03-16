@@ -34,10 +34,12 @@ package ucar.nc2.grib;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 /**
@@ -46,8 +48,8 @@ import ucar.unidata.test.util.TestDir;
  * @author caron
  * @since 3/11/2015
  */
+@Category(NeedsCdmUnitTest.class)
 public class GribTestCreationOptions {
-
   @Test
   public void testTimeUnitOption() throws Exception {
     String config = TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/hrrrConus3surface.xml";

@@ -329,6 +329,7 @@
             <additionalClasspathElement>${basedir}/src/main/webapp</additionalClasspathElement>
             <additionalClasspathElement>${basedir}/src/main/webapp/WEB-INF/classes</additionalClasspathElement>
           </additionalClasspathElements>
+          <excludedGroups>ucar.unidata.test.util.NeedsCdmUnitTest</excludedGroups>
         </configuration>
       </plugin>
 
