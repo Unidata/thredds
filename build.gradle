@@ -21,6 +21,7 @@ buildscript {
 }
 
 // In order to refer to subprojects' Test tasks below, those subprojects must be evaluated first.
+// FIXME: This is kludgy. Use configuration injection (allprojects{}, subprojects{}) instead.
 evaluationDependsOnChildren()
 
 task testAll(group: 'Build') {

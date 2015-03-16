@@ -81,10 +81,6 @@ task printProps << {
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
 apply plugin: 'org.akhikhl.gretty'
 
-//test {
-//    classpath += files("src/main/webapp", "src/main/webapp/WEB-INF/classes")
-//}
-
 test {
     // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
     exclude 'thredds/tds/**'
