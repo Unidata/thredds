@@ -163,9 +163,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludedGroups>ucar.unidata.test.util.NeedsCdmUnitTest</excludedGroups>
-        </configuration>
       </plugin>
 
       <plugin>

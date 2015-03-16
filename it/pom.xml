@@ -173,7 +173,6 @@
           <excludes>
             <exclude>/thredds/tds/*</exclude>
           </excludes>
-          <excludedGroups>ucar.unidata.test.util.NeedsCdmUnitTest</excludedGroups>
         </configuration>
         <executions>
           <!-- execution>
