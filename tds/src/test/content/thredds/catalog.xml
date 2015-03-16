@@ -19,9 +19,12 @@
   </service>
 
   <datasetRoot path="localContent" location="content/testdata/"/>
+  <datasetRoot path="testRestrictedDataset" location="content/testdata/"/>
   <datasetRoot path="cdmUnitTest" location="${cdmUnitTest}"/>
 
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="localContent/testData.nc" dataType="Grid"/>
+  <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" serviceName="all" urlPath="testRestrictedDataset/testData2.nc" restrictAccess="tiggeData"/>
+
   <dataset name="Test With Viewer" ID="testDataset2" serviceName="odap" urlPath="localContent/2004050412_eta_211.nc" dataType="Grid">
     <property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/>
     <property name="viewer2" value="http://www.unidata.ucar.edu/,MyOtherViewer"/>
@@ -85,6 +88,13 @@
 
   </datasetScan>
 
+  <datasetScan name="Test Restricted datasetScan" ID="testRestrictedScan" path="testRestrictedScan" location="${cdmUnitTest}/ncss/point_features/windProfilers"
+      restrictAccess="tiggeData">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+  </datasetScan>
+
   <dataset name="Test dataset scan nested dirs">
     <metadata inherited="true">
       <documentation type="summary">The NOAA Profiler Network (NPN), consisting of 35 unmanned Doppler Radar sites
@@ -99,30 +109,24 @@
         <duration>7 days</duration>
       </timeCoverage>
     </metadata>
-      <datasetScan name="6 minute" collectionType="TimeSeries" harvest="true" ID="NWS/NPN/6min"
-                   path="station/profiler/wind/06min" location="${cdmUnitTest}/ncss/point_features/windProfilers">
-        <metadata inherited="true">
-          <documentation type="summary">Six minute average data.</documentation>
-          <serviceName>all</serviceName>
-        </metadata>
-        <filter>
-          <include wildcard="*.nc" atomic="true" collection="false"/>
-        </filter>
-        <sort>
-          <lexigraphicByName increasing="false"/>
-        </sort>
-        <addLatest/>
-        <addDatasetSize/>
-        <addTimeCoverage
-                datasetNameMatchPattern="PROFILER_wind_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
-                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
-      </datasetScan>
-  </dataset>
-
-
-  <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="testStandardTds/testData2.grib2" restrictAccess="tiggeData">
-    <serviceName>odap</serviceName>
-    <dataType>Grid</dataType>
+    <datasetScan name="6 minute" collectionType="TimeSeries" harvest="true" ID="NWS/NPN/6min"
+                 path="station/profiler/wind/06min" location="${cdmUnitTest}/ncss/point_features/windProfilers">
+      <metadata inherited="true">
+        <documentation type="summary">Six minute average data.</documentation>
+        <serviceName>all</serviceName>
+      </metadata>
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+      <addTimeCoverage
+          datasetNameMatchPattern="PROFILER_wind_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
+          startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
+    </datasetScan>
   </dataset>
 
   <!-- UNTESTED test NcML in dataset LOOK doesnt work -->
@@ -188,13 +192,16 @@
         <attribute name="ncmlAdded" value="lat_stuff"/>
       </variable>
       <aggregation dimName="time" type="joinExisting" timeUnitsChange="true">
-          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_0600.nc" ncoords="2"/>   <!-- prob doesnt work -->
-          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1200.nc" ncoords="2"/>
-          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1800.nc" ncoords="2"/>
-          <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060926_0000.nc" ncoords="2"/>
-        </aggregation>
+        <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_0600.nc" ncoords="2"/>
+        <!-- prob doesnt work -->
+        <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1200.nc" ncoords="2"/>
+        <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060925_1800.nc" ncoords="2"/>
+        <netcdf location="${cdmUnitTest}/ncml/nc/namExtract/20060926_0000.nc" ncoords="2"/>
+      </aggregation>
     </ncml:netcdf>
   </dataset>
+
+
   <!-- END UNTESTED-->
 
   <catalogRef xlink:title="Test Enhanced" xlink:href="enhancedCatalog.xml" name=""/>

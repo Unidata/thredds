@@ -76,13 +76,13 @@ public class DatasetHandler {
 
   // resource control
   static private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
-  static private volatile PathMatcher resourceControlMatcher = new PathMatcher(); // path, restrictAccess string for datasetScan
+  static private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
   static private boolean hasResourceControl = false;
 
   static void reinit() {
     ncmlDatasetHash = new HashMap<>();
     resourceControlHash = new HashMap<>();
-    resourceControlMatcher = new PathMatcher();
+    resourceControlMatcher = new PathMatcher<>();
     sourceList = new ArrayList<>();
 
     hasResourceControl = false;
@@ -351,6 +351,8 @@ public class DatasetHandler {
     }
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Find the longest match for this path.
    *
@@ -365,7 +367,7 @@ public class DatasetHandler {
 
     String rc = resourceControlHash.get(path);
     if (null == rc)
-      rc = (String) resourceControlMatcher.match(path);
+      rc = resourceControlMatcher.match(path);
 
     return rc;
   }
@@ -428,6 +430,8 @@ public class DatasetHandler {
 
       // LOOK: seems like you only need to add if InvAccess.InvService.isReletive
       // LOOK: seems like we should use resourceControlMatcher to make sure we match .dods, etc
+      // LOOK a featureCollection does not have an access path - its further down in the dataset tree, so not getting restricted
+      // seems like you could just use the path ??
       for (InvAccess access : ds.getAccess()) {
         if (access.getService().isRelativeBase())
           resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
@@ -437,6 +441,8 @@ public class DatasetHandler {
 
     hasResourceControl = true;
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * This tracks Dataset elements that have embedded NcML

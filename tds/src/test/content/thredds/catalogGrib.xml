@@ -14,10 +14,8 @@
 
   <!-- test GRIB collection  -->
   <featureCollection featureType="GRIB1" name="GFS_CONUS_80km" path="gribCollection/GFS_CONUS_80km">
-    <dataFormat>GRIB-1</dataFormat>
     <metadata inherited="true">
       <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
 
       <documentation type="summary">NCEP GFS Model : AWIPS 202 (I) Grid. National - CONUS (polar stereographic).
         Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
@@ -36,9 +34,7 @@
 
   <featureCollection name="NDFD-CONUS-5km" featureType="GRIB2" harvest="true" path="grib/NDFD/CONUS_5km">
     <metadata inherited="true">
-      <dataFormat>GRIB-2</dataFormat>
       <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
     </metadata>
 
     <collection
@@ -54,6 +50,15 @@
         <useGenType>true</useGenType>
       </pdsHash>
     </gribConfig>
+  </featureCollection>
+
+  <!-- test restricted GRIB collection  -->
+  <featureCollection featureType="GRIB1" name="GFS_CONUS_80km_restricted" path="restrictCollection/GFS_CONUS_80km" restrictAccess="tiggeData">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+
+    <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
   </featureCollection>
 
 </catalog>

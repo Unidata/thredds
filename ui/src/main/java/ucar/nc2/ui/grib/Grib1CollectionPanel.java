@@ -854,7 +854,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getNIncludeMiss() {
-      return pds.getNincluded()+"/"+pds.getNmissing();
+      return pds.getNincluded()+" / "+pds.getNmissing();
     }
 
     public int getPertNum() {

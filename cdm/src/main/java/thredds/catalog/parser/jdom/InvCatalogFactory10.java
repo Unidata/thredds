@@ -273,7 +273,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (authority != null) dataset.setAuthority(authority);
     if (id != null) dataset.setID(id);
     if (harvest != null) dataset.setHarvest(harvest.equalsIgnoreCase("true"));
-    if (restrictAccess != null) dataset.setResourceControl(restrictAccess);
+    if (restrictAccess != null)
+      dataset.setResourceControl(restrictAccess);
 
     if (collectionTypeName != null) {
       CollectionType collectionType = CollectionType.findType(collectionTypeName);

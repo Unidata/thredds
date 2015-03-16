@@ -71,7 +71,7 @@ public class TomcatAuthorizer implements Authorizer {
     if (debugResourceControl) System.out.println("redirect to = " + urlr);
     res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
     res.addHeader("Location", urlr);
-    res.setHeader("Last-Modified", "");
+    res.setHeader("Last-Modified", "");  // LOOK
     return false;
   }
 
