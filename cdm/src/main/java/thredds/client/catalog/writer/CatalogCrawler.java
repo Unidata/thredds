@@ -32,6 +32,8 @@
  */
 package thredds.client.catalog.writer;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
@@ -74,6 +76,7 @@ public class CatalogCrawler {
    * Constructor.
    *
    * @param type   CatalogCrawler.Type
+   * @param max    return max (random_direct_max only)
    * @param filter dont process this dataset or its descendants. may be null
    * @param listen each dataset gets passed to the listener
    */
@@ -83,7 +86,7 @@ public class CatalogCrawler {
     this.filter = filter;
     this.listen = listen;
 
-    if (type == Type.random_direct || type == Type.random_direct_middle)
+    if (type == Type.random_direct || type == Type.random_direct_middle || type == Type.random_direct_max)
       this.random = new Random(System.currentTimeMillis());
   }
 
@@ -248,6 +251,20 @@ public class CatalogCrawler {
       index--;
     return (Dataset) datasets.get(index);
   }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("filter", filter)
+            .add("max", max)
+            .add("type", type)
+            .add("listen", listen)
+            .add("random", random)
+            .add("countCatrefs", countCatrefs)
+            .toString();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
 
   static public interface Listener {
     /**

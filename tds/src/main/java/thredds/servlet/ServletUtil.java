@@ -34,6 +34,8 @@
 package thredds.servlet;
 
 import java.io.*;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -620,7 +622,9 @@ public class ServletUtil {
 
       // Return the file
       ServletOutputStream out = res.getOutputStream();
-      IO.copyFileB(file, out, 60000);
+      // IO.copyFileB(file, out, 60 * 1000);
+      WritableByteChannel cOut = Channels.newChannel(out);
+      IO.copyFileWithChannels(file, cOut, 60 * 1000);
       res.flushBuffer();
       out.close();
       if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);

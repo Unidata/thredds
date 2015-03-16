@@ -1200,7 +1200,7 @@ public class ToolsUI extends JPanel {
 
   private void openPointFeatureDataset(String datasetName) {
     makeComponent(ftTabPane, "PointFeature");
-    pointFeaturePanel.setPointFeatureDataset(null, datasetName);
+    pointFeaturePanel.setPointFeatureDataset(FeatureType.ANY_POINT, datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(pointFeaturePanel);
   }
