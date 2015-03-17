@@ -85,10 +85,10 @@ test {
     // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
     exclude 'thredds/tds/**'
 
-    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
+//    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
 //    def contentRoot = 'Q:/cdmUnitTest/it/content'
 
-    systemProperty 'tds.content.root.path', contentRoot
+//    systemProperty 'tds.content.root.path', contentRoot
 //    systemProperty 'tds.dir.cdmUnitTest', 'Q:/cdmUnitTest'
 }
 
