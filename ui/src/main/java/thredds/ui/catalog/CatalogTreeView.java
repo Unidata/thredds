@@ -499,8 +499,6 @@ public class CatalogTreeView extends JPanel {
       if (debugTree) System.out.println("isLeaf="+ds.getName());
       if (ds instanceof CatalogRef) {
         return false;
-        //CatalogRef catref = (CatalogRef) ds;
-        //if (!catref.isRead()) return false;
       }
       return !ds.hasNestedDatasets();
     }
@@ -510,6 +508,13 @@ public class CatalogTreeView extends JPanel {
     public void setCatalog(Catalog catalog) {
       children = new ArrayList<>();
       java.util.List<Dataset> datasets = catalog.getDatasets();
+      if (datasets.size() == 1) {
+        Dataset top = datasets.get(0);
+        if (top.getName().equalsIgnoreCase(ds.getName())) {
+          ds = top; // ??
+          datasets = top.getDatasets();
+        }
+      }
       int[] childIndices = new int[ datasets.size()];
       for (int count = 0; count < datasets.size(); count++) {
         children.add( new InvCatalogTreeNode( this, datasets.get(count)));

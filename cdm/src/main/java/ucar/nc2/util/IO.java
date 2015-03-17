@@ -41,6 +41,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -352,6 +354,34 @@ public class IO {
     try (FileInputStream fin = new FileInputStream(fileIn)) {
       InputStream in = new BufferedInputStream(fin);
       IO.copyB(in, out, bufferSize);
+    }
+  }
+
+  static public void copyFileWithChannels(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
+    ReadableByteChannel in = new FileInputStream(fileIn).getChannel();
+    copy(in, out, 32 * 1024);
+  }
+
+    // Read all available bytes from one channel and copy them to the other.
+  static public void copy(ReadableByteChannel in, WritableByteChannel out, int bufferSize) throws IOException {
+    // First, we need a buffer to hold blocks of copied bytes.
+    ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
+
+    // Now loop until no more bytes to read and the buffer is empty
+    while (in.read(buffer) != -1 || buffer.position() > 0) {
+      // The read() call leaves the buffer in "fill mode". To prepare
+      // to write bytes from the bufferwe have to put it in "drain mode"
+      // by flipping it: setting limit to position and position to zero
+      buffer.flip();
+
+      // Now write some or all of the bytes out to the output channel
+      out.write(buffer);
+
+      // Compact the buffer by discarding bytes that were written,
+      // and shifting any remaining bytes. This method also
+      // prepares the buffer for the next call to read() by setting the
+      // position to the limit and the limit to the buffer capacity.
+      buffer.compact();
     }
   }
 

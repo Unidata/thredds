@@ -87,9 +87,9 @@ public class FeatureDatasetServiceImpl implements FeatureDatasetService {
 
       //Try as file?
       NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, datasetPath);
-      Set<Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(Enhance.CoordSystems, Enhance.ConvertEnums));
       if (ncfile != null) {
         //Wrap it into a FeatureDataset
+        Set<Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(Enhance.CoordSystems, Enhance.ConvertEnums));
         fd = FeatureDatasetFactoryManager.wrap(
                 FeatureType.ANY,                  // will check FeatureType below if needed...
                 NetcdfDataset.wrap(ncfile, enhance),

@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package timing.IO;
+package timing;
 
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Format;
@@ -66,12 +66,23 @@ import java.util.Date;
 
  */
 
-public class TimeCopy {
+public class TimingCopy {
   static boolean debug = true;
 
   static public void main(String args[]) throws IOException {
+    // 3/16/2015
+    //copyURL2null("http://thredds-dev.unidata.ucar.edu/thredds/fileServer/grib/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20141116_0000.grib1/files/GFS_CONUS_80km_20141116_0000.grib1", 20000);
+    // copyURL2null("http://thredds-dev.unidata.ucar.edu/thredds/fileServer/grib/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_20141116_0000.grib2/files/GFS_Global_0p5deg_20141116_0000.grib2", 20000);
+    //copyURL2null("http://rdavm.ucar.edu:8080/thredds/fileServer/aggregations/g/ds131.1/4/mean/ds131.1_synop_fgff_mean-1871/files/sflxgrbfg_mean_187101_09.grib", 20000);
+    //copyURL2null("http://localhost:8080/thredds/fileServer/gribCollection/GFS_2p5/GFS_Global_2p5deg_20150301_0600.grib2/files/GFS_Global_2p5deg_20150301_0600.grib2", 20000);
+    //copyURL2null("http://localhost:8080/thredds/fileServer/gribCollection/GFS_2p5/GFS_Global_2p5deg_20150301_1200.grib2/files/GFS_Global_2p5deg_20150301_1200.grib2", 20000);
+    //copyURL2null("http://localhost:8080/thredds/fileServer/gribCollection/GFS_2p5/GFS_Global_2p5deg_20150301_1800.grib2/files/GFS_Global_2p5deg_20150301_1800.grib2", 20000);
+
+    copyFile2null("Q:/cdmUnitTest/gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0600.grib2", 60 * 1000);
+
+
     // took = 316.531 sec; len= 20.0 Mbytes; rate = .0631Mb/sec ok=ok
-    copyURL("http://motherlode.ucar.edu:9080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+    //copyURL("http://motherlode.ucar.edu:9080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
     
     //copyURL("http://localhost:8080/thredds/netcdf/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/ruc.nc", 10000);
     //copyURL("http://localhost:8080/thredds/netcdf/stream/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/rucStream.nc", 10000);
@@ -210,6 +221,22 @@ public class TimeCopy {
     System.out.println(" copy (" + name + ") took = " + took + " sec; rate = " + rate + "Mb/sec");
   }
 
+  static public void copyFile2null(String filenameIn, int buffer) throws IOException {
+    long lenIn = new File(filenameIn).length();
+    if (debug) System.out.println("read " + filenameIn + " len = " + lenIn);
+
+    InputStream in = new FileInputStream(filenameIn);
+
+    long start = System.currentTimeMillis();
+    IO.copy2null(in, buffer);
+    double took = .001 * (System.currentTimeMillis() - start);
+
+    in.close();
+
+    double rate = lenIn / took / (1000 * 1000);
+    System.out.println(" copy (" + filenameIn + ") took = " + took + " sec; rate = " + rate + "Mb/sec");
+  }
+
   static public void copyFileNIO(String filenameIn, String filenameOut, long kbchunks) throws IOException {
 
     FileInputStream in = new FileInputStream(filenameIn);
@@ -285,7 +312,7 @@ public class TimeCopy {
     System.out.println(" copyURL (" + url + ") took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + "Mb/sec ok="+ok);
   }
 
-  static public void copyURL2null(String url, String filenameOut, int bufferSize) throws IOException {
+  static public void copyURL2null(String url, int bufferSize) throws IOException {
 
     long start = System.currentTimeMillis();
     long count = IO.copyUrlB(url, null, bufferSize);

@@ -931,8 +931,8 @@ public class OpendapServlet extends AbstractServlet {
     } */
 
     NetcdfFile ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
-    if (null == ncd)
-      throw new FileNotFoundException("Cant find "+ reqPath);
+    if (null == ncd) return null; // error message already sent
+    //   throw new FileNotFoundException("Cant find "+ reqPath);
 
     GuardedDataset gdataset = new GuardedDatasetCacheAndClone(reqPath, ncd, acceptSession);
 

@@ -66,6 +66,7 @@
 </ul>
 <h2>Tomcat</h2>
 <ul>
+  <li><a href="#OutOfMemoryError">Im getting "java.lang.OutOfMemoryError: Java heap space" Whats up?</a></li>
   <li><a href="#permGenOutOfMemoryError">I'm getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></li>
   <li><a href="#shutdownUnstoppedThreads">During shutdown I'm getting messages about threads (ThreadLocal) having to be shut down to prevent memory leaks. Whats
     up?</a></li>
@@ -75,8 +76,8 @@
   <li><a href="#removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></li>
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
   <li><a href="#SizeLimitExceededException">Manager fails to upload new thredds.war with SizeLimitExceededException</a></li>
+  <li><a href="#Logging">Logging</a> is not working</li>
 </ul>
-
 <hr width="100%">
 <h2>General</h2>
 
@@ -543,21 +544,28 @@ you must restart tomcat for this to take effect.
 
 <hr>
 <h2>Tomcat</h2>
-
+<h4>Q: <a name="OutOfMemoryError" id="OutOfMemoryError">Im getting the error "java.lang.OutOfMemoryError: Java heap space". Whats up?</a></h4>
+<blockquote>
+  <p>If you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError</strong>". This is a known bug in JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
+  <p>The other possibility is that you havent given the TDS enough heap space. The default heap size is quite small, so you need to always set this, eg in <a href="reference/ChecklistReference.html">setenv.sh</a>, this sets the heap to 4 GB.</p>
+  <pre>NORMAL="-Xmx4g -Xms512m -server&quot;
+</pre>
+</blockquote>
+<hr width="50%" align="left">
 <h4>Q: <a name="permGenOutOfMemoryError">Im getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></h4>
 <blockquote>
-  <p>If you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError:
+  <p>The good news is that this problem goes away with Java 8, and we recommend that you switch to Java 8 NOW.</p>
+  <p>Before Jaba 8, if you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError:
     PermGen space</strong>". This is a known bug in JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
 
-  <p>You can increase PermGen using this JVM option: </p>
+  <p>You  can  increase PermGen using this JVM option, eg in <a href="reference/ChecklistReference.html">setenv.sh</a>:</p>
 
-  <p><strong>-XX:MaxPermSize=180m </strong></p>
+  <pre>MAX_PERM_GEN="-XX:MaxPermSize=256m"</pre>
 
-  <p>On
-    the JDK1.6 -server JVM, the default seems to be 64m. However, with
+  <p>In Java 6 and 7, the default is 64m. However, with
     enough redeploys , you will eventually run out of PermGen space no
     matter what your <strong>MaxPermSize</strong> setting is. We have
-    gotten into the habit of restarting tomcat on our production server
+    gotten into the habit of restarting Tomcat on our production server
     whenever we redeploy. Lots of redeploys only happen on our test server.</p>
 
   <p>Resources:</p>
@@ -567,7 +575,7 @@ you must restart tomcat for this to take effect.
     <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/15/permgen-strikes-back">PermGen Strikes Back</a>" (2007-03-15)</li>
     <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/13/good-riddance-permgen-outofmemoryerror">Good Riddance PermGen OutOfMemoryError</a>"
       (2007-03-13)
-    </li>
+</li>
   </ul>
 </blockquote>
 
@@ -678,16 +686,14 @@ because its size (57150447) exceeds the configured maximum (52428800)</pre>
     <li>Go to the web.xml of the manager application (for instance it could be under /tomcat7/webapps/manager/WEB-INF/web.xml.</li>
     <li>Increase the max-file-size and max-request-size:</li>
   </ul>
+  <p>&nbsp;</p>
 </blockquote>
-
-<hr>
-<h2>Tomcat Resources</h2>
-<ul>
-  <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a></li>
-  <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/index.html">Tomcat documentation</a></li>
-  <li><a href="http://www.coreservlets.com/Apache-Tomcat-Tutorial/">coreservlets.com tutorial</a></li>
-</ul>
-
+<hr width="50%" align="left">
+<h4>Q: <a name="SizeLimitExceededException">Logging is not working</a></h4>
+<blockquote>
+  <p>You must use a version of Tomcat &gt;= 7.0.43. See <a href="http://logging.apache.org/log4j/2.0/manual/webapp.html">log4j2 docs</a>. </p>
+</blockquote>
+<p>&nbsp;</p>
 <hr>
 <address>
   <img src="thread.png" alt="THREDDS" height="108" width="110">

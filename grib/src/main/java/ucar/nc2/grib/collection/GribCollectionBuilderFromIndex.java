@@ -36,6 +36,7 @@
 package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ExtensionRegistry;
+import sun.security.ssl.Debug;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
@@ -66,6 +67,7 @@ abstract class GribCollectionBuilderFromIndex {
   protected abstract GribTables makeCustomizer() throws IOException;
   protected abstract String getLevelNameShort(int levelCode);
   protected abstract int getVersion();
+  protected abstract int getMinVersion();
 
   protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, org.slf4j.Logger logger) {
     this.logger = logger;
@@ -91,11 +93,10 @@ abstract class GribCollectionBuilderFromIndex {
       }
 
       gc.version = raf.readInt();
-      boolean versionOk = gc.version >= getVersion();
-      if (!versionOk) {
+      if (gc.version < getVersion()) {
         logger.warn("GribCollectionBuilderFromIndex {}: index found version={}, want version= {} on file {}", gc.getName(), gc.version, Grib2CollectionWriter.version, raf.getLocation());
         // throw new IllegalStateException();   // temp debug
-        return false;
+        if (gc.version < getMinVersion()) return false;
       }
 
       // these are the variable records

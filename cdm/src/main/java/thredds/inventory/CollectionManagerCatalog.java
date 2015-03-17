@@ -70,8 +70,8 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
     int pos = collectionSpec.indexOf('?');
     if (pos > 0) {
-      this.dateExtractor = new DateExtractorFromName(collectionSpec.substring(pos+1), true);  // WTF ?
-      collectionSpec = collectionSpec.substring(0,pos);
+      this.dateExtractor = new DateExtractorFromName(collectionSpec.substring(pos + 1), true);  // WTF ?
+      collectionSpec = collectionSpec.substring(0, pos);
     }
 
     this.catalogUrl = collectionSpec;
@@ -100,19 +100,12 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
   @Override
   public boolean scan(boolean sendEvent) throws IOException {
-   mfiles = new ArrayList<>(100);
+    mfiles = new ArrayList<>(100);
 
-    CatalogBuilder catFactory = new CatalogBuilder();
-    Catalog cat = catFactory.buildFromLocation(catalogUrl);
-    if (!catFactory.hasFatalError() || cat == null) {
-      logger.warn("Catalog invalid= "+catalogUrl+" err= "+ catFactory.getErrorMessage());
-      return false;
-    }
-
-    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all_direct, null, this);
+    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all_direct, 0, null, this);
     long start = System.currentTimeMillis();
     try {
-      crawler.crawl(cat, null, null, null);
+      crawler.crawl(catalogUrl, null, null, null);
     } finally {
       long took = (System.currentTimeMillis() - start);
       if (debug) System.out.format("***Done " + catalogUrl + " took = " + took + " msecs%n");
@@ -136,7 +129,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
       this.access = access;
       for (DateType dateType : access.getDataset().getDates()) {
         if (dateType.getType().equals("modified"))
-          lastModified =  dateType.getDate();
+          lastModified = dateType.getDate();
       }
     }
 

@@ -35,6 +35,7 @@ package ucar.nc2.ui.grib;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.CoordinateAxisTimeHelper;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
@@ -43,6 +44,8 @@ import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -152,17 +155,20 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Complete Grib1 Record", new AbstractAction() {
+    varPopup.addAction("Show Complete Grib1 Record(s)", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
-        if (bean != null) {
+        infoPopup3.setText("");
+        List list = record1BeanTable.getSelectedBeans();
+        for (Object beano : list) {
+          RecordBean bean = (RecordBean) beano;
+
           Formatter f = new Formatter();
           String filename = fileList.get(bean.gr.getFile()).getPath();
           showCompleteRecord(cust, bean.gr, filename, f);
-          infoPopup3.setText(f.toString());
-          infoPopup3.gotoTop();
-          infoWindow3.show();
+          infoPopup3.appendLine(f.toString());
         }
+        infoPopup3.gotoTop();
+        infoWindow3.show();
       }
     });
 
@@ -814,6 +820,19 @@ public class Grib1CollectionPanel extends JPanel {
       return pds.getReferenceDate();
     }
 
+    public CalendarDate getForecastDate() {
+      CalendarPeriod period = GribUtils.getCalendarPeriod(pds.getTimeUnit());
+      CalendarDateUnit unit = CalendarDateUnit.of(null, period.getField(), getReferenceDate());
+      int timeCoord;
+      if (ptime.isInterval()) {
+        int[] intv = ptime.getInterval();
+        timeCoord = intv[1];
+      } else {
+        timeCoord = ptime.getForecastTime();
+      }
+      return unit.makeCalendarDate( period.getValue() * timeCoord);
+    }
+
     public int getTimeValue1() {
       return pds.getTimeValue1();
     }
@@ -835,7 +854,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getNIncludeMiss() {
-      return pds.getNincluded()+"/"+pds.getNmissing();
+      return pds.getNincluded()+" / "+pds.getNmissing();
     }
 
     public int getPertNum() {

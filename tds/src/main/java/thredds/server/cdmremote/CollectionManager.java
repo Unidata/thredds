@@ -107,10 +107,11 @@ public class CollectionManager {
     NetcdfDataset ncd = null;
     try {
       NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
-      if (ncfile == null) {
+      if (ncfile == null) return null;
+      /* {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return null;
-      }
+      } */
 
       ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
       Formatter errlog = new Formatter();

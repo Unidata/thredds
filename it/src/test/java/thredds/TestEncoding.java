@@ -36,6 +36,7 @@
 package thredds;
 
 import org.jdom2.input.SAXBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -54,7 +55,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Test encoding output in mock framework
+ * Test encoding output in it framework
  *
  * @author caron
  * @since 11/7/13
@@ -82,13 +83,11 @@ public class TestEncoding {
     String endpoint = TestWithLocalServer.withPath(path + "?" + query);
     System.out.printf("GetCapabilities req = '%s'%n", endpoint);
 
-    HTTPSession session = null;
-    try {
-      session = new HTTPSession(endpoint);
+    try (HTTPSession session = new HTTPSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      assert (statusCode == 200) : statusCode;
+      Assert.assertEquals(200, statusCode);
       byte[] content = method.getResponseAsBytes();
       assert content.length > 1000;
       //System.out.printf("%s%n", new String(content, "UTF-8"));
@@ -109,8 +108,6 @@ public class TestEncoding {
       e.printStackTrace();
       assert false;
 
-    } finally {
-      if (session != null) session.close();
     }
   }
 

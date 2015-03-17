@@ -134,11 +134,12 @@ public class CdmRemoteController extends AbstractController implements LastModif
     NetcdfFile ncfile = null;
     try {
       ncfile = DatasetHandler.getNetcdfFile(req, res, datasetPath);
-      if (ncfile == null) {
+      if (ncfile == null) return;
+      /*
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         log.debug("DatasetHandler.FAIL path={}", datasetPath);
         return;
-      }
+      } */
 
       long size = -1;
 

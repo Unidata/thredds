@@ -70,19 +70,19 @@ public class DatasetHandler {
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
   static private HashMap<String, InvDatasetImpl> ncmlDatasetHash = new HashMap<>();
 
-   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
+  // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
   // possible change to one global hash table request
   static private ArrayList<DatasetSource> sourceList = new ArrayList<>();
 
   // resource control
   static private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
-  static private volatile PathMatcher resourceControlMatcher = new PathMatcher(); // path, restrictAccess string for datasetScan
+  static private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
   static private boolean hasResourceControl = false;
 
   static void reinit() {
     ncmlDatasetHash = new HashMap<>();
     resourceControlHash = new HashMap<>();
-    resourceControlMatcher = new PathMatcher();
+    resourceControlMatcher = new PathMatcher<>();
     sourceList = new ArrayList<>();
 
     hasResourceControl = false;
@@ -133,11 +133,11 @@ public class DatasetHandler {
 
   static public void registerDatasetSource(DatasetSource v) {
     sourceList.add(v);
-    if (debugResourceControl) System.out.println("registerDatasetSource "+ v.getClass().getName());
+    if (debugResourceControl) System.out.println("registerDatasetSource " + v.getClass().getName());
   }
 
   static public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    return getNetcdfFile( req, res, TdsPathUtils.extractPath(req, null));
+    return getNetcdfFile(req, res, TdsPathUtils.extractPath(req, null));
   }
 
   // return null means request has been handled, and calling routine should exit without further processing
@@ -147,12 +147,12 @@ public class DatasetHandler {
 
     if (reqPath == null)
       return null;
-    
+
     if (reqPath.startsWith("/"))
       reqPath = reqPath.substring(1);
 
     // see if its under resource control
-    if (!resourceControlOk( req, res, reqPath))
+    if (!resourceControlOk(req, res, reqPath))
       return null;
 
     // look for a dataset (non scan, non fmrc) that has an ncml element
@@ -206,8 +206,8 @@ public class DatasetHandler {
       // if theres an ncml element, open it directly through NcMLReader, therefore not being cached.
       // this is safer given all the trouble we have with ncml and caching.
       if (netcdfElem != null) {
-        String ncmlLocation = "DatasetScan#"+file.getName(); // some descriptive name
-        NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, netcdfElem, "file:"+file.getPath(), null);
+        String ncmlLocation = "DatasetScan#" + file.getName(); // some descriptive name
+        NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, netcdfElem, "file:" + file.getPath(), null);
         //new NcMLReader().readNetcdf(reqPath, ncd, ncd, netcdfElem, null);
         if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found DataRoot NcML = " + ds);
         return ncd;
@@ -231,7 +231,7 @@ public class DatasetHandler {
 
     if (reqPath == null)
       return null;
-    
+
     if (reqPath.startsWith("/"))
       reqPath = reqPath.substring(1);
 
@@ -239,8 +239,8 @@ public class DatasetHandler {
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 
     String fullpath = null;
-    if(match != null)
-	    fullpath = match.dirLocation + match.remaining;
+    if (match != null)
+      fullpath = match.dirLocation + match.remaining;
     else {
       File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
       if (file != null)
@@ -250,7 +250,7 @@ public class DatasetHandler {
   }
 
   static public InvDatasetFeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
-	  return getFeatureCollection(req, res, TdsPathUtils.extractPath(req, null));
+    return getFeatureCollection(req, res, TdsPathUtils.extractPath(req, null));
   }
 
   // return null means request has been handled, and calling routine should exit without further processing
@@ -262,7 +262,7 @@ public class DatasetHandler {
       reqPath = reqPath.substring(1);
 
     // see if its under resource control
-    if (!resourceControlOk( req, res, reqPath))
+    if (!resourceControlOk(req, res, reqPath))
       return null;
 
     // look for a feature collection dataset
@@ -271,7 +271,7 @@ public class DatasetHandler {
       return match.dataRoot.getFeatCollection();
     }
 
-    return null;
+    throw new FileNotFoundException("Cant find "+reqPath);
   }
 
   // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.
@@ -291,27 +291,29 @@ public class DatasetHandler {
 
   /**
    * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
-   * @param req the request
-   * @param res the response
+   *
+   * @param req     the request
+   * @param res     the response
    * @param reqPath the request path
    * @return GridDataset
    * @throws IOException on read error
    */
-  static public GridDataset openGridDataset( HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
-	  
+  static public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+
     return openGridDataset(req, res, reqPath, NetcdfDataset.getDefaultEnhanceMode());
   }
 
-    /**
-     * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
-     * @param req the request
-     * @param res the response
-     * @param reqPath the request path
-     * @param enhanceMode optional enhance mode or null
-     * @return GridDataset
-     * @throws IOException on read error
-     */
-  static public GridDataset openGridDataset( HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
+  /**
+   * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
+   *
+   * @param req         the request
+   * @param res         the response
+   * @param reqPath     the request path
+   * @param enhanceMode optional enhance mode or null
+   * @return GridDataset
+   * @throws IOException on read error
+   */
+  static public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
 
     // first look for a grid feature collection
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
@@ -331,52 +333,35 @@ public class DatasetHandler {
     NetcdfDataset ncd = null;
     try {
       // Convert to NetcdfDataset
-      ncd = NetcdfDataset.wrap( ncfile, enhanceMode );
+      ncd = NetcdfDataset.wrap(ncfile, enhanceMode);
       return new ucar.nc2.dt.grid.GridDataset(ncd);
 
 
-    } catch ( Throwable t ) {
-      if ( ncd == null )
+    } catch (Throwable t) {
+      if (ncd == null)
         ncfile.close();
       else
         ncd.close();
 
-      if ( t instanceof IOException)
+      if (t instanceof IOException)
         throw (IOException) t;
 
       String msg = ncd == null ? "Problem wrapping NetcdfFile in NetcdfDataset"
-                               : "Problem creating GridDataset from NetcdfDataset";
-      log.error( "openGridDataset(): " + msg, t);
-      throw new IOException( msg + t.getMessage());
+              : "Problem creating GridDataset from NetcdfDataset";
+      log.error("openGridDataset(): " + msg, t);
+      throw new IOException(msg + t.getMessage());
     }
   }
 
-  /**
-   * Find the longest match for this path.
-   *
-   * @param path the complete path name of the dataset
-   * @return ResourceControl for this dataset, or null if none
-   */
-  static public String findResourceControl(String path) {
-    if (!hasResourceControl) return null;
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if (path.startsWith("/"))
-      path = path.substring(1);
-
-    String rc = resourceControlHash.get(path);
-    if (null == rc)
-      rc = (String) resourceControlMatcher.match(path);
-
-    return rc;
-  }
 
   /**
    * Check if this is making a request for a restricted dataset, and if so, if its allowed.
    *
-   * @param req the request
-   * @param res the response
-   * @param reqPath  the request path; if null, use req.getPathInfo()
-   *
+   * @param req     the request
+   * @param res     the response
+   * @param reqPath the request path; if null, use req.getPathInfo()
    * @return true if ok to proceed. If false, the appropriate error or redirect message has been sent, the caller only needs to return.
    * @throws IOException on read error
    */
@@ -422,12 +407,20 @@ public class DatasetHandler {
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetScan " + scan.getPath());
       resourceControlMatcher.put(scan.getPath(), ds.getRestrictAccess());
 
+    } else if (ds instanceof InvDatasetFeatureCollection) {
+      InvDatasetFeatureCollection fc = (InvDatasetFeatureCollection) ds;
+      if (debugResourceControl)
+        System.out.println("putResourceControl " + ds.getRestrictAccess() + " for InvDatasetFeatureCollection " + fc.getPath());
+      resourceControlMatcher.put(fc.getPath(), ds.getRestrictAccess());
+
     } else { // dataset
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for dataset " + ds.getUrlPath());
 
       // LOOK: seems like you only need to add if InvAccess.InvService.isReletive
       // LOOK: seems like we should use resourceControlMatcher to make sure we match .dods, etc
+      // LOOK a featureCollection does not have an access path - its further down in the dataset tree, so not getting restricted
+      // seems like you could just use the path ??
       for (InvAccess access : ds.getAccess()) {
         if (access.getService().isRelativeBase())
           resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
@@ -437,6 +430,27 @@ public class DatasetHandler {
 
     hasResourceControl = true;
   }
+
+  /**
+   * Find the longest match for this path.
+   *
+   * @param path the complete path name of the dataset
+   * @return ResourceControl for this dataset, or null if none
+   */
+  static private String findResourceControl(String path) {
+    if (!hasResourceControl) return null;
+
+    if (path.startsWith("/"))
+      path = path.substring(1);
+
+    String rc = resourceControlHash.get(path);
+    if (null == rc)
+      rc = resourceControlMatcher.match(path);
+
+    return rc;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * This tracks Dataset elements that have embedded NcML

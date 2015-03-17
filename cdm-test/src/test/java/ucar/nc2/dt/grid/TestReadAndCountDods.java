@@ -42,7 +42,7 @@ import java.util.List;
 
 @RunWith(Parameterized.class)
 public class TestReadAndCountDods {
-  static String base = "thredds:resolve:http://thredds.ucar.edu/thredds/";
+  static String base = "thredds:resolve:http://thredds-dev.unidata.ucar.edu/thredds/";
 
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
@@ -82,7 +82,7 @@ public class TestReadAndCountDods {
     result.add(new Object[]{"catalog/grib/NCEP/NAM/Alaska_45km/noaaport/files/latest.xml", 21, 6, 8, 4});
     // flipping between 29, 12, 14, 9, and 29, 15, 15, 9
     result.add(new Object[]{"catalog/grib/NCEP/NAM/Alaska_95km/files/latest.xml", 29, -1, -1, 9});
-    result.add(new Object[]{"catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7});
+    result.add(new Object[]{"catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 40, 9, 11, 7});
     result.add(new Object[]{"catalog/grib/NCEP/NAM/CONUS_80km/files/latest.xml", 41, 11, 13, 8});
 
     result.add(new Object[]{"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 53, 12, 14, 9});

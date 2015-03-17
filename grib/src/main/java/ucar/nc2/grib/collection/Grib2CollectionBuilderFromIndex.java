@@ -97,6 +97,10 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
     return Grib2CollectionWriter.version;
   }
 
+  protected int getMinVersion() {
+    return Grib2CollectionWriter.minVersion;
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // reading
 

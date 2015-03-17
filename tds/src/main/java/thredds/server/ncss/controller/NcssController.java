@@ -110,8 +110,8 @@ public class NcssController extends AbstractNcssController {
     String datasetPath = getDatasetPath(req);
     try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
       if (fd == null) {
-        handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND,
-                "dataset path not found " + datasetPath);
+        //handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND,
+        //        "dataset path not found " + datasetPath);
         return;
       }
 
@@ -136,14 +136,6 @@ public class NcssController extends AbstractNcssController {
         throw new UnsupportedOperationException("Feature Type " + ft.toString() + " not supported");
       }
 
-     /* } catch (FileNotFoundException t) {
-       handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND, t.getMessage());
-
-     } catch (thredds.server.ncss.exception.UnsupportedOperationException t) {
-       handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
-
-     } catch (Throwable t) {
-       t.printStackTrace();  */
     }
   }
 

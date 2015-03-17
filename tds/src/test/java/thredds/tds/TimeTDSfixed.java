@@ -72,7 +72,7 @@ public class TimeTDSfixed {
       public boolean getCatalogRef(CatalogRef dd, Object context) { return true; }
       
     };
-    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all_direct, null, listener);
+    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all_direct, 0, null, listener);
 
     cancel = new CancelTaskImpl();
     start = System.currentTimeMillis();
