@@ -254,6 +254,7 @@ public class TestGribIndexCreationOther {
     System.out.printf("changed = %s%n", changed);
   }
 
+  @Ignore("B: not visible on spock")
   @Test
   public void testCarlosMoraga() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("CarlosMoragaEcmwf", "CarlosMoragaEcmwf", FeatureCollectionType.GRIB1,
