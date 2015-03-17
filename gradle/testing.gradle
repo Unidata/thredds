@@ -12,11 +12,14 @@ dependencies {
 
 tasks.withType(Test) {
     useJUnit {
-        if (getTestdataDirPath() == null) {
-            logger.warn "Couldn't find \"unidata.testdata.path\" system variable. " +
-                    "Skipping all tests that require cdmUnitTestDir."
+        String testdataDirPath = getTestdataDirPath()
+        if (!testdataDirPath) {
+            logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
             // FIXME: This is spammy.
             // Also, calling (or not calling) this method does not affect a Test task's up-to-date status.
+            excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+        } else if (!new File(testdataDirPath).isDirectory()) {
+            logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
             excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
         }
     }
