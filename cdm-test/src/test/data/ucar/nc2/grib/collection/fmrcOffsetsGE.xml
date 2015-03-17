@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<featureCollection name="espresso_2013_da_history_fmrc_with_Offset_in_filename" featureType="FMRC"
+                 harvest="true" path="roms/espresso/2013_da/fmrc/his/Offset"
+                 xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
+
+
+  <collection spec="Q:/support/DavidRobertson/espresso/.*.nc$"
+              name="espresso_2013_da_his_fmrc"
+              dateFormatMark="#espresso_his_#yyyyMMdd_HHmm"
+              olderThan="5 min" />
+
+  <update startup="true" rescan="0 0/5 * * * ? *" trigger="allow" />
+
+  <!--protoDataset choice="Penultimate">
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="nc/cldc.mean.nc">
+          <remove name="ocean_time" type="variable" />
+      </netcdf>
+  </protoDataset-->
+
+  <fmrcConfig regularize="false" datasetTypes="TwoD Files Runs ConstantForecasts ConstantOffsets">
+      <dataset name="BestGE26" offsetsGreaterEqual="26" />
+  </fmrcConfig>
+
+</featureCollection>

@@ -32,6 +32,8 @@
 
 package ucar.nc2.ui;
 
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfigBuilder;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
@@ -212,13 +214,35 @@ public class Fmrc2Panel extends JPanel {
     fmrc = null;
   }
 
-  public void setFmrc(String collectionSpec) throws IOException {
+  public void setFmrc(String command) throws IOException {
     closeOpenFiles();
-
     long start = System.currentTimeMillis();
 
+    String prefix = "featureCollection:";
+    if (command.startsWith(prefix)) {
+      setFmrcFromConfig(command.substring(prefix.length()));
+    } else {
+      setFmrcFromCollectionSpec(command);
+    }
+
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("that took %f secs%n", ((double)took)/1000);    
+  }
+
+  private void setFmrcFromConfig(String configFile) throws IOException {
     errlog = new Formatter();
-    fmrc = Fmrc.open(collectionSpec, errlog);
+    FeatureCollectionConfigBuilder builder = new FeatureCollectionConfigBuilder(errlog);
+
+      // input is xml file with just the <featureCollection>
+    FeatureCollectionConfig config = builder.readConfigFromFile(configFile);
+    if (config == null) {
+      infoTA.setText(errlog.toString());
+      infoTA.gotoTop();
+      infoWindow.show();
+      return;
+    }
+
+    Fmrc fmrc = Fmrc.open(config, errlog);
     if (fmrc == null) {
       infoTA.setText(errlog.toString());
       infoTA.gotoTop();
@@ -226,6 +250,24 @@ public class Fmrc2Panel extends JPanel {
       return;
     }
 
+    setFmrc(fmrc);
+  }
+
+  private void setFmrcFromCollectionSpec(String collectionSpec) throws IOException {
+    errlog = new Formatter();
+    Fmrc fmrc = Fmrc.open(collectionSpec, errlog);
+    if (fmrc == null) {
+      infoTA.setText(errlog.toString());
+      infoTA.gotoTop();
+      infoWindow.show();
+      return;
+    }
+
+    setFmrc(fmrc);
+  }
+
+  private void setFmrc(Fmrc fmrc) throws IOException {
+    this.fmrc = fmrc;
     if (!showCollectionInfo(false))
       return;
 
@@ -243,17 +285,16 @@ public class Fmrc2Panel extends JPanel {
 
     setCoords(fmrcInv);
     setGrids(fmrcInv);
-
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("that took %f secs%n", ((double)took)/1000);    
   }
 
   public boolean showCollectionInfo(boolean alwaysShow) {
     if (fmrc == null) {
       infoTA.setText("No fmrc, errlog=");
       infoTA.appendLine(errlog.toString());
-      infoTA.appendLine("\ndebug=");
-      infoTA.appendLine(debug.toString());
+      if (debug != null) {
+        infoTA.appendLine("\ndebug=");
+        infoTA.appendLine(debug.toString());
+      }
       infoTA.gotoTop();
       infoWindow.show();
       return false;
