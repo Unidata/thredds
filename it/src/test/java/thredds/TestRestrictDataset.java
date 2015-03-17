@@ -34,11 +34,13 @@ package thredds;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,6 +52,7 @@ import java.util.Collection;
  * @since 3/16/2015
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestRestrictDataset {
   @Parameterized.Parameters
   public static Collection<Object[]> getTestParameters() {
