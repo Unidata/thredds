@@ -48,6 +48,11 @@ public class LatLonPointImmutable implements LatLonPoint {
     this.lon = lon;
   }
 
+  public LatLonPointImmutable(LatLonPoint pt) {
+    this.lat = pt.getLatitude();
+    this.lon = pt.getLongitude();
+  }
+
   @Override
   public double getLongitude() {
     return lon;
