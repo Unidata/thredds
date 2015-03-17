@@ -20,7 +20,7 @@
 
   <datasetRoot path="localContent" location="content/testdata/"/>
   <datasetRoot path="testRestrictedDataset" location="content/testdata/"/>
-  <datasetRoot path="cdmUnitTest2" location="${cdmUnitTest}"/>
+  <datasetRoot path="cdmUnitTest" location="${cdmUnitTest}"/>
 
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="localContent/testData.nc" dataType="Grid"/>
   <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" serviceName="all" urlPath="testRestrictedDataset/testData2.nc" restrictAccess="tiggeData"/>
@@ -31,14 +31,14 @@
   </dataset>
   <dataset name="Test latlon crossing seam" ID="testCrossingSeam" serviceName="all" urlPath="localContent/GFS_Global_onedeg_20120515_1200.grib2.nc"
            dataType="Grid"/>
-  <dataset name="Test climatology" ID="testClimatology" serviceName="all" urlPath="cdmUnitTest2/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc"
+  <dataset name="Test climatology" ID="testClimatology" serviceName="all" urlPath="cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc"
            dataType="Grid"/>
 
-  <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all" urlPath="cdmUnitTest2/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc"
+  <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all" urlPath="cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc"
            dataType="Grid"/>
   <dataset name="Test Single Station Dataset" ID="testSingleStationDataset" serviceName="all"
-           urlPath="cdmUnitTest2/ncss/point_features/metar/Surface_METAR_20130826_0000.nc" dataType="Station"/>
-  <dataset name="Test sst" ID="TESTsst" serviceName="all" urlPath="cdmUnitTest2/conventions/coards/sst.mnmean.nc" dataType="Grid"/>
+           urlPath="cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc" dataType="Station"/>
+  <dataset name="Test sst" ID="TESTsst" serviceName="all" urlPath="cdmUnitTest/conventions/coards/sst.mnmean.nc" dataType="Grid"/>
   <dataset name="Test SatelliteNcss" ID="SatelliteNcss" serviceName="all" urlPath="localContent/SUPER-NATIONAL_1km_CTP_20140105_2300.gini" dataType="Grid"/>
 
   <dataset name="Test Hyrax" ID="Hyrax2TDS" serviceName="all" urlPath="Hyrax2TDS/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf" dataType="Grid">
