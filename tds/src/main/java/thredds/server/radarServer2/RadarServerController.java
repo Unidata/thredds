@@ -3,7 +3,6 @@ package thredds.server.radarServer2;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,6 +27,7 @@ import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.server.config.TdsContext;
+import thredds.servlet.ThreddsConfig;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -35,6 +35,8 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Serve up radar data in a way that makes it easy to query. Relevant query
@@ -47,7 +49,7 @@ import ucar.nc2.units.TimeDuration;
 
 @Controller
 @RequestMapping("/radarServer2")
-public class RadarServerController{
+public class RadarServerController {
     Map<String, RadarDataInventory> data;
     final String URLbase = "/thredds/radarServer2";
     boolean enabled = false;
@@ -69,14 +71,13 @@ public class RadarServerController{
         return exc.getMessage();
     }
 
-    public RadarServerController()
-    {
+    public RadarServerController() {
     }
 
-    public void enable()
-    {
-        if (enabled) return;
-        enabled = true;
+    @PostConstruct
+    public void init() {
+        enabled = ThreddsConfig.getBoolean("RadarServer.allow", false);
+        if (!enabled) return;
 
         // TODO: Need to pull this information from a config file
         data = new TreeMap<>();
@@ -101,6 +102,8 @@ public class RadarServerController{
     @ResponseBody
     public HttpEntity<byte[]> topLevelCatalog() throws IOException
     {
+        if (!enabled) return null;
+
         CatalogBuilder cb = new CatalogBuilder();
         cb.addService(new Service("radarServer", URLbase,
                 "QueryCapability", null, null, new ArrayList<Service>(),
@@ -135,6 +138,8 @@ public class RadarServerController{
     @ResponseBody
     public HttpEntity<byte[]> datasetCatalog(@PathVariable String dataset) throws IOException
     {
+        if (!enabled) return null;
+
         RadarDataInventory di = getInventory(dataset);
 
         CatalogBuilder cb = new CatalogBuilder();
@@ -200,6 +205,7 @@ public class RadarServerController{
     @ResponseBody
     public StationList stations(@PathVariable String dataset)
     {
+        if (!enabled) return null;
         return listStations(dataset);
     }
 
@@ -207,6 +213,7 @@ public class RadarServerController{
     @ResponseBody
     public StationList stationsFile(@PathVariable String dataset)
     {
+        if (!enabled) return null;
         return listStations(dataset);
     }
 
@@ -247,6 +254,7 @@ public class RadarServerController{
             @RequestParam(value="var", required=false) String[] vars)
             throws ParseException, UnsupportedOperationException, IOException
     {
+        if (!enabled) return null;
         RadarDataInventory di = getInventory(dataset);
         if (di == null) {
             return simpleString("Could not find dataset: " + dataset);
