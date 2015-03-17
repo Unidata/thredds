@@ -89,7 +89,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
       fd = datasetService.findDatasetByPath(req, res, datasetPath);
 
       if (fd == null)
-        throw new UnsupportedOperationException("Feature Type not supported");
+    	  return;
 
       String strResponse = ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
 
