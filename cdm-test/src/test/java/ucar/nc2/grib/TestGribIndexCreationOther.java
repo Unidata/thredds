@@ -240,7 +240,6 @@ public class TestGribIndexCreationOther {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
   @Ignore("B: not visible on spock")
@@ -253,7 +252,30 @@ public class TestGribIndexCreationOther {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
+
+  @Test
+  public void testCarlosMoraga() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("CarlosMoragaEcmwf", "CarlosMoragaEcmwf", FeatureCollectionType.GRIB1,
+            "Q:/testdata/support/CarlosMoraga/ECMWF_GNERA.*", null, null, null, null, null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  /*
+      <featureCollection name="Carlos Moraga ECMWF Data featureCollection" featureType="GRIB" path="grib/featureCollection">
+        <metadata inherited="true">
+            <dataFormat>GRIB-1</dataFormat>
+            <serviceName>all</serviceName>
+        </metadata>
+        <collection spec="Z:/testdata/support/CarlosMoraga/ECMWF_GNERA_d....\.#yyyyMMdd#"/>
+        <gribConfig>
+            <gdsName hash='1562665966' groupName='domain1'/>
+            <gdsName hash='-104750013' groupName='domain2'/>
+        </gribConfig>
+    </featureCollection>
+   */
 
 }

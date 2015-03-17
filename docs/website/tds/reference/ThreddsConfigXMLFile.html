@@ -56,7 +56,8 @@
   <li>Disk Caching
     <ul>
       <li><a href="#DiskCache">CDM Disk cache</a></li>
-      <li><a href="#AggregationCache">Aggregation Cache </a></li>
+      <li><a href="#AggregationCache">Aggregation Cache</a></li>
+      <li><a href="FeatureCollectionCache">FMRC cache</a></li>
       <li><a href="#GribIndexWriting">Grib Index redirection</a></li>
     </ul>
   </li>
@@ -530,6 +531,17 @@ ln -s /data/thredds/content content</pre>
   pronounced difference with and without this cache. </p>
 
 <p>The cache information is updated based on the <strong>recheckEvery</strong> field in the <strong>joinExisting</strong> aggregation element.</p>
+<h3>FeatureCollection cache<a name="FeatureCollectionCache"></a></h3>
+<p><em>since version 4.2</em></p>
+<p>This is where persistent information is kept about FMRCs, in order to speed them up. We recommend that you use the default settings, by not specifying this option.</p>
+<pre> &lt;FeatureCollection&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/cache/collection/&lt;/<strong>dir</strong>&gt;
+   &lt;<strong>maxSize</strong>&gt;20 Mb&lt;/<strong>maxSize</strong>&gt;
+   &lt;<strong>jvmPercent</strong>&gt;2&lt;/<strong>jvmPercent</strong>&gt;<br> &lt;/FeatureCollection&gt;</pre>
+<ol>
+  <li><strong>dir</strong>: location of Feature Collection cache, currently implemented with&nbsp;<a href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index-093405.html">Berkeley DB</a>. If not otherwise set, the TDS will use the<strong>${tomcat_home}/content/thredds/cache/collection/</strong>&nbsp;directory We recommend that you use this default, by not specifying a&nbsp;<strong>FeatureCollection</strong>.<strong>dir</strong>&nbsp;element.</li>
+  <li><strong>maxSize</strong>: maximum amount of memory to be used for this cache.</li>
+  <li><strong>jvmPercent</strong>: alternately, set the memory use as a percent of JVM memory, ie -Xmx value.&nbsp;<strong>maxSize</strong>&nbsp;will override if present. Default is 2 %.</li>
+</ol>
 <h3><a name="GribIndexWriting" id="GribIndexWriting">GRIB Index redirection</a></h3>
 
 <p><em>since version 4.3.15</em></p>

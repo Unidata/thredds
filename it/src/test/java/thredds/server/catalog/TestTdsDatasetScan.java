@@ -32,10 +32,10 @@
  */
 package thredds.server.catalog;
 
+import org.junit.Assert;
 import org.junit.Test;
-import thredds.catalog.*;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
+import thredds.client.catalog.*;
+import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,12 +60,18 @@ public class TestTdsDatasetScan {
      List<Dataset> dss = cat.getDatasets();
      assert (dss.size() == 1);
 
-    Dataset ds = dss.get(0);
+     Dataset ds = dss.get(0);
      assert ds.hasAccess();
      assert ds.getDatasets().size() == 0;
 
      assert ds.getID() != null;
      assert ds.getDataSize() > 0.0;
+
+    List<thredds.client.catalog.ThreddsMetadata.Vocab> keywords = ds.getKeywords();
+    Assert.assertEquals("Number of keywords", 2, keywords.size());
+
+    DateRange dr = ds.getTimeCoverage() ;
+    Assert.assertNotNull("TimeCoverage", dr);
    }
 
   @Test
