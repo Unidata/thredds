@@ -12,16 +12,18 @@ dependencies {
 
 tasks.withType(Test) {
     useJUnit {
-        String testdataDirPath = getTestdataDirPath()
-        if (!testdataDirPath) {
-            logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
-            // FIXME: This is spammy.
-            // Also, calling (or not calling) this method does not affect a Test task's up-to-date status.
-            excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
-        } else if (!new File(testdataDirPath).isDirectory()) {
-            logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
-            excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
-        }
+//        String testdataDirPath = getTestdataDirPath()
+//        if (!testdataDirPath) {
+//            logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
+//            // FIXME: This is spammy.
+//            // Also, calling (or not calling) this method does not affect a Test task's up-to-date status.
+//            excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+//        } else if (!new File(testdataDirPath).isDirectory()) {
+//            logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
+//            excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+//        }
+
+        excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
     }
 
     if (!System.env['TRAVIS']) {
