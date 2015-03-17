@@ -11,10 +11,14 @@ dependencies {
 }
 
 tasks.withType(Test) {
-//    outputs.upToDateWhen { false }  // Tests weren't being run when I changed included/excluded categories.
-
     useJUnit {
-        excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+        if (getTestdataDirPath() == null) {
+            logger.warn "Couldn't find \"unidata.testdata.path\" system variable. " +
+                    "Skipping all tests that require cdmUnitTestDir."
+            // FIXME: This is spammy.
+            // Also, calling (or not calling) this method does not affect a Test task's up-to-date status.
+            excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+        }
     }
 
     if (!System.env['TRAVIS']) {
@@ -34,4 +38,32 @@ afterEvaluate {
 boolean testRuntimeHasDepNamed(String depName) {
     // Groovy truth: empty collections are coerced to false.
     configurations.testRuntime.allDependencies.findAll { it.name == depName }
+}
+
+// Copied from ucar.nc2.util.Misc with minor modification.
+String getTestdataDirPath() {
+    String threddsPropFileName = "thredds.properties";
+    String testdataDirPropName = "unidata.testdata.path";
+    String testdataDirPath = null;
+
+    if (testdataDirPath == null)
+        testdataDirPath = System.getProperty(testdataDirPropName);  // Check for system property
+
+    if (testdataDirPath == null) {
+        File userHomeDirFile = new File(System.getProperty("user.home"));
+        File userThreddsPropsFile = new File(userHomeDirFile, threddsPropFileName);
+        if (userThreddsPropsFile.exists() && userThreddsPropsFile.canRead()) {
+            Properties userThreddsProps = new Properties();
+            try {
+                userThreddsProps.load(new FileInputStream(userThreddsPropsFile));
+            } catch (IOException e) {
+                System.out.println("**Failed loading user THREDDS property file: " + e.getMessage());
+            }
+            if (!userThreddsProps.isEmpty()) {
+                testdataDirPath = userThreddsProps.getProperty(testdataDirPropName);
+            }
+        }
+    }
+
+    return testdataDirPath;
 }
