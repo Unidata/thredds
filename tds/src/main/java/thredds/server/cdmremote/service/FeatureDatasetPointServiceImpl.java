@@ -69,6 +69,7 @@ public class FeatureDatasetPointServiceImpl implements 	FeatureDatasetPointServi
 		FeatureDatasetPoint fdp = null;
 		// this looks for a featureCollection
 		InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res, path);
+
 		if (fc != null) {
 			fdp = (FeatureDatasetPoint) fc.getFeatureDataset();
 
@@ -76,7 +77,7 @@ public class FeatureDatasetPointServiceImpl implements 	FeatureDatasetPointServi
 			// tom kunicki 12/18/10
 			// allows a single NetcdfFile to be turned into a FeatureDataset
 			NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
-      if (ncfile == null) return null;
+      if (ncfile == null) return null;  // restricted access
 
 			FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
 						FeatureType.ANY,                  // will check FeatureType below if needed...

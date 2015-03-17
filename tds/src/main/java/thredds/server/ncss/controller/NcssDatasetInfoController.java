@@ -85,7 +85,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
 
     try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
       if (fd == null)
-        throw new FileNotFoundException("Could not find Dataset "+datasetPath);
+        return; // restricted dataset
 
       String strResponse = ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
       res.setContentLength(strResponse.length());
