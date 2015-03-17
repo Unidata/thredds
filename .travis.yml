@@ -17,7 +17,7 @@ script:
   # If we need to do an IDV build, run the script
   - if [[ $BUILD_IDV == true ]]; then travis/build_idv.sh; fi
   # Need to add back d4tests, eventually cdm-test
-  - if [[ $BUILD_IDV == false ]]; then ./gradlew --info :cdm:test :grib:test :udunits:test :ui:test :waterml:test; fi
+  - if [[ $BUILD_IDV == false ]]; then ./gradlew --info testAll; fi
 
 cache:
   directories:
