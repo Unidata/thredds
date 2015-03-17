@@ -108,7 +108,7 @@ task coverallsReport(type: CoverallsTask, group: 'Reports', dependsOn: rootJacoc
         // So, create a copy of env, add our entry, then replace the old map with it.
         // FIXME: In production, COVERALLS_REPO_TOKEN should be an environment variable.
         Map<String, String> envCopy = new HashMap<>(env)
-        envCopy["COVERALLS_REPO_TOKEN"] = "DX6UcqPqzkY5CtAjC99qYHNEnVZGNDLOd"
+        envCopy["COVERALLS_REPO_TOKEN"] = "viswgi0kF5EOgHJXEb58OrOZzToIbi0oJ"
         env = envCopy
 
         // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
