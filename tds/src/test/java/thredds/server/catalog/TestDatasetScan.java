@@ -73,7 +73,7 @@ public class TestDatasetScan {
     List<DatasetRootConfig> roots = cat.getDatasetRoots();
     for (DatasetRootConfig root : roots)
       System.out.printf("DatasetRoot %s -> %s%n", root.path, root.location);
-    assert roots.size() == 2;
+    assert roots.size() == 3;
 
     Dataset ds = cat.findDatasetByID("scanCdmUnitTests");
     assert ds != null;
