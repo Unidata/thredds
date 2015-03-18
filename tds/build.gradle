@@ -21,23 +21,23 @@ dependencies {
   compile group: 'org.springframework', name: 'spring-beans', version:springVersion
   compile group: 'org.springframework', name: 'spring-webmvc', version:springVersion
 
-  compile group: 'commons-fileupload', name: 'commons-fileupload', version: "1.3"
+  compile group: 'commons-fileupload', name: 'commons-fileupload', version: "1.2.2"
   compile group: 'org.apache.commons', name: 'commons-lang3', version: commonsLang3Version
   compile group: 'commons-io', name: 'commons-io', version: commonsIoVersion
 
   // plug-in
-  runtime (group: 'EDS', name: 'threddsIso', version: "2.2.4-SNAPSHOT")
+  runtime (group: 'EDS', name: 'threddsIso', version: "2.2.4")
 
   // ncss
   // JSR 303 with Hibernate Validator
   compile group: 'javax.validation', name: 'validation-api', version: "1.0.0.GA"
-  compile group: 'org.hibernate', name: 'hibernate-validator', version: "4.1.0.Final"
+  compile group: 'org.hibernate', name: 'hibernate-validator', version: "4.3.1.Final"
   compile (group: 'org.jfree', name: 'jfreechart', version: jfreechartVersion) {
     exclude group: 'com.lowagie'
   }
 
   // wms
-  compile (group: 'uk.ac.rdg.resc', name: 'ncwms', version: "1.2.tds.4.5.4-SNAPSHOT") {
+  compile (group: 'uk.ac.rdg.resc', name: 'ncwms', version: "1.2.tds.4.5.4") {
     exclude group: 'commons-logging'
     exclude group: 'edu.ucar'
     exclude group: 'joda-time'

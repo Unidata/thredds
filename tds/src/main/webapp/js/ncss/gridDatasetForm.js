@@ -114,6 +114,15 @@ Ncss.initGridDatasetForm = function () {
     $('#disableLLSubset').change(Ncss.toogleLLSubsetting);
     $('#disableProjSubset').change(Ncss.toogleProjSubsetting);
 
+    // Programmatically "checking" these boxes.
+    // That means that horizontal subsetting will be disabled by default.
+    if (!$('#disableLLSubset').is(':checked')) {
+        $('#disableLLSubset').click();
+    }
+    if (!$('#disableProjSubset').is(':checked')) {
+        $('#disableProjSubset').click();
+    }
+
     Ncss.fullLatLonExt = {
         north: $('input[name=dis_north]').val(),
         south: $('input[name=dis_south]').val(),

@@ -327,7 +327,7 @@ public class NcepLocalTables extends LocalTables {
     if (id < 192) return super.getLevelNameShort(id);
     switch (id) {
       case 200:
-        return "entire_atmosphere";
+        return "entire_atmosphere_single_layer";
       case 201:
         return "entire_ocean";
       case 204:
