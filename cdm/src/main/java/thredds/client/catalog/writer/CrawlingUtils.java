@@ -90,7 +90,7 @@ public class CrawlingUtils {
         }
 
         double totald = total / (1000. * 1000.);
-        double rate = total / time / 1000.0;
+        double rate = (time == 0) ? 0 : total / time / 1000.0;
 
         System.out.printf("%n%s%n", ncfile.getLocation());
         System.out.printf(" took= %f secs rate= %f MB/sec%n", totald, rate);

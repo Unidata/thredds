@@ -618,7 +618,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     if (!file.exists())
       return null; // bail out  */
 
-    InputStream in = null;
     try (FileOutputStream fout = new FileOutputStream(uncompressedFile)) {
 
       // obtain the lock
@@ -638,33 +637,37 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
       try {
         if (suffix.equalsIgnoreCase("Z")) {
-          in = new UncompressInputStream(new FileInputStream(filename));
-          copy(in, fout, 100000);
+          try (InputStream in = new UncompressInputStream(new FileInputStream(filename))) {
+            copy(in, fout, 100000);
+          }
           if (debugCompress) System.out.println("uncompressed " + filename + " to " + uncompressedFile);
 
         } else if (suffix.equalsIgnoreCase("zip")) {
-          ZipInputStream zin = new ZipInputStream(new FileInputStream(filename));
-          ZipEntry ze = zin.getNextEntry();
-          if (ze != null) {
-            in = zin;
-            copy(in, fout, 100000);
-            if (debugCompress)
-              System.out.println("unzipped " + filename + " entry " + ze.getName() + " to " + uncompressedFile);
+
+          try (ZipInputStream zin = new ZipInputStream(new FileInputStream(filename))) {
+            ZipEntry ze = zin.getNextEntry();
+            if (ze != null) {
+              copy(zin, fout, 100000);
+              if (debugCompress)
+                System.out.println("unzipped " + filename + " entry " + ze.getName() + " to " + uncompressedFile);
+            }
           }
 
         } else if (suffix.equalsIgnoreCase("bz2")) {
-          in = new CBZip2InputStream(new FileInputStream(filename), true);
-          copy(in, fout, 100000);
+          try (InputStream in = new CBZip2InputStream(new FileInputStream(filename), true)) {
+            copy(in, fout, 100000);
+          }
           if (debugCompress) System.out.println("unbzipped " + filename + " to " + uncompressedFile);
 
         } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
 
-          in = new GZIPInputStream(new FileInputStream(filename));
-          copy(in, fout, 100000);
+          try (InputStream in = new GZIPInputStream(new FileInputStream(filename))) {
+            copy(in, fout, 100000);
+          }
 
           if (debugCompress) System.out.println("ungzipped " + filename + " to " + uncompressedFile);
         }
-      } catch (Exception e) {
+      }  catch (Exception e) {
 
         // appears we have to close before we can delete   LOOK
         //fout.close();
@@ -679,7 +682,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
       } finally {
         if (lock != null) lock.release();
-        if (in != null) in.close();
       }
     }
 

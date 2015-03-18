@@ -132,7 +132,7 @@ public class Grib2ReportPanel extends ReportPanel {
       }
       long zipSize = fileOut.length();
       totalZip += zipSize;
-      double r = ((double) zipSize) / orgSize;
+      double r = (orgSize == 0) ? 0 : ((double) zipSize) / orgSize;
       f.format("  org=%d zip=%d ratio=%f%n", orgSize, zipSize, r);
     }
     double r = totalOrg != 0 ? ((double) totalZip) / totalOrg : 0;

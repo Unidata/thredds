@@ -6488,12 +6488,12 @@ public class ToolsUI extends JPanel {
       //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
       //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
 
-    /* try {
-      //thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
-      //thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
-    } catch (Exception e) {
-      log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
-    } */
+      try {
+        // thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
+        thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
+      } catch (Exception e) {
+        log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
+      }
 
       UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
       HTTPSession.setGlobalCredentialsProvider(provider);

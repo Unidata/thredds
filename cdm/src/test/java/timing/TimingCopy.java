@@ -72,13 +72,13 @@ public class TimingCopy {
   static public void main(String args[]) throws IOException {
     // 3/16/2015
     //copyURL2null("http://thredds-dev.unidata.ucar.edu/thredds/fileServer/grib/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20141116_0000.grib1/files/GFS_CONUS_80km_20141116_0000.grib1", 20000);
-    // copyURL2null("http://thredds-dev.unidata.ucar.edu/thredds/fileServer/grib/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_20141116_0000.grib2/files/GFS_Global_0p5deg_20141116_0000.grib2", 20000);
+    //copyURL2null("http://thredds-dev.unidata.ucar.edu/thredds/fileServer/grib/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_20141116_0000.grib2/files/GFS_Global_0p5deg_20141116_0000.grib2", 20000);
     //copyURL2null("http://rdavm.ucar.edu:8080/thredds/fileServer/aggregations/g/ds131.1/4/mean/ds131.1_synop_fgff_mean-1871/files/sflxgrbfg_mean_187101_09.grib", 20000);
-    //copyURL2null("http://localhost:8080/thredds/fileServer/gribCollection/GFS_2p5/GFS_Global_2p5deg_20150301_0600.grib2/files/GFS_Global_2p5deg_20150301_0600.grib2", 20000);
+    copyURL2null("http://localhost:8080/thredds/fileServer/gribCollection/GFS_2p5/GFS_Global_2p5deg_20150301_0600.grib2/files/GFS_Global_2p5deg_20150301_0600.grib2", 20000);
     //copyURL2null("http://localhost:8080/thredds/fileServer/gribCollection/GFS_2p5/GFS_Global_2p5deg_20150301_1200.grib2/files/GFS_Global_2p5deg_20150301_1200.grib2", 20000);
     //copyURL2null("http://localhost:8080/thredds/fileServer/gribCollection/GFS_2p5/GFS_Global_2p5deg_20150301_1800.grib2/files/GFS_Global_2p5deg_20150301_1800.grib2", 20000);
 
-    copyFile2null("Q:/cdmUnitTest/gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0600.grib2", 60 * 1000);
+    //copyFile2null("Q:/cdmUnitTest/gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0600.grib2", 60 * 1000);
 
 
     // took = 316.531 sec; len= 20.0 Mbytes; rate = .0631Mb/sec ok=ok

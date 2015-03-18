@@ -271,7 +271,7 @@ public class DatasetHandler {
       return match.dataRoot.getFeatCollection();
     }
 
-    throw new FileNotFoundException("Cant find "+reqPath);
+    return null; // new FileNotFoundException("Cant find "+reqPath);
   }
 
   // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.

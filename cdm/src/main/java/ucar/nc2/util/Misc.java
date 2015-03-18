@@ -213,8 +213,8 @@ public class Misc {
       File userThreddsPropsFile = new File(userHomeDirFile, threddsPropFileName);
       if (userThreddsPropsFile.exists() && userThreddsPropsFile.canRead()) {
         Properties userThreddsProps = new Properties();
-        try {
-          userThreddsProps.load(new FileInputStream(userThreddsPropsFile));
+        try (FileInputStream fin = new FileInputStream(userThreddsPropsFile)) {
+          userThreddsProps.load(fin);
         } catch (IOException e) {
           System.out.println("**Failed loading user THREDDS property file: " + e.getMessage());
         }

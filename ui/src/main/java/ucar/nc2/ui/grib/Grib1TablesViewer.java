@@ -151,11 +151,11 @@ public class Grib1TablesViewer extends JPanel {
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    entryTable.addListSelectionListener(new ListSelectionListener() {
+    /* entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         entryTable.getSelectedBean();
       }
-    });
+    }); */
 
     varPopup = new PopupMenu(entryTable.getJTable(), "Options");
     varPopup.addAction("Show in all tables", new AbstractAction() {

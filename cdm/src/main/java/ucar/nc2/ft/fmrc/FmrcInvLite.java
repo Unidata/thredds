@@ -340,9 +340,10 @@ public class FmrcInvLite implements java.io.Serializable {
 
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) {
-          double baseOffset = timeOffset[run * noffsets + time];
+          double baseOffset = timeOffset[run * noffsets + time];  // this is the offset from the global base
           if (Double.isNaN(baseOffset)) continue;
-          if (bd != null && baseOffset < bd.greaterThan) continue; // skip it
+          double orgOffset = baseOffset - runOffset[run];         // this is the offset from its own base
+          if (bd != null && orgOffset < bd.greaterThan) continue; // skip it
           if (timeBounds == null)
             map.put(new TimeCoord.Tinv(baseOffset), new TimeInv(run, time, baseOffset)); // later ones override
           else {
@@ -362,7 +363,7 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     private List<TimeInv> makeRun(int runIdx) {
-      List<TimeInv> result = new ArrayList<TimeInv>(noffsets);
+      List<TimeInv> result = new ArrayList<>(noffsets);
       for (int time = 0; time < noffsets; time++) {
         double offset = timeOffset[runIdx * noffsets + time];
         if (Double.isNaN(offset)) continue;

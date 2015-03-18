@@ -54,7 +54,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String CollectionType = "CollectionType";
   public static final String Contributors = "Contributors";
   public static final String Creators = "Creators";
-  public static final String DataFormatType = "DataFormatType";
+  public static final String DataFormatType = "DataFormatType"; // DataFormat
   public static final String Datasets = "Datasets";
   public static final String DatasetHash = "DatasetHash";
   public static final String DatasetRoots = "DatasetRoots";
@@ -62,7 +62,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String Dates = "Dates";
   public static final String Documentation = "Documentation";
   public static final String Expires = "Expires";
-  public static final String FeatureType = "FeatureType";
+  public static final String FeatureType = "FeatureType"; // DataType
   public static final String GeospatialCoverage = "GeospatialCoverage";
   public static final String Harvest = "Harvest";
   public static final String Id = "Id";

@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -30,62 +30,37 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package ucar.nc2.ft.fmrc;
 
-package ucar.unidata.geoloc;
+import org.junit.Test;
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.unidata.test.util.TestDir;
+
+import java.util.Formatter;
 
 /**
- * An immutable LatLonPoint
+ * Describe
  *
  * @author caron
- * @since 7/29/2014
+ * @since 3/17/2015
  */
-public class LatLonPointImmutable implements LatLonPoint {
-  public static final LatLonPointImmutable INVALID = new LatLonPointImmutable(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-  private final double lat, lon;
+public class TestFmrcMisc {
+  @Test
+  public void testConventionsAttribute() throws Exception {
+    String path = TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml";
+    Formatter errlog = new Formatter();
+    Fmrc fmrc = Fmrc.open(path, errlog);
+    assert (fmrc != null) : errlog;
 
-  public LatLonPointImmutable(double lat, double lon) {
-    this.lat = lat;
-    this.lon = lon;
+    try (ucar.nc2.dt.GridDataset gridDs = fmrc.getDataset2D(null)) {
+      NetcdfDataset ncd = (NetcdfDataset) gridDs.getNetcdfFile();
+      Attribute att = ncd.findGlobalAttribute(CDM.CONVENTIONS);
+      assert att != null;
+      System.out.printf("%s%n", att);
+    }
   }
 
-  public LatLonPointImmutable(LatLonPoint pt) {
-    this.lat = pt.getLatitude();
-    this.lon = pt.getLongitude();
-  }
-
-  @Override
-  public double getLongitude() {
-    return lon;
-  }
-
-  @Override
-  public double getLatitude() {
-    return lat;
-  }
-
-  @Override
-  public boolean equals(LatLonPoint pt) {
-    if (Double.compare(pt.getLatitude(), lat) != 0) return false;
-    if (Double.compare(pt.getLongitude(), lon) != 0) return false;
-    return true;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof LatLonPoint)) return false;
-    LatLonPoint that = (LatLonPoint) o;
-    return equals(that);
-  }
-
-  @Override
-  public int hashCode() {
-    int result;
-    long temp;
-    temp = Double.doubleToLongBits(lat);
-    result = (int) (temp ^ (temp >>> 32));
-    temp = Double.doubleToLongBits(lon);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    return result;
-  }
 }

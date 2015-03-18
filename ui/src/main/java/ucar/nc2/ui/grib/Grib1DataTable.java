@@ -923,7 +923,7 @@ public class Grib1DataTable extends JPanel {
     public float getAvgBits() {
       float len = getDataLength();
       int n = gdss.getNx() * gdss.getNy();
-      return len * 8 / n;
+      return (n == 0) ? 0 : len * 8 / n;
     }
 
     void showDataRecord(Formatter f) {

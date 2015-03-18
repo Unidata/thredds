@@ -22,6 +22,16 @@
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <dataType>Grid</dataType>
+      <dataFormat>NetCDF</dataFormat>
+
+      <documentation xlink:href="http://www.arm.gov/xds/static/wpdn.stm" xlink:title="NWS/NOAA information"/>
+      <keyword>profiler</keyword>
+      <keyword>WPDN</keyword>
+      <timeCoverage>
+        <end>present</end>
+        <duration>7 days</duration>
+      </timeCoverage>
+
     </metadata>
 
     <collection spec="${cdmUnitTest}/ncss/CONUS_80km_nc/GFS_CONUS_80km_#yyyyMMdd_HHmm#.nc$" />
@@ -34,6 +44,7 @@
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <dataType>Grid</dataType>
+      <dataFormat>NetCDF</dataFormat>
     </metadata>
 
     <collection spec="${cdmUnitTest}/ncml/agg/#yyyyMMdd_HHmm#.nc$" />
@@ -66,6 +77,7 @@
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <dataType>Grid</dataType>
+      <dataFormat>NetCDF</dataFormat>
     </metadata>
 
     <collection spec="${cdmUnitTest}/ncml/agg/#yyyyMMdd_HHmm#.nc$"/>
