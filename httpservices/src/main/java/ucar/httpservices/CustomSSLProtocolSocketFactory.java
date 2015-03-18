@@ -57,6 +57,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import javax.net.ssl.*;
+
 import java.io.*;
 import java.net.*;
 import java.security.*;
@@ -110,17 +111,23 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
         String trustpath = null;
         String trustpassword = null;
         HTTPSSLProvider provider = null;
-        if(params == null) return null;
+        if(params == null) return stdauthentication();
         Object o = params.getParameter(HTTPAuthPolicy.PROVIDER);
-        if(o == null) return null;
-        if(!(o instanceof HTTPSSLProvider))
-            throw new HTTPException("CustomSSLProtocolSocketFactory: provide is not SSL provider");
-        provider = (HTTPSSLProvider)o;
-        keypath = provider.getKeystore();
-        keypassword = provider.getKeypassword();
-        trustpath = provider.getTruststore();
-        trustpassword = provider.getTrustpassword();
-
+        if(o != null){
+	        if(!(o instanceof HTTPSSLProvider))
+	            throw new HTTPException("CustomSSLProtocolSocketFactory: provide is not SSL provider");
+	        provider = (HTTPSSLProvider)o;
+	        keypath = provider.getKeystore();
+	        keypassword = provider.getKeypassword();
+	        trustpath = provider.getTruststore();
+	        trustpassword = provider.getTrustpassword();
+        }else{
+            keypassword = System.getProperty("keystorepassword");
+            keypath = System.getProperty("keystore");
+            trustpassword = System.getProperty("truststorepassword");
+            trustpath = System.getProperty("truststore");
+            if(keypath==null && trustpath==null) return stdauthentication();
+        }
         TrustManager[] trustmanagers = null;
         KeyManager[] keymanagers = null;
 
@@ -140,7 +147,7 @@ public class CustomSSLProtocolSocketFactory implements SchemeLayeredSocketFactor
         if(trustmanagers == null)
             trustmanagers = new TrustManager[]{new CustomX509TrustManager(null)};
 
-        SSLContext sslcontext = SSLContext.getInstance("TSL");
+        SSLContext sslcontext = SSLContext.getInstance("TLS");
         sslcontext.init(keymanagers, trustmanagers, null);
         return sslcontext;
     }
