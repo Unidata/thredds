@@ -463,9 +463,9 @@ public class Grib1Iosp extends GribIosp {
       result2 += result2 * 37 + 4;
       result2 += result2 * 37 + pno;
 
-    System.out.printf("%d,%d%n", result, result2);
+      System.out.printf("%d,%d%n", result, result2);
 
-    Arrays.hashCode(new Object[] {1, 2, 3});
+      // Arrays.hashCode(new Object[] {1, 2, 3});
     }
 
 }

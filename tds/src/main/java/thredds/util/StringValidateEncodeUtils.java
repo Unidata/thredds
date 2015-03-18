@@ -380,7 +380,7 @@ public class StringValidateEncodeUtils
    * @param charsetName the name of the Character set to use in the conversion
    * @return the Unicode code point represented by the given percentHex encoded string.
    * @throws IllegalArgumentException if the given percentHex string is not valid or if the requested character set is not supported.
-   */
+   *
   public static int percentHexString2unicodeCodePoint( String percentHexString, String charsetName )
   {
     Charset charset = Charset.availableCharsets().get( charsetName );
@@ -400,7 +400,7 @@ public class StringValidateEncodeUtils
     // ToDo Look Implement.
 
     return -1;
-  }
+  } */
 
   /**
    * Check that the given string is a valid percentHexOctets string. The

@@ -61,11 +61,11 @@ public class GribWmoCodesPanel extends JPanel {
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    entryTable.addListSelectionListener(new ListSelectionListener() {
+    /* entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         entryTable.getSelectedBean();
       }
-    });
+    });  */
 
     /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to 4.2 table", false);
     compareButton.addActionListener(new ActionListener() {
