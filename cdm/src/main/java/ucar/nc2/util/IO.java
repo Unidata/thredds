@@ -358,6 +358,12 @@ public class IO {
   }
 
   static public void copyFileWithChannels(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
+    try (FileChannel in = new FileInputStream(fileIn).getChannel()) {
+      in.transferTo(0, fileIn.length(), out);
+    }
+  }
+
+ /*  static public void copyFileWithChannels2(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
     ReadableByteChannel in = new FileInputStream(fileIn).getChannel();
     copy(in, out, 32 * 1024);
   }
@@ -383,7 +389,7 @@ public class IO {
       // position to the limit and the limit to the buffer capacity.
       buffer.compact();
     }
-  }
+  }  */
 
   /**
    * Copy part of a RandomAccessFile to output stream, specify internal buffer size
