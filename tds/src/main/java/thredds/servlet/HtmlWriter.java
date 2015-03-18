@@ -143,8 +143,54 @@ public class HtmlWriter {
 	        .append("})();")
 	        .append("</script>").toString();
       }
-}
+  }
+  
+  private String getCollapsableJs() {
+      return new StringBuilder()
+          .append("<script src=\"https://code.jquery.com/jquery-1.11.2.min.js\"></script>\n")
+          .append("<script type='text/javascript'>\n")
+          .append("  $(document).ready(function() {\n")
+          .append("    $('tr.header').on('click',function() {\n")
+          .append("      $(this).nextUntil('tr.header').slideToggle(0);\n")
+          .append("    });\n")
+          .append("    $('tr.header').click();\n")
+          .append("    $('tr').removeAttr(\"bgcolor\");\n")
+          .append("    $('table#datasets').addClass(\"hoverTable\");\n")
+          .append("  });\n")
+	      .append("</script>\n").toString();
+  }
+  
+  private String getCollapsableCss() {
+    return new StringBuilder()
+      .append("<style>\n")
+      .append("  .hoverTable tr.header {cursor:pointer;}\n")
+      .append("  .hoverTable{\n")
+      .append("    width:100%;\n")
+      .append("    cellspacing:0;\n")
+      .append("    cellpadding:5;\n")
+      .append("    align:center;\n")
+      .append("  }\n")
+      .append("  .hoverTable tr {\n")
+      .append("    background: #ffffff;\n")
+      .append("  }\n")
+      .append("  .hoverTable tr:hover {\n")
+      .append("    background-color: #eeeeee;\n")
+      .append("  }\n")
+      .append("</style>\n").toString();
+  }
 
+  public StringBuilder makeCollapsable(StringBuilder sb, int level) {
+	    if (level > 0) {
+	    String replaceThis = "<tr";
+        String withThis = "<tr class=\"header\"";
+        int strRepStart = sb.lastIndexOf(replaceThis);
+        if (strRepStart != -1) {
+          sb.replace(strRepStart, strRepStart + replaceThis.length(), withThis);
+        }
+	  }
+      return sb;
+  }
+  
   public String getTdsCatalogCssLink() {
     return new StringBuilder()
             .append("<link rel='stylesheet' href='")
@@ -560,12 +606,15 @@ public class HtmlWriter {
     sb.append("<head>\r\n");
     sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
     sb.append("<title>");
-    if (cat.isStatic())
+    if (cat.isStatic()) {
       sb.append("TdsStaticCatalog ").append(catname); // for searching
-    else
+    } else {
       sb.append("Catalog ").append(catname);
+    }
     sb.append("</title>\r\n");
     sb.append(this.getTdsCatalogCssLink()).append("\n");
+    sb.append(this.getCollapsableCss());
+    sb.append(this.getCollapsableJs());
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");
@@ -586,7 +635,7 @@ public class HtmlWriter {
     sb.append("</h1>");
     sb.append("<HR size='1' noshade='noshade'>");
 
-    sb.append("<table width='100%' cellspacing='0' cellpadding='5' align='center'>\r\n");
+    sb.append("<table id='datasets' width='100%' cellspacing='0' cellpadding='5' align='center'>\r\n");
 
     // Render the column headings
     sb.append("<tr>\r\n");
@@ -756,6 +805,7 @@ public class HtmlWriter {
         }
         // Dataset without an ID.
         else {
+          sb = makeCollapsable(sb, level);
           sb.append("<tt>");
           sb.append(name);
           sb.append("</tt></td>\r\n");
@@ -803,6 +853,8 @@ public class HtmlWriter {
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\r\n");
     sb.append(this.getTdsPageCssLink());
+    sb.append(this.getCollapsableCss());
+    sb.append(this.getCollapsableJs());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     this.appendOldStyleHeader(sb);
