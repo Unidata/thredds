@@ -34,7 +34,7 @@ package ucar.nc2.ft.fmrc;
 
 import org.junit.Assert;
 import org.junit.Test;
-
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -47,18 +47,20 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Formatter;
 /**
  * Test FMRC aggregation
  *
  * @author caron
  * @since Feb 25, 2010
  */
-
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestFmrc {
   private static String datadir = TestDir.cdmUnitTestDir + "ft/fmrc/";
   private static boolean showDetails = false;
