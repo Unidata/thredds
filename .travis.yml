@@ -15,9 +15,13 @@ matrix:
 
 script:
   # If we need to do an IDV build, run the script
-  - if [[ $BUILD_IDV == true ]]; then travis/build_idv.sh; fi
-  # Need to add back d4tests, eventually cdm-test
-  - if [[ $BUILD_IDV == false ]]; then ./gradlew --info testAll; fi
+  - if [[ $BUILD_IDV == true ]]; then
+      travis/build_idv.sh;
+    fi
+
+  - if [[ $BUILD_IDV == false ]]; then
+      ./gradlew -Djava.net.preferIPv4Stack=true --info testAll;
+    fi
 
 cache:
   directories:
