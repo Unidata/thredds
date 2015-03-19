@@ -82,11 +82,13 @@ libraries["slf4j-jdk14"] = "org.slf4j:slf4j-jdk14:${versions["slf4j"]}"
 
 libraries["jcl-over-slf4j"] = "org.slf4j:jcl-over-slf4j:${versions["slf4j"]}"
 
-versions["log4j"] = "2.0-rc1"
+versions["log4j"] = "2.2"
 
 libraries["log4j-api"] = "org.apache.logging.log4j:log4j-api:${versions["log4j"]}"
 
 libraries["log4j-core"] = "org.apache.logging.log4j:log4j-core:${versions["log4j"]}"
+
+libraries["log4j-web"] = "org.apache.logging.log4j:log4j-web:${versions["log4j"]}"
 
 libraries["log4j-slf4j-impl"] = "org.apache.logging.log4j:log4j-slf4j-impl:${versions["log4j"]}"
 

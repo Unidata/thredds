@@ -33,12 +33,13 @@
 
 package thredds.util;
 
-import org.apache.logging.log4j.*;
-import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
-import org.apache.logging.log4j.core.config.*;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.NullConfiguration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.util.StringUtil2;
@@ -144,65 +145,43 @@ public class LoggerFactorySpecial implements LoggerFactory {
       String fileName = dir + "/" + name + ".log";
       String fileNamePattern = dir + "/" + name + "%i.log";
 
-      //create logger in log4j2
-      Configuration config = new NullConfiguration(); // ?? LOOK
-      Layout layout = PatternLayout.createLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n", config, null, null, null, null);
+      // create logger in log4j2
+      // TODO: There are Builders that make this logger creation less awkward.
+      Configuration config = new NullConfiguration(); // LOOK: Why are we using this? Why not DefaultConfiguration?
+      PatternLayout layout = PatternLayout.createLayout(
+              "%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n",  // String pattern
+              config,                                         // Configuration config
+              null,                                           // RegexReplacement replace
+              null,                                           // Charset charset
+              true,                                           // boolean alwaysWriteExceptions
+              false,                                          // boolean noConsoleNoAnsi
+              null,                                           // String header
+              null                                            // String footer
+      );
 
-      /*
-       fileName - The name of the file that is actively written to. (required).
-       filePattern - The pattern of the file name to use on rollover. (required).
-       append - If true, events are appended to the file. If false, the file is overwritten when opened. Defaults to "true"
-       name - The name of the Appender (required).
-       bufferedIO - When true, I/O will be buffered. Defaults to "true".
-       immediateFlush - When true, events are immediately flushed. Defaults to "true".
-       policy - The triggering policy. (required).
-       strategy - The rollover strategy. Defaults to DefaultRolloverStrategy.
-       layout - The layout to use (defaults to the default PatternLayout).
-       filter - The Filter or null.
-       ignore - If "true" (default) exceptions encountered when appending events are logged; otherwise they are propagated to the caller.
-       advertise - "true" if the appender configuration should be advertised, "false" otherwise.
-       advertiseURI - The advertised URI which can be used to retrieve the file contents.
-       config - The Configuration.
-        */
       RollingFileAppender app = RollingFileAppender.createAppender(
-              fileName,
-              fileNamePattern,
-              "true",
-              name,
-              "true",
-              "true",
-              SizeBasedTriggeringPolicy.createPolicy(Long.toString(maxSize)),
+              fileName,                                                         // String fileName
+              fileNamePattern,                                                  // String filePattern
+              "true",                                                           // String append
+              name,                                                             // String name
+              "true",                                                           // String bufferedIO
+              null,                                                             // String bufferSizeStr
+              "true",                                                           // String immediateFlush
+              SizeBasedTriggeringPolicy.createPolicy(Long.toString(maxSize)),   // TriggeringPolicy policy
+              DefaultRolloverStrategy.createStrategy(                           // RolloverStrategy strategy
+                      Integer.toString(maxBackups),   // String max
+                      "1",                            // String min
+                      "max",                          // String fileIndex
+                      null,                           // String compressionLevelStr
+                      config                          // Configuration config
+              ),
+              layout,                                                           // Layout<? extends Serializable> layout
+              null,                                                             // Filter filter
+              "true",                                                           // String ignore
+              "false",                                                          // String advertise
+              null,                                                             // String advertiseURI
+              config);                                                          // Configuration config
 
-              //   public static org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy createStrategy
-              // (@org.apache.logging.log4j.core.config.plugins.PluginAttr("max") java.lang.String max,
-              // @org.apache.logging.log4j.core.config.plugins.PluginAttr("min") java.lang.String min,
-              // @org.apache.logging.log4j.core.config.plugins.PluginAttr("fileIndex") java.lang.String fileIndex,
-              // @org.apache.logging.log4j.core.config.plugins.PluginConfiguration org.apache.logging.log4j.core.config.Configuration config) { /* compiled code */ }
-
-              /*
-              public static DefaultRolloverStrategy createStrategy(String max,
-                                                                   String min,
-                                                                   String fileIndex,
-                                                                   String compressionLevelStr,
-                                                                   Configuration config)
-              Create the DefaultRolloverStrategy.
-              Parameters:
-              max - The maximum number of files to keep.
-              min - The minimum number of files to keep.
-              fileIndex - If set to "max" (the default), files with a higher index will be newer than files with a smaller index. If set to "min", file renaming and the counter will follow the Fixed Window strategy.
-              compressionLevelStr - The compression level, 0 (less) through 9 (more); applies only to ZIP files.
-              config - The Configuration.
-              Returns:
-              A DefaultRolloverStrategy.
-
-               */
-              DefaultRolloverStrategy.createStrategy(Integer.toString(maxBackups), "1", "max", null, config),
-              layout,
-              null,
-              "true",
-              "false",
-              null,
-              config);
       app.start();
 
       /*LoggerContext ctx = (LoggerContext) LogManager.getContext(false);

@@ -182,18 +182,6 @@
     <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
   </context-param>
 
-  <!-- needed for intelliJ startup; check if needed for regular war
-      https://issues.apache.org/jira/browse/LOG4J2-223
-      Provided the Log4jContextListener is configured in web.xml shutdown now works fine with Tomcat 7 with revision 1484363.
-      LOOK: unsure if this is needed with latest log4j2
-      changed to Log4jServletContainerInitializer
-      see http://logging.apache.org/log4j/2.x/log4j-core/apidocs/index.html
-      -->
-  <listener>
-    <!--listener-class>org.apache.logging.log4j.core.web.Log4jServletContextListener</listener-class-->
-    <listener-class>org.apache.logging.log4j.core.web.Log4jServletContainerInitializer</listener-class>
-  </listener>
-
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
