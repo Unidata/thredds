@@ -154,7 +154,7 @@ public class CoordSysTable extends JPanel {
             ProjectionCT pct = (ProjectionCT) ct;
             if (pct.getProjection() != null) {
               infoTA.appendLine("    impl.class= " + pct.getProjection().getClass().getName());
-              pct.getProjection();
+              // pct.getProjection();
             }
           }
           if (ct instanceof VerticalCT) {
