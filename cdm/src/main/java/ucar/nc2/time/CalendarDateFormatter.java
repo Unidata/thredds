@@ -33,11 +33,13 @@
 package ucar.nc2.time;
 
 import net.jcip.annotations.ThreadSafe;
+
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
 import ucar.nc2.units.DateFormatter;
 
 import java.text.DateFormat;
@@ -187,11 +189,42 @@ public class CalendarDateFormatter {
    * @see "http://www.w3.org/TR/NOTE-datetime"
    */
   static public CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException {
-	  DateTime dt = parseIsoTimeString(calt, iso);
+    DateTime dt = parseIsoTimeString(calt, iso);
     Calendar useCal = Calendar.of(dt.getChronology());
-	  return new CalendarDate(useCal, dt);
+    return new CalendarDate(useCal, dt);
   }
 
+  /**
+   * Convert a WRF formatted String to a CalendarDate.
+   * @param calt calendar, may be null for default calendar (Calendar.getDefault())
+   * @param Time String from WRF output
+     <pre>possible forms (encountered so far):
+      ISO compliant form (see isoStringToCalendarDate)
+      
+      Complete date plus hours and minutes:
+         YYYY-MM-DD_hh:mm (eg 1997-07-16_19:20:01:00)
+   where:
+        YYYY = four-digit year
+        MM   = two-digit month (01=January, etc.)
+        DD   = two-digit day of month (01 through 31)
+        hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+        mm   = two digits of minute (00 through 59)
+        ss   = two digits of second (00 through 59)
+        s    = one or more digits representing a decimal fraction of a second
+        TZD  = time zone designator (Z or +hh:mm or -hh:mm)
+   </pre>
+   Here, we will try an iso date first, but if that fails, we will try some
+   other WRF Date/time Strings that we know about.
+   * @return CalendarDate using given calendar
+   * @throws IllegalArgumentException if the String is not a known WRF date
+   * @see "http://www.w3.org/TR/NOTE-datetime"
+   */
+  static public CalendarDate wrfStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException {
+    DateTime dt = parseWrfTimeString(calt, iso);
+    Calendar useCal = Calendar.of(dt.getChronology());    	
+    return new CalendarDate(useCal, dt);
+  }
+  
   /**
    * Does not handle non-standard Calendars
    * @param iso iso formatted string
@@ -329,6 +362,64 @@ public class CalendarDateFormatter {
     }
   }
 
+  //  Maybe too specific to require WRF to give 10 digits or dashes for the date (e.g. yyyy-mm-dd)?
+  private static final String wrfdatePatternString = "([\\-\\d]{10})_([\\.\\:\\d]+)$";
+  private static final Pattern wrfdatePattern = Pattern.compile(wrfdatePatternString);
+  
+  private static DateTime parseWrfTimeString(Calendar calt, String dtWrfStr) {
+    try {    
+	    DateTime dt = parseIsoTimeString(calt, dtWrfStr);
+    } catch (IllegalArgumentException iae) {
+	  dtWrfStr = dtWrfStr.trim();
+	  dtWrfStr = dtWrfStr.toLowerCase();
+	
+	  Matcher m = wrfdatePattern.matcher(dtWrfStr);
+	  if (!m.matches()) {
+	    throw new IllegalArgumentException(dtWrfStr + " does not match regexp " + wrfdatePatternString);
+	  }
+
+      String dateString = m.group(1);
+      String timeString = m.group(2);
+
+      // TODO refactor such that parseWrfTimeString and parseIsoTimeString use the same
+      // code from here to the end?
+      
+      // Set the defaults for any values that are not specified
+      int year = 0;
+      int month = 1;
+      int day = 1;
+      int hour = 0;
+      int minute = 0;
+      double second = 0.0;
+
+      StringTokenizer dateTokenizer = new StringTokenizer(dateString, "-");
+      if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
+      if (dateTokenizer.hasMoreTokens()) month = Integer.parseInt(dateTokenizer.nextToken());
+      if (dateTokenizer.hasMoreTokens()) day = Integer.parseInt(dateTokenizer.nextToken());
+
+      // Parse the time if present
+      if (timeString != null && timeString.length() > 0) {
+        StringTokenizer timeTokenizer = new StringTokenizer(timeString, ":");
+        if (timeTokenizer.hasMoreTokens()) hour = Integer.parseInt(timeTokenizer.nextToken());
+        if (timeTokenizer.hasMoreTokens()) minute = Integer.parseInt(timeTokenizer.nextToken());
+        if (timeTokenizer.hasMoreTokens()) second = Double.parseDouble(timeTokenizer.nextToken());
+      }
+
+      // Get a DateTime object in this Chronology
+      Chronology cron = Calendar.getChronology(calt);
+      cron = cron.withUTC(); // default is UTC
+      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0, cron);
+
+      // Add the seconds
+      dt = dt.plus((long) (1000 * second));
+      return dt;
+    } catch (Throwable e) {  // catch random joda exceptions
+      throw new IllegalArgumentException("Illegal base time specification:"+e.getMessage());
+      //throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
+    }
+    return null;
+  }
+  
   /////////////////////////////////////////////
   private final DateTimeFormatter dflocal;
 
