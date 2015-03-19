@@ -25,7 +25,8 @@ tasks.withType(Test) {
     }
 
     if (System.env['TRAVIS']) {
-        systemProperty 'java.net.preferIPv4Stack', true
+        logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
+        excludeCategories 'ucar.unidata.test.util.NotTravis'
     } else {
         ignoreFailures true
     }
