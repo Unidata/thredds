@@ -156,14 +156,14 @@ public class NcssController extends AbstractNcssController {
       }
     }
 
-    File netcdfResult = null;
-    try {
-      GridResponder gds = GridResponder.factory(gridDataset, datasetPath);
-      netcdfResult = gds.getResponseFile(req, res, params, version);
-    } catch (Exception e) {
-      handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-      return;
-    }
+    //File netcdfResult = null;
+    //try {
+    GridResponder gds = GridResponder.factory(gridDataset, datasetPath);
+    File netcdfResult = gds.getResponseFile(req, res, params, version);
+    //} catch (Exception e) {
+    //  handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+    //  return;
+    //}
 
     // filename download attachment
     String suffix = (version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc";

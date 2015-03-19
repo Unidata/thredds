@@ -126,6 +126,7 @@ public class TestGribCollectionsBig {
     // jenkins:  that took 32 secs total, 0.077869 msecs per record
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
+    // LOOK 0/366994/418704
     assert count.nread == 837408 : count.nread;
     assert count.nmiss == 0;
   }

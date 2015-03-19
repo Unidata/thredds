@@ -176,7 +176,7 @@ public class TestGrib2CoordsMatch {
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     // 2015/03/11: These tests were commented out, causing this test to be a no-op. Why?
-    assert count.nread == 868;
+    assert count.nread == 5384;
     assert count.nmiss == 0;
     assert count.nerrs == 0;
   }
