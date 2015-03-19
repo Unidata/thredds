@@ -1,23 +1,21 @@
 language: java
 sudo: false
 
+jdk:
+  - oraclejdk7
+  - oraclejdk8
+  - openjdk7
+
 env:
   global:
-    - BUILD_IDV=false
-
-matrix:
-  include:
-    - jdk: oraclejdk7
-    - jdk: oraclejdk8
-    - jdk: openjdk7
-#    - jdk: oraclejdk7
-#      env: BUILD_IDV=true
+    - MAVEN_OPTS="-Djna.library.path=${TRAVIS_BUILD_DIR}/travis -DskipTests=false -DfailIfNoTests=false"
 
 script:
-  # If we need to do an IDV build, run the script
-  - if [[ $BUILD_IDV == true ]]; then travis/build_idv.sh; fi
-  # Need to add back d4tests, eventually cdm-test
-  - if [[ $BUILD_IDV == false ]]; then ./gradlew --info testAll; fi
+  - cd cdm && mvn test ${MAVEN_OPTS}
+  - cd ../udunits && mvn test ${MAVEN_OPTS}
+  - cd ../ui && mvn test ${MAVEN_OPTS}
+  - cd ../waterml && mvn test ${MAVEN_OPTS}
+    #- cd ../dap4/d4tests && mvn test ${MAVEN_OPTS}
 
 cache:
   directories:
