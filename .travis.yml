@@ -20,7 +20,7 @@ script:
     fi
 
   - if [[ $BUILD_IDV == false ]]; then
-      ./gradlew -Djava.net.preferIPv4Stack=true --info testAll;
+      ./gradlew --info testAll;
     fi
 
 cache:

@@ -24,7 +24,9 @@ tasks.withType(Test) {
         }
     }
 
-    if (!System.env['TRAVIS']) {
+    if (System.env['TRAVIS']) {
+        systemProperty 'java.net.preferIPv4Stack', true
+    } else {
         ignoreFailures true
     }
 }
