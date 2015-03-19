@@ -22,13 +22,13 @@ tasks.withType(Test) {
             logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
             excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
         }
-    }
 
-    if (System.env['TRAVIS']) {
-        logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
-        excludeCategories 'ucar.unidata.test.util.NotTravis'
-    } else {
-        ignoreFailures true
+        if (System.env['TRAVIS']) {
+            logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
+            excludeCategories 'ucar.unidata.test.util.NotTravis'
+        } else {
+            ignoreFailures true
+        }
     }
 }
 
