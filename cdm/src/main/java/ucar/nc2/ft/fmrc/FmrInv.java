@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2010. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ft.fmrc;
@@ -53,10 +54,10 @@ import java.util.*;
 public class FmrInv implements Comparable<FmrInv> {
   //static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrInv.class);
 
-  private final List<TimeCoord> timeCoords = new ArrayList<TimeCoord>(); // list of unique TimeCoord
-  private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>(); // list of unique EnsCoord
-  private final List<VertCoord> vertCoords = new ArrayList<VertCoord>(); // list of unique VertCoord
-  private final Map<String, GridVariable> uvHash = new HashMap<String, GridVariable>(); // hash of FmrInv.Grid
+  private final List<TimeCoord> timeCoords = new ArrayList<>(); // list of unique TimeCoord
+  private final List<EnsCoord> ensCoords = new ArrayList<>(); // list of unique EnsCoord
+  private final List<VertCoord> vertCoords = new ArrayList<>(); // list of unique VertCoord
+  private final Map<String, GridVariable> uvHash = new HashMap<>(); // hash of FmrInv.Grid
   private List<GridVariable> gridList;              // sorted list of FmrInv.Grid
 
   public List<TimeCoord> getTimeCoords() {
@@ -89,7 +90,7 @@ public class FmrInv implements Comparable<FmrInv> {
 
   ////////////////////////////////////////////////////////////////////////////////////
 
-  private final List<GridDatasetInv> invList = new ArrayList<GridDatasetInv>();
+  private final List<GridDatasetInv> invList = new ArrayList<>();
   private final CalendarDate runtime;
 
   FmrInv(CalendarDate runtime) {
@@ -121,7 +122,7 @@ public class FmrInv implements Comparable<FmrInv> {
 
   // call after adding all runs
   void finish() {
-    gridList = new ArrayList<GridVariable>(uvHash.values());
+    gridList = new ArrayList<>(uvHash.values());
     Collections.sort(gridList);
 
     // find the common coordinates
@@ -135,11 +136,11 @@ public class FmrInv implements Comparable<FmrInv> {
       tc.setId(seqno++);
 
     // assign sequence number for vertical coords with same name
-    HashMap<String, List<VertCoord>> map = new HashMap<String, List<VertCoord>>();
+    HashMap<String, List<VertCoord>> map = new HashMap<>();
     for (VertCoord vc : vertCoords) {
       List<VertCoord> list = map.get(vc.getName());
       if (list == null) {
-        list = new ArrayList<VertCoord>();
+        list = new ArrayList<>();
         map.put(vc.getName(), list);
       }
       list.add(vc);
@@ -171,7 +172,7 @@ public class FmrInv implements Comparable<FmrInv> {
    */
   public class GridVariable implements Comparable {
     private final String name;
-    private final List<GridDatasetInv.Grid> gridList = new ArrayList<GridDatasetInv.Grid>();
+    private final List<GridDatasetInv.Grid> gridList = new ArrayList<>();
     VertCoord vertCoordUnion = null; // union of vert coords
     EnsCoord ensCoordUnion = null; // union of ens coords NOT USED YET
     TimeCoord timeCoordUnion = null; // union of time coords
@@ -226,7 +227,7 @@ public class FmrInv implements Comparable<FmrInv> {
       }
 
       // run over all ensCoords and construct the union
-      List<EnsCoord> ensList = new ArrayList<EnsCoord>();
+      List<EnsCoord> ensList = new ArrayList<>();
       EnsCoord ec_union = null;
       for (GridDatasetInv.Grid grid : gridList) {
         EnsCoord ec = grid.ec;
@@ -242,7 +243,7 @@ public class FmrInv implements Comparable<FmrInv> {
       }
 
       // run over all vertCoords and construct the union
-      List<VertCoord> vertList = new ArrayList<VertCoord>();
+      List<VertCoord> vertList = new ArrayList<>();
       VertCoord vc_union = null;
       for (GridDatasetInv.Grid grid : gridList) {
         VertCoord vc = grid.vc;
@@ -260,7 +261,7 @@ public class FmrInv implements Comparable<FmrInv> {
       }
 
       // run over all timeCoords and construct the union
-      List<TimeCoord> timeList = new ArrayList<TimeCoord>();
+      List<TimeCoord> timeList = new ArrayList<>();
       for (GridDatasetInv.Grid grid : gridList) {
         TimeCoord tc = grid.tc;
         timeList.add(tc);
@@ -273,7 +274,7 @@ public class FmrInv implements Comparable<FmrInv> {
   }
 
   public Set<GridDatasetInv> getFiles() {
-    HashSet<GridDatasetInv> fileSet = new HashSet<GridDatasetInv>();
+    HashSet<GridDatasetInv> fileSet = new HashSet<>();
     for (FmrInv.GridVariable grid :getGrids()) {
       for (GridDatasetInv.Grid inv : grid.getInventory())  {
         fileSet.add(inv.getFile());  

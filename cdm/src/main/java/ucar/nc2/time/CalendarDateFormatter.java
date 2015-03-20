@@ -64,39 +64,39 @@ public class CalendarDateFormatter {
   private static DateTimeFormatter isof = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
   private static DateTimeFormatter isof_with_millis_of_second = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss'Z'").withZoneUTC();
-  
+
   private static DateTimeFormatter dtf_with_millis_of_second = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
   private static DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // udunits
 
   static public String toDateTimeStringISO(CalendarDate cd) {
-	
-	 if(cd.getDateTime().getMillisOfSecond() == 0)
-		 return isof.print( cd.getDateTime() );
-	 else
-		 return isof_with_millis_of_second.print(cd.getDateTime());
-	 
+
+    if (cd.getDateTime().getMillisOfSecond() == 0)
+      return isof.print(cd.getDateTime());
+    else
+      return isof_with_millis_of_second.print(cd.getDateTime());
+
   }
 
   static public String toDateTimeStringISO(Date d) {
-	  return toDateTimeStringISO( CalendarDate.of(d) );
+    return toDateTimeStringISO(CalendarDate.of(d));
   }
 
   static public String toDateTimeStringISO(long millisecs) {
- 	  return toDateTimeStringISO( CalendarDate.of(millisecs) );
-   }
-
-   static public String toDateTimeString(CalendarDate cd) {
-
-	  if(cd.getDateTime().getMillisOfSecond()==0)	  
-		  return dtf.print(cd.getDateTime());
-	  else
-		  return dtf_with_millis_of_second.print(cd.getDateTime());
+    return toDateTimeStringISO(CalendarDate.of(millisecs));
   }
-  
+
+  static public String toDateTimeString(CalendarDate cd) {
+
+    if (cd.getDateTime().getMillisOfSecond() == 0)
+      return dtf.print(cd.getDateTime());
+    else
+      return dtf_with_millis_of_second.print(cd.getDateTime());
+  }
+
   static public String toDateTimeString(Date date) {
-	    return toDateTimeString(CalendarDate.of(date));
-  }  
+    return toDateTimeString(CalendarDate.of(date));
+  }
 
   static public String toDateTimeStringPresent() {
     return dtf.print(new DateTime());
@@ -112,24 +112,30 @@ public class CalendarDateFormatter {
 
   /**
    * udunits formatting
-   * @param cd  the calendar date
+   *
+   * @param cd the calendar date
    * @return udunits formated date
    */
-  static public String toTimeUnits(CalendarDate cd){
-	  return df_units.print(cd.getDateTime());
+  static public String toTimeUnits(CalendarDate cd) {
+    return df_units.print(cd.getDateTime());
   }
 
-  static public String toTimeUnits(Date date){
-	  return df_units.print(date.getTime());
+  static public String toTimeUnits(Date date) {
+    return df_units.print(date.getTime());
   }
 
   static public CalendarDateFormatter factory(CalendarPeriod period) {
     switch (period.getField()) {
-      case Year: return new CalendarDateFormatter("yyyy");
-      case Month: return new CalendarDateFormatter("yyyy-MM");
-      case Day: return new CalendarDateFormatter("yyyy-MM-dd");
-      case Hour: return new CalendarDateFormatter("yyyy-MM-ddTHH");
-      default: return new CalendarDateFormatter("yyyy-MM-ddTHH:mm:ss");
+      case Year:
+        return new CalendarDateFormatter("yyyy");
+      case Month:
+        return new CalendarDateFormatter("yyyy-MM");
+      case Day:
+        return new CalendarDateFormatter("yyyy-MM-dd");
+      case Hour:
+        return new CalendarDateFormatter("yyyy-MM-ddTHH");
+      default:
+        return new CalendarDateFormatter("yyyy-MM-ddTHH:mm:ss");
     }
   }
 
@@ -139,51 +145,51 @@ public class CalendarDateFormatter {
 
   /**
    * Old version using DateFormatter
+   *
    * @param iso ISO 8601 date String
    * @return equivilent Date
-   * 
    * @deprecated As of 4.3.10 use {@link #isoStringToDate(String)} instead
-   *     
    */
   @Deprecated
   static public Date parseISODate(String iso) {
     DateFormatter df = new DateFormatter();
     return df.getISODate(iso);
   }
-  
+
   /**
    * Convert an ISO formatted String to a CalendarDate.
+   *
    * @param calt calendar, may be null for default calendar (Calendar.getDefault())
-   * @param iso ISO 8601 date String
-     <pre>possible forms for W3C profile of ISO 8601
-        Year:
-         YYYY (eg 1997)
-      Year and month:
-         YYYY-MM (eg 1997-07)
-      Complete date:
-         YYYY-MM-DD (eg 1997-07-16)
-      Complete date plus hours and minutes:
-         YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-      Complete date plus hours, minutes and seconds:
-         YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
-      Complete date plus hours, minutes, seconds and a decimal fraction of a second
-         YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
-
-   where:
-        YYYY = four-digit year
-        MM   = two-digit month (01=January, etc.)
-        DD   = two-digit day of month (01 through 31)
-        hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
-        mm   = two digits of minute (00 through 59)
-        ss   = two digits of second (00 through 59)
-        s    = one or more digits representing a decimal fraction of a second
-        TZD  = time zone designator (Z or +hh:mm or -hh:mm)
-   except:
-       You may use a space instead of the 'T'
-       The year may be preceeded by a '+' (ignored) or a '-' (makes the date BCE)
-       The date part uses a '-' delimiter instead of a fixed number of digits for each field
-       The time part uses a ':' delimiter instead of a fixed number of digits for each field
-   </pre>
+   * @param iso  ISO 8601 date String
+   *             <pre>possible forms for W3C profile of ISO 8601
+   *             Year:
+   *             YYYY (eg 1997)
+   *             Year and month:
+   *             YYYY-MM (eg 1997-07)
+   *             Complete date:
+   *             YYYY-MM-DD (eg 1997-07-16)
+   *             Complete date plus hours and minutes:
+   *             YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
+   *             Complete date plus hours, minutes and seconds:
+   *             YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
+   *             Complete date plus hours, minutes, seconds and a decimal fraction of a second
+   *             YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
+   *             <p/>
+   *             where:
+   *             YYYY = four-digit year
+   *             MM   = two-digit month (01=January, etc.)
+   *             DD   = two-digit day of month (01 through 31)
+   *             hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+   *             mm   = two digits of minute (00 through 59)
+   *             ss   = two digits of second (00 through 59)
+   *             s    = one or more digits representing a decimal fraction of a second
+   *             TZD  = time zone designator (Z or +hh:mm or -hh:mm)
+   *             except:
+   *             You may use a space instead of the 'T'
+   *             The year may be preceeded by a '+' (ignored) or a '-' (makes the date BCE)
+   *             The date part uses a '-' delimiter instead of a fixed number of digits for each field
+   *             The time part uses a ':' delimiter instead of a fixed number of digits for each field
+   *             </pre>
    * @return CalendarDate using given calendar
    * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
    * @see "http://www.w3.org/TR/NOTE-datetime"
@@ -196,37 +202,39 @@ public class CalendarDateFormatter {
 
   /**
    * Convert a WRF formatted String to a CalendarDate.
+   *
    * @param calt calendar, may be null for default calendar (Calendar.getDefault())
    * @param Time String from WRF output
-     <pre>possible forms (encountered so far):
-      ISO compliant form (see isoStringToCalendarDate)
-      
-      Complete date plus hours and minutes:
-         YYYY-MM-DD_hh:mm (eg 1997-07-16_19:20:01:00)
-   where:
-        YYYY = four-digit year
-        MM   = two-digit month (01=January, etc.)
-        DD   = two-digit day of month (01 through 31)
-        hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
-        mm   = two digits of minute (00 through 59)
-        ss   = two digits of second (00 through 59)
-        s    = one or more digits representing a decimal fraction of a second
-        TZD  = time zone designator (Z or +hh:mm or -hh:mm)
-   </pre>
-   Here, we will try an iso date first, but if that fails, we will try some
-   other WRF Date/time Strings that we know about.
+   *             <pre>possible forms (encountered so far):
+   *             ISO compliant form (see isoStringToCalendarDate)
+   *             <p/>
+   *             Complete date plus hours and minutes:
+   *             YYYY-MM-DD_hh:mm (eg 1997-07-16_19:20:01:00)
+   *             where:
+   *             YYYY = four-digit year
+   *             MM   = two-digit month (01=January, etc.)
+   *             DD   = two-digit day of month (01 through 31)
+   *             hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+   *             mm   = two digits of minute (00 through 59)
+   *             ss   = two digits of second (00 through 59)
+   *             s    = one or more digits representing a decimal fraction of a second
+   *             TZD  = time zone designator (Z or +hh:mm or -hh:mm)
+   *             </pre>
+   *             Here, we will try an iso date first, but if that fails, we will try some
+   *             other WRF Date/time Strings that we know about.
    * @return CalendarDate using given calendar
    * @throws IllegalArgumentException if the String is not a known WRF date
    * @see "http://www.w3.org/TR/NOTE-datetime"
    */
   static public CalendarDate wrfStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException {
     DateTime dt = parseWrfTimeString(calt, iso);
-    Calendar useCal = Calendar.of(dt.getChronology());    	
+    Calendar useCal = Calendar.of(dt.getChronology());
     return new CalendarDate(useCal, dt);
   }
-  
+
   /**
    * Does not handle non-standard Calendars
+   *
    * @param iso iso formatted string
    * @return Date
    * @throws IllegalArgumentException
@@ -234,7 +242,7 @@ public class CalendarDateFormatter {
    */
   static public Date isoStringToDate(String iso) throws IllegalArgumentException {
     CalendarDate dt = isoStringToCalendarDate(null, iso);
-	  return dt.toDate();
+    return dt.toDate();
   }
 
   //                                                   1                  2            3
@@ -267,11 +275,11 @@ public class CalendarDateFormatter {
     try {
       boolean isMinus = false;
       if (dateString.startsWith("-")) {
-         isMinus = true;
-         dateString = dateString.substring(1);
-       } else if (dateString.startsWith("+")) {
-         dateString = dateString.substring(1);
-       }
+        isMinus = true;
+        dateString = dateString.substring(1);
+      } else if (dateString.startsWith("+")) {
+        dateString = dateString.substring(1);
+      }
 
       StringTokenizer dateTokenizer = new StringTokenizer(dateString, "-");
       if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
@@ -310,25 +318,25 @@ public class CalendarDateFormatter {
         if (zoneString.length() > 0 && !zoneString.equalsIgnoreCase("Z") && !zoneString.equalsIgnoreCase("UTC") && !zoneString.equalsIgnoreCase("GMT")) {
           isMinus = false;
           if (zoneString.startsWith("-")) {
-             isMinus = true;
-             zoneString = zoneString.substring(1);
-           } else if (zoneString.startsWith("+")) {
-             zoneString = zoneString.substring(1);
-           }
+            isMinus = true;
+            zoneString = zoneString.substring(1);
+          } else if (zoneString.startsWith("+")) {
+            zoneString = zoneString.substring(1);
+          }
 
           // allow 01:00, 1:00, 01 or 0100
           int hourOffset = 0;
           int minuteOffset = 0;
           int posColon = zoneString.indexOf(':');
           if (posColon > 0) {
-            String hourS = zoneString.substring(0,posColon);
-            String minS = zoneString.substring(posColon+1);
+            String hourS = zoneString.substring(0, posColon);
+            String minS = zoneString.substring(posColon + 1);
             hourOffset = Integer.parseInt(hourS);
             minuteOffset = Integer.parseInt(minS);
 
           } else {   // no colon - assume 2 digit hour, optional minutes
             if (zoneString.length() > 2) {
-              String hourS = zoneString.substring(0,2);
+              String hourS = zoneString.substring(0, 2);
               String minS = zoneString.substring(2);
               hourOffset = Integer.parseInt(hourS);
               minuteOffset = Integer.parseInt(minS);
@@ -349,41 +357,41 @@ public class CalendarDateFormatter {
           // Now convert to the UTC time zone, retaining the millisecond instant
           dt = dt.withZone(DateTimeZone.UTC);
         } //else {
-          //dt = dt.withZone(DateTimeZone.UTC);   // default UTC
+        //dt = dt.withZone(DateTimeZone.UTC);   // default UTC
         //}
 
-      //} else {
-      //  dt = dt.withZone(DateTimeZone.UTC);   // default UTC
+        //} else {
+        //  dt = dt.withZone(DateTimeZone.UTC);   // default UTC
       }
 
       return dt;
     } catch (Throwable e) {  // catch random joda exceptions
-      throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
+      throw new IllegalArgumentException("Illegal base time specification: '" + dateString + "' " + e.getMessage());
     }
   }
 
   //  Maybe too specific to require WRF to give 10 digits or dashes for the date (e.g. yyyy-mm-dd)?
   private static final String wrfdatePatternString = "([\\-\\d]{10})_([\\.\\:\\d]+)$";
   private static final Pattern wrfdatePattern = Pattern.compile(wrfdatePatternString);
-  
+
   private static DateTime parseWrfTimeString(Calendar calt, String dtWrfStr) {
-    try {    
-	    DateTime dt = parseIsoTimeString(calt, dtWrfStr);
+    try {
+      DateTime dt = parseIsoTimeString(calt, dtWrfStr);
     } catch (IllegalArgumentException iae) {
-	  dtWrfStr = dtWrfStr.trim();
-	  dtWrfStr = dtWrfStr.toLowerCase();
-	
-	  Matcher m = wrfdatePattern.matcher(dtWrfStr);
-	  if (!m.matches()) {
-	    throw new IllegalArgumentException(dtWrfStr + " does not match regexp " + wrfdatePatternString);
-	  }
+      dtWrfStr = dtWrfStr.trim();
+      dtWrfStr = dtWrfStr.toLowerCase();
+
+      Matcher m = wrfdatePattern.matcher(dtWrfStr);
+      if (!m.matches()) {
+        throw new IllegalArgumentException(dtWrfStr + " does not match regexp " + wrfdatePatternString);
+      }
 
       String dateString = m.group(1);
       String timeString = m.group(2);
 
       // TODO refactor such that parseWrfTimeString and parseIsoTimeString use the same
       // code from here to the end?
-      
+
       // Set the defaults for any values that are not specified
       int year = 0;
       int month = 1;
@@ -414,20 +422,20 @@ public class CalendarDateFormatter {
       dt = dt.plus((long) (1000 * second));
       return dt;
     } catch (Throwable e) {  // catch random joda exceptions
-      throw new IllegalArgumentException("Illegal base time specification:"+e.getMessage());
+      throw new IllegalArgumentException("Illegal base time specification:" + e.getMessage());
       //throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
     }
     return null;
   }
-  
+
   /////////////////////////////////////////////
   private final DateTimeFormatter dflocal;
 
   /**
    * Date formatter with specified pattern.
    * NOTE: we are using jodatime patterns right now, but may switch to jsr-310 when thats available in java 8.
-   *  Not sure whether these patterns will still work then, so use this formatter at the risk of having to
-   *  change it eventually. OTOH, its likely that the same functionality will be present in jsr-310.
+   * Not sure whether these patterns will still work then, so use this formatter at the risk of having to
+   * change it eventually. OTOH, its likely that the same functionality will be present in jsr-310.
    * <p>
    * The pattern syntax is mostly compatible with java.text.SimpleDateFormat -
    * time zone names cannot be parsed and a few more symbols are supported.
@@ -477,7 +485,7 @@ public class CalendarDateFormatter {
   }
 
   public CalendarDateFormatter(String pattern, CalendarTimeZone tz) {
-    dflocal = DateTimeFormat.forPattern(pattern).withZone( tz.getJodaTimeZone());
+    dflocal = DateTimeFormat.forPattern(pattern).withZone(tz.getJodaTimeZone());
   }
 
   public String toString(CalendarDate cd) {
@@ -490,34 +498,34 @@ public class CalendarDateFormatter {
     return new CalendarDate(cal, dt);
   }
 
-   public static void main(String arg[]) {
-     CalendarDate cd = CalendarDate.present();
+  public static void main(String arg[]) {
+    CalendarDate cd = CalendarDate.present();
      /* {"S", "M", "L", "F", "-"}
      System.out.printf("%s%n", DateTimeFormat.forStyle("SS").print(cd.getDateTime()));
      System.out.printf("%s%n", DateTimeFormat.forStyle("MM").print(cd.getDateTime()));
      System.out.printf("%s%n", DateTimeFormat.forStyle("LL").print(cd.getDateTime()));
      System.out.printf("%s%n", DateTimeFormat.forStyle("FF").print(cd.getDateTime())); */
 
-     System.out.printf("%s%n", cd);
-     System.out.printf("toDateTimeStringISO=%s%n", toDateTimeStringISO(cd));
-     System.out.printf("   toDateTimeString=%s%n", toDateTimeString(cd));
-     System.out.printf("       toDateString=%s%n", toDateString(cd));
-     System.out.printf("        toTimeUnits=%s%n", toTimeUnits(cd));
-     System.out.printf("===============================%n");
-     Date d = cd.toDate();
-     System.out.printf("cd.toDate()=%s%n", toDateTimeString(d));
+    System.out.printf("%s%n", cd);
+    System.out.printf("toDateTimeStringISO=%s%n", toDateTimeStringISO(cd));
+    System.out.printf("   toDateTimeString=%s%n", toDateTimeString(cd));
+    System.out.printf("       toDateString=%s%n", toDateString(cd));
+    System.out.printf("        toTimeUnits=%s%n", toTimeUnits(cd));
+    System.out.printf("===============================%n");
+    Date d = cd.toDate();
+    System.out.printf("cd.toDate()=%s%n", toDateTimeString(d));
 
-     SimpleDateFormat udunitDF = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
-     udunitDF.setTimeZone(TimeZone.getTimeZone("UTC"));
-     udunitDF.applyPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
-     System.out.printf("           udunitDF=%s%n", udunitDF.format(d));
+    SimpleDateFormat udunitDF = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+    udunitDF.setTimeZone(TimeZone.getTimeZone("UTC"));
+    udunitDF.applyPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
+    System.out.printf("           udunitDF=%s%n", udunitDF.format(d));
 
-     System.out.printf("===============================%n");
-     DateFormatter df = new DateFormatter();
-     System.out.printf("     toTimeUnits(date)=%s%n", toTimeUnits(cd));
-     System.out.printf("toDateTimeString(date)=%s%n", df.toDateTimeString(d));
-     System.out.printf("toDateOnlyString(date)=%s%n", df.toDateOnlyString(d));
+    System.out.printf("===============================%n");
+    DateFormatter df = new DateFormatter();
+    System.out.printf("     toTimeUnits(date)=%s%n", toTimeUnits(cd));
+    System.out.printf("toDateTimeString(date)=%s%n", df.toDateTimeString(d));
+    System.out.printf("toDateOnlyString(date)=%s%n", df.toDateOnlyString(d));
 
-   }
+  }
 
 }

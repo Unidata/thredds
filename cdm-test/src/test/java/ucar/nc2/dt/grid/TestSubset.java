@@ -64,299 +64,301 @@ public class TestSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testRegular() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc");
+    try( ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc")) {
 
-    GeoGrid grid = dataset.findGridByName("T");
-    assert null != grid;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 4;
+      GeoGrid grid = dataset.findGridByName("T");
+      assert null != grid;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
 
-    CoordinateAxis zaxis = gcs.getVerticalAxis();
-    assert zaxis.getUnitsString().equals("hectopascals");
+      CoordinateAxis zaxis = gcs.getVerticalAxis();
+      assert zaxis.getUnitsString().equals("hectopascals");
 
-    GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
+      GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
 
-    GridCoordSystem gcs_section = grid_section.getCoordinateSystem();
-    CoordinateAxis zaxis2 = gcs_section.getVerticalAxis();
-    assert zaxis2.getSize() == 7;
-    assert zaxis2.getUnitsString().equals("hectopascals");
-    assert gcs_section.getTimeAxis().equals(gcs.getTimeAxis());
+      GridCoordSystem gcs_section = grid_section.getCoordinateSystem();
+      CoordinateAxis zaxis2 = gcs_section.getVerticalAxis();
+      assert zaxis2.getSize() == 7;
+      assert zaxis2.getUnitsString().equals("hectopascals");
+      assert gcs_section.getTimeAxis().equals(gcs.getTimeAxis());
 
-    Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 2 : data.getShape()[0];
-    assert data.getShape()[1] == 7 : data.getShape()[1];
-    assert data.getShape()[2] == 22 : data.getShape()[2];
-    assert data.getShape()[3] == 31 : data.getShape()[3];
+      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == 2 : data.getShape()[0];
+      assert data.getShape()[1] == 7 : data.getShape()[1];
+      assert data.getShape()[2] == 22 : data.getShape()[2];
+      assert data.getShape()[3] == 31 : data.getShape()[3];
 
-    // check axes
-    for (CoordinateAxis axis : gcs_section.getCoordinateAxes()) {
-      assert axis.getAxisType() != null;
+      // check axes
+      for (CoordinateAxis axis : gcs_section.getCoordinateAxes()) {
+        assert axis.getAxisType() != null;
+      }
     }
-
-    // NCdump.printArray( data, "grid_section", System.out,  null);
-    dataset.close();
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testGrib() throws Exception {
-    GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib1/AVN.wmo");
+    try(GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib1/AVN.wmo")) {
 
-    GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_7-0-2-11_L100"); // "Temperature_isobaric");
-    assert null != grid : dataset.getLocation();
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 4;
+      GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_7-0-2-11_L100"); // "Temperature_isobaric");
+      assert null != grid : dataset.getLocation();
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
 
-    GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
+      GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
 
-    Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 3 : data.getShape()[0];
-    assert data.getShape()[1] == 3 : data.getShape()[1];
-    assert data.getShape()[2] == 13 : data.getShape()[2];
-    assert data.getShape()[3] == 15 : data.getShape()[3];
-
-    dataset.close();
+      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == 3 : data.getShape()[0];
+      assert data.getShape()[1] == 3 : data.getShape()[1];
+      assert data.getShape()[2] == 13 : data.getShape()[2];
+      assert data.getShape()[3] == 15 : data.getShape()[3];
+    }
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testWRF() throws Exception {
-    GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
+    try( GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc")) {
 
-    GeoGrid grid = dataset.findGridByName("T");
-    assert null != grid;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 4;
+      GeoGrid grid = dataset.findGridByName("T");
+      assert null != grid;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
 
-    CoordinateAxis zaxis = gcs.getVerticalAxis();
-    assert zaxis.getSize() == 27;
+      CoordinateAxis zaxis = gcs.getVerticalAxis();
+      assert zaxis.getSize() == 27;
 
-    VerticalTransform vt = gcs.getVerticalTransform();
-    assert vt != null;
-    assert vt.getUnitString().equals("Pa");
+      VerticalTransform vt = gcs.getVerticalTransform();
+      assert vt != null;
+      assert vt.getUnitString().equals("Pa");
 
-    GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
+      GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
 
-    Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 13 : data.getShape()[0];
-    assert data.getShape()[1] == 9 : data.getShape()[1];
-    assert data.getShape()[2] == 20 : data.getShape()[2];
-    assert data.getShape()[3] == 25 : data.getShape()[3];
+      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == 13 : data.getShape()[0];
+      assert data.getShape()[1] == 9 : data.getShape()[1];
+      assert data.getShape()[2] == 20 : data.getShape()[2];
+      assert data.getShape()[3] == 25 : data.getShape()[3];
 
-    GridCoordSystem gcs_section = grid_section.getCoordinateSystem();
-    CoordinateAxis zaxis2 = gcs_section.getVerticalAxis();
-    assert zaxis2.getSize() == 9 : zaxis2.getSize();
+      GridCoordSystem gcs_section = grid_section.getCoordinateSystem();
+      CoordinateAxis zaxis2 = gcs_section.getVerticalAxis();
+      assert zaxis2.getSize() == 9 : zaxis2.getSize();
 
-    assert zaxis2.getUnitsString().equals(zaxis.getUnitsString());
-    assert gcs_section.getTimeAxis().equals(gcs.getTimeAxis());
+      assert zaxis2.getUnitsString().equals(zaxis.getUnitsString());
+      assert gcs_section.getTimeAxis().equals(gcs.getTimeAxis());
 
-    VerticalTransform vt_section = gcs_section.getVerticalTransform();
-    assert vt_section != null;
-    assert vt_section.getUnitString().equals(vt.getUnitString());
-
-    dataset.close();
+      VerticalTransform vt_section = gcs_section.getVerticalTransform();
+      assert vt_section != null;
+      assert vt_section.getUnitString().equals(vt.getUnitString());
+    }
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testMSG() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
-    GridDataset dataset = GridDataset.open(filename);
-    System.out.printf("open %s%n", filename);
-    GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
-    assert null != grid : dataset.getLocation();
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 3;
+    try( GridDataset dataset = GridDataset.open(filename)) {
+      System.out.printf("open %s%n", filename);
+      GeoGrid grid = dataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
+      assert null != grid : dataset.getLocation();
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 3;
 
-    // bbox =  ll: 16.79S 20.5W+ ur: 14.1N 20.09E
-    LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), new LatLonPointImpl(14.1, 20.9));
+      // bbox =  ll: 16.79S 20.5W+ ur: 14.1N 20.09E
+      LatLonRect bbox = new LatLonRect(new LatLonPointImpl(-16.79, -20.5), new LatLonPointImpl(14.1, 20.9));
 
-    ProjectionImpl p = gcs.getProjection();
-    ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
-    System.out.printf("%s -> %s %n", bbox, prect);
-    assert Misc.closeEnough(prect.getMinX(), -2129.5688);
-    assert Misc.closeEnough(prect.getWidth(), 4297.8453);
-    assert Misc.closeEnough(prect.getMinY(), -1793.0041);
-    assert Misc.closeEnough(prect.getHeight(), 3308.3885);
+      ProjectionImpl p = gcs.getProjection();
+      ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
+      System.out.printf("%s -> %s %n", bbox, prect);
+      assert Misc.closeEnough(prect.getMinX(), -2129.5688);
+      assert Misc.closeEnough(prect.getWidth(), 4297.8453);
+      assert Misc.closeEnough(prect.getMinY(), -1793.0041);
+      assert Misc.closeEnough(prect.getHeight(), 3308.3885);
 
-    LatLonRect bb2 = p.projToLatLonBB(prect);
-    System.out.printf("%s -> %s %n", prect, bb2);
+      LatLonRect bb2 = p.projToLatLonBB(prect);
+      System.out.printf("%s -> %s %n", prect, bb2);
 
-    GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
+      GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
 
-    Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getRank() == 3;
-    int[] shape = data.getShape();
-    assert shape[0] == 1 : shape[0]+" should be 1";
-    assert shape[1] == 363 : shape[1]+" should be 363";
-    assert shape[2] == 479 : shape[2]+" should be 479";
-
-    dataset.close();
+      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getRank() == 3;
+      int[] shape = data.getShape();
+      assert shape[0] == 1 : shape[0] + " should be 1";
+      assert shape[1] == 363 : shape[1] + " should be 363";
+      assert shape[2] == 479 : shape[2] + " should be 479";
+    }
   }
 
   @Test
   public void testDODS() throws Exception {
     String ds = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
-    //String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
-    DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
-    System.out.println("result errlog= " + result.errLog);
-    assert !result.fatalError;
-    assert result.featureType == FeatureType.GRID;
-    assert result.featureDataset != null;
+    GridDataset dataset = null;
 
-    GridDataset dataset = (GridDataset) result.featureDataset;
+    try {
+      DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
+      System.out.println("result errlog= " + result.errLog);
+      assert !result.fatalError;
+      assert result.featureType == FeatureType.GRID;
+      assert result.featureDataset != null;
 
-    GeoGrid grid = dataset.findGridByName("Temperature_isobaric");
-    assert null != grid;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 4;
+      dataset = (GridDataset) result.featureDataset;
 
-    GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
-    int[] shape = grid_section.getShape();
-    System.out.println("grid_section.getShape= " + new Section(shape));
+      GeoGrid grid = dataset.findGridByName("Temperature_isobaric");
+      assert null != grid;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
 
-    Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == shape[0] : data.getShape()[0];
-    assert data.getShape()[1] == shape[1] : data.getShape()[1];
-    assert data.getShape()[2] == 101 : data.getShape()[2];
-    assert data.getShape()[3] == 164 : data.getShape()[3];
+      GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
+      int[] shape = grid_section.getShape();
+      System.out.println("grid_section.getShape= " + new Section(shape));
 
-    // NCdump.printArray( data, "grid_section", System.out,  null);
-    dataset.close();
+      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == shape[0] : data.getShape()[0];
+      assert data.getShape()[1] == shape[1] : data.getShape()[1];
+      assert data.getShape()[2] == 101 : data.getShape()[2];
+      assert data.getShape()[3] == 164 : data.getShape()[3];
+
+    } finally {
+      if (dataset != null) dataset.close();
+    }
   }
 
   @Test
   @Ignore("Bad URL, as of 2015/03/11.")
   public void testDODS2() throws Exception {
     String threddsURL = "http://lead.unidata.ucar.edu:8080/thredds/dqcServlet/latestOUADAS?adas";
-    DataFactory.Result result = new DataFactory().openFeatureDataset(threddsURL, null);
-    assert result.featureDataset != null;
-    GridDataset dataset = (GridDataset) result.featureDataset;
+    GridDataset dataset = null;
 
-    GeoGrid grid = dataset.findGridByName("PT");
-    assert null != grid;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 4;
+    try {
+      DataFactory.Result result = new DataFactory().openFeatureDataset(threddsURL, null);
+      assert result.featureDataset != null;
+      dataset = (GridDataset) result.featureDataset;
 
-    GeoGrid grid_section = grid.subset(null, null, null, 5, 5, 5);
+      GeoGrid grid = dataset.findGridByName("PT");
+      assert null != grid;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
 
-    Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 1 : data.getShape()[0];
-    assert data.getShape()[1] == 11 : data.getShape()[1];
-    assert data.getShape()[2] == 26 : data.getShape()[2];
-    assert data.getShape()[3] == 43 : data.getShape()[3];
+      GeoGrid grid_section = grid.subset(null, null, null, 5, 5, 5);
 
-    grid_section = grid.subset(null, new Range(0, 0), null, 0, 2, 2);
-    data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 1 : data.getShape()[0];
-    assert data.getShape()[1] == 1 : data.getShape()[1];
-    assert data.getShape()[2] == 65 : data.getShape()[2];
-    assert data.getShape()[3] == 106 : data.getShape()[3];
+      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == 1 : data.getShape()[0];
+      assert data.getShape()[1] == 11 : data.getShape()[1];
+      assert data.getShape()[2] == 26 : data.getShape()[2];
+      assert data.getShape()[3] == 43 : data.getShape()[3];
 
-    NCdumpW.printArray(data, "grid_section", System.out, null);
-    dataset.close();
+      grid_section = grid.subset(null, new Range(0, 0), null, 0, 2, 2);
+      data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == 1 : data.getShape()[0];
+      assert data.getShape()[1] == 1 : data.getShape()[1];
+      assert data.getShape()[2] == 65 : data.getShape()[2];
+      assert data.getShape()[3] == 106 : data.getShape()[3];
+
+      NCdumpW.printArray(data, "grid_section", System.out, null);
+
+    } finally {
+      if (dataset != null) dataset.close();
+    }
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void test2D() throws Exception {
-    GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc");
+    try( GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc")) {
 
-    GeoGrid grid = dataset.findGridByName("salt");
-    assert null != grid;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 4;
+      GeoGrid grid = dataset.findGridByName("salt");
+      assert null != grid;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
 
-    GeoGrid grid_section = grid.subset(null, null, null, 5, 5, 5);
+      GeoGrid grid_section = grid.subset(null, null, null, 5, 5, 5);
 
-    Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 1 : data.getShape()[0];
-    assert data.getShape()[1] == 4 : data.getShape()[1];
-    assert data.getShape()[2] == 13 : data.getShape()[2];
-    assert data.getShape()[3] == 26 : data.getShape()[3];
+      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == 1 : data.getShape()[0];
+      assert data.getShape()[1] == 4 : data.getShape()[1];
+      assert data.getShape()[2] == 13 : data.getShape()[2];
+      assert data.getShape()[3] == 26 : data.getShape()[3];
 
-    grid_section = grid.subset(null, new Range(0, 0), null, 0, 2, 2);
-    data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 1 : data.getShape()[0];
-    assert data.getShape()[1] == 1 : data.getShape()[1];
-    assert data.getShape()[2] == 32 : data.getShape()[2];
-    assert data.getShape()[3] == 64 : data.getShape()[3];
+      grid_section = grid.subset(null, new Range(0, 0), null, 0, 2, 2);
+      data = grid_section.readDataSlice(-1, -1, -1, -1);
+      assert data.getShape()[0] == 1 : data.getShape()[0];
+      assert data.getShape()[1] == 1 : data.getShape()[1];
+      assert data.getShape()[2] == 32 : data.getShape()[2];
+      assert data.getShape()[3] == 64 : data.getShape()[3];
 
-    NCdumpW.printArray(data, "grid_section", System.out, null);
+      NCdumpW.printArray(data, "grid_section", System.out, null);
 
-    LatLonPoint p0 = new LatLonPointImpl(29.0, -90.0);
-    LatLonRect bbox = new LatLonRect(p0, 1.0, 2.0);
-    grid_section = grid.subset(null, null, bbox, 1, 1, 1);
-    data = grid_section.readDataSlice(-1, -1, -1, -1);
+      LatLonPoint p0 = new LatLonPointImpl(29.0, -90.0);
+      LatLonRect bbox = new LatLonRect(p0, 1.0, 2.0);
+      grid_section = grid.subset(null, null, bbox, 1, 1, 1);
+      data = grid_section.readDataSlice(-1, -1, -1, -1);
 
-    assert data.getShape()[0] == 1 : data.getShape()[0];
-    assert data.getShape()[1] == 20 : data.getShape()[1];
-    assert data.getShape()[2] == 63 : data.getShape()[2];
-    assert data.getShape()[3] == 53 : data.getShape()[3];
+      assert data.getShape()[0] == 1 : data.getShape()[0];
+      assert data.getShape()[1] == 20 : data.getShape()[1];
+      assert data.getShape()[2] == 63 : data.getShape()[2];
+      assert data.getShape()[3] == 53 : data.getShape()[3];
 
-    gcs = grid_section.getCoordinateSystem();
-    ProjectionRect rect = gcs.getBoundingBox();
-    System.out.println(" rect= " + rect);
+      gcs = grid_section.getCoordinateSystem();
+      ProjectionRect rect = gcs.getBoundingBox();
+      System.out.println(" rect= " + rect);
 
-    p0 = new LatLonPointImpl(30.0, -90.0);
-    bbox = new LatLonRect(p0, 1.0, 2.0);
-    grid_section = grid.subset(null, null, bbox, 1, 1, 1);
-    data = grid_section.readDataSlice(-1, -1, -1, -1);
+      p0 = new LatLonPointImpl(30.0, -90.0);
+      bbox = new LatLonRect(p0, 1.0, 2.0);
+      grid_section = grid.subset(null, null, bbox, 1, 1, 1);
+      data = grid_section.readDataSlice(-1, -1, -1, -1);
 
-    assert data.getShape()[0] == 1 : data.getShape()[0];
-    assert data.getShape()[1] == 20 : data.getShape()[1];
-    assert data.getShape()[2] == 18 : data.getShape()[2];
-    assert data.getShape()[3] == 17 : data.getShape()[3];
+      assert data.getShape()[0] == 1 : data.getShape()[0];
+      assert data.getShape()[1] == 20 : data.getShape()[1];
+      assert data.getShape()[2] == 18 : data.getShape()[2];
+      assert data.getShape()[3] == 17 : data.getShape()[3];
 
-    gcs = grid_section.getCoordinateSystem();
-    System.out.println(" rect= " + gcs.getBoundingBox());
-
-
-    dataset.close();
+      gcs = grid_section.getCoordinateSystem();
+      System.out.println(" rect= " + gcs.getBoundingBox());
+    }
   }
 
   @Test
   public void test3D() throws Exception {
-    GridDataset dataset = GridDataset.open("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
-    //GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
+    try (GridDataset dataset = GridDataset.open("dods://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
+      System.out.printf("%s%n", dataset.getLocation());
+      //GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
 
-    GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
-    assert null != grid;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert null != gcs;
-    assert grid.getRank() == 4;
+      GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
+      assert null != grid;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert null != gcs;
+      assert grid.getRank() == 4;
 
-    // x and y stride 10
-    GeoGrid grid_section = grid.subset(null, null, null, 1, 10, 10);
-    Array data = grid_section.readDataSlice(0, -1, -1, -1);      // get first time slice
-    assert data.getRank() == 3;
-    // assert data.getShape()[0] == 6 : data.getShape()[0];
-    assert data.getShape()[1] == 43 : data.getShape()[1];
-    assert data.getShape()[2] == 62 : data.getShape()[2];
+      // x and y stride 10
+      GeoGrid grid_section = grid.subset(null, null, null, 1, 10, 10);
+      Array data = grid_section.readDataSlice(0, -1, -1, -1);      // get first time slice
+      assert data.getRank() == 3;
+      // assert data.getShape()[0] == 6 : data.getShape()[0];
+      assert data.getShape()[1] == 43 : data.getShape()[1];
+      assert data.getShape()[2] == 62 : data.getShape()[2];
 
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      float val = ii.getFloatNext();
-      if (grid_section.isMissingData(val)) {
-        if (!Float.isNaN(val)) {
-          System.out.println(" got not NaN at =" + ii);
-        }
-        int[] current = ii.getCurrentCounter();
-        if ((current[1] > 0) && (current[2] > 1)) {
-          System.out.println(" got missing at =" + ii);
-          System.out.println(current[1] + " " + current[2]);
+      IndexIterator ii = data.getIndexIterator();
+      while (ii.hasNext()) {
+        float val = ii.getFloatNext();
+        if (grid_section.isMissingData(val)) {
+          if (!Float.isNaN(val)) {
+            System.out.println(" got not NaN at =" + ii);
+          }
+          int[] current = ii.getCurrentCounter();
+          if ((current[1] > 0) && (current[2] > 1)) {
+            System.out.println(" got missing at =" + ii);
+            System.out.println(current[1] + " " + current[2]);
+          }
         }
       }
     }
-
-    dataset.close();
   }
 
   private void testLatLonSubset(GeoGrid grid, LatLonRect bbox, int[] shape) throws Exception {
