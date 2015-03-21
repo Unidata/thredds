@@ -85,8 +85,9 @@ public class TestGribIndexCreationOther {
   }
 
   @Ignore("B: not visible on spock")
- @Test
+  @Test
   public void testRadarNWS() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("radarNWS", "test/radarNWS", FeatureCollectionType.GRIB1,
  //           TestDir.cdmUnitTestDir + "gribCollections/www/.*grib2",
             "B:/lead/radar/**/.*gbx9",  null,
@@ -96,6 +97,7 @@ public class TestGribIndexCreationOther {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
   }
 
   @Ignore("B: not visible on spock")

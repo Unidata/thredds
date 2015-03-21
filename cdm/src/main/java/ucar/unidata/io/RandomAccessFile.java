@@ -127,7 +127,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @return list of open files.
    */
   static public List<String> getOpenFiles() {
-    return openFiles;
+    return Collections.unmodifiableList(openFiles);
   }
 
   static public long getOpenFileCount() {
