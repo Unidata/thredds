@@ -32,10 +32,8 @@
 
 package thredds.server.catalog;
 
-import thredds.catalog.InvCatalogImpl;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.CatalogRef;
-import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;

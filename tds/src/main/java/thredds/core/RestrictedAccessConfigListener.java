@@ -44,7 +44,7 @@ import thredds.client.catalog.Dataset;
  * @author caron
  * @since 1/23/2015
  */
-public class RestrictedAccessConfigListener implements DataRootHandler.ConfigListener {
+public class RestrictedAccessConfigListener implements DataRootManager.ConfigListener {
   volatile boolean initializing;
 
   public RestrictedAccessConfigListener() {
