@@ -71,16 +71,16 @@ import java.util.*;
  * @author caron
  * @since 1/23/2015
  */
-// @Component("DataRootHandler")
-// @DependsOn("CdmInit")
-public final class DataRootHandler implements InitializingBean {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
-  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
+@Component("DataRootManager")
+@DependsOn("CdmInit")
+public final class DataRootManager implements InitializingBean {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootManager.class);
+  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootManager.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
-  static private DataRootHandler singleton = null;
+  static private DataRootManager singleton = null;
   static private final String ERROR = "*** ERROR ";
   static public final boolean debug = false;
 
@@ -91,7 +91,7 @@ public final class DataRootHandler implements InitializingBean {
    *
    * @param drh the singleton instance of DataRootHandler being used
    */
-  static public void setInstance(DataRootHandler drh) {
+  static public void setInstance(DataRootManager drh) {
     if (singleton != null) {
       log.warn("setInstance(): Singleton already set: ignoring call.");
       return;
@@ -107,7 +107,7 @@ public final class DataRootHandler implements InitializingBean {
    * @return the singleton instance.
    * @throws IllegalStateException if setInstance() has not been called.
    */
-  static public DataRootHandler getInstance() {
+  static public DataRootManager getInstance() {
     if (singleton == null) {
       logCatalogInit.error(ERROR + "getInstance(): Called without setInstance() having been called.");
       throw new IllegalStateException("setInstance() must be called first.");
@@ -123,7 +123,10 @@ public final class DataRootHandler implements InitializingBean {
   private PathMatcher pathMatcher;
 
   @Autowired
-  private ConfigCatalogManager ccManager;
+  private ConfigCatalogManagerNew ccManager;
+
+  @Autowired
+  private ConfigCatalogCache ccc;
 
   //private final TdsContext tdsContext;
   //private boolean staticCache;
@@ -145,11 +148,11 @@ public final class DataRootHandler implements InitializingBean {
    * Constructor.
    * Managed bean - dont do nuttin else !!
    */
-  private DataRootHandler(TdsContext tdsContext) {
+  private DataRootManager(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
 
-  private DataRootHandler() {
+  private DataRootManager() {
 
   }
 
@@ -176,14 +179,11 @@ public final class DataRootHandler implements InitializingBean {
         ConfigCatalog.addAlias("content", StringUtils.cleanPath(file.getPath())); // LOOK
     }
 
-    ccManager = new ConfigCatalogManager();
-    ccManager.initCatalogs();
-
     this.makeDebugActions();
     DatasetHandler.makeDebugActions();
 
     //Set the instance
-    DataRootHandler.setInstance(this);
+    DataRootManager.setInstance(this);
   }
 
   public boolean registerConfigListener(ConfigListener cl) {
@@ -217,8 +217,6 @@ public final class DataRootHandler implements InitializingBean {
     //idHash = new HashSet<>();
 
     DatasetHandler.reinit(); // NcML datasets
-    ccManager = new ConfigCatalogManager();
-    ccManager.initCatalogs();
 
     isReinit = false;
 
@@ -228,478 +226,7 @@ public final class DataRootHandler implements InitializingBean {
 
   volatile boolean isReinit = false;
 
-  /* void initCatalogs() {
-    ArrayList<String> catList = new ArrayList<>();
-    catList.add("catalog.xml"); // always first
-    catList.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
-
-    logCatalogInit.info("initCatalogs(): initializing " + catList.size() + " root catalogs.");
-    this.initCatalogs(catList);
-  }
-
-  public synchronized void initCatalogs(List<String> configCatalogRoots) {
-    // Notify listeners of start of initialization if not reinit (in which case it is already done).
-    if (!isReinit)
-      for (ConfigListener cl : configListeners)
-        cl.configStart();
-    isReinit = false;
-
-    staticCache = ThreddsConfig.getBoolean("Catalog.cache", true);  // user can turn off static catalog caching
-    startupLog.info("DataRootHandler: staticCache= " + staticCache);
-
-    this.staticCatalogNames = new HashSet<>();
-    this.staticCatalogHash = new HashMap<>();
-
-    for (String path : configCatalogRoots) {
-      try {
-        path = StringUtils.cleanPath(path);
-        logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + CalendarDate.present() + "]");
-        initCatalog(path, true, true);
-      } catch (Throwable e) {
-        logCatalogInit.error(ERROR + "initializing catalog " + path + "; " + e.getMessage(), e);
-      }
-    }
-
-    for (ConfigListener cl : configListeners)
-      cl.configEnd();
-  }
-
-
-  /*
-   * Reads a catalog, finds datasetRoot, datasetScan, datasetFmrc, NcML and restricted access datasets
-   * <p/>
-   * Only called by synchronized methods.
-   *
-   * @param path    file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
-   * @param recurse if true, look for catRefs in this catalog
-   * @param cache   if true, always cache
-   * @throws java.io.IOException if reading catalog fails
-   *
-  private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
-    path = StringUtils.cleanPath(path);
-    File f = this.tdsContext.getConfigFileSource().getFile(path);
-    if (f == null) {
-      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
-      return;
-    }
-    System.out.printf("initCatalog %s%n", f.getPath());
-
-    // make sure we dont already have it
-    if (staticCatalogNames.contains(path)) {
-      logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
-      return;
-    }
-    staticCatalogNames.add(path);
-    if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
-
-    // read it
-    InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
-    Catalog cat = readCatalog(factory, path, f.getPath());
-    if (cat == null) {
-      logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + f.getPath() + ">.");
-      return;
-    }
-
-    // Notify listeners of config catalog.
-    for (ConfigListener cl : configListeners)
-      cl.configCatalog(cat);
-
-    // look for datasetRoots
-    for (DataRootConfig p : cat.getDatasetRoots()) {
-      addRoot(p, true);
-    }
-
-    List<String> disallowedServices = AllowableService.checkCatalogServices(cat);
-    if (!disallowedServices.isEmpty()) {
-      logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
-    }
-
-    // old style - in the service elements
-    for (Service s : cat.getServices()) {
-      for (Property p : s.getDatasetRoots()) {
-        addRoot(p.getName(), p.getValue(), true);
-      }
-    }
-
-    // get the directory path, reletive to the contentPath
-    int pos = path.lastIndexOf("/");
-    String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
-
-    // look for datasetScans and NcML elements and Fmrc and featureCollections
-    boolean needsCache = initSpecialDatasets(cat.getDatasets());
-
-    // optionally add catalog to cache
-    if (staticCache || cache || needsCache) {
-      cat.setStatic(true);
-      staticCatalogHash.put(path, cat);
-      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog to hash=" + path);
-    }
-
-    if (recurse) {
-      initFollowCatrefs(dirPath, cat.getDatasets());
-    }
-  }
-
-  // testing only
-  void initCatalog(String path, String absPath) throws IOException {
-    // read it
-    InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
-    Catalog cat = readCatalog(factory, path, absPath);
-    if (cat == null) {
-      logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + absPath + ">.");
-      return;
-    }
-
-    // look for datasetRoots
-    for (DataRootConfig p : cat.getDatasetRoots()) {
-      addRoot(p, true);
-    }
-
-    List<String> disallowedServices = AllowableService.checkCatalogServices(cat);
-    if (!disallowedServices.isEmpty()) {
-      logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + cat.getName() + " are disallowed in threddsConfig file");
-    }
-
-    // old style - in the service elements
-    for (Service s : cat.getServices()) {
-      for (Property p : s.getDatasetRoots()) {
-        addRoot(p.getName(), p.getValue(), true);
-      }
-    }
-  }
-  
-  /*private void checkServices(Service service, String path ){
-
-	  if( service.getServiceType() == ServiceType.COMPOUND ){
-		  for(Service s : service.getServices() ){
-			checkServices(s, path);  
-		  }
-	  }else{
-		  
-		  if( service.getServiceType() == ServiceType.WMS ){			  
-			  
-			  //if(! ThreddsConfig.getBoolean("WMS.allow", false) ) {
-			  if(AllowableService.WMS.isAllowed()){
-				  logCatalogInit.warn("initCatalog(): Service "+service.getName()+ " in catalog "+ path +"is not allowed in the server settings");
-			  }
-		  }
-
-	  }
-	  
-  }*
-
-  public InvCatalogFactory getCatalogFactory(boolean validate) {
-    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(validate);
-    if (!this.dataRootLocationAliasExpanders.isEmpty())
-      factory.setDataRootLocationAliasExpanders(this.dataRootLocationAliasExpanders);
-    return factory;
-  }
-
-  /**
-   * Does the actual work of reading a catalog.
-   *
-   * @param factory         use this InvCatalogFactory
-   * @param path            reletive path starting from content root
-   * @param catalogFullPath absolute location on disk
-   * @return the Catalog, or null if failure
-   *
-  private Catalog readCatalog(InvCatalogFactory factory, String path, String catalogFullPath) {
-    URI uri;
-    try {
-      uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
-    } catch (URISyntaxException e) {
-      logCatalogInit.error(ERROR + "readCatalog(): URISyntaxException=" + e.getMessage());
-      return null;
-    }
-
-    // read the catalog
-    logCatalogInit.info("\n-------readCatalog(): full path=" + catalogFullPath + "; path=" + path);
-    Catalog cat = null;
-    FileInputStream ios = null;
-    try {
-      ios = new FileInputStream(catalogFullPath);
-      cat = factory.readXML(ios, uri);
-
-      StringBuilder sbuff = new StringBuilder();
-      if (!cat.check(sbuff)) {
-        logCatalogInit.error(ERROR + "   invalid catalog -- " + sbuff.toString());
-        return null;
-      }
-      String warn = sbuff.toString();
-      if (warn.length() > 0)
-        logCatalogInit.debug(warn);
-
-    } catch (Throwable t) {
-      String msg = (cat == null) ? "null catalog" : cat.getLog();
-      logCatalogInit.error(ERROR + "  Exception on catalog=" + catalogFullPath + " " + t.getMessage() + "\n log=" + msg, t);
-      return null;
-
-    } finally {
-      if (ios != null) {
-        try {
-          ios.close();
-        } catch (IOException e) {
-          logCatalogInit.error("  error closing" + catalogFullPath);
-        }
-      }
-    }
-
-    return cat;
-  }
-
-  /**
-   * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
-   * Look for duplicate Ids (give message). Dont follow catRefs.
-   * Only called by synchronized methods.
-   *
-   * @param dsList the list of Dataset
-   * @return true if the containing catalog should be cached
-   *
-  private boolean initSpecialDatasets(List<Dataset> dsList) {
-    boolean needsCache = false;
-
-    Iterator<Dataset> iter = dsList.iterator();
-    while (iter.hasNext()) {
-      Dataset Dataset = (Dataset) iter.next();
-
-      // look for duplicate ids
-      String id = Dataset.getUniqueID();
-      if (id != null) {
-        if (idHash.contains(id)) {
-          logCatalogInit.error(ERROR + "Duplicate id on  '" + Dataset.getFullName() + "' id= '" + id + "'");
-        } else {
-          idHash.add(id);
-        }
-      }
-
-      // Notify listeners of config datasets.
-      for (ConfigListener cl : configListeners)
-        cl.configDataset(Dataset);
-
-      if (Dataset instanceof DatasetScan) {
-        DatasetScan ds = (DatasetScan) Dataset;
-        Service service = ds.getServiceDefault();
-        if (service == null) {
-          logCatalogInit.error(ERROR + "DatasetScan " + ds.getFullName() + " has no default Service - skipping");
-          continue;
-        }
-        if (!addRoot(ds))
-          iter.remove();
-
-      } else if (Dataset instanceof FeatureCollection) {
-        FeatureCollection fc = (FeatureCollection) Dataset;
-        addRoot(fc);
-        needsCache = true;
-
-        // not a DatasetScan or DatasetFmrc or FeatureCollection
-      } else if (Dataset.getNcmlElement() != null) {
-        DatasetHandler.putNcmlDataset(Dataset.getUrlPath(), Dataset);
-      }
-
-      if (!(Dataset instanceof CatalogRef)) {
-        // recurse
-        initSpecialDatasets(Dataset.getDatasets());
-      }
-    }
-
-    return needsCache;
-  }
-
-  // Only called by synchronized methods
-  private void initFollowCatrefs(String dirPath, List<Dataset> datasets) throws IOException {
-    for (Dataset Dataset : datasets) {
-
-      if ((Dataset instanceof CatalogRef) && !(Dataset instanceof DatasetScan)
-              && !(Dataset instanceof FeatureCollection)) {
-        CatalogRef catref = (CatalogRef) Dataset;
-        String href = catref.getXlinkHref();
-        if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
-
-        // Check that catRef is relative
-        if (!href.startsWith("http:")) {
-          // Clean up relative URLs that start with "./"
-          if (href.startsWith("./")) {
-            href = href.substring(2);
-          }
-
-          String path;
-          String contextPathPlus = this.tdsContext.getContextPath() + "/";
-          if (href.startsWith(contextPathPlus)) {
-            path = href.substring(contextPathPlus.length()); // absolute starting from content root
-          } else if (href.startsWith("/")) {
-            // Drop the catRef because it points to a non-TDS served catalog.
-            logCatalogInit.error(ERROR + "Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path [" + contextPathPlus + "]. " +
-                    "Parent catalog info: Name=\"" + catref.getParentCatalog().getName() + "\"; Base URI=\"" + catref.getParentCatalog().getUriString() + "\"; dirPath=\"" + dirPath + "\".");
-            continue;
-          } else {
-            path = dirPath + href;  // reletive starting from current directory
-          }
-
-          initCatalog(path, true, false);
-        }
-
-      } else if (!(Dataset instanceof DatasetScan) && !(Dataset instanceof FeatureCollection)) {
-        // recurse through nested datasets
-        initFollowCatrefs(dirPath, Dataset.getDatasets());
-      }
-    }
-  }
-
-  // Only called by synchronized methods
-  private boolean addRoot(DatasetScan dscan) {
-    // check for duplicates
-    String path = dscan.getPath();
-
-    if (path == null) {
-      logCatalogInit.error(ERROR + dscan.getFullName() + " missing a path attribute.");
-      return false;
-    }
-
-    DataRoot droot = (DataRoot) pathMatcher.get(path);
-    if (droot != null) {
-      if (!droot.dirLocation.equals(dscan.getScanLocation())) {
-        logCatalogInit.error(ERROR + "DatasetScan already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-                " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog " + dscan.getParentCatalog().getUriString());
-      }
-
-      return false;
-    }
-
-    // Check whether DatasetScan is valid before adding.
-    if (!dscan.isValid()) {
-      logCatalogInit.error(ERROR + dscan.getInvalidMessage() + "\n... Dropping this datasetScan [" + path + "].");
-      return false;
-    }
-
-    // add it
-    droot = new DataRoot(dscan);
-    pathMatcher.put(path, droot);
-
-    logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
-    return true;
-  }
-
-  public List<FeatureCollection> getFeatureCollections() {
-    List<FeatureCollection> result = new ArrayList<>();
-    Iterator iter = pathMatcher.iterator();
-    while (iter.hasNext()) {
-      DataRoot droot = (DataRoot) iter.next();
-      if (droot.featCollection != null)
-        result.add(droot.featCollection);
-    }
-    return result;
-  }
-
-  public FeatureCollection findFcByCollectionName(String collectionName) {
-    Iterator iter = pathMatcher.iterator();
-    while (iter.hasNext()) {
-      DataRoot droot = (DataRoot) iter.next();
-      if ((droot.featCollection != null) && droot.featCollection.getCollectionName().equals(collectionName))
-        return droot.featCollection;
-    }
-    return null;
-  }
-
-
-  // Only called by synchronized methods
-  private boolean addRoot(FeatureCollection fc) {
-    // check for duplicates
-    String path = fc.getPath();
-
-    if (path == null) {
-      logCatalogInit.error(ERROR + fc.getName() + " missing a path attribute.");
-      return false;
-    }
-
-    DataRoot droot = (DataRoot) pathMatcher.get(path);
-    if (droot != null) {
-      logCatalogInit.error(ERROR + "FeatureCollection already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-              " wanted to use by FeatureCollection Dataset =<" + fc.getName() + ">");
-      return false;
-    }
-
-    // add it
-    droot = new DataRoot(fc);
-
-    if (droot.dirLocation != null) {
-      File file = new File(droot.dirLocation);
-      if (!file.exists()) {
-        logCatalogInit.error(ERROR + "FeatureCollection = '" + fc.getName() + "' directory= <" + droot.dirLocation + "> does not exist\n");
-        return false;
-      }
-    }
-
-    pathMatcher.put(path, droot);
-    logCatalogInit.debug(" added rootPath=<" + path + ">  for feature collection= <" + fc.getFullName() + ">");
-    return true;
-  }
-
-  // Only called by synchronized methods
-  private boolean addRoot(String path, String dirLocation, boolean wantErr) {
-    // check for duplicates
-    DataRoot droot = (DataRoot) pathMatcher.get(path);
-    if (droot != null) {
-      if (wantErr)
-        logCatalogInit.error(ERROR + "already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-                " wanted to map to <" + dirLocation + ">");
-
-      return false;
-    }
-
-    File file = new File(dirLocation);
-    if (!file.exists()) {
-      logCatalogInit.error(ERROR + "Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
-      return false;
-    }
-
-    // add it
-    droot = new DataRoot(path, dirLocation, true);
-    pathMatcher.put(path, droot);
-
-    logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dirLocation + ">");
-    return true;
-  }
-
-  // Only called by synchronized methods
-  private boolean addRoot(DataRootConfig config, boolean wantErr) {
-    String path = config.getName();
-    String location = config.getValue();
-
-    // check for duplicates
-    DataRoot droot = (DataRoot) pathMatcher.get(path);
-    if (droot != null) {
-      if (wantErr)
-        logCatalogInit.error(ERROR + "DataRootConfig already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-                " wanted to map to <" + location + ">");
-
-      return false;
-    }
-
-    location = expandAliasForDataRoot(location);
-    File file = new File(location);
-    if (!file.exists()) {
-      logCatalogInit.error(ERROR + "DataRootConfig path =" + path + " directory= <" + location + "> does not exist");
-      return false;
-    }
-
-    // add it
-    droot = new DataRoot(path, location, config.isCache());
-    pathMatcher.put(path, droot);
-
-    logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + location + ">");
-    return true;
-  }
-
-  public String expandAliasForDataRoot(String location) {
-    for (PathAliasReplacement par : this.dataRootLocationAliasExpanders) {
-      String result = par.replaceIfMatch(location);
-      if (result != null)
-        return result;
-    }
-    return location;
-  }  */
-
-  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   static public class DataRootMatch {
     String rootPath;     // this is the matching part of the URL
@@ -822,54 +349,6 @@ public final class DataRootHandler implements InitializingBean {
     }
   }
 
-  // LOOK WTF ??
-  /* private boolean isProxyDatasetResolver(String path) {
-    ProxyDatasetHandler pdh = this.getMatchingProxyDataset(path);
-    if (pdh == null)
-      return false;
-
-    return pdh.isProxyDatasetResolver();
-  }
-
-  private ProxyDatasetHandler getMatchingProxyDataset(String path) {
-    DatasetScan scan = this.getMatchingScan(path);
-    if (null == scan) return null;
-
-    int index = path.lastIndexOf("/");
-    String proxyName = path.substring(index + 1);
-
-    Map pdhMap = scan.getProxyDatasetHandlers();
-    if (pdhMap == null) return null;
-
-    return (ProxyDatasetHandler) pdhMap.get(proxyName);
-  }
-
-  private DatasetScan getMatchingScan(String path) {
-    DataRoot reqDataRoot = findDataRoot(path);
-    if (reqDataRoot == null)
-      return null;
-
-    DatasetScan scan = null;
-    if (reqDataRoot.scan != null)
-      scan = reqDataRoot.scan;
-
-    return scan;
-  }
-
-  public Catalog getProxyDatasetResolverCatalog(String path, URI baseURI) {
-    if (!isProxyDatasetResolver(path))
-      throw new IllegalArgumentException("Not a proxy dataset resolver path <" + path + ">.");
-
-    DatasetScan scan = this.getMatchingScan(path);
-    if (scan == null) return null;
-
-    // Call the matching DatasetScan to make the proxy dataset resolver catalog.
-    //noinspection UnnecessaryLocalVariable
-    Catalog cat = scan.makeProxyDsResolverCatalog(path, baseURI);
-
-    return cat;
-  }  */
-
   /**
    * If a catalog exists and is allowed (not filtered out) for the given path, return
    * the catalog as an Catalog. Otherwise, return null.
@@ -891,14 +370,11 @@ public final class DataRootHandler implements InitializingBean {
 
     // Check for static catalog.
     boolean reread = false;
-    Catalog catalog = ccManager.getStaticCatalog(workPath);
+    Catalog catalog = ccc.get(workPath);
     if (catalog != null) {  // see if its stale
       CalendarDate expiresDateType = catalog.getExpires();
       if ((expiresDateType != null) && expiresDateType.getMillis() < System.currentTimeMillis())
-        reread = true;
-
-    } else {
-      reread = ccManager.isStaticCatalogNotInCache(workPath); // see if we know if its a static catalog
+        reread = true;     // LOOK reread ??
     }
 
     /* its a static catalog that needs to be read
@@ -926,13 +402,6 @@ public final class DataRootHandler implements InitializingBean {
       }
     }  */
 
-    // LOOK is this needd ??
-    /* if ((catalog != null) && catalog.getBaseURI() == null) { for some reason you have to keep setting - is someone setting to null ?
-    if (catalog != null) {
-      // this is the first time we actually know an absolute, external path for the catalog, so we set it here
-      // LOOK however, this causes a possible thread safety problem
-      catalog.setBaseURI(baseURI);
-    } */
 
     // Check for dynamic catalog.
     if (catalog == null)
@@ -1000,10 +469,7 @@ public final class DataRootHandler implements InitializingBean {
     return cat;
   }
 
-  /*
-   * ***********************************************************************
-   */
-
+  ////////////////////////////////////////////////////////////////////////////////////////////
   // debugging only !!
   public PathMatcher getPathMatcher() {
     return pathMatcher;
@@ -1041,17 +507,15 @@ public final class DataRootHandler implements InitializingBean {
    };
    debugHandler.addAction( act);  */
 
-    act = new DebugController.Action("showStatic", "Show static catalogs") {
+    act = new DebugController.Action("showStatic", "Show root catalogs") {
       public void doAction(DebugController.Event e) {
         StringBuilder sbuff = new StringBuilder();
-        synchronized (DataRootHandler.this) {
-          List<String> list = ccManager.getStaticCatalogPaths();
-          Collections.sort(list);
+        synchronized (DataRootManager.this) {
+          List<String> list = ccManager.getRootCatalogKeys();
           for (String catPath : list) {
-            ConfigCatalog cat = ccManager.getStaticCatalog(catPath);
-            sbuff.append(" catalog= ").append(catPath).append("; ");
-            String filename = StringUtil2.unescape(cat.getUriString());
-            sbuff.append(" from= ").append(filename).append("\n");
+            sbuff.append(" catalog= ").append(catPath).append("\n");
+            //String filename = StringUtil2.unescape(cat.getUriString());
+            //sbuff.append(" from= ").append(filename).append("\n");
           }
         }
         e.pw.println(StringUtil2.quoteHtmlContent("\n" + sbuff.toString()));
@@ -1061,12 +525,12 @@ public final class DataRootHandler implements InitializingBean {
 
     act = new DebugController.Action("showRoots", "Show data roots") {
       public void doAction(DebugController.Event e) {
-        synchronized (DataRootHandler.this) {
+        synchronized (DataRootManager.this) {
           Iterator iter = pathMatcher.iterator();
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
             e.pw.print(" <b>" + ds.getPath() + "</b>");
-            String url = DataRootHandler.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";
+            String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";
             String type = (ds.getDatasetScan() == null) ? "root" : "scan";
             e.pw.println(" for " + type + " directory= <a href='" + url + "'>" + ds.getDirLocation() + "</a> ");
           }
@@ -1077,7 +541,7 @@ public final class DataRootHandler implements InitializingBean {
 
     act = new DebugController.Action("getRoots", "Check data roots") {
       public void doAction(DebugController.Event e) {
-        synchronized (DataRootHandler.this) {
+        synchronized (DataRootManager.this) {
           e.pw.print("<pre>\n");
           Iterator iter = pathMatcher.iterator();
           boolean ok = true;

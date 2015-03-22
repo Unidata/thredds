@@ -53,7 +53,6 @@ import ucar.nc2.util.cache.FileFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -173,7 +172,7 @@ public class DatasetHandler {
     }
 
     // look for a match
-    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(reqPath);
 
     // look for an feature collection dataset
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
@@ -198,14 +197,14 @@ public class DatasetHandler {
       boolean doCache = true; // hack in a "no cache" option
       org.jdom2.Element netcdfElem = null; // find ncml if it exists
       if (match.dataRoot != null) {
-        doCache = match.dataRoot.isCache();
+        // doCache = match.dataRoot.isCache();  LOOK
         DatasetScan dscan = match.dataRoot.getDatasetScan();
         // if (dscan == null) dscan = match.dataRoot.getDatasetRootProxy();  // no ncml possible in getDatasetRootProxy
         if (dscan != null)
           netcdfElem = dscan.getNcmlElement();
       }
 
-      MFile file = DataRootHandler.getInstance().getFileFromRequestPath(reqPath);
+      MFile file = DataRootManager.getInstance().getFileFromRequestPath(reqPath);
       if (file == null)
         throw new FileNotFoundException(reqPath);
 
@@ -242,13 +241,13 @@ public class DatasetHandler {
       reqPath = reqPath.substring(1);
 
     // look for a match
-    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(reqPath);
 
     String fullpath = null;
     if (match != null)
       fullpath = match.dirLocation + match.remaining;
     else {
-      MFile file = DataRootHandler.getInstance().getFileFromRequestPath(reqPath);
+      MFile file = DataRootManager.getInstance().getFileFromRequestPath(reqPath);
       if (file != null)
         fullpath = file.getPath();
     }
@@ -272,7 +271,7 @@ public class DatasetHandler {
       return null;
 
     // look for a feature collection dataset
-    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
       return match.dataRoot.getFeatureCollection();
     }
@@ -322,7 +321,7 @@ public class DatasetHandler {
   static public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
 
     // first look for a grid feature collection
-    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
       FeatureCollection featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);

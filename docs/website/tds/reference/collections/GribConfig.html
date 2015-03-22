@@ -107,7 +107,7 @@
   <p>NCEP GRIB2 model output, at least, has some issues that we are slowing learning how best to deal with. Currently there are two situations which the user
     can fix:</p>
   <ol>
-    <li><strong>excludeZero</strong>: <em>By default, intervals of length 0 are ignored</em>. You can choose not to ignore zero length intervals. (One sees (0,0) intervals these in NCEP model output, apparently  initialization records, possibly miscoded.)</li>
+    <li><strong>excludeZero</strong>:<em> </em>You can choose to ignore or not to ignore zero length intervals. (One sees (0,0) intervals these in NCEP model output, apparently  initialization records, possibly miscoded.) <em>By default, intervals of length 0 are ignored in GRIB-2, but not ignored in GRIB-1</em>. You can override this if for each dataset.</li>
     <li><strong>intvLength</strong>:  <em>By default, intervals of all lengths (except 0) are used. </em> You can choose that certain parameters use only selected intervals. This is helpful when the parameter has redundant mixed levels, which can be
       derived from the set of intervals of a fixed size . For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12) intervals are all present, and so
       other intervals (0,6), (0, 9), (0,12) can be ignored. </li>
