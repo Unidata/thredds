@@ -48,7 +48,6 @@ public class DataRoot {
   private String dirLocation;   // to this directory
   private DatasetScan scan;     // the DatasetScan that created this (may be null)
   private FeatureCollection featCollection; // the FeatureCollection that created this (may be null)
-  private boolean cache = true;
 
   DataRoot(FeatureCollection featCollection) {
     setPath(featCollection.getPath());
@@ -78,7 +77,7 @@ public class DataRoot {
 
 
   private void show() {
-    if (DataRootHandler.debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
+    if (DataRootManager.debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
   }
 
   public String getPath() {
@@ -95,10 +94,6 @@ public class DataRoot {
 
   public FeatureCollection getFeatureCollection() {
     return featCollection;
-  }
-
-  public boolean isCache() {
-    return cache;
   }
 
   // used by PathMatcher

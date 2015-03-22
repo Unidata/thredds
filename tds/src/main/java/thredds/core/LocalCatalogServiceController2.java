@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.server.catalogservice.CatalogServiceUtils;
@@ -82,6 +83,9 @@ public class LocalCatalogServiceController2 {
   @Autowired
   private HtmlConfig htmlConfig;
 
+  @Autowired
+  private DataRootManager dataRootManager;
+
   @RequestMapping(value = {"/**/*.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   protected ModelAndView handleXmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
@@ -105,13 +109,10 @@ public class LocalCatalogServiceController2 {
       // Determine path and catalogPath
       String catalogPath = catalogServiceRequest.getPath();
 
-      // Check for matching catalog. LOOK autowired ??
-      DataRootHandler drh = DataRootHandler.getInstance();
-
       Catalog catalog = null;
       String baseUriString = request.getRequestURL().toString();
       try {
-        catalog = drh.getCatalog(catalogPath, new URI(baseUriString));
+        catalog = dataRootManager.getCatalog(catalogPath, new URI(baseUriString));
       } catch (URISyntaxException e) {
         String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
         log.error("handleRequestInternal(): " + msg);
@@ -180,13 +181,10 @@ public class LocalCatalogServiceController2 {
       String path = catalogServiceRequest.getPath();
       String catalogPath = path.replaceAll(".html$", ".xml");
 
-      // Check for matching catalog.
-      DataRootHandler drh = DataRootHandler.getInstance();
-
       Catalog catalog = null;
       String baseUriString = request.getRequestURL().toString();
       try {
-        catalog = drh.getCatalog(catalogPath, new URI(baseUriString));
+        catalog = dataRootManager.getCatalog(catalogPath, new URI(baseUriString));
       } catch (URISyntaxException e) {
         String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
         log.error("handleRequestInternal(): " + msg);
