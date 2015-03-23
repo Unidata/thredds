@@ -30,20 +30,21 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
 package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import thredds.client.catalog.*;
+import thredds.client.catalog.CatalogRef;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Service;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetRootConfig;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import thredds.server.config.TdsContext;
-import thredds.servlet.PathMatcher;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
@@ -55,12 +56,13 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * Read in the Config Catalogs
+ * Describe
  *
  * @author caron
- * @since 1/23/2015
+ * @since 3/21/2015
  */
-@Component("ConfigCatalogManager")
+@Component("ConfigCatalogManagerNew")
+@DependsOn("CdmInit")
 public class ConfigCatalogManager {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class.getName() + ".catalogInit");
@@ -73,66 +75,39 @@ public class ConfigCatalogManager {
   @Autowired
   private PathMatcher<DataRoot> pathMatcher; // collection of DataRoot objects
 
-  private HashMap<String, ConfigCatalog> staticCatalogHash; // Hash of static catalogs, key = path
-  private Set<String> staticCatalogNames;                   // Hash of static catalogs, key = path
-  private HashSet<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
-  private boolean cacheStaticCatalogs;
-  private AllowedServices allowedServices;
+  @Autowired
+  DatasetManager datasetManager;
 
-  public ConfigCatalog getStaticCatalog(String path) {
-    return staticCatalogHash.get(path);
-  }
+  private final AllowedServices allowedServices;
+  private final List<String> rootCatalogKeys;
 
-  public List<String> getStaticCatalogPaths() {
-    List<String> result = new ArrayList<>();
-    for (String s : staticCatalogNames)
-      result.add(s);
-    return result;
-  }
-
-  public boolean isStaticCatalogNotInCache(String path) {
-    return !cacheStaticCatalogs && staticCatalogNames.contains(path);
-  }
-
-  void initCatalogs() {
-    ArrayList<String> catList = new ArrayList<>();
-    catList.add("catalog.xml"); // always first
-    catList.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
-
-    logCatalogInit.info("initCatalogs(): initializing " + catList.size() + " root catalogs.");
-    this.initCatalogs(catList);
-  }
-
-  void initCatalogs(List<String> configCatalogRoots) {
+  ConfigCatalogManager() {
+    rootCatalogKeys = new ArrayList<>();
+    rootCatalogKeys.add("catalog.xml"); // always first
+    rootCatalogKeys.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
     allowedServices = new AllowedServices();
 
-    cacheStaticCatalogs = ThreddsConfig.getBoolean("Catalog.cache", true);  // user can turn off static catalog caching
-    startupLog.info("DataRootHandler: staticCache= " + cacheStaticCatalogs);
+    logCatalogInit.info("ConfigCatalogManage: initializing " + rootCatalogKeys.size() + " root catalogs.");
 
-    this.staticCatalogNames = new HashSet<>();
-    this.staticCatalogHash = new HashMap<>();
+    Set<String> pathHash = new HashSet<>();       // Hash of ids, to look for duplicates
+    Set<String> idHash = new HashSet<>();         // Hash of ids, to look for duplicates
 
-    for (String path : configCatalogRoots) {
+    for (String path : rootCatalogKeys) {
       try {
         path = StringUtils.cleanPath(path);
         logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + CalendarDate.present() + "]");
-        initCatalog(path, true, true);
+        initCatalog(path, pathHash, idHash);
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + path + "; " + e.getMessage(), e);
       }
     }
   }
 
-  /**
-   * Reads a catalog, finds datasetRoot, datasetScan, datasetFmrc, NcML and restricted access datasets
-   * <p/>
-   *
-   * @param path    file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
-   * @param recurse if true, look for catRefs in this catalog
-   * @param cache   if true, always cache
-   * @throws java.io.IOException if reading catalog fails
-   */
-  private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
+  public List<String> getRootCatalogKeys() {
+    return rootCatalogKeys;
+  }
+
+  private void initCatalog(String path, Set<String> pathHash, Set<String> idHash) throws IOException {
     path = StringUtils.cleanPath(path);
     File f = this.tdsContext.getConfigFileSource().getFile(path);
     if (f == null) {
@@ -142,11 +117,11 @@ public class ConfigCatalogManager {
     System.out.printf("initCatalog %s%n", f.getPath());
 
     // make sure we dont already have it
-    if (staticCatalogNames.contains(path)) {
+    if (pathHash.contains(path)) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
       return;
     }
-    staticCatalogNames.add(path);
+    pathHash.add(path);
     if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
 
     // read it
@@ -171,17 +146,10 @@ public class ConfigCatalogManager {
     String dirPath = (pos > 0) ? path.substring(0, pos + 1) : "";
 
     // look for datasetScans and NcML elements and Fmrc and featureCollections
-    boolean needsCache = initSpecialDatasets(cat.getDatasets());
+    boolean needsCache = extractRoots(cat.getDatasets(), idHash);
 
-    // optionally add catalog to cache
-    if (cacheStaticCatalogs || cache || needsCache) {
-      staticCatalogHash.put(path, cat);
-      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog to hash=" + path);
-    }
-
-    if (recurse) {
-      initFollowCatrefs(dirPath, cat.getDatasets());
-    }
+    // recurse
+    processDatasets(dirPath, cat.getDatasets(), pathHash, idHash);
   }
 
   /**
@@ -219,68 +187,14 @@ public class ConfigCatalogManager {
       logCatalogInit.error(ERROR + "  Exception on catalog=" + catalogFullPath + " " + t.getMessage() + "\n log=" + builder.getErrorMessage(), t);
       return null;
     }
-
   }
 
-  /**
-   * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
-   * Look for duplicate Ids (give message). Dont follow catRefs.
-   *
-   * @param dsList the list of Dataset
-   * @return true if the containing catalog should be cached
-   */
-  private boolean initSpecialDatasets(List<Dataset> dsList) {
-    boolean needsCache = false;
+  private void processDatasets(String dirPath, List<Dataset> datasets, Set<String> pathHash, Set<String> idHash) throws IOException {
+    for (Dataset ds : datasets) {
+      if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollection)) continue;
 
-    Iterator<Dataset> iter = dsList.iterator();
-    while (iter.hasNext()) {
-      Dataset dataset = iter.next();
-
-      // look for duplicate ids
-      String id = dataset.getID();
-      if (id != null) {
-        if (idHash.contains(id)) {
-          logCatalogInit.error(ERROR + "Duplicate id on  '" + dataset.getName() + "' id= '" + id + "'");
-        } else {
-          idHash.add(id);
-        }
-      }
-
-      if (dataset instanceof DatasetScan) {
-        DatasetScan ds = (DatasetScan) dataset;
-        Service service = ds.getServiceDefault();
-        if (service == null) {
-          logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");
-          continue;
-        }
-        if (!addRoot(ds))
-          iter.remove();
-
-      } else if (dataset instanceof FeatureCollection) {
-        FeatureCollection fc = (FeatureCollection) dataset;
-        addRoot(fc);
-        needsCache = true;
-
-        // not a DatasetScan or DatasetFmrc or FeatureCollection
-      } else if (dataset.getNcmlElement() != null) {
-        DatasetHandler.putNcmlDataset(dataset.getUrlPath(), dataset);
-      }
-
-      if (!(dataset instanceof CatalogRef)) {
-        // recurse
-        initSpecialDatasets(dataset.getDatasets());
-      }
-    }
-
-    return needsCache;
-  }
-
-  private void initFollowCatrefs(String dirPath, List<Dataset> datasets) throws IOException {
-    for (Dataset Dataset : datasets) {
-
-      if ((Dataset instanceof CatalogRef) && !(Dataset instanceof DatasetScan)
-              && !(Dataset instanceof FeatureCollection)) {
-        CatalogRef catref = (CatalogRef) Dataset;
+      if (ds instanceof CatalogRef) {
+        CatalogRef catref = (CatalogRef) ds;
         String href = catref.getXlinkHref();
         if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
 
@@ -304,14 +218,67 @@ public class ConfigCatalogManager {
             path = dirPath + href;  // reletive starting from current directory
           }
 
-          initCatalog(path, true, false);
+          initCatalog(path, pathHash, idHash);
         }
 
-      } else if (!(Dataset instanceof DatasetScan) && !(Dataset instanceof FeatureCollection)) {
+      } else {
         // recurse through nested datasets
-        initFollowCatrefs(dirPath, Dataset.getDatasets());
+        processDatasets(dirPath, ds.getDatasets(), pathHash, idHash);
       }
     }
+  }
+
+  /**
+   * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
+   * Look for duplicate Ids (give message). Dont follow catRefs.
+   *
+   * @param dsList the list of Dataset
+   * @return true if the containing catalog should be cached
+   */
+  private boolean extractRoots(List<Dataset> dsList, Set<String> idHash) {
+    boolean needsCache = false;
+
+    Iterator<Dataset> iter = dsList.iterator();
+    while (iter.hasNext()) {
+      Dataset dataset = iter.next();
+
+      // look for duplicate ids
+      String id = dataset.getID();
+      if (id != null) {
+        if (idHash.contains(id)) {
+          logCatalogInit.error(ERROR + "Duplicate id on  '" + dataset.getName() + "' id= '" + id + "'");
+        } else {
+          idHash.add(id);
+        }
+      }
+
+      if (dataset instanceof DatasetScan) {
+        DatasetScan ds = (DatasetScan) dataset;
+        Service service = ds.getServiceDefault();
+        if (service == null) {
+          logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");  // LOOK needed?
+          continue;
+        }
+        if (!addRoot(ds))
+          iter.remove();  // LOOK WTF ??
+
+      } else if (dataset instanceof FeatureCollection) {
+        FeatureCollection fc = (FeatureCollection) dataset;
+        addRoot(fc);
+        needsCache = true;
+
+        // not a DatasetScan or DatasetFmrc or FeatureCollection
+      } else if (dataset.getNcmlElement() != null) {
+        datasetManager.putNcmlDataset(dataset.getUrlPath(), dataset);
+      }
+
+      if (!(dataset instanceof CatalogRef)) {
+        // recurse
+        extractRoots(dataset.getDatasets(), idHash);
+      }
+    }
+
+    return needsCache;
   }
 
   private boolean addRoot(DatasetScan dscan) {
@@ -329,7 +296,6 @@ public class ConfigCatalogManager {
         logCatalogInit.error(ERROR + "DatasetScan already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
                 " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog " + dscan.getParentCatalog().getUriString());
       }
-
       return false;
     }
 
@@ -339,27 +305,6 @@ public class ConfigCatalogManager {
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
     return true;
-  }
-
-  public List<FeatureCollection> getFeatureCollections() {
-    List<FeatureCollection> result = new ArrayList<>();
-    Iterator iter = pathMatcher.iterator();
-    while (iter.hasNext()) {
-      DataRoot droot = (DataRoot) iter.next();
-      if (droot.getFeatureCollection() != null)
-        result.add(droot.getFeatureCollection());
-    }
-    return result;
-  }
-
-  public FeatureCollection findFcByCollectionName(String collectionName) {
-    Iterator iter = pathMatcher.iterator();
-    while (iter.hasNext()) {
-      DataRoot droot = (DataRoot) iter.next();
-      if ((droot.getFeatureCollection() != null) && droot.getFeatureCollection().getCollectionName().equals(collectionName))
-        return droot.getFeatureCollection();
-    }
-    return null;
   }
 
   private boolean addRoot(FeatureCollection fc) {
@@ -394,31 +339,6 @@ public class ConfigCatalogManager {
     return true;
   }
 
-  private boolean addRoot(String path, String dirLocation, boolean wantErr) {
-    // check for duplicates
-    DataRoot droot = pathMatcher.get(path);
-    if (droot != null) {
-      if (wantErr)
-        logCatalogInit.error(ERROR + "already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
-                " wanted to map to <" + dirLocation + ">");
-
-      return false;
-    }
-
-    File file = new File(dirLocation);
-    if (!file.exists()) {
-      logCatalogInit.error(ERROR + "Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
-      return false;
-    }
-
-    // add it
-    droot = new DataRoot(path, dirLocation);
-    pathMatcher.put(path, droot);
-
-    logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dirLocation + ">");
-    return true;
-  }
-
   private boolean addRoot(DatasetRootConfig config, boolean wantErr) {
     String path = config.getPath();
     String location = config.getLocation();
@@ -447,5 +367,4 @@ public class ConfigCatalogManager {
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + location + ">");
     return true;
   }
-
 }

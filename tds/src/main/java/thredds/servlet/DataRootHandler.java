@@ -64,6 +64,7 @@ import thredds.catalog.InvDatasetScan;
 import thredds.catalog.InvProperty;
 import thredds.catalog.InvService;
 import thredds.cataloggen.ProxyDatasetHandler;
+import thredds.core.PathMatcher;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.crawlabledataset.CrawlableDatasetFile;
@@ -89,8 +90,8 @@ import ucar.unidata.util.StringUtil2;
  *
  * @author caron
  */
-@Component("DataRootHandler")
-@DependsOn("CdmInit")
+//@Component("DataRootHandler")
+//@DependsOn("CdmInit")
 public final class DataRootHandler implements InitializingBean {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
