@@ -80,9 +80,6 @@ public class LocalCatalogServiceController {
   private TdsContext tdsContext;
 
   @Autowired
-  private HtmlWriter htmlWriter;
-
-  @Autowired
   private HtmlConfig htmlConfig;
 
   @Autowired
@@ -199,7 +196,7 @@ public class LocalCatalogServiceController {
         return handlePublicDocumentRequest(request, response, path);
 
       // Otherwise, handle catalog as indicated by "command".
-      ConfigCatalogHtmlWriter writer = new ConfigCatalogHtmlWriter(htmlWriter, htmlConfig, tdsContext.getContextPath());
+      ConfigCatalogHtmlWriter writer = new ConfigCatalogHtmlWriter(htmlConfig, tdsContext.getContextPath());
       if (catalogServiceRequest.getCommand().equals(Command.SHOW)) {
           int i = writer.writeCatalog(request, response, catalog, true);
           return null;

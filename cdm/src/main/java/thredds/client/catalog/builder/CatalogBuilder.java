@@ -48,6 +48,8 @@ import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.URLnaming;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -99,6 +101,12 @@ public class CatalogBuilder {
   public Catalog buildFromURI(URI uri) throws IOException {
     setBaseURI(uri);
     readXML(this, uri);
+    return makeCatalog();
+  }
+
+  public Catalog buildFromString(URI docBaseUri, String catalogAsString) throws IOException {
+    setBaseURI(docBaseUri);
+    readXML(this, docBaseUri, catalogAsString);
     return makeCatalog();
   }
 
@@ -184,7 +192,24 @@ public class CatalogBuilder {
 
     } catch (Exception e) {
       errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
-      logger.error("failed to read catalog at {}", uri.toString(), e);
+      logger.error("failed to read catalog at " + uri.toString(), e);
+      e.printStackTrace();
+      fatalError = true;
+    }
+
+  }
+
+  public void readXML(CatalogBuilder catBuilder, URI docBaseUri, String catalogAsString) throws IOException {
+
+    try {
+      StringReader in = new StringReader(catalogAsString);
+      SAXBuilder saxBuilder = new SAXBuilder();
+      org.jdom2.Document jdomDoc = saxBuilder.build(in);
+      readCatalog(catBuilder, jdomDoc.getRootElement(), docBaseUri);
+
+    } catch (Exception e) {
+      errlog.format("failed to read catalogAsString err='%s'%n", e);
+      logger.error("failed to read catalogAsString at" + docBaseUri.toString(), e);
       e.printStackTrace();
       fatalError = true;
     }

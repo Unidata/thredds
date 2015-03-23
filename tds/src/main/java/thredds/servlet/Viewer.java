@@ -32,7 +32,7 @@
  */
 package thredds.servlet;
 
-import thredds.catalog.InvDatasetImpl;
+import thredds.client.catalog.Dataset;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,7 +51,7 @@ public interface Viewer {
    * @param ds the dataset
    * @return  true if viewable
    */
-   public boolean isViewable( InvDatasetImpl ds);
+   public boolean isViewable( Dataset ds);
 
   /**
    * Get an HTML fragment link to the viewer JNLP file, for this dataset.
@@ -62,6 +62,6 @@ public interface Viewer {
    * @param req the request
    * @return HTML fragment string
    */
-   public String getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req);
+   public String getViewerLinkHtml( Dataset ds, HttpServletRequest req);
 
 }

@@ -48,7 +48,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import thredds.server.viewer.dataservice.ViewerService;
 import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
 import ucar.unidata.util.StringUtil2;
