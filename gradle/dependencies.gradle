@@ -3,23 +3,25 @@
 
 //================================================ Repositories ================================================//
 
-// TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
-// Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
-repositories {
-    mavenCentral()
-    maven {
-        url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
-    }
-    maven {
-        url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+allprojects {
+    // TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
+    // Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
+        }
+        maven {
+            url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+        }
     }
 }
 
 //================================================ Dependencies ================================================//
 
 ext {
-    // Extra properties must be declared in the "ext" namespace.
-    // After declaration, they can be used without prefix.
+    // Extra properties must be declared in the "ext" namespace. After declaration, they can be used without prefix.
+    // These will be inherited by subprojects.
     versions = [:]
     libraries = [:]
 }
@@ -186,31 +188,35 @@ libraries["threddsIso"] = "EDS:threddsIso:2.2.5-SNAPSHOT"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
-configurations.all {
-    // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j".
-    // This effectively converts every jcl call to an slf4j call.
-    // "commons-logging" is dragged in by spring-core and httpclient.
-    resolutionStrategy.eachDependency { DependencyResolveDetails dep ->
-        if (dep.requested.name == 'commons-logging') {
-            dep.useTarget libraries["jcl-over-slf4j"]
+subprojects {
+    // all() executes the given closure against all configurations currently in the container,
+    // and any configurations added later as well.
+    configurations.all {
+        // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j".
+        // This effectively converts every jcl call to an slf4j call.
+        // "commons-logging" is dragged in by spring-core and httpclient.
+        resolutionStrategy.eachDependency { DependencyResolveDetails dep ->
+            if (dep.requested.name == 'commons-logging') {
+                dep.useTarget libraries["jcl-over-slf4j"]
+            }
         }
+
+        // STAX comes with Java 1.6+
+        // Dragged in by xmlbeans
+        exclude group: 'stax', module: 'stax-api'
+
+        // Xerces comes with Java 1.6+
+        // This SHOULD be okay, but see http://stackoverflow.com/questions/1167757
+        // Dragged in by 52n-oxf-xmlbeans
+        exclude group: 'xerces', module: 'xercesImpl'
+
+        // This is an old version of the servlet API: v2. We're using v3.
+        // Dragged in by httpunit.
+        exclude group: 'javax.servlet', module: 'servlet-api'
+
+        // Includes a lot of classes that already come with Java 1.6+
+        // and we don't use the "tidy" functionality (i.e. HTML pretty printing) anyway.
+        // Dragged in by httpunit.
+        exclude group: 'jtidy', module: 'jtidy'
     }
-
-    // STAX comes with Java 1.6+
-    // Dragged in by xmlbeans
-    exclude group: 'stax', module: 'stax-api'
-
-    // Xerces comes with Java 1.6+
-    // This SHOULD be okay, but see http://stackoverflow.com/questions/1167757
-    // Dragged in by 52n-oxf-xmlbeans
-    exclude group: 'xerces', module: 'xercesImpl'
-
-    // This is an old version of the servlet API: v2. We're using v3.
-    // Dragged in by httpunit.
-    exclude group: 'javax.servlet', module: 'servlet-api'
-
-    // Includes a lot of classes that already come with Java 1.6+
-    // and we don't use the "tidy" functionality (i.e. HTML pretty printing) anyway.
-    // Dragged in by httpunit.
-    exclude group: 'jtidy', module: 'jtidy'
 }
