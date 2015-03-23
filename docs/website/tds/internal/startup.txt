@@ -1,4 +1,5 @@
-TDS startup
+TDS startup 
+(logging is in serverStartup.log)
 
 0. tomcat loads thredds.war with /WEB-INF/web.xml
 
@@ -39,14 +40,14 @@ in Log4j1. Need to tell it where the log files go.
 2013-09-02 16:53:36,057 DEBUG Calling createProperty on class org.apache.logging.log4j.core.config.Property for element property with params(name="tds.content.root.path", value="../../content")
 
 
-WEB-INF/classes/log4j2.xml
+ WEB-INF/classes/log4j2.xml
 
   <properties>
     <property name="tds.content.root.path">../content</property>
     <property name="tds.log.dir">${sys:tds.content.root.path}/thredds/logs</property>
   </properties>
 
-this has default, plus override from command line.
+ this has default, plus override from command line.
 
 
 2. Spring is then called
@@ -63,7 +64,6 @@ not clear if classses are loaded here
 3. applicationContext-tdsConfig is processed, and TdsContext bean is made:
 
 2013-09-02T16:59:49.530-0600 [     18430][        ] INFO  serverStartup: TdsContext version= 4.3.20120406.1714 - 20120406.1714
-
 
   <!-- tell spring that tds.properties gets read in first and overrides anything else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

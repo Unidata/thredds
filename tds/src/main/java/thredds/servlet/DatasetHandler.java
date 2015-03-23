@@ -48,6 +48,7 @@ import thredds.catalog.InvAccess;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
+import thredds.core.PathMatcher;
 import thredds.server.admin.DebugController;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
 import thredds.util.TdsPathUtils;

@@ -33,11 +33,9 @@
 
 package thredds.core;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import thredds.client.catalog.*;
 import thredds.filesystem.MFileOS7;
@@ -46,9 +44,7 @@ import thredds.server.admin.DebugController;
 import thredds.server.catalog.*;
 import thredds.server.config.TdsContext;
 
-import thredds.servlet.PathMatcher;
 import thredds.util.*;
-import thredds.util.filesource.FileSource;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 
@@ -73,47 +69,15 @@ import java.util.*;
  */
 @Component("DataRootManager")
 @DependsOn("CdmInit")
-public final class DataRootManager implements InitializingBean {
+public final class DataRootManager { // implements InitializingBean {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootManager.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootManager.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
-  static private DataRootManager singleton = null;
   static private final String ERROR = "*** ERROR ";
   static public final boolean debug = false;
-
-  /**
-   * Initialize the DataRootHandler singleton instance.
-   * <p/>
-   * This method should only be called once. Additional calls will be ignored.
-   *
-   * @param drh the singleton instance of DataRootHandler being used
-   */
-  static public void setInstance(DataRootManager drh) {
-    if (singleton != null) {
-      log.warn("setInstance(): Singleton already set: ignoring call.");
-      return;
-    }
-    singleton = drh;
-  }
-
-  /**
-   * Get the singleton.
-   * <p/>
-   * The setInstance() method must be called before this method is called.
-   *
-   * @return the singleton instance.
-   * @throws IllegalStateException if setInstance() has not been called.
-   */
-  static public DataRootManager getInstance() {
-    if (singleton == null) {
-      logCatalogInit.error(ERROR + "getInstance(): Called without setInstance() having been called.");
-      throw new IllegalStateException("setInstance() must be called first.");
-    }
-    return singleton;
-  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   @Autowired
@@ -123,34 +87,12 @@ public final class DataRootManager implements InitializingBean {
   private PathMatcher pathMatcher;
 
   @Autowired
-  private ConfigCatalogManagerNew ccManager;
+  private ConfigCatalogManager ccManager;
 
   @Autowired
   private ConfigCatalogCache ccc;
 
-  //private final TdsContext tdsContext;
-  //private boolean staticCache;
-
-  // @GuardedBy("this") LOOK should be able to access without synchronization
-  //private HashMap<String, ConfigCatalog> staticCatalogHash; // Hash of static catalogs, key = path
-  //private Set<String> staticCatalogNames; // Hash of static catalogs, key = path
-
-  // @GuardedBy("this")
-  //private HashSet<String> idHash = new HashSet<>(); // Hash of ids, to look for duplicates
-
-  //  PathMatcher is "effectively immutable"; use volatile for visibilty
-  // private volatile PathMatcher pathMatcher = new PathMatcher(); // collection of DataRoot objects
-
   private List<ConfigListener> configListeners = new ArrayList<>();
-
-
-  /**
-   * Constructor.
-   * Managed bean - dont do nuttin else !!
-   */
-  private DataRootManager(TdsContext tdsContext) {
-    this.tdsContext = tdsContext;
-  }
 
   private DataRootManager() {
 
@@ -165,7 +107,7 @@ public final class DataRootManager implements InitializingBean {
 
   //////////////////////////////////////////////
 
-  //public void init() {
+  /* public void init() {
   public void afterPropertiesSet() {
 
     //Registering first the AccessConfigListener
@@ -184,9 +126,9 @@ public final class DataRootManager implements InitializingBean {
 
     //Set the instance
     DataRootManager.setInstance(this);
-  }
+  }  */
 
-  public boolean registerConfigListener(ConfigListener cl) {
+  /* public boolean registerConfigListener(ConfigListener cl) {
     if (cl == null) return false;
     if (configListeners.contains(cl)) return false;
     return configListeners.add(cl);
@@ -195,11 +137,11 @@ public final class DataRootManager implements InitializingBean {
   public boolean unregisterConfigListener(ConfigListener cl) {
     if (cl == null) return false;
     return configListeners.remove(cl);
-  }
+  }  */
 
   /**
    * Reinitialize lists of static catalogs, data roots, dataset Ids.
-   */
+   *
   public synchronized void reinit() {
     // Notify listeners of start of initialization.
     isReinit = true;
@@ -224,7 +166,7 @@ public final class DataRootManager implements InitializingBean {
             + CalendarDate.present() + "]");
   }
 
-  volatile boolean isReinit = false;
+  volatile boolean isReinit = false;  */
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -569,7 +511,7 @@ public final class DataRootManager implements InitializingBean {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("reinit", "Reinitialize") {
+    /* act = new DebugController.Action("reinit", "Reinitialize") {
       public void doAction(DebugController.Event e) {
         try {
           singleton.reinit();
@@ -581,7 +523,7 @@ public final class DataRootManager implements InitializingBean {
         }
       }
     };
-    debugHandler.addAction(act);
+    debugHandler.addAction(act); */
 
   }
 
