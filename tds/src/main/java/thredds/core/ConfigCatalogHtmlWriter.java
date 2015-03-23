@@ -37,7 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import thredds.client.catalog.*;
 import thredds.client.catalog.writer.DatasetHtmlWriter;
 import thredds.server.config.HtmlConfig;
-import thredds.servlet.HtmlWriter;
+import thredds.server.config.TdsContext;
+import thredds.server.viewer.ViewerService;
 import thredds.util.ContentType;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.Format;
@@ -61,15 +62,30 @@ import java.util.List;
 public class ConfigCatalogHtmlWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogHtmlWriter.class);
 
+  static public String getHtmlDoctypeAndOpenTag() {
+    return "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'\n" +
+            "        'http://www.w3.org/TR/html4/loose.dtd'>\n" + "<html>\n";
+  }
+
+  static public String getXHtmlDoctypeAndOpenTag() {
+    return "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n" +
+            "        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n" +
+            "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>";
+  }
+
+
   @Autowired
   private ViewerService viewerService;
 
-  HtmlWriter html;
-  HtmlConfig htmlConfig;
+  @Autowired
+  private TdsContext tdsContext;
+
+  @Autowired
+  private HtmlConfig htmlConfig;
+
   String contextPath;
 
-  public ConfigCatalogHtmlWriter(HtmlWriter html, HtmlConfig htmlConfig, String contextPath) {
-    this.html = html;
+  public ConfigCatalogHtmlWriter(HtmlConfig htmlConfig, String contextPath) {
     this.htmlConfig = htmlConfig;
     this.contextPath = contextPath;
   }
@@ -112,7 +128,7 @@ public class ConfigCatalogHtmlWriter {
     String catname = StringUtil2.quoteHtmlContent(uri);
 
     // Render the page header
-    sb.append(html.getHtmlDoctypeAndOpenTag()); // "<html>\n" );
+    sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
     sb.append("<head>\r\n");
     sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
     sb.append("<title>");
@@ -121,7 +137,7 @@ public class ConfigCatalogHtmlWriter {
     //else
     sb.append("Catalog ").append(catname);
     sb.append("</title>\r\n");
-    sb.append(html.getTdsCatalogCssLink()).append("\n");
+    sb.append(getTdsCatalogCssLink()).append("\n");
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");
@@ -161,7 +177,7 @@ public class ConfigCatalogHtmlWriter {
     // Render the page footer
     sb.append("</table>\r\n");
     sb.append("<HR size='1' noshade='noshade'>");
-    html.appendSimpleFooter(sb);
+    appendSimpleFooter(sb);
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");
 
@@ -338,14 +354,14 @@ public class ConfigCatalogHtmlWriter {
                                       boolean isLocalCatalog) {
     Formatter out = new Formatter();
 
-    out.format("%s<head>\r\n", html.getHtmlDoctypeAndOpenTag());
+    out.format("%s<head>\r\n", getHtmlDoctypeAndOpenTag());
     out.format("<title> Catalog Services</title>\r\n");
     out.format("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\r\n");
-    out.format("%s</head>\r\n", html.getTdsPageCssLink());
+    out.format("%s</head>\r\n", getTdsPageCssLink());
     out.format("<body>\r\n");
 
     StringBuilder sb = new StringBuilder();
-    html.appendOldStyleHeader(sb);
+    appendOldStyleHeader(sb);
     out.format("%s\r\n", sb);
 
     out.format("<h2> Catalog %s</h2>\r\n", catURL);
@@ -358,7 +374,7 @@ public class ConfigCatalogHtmlWriter {
     if (isLocalCatalog)
       viewerService.showViewers(out, dataset, request);
 
-    out.format("%s\r\n", html.getGoogleTrackingContent());
+    out.format("%s\r\n", getGoogleTrackingContent());
 
     out.format("</body>\r\n");
     out.format("</html>\r\n");
@@ -382,5 +398,135 @@ public class ConfigCatalogHtmlWriter {
     }
 
     return datasetAsHtml.length();
+  }
+
+
+    //  public static final String UNIDATA_CSS
+  public String getUserCSS() {
+    return new StringBuilder()
+            .append("<link rel='stylesheet' href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getPageCssUrl()))
+            .append("' type='text/css' >").toString();
+  }
+
+  public String getTdsCatalogCssLink() {
+    return new StringBuilder()
+            .append("<link rel='stylesheet' href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getCatalogCssUrl()))
+            .append("' type='text/css' >").toString();
+  }
+
+  public String getTdsPageCssLink() {
+    return new StringBuilder()
+            .append("<link rel='stylesheet' href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getPageCssUrl()))
+            .append("' type='text/css' >").toString();
+  }
+
+  //  public static final String UNIDATA_HEAD
+  public String getUserHead() {
+    return new StringBuilder()
+            .append("<table width='100%'><tr><td>\n")
+            .append("  <img src='").append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstLogoUrl()))
+            .append("'\n")
+            .append("       alt='").append(this.htmlConfig.getHostInstLogoAlt()).append("'\n")
+            .append("       align='left' valign='top'\n")
+            .append("       hspace='10' vspace='2'>\n")
+            .append("  <h3><strong>").append(this.tdsContext.getWebappName()).append("</strong></h3>\n")
+            .append("</td></tr></table>\n")
+            .toString();
+  }
+
+  public void appendOldStyleHeader(StringBuilder sb) {
+    appendOldStyleHeader(sb,
+            this.htmlConfig.getWebappName(), this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappUrl()),
+            this.htmlConfig.getInstallLogoAlt(), this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallLogoUrl()),
+            this.htmlConfig.getInstallName(), this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl()),
+            this.htmlConfig.getHostInstName(), this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstUrl()));
+  }
+
+  public void appendOldStyleHeader(StringBuilder sb,
+                                   String webappName, String webappUrl,
+                                   String logoAlt, String logoUrl,
+                                   String installName, String installUrl,
+                                   String hostName, String hostUrl) {
+    // Table setup.
+    sb.append("<table width='100%'>\n")
+            .append("<tr><td>\n");
+    // Logo
+    sb.append("<img src='").append(logoUrl)
+            .append("' alt='").append(logoAlt)
+            .append("' align='left' valign='top'")
+            .append(" hspace='10' vspace='2'")
+            .append(">\n");
+
+    // Installation name.
+    sb.append("<h3><strong>")
+            .append("<a href='").append(installUrl).append("'>")
+            .append(installName).append("</a>")
+            .append("</strong>");
+    if (false) sb.append(" at ").append(hostName);
+    sb.append("</h3>\n");
+
+    // Webapp Name.
+    sb.append("<h3><strong>")
+            .append("<a href='").append(webappUrl).append("'>")
+            .append(webappName).append("</a>")
+            .append("</strong></h3>\n");
+
+    sb.append("</td></tr>\n")
+            .append("</table>\n");
+  }
+
+  public void appendSimpleFooter(StringBuilder sb) {
+    sb.append("<h3>");
+    if (this.htmlConfig.getInstallName() != null) {
+      String installUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl());
+      if (installUrl != null)
+        sb.append("<a href='").append(installUrl).append("'>");
+      sb.append(this.htmlConfig.getInstallName());
+      if (installUrl != null)
+        sb.append("</a>");
+    }
+    if (this.htmlConfig.getHostInstName() != null) {
+      sb.append(" at ");
+      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstUrl());
+      if (hostInstUrl != null)
+        sb.append("<a href='").append(hostInstUrl).append("'>");
+      sb.append(this.htmlConfig.getHostInstName());
+      if (hostInstUrl != null)
+      sb.append("</a>");
+      sb.append(" see <a href='/thredds/serverInfo.html'> Info </a>");
+      sb.append("<br>\n");
+    }
+
+    sb.append( this.tdsContext.getWebappName() )
+            .append( " [Version " ).append( this.tdsContext.getVersionInfo() );
+    sb.append( "] <a href='" )
+            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
+            .append( "'> Documentation</a>" );
+    sb.append( "</h3>\n" );
+    sb.append( this.getGoogleTrackingContent() );
+  }
+
+  public String getGoogleTrackingContent() {
+      if (this.htmlConfig.getGoogleTrackingCode().isEmpty()){
+          return "";
+      } else {
+          return new StringBuilder()
+	        .append("<script type='text/javascript'>")
+	        .append("var _gaq = _gaq || [];")
+	        .append("_gaq.push(['_setAccount', '")
+	        .append( this.htmlConfig.getGoogleTrackingCode() )
+	        .append("']);")
+	        .append("_gaq.push(['_trackPageview']);")
+
+	        .append("(function() {")
+	        .append("var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;")
+	        .append("ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';")
+	        .append("    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);")
+	        .append("})();")
+	        .append("</script>").toString();
+      }
   }
 }

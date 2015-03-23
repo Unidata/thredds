@@ -33,48 +33,54 @@
 
 package thredds.core;
 
+import net.jcip.annotations.Immutable;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
 
 /**
-* A DataRoot matches URLs to file directories
+* A DataRoot matches URLs to the objects that can serve them.
+ *
+ * A PathMatcher manages a hash table of path -> DataRoot
+ * Possible design:
+ *   catKey : which catalog defined this?   not present at the moment
+ *   directory : if its a simple DataRoot
+ *   fc        : prob is this drags in entire configCat
+ *   dscan     : ditto
 *
 * @author caron
 * @since 1/23/2015
 */
+@Immutable
 public class DataRoot {
-  private String path;          // match this path
-  private String dirLocation;   // to this directory
-  private DatasetScan scan;     // the DatasetScan that created this (may be null)
-  private FeatureCollection featCollection; // the FeatureCollection that created this (may be null)
+  private final String path;          // match this path
+  private final String dirLocation;   // to this directory
+  private final DatasetScan scan;     // the DatasetScan that created this (may be null)
+  private final FeatureCollection featCollection; // the FeatureCollection that created this (may be null)
 
   DataRoot(FeatureCollection featCollection) {
-    setPath(featCollection.getPath());
-    this.featCollection = featCollection;
+    this.path = featCollection.getPath();
     this.dirLocation = featCollection.getTopDirectoryLocation();
+    this.scan = null;
+    this.featCollection = featCollection;
     show();
   }
 
   DataRoot(DatasetScan scan) {
-    setPath( scan.getPath());
-    this.scan = scan;
+    this.path = scan.getPath();
     this.dirLocation = scan.getScanLocation();
+    this.scan = scan;
+    this.featCollection = null;
     show();
   }
 
   DataRoot(String path, String dirLocation) {
-    setPath(path);
+    this.path = path;
     this.dirLocation = dirLocation;
     this.scan = null;
+    this.featCollection = null;
     show();
   }
-
-  private void setPath(String path) {
-    // if (path.endsWith("/")) path = path + "/";
-    this.path = path;
-  }
-
 
   private void show() {
     if (DataRootManager.debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);

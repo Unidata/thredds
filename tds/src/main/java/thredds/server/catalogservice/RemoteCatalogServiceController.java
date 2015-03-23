@@ -75,9 +75,6 @@ public class RemoteCatalogServiceController {
   private TdsContext tdsContext;
 
   @Autowired
-  private HtmlWriter htmlWriter;
-
-  @Autowired
   private HtmlConfig htmlConfig;
 
   @RequestMapping("**")
@@ -141,7 +138,7 @@ public class RemoteCatalogServiceController {
 
       ///////////////////////////////////////////
       // Otherwise, handle catalog as indicated by "command".
-      ConfigCatalogHtmlWriter writer = new ConfigCatalogHtmlWriter(htmlWriter, htmlConfig, tdsContext.getContextPath());
+      ConfigCatalogHtmlWriter writer = new ConfigCatalogHtmlWriter(htmlConfig, tdsContext.getContextPath());
 
       if (catalogServiceRequest.getCommand().equals(Command.SHOW)) {
         writer.writeCatalog(request, response, catalog, false);
