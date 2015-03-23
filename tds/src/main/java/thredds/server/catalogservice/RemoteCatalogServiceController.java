@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -30,88 +30,45 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 package thredds.server.catalogservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
+
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.core.ConfigCatalogHtmlWriter;
+import thredds.server.catalogservice.CatalogServiceUtils;
+import thredds.server.catalogservice.Command;
+import thredds.server.catalogservice.RemoteCatalogRequest;
+import thredds.server.config.HtmlConfig;
+import thredds.server.config.TdsContext;
+import thredds.servlet.HtmlWriter;
+import thredds.servlet.ThreddsConfig;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.util.HtmlUtils;
-import thredds.catalog.util.DeepCopyUtils;
-import thredds.servlet.HtmlWriter;
-import thredds.servlet.ThreddsConfig;
-import thredds.server.config.TdsContext;
-import thredds.server.config.HtmlConfig;
-import thredds.catalog.*;
-
+import java.io.IOException;
+import java.net.URI;
+import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.net.URI;
-import java.io.IOException;
 
 /**
- * Handle all requests for catalog services on remote catalogs. Supported
- * services are:
- * <ol>
- * <li>catalog validation,</li>
- * <li>catalog subsetting, and</li>
- * <li>HTML views of catalogs (full or subset) and datasets.</li>
- * <p/>
- * <p/>
- * Currently, handles the following TDS requests:
- * <ul>
- * <li>Mapping="/remoteCatalogService"</li>
- * </ul>
- * <p/>
- * <p> NOTE: Only supported if CatalogServices/allowRemote is set to "true" in threddsConfig.xml.
- * <p/>
- * <p> Uses the following information from an HTTP request:
- * <ul>
- * <li>The "catalog" parameter gives the URI of a remote catalog.</li>
- * <li>The "command" parameter must either be empty or have one of the
- * following values: "SHOW", "SUBSET", or "VALIDATE", see
- * {@link Command}.</li>
- * <li>The "dataset" parameter identifies a dataset contained by the
- * local catalog. [Used only in "SUBSET" requests.]</li>
- * <li>The "htmlView" parameter indicates if an HTML or XML view is
- * desired. [Used only in "SUBSET" requests.]</li>
- * <li>The "verbose" parameter indicates if the output of a "VALIDATE"
- * request should be verbose ("true") or not ("false" or not given).</li>
- * </ul>
- * <p/>
- * <p>Constraints on the above information:
- * <ul>
- * <li>The catalog URI must be absolute and is expected to reference a
- * THREDDS catalog XML document.</li>
- * <li>The "dataset" parameter must either be empty or contain the value
- * of a dataset ID contained in the catalog.</li>
- * <li>If the "command" parameter is empty, it will default to "SHOW" if
- * the "dataset" parameter is empty, otherwise it will default to "SUBSET".</li>
- * </ul>
- * <p/>
- * <p>The above information is contained in a {@link RemoteCatalogRequest}
- * command object, default values are set during binding by
- * {@link RemoteCatalogRequestDataBinder}, and constraints are enforced by
- * {@link RemoteCatalogRequestValidator}.
+ * Remote CatalogService Controller using client/server catalogs
  *
- * @author edavis
- * @see thredds.util.TdsPathUtils#extractPath(HttpServletRequest req, String removePrefix)
- * @see Command
- * @see RemoteCatalogRequest
- * @see RemoteCatalogRequestDataBinder
- * @see RemoteCatalogRequestValidator
- * @since 4.0
+ * @author caron
+ * @since 1/19/2015
  */
-@Component
-@RequestMapping(value = {"/remoteCatalogService", "/remoteCatalogValidation.html"})
 public class RemoteCatalogServiceController {
+
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
   @Autowired
@@ -120,9 +77,11 @@ public class RemoteCatalogServiceController {
   @Autowired
   private HtmlWriter htmlWriter;
 
+  @Autowired
+  private HtmlConfig htmlConfig;
+
   @RequestMapping("**")
   protected ModelAndView handleAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    HtmlConfig htmlConfig = this.tdsContext.getHtmlConfig();
 
     try {
       // Send error response if remote catalog service requests are not allowed.
@@ -162,34 +121,19 @@ public class RemoteCatalogServiceController {
       // Determine path and catalogPath
       URI uri = catalogServiceRequest.getCatalogUri();
 
-      // Check for matching catalog.
-      InvCatalogImpl catalog;
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory(true);
-      try {
-        catalog = fac.readXML(uri);
-      } catch (Throwable t) {
-        String msg = "Error reading catalog [" + uri + "]: " + t.getMessage();
-        log.error("handleRequestInternal(): " + msg);
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
+      CatalogBuilder builder = new CatalogBuilder();
+      Catalog catalog = builder.buildFromURI(uri);
+      if (builder.hasFatalError() || catalog == null) {
+        Formatter f = new Formatter();
+        f.format("Error reading catalog '%s' err=%s%n", uri, builder.getErrorMessage());
+        log.debug(f.toString());
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, f.toString());
         return null;
-      }
 
-      // Check whether a catalog was found.
-      if (catalog == null) {
-        String msg = "Failed to read catalog [" + uri + "].";
-        log.error("handleRequestInternal(): " + msg);
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
-        return null;
-      }
-
-      // Check catalog validity.
-      StringBuilder validateMess = new StringBuilder();
-      // boolean verbose = catalogServiceRequest.isVerbose();
-      catalog.check(validateMess, false);
-      if (catalog.hasFatalError()) {
-        // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
-        response.setHeader("Validate", "FAIL");
-        return CatalogServiceUtils.constructValidationErrorModelAndView(uri, validateMess.toString(), htmlConfig);
+      } else {
+        String mess = builder.getErrorMessage();
+        if (mess.length() > 0)
+          System.out.printf(" parse Messages = %s%n", builder.getErrorMessage());
       }
 
       // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
@@ -197,13 +141,15 @@ public class RemoteCatalogServiceController {
 
       ///////////////////////////////////////////
       // Otherwise, handle catalog as indicated by "command".
+      ConfigCatalogHtmlWriter writer = new ConfigCatalogHtmlWriter(htmlWriter, htmlConfig, tdsContext.getContextPath());
+
       if (catalogServiceRequest.getCommand().equals(Command.SHOW)) {
-        this.htmlWriter.writeCatalog(request, response, catalog, false);
+        writer.writeCatalog(request, response, catalog, false);
         return null;
 
       } else if (catalogServiceRequest.getCommand().equals(Command.SUBSET)) {
         String datasetId = catalogServiceRequest.getDataset();
-        InvDataset dataset = catalog.findDatasetByID(datasetId);
+        Dataset dataset = catalog.findDatasetByID(datasetId);
         if (dataset == null) {
           String msg = "Did not find dataset [" + HtmlUtils.htmlEscape(datasetId) + "] in catalog [" + uri + "].";
           log.info("handleRequestInternal(): " + msg);
@@ -212,15 +158,16 @@ public class RemoteCatalogServiceController {
         }
 
         if (catalogServiceRequest.isHtmlView()) {
-          this.htmlWriter.showDataset(uri.toString(), (InvDatasetImpl) dataset, request, response, false);
+          writer.showDataset(uri.toString(), dataset, request, response, false);
           return null;
+
         } else {
-          InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset(catalog, dataset);
+          Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
           return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
         }
 
       } else if (catalogServiceRequest.getCommand().equals(Command.VALIDATE)) {
-        return CatalogServiceUtils.constructValidationMessageModelAndView(uri, validateMess.toString(), htmlConfig);
+        return CatalogServiceUtils.constructValidationMessageModelAndView(uri, builder.getValidationMessage(), htmlConfig);
 
       } else {
         String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
@@ -239,5 +186,4 @@ public class RemoteCatalogServiceController {
       return null;
     }
   }
-
 }

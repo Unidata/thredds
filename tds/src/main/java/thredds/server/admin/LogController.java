@@ -51,7 +51,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
-import thredds.servlet.PathMatcher;
+import thredds.core.PathMatcher;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.constants.CDM;
 

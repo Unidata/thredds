@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>TDS URLs</title>
+  	<link href="../tds.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<h1>TDS URL patterns (5.0)</h1>
+<h2>Forms</h2>
+<pre>0) http://server/webapp/service/dataRoot/remaining
+</pre>
+<ul>
+  <li>    dataRoot or configCatalog
+    <ul>
+      <li>path</li>
+      <li>configCatalog path (catKey)</li>
+      <li>directory</li>
+      <li>fc</li>
+      <li>dsScan</li>
+    </ul>
+  </li>
+</ul>
+<h2>Catalogs</h2>
+<h3>Forms</h3>
+
+<pre>1) http://server/webapp/catalog/catKey.[xml|html]
+
+2) http://server/webapp/catalog/dataRoot/catalog.[xml|html]
+
+3) http://server/webapp/catalog/dataRoot/remaining/catalog.[xml|html]</pre>
+<ol>
+  <li>The <strong>catKey</strong> references a <strong>configCatalog</strong></li>
+  <li>The <strong>dataRoot</strong> references a  <strong>datasetScan</strong> or <strong>featureCollection</strong>. Special case of 2 where remaining = null.</li>
+  <li>Same as 2, resolved by
+    <ul>
+      <li>&lt;<em>datasetScan root directory</em>&gt;/remaining</li>
+      
+      
+      <li><em>featureCollection</em>: internal to featureCollection</li>
+    </ul>
+  </li>
+</ol>
+<p>Notes:</p>
+<ul>
+  <li><strong>&quot;http://server/webapp/&quot;</strong> redirects to<strong> &quot;http://server/webapp/catalog/catalog.html&quot;</strong></li>
+  <li>Might be better to add a <strong>catalog</strong> in front: http://server/webapp/<strong>catalog</strong>/catKey.[xml|html], to follow the form<strong> http://server/webapp/service/...</strong></li>
+</ul>
+<h3>Examples</h3>
+<pre>1) http://thredds-dev.unidata.ucar.edu/thredds/catalog.html
+1) https://thredds-dev.unidata.ucar.edu/thredds/idd/forecastModels.html
+
+2) https://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/catalog.html
+2) https://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/catalog.html?
+		dataset=grib/NCEP/DGEX/CONUS_12km/TwoD
+
+3) https://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20150220_0600.grib2/catalog.html
+3) https://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20150220_0600.grib2/catalog.html?
+		dataset=grib/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20150220_0600.grib2
+3) https://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20150220_0600.grib2/catalog.html?
+		dataset=grib/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20150220_0600.grib2/files/DGEX_CONUS_12km_20150220_0600.grib2</pre>
+<h3>FMRC Collections</h3>
+<h4>Forms</h4>
+<pre>4) http://server/webapp/catalog/dataRoot/remaining/catalog.[xml|html] [?dataset=dataRoot/&lt;<em>name_</em>&gt;[fmrc.ncd | best.ncd]]
+</pre>
+<ul>
+  <li>    remaining = null, <strong>runs</strong>, <strong>files</strong>, <strong>constantForecast</strong>, <strong>constantOffset</strong></li>
+</ul>
+<h4>Examples: </h4>
+<pre>
+https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/catalog.html?dataset=fmrc/ecmwf/global_2p5/TestFmrc_fmrc.ncd
+https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/catalog.html?dataset=fmrc/ecmwf/global_2p5/TestFmrc_best.ncd
+
+https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/runs/catalog.html
+https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/runs/catalog.html?dataset=fmrc/ecmwf/global_2p5/runs/TestFmrc_RUN_2015-03-19T12:00:00Z
+
+https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/files/catalog.html
+https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/files/latest.html
+https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/files/latest.html?dataset=fmrc/ecmwf/global_2p5/files/ECMWF_Global_2p5_20150319_1200.nc</pre>
+<h3>GRIB Collections</h3>
+<h4>Forms</h4>
+<pre>sss</pre>
+<h4>Examples</h4>
+<pre>sss</pre>
+<hr />
+<h2>Data services</h2>
+<h3>Forms</h3>
+<pre>1) http://server/webapp/service/dataRoot/remaining</pre>
+<h3>Services</h3>
+<pre>admin
+catalog
+cdmremote
+cdmfeature
+dlwriter
+fileServer
+metadata
+ncss/grid
+ncss/point
+radarServer2 // change to ncss/radar
+view</pre>
+<h3>Plugins</h3>
+<pre>iso
+ncml
+ncsos
+uddc
+wcs
+wms</pre>
+<h3>Examples</h3>
+<pre>https://thredds-dev.unidata.ucar.edu/thredds/fileServer/grib/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20150220_0600.grib2/files/DGEX_CONUS_12km_20150220_0600.grib2</pre>
+
+</body>
+</html>

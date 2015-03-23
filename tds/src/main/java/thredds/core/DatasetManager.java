@@ -33,13 +33,14 @@
 
 package thredds.core;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.inventory.MFile;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
 import thredds.servlet.DatasetSource;
-import thredds.servlet.PathMatcher;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
 import thredds.util.TdsPathUtils;
@@ -68,23 +69,27 @@ import java.util.Set;
  *  @author caron
   * @since 1/23/2015
  */
-public class DatasetHandler {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetHandler.class);
+@Component
+public class DatasetManager {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetManager.class);
   static private final boolean debugResourceControl = false;
 
+  @Autowired
+  DataRootManager dataRootManager;
+
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
-  static private HashMap<String, Dataset> ncmlDatasetHash = new HashMap<>();
+  private HashMap<String, Dataset> ncmlDatasetHash = new HashMap<>();
 
   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
   // possible change to one global hash table request
-  static private ArrayList<DatasetSource> sourceList = new ArrayList<>();
+  private ArrayList<DatasetSource> sourceList = new ArrayList<>();
 
   // resource control
-  static private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
-  static private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
-  static private boolean hasResourceControl = false;
+  private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
+  private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
+  private boolean hasResourceControl = false;
 
-  static void reinit() {
+  void reinit() {
     ncmlDatasetHash = new HashMap<>();
     resourceControlHash = new HashMap<>();
     resourceControlMatcher = new PathMatcher<>();
@@ -93,7 +98,7 @@ public class DatasetHandler {
     hasResourceControl = false;
   }
 
-  public static void makeDebugActions() {
+  void makeDebugActions() {
     DebugController.Category debugHandler = DebugController.find("catalogs");
     DebugController.Action act;
 
@@ -107,10 +112,10 @@ public class DatasetHandler {
     debugHandler.addAction(act);
   }
 
-  static public void registerDatasetSource(String className) {
+  public void registerDatasetSource(String className) {
     Class vClass;
     try {
-      vClass = DatasetHandler.class.getClassLoader().loadClass(className);
+      vClass = DatasetManager.class.getClassLoader().loadClass(className);
     } catch (ClassNotFoundException e) {
       log.error("Attempt to load DatasetSource class " + className + " not found");
       return;
@@ -136,17 +141,17 @@ public class DatasetHandler {
     registerDatasetSource((DatasetSource) instance);
   }
 
-  static public void registerDatasetSource(DatasetSource v) {
+  public void registerDatasetSource(DatasetSource v) {
     sourceList.add(v);
     if (debugResourceControl) System.out.println("registerDatasetSource " + v.getClass().getName());
   }
 
-  static public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
+  public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
     return getNetcdfFile(req, res, TdsPathUtils.extractPath(req, null));
   }
 
   // return null means request has been handled, and calling routine should exit without further processing
-  static public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
     if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
 
@@ -172,7 +177,7 @@ public class DatasetHandler {
     }
 
     // look for a match
-    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(reqPath);
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
 
     // look for an feature collection dataset
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
@@ -204,7 +209,7 @@ public class DatasetHandler {
           netcdfElem = dscan.getNcmlElement();
       }
 
-      MFile file = DataRootManager.getInstance().getFileFromRequestPath(reqPath);
+      MFile file = dataRootManager.getFileFromRequestPath(reqPath);
       if (file == null)
         throw new FileNotFoundException(reqPath);
 
@@ -230,7 +235,7 @@ public class DatasetHandler {
     return ncfile;
   }
 
-  static public String getNetcdfFilePath(HttpServletRequest req, /*HttpServletResponse res,*/ String reqPath) throws IOException {
+  public String getNetcdfFilePath(HttpServletRequest req, /*HttpServletResponse res,*/ String reqPath) throws IOException {
     if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
     if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
 
@@ -241,25 +246,25 @@ public class DatasetHandler {
       reqPath = reqPath.substring(1);
 
     // look for a match
-    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(reqPath);
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
 
     String fullpath = null;
     if (match != null)
       fullpath = match.dirLocation + match.remaining;
     else {
-      MFile file = DataRootManager.getInstance().getFileFromRequestPath(reqPath);
+      MFile file = dataRootManager.getFileFromRequestPath(reqPath);
       if (file != null)
         fullpath = file.getPath();
     }
     return fullpath;
   }
 
-  static public FeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
+  public FeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
     return getFeatureCollection(req, res, TdsPathUtils.extractPath(req, null));
   }
 
   // return null means request has been handled, and calling routine should exit without further processing
-  static public FeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public FeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     if (reqPath == null)
       return null;
 
@@ -271,7 +276,7 @@ public class DatasetHandler {
       return null;
 
     // look for a feature collection dataset
-    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(reqPath);
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
       return match.dataRoot.getFeatureCollection();
     }
@@ -281,7 +286,7 @@ public class DatasetHandler {
 
   // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.
   // This makes the NcML dataset the target of the server.
-  static private class NcmlFileFactory implements FileFactory {
+  private class NcmlFileFactory implements FileFactory {
     private Dataset ds;
 
     NcmlFileFactory(Dataset ds) {
@@ -303,7 +308,7 @@ public class DatasetHandler {
    * @return GridDataset
    * @throws IOException on read error
    */
-  static public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
 
     return openGridDataset(req, res, reqPath, NetcdfDataset.getDefaultEnhanceMode());
   }
@@ -318,10 +323,10 @@ public class DatasetHandler {
    * @return GridDataset
    * @throws IOException on read error
    */
-  static public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
+  public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
 
     // first look for a grid feature collection
-    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(reqPath);
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
       FeatureCollection featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
@@ -363,7 +368,7 @@ public class DatasetHandler {
    * @param path the complete path name of the dataset
    * @return ResourceControl for this dataset, or null if none
    */
-  static public String findResourceControl(String path) {
+  public String findResourceControl(String path) {
     if (!hasResourceControl) return null;
 
     if (path.startsWith("/"))
@@ -385,7 +390,7 @@ public class DatasetHandler {
    * @return true if ok to proceed. If false, the appropriate error or redirect message has been sent, the caller only needs to return.
    * @throws IOException on read error
    */
-  static public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     if (null == reqPath)
       reqPath = TdsPathUtils.extractPath(req, null);
 
@@ -449,7 +454,7 @@ public class DatasetHandler {
    * @param path the req.getPathInfo() of the dataset.
    * @param ds   the dataset
    */
-  static void putNcmlDataset(String path, Dataset ds) {
+  void putNcmlDataset(String path, Dataset ds) {
     if (log.isDebugEnabled()) log.debug("putNcmlDataset " + path + " for " + ds.getName());
     ncmlDatasetHash.put(path, ds);
   }
