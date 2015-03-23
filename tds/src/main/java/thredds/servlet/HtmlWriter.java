@@ -54,7 +54,7 @@ import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.ServiceType;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
-import thredds.server.viewer.dataservice.ViewerService;
+import thredds.server.viewer.ViewerService;
 import thredds.util.ContentType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -813,8 +813,10 @@ public class HtmlWriter {
     InvDatasetImpl.writeHtmlDescription(sb, dataset, false, true, false, false, !isLocalCatalog);
 
     // optional access through Viewers
-    if (isLocalCatalog)
-      viewerService.showViewers(sb, dataset, request);	
+    if (isLocalCatalog) {
+      Formatter f = new Formatter();
+      // viewerService.showViewers(f, dataset, request);
+    }
     
     sb.append( this.getGoogleTrackingContent() );
     
