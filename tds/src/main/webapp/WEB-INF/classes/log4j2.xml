@@ -87,7 +87,7 @@
       <appender-ref ref="catalogInit"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFeatureCollection.catalogInit" level="info" additivity="false">
+    <logger name="thredds.featurecollection.InvDatasetFeatureCollection.catalogInit" level="info" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>
 
@@ -106,6 +106,7 @@
     </logger>
 
     <logger name="thredds.catalog.InvDatasetFcFmrc" level="info" additivity="false">
+    <logger name="thredds.featurecollection.InvDatasetFcFmrc" level="debug" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
 
@@ -150,11 +151,11 @@
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFeatureCollection" level="info" additivity="false">
+    <logger name="thredds.featurecollection.InvDatasetFeatureCollection" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFcGrib" level="info" additivity="false">
+    <logger name="thredds.featurecollection.InvDatasetFcGrib" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 

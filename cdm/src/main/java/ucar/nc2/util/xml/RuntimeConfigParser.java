@@ -114,21 +114,22 @@ public class RuntimeConfigParser {
           errlog.append("CoordTransBuilder " + className + " failed= " + e.getMessage() + "\n");
         }
 
-      } else if (elem.getName().equals("typedDatasetFactory")) {
-        String typeName = elem.getAttributeValue("datatype");
+      } else if (elem.getName().equals("featureDatasetFactory")) {
+        String typeName = elem.getAttributeValue("featureType");
         String className = elem.getAttributeValue("class");
-        FeatureType datatype = FeatureType.valueOf(typeName.toUpperCase());
-        if (null == datatype) {
-          errlog.append("TypedDatasetFactory " + className + " unknown datatype= " + typeName + "\n");
+        FeatureType featureType = FeatureType.valueOf(typeName.toUpperCase());
+        if (null == featureType) {
+          errlog.append("FeatureDatasetFactory " + className + " unknown datatype= " + typeName + "\n");
           continue;
         }
 
         try {
-          ucar.nc2.dt.TypedDatasetFactory.registerFactory(datatype, className);
-        } catch (ClassNotFoundException e) {
-          errlog.append("CoordSysBuilder class not found= " + className + "; check your classpath\n");
+          boolean ok = ucar.nc2.ft.FeatureDatasetFactoryManager.registerFactory( featureType, className);
+          if (!ok)
+            errlog.append("FeatureDatasetFactory " + className + " failed\n");
+
         } catch (Exception e) {
-          errlog.append("TypedDatasetFactory " + className + " failed= " + e.getMessage() + "\n");
+          errlog.append("FeatureDatasetFactory " + className + " failed= " + e.getMessage() + "\n");
         }
 
       } else if (elem.getName().equals("gribParameterTable")) {

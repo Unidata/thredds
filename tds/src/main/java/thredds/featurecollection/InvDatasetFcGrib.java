@@ -30,12 +30,17 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.catalog;
+package thredds.featurecollection;
 
 import net.jcip.annotations.ThreadSafe;
-import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.client.catalog.*;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.builder.CatalogRefBuilder;
+import thredds.client.catalog.builder.DatasetBuilder;
+import thredds.core.StandardServices;
 import thredds.inventory.*;
 import ucar.coord.CoordinateRuntime;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
@@ -54,23 +59,24 @@ import java.util.*;
 
 /**
  * Implement FeatureCollection GRIB - a collection of Grib1 or Grib2 files that are served as Grids.
- *
+ * <p/>
  * catalogs                                see makeCatalog()
- *  path/catalog.xml                       // top catalog
- *  path/partitionName/catalog.xml
- *  path/partitionName/../partitionName/catalog.xml
- *  path/latest.xml                       // latest (resolver)
- *
+ * path/catalog.xml                       // top catalog
+ * path/partitionName/catalog.xml
+ * path/partitionName/../partitionName/catalog.xml
+ * path/latest.xml                       // latest (resolver)
+ * <p/>
  * datasets                                see findDataset()
- *  path/dataset (dataset = BEST, TWOD, TP, "")  // top collection, single group
- *  path/dataset/groupName                       // top collection, multiple group
- *  path/partitionName/dataset                   // partition, single group
- *  path/partitionName/../partitionName/dataset
- *  path/partitionName/dataset/groupName         // partition, multiple group
- *  path/partitionName/../partitionName/dataset/groupName
- *
+ * path/dataset (dataset = BEST, TWOD, TP, "")  // top collection, single group
+ * path/dataset/groupName                       // top collection, multiple group
+ * path/partitionName/dataset                   // partition, single group
+ * path/partitionName/../partitionName/dataset
+ * path/partitionName/dataset/groupName         // partition, multiple group
+ * path/partitionName/../partitionName/dataset/groupName
+ * <p/>
  * files
- *  path/partitionName/../partitionName/FILES/filename
+ * path/partitionName/../partitionName/FILES/filename
+ *
  * @author caron
  * @since 4/15/11
  */
@@ -105,7 +111,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  public InvDatasetFcGrib(InvDatasetImpl parent, FeatureCollectionConfig config) {
+  public InvDatasetFcGrib(Dataset parent, FeatureCollectionConfig config) {
     super(parent, config);
 
     Formatter errlog = new Formatter();
@@ -115,9 +121,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
 
-    tmi.setDataType(FeatureType.GRID); // override GRIB
     state = new StateGrib(null);
-    finish();
   }
 
   @Override
@@ -150,9 +154,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       localState.latest = null; // will get updated next time its asked for
       localState.gribCollection = GribCdmIndex.openGribCollection(this.config, force, logger);
       if (localState.gribCollection == null)
-        logger.error("InvDatasetFcGrib.updateCollection failed "+this.config);
+        logger.error("InvDatasetFcGrib.updateCollection failed " + this.config);
 
-      logger.debug("{}: GribCollection object was recreated", getName());
+      logger.debug("{}: GribCollection object was recreated", name);
       if (previous != null) previous.close();                 // LOOK may be another thread using - other thread will fail
       if (previousLatest != null) previousLatest.close();
 
@@ -167,30 +171,28 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String topCollectionName = config.collectionName;
     if (collectionName.equals(topCollectionName)) return topCollectionName;
     if (collectionName.startsWith(topCollectionName)) {
-      return getName()+collectionName.substring(topCollectionName.length());
+      return name + collectionName.substring(topCollectionName.length());
     }
     return collectionName;
   }
 
-  private InvDatasetImpl makeDatasetFromCollection( boolean isTop, InvCatalogImpl parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
-    // StateGrib localState = (StateGrib) state;
+  private DatasetBuilder makeDatasetFromCollection(boolean isTop, CatalogBuilder parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
 
-    String dsName = isTop ? getName() : makeCollectionShortName(fromGc.getName());
-    InvDatasetImpl result = new InvDatasetImpl(this);
+    String dsName = isTop ? name : makeCollectionShortName(fromGc.getName());
+    DatasetBuilder result = new DatasetBuilder(null);
     result.setName(dsName);
-    result.setParent(null);
-    InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
     if (parent != null)
       result.transferMetadata(parent, true); // make all inherited metadata local
 
-    String tpath = getPath()+"/"+COLLECTION;
-    ThreddsMetadata tmi = result.getLocalMetadataInheritable();
-    tmi.addVariableMapLink(makeMetadataLink(tpath, VARIABLES));
-    tmi.setServiceName(Virtual_Services);
-    tmi.setDataFormatType(fromGc.isGrib1 ? DataFormatType.GRIB1 : DataFormatType.GRIB2);
-    tmi.addProperties(fromGc.getGlobalAttributes());
+    String tpath = getPath() + "/" + COLLECTION;
+    Map<String, Object> tmi = result.getInheritableMetadata().getFlds();
+    tmi.put(Dataset.VariableMapLink, makeMetadataLink(tpath, VARIABLES));
+    tmi.put(Dataset.ServiceName, Virtual_Services_Name);
+    tmi.put(Dataset.DataFormatType, fromGc.isGrib1 ? DataFormatType.GRIB1.toString() : DataFormatType.GRIB2.toString());
+    tmi.put(Dataset.Properties, Property.convertToProperties(fromGc.getGlobalAttributes()));
+    tmi.put(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
 
-    String pathStart = parentCollectionName == null ? getPath() :  getPath()+"/"+parentCollectionName;
+    String pathStart = parentCollectionName == null ? getPath() : getPath() + "/" + parentCollectionName;
 
     for (GribCollectionImmutable.Dataset ds : fromGc.getDatasets()) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
@@ -199,10 +201,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (ds.getType() == GribCollectionImmutable.Type.TwoD) {
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
-          InvDatasetImpl twoD = new InvDatasetImpl(this, getDatasetNameTwoD(result.getName()));
+          DatasetBuilder twoD = new DatasetBuilder(result);
+          twoD.setName(getDatasetNameTwoD(result.getName()));
           String path = pathStart + "/" + TWOD_DATASET;
-          twoD.setUrlPath(path);
-          twoD.tm.addDocumentation("summary", "Two time dimensions: reference and forecast; full access to all GRIB records");
+          twoD.put(Dataset.UrlPath, path);
+          twoD.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Two time dimensions: reference and forecast; full access to all GRIB records"));
           result.addDataset(twoD);
 
           // Collections.sort(groups);
@@ -212,202 +215,168 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       } else if (ds.getType() == GribCollectionImmutable.Type.Best) {
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-          InvDatasetImpl best = new InvDatasetImpl(this, getDatasetNameBest(result.getName()));
+          DatasetBuilder best = new DatasetBuilder(result);
+          best.setName(getDatasetNameBest(result.getName()));
           String path = pathStart + "/" + BEST_DATASET;
-          best.setUrlPath(path);
-          best.tm.addDocumentation("summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time");
+          best.put(Dataset.UrlPath, path);
+          best.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time"));
           result.addDataset(best);
 
           makeDatasetsFromGroups(best, groups, isSingleGroup);
         }
 
       } else if (ds.getType() == GribCollectionImmutable.Type.TP) {
-
-        InvDatasetImpl tp = new InvDatasetImpl(this, getDatasetNameTP(result.getName()));
+        DatasetBuilder tp = new DatasetBuilder(result);
+        tp.setName(getDatasetNameTP(result.getName()));
         String path = pathStart + "/" + TP_DATASET;
-        tp.setUrlPath(path);
-        tp.tm.addDocumentation("summary", "Multiple reference, single time Grib Partition");
-        result.addDataset(tp);
+        tp.put(Dataset.UrlPath, path);
+        tp.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference, single time Grib Partition"));
 
         makeDatasetsFromGroups(tp, groups, isSingleGroup);
 
       } else { // not a partition
 
-        // tmi.setServiceName(this.orgService.getName());
-        result.setUrlPath(pathStart);
+        result.put(Dataset.UrlPath, pathStart);
 
         if (ds.getType() == GribCollectionImmutable.Type.SRC) {
           CoordinateRuntime runCoord = fromGc.getMasterRuntime();
           assert runCoord.getSize() == 1;
           CalendarDate runtime = runCoord.getFirstDate();
-          result.tm.addDocumentation("summary", "Single reference time Grib Collection");
-          result.tmi.addDocumentation("Reference Time", runtime.toString());
+          result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Single reference time Grib Collection"));
+          result.addToList(Dataset.Documentation, new Documentation(null, null, null, "Reference Time", runtime.toString()));
 
         } else if (ds.getType() == GribCollectionImmutable.Type.MRSTC) {
-          result.tm.addDocumentation("summary", "Multiple reference time Grib Collection");
+          result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference time Grib Collection"));
         }
 
         makeDatasetsFromGroups(result, groups, isSingleGroup);
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
           String filesPath = pathStart + "/" + FILES;
-          InvCatalogRef filesRef = new InvCatalogRef(this, FILES, getCatalogHref(filesPath));
-          filesRef.finish();
+          CatalogRefBuilder filesRef = new CatalogRefBuilder(result); // LOOK this isnt used
+          filesRef.setName(FILES);
+          filesRef.setHref(getCatalogHref(filesPath));
           addFileDatasets(parentCatalog, result, fromGc, config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
         }
-
       }
 
     }
 
     if (fromGc instanceof PartitionCollectionImmutable) {
       if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest) && parentCollectionName == null) {  // latest for top only
-        InvDatasetImpl ds = new InvDatasetImpl(this, getDatasetNameLatest(result.getName()));
-        ds.setUrlPath(LATEST_DATASET_CATALOG);
-        // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
-        ds.setServiceName(LATEST_SERVICE);
-        ds.finish();
+        DatasetBuilder ds = new DatasetBuilder(result);
+        ds.setName(getDatasetNameLatest(result.getName()));
+        ds.put(Dataset.UrlPath, LATEST_DATASET_CATALOG);
+        ds.put(Dataset.ServiceName, LATEST_SERVICE);
         result.addDataset(ds);
-        //this.addService(InvService.latest);
       }
 
-      PartitionCollectionImmutable pc =  (PartitionCollectionImmutable) fromGc;
+      PartitionCollectionImmutable pc = (PartitionCollectionImmutable) fromGc;
       for (PartitionCollectionImmutable.Partition partition : pc.getPartitionsSorted()) {
-        InvDatasetImpl partDs = makeDatasetFromPartition(this, parentCollectionName, partition, pc.isPartitionOfPartitions());
+        DatasetBuilder partDs = makeDatasetFromPartition(result, parentCollectionName, partition, pc.isPartitionOfPartitions());
         result.addDataset(partDs);
       }
     }
 
-    result.finish();
     return result;
   }
 
-  private void makeDatasetsFromGroups(InvDatasetImpl parent, Iterable<GribCollectionImmutable.GroupGC> groups,  boolean isSingleGroup) {
+  private void makeDatasetsFromGroups(DatasetBuilder parent, Iterable<GribCollectionImmutable.GroupGC> groups, boolean isSingleGroup) {
 
     for (GribCollectionImmutable.GroupGC group : groups) {
-      InvDatasetImpl ds = isSingleGroup ? parent : new InvDatasetImpl(this, group.getDescription());
+      DatasetBuilder ds;
+      String dpath;
+      if (isSingleGroup) {
+        ds = parent;
+        dpath = (String) parent.get(Dataset.UrlPath);
+        ds.put(Dataset.Id, dpath);
 
-      String groupId = isSingleGroup ? null : group.getId();
-      String dpath =  isSingleGroup ? parent.getUrlPath() : parent.getUrlPath() + "/" + groupId;
-      ds.setID(dpath);
-      ds.setUrlPath(dpath);
+      } else {
+        ds = new DatasetBuilder(parent);
+        ds.setName(group.getDescription());
 
-      if (!isSingleGroup) {
+        dpath = parent.get(Dataset.UrlPath) + "/" + group.getId();
+        ds.put(Dataset.Id, dpath);
+        ds.put(Dataset.UrlPath, dpath);
+
+        // remove the urlPath on the parent if multiple groups;
+        // cannot get a dataset with multiple groups in it
+        parent.put(Dataset.UrlPath, null);
         parent.addDataset(ds);
       }
 
-      ds.tmi.setGeospatialCoverage(extractGeospatial(group));
-      ds.tmi.setTimeCoverage(group.makeCalendarDateRange());
-      ds.tmi.addVariableMapLink(makeMetadataLink(dpath, VARIABLES));
-
-     /* if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.TwoD)) {
-        InvDatasetImpl twoD = new InvDatasetImpl(this, getTwodDatasetName());
-        String path = dpath + "/" + TWOD_DATASET;
-        twoD.setUrlPath(path);
-        twoD.setID(path);
-        twoD.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-        ds.addDataset(twoD);
-      }
-
-      if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
-        InvDatasetImpl best = new InvDatasetImpl(this, getBestDatasetName());
-        String path = dpath + "/" + BEST_DATASET;
-        best.setUrlPath(path);
-        best.setID(path);
-        best.tmi.addVariableMapLink(makeMetadataLink(path, VARIABLES));
-        ds.addDataset(best);
-      }
-
-      if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
-        String name = isSingleGroup ? FILES : groupId + "/" + FILES;
-        InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(name));
-        filesCat.finish();
-        ds.addDataset(filesCat);
-      }  */
-
+      Map<String, Object> tmi = ds.getInheritableMetadata().getFlds();
+      tmi.put(Dataset.GeospatialCoverage, extractGeospatial(group));
+      tmi.put(Dataset.TimeCoverage, group.makeCalendarDateRange());
+      tmi.put(Dataset.VariableMapLink, makeMetadataLink(dpath, VARIABLES));
     }
-
-    // remove the urlPath on the parent if multiple groups;
-    // cannot get a dataset with multiple groups in it
-    if (!isSingleGroup) {
-      parent.setUrlPath(null);
-    }
-
   }
 
-  private InvDatasetImpl makeDatasetFromPartition(InvDatasetImpl parent, String parentCollectionName, PartitionCollectionImmutable.Partition partition, boolean isPofP) throws IOException {
-    InvDatasetImpl result;
+  private DatasetBuilder makeDatasetFromPartition(DatasetBuilder parent, String parentCollectionName, PartitionCollectionImmutable.Partition partition, boolean isPofP) throws IOException {
     String dsName = makeCollectionShortName(partition.getName());
 
-    // if (isPofP) { // make a catRef
-      String startPath = parentCollectionName == null ? getPath() : getPath() + "/" + parentCollectionName;
-      String dpath = startPath + "/" + partition.getName();
-      result = new InvCatalogRef(parent, dsName, buildCatalogServiceHref(dpath)); // LOOK could be plain if not PoP ??
-      result.setID(dpath);
-      result.setUrlPath(dpath);
-      result.setServiceName(Virtual_Services);
+    String startPath = parentCollectionName == null ? getPath() : getPath() + "/" + parentCollectionName;
+    String dpath = startPath + "/" + partition.getName();
+    CatalogRefBuilder result = new CatalogRefBuilder(parent);
+    result.setName(dsName);
+    result.setHref(buildCatalogServiceHref(dpath));  // LOOK could be plain if not PoP ??
+    result.put(Dataset.Id, dpath);
+    result.put(Dataset.UrlPath, dpath);
+    result.put(Dataset.ServiceName, Virtual_Services_Name);
 
-    /* } else {   // make a InvDatasetImpl
-      try (GribCollectionImmutable gc = partition.getGribCollection()) {
-        result = makeDatasetFromCollection(false, parentCollectionName, gc);
-      }
-    }   */
-
-    //result.tmi.setGeospatialCoverage(extractGeospatial(group));
-    //result.tmi.setTimeCoverage(group.getCalendarDateRange());
     return result;
   }
 
   /* file datasets of the partition catalog are InvCatalogRef pointing to "FileCatalogs"
-  private void addFileDatasets(InvDatasetImpl parent, String prefix) {
+  private void addFileDatasets(Dataset parent, String prefix) {
     String name = (prefix == null) ? FILES : prefix + "/" + FILES;
     InvCatalogRef ds = new InvCatalogRef(this, FILES, getCatalogHref(name));
     ds.finish();
     parent.addDataset(ds);
   }  */
 
-    // this catalog lists the individual files comprising the collection.
-  protected void addFileDatasets(InvCatalogImpl parentCatalog, InvDatasetImpl parent, GribCollectionImmutable fromGc, boolean addLatest) throws IOException {
+  // this catalog lists the individual files comprising the collection.
+  protected void addFileDatasets(CatalogBuilder parentCatalog, DatasetBuilder parent, GribCollectionImmutable fromGc, boolean addLatest) throws IOException {
+
+    DatasetBuilder filesParent = new DatasetBuilder(parent);
+    filesParent.setName("Raw Files");
+    Map<String, Object> tmi = filesParent.getInheritableMetadata().getFlds();
+    tmi.put(Dataset.ServiceName, Download_Services_Name);
+    parent.addDataset(filesParent);
+    if (parentCatalog != null)
+      parentCatalog.addService(makeDownloadService());
+
     List<MFile> mfiles = new ArrayList<>(fromGc.getFiles());
     Collections.sort(mfiles);
-    InvDatasetImpl filesParent = new InvDatasetImpl(this, "Raw Files");
-    filesParent.tmi.setServiceName(Download_Services);
-    parent.addDataset(filesParent);
-    if (parentCatalog != null) parentCatalog.addService(makeDownloadService());
-
     for (MFile mfile : mfiles) {
-      InvDatasetImpl ds = new InvDatasetImpl(this, mfile.getName());
-      String lpath = parent.getUrlPath() + "/" + FILES + "/" +  mfile.getName();  // LOOK wrong
-      ds.setUrlPath(lpath);
-      ds.setID(lpath);
-      ds.tm.setDataSize(mfile.getLength());
+      DatasetBuilder ds = new DatasetBuilder(parent);
+      ds.setName(mfile.getName());
+      String lpath = parent.get(Dataset.UrlPath) + "/" + FILES + "/" + mfile.getName();  // LOOK wrong
+      ds.put(Dataset.UrlPath, lpath);
+      ds.put(Dataset.Id, lpath);
+      ds.put(Dataset.DataSize, mfile.getLength());
       // ds.tm.setXXXX(mfile.getLastModified());
-      ds.finish();
       filesParent.addDataset(ds);
     }
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
+
   @Override
-  protected InvCatalogImpl makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
-    InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
-    InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
+  protected CatalogBuilder makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
+    CatalogBuilder result = super.makeCatalogTop(catURI, localState);
 
     if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
-      mainCatalog.addService(InvService.latest);
-    mainCatalog.addDataset(((StateGrib) localState).top);
-    // mainCatalog.addService(orgService);
-    mainCatalog.addService(virtualService);
-    mainCatalog.finish();
+      result.addService(StandardServices.latest.getService());
 
-    return mainCatalog;
+    return result;
   }
 
   // called by DataRootHandler.makeDynamicCatalog() when a catref is requested
   // see top javadoc for possible URLs
   @Override
-  public InvCatalogImpl makeCatalog(String match, String reqPath, URI catURI) throws IOException {
+  public Catalog makeCatalog(String match, String reqPath, URI catURI) throws IOException {
     StateGrib localState = (StateGrib) checkState();
     if (localState == null) return null; // not ready yet maybe
 
@@ -415,7 +384,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       // case 0
       if ((match == null) || (match.length() == 0)) {
-        return makeCatalogTop(catURI, localState);  // top catalog : uses state.top previously made in checkState()
+        CatalogBuilder catb = makeCatalogTop(catURI, localState);  // top catalog : uses state.top previously made in checkState()
+        return catb.makeCatalog();
       }
 
       // case 1
@@ -432,15 +402,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return null;
   }
 
-  private InvCatalogImpl makeCatalogFromPartition(PartitionCollectionImmutable pc, String[] paths, int idx, URI catURI) throws IOException {
-    if (paths.length < idx+1) return null;
+  private Catalog makeCatalogFromPartition(PartitionCollectionImmutable pc, String[] paths, int idx, URI catURI) throws IOException {
+    if (paths.length < idx + 1) return null;
     PartitionCollectionImmutable.Partition pcp = pc.getPartitionByName(paths[idx]);
     if (pcp == null) return null;
 
-    try (GribCollectionImmutable gc =  pcp.getGribCollection()) {
-      if (paths.length > idx+1 && gc instanceof PartitionCollectionImmutable) {
+    try (GribCollectionImmutable gc = pcp.getGribCollection()) {
+      if (paths.length > idx + 1 && gc instanceof PartitionCollectionImmutable) {
         PartitionCollectionImmutable pcNested = (PartitionCollectionImmutable) gc;
-        PartitionCollectionImmutable.Partition pcpNested = pcNested.getPartitionByName(paths[idx+1]);
+        PartitionCollectionImmutable.Partition pcpNested = pcNested.getPartitionByName(paths[idx + 1]);
         if (pcpNested != null)  // recurse
           return makeCatalogFromPartition(pcNested, paths, idx + 1, catURI);
       }
@@ -456,17 +426,19 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
-  private InvCatalogImpl makeCatalogFromCollection(GribCollectionImmutable fromGc, String parentCollectionName, URI catURI) throws IOException { // }, URISyntaxException {
-    InvCatalogImpl result = new InvCatalogImpl(makeCollectionShortName(fromGc.getName()), getParentCatalog().getVersion(), catURI);  // LOOK is catURL right ??
-    // result.addService(orgService);
+  private Catalog makeCatalogFromCollection(GribCollectionImmutable fromGc, String parentCollectionName, URI catURI) throws IOException { // }, URISyntaxException {
+    Catalog parentCatalog = parent.getParentCatalog();
+
+    CatalogBuilder result = new CatalogBuilder();
+    result.setName(makeCollectionShortName(fromGc.getName()));
+    result.setVersion(parentCatalog.getVersion());
+    result.setBaseURI(catURI);                       // LOOK is catURL right ??
     result.addService(virtualService);
 
-    InvDatasetImpl ds = makeDatasetFromCollection(false, result, parentCollectionName, fromGc);
+    DatasetBuilder ds = makeDatasetFromCollection(false, result, parentCollectionName, fromGc);
     result.addDataset(ds);
-    // String serviceName = ds.getServiceName(); LAME - cant do this way, needs service already added -fix in cat2; YEAH right, cat2
-    result.finish();
 
-    return result;
+    return result.makeCatalog();
   }
 
   /////////////////////////////////////
@@ -480,7 +452,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   // path/latest.xml
   @Override
-  public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
+  public Catalog makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
     StateGrib localState = (StateGrib) checkState();
     if (!(localState.gribCollection instanceof PartitionCollectionImmutable)) return null;
 
@@ -496,7 +468,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       int count = 0;
       for (String p : paths) {
         if (count++ > 0) f.format("/");
-        f.format("%s",p);
+        f.format("%s", p);
       }
 
       synchronized (lock) {
@@ -510,32 +482,21 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   ///////////////////////////////////////////////////////////////////////////
 
-  private ThreddsMetadata.GeospatialCoverage extractGeospatial(Iterable<GribCollectionImmutable.GroupGC> groups) {
-    ThreddsMetadata.GeospatialCoverage gcAll = null;
-    for (GribCollectionImmutable.GroupGC group : groups) {
-      ThreddsMetadata.GeospatialCoverage gc = extractGeospatial(group);
-      if (gcAll == null) gcAll = gc;
-      else gcAll.extend(gc);
-    }
-    return gcAll;
-  }
 
-
+  // LOOK how come we arent using NetadataExtractor ??
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollectionImmutable.GroupGC group) {
     GdsHorizCoordSys gdsCoordSys = group.getGdsHorizCoordSys();
     LatLonRect llbb = GridCoordSys.getLatLonBoundingBox(gdsCoordSys.proj, gdsCoordSys.getStartX(), gdsCoordSys.getStartY(),
             gdsCoordSys.getEndX(), gdsCoordSys.getEndY());
 
-    ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
-    if (llbb != null)
-      gc.setBoundingBox(llbb);
 
+    double dx = 0.0, dy = 0.0;
     if (gdsCoordSys.isLatLon()) {
-      gc.setLonResolution(gdsCoordSys.dx);
-      gc.setLatResolution(gdsCoordSys.dy);
+      dx = gdsCoordSys.dx;
+      dy = gdsCoordSys.dy;
     }
 
-    return gc;
+    return new ThreddsMetadata.GeospatialCoverage(llbb, null, dx, dy);
   }
 
   private CalendarDateRange extractCalendarDateRange(Iterable<GribCollectionImmutable.GroupGC> groups) {
@@ -555,7 +516,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (config.gribConfig != null && config.gribConfig.latestNamer != null) {
       return config.gribConfig.latestNamer;
     } else {
-      return "Latest Collection for "+dsName;
+      return "Latest Collection for " + dsName;
     }
   }
 
@@ -563,7 +524,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (config.gribConfig != null && config.gribConfig.bestNamer != null) {
       return config.gribConfig.bestNamer;
     } else {
-      return "Best "+dsName +" Time Series";
+      return "Best " + dsName + " Time Series";
     }
   }
 
@@ -580,7 +541,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     try {
       StateGrib localState = (StateGrib) checkState();
       int pos = remaining.lastIndexOf("/");
-      final String filename = (pos >= 0) && (remaining.length() > 1) ? remaining.substring(pos+1)  : remaining;
+      final String filename = (pos >= 0) && (remaining.length() > 1) ? remaining.substring(pos + 1) : remaining;
 
       MFile result = (MFile) findDataset(remaining, localState.gribCollection, new DatasetCreator() {
         @Override
@@ -592,7 +553,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (result == null) return null;
       return new File(result.getPath());
 
-    } catch (IOException iow ) {
+    } catch (IOException iow) {
       return null;
     }
 
@@ -653,8 +614,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
      case 2: path/dataset/groupName
      case 3: path/groupName                           // single dataset not sure this is actually used ??
   */
-  private DatasetAndGroup findDatasetAndGroup(List<String> paths, GribCollectionImmutable gc)  {
-    if (paths.size() < 1 || paths.get(0).length() == 0)  {   // case 0: use first dataset,group in the collection
+  private DatasetAndGroup findDatasetAndGroup(List<String> paths, GribCollectionImmutable gc) {
+    if (paths.size() < 1 || paths.get(0).length() == 0) {   // case 0: use first dataset,group in the collection
       GribCollectionImmutable.Dataset ds = gc.getDataset(0);
       GribCollectionImmutable.GroupGC dg = ds.getGroup(0);
       return new DatasetAndGroup(ds, dg);
@@ -702,7 +663,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         return null;
     }
 
-    try (GribCollectionImmutable gc =  pcp.getGribCollection()) {
+    try (GribCollectionImmutable gc = pcp.getGribCollection()) {
       if (gc instanceof PartitionCollectionImmutable) {
         PartitionCollectionImmutable pcNested = (PartitionCollectionImmutable) gc;
         return findDatasetPartition(visit, pcNested, pathList.subList(1, n));

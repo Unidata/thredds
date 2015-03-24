@@ -78,5 +78,5 @@ public interface FeatureDatasetFactory {
    * This Factory can open these types of Feature datasets.
    * @return array of FeatureType
    */
-  public FeatureType[] getFeatureType();
+  public FeatureType[] getFeatureTypes();
 }

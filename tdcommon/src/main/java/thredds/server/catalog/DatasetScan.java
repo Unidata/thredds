@@ -415,7 +415,45 @@ public class DatasetScan extends CatalogRef {
   }
 
   //////////////////
-  // Latest
+  /*
+    // specialized filter handles olderThan and/or filename pattern matching
+  // for DatasetScan
+  static class ScanFilter implements CrawlableDatasetFilter {
+    private final Pattern p;
+    private final long olderThan;
+
+    public ScanFilter(Pattern p, long olderThan) {
+      this.p = p;
+      this.olderThan = olderThan;
+    }
+
+    @Override
+    public boolean accept(CrawlableDataset dataset) {
+      if (dataset.isCollection()) return true;
+
+      if (p != null) {
+        java.util.regex.Matcher matcher = p.matcher(dataset.getName());
+        if (!matcher.matches()) return false;
+      }
+
+      if (olderThan > 0) {
+        Date lastModDate = dataset.lastModified();
+        if (lastModDate != null) {
+          long now = System.currentTimeMillis();
+          if (now - lastModDate.getTime() <= olderThan)
+            return false;
+        }
+      }
+
+      return true;
+    }
+
+    @Override
+    public Object getConfigObject() {
+      return null;
+    }
+  }
+   */
 
   /* <dataset name="latest.xml" ID="testGridScan/latest.xml" urlPath="latest.xml">
      <serviceName>latest</serviceName>
