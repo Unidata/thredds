@@ -37,6 +37,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -56,14 +57,13 @@ import java.util.*;
  * @author yuan
  */
 
-public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {
+public class LevelII2Dataset extends RadialDatasetSweepAdapter {
   private NetcdfDataset ds;
   double latv, lonv, elev;
   DateFormatter formatter = new DateFormatter();
 
   /////////////////////////////////////////////////
-  // TypedDatasetFactoryIF
-  public boolean isMine(NetcdfDataset ds) {
+  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
     String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ds.findAttValueIgnoreCase(null, "Format", null);
@@ -71,12 +71,12 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
               || format.equals("AR2V0001") || format.equals("CINRAD-SA")
               || format.equals("AR2V0003") || format.equals("AR2V0002") || format.equals("AR2V0004")
               || format.equals("AR2V0006") || format.equals("AR2V0007")))
-        return true;
+        return this;
     }
-    return false;
+    return null;
   }
 
-  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     return new LevelII2Dataset(ncd);
   }
 
@@ -911,31 +911,4 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     assert(0 != nrays);
   }
 
-
-  public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-   // String fileIn = "/home/yuanho/Download/KCLX_20091019_2021";
-   String fileIn ="C:/Users/yuanho/Downloads/Level2_KCBW_20110307_2351.ar2v";
-    //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
-    //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
-  //ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuilder());
-      //ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
-    String id = rds.getRadarID();
-    String name = rds.getRadarName();
-    if (rds.isStationary()) {
-      System.out.println("*** radar is stationary with name and id: " + name + " " + id);
-    }
-//    List rvars = rds.getDataVariables();
-    RadialDatasetSweep.RadialVariable vDM = (RadialDatasetSweep.RadialVariable) rds.getDataVariable("Reflectivity");
-    vDM.readAllData();
-    testRadialVariable(vDM);
-//    for (int i = 0; i < rvars.size(); i++) {
-//      RadialDatasetSweep.RadialVariable rv = (RadialDatasetSweep.RadialVariable) rvars.get(i);
-    //   testRadialVariable(rv);
-
-      //  RadialCoordSys.makeRadialCoordSys( "desc", CoordinateSystem cs, VariableEnhanced v);
-      // ucar.nc2.dt.radial.RadialCoordSys rcsys = rv.getRadialCoordSys();
-//    }
-
-  }
 } // LevelII2Dataset

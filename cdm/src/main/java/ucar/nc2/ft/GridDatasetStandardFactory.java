@@ -65,7 +65,7 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
     return (GridDataset) analysis;
   }
 
-  public FeatureType[] getFeatureType() {
+  public FeatureType[] getFeatureTypes() {
     return new FeatureType[] {FeatureType.GRID, FeatureType.SWATH};
   }
 }

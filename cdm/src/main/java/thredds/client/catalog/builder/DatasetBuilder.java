@@ -46,6 +46,13 @@ import java.util.*;
  */
 public class DatasetBuilder {
 
+  /**
+   * Utility routine to keep list of objects small.
+   * add fldValue to the fldName list in flds.
+   * fldValue may be a list or an object.
+   * if no list, just keep the object without creating a list (common case).
+   * otherwise add it to the existing list.
+   */
   public static void addToList(Map<String, Object> flds, String fldName, Object fldValue) {
     if (fldValue == null) return;
     Object prevVal = flds.get(fldName);
@@ -81,6 +88,10 @@ public class DatasetBuilder {
     this.parent = parent;
   }
 
+  public DatasetBuilder getParent() {
+    return parent;
+  }
+
   public Object get(String fldName) {
     return flds.get(fldName);
   }
@@ -100,8 +111,16 @@ public class DatasetBuilder {
     tmi.getFlds().put(fldName, fldValue);
   }
 
+  public void addToList(String fldName, Object fldValue) {
+    if (fldValue != null) addToList(flds, fldName, fldValue);
+  }
+
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getName() {
+    return name;
   }
 
   public void addDataset(DatasetBuilder d) {
@@ -142,6 +161,15 @@ public class DatasetBuilder {
     for (Map.Entry<String, Object> entry : fromFlds.entrySet()) {
       flds.put(entry.getKey(), entry.getValue());
     }
+  }
+
+  public ThreddsMetadata getInheritableMetadata() {
+    ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
+    if (tmi == null) {
+      tmi = new ThreddsMetadata();
+      put(Dataset.ThreddsMetadataInheritable, tmi);
+    }
+    return tmi;
   }
 
 

@@ -141,7 +141,7 @@ public class ProxyGenerator {
 
 
   public static void main(String[] args) throws SecurityException {
-    generate(thredds.catalog.InvDatasetImpl.class, System.out);
+    generate(thredds.client.catalog.Dataset.class, System.out);
   }
 
 }

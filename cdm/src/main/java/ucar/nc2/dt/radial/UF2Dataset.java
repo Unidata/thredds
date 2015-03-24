@@ -36,6 +36,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -56,24 +57,23 @@ import java.util.*;
  * Time: 10:14:22 AM
  * To change this template use File | Settings | File Templates.
  */
-public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {
+public class UF2Dataset extends RadialDatasetSweepAdapter {
   private NetcdfDataset ds;
   double latv, lonv, elev;
   DateFormatter formatter = new DateFormatter();
 
   /////////////////////////////////////////////////
-  // TypedDatasetFactoryIF
-  public boolean isMine(NetcdfDataset ds) {
+  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
     String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ds.findAttValueIgnoreCase(null, "Format", null);
       if (format != null && format.equals("UNIVERSALFORMAT") )
-        return true;
+        return this;
     }
-    return false;
+    return null;
   }
 
-  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     return new UF2Dataset(ncd);
   }
 
@@ -695,33 +695,4 @@ public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatase
     assert(0 != nrays);
   }
 
-
-  public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-   String fileIn = "/home/yuanho/Desktop/idv/dorade/KATX_20040113_0107";
-   // String fileIn ="/upc/share/testdata2/radar/NOP3_20071112_1633";
-    //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
-    //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
-  //ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
-     long start = System.currentTimeMillis();
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuilder());
-      long took = System.currentTimeMillis() - start;
-         System.out.println("that took = "+took+" msec");
-      //ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
-    String id = rds.getRadarID();
-    String name = rds.getRadarName();
-    if (rds.isStationary()) {
-      System.out.println("*** radar is stationary with name and id: " + name + " " + id);
-    }
-    List rvars = rds.getDataVariables();
-    RadialDatasetSweep.RadialVariable vDM = (RadialDatasetSweep.RadialVariable) rds.getDataVariable("Reflectivity");
-    testRadialVariable(vDM);
-    for (int i = 0; i < rvars.size(); i++) {
-      RadialDatasetSweep.RadialVariable rv = (RadialDatasetSweep.RadialVariable) rvars.get(i);
-       testRadialVariable(rv);
-
-      //  RadialCoordSys.makeRadialCoordSys( "desc", CoordinateSystem cs, VariableEnhanced v);
-      // ucar.nc2.dt.radial.RadialCoordSys rcsys = rv.getRadialCoordSys();
-    }
-
-  }
 }

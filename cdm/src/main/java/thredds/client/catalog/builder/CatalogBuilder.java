@@ -180,6 +180,11 @@ public class CatalogBuilder {
     return flds;
   }
 
+  public DatasetBuilder getTop() {
+    if (datasetBuilders == null) return null;
+    return datasetBuilders.get(0);
+  }
+
   /////////////////////////////////////////////////////////////////////
   // JDOM
 
