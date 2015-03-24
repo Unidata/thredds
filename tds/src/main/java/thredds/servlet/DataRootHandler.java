@@ -48,8 +48,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import thredds.catalog.DataRootConfig;
@@ -58,7 +56,7 @@ import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogRef;
 import thredds.catalog.InvDataset;
-import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
 import thredds.catalog.InvProperty;

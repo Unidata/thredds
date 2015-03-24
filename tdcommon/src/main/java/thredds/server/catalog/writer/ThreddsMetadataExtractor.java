@@ -90,7 +90,7 @@ public class ThreddsMetadataExtractor {
         PointDatasetImpl pobsDataset = (PointDatasetImpl) result.featureDataset;
         LatLonRect llbb = pobsDataset.getBoundingBox();
         if (null != llbb)
-          flds.put(Dataset.GeospatialCoverage, new ThreddsMetadata.GeospatialCoverage(llbb, null));
+          flds.put(Dataset.GeospatialCoverage, new ThreddsMetadata.GeospatialCoverage(llbb, null, 0.0, 0.0));
 
         DateRange tc = extractDateRange(pobsDataset);
         if (tc != null)
@@ -113,7 +113,7 @@ public class ThreddsMetadataExtractor {
     return metadata;
   }
 
-  private ThreddsMetadata.GeospatialCoverage extractGeospatial(GridDataset gridDataset) {
+  public ThreddsMetadata.GeospatialCoverage extractGeospatial(GridDataset gridDataset) {
     LatLonRect llbb = null;
     CoordinateAxis1D vaxis = null;
 
@@ -129,10 +129,10 @@ public class ThreddsMetadataExtractor {
         vaxis = vaxis2;
     }
 
-    return new ThreddsMetadata.GeospatialCoverage(llbb, vaxis);
+    return new ThreddsMetadata.GeospatialCoverage(llbb, vaxis, 0.0, 0.0); // LOOK can we extract dx, dy ?
   }
 
-  private ThreddsMetadata.VariableGroup extractVariables(String fileFormat, GridDataset gridDataset) {
+  public ThreddsMetadata.VariableGroup extractVariables(String fileFormat, GridDataset gridDataset) {
     List<ThreddsMetadata.Variable> vars = new ArrayList<>();
     String vocab = fileFormat;
     DataFormatType fileType = DataFormatType.getType(fileFormat);
@@ -177,7 +177,7 @@ public class ThreddsMetadataExtractor {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
-  private ThreddsMetadata.VariableGroup extractVariables(FeatureDatasetPoint fd) {
+  public ThreddsMetadata.VariableGroup extractVariables(FeatureDatasetPoint fd) {
     List<ThreddsMetadata.Variable> vars = new ArrayList<>();
 
     List<VariableSimpleIF> dataVars = fd.getDataVariables();
@@ -202,7 +202,7 @@ public class ThreddsMetadataExtractor {
     return new ThreddsMetadata.VariableGroup("CF-1.0", null, null, vars);
   }
 
-  private DateRange extractDateRange(GridDataset gridDataset) {
+  public DateRange extractDateRange(GridDataset gridDataset) {
     DateRange maxDateRange = null;
 
     for (GridDataset.Gridset gridset : gridDataset.getGridsets()) {
@@ -237,17 +237,17 @@ public class ThreddsMetadataExtractor {
     return maxDateRange;
   }
 
-  private DateRange extractDateRange(FeatureDatasetPoint fd) {
+  public DateRange extractDateRange(FeatureDatasetPoint fd) {
     return fd.getDateRange();
   }
 
-  private CalendarDateRange extractCalendarDateRange(FeatureDatasetPoint fd) {
+  public CalendarDateRange extractCalendarDateRange(FeatureDatasetPoint fd) {
     return fd.getCalendarDateRange();
   }
 
   ////////////////////
 
-  static public CalendarDateRange extractCalendarDateRange(GridDataset gridDataset) {
+  public CalendarDateRange extractCalendarDateRange(GridDataset gridDataset) {
     CalendarDateRange maxDateRange = null;
 
     for (GridDataset.Gridset gridset : gridDataset.getGridsets()) {

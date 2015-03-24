@@ -42,7 +42,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.TypedDataset;
-import ucar.nc2.dt.TypedDatasetFactoryIF;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
@@ -63,7 +63,7 @@ import java.util.*;
  * Time: 1:15:48 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {
+public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter {
 
   private NetcdfDataset ds = null;
   private double latv, lonv, elev;
@@ -80,12 +80,14 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
 
-  public boolean isMine(NetcdfDataset ds) {
-    String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
-    return (null != convention) && convention.startsWith("CF/Radial");
+  public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+    String convStr = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    if ((null != convStr) && convStr.startsWith("CF/Radial"))
+      return this;
+    return null;
   }
 
-  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
+  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     return new CFnetCDF2Dataset(ncd);
   }
 

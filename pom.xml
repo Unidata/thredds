@@ -248,6 +248,11 @@
         <artifactId>waterml</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>legacy</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -900,6 +905,7 @@
     <module>clcommon</module>
     <module>httpservices</module>
     <module>waterml</module>
+    <module>legacy</module>
     <!-- module>wmotables</module -->
     <!-- module>cdmvalidator</module -->
     <module>dap4/d4core</module>

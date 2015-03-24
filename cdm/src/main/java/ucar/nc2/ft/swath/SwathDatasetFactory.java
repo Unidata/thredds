@@ -69,7 +69,7 @@ public class SwathDatasetFactory implements FeatureDatasetFactory {
     return new SwathDataset(ncd);
   }
 
-  public FeatureType[] getFeatureType() {
+  public FeatureType[] getFeatureTypes() {
     return new FeatureType[] {FeatureType.SWATH};
   }
 

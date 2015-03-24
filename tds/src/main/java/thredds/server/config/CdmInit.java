@@ -39,7 +39,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.inventory.CollectionUpdater;
 import thredds.server.ncss.format.SupportedFormat;

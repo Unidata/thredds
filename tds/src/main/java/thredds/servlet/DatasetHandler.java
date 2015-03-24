@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import thredds.catalog.InvAccess;
-import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
 import thredds.core.PathMatcher;

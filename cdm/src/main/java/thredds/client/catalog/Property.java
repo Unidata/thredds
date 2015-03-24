@@ -33,6 +33,7 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.Attribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,10 +78,19 @@ public class Property {
   // first one override
   public static List<Property> removeDups(List<Property> org) {
     List<Property> result = new ArrayList<>(org.size());
-    for (Property p : org) {
+    for (Property p : org)
       if (!result.contains(p))  // O(n**2)
         result.add(p);
+    return result;
+  }
+
+  public static List<Property> convertToProperties(List<Attribute> from) {
+    List<Property> result = new ArrayList<>(from.size());
+    for (Attribute p : from) {
+        result.add(new Property(p.getShortName(), p.getStringValue()));
     }
     return result;
   }
+
+
 }

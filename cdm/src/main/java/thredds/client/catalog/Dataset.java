@@ -54,7 +54,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String CollectionType = "CollectionType";
   public static final String Contributors = "Contributors";
   public static final String Creators = "Creators";
-  public static final String DataFormatType = "DataFormatType"; // DataFormat
+  public static final String DataFormatType = "DataFormatType"; // String
   public static final String Datasets = "Datasets";
   public static final String DatasetHash = "DatasetHash";
   public static final String DatasetRoots = "DatasetRoots";

@@ -33,6 +33,8 @@
 
 package thredds.core;
 
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.servlet.ThreddsConfig;
 
@@ -46,6 +48,8 @@ import java.util.*;
  * @author caron
  * @since 1/23/2015
  */
+@Component
+@DependsOn("CdmInit")
 public class AllowedServices {
 
   private Map<ServiceType, AllowedService> allowed = new HashMap<>();
@@ -82,6 +86,11 @@ public class AllowedServices {
   public Service getStandardService(ServiceType type) {
     AllowedService s = allowed.get(type);
     return s == null ? null : s.ss.getService();
+  }
+
+  public void addIfAllowed(ServiceType type, List<Service> result) {
+    AllowedService s = allowed.get(type);
+    if (s.allowed) result.add( s.ss.getService());
   }
 
   /**

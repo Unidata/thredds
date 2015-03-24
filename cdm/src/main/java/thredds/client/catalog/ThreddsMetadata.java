@@ -201,8 +201,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       this.isGlobal = isGlobalCheck;
     }
 
-    // constructor from dataset
-    public GeospatialCoverage(LatLonRect bb, CoordinateAxis1D vaxis) {
+        // constructor from dataset
+    public GeospatialCoverage(LatLonRect bb, CoordinateAxis1D vaxis, double dX, double dY) {
       if (bb == null) {
         this.eastwest = null;
         this.northsouth = null;
@@ -214,8 +214,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
         LatLonPointImpl urpt = bb.getUpperRightPoint();
         double height = urpt.getLatitude() - llpt.getLatitude();
 
-        this.eastwest = new GeospatialRange(llpt.getLongitude(), bb.getWidth(), 0.0, CDM.LON_UNITS);
-        this.northsouth = new GeospatialRange(llpt.getLatitude(), height, 0.0, CDM.LAT_UNITS);
+        this.eastwest = new GeospatialRange(llpt.getLongitude(), bb.getWidth(), dX, CDM.LON_UNITS);
+        this.northsouth = new GeospatialRange(llpt.getLatitude(), height, dY, CDM.LAT_UNITS);
 
         if ((bb.getWidth() > 358) && (height > 178)) { // LOOK 178 ??
           this.isGlobal = true;

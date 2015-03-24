@@ -40,7 +40,7 @@ import org.jdom2.Document;
 import org.jdom2.transform.XSLTransformer;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
-import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
@@ -65,7 +65,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.Station;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * Controller for CdmrFeature service.

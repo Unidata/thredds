@@ -53,7 +53,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetScan;
 import thredds.inventory.CollectionUpdater;
 import thredds.servlet.ServletUtil;

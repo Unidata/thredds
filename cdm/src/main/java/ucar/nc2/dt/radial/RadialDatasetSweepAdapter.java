@@ -34,6 +34,7 @@ package ucar.nc2.dt.radial;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
+import ucar.nc2.ft.FeatureDatasetFactory;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -56,7 +57,7 @@ import java.io.IOException;
  * @author yuan
  */
 
-public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl implements RadialDatasetSweep {
+public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl implements RadialDatasetSweep, FeatureDatasetFactory {
   protected ucar.unidata.geoloc.EarthLocation origin;
   protected HashMap csHash = new HashMap();
   protected ucar.nc2.units.DateUnit dateUnits;
@@ -198,8 +199,13 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   }
 
   /////////////////////////////////////////////
-  // FeatureDataset
+  // FeatureDatasetFactory
 
+  public FeatureType[] getFeatureTypes() {
+    return new FeatureType[] {FeatureType.RADIAL};
+  }
+
+  // FeatureDataset
   public FeatureType getFeatureType() {
     return FeatureType.RADIAL;
   }
@@ -268,5 +274,6 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   public synchronized void setFileCache(FileCacheIF fileCache) {
     this.fileCache = fileCache;
   }
+
 
 }
