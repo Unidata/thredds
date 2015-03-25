@@ -35,7 +35,7 @@ package ucar.nc2.dt.grid;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;

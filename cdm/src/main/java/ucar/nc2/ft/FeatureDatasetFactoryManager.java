@@ -33,7 +33,7 @@
 
 package ucar.nc2.ft;
 
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;

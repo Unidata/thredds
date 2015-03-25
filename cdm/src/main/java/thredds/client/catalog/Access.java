@@ -33,7 +33,7 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.stream.CdmRemote;
 

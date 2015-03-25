@@ -25,7 +25,7 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.constants.FeatureType;

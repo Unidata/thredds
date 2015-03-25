@@ -42,8 +42,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import thredds.core.DataRootManager;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.util.RequestForwardUtils;
 
@@ -104,7 +105,7 @@ public class DirDisplayController {
 
     } else if (path.startsWith("/dataDir/")) {
       String root = path.substring(9);
-      file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(root);
+      file = TdsRequestedDataset.getFile(root);
     }
 
     if (file == null) {

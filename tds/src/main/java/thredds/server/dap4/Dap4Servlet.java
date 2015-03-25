@@ -5,7 +5,7 @@
 package thredds.server.dap4;
 
 import dap4.servlet.*;
-import thredds.servlet.DatasetHandler;
+import thredds.core.TdsRequestedDataset;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.constants.CDM;
 
@@ -83,8 +83,7 @@ public class Dap4Servlet extends DapServlet
         String datasetpath = drq.getDataset();
         if(datasetpath.startsWith("/"))
             datasetpath = datasetpath.substring(1);
-        datasetpath = DatasetHandler.getNetcdfFilePath(drq.getRequest(), datasetpath);
-        return datasetpath;
+        return TdsRequestedDataset.getNetcdfFilePath(drq.getRequest(), datasetpath);
     }
 
     @Override

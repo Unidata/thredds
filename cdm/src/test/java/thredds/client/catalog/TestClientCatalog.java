@@ -35,7 +35,7 @@ package thredds.client.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.client.catalog.builder.CatalogBuilder;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;

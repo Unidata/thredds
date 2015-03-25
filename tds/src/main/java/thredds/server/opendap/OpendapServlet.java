@@ -48,6 +48,7 @@ import java.net.URI;
 
 import opendap.servlet.*;
 import opendap.servlet.AbstractServlet;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.admin.DebugController;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
@@ -136,11 +137,7 @@ public class OpendapServlet extends AbstractServlet {
 
     // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox behaviour?
 
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
-    if ((file != null) && file.exists())
-      return file.lastModified();
-
-    return -1;
+    return TdsRequestedDataset.getLastModified(path);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -930,7 +927,7 @@ public class OpendapServlet extends AbstractServlet {
       ncd.close();
     } */
 
-    NetcdfFile ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
+    NetcdfFile ncd = TdsRequestedDataset.getNetcdfFile(req, preq.getResponse(), reqPath);
     if (null == ncd) return null; // error message already sent
     //   throw new FileNotFoundException("Cant find "+ reqPath);
 

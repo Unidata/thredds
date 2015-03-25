@@ -38,7 +38,6 @@ import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -82,6 +81,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String Version = "Version";
   public static final String UrlPath = "UrlPath";
   public static final String UseRemoteCatalogService = "UseRemoteCatalogService";
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public Dataset(DatasetNode parent, String name, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
     super(parent, name, flds, datasetBuilders);

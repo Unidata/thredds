@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.inventory.MFile;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;

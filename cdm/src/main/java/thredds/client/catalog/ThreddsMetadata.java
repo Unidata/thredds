@@ -36,6 +36,7 @@ import net.jcip.annotations.Immutable;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -47,7 +48,7 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Thredds Metadata. Immutable
+ * Thredds Metadata. Immutable after finishing
  *
  * @author John
  * @since 1/10/2015
@@ -56,6 +57,7 @@ import java.util.*;
 public class ThreddsMetadata implements ThreddsMetadataContainer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ThreddsMetadata.class);
   private final Map<String, Object> flds;
+  private boolean immutable;
 
   public ThreddsMetadata() {
     this.flds = new HashMap<>();
@@ -63,7 +65,22 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
 
   // do not use after building
   public Map<String, Object> getFlds() {
+    if (immutable) throw new UnsupportedOperationException();
     return flds;
+  }
+
+  public void set(String fldName, Object fldValue) {
+    if (immutable) throw new UnsupportedOperationException();
+    flds.put( fldName, fldValue);
+  }
+
+  public void addToList(String fldName, Object fldValue) {
+    if (immutable) throw new UnsupportedOperationException();
+    if (fldValue != null) DatasetBuilder.addToList(flds, fldName, fldValue);
+  }
+
+  public void finish() {
+    immutable = true;
   }
 
   @Override

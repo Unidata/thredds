@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 import static org.springframework.test.web.ModelAndViewAssert.assertAndReturnModelAttributeOfType;
 import static org.springframework.test.web.ModelAndViewAssert.assertViewName;
 
-import org.junit.Before;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -34,7 +33,7 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest {
     ModelAndView mv = anyXmlController.handleXmlRequest(request, response);
 
     assertViewName(mv, "threddsInvCatXmlView");
-    assertAndReturnModelAttributeOfType(mv, "catalog", thredds.catalog.InvCatalogImpl.class);
+    assertAndReturnModelAttributeOfType(mv, "catalog", thredds.client.catalog.Catalog.class);
 
   }
 
@@ -55,7 +54,7 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest {
 
     ModelAndView mv = anyXmlController.handleXmlRequest(request, response);
     assertViewName(mv, "threddsInvCatXmlView");
-    assertAndReturnModelAttributeOfType(mv, "catalog", thredds.catalog.InvCatalogImpl.class);
+    assertAndReturnModelAttributeOfType(mv, "catalog", thredds.client.catalog.Catalog.class);
 
   }
 

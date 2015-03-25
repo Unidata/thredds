@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.AbstractController;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
@@ -48,9 +49,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DataRootHandler;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.DatasetHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -98,10 +97,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
   @Override
   public long getLastModified(HttpServletRequest req) {
     String path = TdsPathUtils.extractPath(req, "wcs/");
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
-    if ((file != null) && file.exists())
-      return file.lastModified();
-    return -1;
+    return TdsRequestedDataset.getLastModified(path);
   }
 
   @RequestMapping("**")
@@ -133,7 +129,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
 
     NetcdfFile ncfile = null;
     try {
-      ncfile = DatasetHandler.getNetcdfFile(req, res, datasetPath);
+      ncfile = new TdsRequestedDataset(req).openAsNetcdfFile(req, res);
       if (ncfile == null) return;
       /*
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);

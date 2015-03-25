@@ -35,23 +35,14 @@ package thredds.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import thredds.catalog.InvAccess;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvCatalogRef;
-import thredds.catalog.InvDataset;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.ServiceType;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
 import thredds.server.viewer.ViewerService;
@@ -63,8 +54,6 @@ import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateType;
-import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -569,13 +558,6 @@ public class HtmlWriter {
   /**
    * Write an InvCatalogImpl to the HttpServletResponse, return the size in bytes of the catalog written to the response.
    *
-   * @param req            the HttpServletRequest
-   * @param res            the HttpServletResponse.
-   * @param cat            the InvCatalogImpl to write to the HttpServletResponse.
-   * @param isLocalCatalog indicates whether this catalog is local to this server.
-   * @return the size in bytes of the catalog written to the HttpServletResponse.
-   * @throws IOException if problems writing the response.
-   */
   public int writeCatalog(HttpServletRequest req, HttpServletResponse res, InvCatalogImpl cat, boolean isLocalCatalog)
           throws IOException {
     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
@@ -594,8 +576,7 @@ public class HtmlWriter {
   /**
    * Write a catalog in HTML, make it look like a file directory.
    *
-   * @param cat catalog to write
-   */
+   *
   String convertCatalogToHtml(InvCatalogImpl cat, boolean isLocalCatalog) {
     StringBuilder sb = new StringBuilder(10000);
 

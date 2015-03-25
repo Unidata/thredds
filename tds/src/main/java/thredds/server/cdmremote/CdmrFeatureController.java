@@ -40,9 +40,8 @@ import org.jdom2.Document;
 import org.jdom2.transform.XSLTransformer;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
-import thredds.featurecollection.InvDatasetFeatureCollection;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -139,14 +138,14 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     FeatureDatasetPoint fdp = null;
 
     // this looks for a featureCollection
-    InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res);
+    FeatureDataset fc = TdsRequestedDataset.getFeatureCollection(req, res);
     if (fc != null) {
-      fdp = (FeatureDatasetPoint) fc.getFeatureDataset();
+      fdp = (FeatureDatasetPoint) fc;
 
     } else {
       // tom kunicki 12/18/10
-      // allows a single NetcdfFile to be turned into a FeatureDataset
-      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res);
+      // allows a single NetcdfFile to be turned into a FeatureDataset  LOOK seems like this should work from getFeatureCollection()
+      NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res);
       if (ncfile != null) {
         FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
                 FeatureType.ANY,                  // will check FeatureType below if needed...

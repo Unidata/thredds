@@ -33,6 +33,7 @@
 
 package thredds.server.cdmremote;
 
+import thredds.core.TdsRequestedDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
@@ -50,8 +51,6 @@ import java.util.Formatter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
-
-import thredds.servlet.DatasetHandler;
 
 /**
  * Describe
@@ -106,7 +105,7 @@ public class CollectionManager {
   public FeatureDatasetPoint getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
     NetcdfDataset ncd = null;
     try {
-      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+      NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, path);
       if (ncfile == null) return null;
       /* {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);

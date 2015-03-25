@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Documentation;
+import thredds.client.catalog.ThreddsMetadata;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
@@ -182,11 +183,11 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     top.transferMetadata(parent, true); // make all inherited metadata local
     top.setName(name);
 
-    Map<String, Object> tmi = top.getInheritableMetadata().getFlds();
-    tmi.put(Dataset.ServiceName, Virtual_Services_Name);
-    if (localState.coverage != null) tmi.put(Dataset.GeospatialCoverage, localState.coverage);
-    if (localState.dateRange != null) tmi.put(Dataset.TimeCoverage, localState.dateRange);
-    if (localState.vars != null) tmi.put(Dataset.VariableGroups, localState.vars);
+    ThreddsMetadata tmi = top.getInheritableMetadata();
+    tmi.set(Dataset.ServiceName, Virtual_Services_Name);
+    if (localState.coverage != null) tmi.set(Dataset.GeospatialCoverage, localState.coverage);
+    if (localState.dateRange != null) tmi.set(Dataset.TimeCoverage, localState.dateRange);
+    if (localState.vars != null) tmi.set(Dataset.VariableGroups, localState.vars);
 
     result.addDataset(top);
 
@@ -306,12 +307,12 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     String id = getId();
     top.put(Dataset.Id, id);
 
-    Map<String, Object> tmi = top.getInheritableMetadata().getFlds();
-    tmi.put(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
-    tmi.put(Dataset.ServiceName, Virtual_Services_Name);
-    if (localState.coverage != null) tmi.put(Dataset.GeospatialCoverage, localState.coverage);
-    if (localState.dateRange != null) tmi.put(Dataset.TimeCoverage, localState.dateRange);
-    if (localState.vars != null) tmi.put(Dataset.VariableGroups, localState.vars);
+    ThreddsMetadata tmi = top.getInheritableMetadata();
+    tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
+    tmi.set(Dataset.ServiceName, Virtual_Services_Name);
+    if (localState.coverage != null) tmi.set(Dataset.GeospatialCoverage, localState.coverage);
+    if (localState.dateRange != null) tmi.set(Dataset.TimeCoverage, localState.dateRange);
+    if (localState.vars != null) tmi.set(Dataset.VariableGroups, localState.vars);
 
 
     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {

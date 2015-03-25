@@ -36,15 +36,14 @@
 package ucar.nc2.util.net;
 
 import org.junit.Test;
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
-import ucar.httpservices.HTTPException;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -63,28 +62,21 @@ public class TestStream {
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
-    HTTPSession client = null;
-    HTTPMethod m = null;
-    try {
-      client = HTTPFactory.newSession(catalogName);
-      m = HTTPFactory.Get(client);
+    try (HTTPSession client = HTTPFactory.newSession(catalogName)) {
+      HTTPMethod m = HTTPFactory.Get(client);
 
       int statusCode = m.execute();
       System.out.printf("status = %d%n", statusCode);
 
       InputStream stream = m.getResponseBodyAsStream();
-      InvCatalogFactory reader = InvCatalogFactory.getDefaultFactory(true);
-
-      InvCatalogImpl catalog = reader.readXML(stream, catalogURI);
-      catalog.writeXML(System.out);
+      CatalogBuilder builder = new CatalogBuilder();
+      Catalog cat = builder.buildFromStream(stream, catalogURI);
+      CatalogXmlWriter writer = new CatalogXmlWriter();
+      writer.writeXML(cat, System.out, false);
 
     } catch (IOException e) {
       e.printStackTrace();
-
-    } finally {
-      if (client != null) client.close();
     }
-
   }
 
   @Test
@@ -92,28 +84,23 @@ public class TestStream {
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
-    HTTPSession client = null;
-    HTTPMethod m = null;
-    try {
-      client = HTTPFactory.newSession(catalogName);
-      m = HTTPFactory.Get(client);
+    try (HTTPSession client = HTTPFactory.newSession(catalogName)) {
+      HTTPMethod m = HTTPFactory.Get(client);
 
       int statusCode = m.execute();
       System.out.printf("status = %d%n", statusCode);
 
-      String stream = m.getResponseAsString(CDM.UTF8);
-      System.out.printf("cat = %s%n", stream);
+      String catAsString = m.getResponseAsString(CDM.UTF8);
+      System.out.printf("cat = %s%n", catAsString);
 
-      InvCatalogFactory reader = InvCatalogFactory.getDefaultFactory(true);
-
-      InvCatalogImpl catalog = reader.readXML(stream, catalogURI);
-      catalog.writeXML(System.out);
+      CatalogBuilder builder = new CatalogBuilder();
+      Catalog cat = builder.buildFromString(catAsString, catalogURI);
+      CatalogXmlWriter writer = new CatalogXmlWriter();
+      writer.writeXML(cat, System.out, false);
 
     } catch (IOException e) {
       e.printStackTrace();
 
-    } finally {
-      if (client != null) client.close();
     }
 
   }

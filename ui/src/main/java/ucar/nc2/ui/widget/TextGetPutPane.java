@@ -35,7 +35,7 @@ package ucar.nc2.ui.widget;
 
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;

@@ -32,10 +32,10 @@
  */
 package thredds.server.wcs.v1_0_0_1;
 
+import thredds.core.TdsRequestedDataset;
 import thredds.util.TdsPathUtils;
 import thredds.wcs.Request;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.DatasetHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -391,10 +391,10 @@ public class WcsRequestParser
                                           String datasetPath, boolean isRemote )
           throws thredds.wcs.v1_0_0_1.WcsException
   {
-    GridDataset dataset;
+    GridDataset dataset; // LOOK TdsRequestedDataset should simplfy this
     try
     {
-      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : DatasetHandler.openGridDataset( req, res, datasetPath );
+      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : TdsRequestedDataset.openGridDataset(req, res, datasetPath);
     }
     catch ( IOException e )
     {

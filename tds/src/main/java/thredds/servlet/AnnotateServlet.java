@@ -34,7 +34,6 @@
 package thredds.servlet;
 
 import com.coverity.security.Escape;
-import thredds.catalog.*;
 
 import java.io.*;
 import java.net.*;
@@ -42,6 +41,8 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
@@ -155,11 +156,11 @@ public class AnnotateServlet extends AbstractServlet {
           log.debug("CatalogAnnotate: dataset = " + datasetID);
       }
 
-      // parse the catalog
-      InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-      InvCatalogImpl catalog;
+      // parse the catalog LOOK not used
+      CatalogBuilder builder = new CatalogBuilder();
+      Catalog catalog;
       try {
-        catalog = catFactory.readXML(catURL);
+        catalog = builder.buildFromLocation(catURL);
       } catch (Exception e) {
         ServletUtil.handleException(e, res);
         return;

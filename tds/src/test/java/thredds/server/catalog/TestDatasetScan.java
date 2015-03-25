@@ -38,7 +38,7 @@ import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;

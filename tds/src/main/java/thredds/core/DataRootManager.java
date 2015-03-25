@@ -38,6 +38,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import thredds.client.catalog.*;
+import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.MFile;
 import thredds.server.admin.DebugController;
@@ -78,6 +79,10 @@ public final class DataRootManager { // implements InitializingBean {
   //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
   static private final String ERROR = "*** ERROR ";
   static public final boolean debug = false;
+
+  static public DataRootManager getInstance() {
+    return new DataRootManager(); // LOOK wrong
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   @Autowired
@@ -171,10 +176,10 @@ public final class DataRootManager { // implements InitializingBean {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   static public class DataRootMatch {
-    String rootPath;     // this is the matching part of the URL
-    String remaining;   // this is the part of the URL that didnt match
-    String dirLocation;   // this is the directory that should be substituted for the rootPath
-    DataRoot dataRoot;  // this is the directory that should be substituted for the rootPath
+    public String rootPath;     // this is the matching part of the URL
+    public String remaining;   // this is the part of the URL that didnt match
+    public String dirLocation;   // this is the directory that should be substituted for the rootPath
+    public DataRoot dataRoot;  // this is the directory that should be substituted for the rootPath
   }
 
   /**
@@ -424,6 +429,11 @@ public final class DataRootManager { // implements InitializingBean {
       f.format(" %s%n", ds.toString2());
     }
   }
+
+  public List<InvDatasetFeatureCollection> getFeatureCollections() {
+    return null;
+  }
+
 
 
   public void makeDebugActions() {

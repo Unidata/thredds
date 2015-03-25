@@ -34,7 +34,7 @@ package ucar.nc2.dataset;
 
 import org.apache.http.Header;
 import thredds.client.catalog.ServiceType;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.ma2.Array;

@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import thredds.core.DatasetManager;
 import thredds.util.ThreddsConfigReader;
 
 /**
@@ -53,7 +55,6 @@ public final class ThreddsConfig {
   private static ThreddsConfigReader reader;
 
   private static List<String> catalogRoots;   //catalogs not linked from main catalog
-  //private static List<String> contentRootList;
 
   public static void init( String filename) {
     reader = new ThreddsConfigReader(filename, log);
@@ -76,10 +77,6 @@ public final class ThreddsConfig {
     //  ViewServlet.registerViewer(className);
     //}
 
-    // datasetSource plug-in
-    for (String className : reader.getRootList("datasetSource"))  {
-      DatasetHandler.registerDatasetSource(className);
-    }
   }
 
   static public List<String> getCatalogRoots() {
@@ -119,5 +116,8 @@ public final class ThreddsConfig {
   }
 
 
+  static public List<String> getRootList(String elementName) {
+    return reader.getRootList(elementName);
+  }
 
 }

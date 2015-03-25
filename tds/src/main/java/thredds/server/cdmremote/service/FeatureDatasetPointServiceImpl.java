@@ -44,8 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import thredds.core.TdsRequestedDataset;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.servlet.DatasetHandler;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -63,20 +63,19 @@ public class FeatureDatasetPointServiceImpl implements 	FeatureDatasetPointServi
 	 * @see thredds.server.cdmremote.service.FeatureDatasetPointService#findFeatureDatasetPointByPath(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public FeatureDatasetPoint findFeatureDatasetPointByPath(
-			HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
+	public FeatureDatasetPoint findFeatureDatasetPointByPath(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
 
-		FeatureDatasetPoint fdp = null;
 		// this looks for a featureCollection
-		InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res, path);
+    FeatureDataset fc = TdsRequestedDataset.getFeatureCollection(req, res, path);
 
+    FeatureDatasetPoint fdp = null;
 		if (fc != null) {
-			fdp = (FeatureDatasetPoint) fc.getFeatureDataset();
+			fdp = (FeatureDatasetPoint) fc;
 
 		} else {
 			// tom kunicki 12/18/10
 			// allows a single NetcdfFile to be turned into a FeatureDataset
-			NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+			NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, path); // LOOK above call should do thie ??
       if (ncfile == null) return null;  // restricted access
 
 			FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
