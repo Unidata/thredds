@@ -50,13 +50,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import thredds.core.DataRootManager;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DataRootHandler;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.constants.CDM;
@@ -79,6 +79,9 @@ public class CollectionController  {
   private static final String TRIGGER = "trigger";
 
   @Autowired
+    DataRootManager matcher;
+
+  @Autowired
   private TdsContext tdsContext;
 
   @PostConstruct
@@ -91,7 +94,7 @@ public class CollectionController  {
     act = new DebugController.Action("showCollection", "Show Collections") {
       public void doAction(DebugController.Event e) {
         // get sorted list of collections
-        List<InvDatasetFeatureCollection> fcList = DataRootHandler.getInstance().getFeatureCollections();
+        List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
         Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
           public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
             return o1.getName().compareTo(o2.getName());
@@ -180,7 +183,7 @@ public class CollectionController  {
     PrintWriter pw = res.getWriter();
 
    // get sorted list of collections
-    List<InvDatasetFeatureCollection> fcList = DataRootHandler.getInstance().getFeatureCollections();
+    List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
     Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
       public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
         return o1.getName().compareTo(o2.getName());
@@ -202,7 +205,7 @@ public class CollectionController  {
     PrintWriter pw = res.getWriter();
 
    // get sorted list of collections
-    List<InvDatasetFeatureCollection> fcList = DataRootHandler.getInstance().getFeatureCollections();
+    List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
     Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
       public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
         int compareType = o1.getConfig().type.toString().compareTo(o1.getConfig().type.toString());
@@ -249,8 +252,12 @@ public class CollectionController  {
     }
 
     String collectName = StringUtil2.unescape( req.getParameter(COLLECTION)); // this is the collection name
-    InvDatasetFeatureCollection fc = DataRootHandler.getInstance().findFcByCollectionName(collectName);
-    if (fc == null) {
+    List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
+    InvDatasetFeatureCollection want = null;
+    for (InvDatasetFeatureCollection fc : fcList) {
+      if (fc.getName().equalsIgnoreCase(collectName)) want = fc;
+    }
+    if (want == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
       pw.append("NOT FOUND");
       pw.flush();
@@ -260,7 +267,7 @@ public class CollectionController  {
     pw.printf("<h3>Collection %s</h3>%n", Escape.html(collectName));
 
     if (triggerType != null) {
-      if (!fc.getConfig().isTrigggerOk()) {
+      if (!want.getConfig().isTrigggerOk()) {
         res.setStatus(HttpServletResponse.SC_FORBIDDEN);
         pw.printf(" TRIGGER NOT ENABLED%n");
         pw.flush();
@@ -271,11 +278,11 @@ public class CollectionController  {
       pw.printf(" TRIGGER SENT%n");
 
     } else {
-      showFeatureCollection(pw, fc);
+      showFeatureCollection(pw, want);
 
-      String uriParam = Escape.uriParam(fc.getCollectionName());
+      String uriParam = Escape.uriParam(want.getCollectionName());
       String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + uriParam + "&" + TRIGGER + "=" + CollectionUpdateType.nocheck;
-      pw.printf("<p/><a href='%s'>Send trigger to %s</a>%n", url, Escape.html(fc.getName()));
+      pw.printf("<p/><a href='%s'>Send trigger to %s</a>%n", url, Escape.html(want.getName()));
     }
 
     pw.flush();

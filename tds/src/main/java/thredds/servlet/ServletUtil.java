@@ -34,6 +34,7 @@
 package thredds.servlet;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.*;
@@ -45,7 +46,6 @@ import javax.servlet.http.*;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
-import thredds.catalog.XMLEntityResolver;
 import thredds.util.RequestForwardUtils;
 import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.io.RandomAccessFile;
@@ -811,7 +811,7 @@ public class ServletUtil {
 
   static public void showServerInfo(PrintStream out) {
     out.println("Server Info");
-    out.println(" getDocumentBuilderFactoryVersion(): " + XMLEntityResolver.getDocumentBuilderFactoryVersion());
+    out.println(" getDocumentBuilderFactoryVersion(): " + getDocumentBuilderFactoryVersion());
     out.println();
 
     Properties sysp = System.getProperties();
@@ -825,6 +825,17 @@ public class ServletUtil {
       out.println("  " + name + " = " + value);
     }
     out.println();
+  }
+
+  // from XMLEntityResolver, not sure if its needed
+  static private String getDocumentBuilderFactoryVersion() {
+    try {
+      Class version = Class.forName("org.apache.xerces.impl.Version");
+      Method m = version.getMethod("getVersion", (Class []) null);
+      return (String) m.invoke(null, (Object []) null);
+    } catch (Exception e) {
+      return "Error= "+e.getMessage();
+    }
   }
 
   static public void showServletInfo(HttpServlet servlet, PrintStream out) {

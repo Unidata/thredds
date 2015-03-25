@@ -5,13 +5,14 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.core.DataRootManager;
 import thredds.server.ncss.controller.AbstractNcssController;
-import thredds.servlet.DataRootHandler;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.List;
@@ -20,6 +21,9 @@ import java.util.List;
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"}, loader=MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class DataRootHandlerTest {
+
+  @Autowired
+  DataRootManager matcher;
 
   @SpringJUnit4ParameterizedClassRunner.Parameters
  	public static List<String[]> getTestParameters(){
@@ -35,7 +39,7 @@ public class DataRootHandlerTest {
   public void testAllRoots() {
     System.out.printf("pathInfo=%s%n", pathInfo);
     String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
-		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(datasetPath);
+    DataRootManager.DataRootMatch match = matcher.findDataRootMatch(datasetPath);
 		assertNotNull(match);
  	}
 		

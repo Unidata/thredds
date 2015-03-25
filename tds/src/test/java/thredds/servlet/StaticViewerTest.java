@@ -112,7 +112,7 @@ public class StaticViewerTest {
 
     try {
       CatalogBuilder builder = new CatalogBuilder();
-      Catalog cat = builder.buildFromString(docBaseUri, catalogAsString);
+      Catalog cat = builder.buildFromString(catalogAsString, docBaseUri);
 
       if (builder.hasFatalError()) {
         System.out.printf("Validate failed %s %n%s%n", docBaseUri, builder.getErrorMessage());

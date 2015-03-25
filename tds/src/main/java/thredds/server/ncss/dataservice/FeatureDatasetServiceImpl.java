@@ -43,8 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Service;
 
-import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.servlet.DatasetHandler;
+import thredds.core.TdsRequestedDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -67,26 +66,11 @@ public class FeatureDatasetServiceImpl implements FeatureDatasetService {
   @Override
   public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res, String datasetPath) throws IOException {
 
-    FeatureType type;
-    FeatureDataset fd = null;
-    InvDatasetFeatureCollection ftCollection = DatasetHandler.getFeatureCollection(req, res, datasetPath);
+    FeatureDataset fd = TdsRequestedDataset.getFeatureCollection(req, res, datasetPath);
 
-    if (ftCollection != null) {
-      type = ftCollection.getDataType();
-      if (type == FeatureType.GRID) {
-        fd = DatasetHandler.openGridDataset(req, res, datasetPath);
-        //builds a FeatureDataset from an TypedDataset
-        // fd = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(gds.getNetcdfFile()));
-      }
+    if (fd == null) {
 
-      if (type.isPointFeatureType()) {
-        fd = ftCollection.getFeatureDataset();
-      }
-
-    } else {
-
-      //Try as file?
-      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, datasetPath);
+      NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, datasetPath); // LOOK should handle this case ??
       if (ncfile != null) {
         //Wrap it into a FeatureDataset
         Set<Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(Enhance.CoordSystems, Enhance.ConvertEnums));

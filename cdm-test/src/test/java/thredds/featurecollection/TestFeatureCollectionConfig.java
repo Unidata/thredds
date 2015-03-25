@@ -5,7 +5,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import thredds.inventory.filter.WildcardMatchOnName;
@@ -109,7 +108,9 @@ public class TestFeatureCollectionConfig {
     XMLOutputter xmlOut = new XMLOutputter();
     System.out.println(xmlOut.outputString(doc));
 
-    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
+    Formatter errlog = new Formatter();
+    FeatureCollectionConfigBuilder fcb = new FeatureCollectionConfigBuilder(errlog);
+    FeatureCollectionConfig config = fcb.readConfig(doc.getRootElement());
     DateExtractor extractor = config.getDateExtractor();
 
     String path = "[DATA_DIR]/native/grid/FNMOC/COAMPS/FNMOC_COAMPS_Equatorial_America_20141207_1200.grib1.ncx3";

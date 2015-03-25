@@ -32,21 +32,13 @@
 
 package thredds.tds.idd;
 
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.Test;
-import ucar.unidata.test.util.NotTravis;
 
+import java.io.IOException;
 import java.util.Collection;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
-@Category(NotTravis.class)
 @RunWith(Parameterized.class)
 public class PingTdsOnMotherlode8080
 {
@@ -67,8 +59,7 @@ public class PingTdsOnMotherlode8080
     }
 
     @Test
-    public void ping()
-    {
+    public void ping() throws IOException {
         String tdsUrl = "http://thredds.ucar.edu/thredds/";
 
         CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );

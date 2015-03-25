@@ -363,6 +363,11 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+  public String getName() {
+    return name;
+  }
+
   public String getConfigPath() {
     return configPath;
   }
@@ -437,7 +442,6 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     topCatalog.addDataset(localState.top);
     // topCatalog.addService(StandardServices.latest.getService());  // in case its needed
     topCatalog.addService(virtualService);
-    // top.getLocalMetadataInheritable().setServiceName(virtualService.getName());  //??
     return topCatalog;
   }
 
@@ -456,12 +460,12 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     top.setName(FILES);
 
     // add Variables, GeospatialCoverage, TimeCoverage
-    Map<String, Object> flds = top.getInheritableMetadata().getFlds();
-    flds.put(Dataset.TimeCoverage, null);      // LOOK
+    ThreddsMetadata tmi = top.getInheritableMetadata();
+    tmi.set(Dataset.TimeCoverage, null);      // LOOK
     if (localState.coverage != null) {
-      flds.put(Dataset.GeospatialCoverage, localState.coverage);
+      tmi.set(Dataset.GeospatialCoverage, localState.coverage);
     }
-    flds.put(Dataset.ServiceName, orgService.getName());
+    tmi.set(Dataset.ServiceName, orgService.getName());
     result.addDataset(top);
 
     if (addLatest) {

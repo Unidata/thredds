@@ -1,11 +1,10 @@
 package thredds.tds.idd;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.unidata.test.util.NotTravis;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -14,7 +13,6 @@ import java.util.*;
  * @author edavis
  * @since 4.0
  */
-@Category(NotTravis.class)
 @RunWith(Parameterized.class)
 public class CompareGribVarNamesOnMotherlodeTds
 {
@@ -40,7 +38,7 @@ public class CompareGribVarNamesOnMotherlodeTds
    * dataset with matching run time from the "FMRC Raw File" catalog.
    */
   @Test
-  public void compareFifthFmrcRunDsAndMatchingScanDsVariableNames() {
+  public void compareFifthFmrcRunDsAndMatchingScanDsVariableNames() throws IOException {
       CompareGribVarNamesUtils.assertEqualityOfFmrcRunDsAndMatchingFmrcRawFileDsVariableNames( this.tdsUrl, this.modelId, 4 );
   }
 
@@ -49,7 +47,7 @@ public class CompareGribVarNamesOnMotherlodeTds
    * the dataset with matching run time from the "FMRC Raw File" catalog.
    */
   @Test
-  public void compareTenthFmrcRunDsAndMatchingScanDsVariableNames() {
+  public void compareTenthFmrcRunDsAndMatchingScanDsVariableNames() throws IOException {
       CompareGribVarNamesUtils.assertEqualityOfFmrcRunDsAndMatchingFmrcRawFileDsVariableNames( this.tdsUrl, this.modelId, 9 );
   }
 

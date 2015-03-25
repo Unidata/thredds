@@ -3,12 +3,6 @@ package thredds.tds.idd;
 import java.util.Collection;
 import java.util.Arrays;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
 public class IddModelDatasetsUtils
 {
   private static final String[][] modelIds =

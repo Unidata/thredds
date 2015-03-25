@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thredds.server.dataset.DatasetException;
-import thredds.server.dataset.TdsRequestedDataset;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.wms.config.WmsDetailedConfig;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.NetcdfDataset;

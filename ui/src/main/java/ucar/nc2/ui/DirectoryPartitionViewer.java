@@ -2,8 +2,8 @@ package ucar.nc2.ui;
 
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
-import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfigBuilder;
 import thredds.inventory.*;
 import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryBuilder;
@@ -252,9 +252,10 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     Formatter errlog = new Formatter();
-    config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
-    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
-    partitionTreeBrowser.setRoot(Paths.get(specp.getRootDir()));
+    FeatureCollectionConfigBuilder builder = new FeatureCollectionConfigBuilder(errlog);
+    config = builder.readConfig(doc.getRootElement());
+    CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
+    partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
   }
 
   // ncx2 index

@@ -35,7 +35,7 @@ package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import thredds.client.catalog.*;
-import thredds.client.catalog.writer.DatasetHtmlWriter;
+import thredds.client.catalog.tools.DatasetHtmlWriter;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
 import thredds.server.viewer.ViewerService;

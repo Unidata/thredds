@@ -5,12 +5,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
 public class StandardCatalogUtils
 {
     private StandardCatalogUtils() {}

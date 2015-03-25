@@ -38,8 +38,10 @@ import org.springframework.test.web.ModelAndViewAssert;
 import org.springframework.web.servlet.View;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import thredds.catalog.*;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.builder.CatalogBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -57,8 +59,7 @@ public class TestInvCatalogXmlView
           org.slf4j.LoggerFactory.getLogger( TestInvCatalogXmlView.class );
 
   @Test
-  public void testUnknownEncoding()
-  {
+  public void testUnknownEncoding() throws IOException {
     StringBuilder catAsString = new StringBuilder()
             .append( "<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"\n" )
             .append( "         xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n" )
@@ -85,9 +86,8 @@ public class TestInvCatalogXmlView
       return;
     }
 
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-    InvCatalogImpl cat = fac.readXML( catAsString.toString(), catURI );
-
+    CatalogBuilder builder = new CatalogBuilder();
+    Catalog cat = builder.buildFromString(catAsString.toString(), catURI);
     Map model = Collections.singletonMap( "catalog", cat );
 
     View view = new InvCatalogXmlView();

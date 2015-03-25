@@ -71,9 +71,6 @@
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="thredds.servlet.DataRootHandler.catalogInit" level="debug" additivity="false">
-      <appender-ref ref="catalogInit"/>
-    </logger>
 
     <logger name="thredds.catalog.parser" level="info" additivity="false">
       <appender-ref ref="catalogInit"/>
@@ -112,7 +109,6 @@
       <appender-ref ref="fmrc"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFcFmrc" level="info" additivity="false">
     <logger name="thredds.featurecollection.InvDatasetFcFmrc" level="debug" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>

@@ -36,7 +36,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.NCdumpW;

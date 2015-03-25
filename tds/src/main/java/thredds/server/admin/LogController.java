@@ -49,8 +49,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import thredds.core.DataRoot;
+import thredds.core.DataRootManager;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DataRootHandler;
 import thredds.core.PathMatcher;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.constants.CDM;
@@ -71,6 +72,10 @@ public class LogController{
 
   @Autowired
   private TdsContext tdsContext;
+
+
+  @Autowired
+  private DataRootManager matcher;
 
   public void setAccessLogDirectory(String accessLogDirectory) {
     this.accessLogDirectory = new File(accessLogDirectory);
@@ -113,10 +118,10 @@ public class LogController{
     File file = null;
     if (path.equals("/log/dataroots.txt")) {
       PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
-      PathMatcher pathMatcher = DataRootHandler.getInstance().getPathMatcher();
+      PathMatcher pathMatcher = matcher.getPathMatcher();
       Iterator iter = pathMatcher.iterator();
       while (iter.hasNext()) {
-        DataRootHandler.DataRoot ds = (DataRootHandler.DataRoot) iter.next();
+        DataRoot ds = (DataRoot) iter.next();
         pw.format("%s%n", ds.toString2()); // path,dir
       }
       pw.flush();
