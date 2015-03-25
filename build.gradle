@@ -5,8 +5,7 @@ allprojects {
 
 // Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
 // exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.
-// Thus, as long as we declare all plugins here, no child needs its own buildscript block. See
-// http://forums.gradle.org/gradle/topics/how_do_i_include_buildscript_block_from_external_gradle_script#reply_9303244
+// Thus, as long as we declare all plugins here, no child needs its own buildscript block. See http://goo.gl/2y3KhZ.
 buildscript {
     apply from: "$rootDir/gradle/dependencies.gradle"
 
@@ -24,3 +23,8 @@ apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/testing.gradle"
 apply from: "$rootDir/gradle/coverage.gradle"
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}

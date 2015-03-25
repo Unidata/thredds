@@ -220,7 +220,7 @@ subprojects {
         exclude group: 'jtidy', module: 'jtidy'
 
         // On TDS startup, I'm getting "Class path contains multiple SLF4J bindings" warnings.
-        // This is one of them. Strangely, I have NO idea what dependency is dragging it on.
+        // This is one of those bindings. Strangely, I have NO idea what dependency is dragging it in.
         // It doesn't matter though; we always want to see the logging messages.
         exclude group: 'org.slf4j', module: 'slf4j-nop'
     }

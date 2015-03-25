@@ -70,24 +70,29 @@ task rootJacocoReport(type: JacocoReport, group: 'Reports') {
 
 apply plugin: "base"  // Gives us the "clean" task for removing rootJacocoReport's output.
 
-
-buildscript {
-    apply from: "$rootDir/gradle/dependencies.gradle"
-
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath libraries["coveralls-gradle-plugin"]
-    }
-}
-
 apply plugin: "com.github.kt3k.coveralls"
-import org.kt3k.gradle.plugin.coveralls.CoverallsTask
-import org.gradle.api.internal.plugins.ExtensionContainerInternal
 
-task coverallsReport(type: CoverallsTask, group: 'Reports', dependsOn: rootJacocoReport) {
+/*
+ * Ordinarily, I'd be able to configure the "coveralls" task by using the "coveralls(Closure)" dynamic method added to
+ * Project when the above plugin is applied. However, the plugin also adds an extension with the same name (see
+ * http://goo.gl/GVE4v6). As a result, Project now has TWO dynamic methods with the "coveralls(Closure)" signature.
+ *
+ * Which method takes precedence: the one that configures the extension or the one that configures the task? I can't
+ * find a definitive answer, but the Gradle docs (http://goo.gl/KPXLpf) seem to indicate that the extension wins
+ * (it appears earlier in the list--hardly definitive, I know).
+ *
+ * Operating under this assumption, we must explicitly indicate that we are configuring the "coveralls" task.
+ * Why not just create a new task of type CoverallsTask? Something like "task coverallsReport(type: CoverallsTask)"?
+ *
+ * Unfortunately, that gives an error: "Extension of type 'CoverallsPluginExtension' does not exist", originating
+ * from here: http://goo.gl/HAZk1L. The behavior does not occur when the task is defined in the root build script,
+ * meaning it's most likely a Gradle bug, not a coveralls-gradle-plugin bug. That's not surprising: there are lots
+ * of weird and poorly-defined limitations about what you can and can't do in a script plugin.
+ */
+tasks.coveralls {
+    group = 'Reports'
     description = 'Uploads the aggregate coverage report to Coveralls'
+    dependsOn rootJacocoReport
 
     // This task logs the entire coveralls.io JSON payload (~27 MB) to the INFO log level. We don't want to see it.
     logging.level = LogLevel.LIFECYCLE
@@ -99,23 +104,9 @@ task coverallsReport(type: CoverallsTask, group: 'Reports', dependsOn: rootJacoc
     envCopy["COVERALLS_REPO_TOKEN"] = "viswgi0kF5EOgHJXEb58OrOZzToIbi0oJ"
     env = envCopy
 
-
-    ExtensionContainerInternal exts = (ExtensionContainerInternal) extensions
-    println "===extensions==="
-    exts.each {
-        println "\t$it"
-    }
-
     // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
     coveralls {
         jacocoReportPath = tasks.rootJacocoReport.reports.xml.destination
         sourceDirs = tasks.rootJacocoReport.sourceDirectories.files.collect { it.getPath() }
     }
-
-
-
-//    configure(extensions.getByType(CoverallsPluginExtension.class)) {
-//        jacocoReportPath = tasks.rootJacocoReport.reports.xml.destination
-//        sourceDirs = tasks.rootJacocoReport.sourceDirectories.files.collect { it.getPath() }
-//    }
 }
