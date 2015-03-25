@@ -218,5 +218,10 @@ subprojects {
         // and we don't use the "tidy" functionality (i.e. HTML pretty printing) anyway.
         // Dragged in by httpunit.
         exclude group: 'jtidy', module: 'jtidy'
+
+        // On TDS startup, I'm getting "Class path contains multiple SLF4J bindings" warnings.
+        // This is one of them. Strangely, I have NO idea what dependency is dragging it on.
+        // It doesn't matter though; we always want to see the logging messages.
+        exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
 }
