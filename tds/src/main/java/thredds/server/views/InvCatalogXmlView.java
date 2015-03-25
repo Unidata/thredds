@@ -39,12 +39,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.io.OutputStream;
 
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.util.ContentType;
 
 /**
- * Configured by Spring, noty sure if its actually used
+ * Configured by Spring, not sure if its actually used
  *
  * @author edavis
  * @since 4.0
@@ -60,9 +60,9 @@ public class InvCatalogXmlView extends AbstractView {
       throw new IllegalArgumentException("Model must contain \"catalog\" key.");
 
     Object o = model.get("catalog");
-    if (!(o instanceof InvCatalogImpl))
+    if (!(o instanceof Catalog))
       throw new IllegalArgumentException("Model must contain an InvCatalogImpl object.");
-    InvCatalogImpl cat = (InvCatalogImpl) o;
+    Catalog cat = (Catalog) o;
 
     res.setContentType(ContentType.xml.getContentHeader());
     OutputStream os = null;
@@ -70,7 +70,7 @@ public class InvCatalogXmlView extends AbstractView {
       try {
         os = res.getOutputStream();
         // Return catalog as XML response.
-        InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(false);
+        CatalogXmlWriter catFactory = new CatalogXmlWriter();
         catFactory.writeXML(cat, os);
       } finally {
         if (os != null)

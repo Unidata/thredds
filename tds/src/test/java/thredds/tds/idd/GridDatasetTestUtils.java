@@ -4,12 +4,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.ma2.Section;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
 public class GridDatasetTestUtils
 {
   public static boolean equalityOfGridDatasetsByGridNameAndShape( GridDataset gridDs1,

@@ -47,8 +47,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import thredds.core.DataRootManager;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.servlet.DataRootHandler;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -62,6 +62,9 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class FeatureDatasetTypeTest {
+
+  @Autowired
+  DataRootManager matcher;
 
 	@Autowired
 	FeatureDatasetService featureDatasetService;
@@ -102,10 +105,10 @@ public class FeatureDatasetTypeTest {
     String reqPath =  "testStationScan/Surface_METAR_20130826_0000.nc";
 		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, reqPath);
     if (fd == null) {
-      DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+      DataRootManager.DataRootMatch match = matcher.findDataRootMatch(reqPath);
       if (match == null) {
         Formatter f = new Formatter();
-        DataRootHandler.getInstance().showRoots(f);
+        matcher.showRoots(f);
         System.out.printf("DataRoots%n%s%n", f);
       }
 

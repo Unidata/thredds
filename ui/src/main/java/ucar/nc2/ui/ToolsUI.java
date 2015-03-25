@@ -34,7 +34,7 @@
 package ucar.nc2.ui;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.catalog.ThreddsUI;
@@ -6222,7 +6222,7 @@ public class ToolsUI extends JPanel {
 
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
-      if (is == null) return "4.6";
+      if (is == null) return "5.0";
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {

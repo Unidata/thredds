@@ -83,6 +83,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String UrlPath = "UrlPath";
   public static final String UseRemoteCatalogService = "UseRemoteCatalogService";
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   public Dataset(DatasetNode parent, String name, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
     super(parent, name, flds, datasetBuilders);
 

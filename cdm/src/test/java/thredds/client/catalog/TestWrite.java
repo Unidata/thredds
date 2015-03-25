@@ -34,7 +34,7 @@ package thredds.client.catalog;
 
 import org.junit.Assert;
 import org.junit.Test;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;

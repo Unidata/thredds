@@ -37,6 +37,7 @@ import junit.framework.*;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.io.File;
 import java.util.List;
 import java.util.Date;
+import java.util.Formatter;
 
 /** Test radial datasets in the JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
@@ -110,8 +112,8 @@ public class TestRadialDataset extends TestCase {
   }
 
   private void testAllMethods(String location) throws IOException {
-    //RadialDatasetSweep rds = datasetFactory.open( location, null);
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, location, null, new StringBuilder());
+    Formatter errlog = new Formatter();
+    RadialDatasetSweep rds = (RadialDatasetSweep) FeatureDatasetFactoryManager.open(FeatureType.RADIAL, location, null, errlog);
 
     System.out.println(location+"-----------");
     if (show) System.out.println(rds.getDetailInfo());

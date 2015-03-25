@@ -39,8 +39,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
+import thredds.client.catalog.tools.CatalogXmlWriter;
+import thredds.client.catalog.tools.DataFactory;
+import thredds.core.DatasetManager;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.inventory.CollectionUpdater;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.servlet.ThreddsConfig;
@@ -50,7 +52,6 @@ import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
@@ -76,24 +77,31 @@ public class CdmInit implements InitializingBean,  DisposableBean{
 
   private DiskCache2 aggCache, gribCache, cdmrCache;
   private Timer timer;
-  //private thredds.inventory.MController cacheManager;
-  
+
   @Autowired
   private TdsContext tdsContext;
+
+  @Autowired
+  private DatasetManager datasetManager;
 
   public void afterPropertiesSet(){
     startupLog.info("CdmInit getContentRootPathAbsolute= "+tdsContext.getContentRootPath());
 
     // prefer cdmRemote when available
-    ThreddsDataFactory.setPreferCdm(true);
+    DataFactory.setPreferCdm(true);
     // netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
 
     // Global config
-
     boolean useBytesForDataSize = ThreddsConfig.getBoolean("catalogWriting.useBytesForDataSize", false);
-    InvCatalogFactory10.useBytesForDataSize(useBytesForDataSize);
+    CatalogXmlWriter.useBytesForDataSize(useBytesForDataSize);
     startupLog.info("CdmInit: catalogWriting.useBytesForDataSize= "+useBytesForDataSize);
+
+
+     // datasetSource plug-in
+    for (String className : ThreddsConfig.getRootList("datasetSource"))  {
+      datasetManager.registerDatasetSource(className);
+    }
 
     //////////////////////////////////////////////////////////
     // Controlling Data Services

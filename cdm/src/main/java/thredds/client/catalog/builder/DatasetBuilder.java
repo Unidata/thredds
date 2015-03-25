@@ -77,6 +77,8 @@ public class DatasetBuilder {
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////
+
   protected DatasetBuilder parent;
   protected String name;
   protected Map<String, Object> flds = new HashMap<>(10);
@@ -135,8 +137,17 @@ public class DatasetBuilder {
   }
 
   public Dataset makeDataset(DatasetNode parent) {
+    ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
+    if (tmi != null) tmi.finish();
     return new Dataset(parent, name, flds, accessBuilders, datasetBuilders);
   }
+
+  // make an immutable copy without changin DatasetBuilder
+  public Dataset copyDataset(DatasetNode parent) {
+    return new Dataset(parent, name, flds, accessBuilders, datasetBuilders);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
 
   public void transferMetadata( Dataset from, boolean inherit) {
     if (inherit)

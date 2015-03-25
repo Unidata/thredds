@@ -34,7 +34,7 @@
 package thredds.ui.catalog;
 
 import thredds.client.catalog.*;
-import thredds.client.catalog.writer.DatasetHtmlWriter;
+import thredds.client.catalog.tools.DatasetHtmlWriter;
 import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;

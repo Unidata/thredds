@@ -2,7 +2,7 @@ package ucar.nc2.ui.coverage;
 
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;

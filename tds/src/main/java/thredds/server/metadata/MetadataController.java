@@ -43,14 +43,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
-import thredds.catalog.ThreddsMetadata;
 import thredds.client.catalog.Catalog;
-import thredds.servlet.DatasetHandler;
+import thredds.client.catalog.ThreddsMetadata;
+import thredds.core.TdsRequestedDataset;
+import thredds.server.catalog.writer.ThreddsMetadataExtractor;
 import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.thredds.MetadataExtractor;
 import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +59,6 @@ import javax.validation.Valid;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.util.Formatter;
 import java.util.List;
 
@@ -86,9 +85,7 @@ public class MetadataController {
     //String info = ServletUtil.showRequestDetail(null, req);
     //System.out.printf("%s%n", info);
 
-    GridDataset gridDataset = null;
-    try {
-      gridDataset = DatasetHandler.openGridDataset(req, res, path);
+    try (GridDataset gridDataset = TdsRequestedDataset.openGridDataset(req, res, path)) {
       if (gridDataset == null) {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         log.debug("DatasetHandler.FAIL path={}", path);
@@ -97,8 +94,8 @@ public class MetadataController {
 
       NetcdfFile ncfile = gridDataset.getNetcdfFile();
       String fileType = ncfile.getFileTypeId();
-      thredds.catalog.DataFormatType fileFormat = thredds.catalog.DataFormatType.findType(fileType);
-      ThreddsMetadata.Variables vars = MetadataExtractor.extractVariables(fileFormat, gridDataset);
+      ucar.nc2.constants.DataFormatType fileFormat = ucar.nc2.constants.DataFormatType.getType(fileType);
+      ThreddsMetadata.VariableGroup vars = new ThreddsMetadataExtractor().extractVariables(fileFormat.toString(), gridDataset);
 
       boolean wantXML = (params.getAccept() != null) && params.getAccept().equalsIgnoreCase("XML");
 
@@ -123,22 +120,18 @@ public class MetadataController {
     } catch (Throwable t) {
       log.error("Error", t);
       res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
-    } finally {
-      if (gridDataset != null)
-        gridDataset.close();
     }
 
   }
 
-  public String writeHTML(ThreddsMetadata.Variables vars) {
+  public String writeHTML(ThreddsMetadata.VariableGroup vars) {
     Formatter f = new Formatter();
     f.format("<h3>Variables:</h3>%n<ul>%n");
 
     f.format("<em>Vocabulary</em> [");
     if (vars.getVocabUri() != null) {
-      URI uri = vars.getVocabUri();
-      f.format(" %s", uri.toString());
+      ThreddsMetadata.UriResolved uri = vars.getVocabUri();
+      f.format(" %s", uri.resolved.toString());
     }
     f.format(" %s ]%n<ul>%n", StringUtil2.quoteHtmlContent(vars.getVocabulary()));
 
@@ -158,15 +151,15 @@ public class MetadataController {
     return f.toString();
   }
 
-  private String writeXML(ThreddsMetadata.Variables vars) {
+  private String writeXML(ThreddsMetadata.VariableGroup vars) {
     Document doc = new Document();
     Element elem = new Element("variables", Catalog.defNS);
     doc.setRootElement(elem);
 
     if (vars.getVocabulary() != null)
       elem.setAttribute("vocabulary", vars.getVocabulary());
-    if (vars.getVocabHref() != null)
-      elem.setAttribute("href", vars.getVocabHref(), Catalog.xlinkNS);
+    if (vars.getVocabUri() != null)
+      elem.setAttribute("href", vars.getVocabUri().href, Catalog.xlinkNS);
 
     List<ThreddsMetadata.Variable> varList = vars.getVariableList();
     for (ThreddsMetadata.Variable v : varList) {

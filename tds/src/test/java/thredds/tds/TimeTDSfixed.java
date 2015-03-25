@@ -35,8 +35,8 @@
 package thredds.tds;
 
 import thredds.client.catalog.*;
-import thredds.client.catalog.writer.CatalogCrawler;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.CatalogCrawler;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.FeatureType;
 
 import java.io.IOException;

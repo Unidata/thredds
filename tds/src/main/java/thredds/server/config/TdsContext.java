@@ -54,7 +54,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.catalog.InvDatasetScan;
 import thredds.inventory.CollectionUpdater;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
@@ -463,8 +462,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     this.publicDocSource = this.publicContentDirSource;
 
     // ToDo LOOK Find a better way once thredds.catalog2 is used.
-    InvDatasetScan.setContext(contextPath);
-    InvDatasetScan.setCatalogServletName("/catalog");
+    //InvDatasetScan.setContext(contextPath);
+    //InvDatasetScan.setCatalogServletName("/catalog");
     InvDatasetFeatureCollection.setContext(contextPath);
     // GridServlet.setContextPath( contextPath ); // Won't need when switch GridServlet to use Swing MVC and TdsContext
 

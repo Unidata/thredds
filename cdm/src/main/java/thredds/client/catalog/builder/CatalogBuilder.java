@@ -67,18 +67,6 @@ public class CatalogBuilder {
     void setCatalog(Catalog cat);
   }
 
-  public Catalog buildFromCatref(CatalogRef catref) throws IOException {
-    URI catrefURI = catref.getURI();
-    if (catrefURI == null) {
-      errlog.format("Catref doesnt have valid UrlPath=%s%n", catref.getUrlPath());
-      fatalError = true;
-      return null;
-    }
-    Catalog result =  buildFromURI(catrefURI);
-    catref.setRead(!fatalError);
-    return result;
-  }
-
   //////////////////////////////////////////////////////////////////////////////////
 
   protected URI docBaseURI;
@@ -104,11 +92,36 @@ public class CatalogBuilder {
     return makeCatalog();
   }
 
-  public Catalog buildFromString(URI docBaseUri, String catalogAsString) throws IOException {
+  public Catalog buildFromCatref(CatalogRef catref) throws IOException {
+    URI catrefURI = catref.getURI();
+    if (catrefURI == null) {
+      errlog.format("Catref doesnt have valid UrlPath=%s%n", catref.getUrlPath());
+      fatalError = true;
+      return null;
+    }
+    Catalog result =  buildFromURI(catrefURI);
+    catref.setRead(!fatalError);
+    return result;
+  }
+
+  public Catalog buildFromString(String catalogAsString, URI docBaseUri) throws IOException {
     setBaseURI(docBaseUri);
     readXML(this, docBaseUri, catalogAsString);
     return makeCatalog();
   }
+
+  public Catalog buildFromStream(InputStream stream, URI docBaseUri) throws IOException {
+    setBaseURI(docBaseUri);
+    readXML(this, docBaseUri, stream);
+    return makeCatalog();
+  }
+
+
+  public Catalog buildFromJdom(Element root, URI docBaseUri) throws IOException {
+    readCatalog(this, root, baseURI);
+    return makeCatalog();
+  }
+
 
   public String getErrorMessage() {
     return errlog.toString();
@@ -188,7 +201,7 @@ public class CatalogBuilder {
   /////////////////////////////////////////////////////////////////////
   // JDOM
 
-  public void readXML(CatalogBuilder catBuilder, URI uri) throws IOException {
+  private void readXML(CatalogBuilder catBuilder, URI uri) throws IOException {
 
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
@@ -204,12 +217,27 @@ public class CatalogBuilder {
 
   }
 
-  public void readXML(CatalogBuilder catBuilder, URI docBaseUri, String catalogAsString) throws IOException {
+  private void readXML(CatalogBuilder catBuilder, URI docBaseUri, String catalogAsString) throws IOException {
 
     try {
       StringReader in = new StringReader(catalogAsString);
       SAXBuilder saxBuilder = new SAXBuilder();
       org.jdom2.Document jdomDoc = saxBuilder.build(in);
+      readCatalog(catBuilder, jdomDoc.getRootElement(), docBaseUri);
+
+    } catch (Exception e) {
+      errlog.format("failed to read catalogAsString err='%s'%n", e);
+      logger.error("failed to read catalogAsString at" + docBaseUri.toString(), e);
+      e.printStackTrace();
+      fatalError = true;
+    }
+
+  }
+
+  private void readXML(CatalogBuilder catBuilder, URI docBaseUri, InputStream stream) throws IOException {
+    try {
+      SAXBuilder saxBuilder = new SAXBuilder();
+      org.jdom2.Document jdomDoc = saxBuilder.build(stream);
       readCatalog(catBuilder, jdomDoc.getRootElement(), docBaseUri);
 
     } catch (Exception e) {

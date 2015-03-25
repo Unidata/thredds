@@ -33,8 +33,8 @@
 package thredds.server.cdmr;
 
 import thredds.client.catalog.*;
-import thredds.client.catalog.writer.CatalogCrawler;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.CatalogCrawler;
+import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TestTdsLocal;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;

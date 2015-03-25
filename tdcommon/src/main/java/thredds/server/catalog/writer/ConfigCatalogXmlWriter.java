@@ -35,7 +35,7 @@ package thredds.server.catalog.writer;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Property;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 
 /**
  * Describe

@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import thredds.server.dataset.TdsRequestedDataset;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.wms.config.WmsDetailedConfig;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.dt.GridDataset;

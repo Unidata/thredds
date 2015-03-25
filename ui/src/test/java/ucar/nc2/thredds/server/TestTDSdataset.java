@@ -32,7 +32,7 @@
  */
 package ucar.nc2.thredds.server;
 
-import thredds.client.catalog.writer.CrawlingUtils;
+import thredds.client.catalog.tools.CrawlingUtils;
 import ucar.nc2.ui.widget.StopButton;
 
 import javax.swing.*;

@@ -185,12 +185,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       result.transferMetadata(parent, true); // make all inherited metadata local
 
     String tpath = getPath() + "/" + COLLECTION;
-    Map<String, Object> tmi = result.getInheritableMetadata().getFlds();
-    tmi.put(Dataset.VariableMapLink, makeMetadataLink(tpath, VARIABLES));
-    tmi.put(Dataset.ServiceName, Virtual_Services_Name);
-    tmi.put(Dataset.DataFormatType, fromGc.isGrib1 ? DataFormatType.GRIB1.toString() : DataFormatType.GRIB2.toString());
-    tmi.put(Dataset.Properties, Property.convertToProperties(fromGc.getGlobalAttributes()));
-    tmi.put(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
+    ThreddsMetadata tmi = result.getInheritableMetadata();
+    tmi.set(Dataset.VariableMapLink, makeMetadataLink(tpath, VARIABLES));
+    tmi.set(Dataset.ServiceName, Virtual_Services_Name);
+    tmi.set(Dataset.DataFormatType, fromGc.isGrib1 ? DataFormatType.GRIB1.toString() : DataFormatType.GRIB2.toString());
+    tmi.set(Dataset.Properties, Property.convertToProperties(fromGc.getGlobalAttributes()));
+    tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
 
     String pathStart = parentCollectionName == null ? getPath() : getPath() + "/" + parentCollectionName;
 
@@ -305,10 +305,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         parent.addDataset(ds);
       }
 
-      Map<String, Object> tmi = ds.getInheritableMetadata().getFlds();
-      tmi.put(Dataset.GeospatialCoverage, extractGeospatial(group));
-      tmi.put(Dataset.TimeCoverage, group.makeCalendarDateRange());
-      tmi.put(Dataset.VariableMapLink, makeMetadataLink(dpath, VARIABLES));
+      ThreddsMetadata tmi = ds.getInheritableMetadata();
+      tmi.set(Dataset.GeospatialCoverage, extractGeospatial(group));
+      tmi.set(Dataset.TimeCoverage, group.makeCalendarDateRange());
+      tmi.set(Dataset.VariableMapLink, makeMetadataLink(dpath, VARIABLES));
     }
   }
 
@@ -340,8 +340,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     DatasetBuilder filesParent = new DatasetBuilder(parent);
     filesParent.setName("Raw Files");
-    Map<String, Object> tmi = filesParent.getInheritableMetadata().getFlds();
-    tmi.put(Dataset.ServiceName, Download_Services_Name);
+    ThreddsMetadata tmi = filesParent.getInheritableMetadata();
+    tmi.set(Dataset.ServiceName, Download_Services_Name);
     parent.addDataset(filesParent);
     if (parentCatalog != null)
       parentCatalog.addService(makeDownloadService());

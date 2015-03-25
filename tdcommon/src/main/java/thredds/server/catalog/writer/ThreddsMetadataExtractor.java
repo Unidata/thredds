@@ -34,7 +34,7 @@ package thredds.server.catalog.writer;
 
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ThreddsMetadata;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.DataFormatType;
@@ -62,13 +62,17 @@ import java.util.*;
 public class ThreddsMetadataExtractor {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ThreddsMetadataExtractor.class);
 
+  /**
+   * extract info from underlying feature dataset
+   * @param threddsDataset  call DataFactory().openFeatureDataset() to open it
+   * @return results in ThreddsMetadata object
+   * @throws IOException
+   */
   public ThreddsMetadata extract(Dataset threddsDataset) throws IOException {
     ThreddsMetadata metadata = new ThreddsMetadata();
     Map<String, Object> flds = metadata.getFlds();
 
-    DataFactory.Result result = null;
-    try {
-      result = new DataFactory().openFeatureDataset(threddsDataset, null);
+    try ( DataFactory.Result result = new DataFactory().openFeatureDataset(threddsDataset, null)) {
       if (result.fatalError) {
         logger.warn(" openFeatureDataset failed, errs=%s%n", result.errLog);
         return null;
@@ -101,13 +105,8 @@ public class ThreddsMetadataExtractor {
           flds.put(Dataset.VariableGroups, vars);
       }
 
-    } finally {
-      try {
-        if ((result != null) && (result.featureDataset != null))
-          result.featureDataset.close();
-      } catch (IOException ioe) {
-        logger.error("Closing dataset " + result.featureDataset, ioe);
-      }
+    } catch (IOException ioe) {
+      logger.error("Error opening dataset " + threddsDataset.getName(), ioe);
     }
 
     return metadata;
@@ -177,6 +176,16 @@ public class ThreddsMetadataExtractor {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
+
+
+  public ThreddsMetadata.GeospatialCoverage extractGeospatial(FeatureDatasetPoint fd) {
+    LatLonRect llbb = fd.getBoundingBox();
+    if (llbb != null) {
+      return new ThreddsMetadata.GeospatialCoverage(llbb, null, 0.0, 0.0);
+    }
+    return null;
+  }
+
   public ThreddsMetadata.VariableGroup extractVariables(FeatureDatasetPoint fd) {
     List<ThreddsMetadata.Variable> vars = new ArrayList<>();
 
