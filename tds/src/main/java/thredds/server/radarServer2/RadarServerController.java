@@ -16,10 +16,7 @@ import java.io.StringWriter;
 import java.nio.file.*;
 import java.lang.UnsupportedOperationException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
@@ -37,6 +34,7 @@ import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Serve up radar data in a way that makes it easy to query. Relevant query
@@ -51,7 +49,7 @@ import javax.annotation.PostConstruct;
 @RequestMapping("/radarServer2")
 public class RadarServerController {
     Map<String, RadarDataInventory> data;
-    final String URLbase = "/thredds/radarServer2";
+    final String URLbase = "/thredds/radarServer2/";
     boolean enabled = false;
 
     @Autowired
@@ -134,12 +132,26 @@ public class RadarServerController {
         return new HttpEntity<>(xmlBytes, header);
     }
 
-    @RequestMapping(value="{dataset}/dataset.xml")
+    private String idvDatasetCatalog(String xml)
+    {
+        String ret = xml.replace("variables", "Variables");
+        ret = ret.replace("timeCoverage", "TimeSpan");
+        ret = ret.replace("geospatialCoverage", "LatLonBox");
+        return ret;
+    }
+
+    @RequestMapping(value="level3/dataset.xml")
     @ResponseBody
-    public HttpEntity<byte[]> datasetCatalog(@PathVariable String dataset) throws IOException
+    public HttpEntity<byte[]> datasetCatalog(final HttpServletRequest request) throws IOException
     {
         if (!enabled) return null;
 
+        String agent = request.getHeader("user-agent");
+        boolean makeIDVCatalog = false;
+        if (agent != null && agent.startsWith("Java/1."))
+            makeIDVCatalog = true;
+
+        String dataset = "level3";
         RadarDataInventory di = getInventory(dataset);
 
         CatalogBuilder cb = new CatalogBuilder();
@@ -162,6 +174,7 @@ public class RadarServerController {
         metadata.put(Dataset.Documentation, new Documentation(null, null, null,
                 "summary", di.getDescription()));
 
+        // TODO: Pull from inventory
         metadata.put(Dataset.GeospatialCoverage,
                 new ThreddsMetadata.GeospatialCoverage(
                         new ThreddsMetadata.GeospatialRange(20.0, 40.0, 0.0,
@@ -193,7 +206,15 @@ public class RadarServerController {
         CatalogXmlWriter writer = new CatalogXmlWriter();
         ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
         writer.writeXML(cb.makeCatalog(), os);
-        byte[] xmlBytes = os.toByteArray();
+
+        byte[] xmlBytes;
+        if (makeIDVCatalog) {
+            String xml = os.toString();
+            xml = idvDatasetCatalog(xml);
+            xmlBytes = xml.getBytes();
+        } else {
+            xmlBytes = os.toByteArray();
+        }
 
         HttpHeaders header = new HttpHeaders();
         header.setContentType(new MediaType("application", "xml"));
