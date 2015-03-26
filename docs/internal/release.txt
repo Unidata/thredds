@@ -1,12 +1,16 @@
 Making a release for CDM/TDS with jenkins
 last edited 2015/03/26
 
-1. tds.properties
+1. Prepare ncWMS and threddsIso
+   - Detailed instructions can be found in threddsIso/docs/internal/release.txt and ncwms/docs/internal/release.txt.
+   - The instructions for the two are very similar.
+
+2. tds.properties
   - In /thredds/tds/src/main/template/thredds/server/tds.properties,
     the "tds.content.root.path" and "tds.dir.cdmUnitTest" properties must be set to the production release values.
     Make sure the Spock and local override values are commented out.
 
-2. Jenkins
+3. Jenkins
   - Go to Jenkin project's configuration page
       - Under "Source Code Management" - "Additional Behaviors" - Add - "Check out to specific local branch"
       - Enter the branch name for the next version, eg if current is "4.5.3", then use "4.5.4" here
@@ -18,24 +22,24 @@ last edited 2015/03/26
       - If the local branch was not specified, you will get the following error
         "Detecting the current branch failed: fatal: ref HEAD is not a symbolic ref"
 
-3. Check that all went well:
+4. Check that all went well:
     - gitHub has new release tag, eg "v{release}"
     - gitHub has new branch, eg if current is "4.5.3", then "4.5.4" should now be on gitHub
     - Check release artifacts are in artifacts.unidata.ucar.edu, eg http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
 
-4. Jenkins- "Additional Behaviors"
+5. Jenkins- "Additional Behaviors"
     - Go back to the CMD/TDS project's configuration page, "Source Code Management"
     - Update "Branches to build" to new branch, eg "target-{next}"
     - Delete "Checkout to local branch" (added in the first step of "1. Jenkins")
     - Check "Branches to build" now refers to the new one
     - Save
 
-5. Git (ONLY IF THIS IS STABLE RELEASE)
+6. Git (ONLY IF THIS IS STABLE RELEASE)
   - go to github thredds repo, "settings"
   - change "Default branch" to the released version
   - ie, default branch == stable release
 
-6. put thredds.war on conan ftp  (best to do from ssh)
+7. put thredds.war on conan ftp  (best to do from ssh)
   - cd /web/ftp/pub/thredds/{version}
   - mkdir {release}
   - from http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
@@ -45,13 +49,13 @@ last edited 2015/03/26
      rm current
      ln -s {release} current
 
-7. build thredds locally
+8. build thredds locally
     git fetch
     git checkout "v{release}"  (note that this is the tagged release)
     cd {github/thredds}
     mvn clean install
 
-8. put ncIdv, netcdfAll, toolsUI onto conan ftp
+9. put ncIdv, netcdfAll, toolsUI onto conan ftp
     cp {github/thredds}/ncIdv/target/ncIdv-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
     cp {github/thredds}/ui/target/netcdfAll-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
     cp {github/thredds}/ui/target/toolsUI-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
@@ -63,12 +67,12 @@ last edited 2015/03/26
     ln -s netcdfAll-{release}.jar netcdfAll-{version}.jar
     ln -s ncIdv-{release}.jar ncIdv-{version}.jar
 
-9. put tdm onto conan ftp (version 4.5 and above)
+10. put tdm onto conan ftp (version 4.5 and above)
     cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/{version}/current/tdm-{version}.jar
     also copy over md5 and sha1
     rename all to remove minor version (eg tdm-4.5.4.jar -> tdm-4.5.jar)
 
-10. Change permissions of the files you just copied.
+11. Change permissions of the files you just copied.
    - cd /web/ftp/pub/thredds/{version}/{release}
    - chmod 775 .
    - chmod 664 *
@@ -76,7 +80,7 @@ last edited 2015/03/26
    - chmod 775 .
    - chmod 664 *
 
-11. CDM has additional targets that are handled by gradle builds
+12. CDM has additional targets that are handled by gradle builds
   - modify build.gradle in top directory to use the correct version
   - make sure you have correct gradle.properties in ~home/.gradle/  [See John or Sean for info]
   - cd {github/thredds}
@@ -102,15 +106,15 @@ last edited 2015/03/26
          find javadocAll -type d -exec chmod 775 {} \;
          find javadocAll -type f -exec chmod 664 {} \;
 
-12. update Unidata download page(s)
+13. update Unidata download page(s)
   - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
     modify conan:/content/downloads/thredds/toc.xml as needed
   - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
     modify conan:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
 
-13. if you need to do any changes to web pages, do it on the next branch (eg target-{next})
+14. if you need to do any changes to web pages, do it on the next branch (eg target-{next})
 
-14. To start working with the next branch in IntelliJ
+15. To start working with the next branch in IntelliJ
   - Git Fetch
   - Checkout <new branch>
 
