@@ -81,18 +81,20 @@ last edited 2015/03/26
   - make sure you have correct gradle.properties in ~home/.gradle/  [See John or Sean for info]
   - cd {github/thredds}
   a. make supporting libraries
-      ./gradlew clean build -x test
-      If this fails but mvn works, make sure that any new dependencies added to the project modules were
-      also added to the build.gradle files.
-  b. release webstart to conan:/content/software/netcdf-java/v{version}/webstart
-      ./gradlew :ui:releaseWebstart
-  c. release cdm javadocs to conan:/content/software/netcdf-java/v{version}/javadoc
-      ./gradlew :cdm:releaseDocs
-  d. release all javadocs to conan:/content/software/netcdf-java/v{version}/javadocAll
-      ./gradlew :ui:releaseDocs
+     - gradlew clean build -x test
+     - If this fails but mvn works, make sure that any new dependencies added to the project modules were
+       also added to the build.gradle files.
+  b. release webstart to conan:/content/software/thredds/v{version}/netcdf-java/webstart
+     - Update ~/.gradle/gradle.properties (i.e. webdir and ftpdir)
+     - Update /thredds/ui/netCDFtools.jnlp and /thredds/ui/netCDFtoolsExtraJars.jnlp as needed.
+     - gradlew :ui:releaseWebstart
+  c. release cdm javadocs to conan:/content/software/thredds/v{version}/netcdf-java/javadoc
+     - gradlew :cdm:releaseDocs
+  d. release all javadocs to conan:/content/software/thredds/v{version}/netcdf-java/javadocAll
+     - gradlew :ui:releaseDocs
   e. Change permissions of the files you just copied.
-       cd to conan:/content/software/netcdf-java/v{version}/
-       Execute:
+     - cd to conan:/content/software/thredds/v{version}/netcdf-java/
+     - Execute:
          find webstart -type d -exec chmod 775 {} \;
          find webstart -type f -exec chmod 664 {} \;
          find javadoc -type d -exec chmod 775 {} \;
@@ -211,8 +213,3 @@ gradle clean install -x test
 first time, you will see gradle pull down maven artifacts into its repository in $userHome/.gradle/cache
 
 3) release
-
-
-
-
-

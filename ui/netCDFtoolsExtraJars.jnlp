@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/thredds/v4.5/netcdf-java/webstart"
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/thredds/v4.6/netcdf-java/webstart"
       href="netCDFtools.jnlp">
     <information>
-        <title>NetCDF Tools UI 4.5</title>
+        <title>NetCDF Tools UI 4.6</title>
         <vendor>Unidata</vendor>
         <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/documentation.htm"/>
         <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>
@@ -19,71 +19,62 @@
 
     <resources>
         <j2se version="1.7+" max-heap-size="1500m"/>
-        <!-- Updated by hand for 4.5.4, using :ui:showDependencies to print the deps.
+        <!-- Updated by hand for 4.6.0, using :ui:showDependencies to print the deps.
         In the future, we should be generating this file in Gradle. -->
-        <jar href="cdm-4.5.4.jar"/>
-        <jar href="clcommon-4.5.4.jar"/>
-        <jar href="bufr-4.5.4.jar"/>
-        <jar href="grib-4.5.4.jar"/>
-        <jar href="netcdf4-4.5.4.jar"/>
-        <jar href="opendap-4.5.4.jar"/>
-        <jar href="visad-4.5.4.jar"/>
-        <jar href="waterml-4.5.4.jar"/>
-        <jar href="d4core-4.5.4.jar"/>
-        <jar href="d4shared-4.5.4.jar"/>
-        <jar href="d4cdmshared-4.5.4.jar"/>
-        <jar href="d4cdmclient-4.5.4.jar"/>
+        <jar href="cdm-4.6.0.jar"/>
+        <jar href="clcommon-4.6.0.jar"/>
+        <jar href="bufr-4.6.0.jar"/>
+        <jar href="grib-4.6.0.jar"/>
+        <jar href="netcdf4-4.6.0.jar"/>
+        <jar href="opendap-4.6.0.jar"/>
+        <jar href="waterml-4.6.0.jar"/>
+        <jar href="httpservices-4.6.0.jar"/>
+        <jar href="ehcache-core-2.6.2.jar"/>
+        <jar href="jdom2-2.0.4.jar"/>
+        <jar href="spring-context-3.2.12.RELEASE.jar"/>
         <jar href="jcommon-1.0.23.jar"/>
         <jar href="jfreechart-1.0.19.jar"/>
         <jar href="jgoodies-forms-1.6.0.jar"/>
+        <jar href="httpclient-4.2.6.jar"/>
+        <jar href="httpcore-4.2.5.jar"/>
         <jar href="bounce-0.14.jar"/>
         <jar href="imgscalr-lib-4.2.jar"/>
         <jar href="bzip2-0.9.1.jar"/>
-        <jar href="ehcache-core-2.6.2.jar"/>
-        <jar href="commons-lang3-3.1.jar"/>
-        <jar href="spring-core-3.2.12.RELEASE.jar"/>
-        <jar href="spring-context-3.2.12.RELEASE.jar"/>
+        <jar href="commons-lang3-3.3.2.jar"/>
+        <jar href="52n-oxf-xmlbeans-1.12.jar"/>
+        <jar href="guava-18.0.jar"/>
+        <jar href="slf4j-api-1.7.7.jar"/>
         <jar href="slf4j-jdk14-1.7.7.jar"/>
-        <jar href="udunits-4.5.4.jar"/>
-        <jar href="httpservices-4.5.4.jar"/>
-        <jar href="httpcore-4.2.5.jar"/>
-        <jar href="protobuf-java-2.5.0.jar"/>
-        <jar href="guava-17.0.jar"/>
+        <jar href="udunits-4.6.0.jar"/>
         <jar href="joda-time-2.2.jar"/>
         <jar href="jcip-annotations-1.0.jar"/>
-        <jar href="jdom2-2.0.4.jar"/>
         <jar href="quartz-2.2.0.jar"/>
-        <jar href="slf4j-api-1.7.7.jar"/>
+        <jar href="protobuf-java-2.5.0.jar"/>
         <jar href="jcommander-1.35.jar"/>
-        <jar href="jcl-over-slf4j-1.7.7.jar"/>
         <jar href="je-4.0.92.jar"/>
         <jar href="jsoup-1.7.2.jar"/>
         <jar href="jj2000-5.2.jar"/>
         <jar href="jna-4.1.0.jar"/>
         <jar href="coverity-escapers-1.1.1.jar"/>
-        <jar href="visad-2.0-20130124.jar"/>
-        <jar href="52n-xml-waterML-dr-v20-1.1.5.jar"/>
-        <jar href="52n-oxf-xmlbeans-1.12.jar"/>
+        <jar href="javax.servlet-api-3.1.0.jar"/>
         <jar href="xmlbeans-2.6.0.jar"/>
-        <jar href="httpclient-4.2.6.jar"/>
-        <jar href="httpmime-4.2.6.jar"/>
-        <jar href="jgoodies-common-1.4.0.jar"/>
+        <jar href="52n-xml-waterML-v20-1.1.5.jar"/>
+        <jar href="52n-xml-gml-v321-1.1.5.jar"/>
+        <jar href="52n-xml-sweCommon-v20-1.1.5.jar"/>
+        <jar href="52n-xml-om-v20-1.1.5.jar"/>
+        <jar href="52n-xml-sampling-v20-1.1.5.jar"/>
         <jar href="spring-aop-3.2.12.RELEASE.jar"/>
         <jar href="spring-beans-3.2.12.RELEASE.jar"/>
+        <jar href="spring-core-3.2.12.RELEASE.jar"/>
         <jar href="spring-expression-3.2.12.RELEASE.jar"/>
+        <jar href="jgoodies-common-1.4.0.jar"/>
+        <jar href="jcl-over-slf4j-1.7.7.jar"/>
+        <jar href="commons-codec-1.6.jar"/>
+        <jar href="xmlbeans-xpath-2.3.0.jar"/>
         <jar href="c3p0-0.9.1.1.jar"/>
         <jar href="52n-xml-ows-v110-1.1.5.jar"/>
-        <jar href="52n-xml-gml-v321-1.1.5.jar"/>
-        <jar href="52n-xml-sampling-v20-1.1.5.jar"/>
-        <jar href="52n-xml-om-v20-1.1.5.jar"/>
-        <jar href="52n-xml-sweCommon-v20-1.1.5.jar"/>
-        <jar href="52n-xml-waterML-v20-1.1.5.jar"/>
-        <jar href="52n-xml-gmlcov-v10-1.1.5.jar"/>
-        <jar href="xmlbeans-xpath-2.3.0.jar"/>
-        <jar href="commons-codec-1.6.jar"/>
-        <jar href="aopalliance-1.0.jar"/>
         <jar href="52n-xml-xlink-v110-1.1.5.jar"/>
+        <jar href="aopalliance-1.0.jar"/>
         <jar href="saxon-8.7.jar"/>
-        <jar href="commons-logging-1.1.3.jar"/>
     </resources>
 </jnlp>
