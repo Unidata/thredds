@@ -53,7 +53,6 @@ import ucar.nc2.util.cache.FileFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -416,7 +415,7 @@ public class DatasetHandler {
    * @param ds the dataset
    */
   static void putResourceControl(Dataset ds) {
-    if (log.isDebugEnabled()) log.debug("putResourceControl " + ds.getResourceControl() + " for " + ds.getName());
+    if (log.isDebugEnabled()) log.debug("putResourceControl " + ds.getRestrictAccess() + " for " + ds.getName());
 
     // resourceControl is inherited, but no guarentee that children paths are related, unless its a
     //   DatasetScan or InvDatasetFmrc. So we keep track of all datasets that have a ResourceControl, including children
@@ -425,18 +424,18 @@ public class DatasetHandler {
     if (ds instanceof DatasetScan) {
       DatasetScan scan = (DatasetScan) ds;
       if (debugResourceControl)
-        System.out.println("putResourceControl " + ds.getResourceControl() + " for datasetScan " + scan.getPath());
-      resourceControlMatcher.put(scan.getPath(), ds.getResourceControl());
+        System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetScan " + scan.getPath());
+      resourceControlMatcher.put(scan.getPath(), ds.getRestrictAccess());
 
     } else { // dataset
       if (debugResourceControl)
-        System.out.println("putResourceControl " + ds.getResourceControl() + " for dataset " + ds.getUrlPath());
+        System.out.println("putResourceControl " + ds.getRestrictAccess() + " for dataset " + ds.getUrlPath());
 
       // LOOK: seems like you only need to add if InvAccess.InvService.isReletive
       // LOOK: seems like we should use resourceControlMatcher to make sure we match .dods, etc
       for (Access access : ds.getAccess()) {
         if (access.getService().isRelativeBase())
-          resourceControlHash.put(access.getUrlPath(), ds.getResourceControl());
+          resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
       }
 
     }

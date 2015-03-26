@@ -234,10 +234,10 @@ public class Write2ncRect {
 
     //String fileIn = "C:/data/bufr/edition3/newIdd/IcingTropopause/IcingTropopause_20080529_0000.bufr";
     String fileIn = "C:\\data\\bufr\\edition3\\meteosat\\METEOSAT7-MVIRI-MTPHRWW-NA-1-20080405123005.000000000Z-909326.bfr ";
-    NetcdfFile ncf = NetcdfDataset.openFile(fileIn, null);
-    System.out.println(ncf.toString());
-
-    new Write2ncRect(ncf, "C:/data/bufr2nc.meteosat.nc", true);
+    try (NetcdfFile ncf = NetcdfDataset.openFile(fileIn, null)) {
+      System.out.println(ncf.toString());
+      new Write2ncRect(ncf, "C:/data/bufr2nc.meteosat.nc", true);
+    }
   }
 
 }

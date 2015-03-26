@@ -3,6 +3,7 @@ package ucar.nc2.time;
 import net.jcip.annotations.Immutable;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.ZonedChronology;
@@ -235,6 +236,23 @@ public class CalendarDate implements Comparable<CalendarDate> {
    */
   public int getHourOfDay() {
     return dateTime.getHourOfDay();
+  }
+
+  /*
+      Millisec(PeriodType.millis()), Second(PeriodType.seconds()), Minute(PeriodType.minutes()), Hour(PeriodType.hours()),
+    Day(PeriodType.days()), Month(PeriodType.months()), Year(PeriodType.years())
+   */
+  public int getFieldValue(CalendarPeriod.Field fld) {
+    switch (fld) {
+      case Day: return dateTime.get(DateTimeFieldType.dayOfMonth());
+      case Hour: return dateTime.get(DateTimeFieldType.hourOfDay());
+      case Millisec: return dateTime.get(DateTimeFieldType.millisOfSecond());
+      case Minute: return dateTime.get(DateTimeFieldType.minuteOfHour());
+      case Month: return dateTime.get(DateTimeFieldType.monthOfYear());
+      case Second: return dateTime.get(DateTimeFieldType.secondOfMinute());
+      case Year: return dateTime.get(DateTimeFieldType.year());
+    }
+    throw new IllegalArgumentException("unimplemented "+fld);
   }
 
   public int getDayOfMonth() {

@@ -95,11 +95,11 @@ public class BufrTableBViewer extends JPanel {
     });
 
     variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
-    variantTable.addListSelectionListener(new ListSelectionListener() {
+    /* variantTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         variantTable.getSelectedBean();
       }
-    });
+    }); */
 
     PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(ddsTable.getJTable(), "Options");
     varPopup.addAction("Show uses", new AbstractAction() {

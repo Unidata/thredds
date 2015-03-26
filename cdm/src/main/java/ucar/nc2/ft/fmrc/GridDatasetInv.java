@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2010. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ft.fmrc;
@@ -58,7 +59,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import thredds.inventory.MFile;
-import thredds.inventory.CollectionManager;
 
 /**
  * The data inventory of one GridDataset.
@@ -79,7 +79,7 @@ import thredds.inventory.CollectionManager;
  * @since Jan 11, 2010
  */
 public class GridDatasetInv {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
   static private final int REQ_VERSION = 2; // minimum required version, else regenerate XML
   static private final int CURR_VERSION = 2;  // current version
   
@@ -89,9 +89,9 @@ public class GridDatasetInv {
     // do we already have it ?
     byte[] xmlBytes = ((CollectionManagerAbstract)cm).getMetadata(mfile, "fmrInv.xml");  // LOOK should we keep this functionality ??
     if (xmlBytes != null) {
-      if (log.isDebugEnabled()) log.debug(" got xmlFile in cache ="+ mfile.getPath()+ " size = "+xmlBytes.length);
+      if (logger.isDebugEnabled()) logger.debug(" got xmlFile in cache ="+ mfile.getPath()+ " size = "+xmlBytes.length);
       if (xmlBytes.length < 300) {
-        log.warn(" xmlFile in cache only has nbytes ="+ xmlBytes.length+"; will reread");
+        logger.warn(" xmlFile in cache only has nbytes ="+ xmlBytes.length+"; will reread");
         // drop through and regenerate
       } else {
         GridDatasetInv inv = readXML(xmlBytes);
@@ -102,13 +102,13 @@ public class GridDatasetInv {
           long fileModifiedSecs = mfile.getLastModified() / 1000; // ignore msecs
           long xmlModifiedSecs = inv.getLastModified() / 1000; // ignore msecs
           if (xmlModifiedSecs >= fileModifiedSecs) { // LOOK if fileDate is -1, will always succeed
-            if (log.isDebugEnabled()) log.debug(" cache ok "+new Date(inv.getLastModified())+" >= "+new Date(mfile.getLastModified())+" for " + mfile.getName());
+            if (logger.isDebugEnabled()) logger.debug(" cache ok "+new Date(inv.getLastModified())+" >= "+new Date(mfile.getLastModified())+" for " + mfile.getName());
             return inv; // ok, use it
           } else {
-            if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified())+" for " + mfile.getName());
+            if (logger.isInfoEnabled()) logger.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified())+" for " + mfile.getName());
           }
         } else {
-          if (log.isInfoEnabled()) log.info(" version needs upgrade "+inv.version+" < "+REQ_VERSION +" for " + mfile.getName());
+          if (logger.isInfoEnabled()) logger.info(" version needs upgrade "+inv.version+" < "+REQ_VERSION +" for " + mfile.getName());
         }
       }
     }
@@ -131,7 +131,7 @@ public class GridDatasetInv {
       GridDatasetInv inv = new GridDatasetInv(gds, cm.extractDate(mfile));
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
       ((CollectionManagerAbstract)cm).putMetadata(mfile, "fmrInv.xml", xmlString.getBytes(CDM.utf8Charset));
-      if (log.isDebugEnabled()) log.debug(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
+      if (logger.isDebugEnabled()) logger.debug(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
       if (debug) System.out.printf(" added xmlFile %s.fmrInv.xml to cache%n", mfile.getPath());
       // System.out.println("new xmlBytes= "+ xmlString);
       return inv;
@@ -144,9 +144,9 @@ public class GridDatasetInv {
 
   private String location;
   private int version;
-  private final List<TimeCoord> times = new ArrayList<TimeCoord>(); // list of TimeCoord
-  private final List<VertCoord> vaxes = new ArrayList<VertCoord>(); // list of VertCoord
-  private final List<EnsCoord> eaxes = new ArrayList<EnsCoord>(); // list of EnsCoord
+  private final List<TimeCoord> times = new ArrayList<>(); // list of TimeCoord
+  private final List<VertCoord> vaxes = new ArrayList<>(); // list of VertCoord
+  private final List<EnsCoord> eaxes = new ArrayList<>(); // list of EnsCoord
   private CalendarDate runDate; // date of the run
   private String runTimeString; // string representation of the date of the run
   private Date lastModified;
@@ -167,14 +167,14 @@ public class GridDatasetInv {
       if (runTimeString != null) {
         this.runDate = DateUnit.parseCalendarDate(runTimeString);
          if (this.runDate == null) {
-           log.warn("GridDatasetInv rundate not ISO date string ({}) file={}", runTimeString, location);
+           logger.warn("GridDatasetInv rundate not ISO date string ({}) file={}", runTimeString, location);
            //throw new IllegalArgumentException(_Coordinate.ModelRunDate + " must be ISO date string " + runTime);
          }
       }
 
       if (this.runDate == null) {
         this.runDate = gds.getCalendarDateStart(); // LOOK not really right
-        log.warn("GridDatasetInv using gds.getStartDate() for run date = {}", runTimeString, location);
+        logger.warn("GridDatasetInv using gds.getStartDate() for run date = {}", runTimeString, location);
         //log.error("GridDatasetInv missing rundate in file=" + location);
         //throw new IllegalArgumentException("File must have " + _Coordinate.ModelBaseDate + " or " + _Coordinate.ModelRunDate + " attribute ");
       }
@@ -580,7 +580,7 @@ public class GridDatasetInv {
       fmr.location = rootElem.getAttributeValue("name"); // old way
     String lastModifiedS = rootElem.getAttributeValue("lastModified");
     if (lastModifiedS != null)
-      fmr.lastModified = CalendarDateFormatter.parseISODate(lastModifiedS);
+      fmr.lastModified = CalendarDateFormatter.isoStringToDate(lastModifiedS);
     String version = rootElem.getAttributeValue("version");
     fmr.version = (version == null) ? 0 : Integer.parseInt(version);
     if (fmr.version < REQ_VERSION) return fmr;

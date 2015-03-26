@@ -3,8 +3,8 @@ package thredds.catalog;
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
+import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
@@ -70,10 +70,32 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     finish(); // ??
   }
 
-  @Override
+  /* @Override  // overriding superclass -WHY?
   public void update(CollectionUpdateType force) {
     fmrc.update();       // so when is work done?
+  } */
+
+  protected void update(CollectionUpdateType force) throws IOException {  // this may be called from a background thread, or from checkState() request thread
+    logger.debug("update {} force={}", name, force);
+    boolean changed;
+    MFileCollectionManager dcm;
+    switch (force) {
+      case always:
+      case test:
+        dcm = (MFileCollectionManager) getDatasetCollectionManager();
+        changed = dcm.scan(false);
+        if (changed)
+          super.update(force);
+        break;
+
+      case never:
+        return;
+
+      default :
+        super.update(force);
+    }
   }
+
 
   public void updateProto() {
     fmrc.updateProto();
@@ -239,7 +261,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   private List<InvDatasetImpl> makeRunDatasets() throws IOException {
 
-    List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();
+    List<InvDatasetImpl> datasets = new ArrayList<>();
 
     String id = getID();
     if (id == null)
@@ -265,7 +287,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   private List<InvDatasetImpl> makeOffsetDatasets() throws IOException {
 
-    List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();
+    List<InvDatasetImpl> datasets = new ArrayList<>();
 
     String id = getID();
     if (id == null)
@@ -290,7 +312,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   private List<InvDatasetImpl> makeForecastDatasets() throws IOException {
 
-    List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();
+    List<InvDatasetImpl> datasets = new ArrayList<>();
 
     String id = getID();
     if (id == null)

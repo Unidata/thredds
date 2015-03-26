@@ -137,6 +137,9 @@ task releaseWebstart(dependsOn: jar) << {
                     storepass: keystorePassword, preservelastmodified: true, verbose: true)
         }
 
+        ant.delete(dir: webstartDir)
+        ant.mkdir(dir: webstartDir)
+
         copy {
             println "copy2web"
             from(webstartWorkingDir)

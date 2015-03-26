@@ -9,30 +9,56 @@
 <h1><img alt="Unidata" src="images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS 4.6</h1>
 
 <hr>
-<h2>New Requirement</h2>
+<h2>Requirements</h2>
 <ul>
   <li>Java 7 is  required</li>
   <li>Tomcat version 7.0.43 or greater</li>
-  <p>&nbsp;</p>
 </ul>
 <h2>GRIB Feature Collection Changes</h2>
 <ol>
-  <li>New indexes (.<strong>ncx3</strong>) will be written the first time GRIB files are accessed. You may delete the older indices (<strong>ncx</strong>, <strong>ncx2</strong>) if you like. The <strong>gbx9</strong> indices can stay, althoug deleting them will allow a few minor improvements to be made.</li>
+  <li>GRIB Collections now scale to large numbers of files.</li>
+  <li>New indexes (.<strong>ncx3</strong>) will be written the first time GRIB files are accessed. You may delete the older indices (<strong>ncx</strong>, <strong>ncx2</strong>) if you like. The <strong>gbx9</strong> indices can stay as they are somewhat expensive to build (requiring a sequential read of the grib files). Deleting them will allow a few minor improvements to be made when recreating.</li>
+  <li>GRIB Best Collections now show the runtime as an auxiliary coordinate, and runtimes are monotonic increasing.</li>
+  <li>Some GRIB specific <a href="reference/collections/GribCollectionFaq.html">FAQs</a></li>
+  <li>For complete information, see <a href="reference/collections/GribCollections.html">GRIB Collections</a> and <a href="reference/collections/TDM.html">TDM</a>.</li>
 </ol>
-<p>For complete information, see <a href="reference/collections/GribCollections.html">GRIB Collections</a> and <a href="reference/collections/TDM.html">TDM</a>.</p>
-<h2>&nbsp;</h2>
-<h2>New Features in version 4.6</h2>
+<h2>Bug Fixes in version 4.6</h2>
 <ul>
+  <li>IOSP
+    <ul>
+      <li>Dates from WRF not CF / ISO compliant</li>
+    </ul>
+  </li>
+  <li>GRIB Collections
+    <ul>
+      <li>restrict datasets was not working</li>
+      <li>improve detection of variant coded GDS - less need for gdshash corrections</li>
+      <li>add earth radius to lat/lon projection</li>
+    </ul>
+  </li>
+  <li>FMRC
+    <ul>
+      <li>floating point compares sometimes made spurious time coordinates</li>
+      <li>offsetsGreaterEqual did not work correctly</li>
+      <li>collection updating was not working (in 4.5)</li>
+    </ul>
+  </li>
+  <li>CDM
+    <ul>
+      <li>GeoGrid.makeSubset() not correctly subsetting regular axes.</li>
+    </ul>
+  </li>
 </ul>
+<p>See JIRA<a href="https://bugtracking.unidata.ucar.edu/issues/?jql=project%20%3D%20TDS%20AND%20fixVersion%20%3D%204.6.0"> issues log</a></p>
 <h2>API changes</h2>
 <h3>Client Catalog API</h3>
 <blockquote>
-  <p>The catalog processing classes in <strong>thredds.catalog</strong> package has been replaced by <strong>thredds.client.catalog</strong> everywhere on the client. If you are using  <strong>thredds.catalog</strong>  in your code, please switch to <strong>thredds.catalog</strong>.<strong>client</strong>, as it is takes less memory and is better performant. The old package is still available in the <strong>compatibility.jar</strong>, which you will need to sperately include in your classpath if needed.</p>
+  <p>The catalog processing classes in <strong>thredds.catalog</strong> package has been replaced by <strong>thredds.client.catalog</strong> everywhere in  client code. If you are using  <strong>thredds.catalog</strong>  in your code, please switch to <strong>thredds.catalog</strong>.<strong>client</strong>, as it is takes less memory and is better performant. The old package is still available, but in future versios they will be moved to a <strong>legacy.jar</strong>, which you will need to seperately include in your classpath if needed.</p>
 </blockquote>
-<p>&nbsp;</p>
 <h3>Internal changes</h3>
 <ul>
-  <li></li>
+  <li>We are now using <strong>gradle</strong> to do our builds. Maven will continue to be supported for now (version 4.6.0).</li>
+  <li>Using <strong>Coverity</strong> to find and fix more than 4000 defects. Defect count now &lt; 1 / 1000 LOC.</li>
 </ul>
 <p>&nbsp;</p>
 <hr>

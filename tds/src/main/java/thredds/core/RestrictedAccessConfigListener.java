@@ -64,7 +64,7 @@ public class RestrictedAccessConfigListener implements DataRootHandler.ConfigLis
 
   public void configDataset( Dataset dataset) {
     // check for resource control
-    if (dataset.getResourceControl() != null)
+    if (dataset.getRestrictAccess() != null)
       DatasetHandler.putResourceControl(dataset);
   }
 }

@@ -88,7 +88,7 @@ public class GridRequestException2Test {
 		BindingResult validationResult;
 		params = new NcssParamsBean();
 		params.setTemporal("all");
-		List<String> vars = new ArrayList<String>();
+		List<String> vars = new ArrayList<>();
 		vars.add("u-component_of_wind_isobaric");
 		vars.add("v-component_of_wind_isobaric");
 		vars.add("Geopotential_height_isobaric");

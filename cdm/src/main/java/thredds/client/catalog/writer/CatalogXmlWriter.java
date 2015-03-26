@@ -173,8 +173,8 @@ public class CatalogXmlWriter {
     catrefElem.setAttribute("title", name, Catalog.xlinkNS);
     if (catRef.getId() != null)
       catrefElem.setAttribute("ID", catRef.getId());
-    if (catRef.getResourceControl() != null)
-      catrefElem.setAttribute("restrictAccess", catRef.getResourceControl());
+    if (catRef.getRestrictAccess() != null)
+      catrefElem.setAttribute("restrictAccess", catRef.getRestrictAccess());
     catrefElem.setAttribute("name", "");
 
     writeDatasetInfo(catRef, catrefElem, false, raw);
@@ -224,8 +224,8 @@ public class CatalogXmlWriter {
       dsElem.setAttribute("ID", ds.getID());
     if (ds.getUrlPath() != null)
       dsElem.setAttribute("urlPath", ds.getUrlPath());
-    if (ds.getResourceControl() != null)
-      dsElem.setAttribute("restrictAccess", ds.getResourceControl());
+    if (ds.getRestrictAccess() != null)
+      dsElem.setAttribute("restrictAccess", ds.getRestrictAccess());
 
     /* services (local only)
     for (Service service : ds.getServices()) {

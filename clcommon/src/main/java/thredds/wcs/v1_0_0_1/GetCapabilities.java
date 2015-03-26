@@ -110,8 +110,8 @@ public class GetCapabilities extends WcsRequest
     // ToDo If decide to support updateSequence, need to
     // ToDo     1) update getCurrentUpdateSequence() and
     // ToDo     2) update logic to handle exceptions appropriately.
-    if (updateSequence == null)
-      return null;
+    //if (updateSequence == null)
+    //  return null;
     return null;
   }
 

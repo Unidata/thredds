@@ -35,91 +35,135 @@ package ucar.nc2.util.net;
 import ucar.httpservices.*;
 
 import org.junit.Test;
-import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.*;
 
 import java.net.URI;
+import java.util.List;
 
 public class TestMisc extends UnitTestCommon
 {
 
-  static {HTTPSession.TESTING = true;}
-
-  //////////////////////////////////////////////////
-
-  // Define the test sets
-
-  int passcount = 0;
-  int xfailcount = 0;
-  int failcount = 0;
-  boolean verbose = true;
-  boolean pass = false;
-
-  String datadir = null;
-  String threddsroot = null;
-
-  public TestMisc() {
-    setTitle("HTTP Session tests");
-  }
-
-  static final String[] esinputs = {
-          "http://localhost:8081/dts/test.01",
-          "http://localhost:8081///xx/",
-          "http://localhost:8081/<>^/`/",
-  };
-  static final String[] esoutputs = {
-          "http://localhost:8081/dts/test.01",
-          "http://localhost:8081///xx/",
-          "http://localhost:8081/%3c%3e%5e/%60/",
-  };
-
-  @Test
-  public void
-  testEscapeStrings() throws Exception {
-    pass = true;
-    assert (esinputs.length == esoutputs.length);
-    for (int i = 0; i < esinputs.length && pass; i++) {
-      String result = EscapeStrings.escapeURL(esinputs[i]);
-        System.err.printf("input= |%s|\n",esinputs[i]);
-        System.err.printf("result=|%s|\n",result);
-        System.err.printf("output=|%s|\n",esoutputs[i]);
-      if (!result.equals(esoutputs[i])) pass = false;
-      System.out.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
+    static {
+        HTTPSession.TESTING = true;
     }
-    assertTrue("TestMisc.testEscapeStrings", pass);
-  }
+
+    //////////////////////////////////////////////////
+
+    // Define the test sets
+
+    int passcount = 0;
+    int xfailcount = 0;
+    int failcount = 0;
+    boolean verbose = true;
+    boolean pass = false;
+
+    String datadir = null;
+    String threddsroot = null;
+
+    public TestMisc()
+    {
+        setTitle("HTTP Session tests");
+    }
+
+    static final String[] esinputs = {
+        "http://localhost:8081/dts/test.01",
+        "http://localhost:8081///xx/",
+        "http://localhost:8081/<>^/`/",
+    };
+    static final String[] esoutputs = {
+        "http://localhost:8081/dts/test.01",
+        "http://localhost:8081///xx/",
+        "http://localhost:8081/%3c%3e%5e/%60/",
+    };
+
+    @Test
+    public void
+    testEscapeStrings() throws Exception
+    {
+        pass = true;
+        assert (esinputs.length == esoutputs.length);
+        for(int i = 0;i < esinputs.length && pass;i++) {
+            String result = EscapeStrings.escapeURL(esinputs[i]);
+            System.err.printf("input= |%s|\n", esinputs[i]);
+            System.err.printf("result=|%s|\n", result);
+            System.err.printf("output=|%s|\n", esoutputs[i]);
+            if(!result.equals(esoutputs[i])) pass = false;
+            System.out.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
+        }
+        assertTrue("TestMisc.testEscapeStrings", pass);
+    }
 
 
-  @Test
-  public void
-  testUTF8Stream()
-    throws Exception
-  {
-     pass = true;
+    @Test
+    public void
+    testUTF8Stream()
+        throws Exception
+    {
+        pass = true;
 
-     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
-     URI catalogURI = new URI(catalogName);
+        String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
+        URI catalogURI = new URI(catalogName);
 
-     HTTPSession client = null;
-     HTTPMethod m = null;
-     try {
-       client = HTTPFactory.newSession(catalogName);
-       m = HTTPFactory.Get(client);
+        HTTPSession client = null;
+        HTTPMethod m = null;
+        try {
+            client = HTTPFactory.newSession(catalogName);
+            m = HTTPFactory.Get(client);
 
-       int statusCode = m.execute();
-       System.out.printf("status = %d%n", statusCode);
+            int statusCode = m.execute();
+            System.out.printf("status = %d%n", statusCode);
 
-       try {
-           String content = m.getResponseAsString("ASCII");
-           System.out.printf("cat = %s%n", content);
-       }  catch (Throwable t) {
-           t.printStackTrace();
-         assert false;
-       }
-     } finally {
-       if (client != null) client.close();
-     }
+            try {
+                String content = m.getResponseAsString("ASCII");
+                System.out.printf("cat = %s%n", content);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                assert false;
+            }
+        } finally {
+            if(client != null) client.close();
+        }
 
-   }
+    }
+
+    protected boolean protocheck(String path, String expected)
+    {
+        if(expected == null)
+            expected = "";
+        List<String> protocols = Misc.getProtocols(path);
+        StringBuilder buf = new StringBuilder();
+        for(String s : protocols) {
+            buf.append(s);
+            buf.append(":");
+        }
+        String result = buf.toString();
+        boolean ok = expected.equals(result);
+        System.err.printf("path=|%s| result=|%s| pass=%s\n",
+            path, result, (ok ? "true" : "false"));
+        System.err.flush();
+        return ok;
+    }
+
+    @Test
+    public void
+    testGetProtocols()
+    {
+        String tag = "TestMisc.testGetProtocols";
+        assertTrue(tag, protocheck("http://server/thredds/dodsC/", "http:"));
+        assertTrue(tag, protocheck("dods://thredds-test.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best", "dods:"));
+        assertTrue(tag, protocheck("dap4://ucar.edu:8080/x/y/z", "dap4:"));
+        assertTrue(tag, protocheck("dap4:https://ucar.edu:8080/x/y/z", "dap4:https:"));
+        assertTrue(tag, protocheck("file:///x/y/z", "file:"));
+        assertTrue(tag, protocheck("file://c:/x/y/z", "file:"));
+        assertTrue(tag, protocheck("file:c:/x/y/z", "file:"));
+        assertTrue(tag, protocheck("file:../x/y/z", "file:"));
+        assertTrue(tag, protocheck("c:/x/y/z", null));
+        assertTrue(tag, protocheck("x::a/y/z", null));
+        assertTrue(tag, protocheck("x::/y/z", null));
+        assertTrue(tag, protocheck("::/y/z", ""));
+        assertTrue(tag, protocheck("dap4:&/y/z", null));
+        assertTrue(tag, protocheck("file:x/z::a", "file:"));
+        assertTrue(tag, protocheck("x/z::a", null));
+    }
+
 }
-

@@ -32,17 +32,24 @@
  */
 package ucar.nc2.ft.fmrc;
 
+import org.junit.Assert;
 import org.junit.Test;
+import ucar.ma2.Array;
 import ucar.nc2.Attribute;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.Formatter;
 
 /**
- * Describe
+ * misc tests on Fmrc
  *
  * @author caron
  * @since 3/17/2015
@@ -62,5 +69,31 @@ public class TestFmrcMisc {
       System.out.printf("%s%n", att);
     }
   }
+
+  @Test
+  public void testFloatingPointCompare() throws Exception {
+    String spec = TestDir.cdmUnitTestDir+"ft/fmrc/fp_precision/sediment_thickness_#yyMMddHHmm#.*\\.nc$";
+    System.out.printf("%n====================FMRC dataset %s%n", spec);
+    Formatter errlog = new Formatter();
+    Fmrc fmrc = Fmrc.open(spec, errlog);
+    assert (fmrc != null) : errlog;
+
+    try (ucar.nc2.dt.GridDataset gridDs = fmrc.getDatasetBest()) {
+      GridDatatype v = gridDs.findGridByShortName("thickness_of_sediment");
+      assert v != null;
+      GridCoordSystem gcs = v.getCoordinateSystem();
+      CoordinateAxis1DTime time = gcs.getTimeAxis1D();
+
+      Assert.assertEquals("hours since 2015-03-08 12:51:00.000 UTC", time.getUnitsString());
+      Assert.assertEquals(74, time.getSize());
+      Array data = time.read();
+      System.out.printf("%s%n", NCdumpW.toString(data));
+
+      for (CalendarDate cd : time.getCalendarDates()) {
+        assert cd.getFieldValue(CalendarPeriod.Field.Minute) == 0 : System.out.printf("%s%n", cd);
+      }
+    }
+  }
+
 
 }

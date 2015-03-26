@@ -40,7 +40,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
       CoordinateTimeAbstract timesPrev = timeMap.get(coordT2D.getRuntime(runIdx));
       if (timesPrev != null && !shown) {
-        logger.warn("HEY CoordinateTime2DUnionizer duplicate runtimes from different partitions {}",
+        logger.warn("CoordinateTime2DUnionizer duplicate runtimes from different partitions {}",
                 Thread.currentThread().getStackTrace());
         shown = true;
       }

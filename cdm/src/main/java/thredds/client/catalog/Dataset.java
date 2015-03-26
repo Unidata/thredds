@@ -38,7 +38,6 @@ import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -72,7 +71,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String Projects = "Projects";
   public static final String Properties = "Properties";
   public static final String Publishers = "Publishers";
-  public static final String ResourceControl = "ResourceControl";
+  public static final String RestrictAccess = "RestrictAccess";
   public static final String ServiceName = "ServiceName";
   public static final String Services = "Services";
   public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable";
@@ -255,7 +254,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     String name = getDataFormatName();
     if (name == null) return null;
     try {
-      return ucar.nc2.constants.DataFormatType.valueOf(name);
+      return ucar.nc2.constants.DataFormatType.getType(name);
     } catch (Exception e) {
       return null;
     }
@@ -298,8 +297,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return cat.findService( getServiceNameDefault());
   }
 
-  public String getResourceControl() {
-    return (String) getInheritedField(ResourceControl);
+  public String getRestrictAccess() {
+    return (String) getInheritedField(RestrictAccess);
   }
 
   public DateRange getTimeCoverage() {

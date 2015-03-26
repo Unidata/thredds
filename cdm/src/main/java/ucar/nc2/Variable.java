@@ -1459,7 +1459,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     if (immutable) throw new IllegalStateException("Cant modify");
     this.dimensions = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
-      if ((shape[i] < 1) && (shape[i] != -1)) throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
+      if ((shape[i] < 1) && (shape[i] != -1))
+        throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
       Dimension anon;
       if (shape[i] == -1) {
         anon = Dimension.VLEN;
