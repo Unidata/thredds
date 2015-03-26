@@ -1,12 +1,12 @@
 Making a release for CDM/TDS with jenkins
-last edited 08/26/2014
+last edited 2015/03/26
 
-0. tds.properties
+1. tds.properties
   - In /thredds/tds/src/main/template/thredds/server/tds.properties,
     the "tds.content.root.path" and "tds.dir.cdmUnitTest" properties must be set to the production release values.
     Make sure the Spock and local override values are commented out.
 
-1. Jenkins
+2. Jenkins
   - Go to Jenkin project's configuration page
       - Under "Source Code Management" - "Additional Behaviors" - Add - "Check out to specific local branch"
       - Enter the branch name for the next version, eg if current is "4.5.3", then use "4.5.4" here
@@ -18,45 +18,41 @@ last edited 08/26/2014
       - If the local branch was not specified, you will get the following error
         "Detecting the current branch failed: fatal: ref HEAD is not a symbolic ref"
 
-2. Check that all went well:
+3. Check that all went well:
     - gitHub has new release tag, eg "v{release}"
     - gitHub has new branch, eg if current is "4.5.3", then "4.5.4" should now be on gitHub
     - Check release artifacts are in artifacts.unidata.ucar.edu, eg http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
 
-3. Jenkins- "Additional Behaviors"
+4. Jenkins- "Additional Behaviors"
     - Go back to the CMD/TDS project's configuration page, "Source Code Management"
     - Update "Branches to build" to new branch, eg "target-{next}"
     - Delete "Checkout to local branch" (added in the first step of "1. Jenkins")
     - Check "Branches to build" now refers to the new one
     - Save
 
-4. Git (ONLY IF THIS IS STABLE RELEASE)
+5. Git (ONLY IF THIS IS STABLE RELEASE)
   - go to github thredds repo, "settings"
   - change "Default branch" to the released version
   - ie, default branch == stable release
 
-5. put thredds.war on conan ftp  (best to do from ssh)
+6. put thredds.war on conan ftp  (best to do from ssh)
   - cd /web/ftp/pub/thredds/{version}
   - mkdir {release}
   - from http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
-     download tds-{release}.war tds-{release}.war.md5 tds-{release}.sha1 to /web/ftp/pub/thredds/{version}/{release}
+     download tds-{release}.war tds-{release}.war.md5 tds-{release}.war.sha1 to /web/ftp/pub/thredds/{version}/{release}
      rename to thredds.war, thredds.war.md5 and thredds.war.sha1
   - move /web/ftp/pub/thredds/{version}/current to point to /web/ftp/pub/thredds/{version}/{release}
      rm current
      ln -s {release} current
 
-6. build cdm locally
+7. build thredds locally
     git fetch
     git checkout "v{release}"  (note that this is the tagged release)
     cd {github/thredds}
     mvn clean install
 
-7a. put ncIdv onto conan ftp
-   cd  /web/ftp/pub/netcdf-java/v{version}
-   wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/4.3.23/ncIdv-4.3.23.jar
-
-7. put ncIdv, netcdfAll, toolsUI onto conan ftp
-    cp {github/thredds}/ncIdv/target/ncIdv-{release}.jar to /web/ftp/pub/netcdf-java/v{version}        (could do it this way instead of 7a)
+8. put ncIdv, netcdfAll, toolsUI onto conan ftp
+    cp {github/thredds}/ncIdv/target/ncIdv-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
     cp {github/thredds}/ui/target/netcdfAll-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
     cp {github/thredds}/ui/target/toolsUI-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
 
@@ -67,25 +63,33 @@ last edited 08/26/2014
     ln -s netcdfAll-{release}.jar netcdfAll-{version}.jar
     ln -s ncIdv-{release}.jar ncIdv-{version}.jar
 
-8. put tdm onto conan ftp (version 4.5 and above)
+9. put tdm onto conan ftp (version 4.5 and above)
     cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/{version}/current/tdm-{version}.jar
     also copy over md5 and sha1
     rename all to remove minor version (eg tdm-4.5.4.jar -> tdm-4.5.jar)
 
-9. CDM has additional targets that are handled by gradle builds
+10. Change permissions of the files you just copied.
+   - cd /web/ftp/pub/thredds/{version}/{release}
+   - chmod 775 .
+   - chmod 664 *
+   - cd /web/ftp/pub/netcdf-java/v{version}
+   - chmod 775 .
+   - chmod 664 *
+
+11. CDM has additional targets that are handled by gradle builds
   - modify build.gradle in top directory to use the correct version
   - make sure you have correct gradle.properties in ~home/.gradle/  [See John or Sean for info]
   - cd {github/thredds}
   a. make supporting libraries
-      gradle clean build -x test
+      ./gradlew clean build -x test
       If this fails but mvn works, make sure that any new dependencies added to the project modules were
       also added to the build.gradle files.
   b. release webstart to conan:/content/software/netcdf-java/v{version}/webstart
-      gradle -p ui releaseWebstart
+      ./gradlew :ui:releaseWebstart
   c. release cdm javadocs to conan:/content/software/netcdf-java/v{version}/javadoc
-      gradle -p cdm releaseDocs
+      ./gradlew :cdm:releaseDocs
   d. release all javadocs to conan:/content/software/netcdf-java/v{version}/javadocAll
-      gradle -p ui releaseDocs
+      ./gradlew :ui:releaseDocs
   e. Change permissions of the files you just copied.
        cd to conan:/content/software/netcdf-java/v{version}/
        Execute:
@@ -96,15 +100,15 @@ last edited 08/26/2014
          find javadocAll -type d -exec chmod 775 {} \;
          find javadocAll -type f -exec chmod 664 {} \;
 
-10. update Unidata download page(s)
+12. update Unidata download page(s)
   - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
     modify conan:/content/downloads/thredds/toc.xml as needed
   - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
     modify conan:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
 
-11. if you need to do any changes to web pages, do it on the next branch (eg target-{next})
+13. if you need to do any changes to web pages, do it on the next branch (eg target-{next})
 
-12. To start working with the next branch in IntelliJ
+14. To start working with the next branch in IntelliJ
   - Git Fetch
   - Checkout <new branch>
 
