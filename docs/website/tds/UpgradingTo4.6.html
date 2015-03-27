@@ -17,7 +17,7 @@
 <h2>GRIB Feature Collection Changes</h2>
 <ol>
   <li>GRIB Collections now scale to large numbers of files.</li>
-  <li>New indexes (.<strong>ncx3</strong>) will be written the first time GRIB files are accessed. You may delete the older indices (<strong>ncx</strong>, <strong>ncx2</strong>) if you like. The <strong>gbx9</strong> indices can stay as they are somewhat expensive to build (requiring a sequential read of the grib files). Deleting them will allow a few minor improvements to be made when recreating.</li>
+  <li>New indexes (.<strong>ncx3</strong>) will be written the first time GRIB files are accessed. You may delete the older indices (<strong>ncx</strong>, <strong>ncx2</strong>) if you like. The <strong>gbx9</strong> indices can stay as they are somewhat expensive to build (requiring a sequential read of the GRIBfiles). Deleting them will allow a few minor improvements to be made when recreating.</li>
   <li>GRIB Best Collections now show the runtime as an auxiliary coordinate, and runtimes are monotonic increasing.</li>
   <li>Some GRIB specific <a href="reference/collections/GribCollectionFaq.html">FAQs</a></li>
   <li>For complete information, see <a href="reference/collections/GribCollections.html">GRIB Collections</a> and <a href="reference/collections/TDM.html">TDM</a>.</li>
@@ -53,7 +53,7 @@
 <h2>API changes</h2>
 <h3>Client Catalog API</h3>
 <blockquote>
-  <p>The catalog processing classes in <strong>thredds.catalog</strong> package has been replaced by <strong>thredds.client.catalog</strong> everywhere in  client code. If you are using  <strong>thredds.catalog</strong>  in your code, please switch to <strong>thredds.catalog</strong>.<strong>client</strong>, as it is takes less memory and is better performant. The old package is still available, but in future versios they will be moved to a <strong>legacy.jar</strong>, which you will need to seperately include in your classpath if needed.</p>
+  <p>The catalog processing classes in <strong>thredds.catalog</strong> package has been replaced by <strong>thredds.client.catalog</strong> everywhere in  client code. If you are using  <strong>thredds.catalog</strong>  in your code, please switch to <strong>thredds.catalog</strong>.<strong>client</strong>, as it is takes less memory and is better performant. The old classes are deprecated but still available, but in future versions they will be moved to <strong>legacy.jar</strong>, which you will need to seperately include in your classpath if needed.</p>
 </blockquote>
 <h3>Internal changes</h3>
 <ul>
