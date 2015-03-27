@@ -20,6 +20,16 @@ subprojects {
     }
 
     tasks.withType(Test) {
+        // Eventually create a JUnit category for tests that need this.
+        String propKey = 'tds.content.root.path'
+        def propVal = System.properties[propKey]  // Defined in gradle.properties or command line.
+
+        if (propVal) {
+            systemProperty propKey, propVal  // Propagate to Gradle Test Executor.
+        } else {
+            logger.warn "\"$propKey\" not defined! Some tests will fail."
+        }
+
         if (!System.env['TRAVIS']) {
             ignoreFailures true  // Don't fail the build on test failure unless we're running on Travis.
         }

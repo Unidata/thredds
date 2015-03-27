@@ -36,15 +36,15 @@
 package ucar.nc2.util.net;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
-import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
+import ucar.unidata.test.util.NotTravis;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -59,6 +59,7 @@ import java.net.URISyntaxException;
 public class TestStream {
 
   @Test
+  @Category(NotTravis.class)
   public void testStream1() throws URISyntaxException {
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
@@ -88,6 +89,7 @@ public class TestStream {
   }
 
   @Test
+  @Category(NotTravis.class)
   public void testString() throws URISyntaxException {
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);

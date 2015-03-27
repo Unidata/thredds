@@ -50,12 +50,6 @@ gretty {
     // However, it is actually still present as of 7.0.55
     secureRandom = true
 
-//    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
-//    def contentRoot = 'Q:/cdmUnitTest/it/content'
-
-//    systemProperty 'tds.content.root.path', contentRoot
-//    systemProperty 'tds.dir.cdmUnitTest', 'Q:/cdmUnitTest'
-
     // Causes the org.akhikhl.gretty.ServerConfig.systemProperties field to be initialized.
     // We don't actually care about the key-value-pair; we just want that field to be non-null to avoid an NPE.
     // TODO: Reduce this bug to a minimum test case and submit to Gretty project.

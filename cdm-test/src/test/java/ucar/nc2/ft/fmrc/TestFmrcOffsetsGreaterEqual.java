@@ -34,17 +34,16 @@ package ucar.nc2.ft.fmrc;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import ucar.nc2.Attribute;
 import ucar.nc2.NCdumpW;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -56,6 +55,7 @@ import java.util.Formatter;
  * @author caron
  * @since 3/17/2015
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestFmrcOffsetsGreaterEqual {
   /*
       <featureCollection name="espresso_2013_da_history_fmrc_with_Offset_in_filename" featureType="FMRC"

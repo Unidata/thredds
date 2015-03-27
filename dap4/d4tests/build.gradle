@@ -16,14 +16,12 @@ dependencies {
 }
 
 test {
-    // Causes JUnit to throw an exception: "No tests found in ucar.nc2.util.UnitTestCommon"
-    exclude 'dap4/test/util/DapTestCommon.class'
-
-    // Let Gradle run the tests; we don't need our own test suites.
-    exclude 'dap4/test/TestDap4All.class'
-
-    // In the d4tests maven-surefire-plugin config, there is a list of included test classes, implying that those
-    // are the only ones that should be run. However, not all of them yield success when run from Gradle.
-    // I think d4tests just needs some attention: fix broken tests if possible and possibly upgrade JUnit 3 tests to
-    // JUnit 4.
+    include 'dap4/test/TestParserDMR.class'
+    include 'dap4/test/TestParserCE.class'
+    include 'dap4/test/TestNc4Iosp.class'
+    include 'dap4/test/TestServlet.class'
+    include 'dap4/test/TestServletConstraints.class'
+    include 'dap4/test/TestCDMClient.class'
+    include 'dap4/test/TestConstraints.class'
+    include 'dap4/test/TestDSR.class'
 }

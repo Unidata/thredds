@@ -52,6 +52,7 @@ import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.PrintWriter;
@@ -194,6 +195,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NotTravis.class)
   public void testDODS() throws Exception {
     String ds = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
     GridDataset dataset = null;
@@ -493,6 +495,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NotTravis.class)
   public void testBBSubset() throws Exception {
     GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best");
     GeoGrid grid = dataset.findGridByName("Pressure_surface");
@@ -522,6 +525,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NotTravis.class)
   public void testBBSubset2() throws Exception {
     GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best");
     GeoGrid grid = dataset.findGridByName("Pressure_hybrid");
@@ -753,6 +757,7 @@ public class TestSubset {
   }
 
   @Test
+  @Category(NotTravis.class)
   public void testFindVerticalCoordinate() throws Exception {
     String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
     GridDataset dataset = GridDataset.open(filename);

@@ -1,15 +1,16 @@
 package thredds.tds.idd;
 
-import org.junit.runners.Parameterized;
-import org.junit.runner.RunWith;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import thredds.client.catalog.Catalog;
+import thredds.tds.ethan.TestAll;
+import ucar.unidata.test.util.NotTravis;
 
 import java.util.Collection;
 
-import thredds.client.catalog.Catalog;
-import thredds.tds.ethan.TestAll;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Ping a TDS assuming an IDD setup.
@@ -17,6 +18,7 @@ import static org.junit.Assert.*;
  * @author edavis
  * @since 4.0
  */
+@Category(NotTravis.class)
 @RunWith(Parameterized.class)
 public class PingMotherlodeTdsTest
 {

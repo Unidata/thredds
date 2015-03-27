@@ -42,12 +42,11 @@ import ucar.unidata.test.util.NotTravis;
  * @author caron
  * @since 3/5/2015
  */
-// For some reason, testLiveServer() fails on Travis after a 10-minute timeout. It succeeds everywhere else.
-// We assume that thredds.ucar.edu is unreachable due to some limitation and/or bug in Travis.
-// testDevServer() actually works. Not sure about testTestServer().
-@Category(NotTravis.class)
 public class TestReadAndCountMisc {
+  // For some reason, this fails on Travis after a 10-minute timeout. It succeeds everywhere else.
+  // We assume that thredds.ucar.edu is unreachable due to some limitation and/or bug in Travis.
   @Test
+  @Category(NotTravis.class)
   public void testLiveServer() throws Exception {
     TestReadandCount.doOne("thredds:resolve:http://thredds.ucar.edu/thredds/",
             "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);

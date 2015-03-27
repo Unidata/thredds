@@ -32,9 +32,11 @@
 
 package thredds.tds.idd;
 
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.Test;
+import ucar.unidata.test.util.NotTravis;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -47,6 +49,7 @@ import java.util.ArrayList;
  * @author edavis
  * @since 4.0
  */
+@Category(NotTravis.class)
 @RunWith(Parameterized.class)
 public class CrawlRandomDatasetsOnMotherlodeTds
 {

@@ -35,12 +35,14 @@ package thredds.tds.ethan.httpunit;
 
 import com.meterware.httpunit.*;
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
+import ucar.unidata.test.util.NotTravis;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.net.ssl.HttpsURLConnection;
@@ -56,6 +58,7 @@ import java.security.cert.Certificate;
  * @author edavis
  * @since 15 July 2005 15:50:59 -0600
  */
+@Category(NotTravis.class)
 public class TestServerSite extends TestCase
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestServerSite.class );

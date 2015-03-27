@@ -32,12 +32,16 @@
 
 package thredds.tds.idd;
 
+import org.junit.experimental.categories.Category;
+import ucar.unidata.test.util.NotTravis;
+
 /**
  * _more_
  *
  * @author edavis
  * @since 4.0
  */
+@Category(NotTravis.class)
 public class TdsTestUtils
 {
   public static String getTargetTdsUrl()
