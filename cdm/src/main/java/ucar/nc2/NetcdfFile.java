@@ -242,11 +242,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    /* try {
+    try {
       registerIOProvider("ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
-    } */
+    }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.AreaServiceProvider");
       registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");

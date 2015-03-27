@@ -215,7 +215,7 @@ public class TestDir {
     return open( TestDir.cdmLocalTestDataDir +filename);
   }
 
-  static public void checkLeaks() {
+  static public long checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
       System.out.printf("%nRandomAccessFile still open:%n");
       for (String filename : RandomAccessFile.getOpenFiles()) {
@@ -225,6 +225,7 @@ public class TestDir {
       System.out.printf("RandomAccessFile: no leaks%n");
     }
     System.out.printf("RandomAccessFile: count open=%d, max=%d%n", RandomAccessFile.getOpenFileCount(), RandomAccessFile.getMaxOpenFileCount());
+    return RandomAccessFile.getOpenFiles().size();
   }
 
 

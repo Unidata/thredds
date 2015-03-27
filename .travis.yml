@@ -13,6 +13,12 @@ matrix:
 #    - jdk: oraclejdk7
 #      env: BUILD_IDV=true
 
+before_install:
+  - cp ${TRAVIS_BUILD_DIR}/travis/settings.xml ${HOME}/.m2
+
+install:
+  - mvn install -DskipTests=true
+
 script:
   # If we need to do an IDV build, run the script
   - if [[ $BUILD_IDV == true ]]; then
@@ -25,4 +31,4 @@ script:
 
 cache:
   directories:
-    - $HOME/.gradle
+    - $HOME/.m2
