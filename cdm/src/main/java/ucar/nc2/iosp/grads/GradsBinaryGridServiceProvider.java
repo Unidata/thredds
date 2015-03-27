@@ -187,7 +187,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
 
     // we think its a GRADS file, but we have lots of restrictions on what we can handle
     try {
-      gradsDDF = new GradsDataDescriptorFile(raf.getLocation());
+      gradsDDF = new GradsDataDescriptorFile(raf.getLocation(), 1000);
       GradsDimension x = gradsDDF.getXDimension();
       GradsDimension y = gradsDDF.getYDimension();
       //J-
@@ -235,7 +235,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     this.ncFile = ncfile;
     // debugProj = true;
     if (gradsDDF == null) {
-      gradsDDF = new GradsDataDescriptorFile(raf.getLocation());
+      gradsDDF = new GradsDataDescriptorFile(raf.getLocation(), 1000);
     }
     xyHeaderBytes = gradsDDF.getXYHeaderBytes();
     fileHeaderBytes = gradsDDF.getFileHeaderBytes();
@@ -588,9 +588,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException problem closing files
    */
   public void close() throws IOException {
-    if (dataFile != null) {
+    if (dataFile != null)
       dataFile.close();
-    }
     dataFile = null;
     super.close();
   }
@@ -685,7 +684,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     //                   + ", lev = " + levIdx);
 
 
-    dataFile = getDataFile(ensIdx, timeIdx);
+    dataFile = getDataFile(ensIdx, timeIdx);  // LOOK file leak ??
     List<GradsVariable> vars = gradsDDF.getVariables();
     // if it's an ensemble template, then all data is in this file
     int numEns =

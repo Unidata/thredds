@@ -220,10 +220,26 @@ public class GradsDataDescriptorFile {
    */
   public static final int ENS_TIME_TEMPLATE = 3;
 
-  // assume there must be a "pdef" string in the first 1K
-  static private final KMPMatch matcher = new KMPMatch(new byte[] {'p','d','e','f'} );
+  static private final KMPMatch matchDSET = new KMPMatch("DSET".getBytes(CDM.utf8Charset));
+  static private final KMPMatch matchdset = new KMPMatch("dset".getBytes(CDM.utf8Charset));
+  static private final KMPMatch matchENDVARS = new KMPMatch("ENDVARS".getBytes(CDM.utf8Charset));
+  static private final KMPMatch matchendvars = new KMPMatch("endvars".getBytes(CDM.utf8Charset));
   public static boolean failFast(RandomAccessFile raf) throws IOException {
-    return !raf.searchForward(matcher, 1000); // look in first 1K
+    raf.seek(0);
+    boolean ok = raf.searchForward(matchDSET, 1000); // look in first 1K
+    if (!ok) {
+      raf.seek(0);
+      ok = raf.searchForward(matchdset, 1000); // look in first 1K
+      if (!ok) return true;
+    }
+
+    long pos = raf.getFilePointer();
+    ok = raf.searchForward(matchENDVARS, 20000); // look in next 20K
+    if (!ok) {
+      raf.seek(pos);
+      ok = raf.searchForward(matchendvars, 20000); // look in next 20K
+    }
+    return !ok;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////
@@ -368,24 +384,27 @@ public class GradsDataDescriptorFile {
    */
   private String pathToDDF = null;
 
+  boolean error = false;
+
   /**
    * Create a GradsDataDescriptorFile from the file
    *
    * @param filename the name of the file
    * @throws IOException problem reading/parsing the file
    */
-  public GradsDataDescriptorFile(String filename) throws IOException {
-    ddFile = filename;
-    parseDDF();
-    getFileNames();
-  }
+  public GradsDataDescriptorFile(String filename, int maxLines) throws IOException {
+     ddFile = filename;
+     parseDDF(maxLines);
+     if (error) return;
+     getFileNames();
+   }
 
   /**
    * Parse the ctl file
    *
    * @throws IOException problem reading the file
    */
-  private void parseDDF() throws IOException {
+  private void parseDDF(int maxLines) throws IOException {
 
     //long start2 = System.currentTimeMillis();
 
@@ -394,6 +413,7 @@ public class GradsDataDescriptorFile {
     attrList = new ArrayList<>();
 
     // not using raf - opened file again
+    int count = 0;
     try (BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(ddFile), CDM.utf8Charset))) {
       boolean inVarSection = false;
       boolean inEnsSection = false;
@@ -402,6 +422,11 @@ public class GradsDataDescriptorFile {
       GradsDimension curDim = null;
 
       while ((original = r.readLine()) != null) {
+        count++;
+        if (count > maxLines) {
+          error = true;
+          return;
+        }
 
         original = original.trim();
         if (original.isEmpty()) {
@@ -865,7 +890,7 @@ public class GradsDataDescriptorFile {
    * @throws Exception problem reading the file
    */
   public static void main(String[] args) throws Exception {
-    GradsDataDescriptorFile gdd = new GradsDataDescriptorFile(args[0]);
+    GradsDataDescriptorFile gdd = new GradsDataDescriptorFile(args[0], 1000);
     System.out.println(gdd);
   }
 
