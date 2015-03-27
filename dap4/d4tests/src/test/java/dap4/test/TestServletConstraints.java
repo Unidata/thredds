@@ -57,6 +57,11 @@ public class TestServletConstraints extends DapTestCommon
 
         static {
             alltests = new ConstraintTest[2048];
+            reset();
+        }
+
+        static public void reset()
+        {
             Arrays.fill(alltests, null);
         }
 
@@ -85,12 +90,6 @@ public class TestServletConstraints extends DapTestCommon
         ConstraintTest(int id, String dataset, String extensions, String ce,
                        Dump.Commands template, boolean xfail)
         {
-            if(alltests[id] != null) {
-                System.err.printf("Two tests with same id: id=%d old=%s new=%s%n",
-                    id,alltests[id],dataset+(ce==null?"":"?+ce"));
-                System.err.flush();
-                throw new IllegalStateException("two tests with same id");
-            }
             this.id = id;
             this.title = dataset + (ce == null ? "" : ("?" + ce));
             this.dataset = dataset;
@@ -104,6 +103,12 @@ public class TestServletConstraints extends DapTestCommon
                     = this.baselineroot + "/" + dataset + "." + id;
             this.generatepath
                     = this.generateroot + "/" + dataset + "." + id;
+            if(alltests[id] != null) {
+                System.err.printf("Two tests with same id: id=%d old=%s new=%s%n",
+                        id, alltests[id], this);
+                System.err.flush();
+                throw new IllegalStateException("Two tests with same id");
+            }
             alltests[id] = this;
         }
 
@@ -156,6 +161,7 @@ public class TestServletConstraints extends DapTestCommon
     {
         super(name);
         ConstraintTest.setRoots(getResourceDir() + "/" + TESTINPUTDIR, getResourceDir() + BASELINEDIR, getResourceDir() + GENERATEDIR);
+        alltestcases.clear();
         defineAllTestcases();
         chooseTestcases();
     }
