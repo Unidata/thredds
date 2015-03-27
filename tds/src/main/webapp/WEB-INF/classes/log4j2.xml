@@ -67,7 +67,7 @@
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="thredds.servlet.DataRootHandler.catalogInit" level="debug" additivity="false">
+    <logger name="thredds.servlet.DataRootHandler.catalogInit" level="info" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>
 
@@ -97,19 +97,19 @@
     </logger>
 
     <!-- fmrc -->
-    <logger name="ucar.nc2.ft.fmrc" level="debug" additivity="false">
+    <logger name="ucar.nc2.ft.fmrc" level="info" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
 
-    <logger name="thredds.catalog.InvDatasetFcFmrc" level="debug" additivity="false">
+    <logger name="thredds.catalog.InvDatasetFcFmrc" level="info" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
 
-    <logger name="thredds.servlet.DataRootHandler.fcScan" level="debug" additivity="false">
+    <logger name="thredds.servlet.DataRootHandler.fcScan" level="info" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
 
-    <logger name="thredds.inventory.CollectionManagerAbstract" level="debug" additivity="false">
+    <logger name="thredds.inventory.CollectionManagerAbstract" level="info" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
 

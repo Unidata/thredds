@@ -34,6 +34,7 @@ package thredds.client.catalog.builder;
 
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.DatasetNode;
+import thredds.client.catalog.ThreddsMetadata;
 
 import java.util.*;
 
@@ -86,6 +87,17 @@ public class DatasetBuilder {
 
   public void put(String fldName, Object fldValue) {
     if (fldValue != null) flds.put(fldName, fldValue);
+  }
+
+  public void putInheritedField(String fldName, Object fldValue) {
+    if (fldValue == null) return;
+
+    ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
+    if (tmi == null) {
+      tmi = new ThreddsMetadata();
+      put(Dataset.ThreddsMetadataInheritable, tmi);
+    }
+    tmi.getFlds().put(fldName, fldValue);
   }
 
   public void setName(String name) {

@@ -940,8 +940,10 @@ public class Grib2CollectionPanel extends JPanel {
     float[] data;
     try {
       data = bean1.readData();
-    } catch (IOException e) {
-      f.format("IOException %s", e.getMessage());
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter(5000);
+      e.printStackTrace(new PrintWriter(sw));
+      f.format("Exception %s", sw.toString());
       return;
     }
 

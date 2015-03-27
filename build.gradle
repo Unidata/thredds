@@ -1,6 +1,6 @@
 allprojects {
     group = "edu.ucar"
-    version = '4.6.0-SNAPSHOT'
+    version = '4.6.0'
 }
 
 // Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can

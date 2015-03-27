@@ -434,7 +434,7 @@ public class CatalogBuilder {
     dataset.put( Dataset.Authority, dsElem.getAttributeValue("authority"));
     dataset.put( Dataset.CollectionType, dsElem.getAttributeValue("collectionType"));
     dataset.put( Dataset.Id, dsElem.getAttributeValue("ID"));
-    dataset.put( Dataset.ResourceControl, dsElem.getAttributeValue("resourceControl"));
+    dataset.putInheritedField( Dataset.RestrictAccess, dsElem.getAttributeValue("restrictAccess"));
     dataset.put( Dataset.ServiceName, dsElem.getAttributeValue("serviceName"));
     dataset.put( Dataset.UrlPath, dsElem.getAttributeValue("urlPath"));
 
@@ -776,7 +776,6 @@ public class CatalogBuilder {
       useFlds = flds;
     }
     readThreddsMetadataGroup(useFlds, dataset, mdataElement);
-
 
     // also need to capture any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
     // in this case we just suck it in as if it was inline

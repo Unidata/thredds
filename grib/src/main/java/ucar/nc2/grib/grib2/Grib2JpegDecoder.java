@@ -375,11 +375,12 @@ public class Grib2JpegDecoder {
       } else {
         error("An uncaught runtime exception has occurred.", 2);
       }
-      if (debug) e.printStackTrace();
+      throw new IOException(e);
 
     } catch (Throwable e) {
-      error("An uncaught exception has occurred.", 2);
-      if (debug) e.printStackTrace();
+      throw new IOException(e);
+      //error("An uncaught exception has occurred.", 2);
+      //if (debug) e.printStackTrace();
     }
   } // end decode
 
