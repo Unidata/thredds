@@ -36,10 +36,28 @@ boolean testRuntimeHasDepNamed(String depName) {
     }
 }
 
+// Process test exclusions.
 gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     Collection<Task> testTasks = taskGraph.allTasks.findAll { it instanceof Test }
     if (!testTasks) {
         return  // We're not running any tests.
+    }
+
+    // These appear to be the only environment variables that Jenkins defines: http://goo.gl/iCh08k
+    // Is there a better way to detect Jenkins?
+    boolean isJenkins = System.env['JENKINS_URL']  // We only care if prop is defined, not its actual value.
+
+    if (isJenkins) {
+        // Never exclude any tests when running on Jenkins.
+        // We're explicitly checking for this so that we don't accidentally exclude tests due to a mis-configuration
+        // of one of the properties below. In that scenario, we want tests to fail so that we know to fix our config.
+        return
+    }
+
+    boolean isTravis = System.env['TRAVIS']
+
+    if (isTravis) {
+        logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
     }
 
     boolean isCdmUnitTestDirAvailable = true
@@ -53,18 +71,13 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
         isCdmUnitTestDirAvailable = false
     }
 
-    boolean isTravis = System.env['TRAVIS']
-    if (isTravis) {
-        logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
-    }
-
     testTasks*.configure {
         useJUnit {
-            if (!isCdmUnitTestDirAvailable) {
-                excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
-            }
             if (isTravis) {
                 excludeCategories 'ucar.unidata.test.util.NotTravis'
+            }
+            if (!isCdmUnitTestDirAvailable) {
+                excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
             }
         }
     }
