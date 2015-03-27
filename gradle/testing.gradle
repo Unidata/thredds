@@ -19,26 +19,9 @@ subprojects {
         }
     }
 
-
     tasks.withType(Test) {
-        useJUnit {
-            String testdataDirPath = getTestdataDirPath()
-            if (!testdataDirPath) {
-                logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
-                // FIXME: This is spammy.
-                // Also, calling (or not calling) this method does not affect a Test task's up-to-date status.
-                excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
-            } else if (!new File(testdataDirPath).isDirectory()) {
-                logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
-                excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
-            }
-
-            if (System.env['TRAVIS']) {
-                logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
-                excludeCategories 'ucar.unidata.test.util.NotTravis'
-            } else {
-                ignoreFailures true
-            }
+        if (!System.env['TRAVIS']) {
+            ignoreFailures true  // Don't fail the build on test failure unless we're running on Travis.
         }
     }
 }
@@ -50,6 +33,40 @@ boolean testRuntimeHasDepNamed(String depName) {
     } catch (UnknownConfigurationException e) {  // Project did not have a configuration named 'testRuntime'.
         logger.debug e.message
         false
+    }
+}
+
+gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+    Collection<Task> testTasks = taskGraph.allTasks.findAll { it instanceof Test }
+    if (!testTasks) {
+        return  // We're not running any tests.
+    }
+
+    boolean isCdmUnitTestDirAvailable = true
+    String testdataDirPath = getTestdataDirPath()
+
+    if (!testdataDirPath) {
+        logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
+        isCdmUnitTestDirAvailable = false
+    } else if (!new File(testdataDirPath).isDirectory()) {
+        logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
+        isCdmUnitTestDirAvailable = false
+    }
+
+    boolean isTravis = System.env['TRAVIS']
+    if (isTravis) {
+        logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
+    }
+
+    testTasks*.configure {
+        useJUnit {
+            if (!isCdmUnitTestDirAvailable) {
+                excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+            }
+            if (isTravis) {
+                excludeCategories 'ucar.unidata.test.util.NotTravis'
+            }
+        }
     }
 }
 
