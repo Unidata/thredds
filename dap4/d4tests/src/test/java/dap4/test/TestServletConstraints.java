@@ -85,8 +85,12 @@ public class TestServletConstraints extends DapTestCommon
         ConstraintTest(int id, String dataset, String extensions, String ce,
                        Dump.Commands template, boolean xfail)
         {
-            if(alltests[id] != null)
+            if(alltests[id] != null) {
+                System.err.printf("Two tests with same id: id=%d old=%s new=%s%n",
+                    id,alltests[id],dataset+(ce==null?"":"?+ce"));
+                System.err.flush();
                 throw new IllegalStateException("two tests with same id");
+            }
             this.id = id;
             this.title = dataset + (ce == null ? "" : ("?" + ce));
             this.dataset = dataset;
