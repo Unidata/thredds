@@ -38,8 +38,13 @@ import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.util.Misc;
+import ucar.nc2.util.cache.FileCache;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
@@ -106,6 +111,74 @@ public class TestMiscIosp {
 
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 3000, 4736});
+    }
+  }
+
+
+  @Test
+  public void testGrads() throws IOException, InvalidRangeException {
+    RandomAccessFile.setDebugLeaks(true);
+    String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+      System.out.printf("open %s %n", ncf.getLocation());
+
+      ucar.nc2.Variable v = ncf.findVariable("mask");
+      assert v != null;
+      assert v.getDataType() == DataType.FLOAT;
+      Attribute att = v.findAttribute(CDM.MISSING_VALUE);
+      assert att != null;
+      assert att.getDataType() == DataType.FLOAT;
+      assert Misc.closeEnough(att.getNumericValue().floatValue(), -9999.0f);
+
+      Array data = v.read();
+      assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
+    }
+    TestDir.checkLeaks();
+    RandomAccessFile.setDebugLeaks(false);
+  }
+
+  @Test
+  public void testGradsWithRAFCache() throws IOException, InvalidRangeException {
+    RandomAccessFile.setDebugLeaks(true);
+    RandomAccessFile.enableDefaultGlobalFileCache();
+    String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+      System.out.printf("open %s %n", ncf.getLocation());
+
+      ucar.nc2.Variable v = ncf.findVariable("mask");
+      assert v != null;
+      assert v.getDataType() == DataType.FLOAT;
+      Attribute att = v.findAttribute(CDM.MISSING_VALUE);
+      assert att != null;
+      assert att.getDataType() == DataType.FLOAT;
+      assert Misc.closeEnough(att.getNumericValue().floatValue(), -9999.0f);
+
+      Array data = v.read();
+      assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
+    }
+    FileCache.shutdown();
+    RandomAccessFile.setGlobalFileCache(null);
+    assert 0 == TestDir.checkLeaks();
+    RandomAccessFile.setDebugLeaks(false);
+  }
+
+  // @Test
+  // dunno what kind of grads file this is.
+  public void testGrads2() throws IOException, InvalidRangeException {
+    String fileIn = TestDir.cdmUnitTestDir + "formats/grads/pdef.ctl";
+    try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
+      System.out.printf("open %s %n", ncf.getLocation());
+
+      ucar.nc2.Variable v = ncf.findVariable("pdef");
+      assert v != null;
+      assert v.getDataType() == DataType.FLOAT;
+      Attribute att = v.findAttribute(CDM.MISSING_VALUE);
+      assert att != null;
+      assert att.getDataType() == DataType.FLOAT;
+      assert Misc.closeEnough(att.getNumericValue().floatValue(), -9999.0f);
+
+      Array data = v.read();
+      assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
     }
   }
 
