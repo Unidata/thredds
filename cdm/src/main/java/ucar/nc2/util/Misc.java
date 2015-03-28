@@ -45,6 +45,9 @@ import java.util.*;
  */
 public class Misc {
 
+  static final protected String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  static final protected String slashalpha = "\\/" + alpha;
+
   //private static double maxAbsoluteError = 1.0e-6;
   public static final double maxReletiveError = 1.0e-6;
 
@@ -280,37 +283,67 @@ public class Misc {
     return (x < y) ? -1 : ((x == y) ? 0 : 1);
   }
 
-  /**
-   * Return the set of leading protocols for a url; may be more than one.
-   *
-   * @param url the url whose protocols to return
-   * @return list of leading protocols without the trailing :
-   */
-  static public List<String> getProtocols(String url) {
-    // break off any leading protocols;
-    // there may be more than one.
-    // Watch out for Windows paths starting with a drive letter.
-    // Each protocol does not have trailing :
 
-    List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
+    /**
+     * Return the set of leading protocols for a url; may be more than one.
+     * Watch out for Windows paths starting with a drive letter => protocol
+     * names must all have a length > 1.
+     * Watch out for '::'
+     * Each captured protocol is saved without trailing ':'
+     * Assume: the protocols MUST be terminated by the occurrence of '/'.
+     *
+     * @param url the url whose protocols to return
+     * @return list of leading protocols without the trailing :
+     */
+    static public List<String> getProtocols(String url)
+    {
+        List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
 
-    // Note, we cannot use split because of the context sensitivity
-    StringBuilder buf = new StringBuilder(url);
-    for (; ; ) {
-      int index = buf.indexOf(":");
-      if (index < 0) break; // no more protocols
-      String protocol = buf.substring(0, index);
-      // Check for windows drive letter
-      if (index == 1 //=>|protocol| == 1
-              && "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-              .indexOf(buf.charAt(0)) >= 0) break;
-      allprotocols.add(protocol);
-      buf.delete(0, index + 1); // remove the leading protocol
-      if (buf.indexOf("/") == 0)
-        break; // anything after this is not a protocol
+        // Note, we cannot use split because of the context sensitivity
+        // This code is quite ugly because of all the confounding cases
+        // (e.g. windows path, embedded colons, etc.).
+        // Specifically, the 'file:' protocol is a problem because
+        // it has no many non-standard forms such as file:x/y file://x/y file:///x/y.
+        StringBuilder buf = new StringBuilder(url);
+        // If there are any leading protocols, then they must stop at the first '/'.
+        int slashpos = buf.indexOf("/");
+        // Check special case of file:<path> with no slashes after file:
+        if(url.startsWith("file:") && "/\\".indexOf(url.charAt(5)) < 0) {
+            allprotocols.add("file");
+        } else if(slashpos >= 0) {
+            // Remove everything after the first slash
+            buf.delete(slashpos + 1, buf.length());
+            for(;;) {
+                int index = buf.indexOf(":");
+                if(index < 0) break; // no more protocols
+                // Validate protocol
+                if(!validateprotocol(url, 0, index))
+                    break;
+                String protocol = buf.substring(0, index);  // not including trailing ':'
+                allprotocols.add(protocol);
+                buf.delete(0, index + 1); // remove the leading protocol
+            }
+        }
+        return allprotocols;
     }
-    return allprotocols;
-  }
+
+
+    static protected boolean
+    validateprotocol(String url, int startpos, int endpos)
+    {
+        int len = endpos - startpos;
+        if(len == 0) return false;
+        char cs = url.charAt(startpos);
+        char ce1 = url.charAt(endpos + 1);
+        if(len == 1 //=>|protocol| == 1
+            && alpha.indexOf(cs) >= 0 && "/\\".indexOf(ce1) >= 0)
+            return false; // looks like windows drive letter
+        // If trailing colon is not followed by alpha or /, then assume not url
+        if(slashalpha.indexOf(ce1) < 0)
+            return false;
+        return true;
+    }
+
 
   /**
    * test
