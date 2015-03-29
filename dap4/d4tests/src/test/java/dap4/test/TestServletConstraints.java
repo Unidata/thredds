@@ -341,7 +341,11 @@ public class TestServletConstraints extends DapTestCommon
                 assert (false);
                 if(!pass) break;
             }
-            if(!pass) break;
+            if(!pass) {
+                System.err.printf("TestServletConstraint: fail: %s ext=%s\n",testcase,extension);
+                System.err.flush();
+                break;
+            }
         }
         return pass;
     }
