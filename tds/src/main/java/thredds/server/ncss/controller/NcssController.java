@@ -37,9 +37,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.config.FormatsAvailabilityService;
 import thredds.server.config.TdsContext;
-import thredds.server.ncss.dataservice.FeatureDatasetService;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.exception.UnsupportedOperationException;
 import thredds.server.ncss.exception.UnsupportedResponseFormatException;
@@ -78,8 +78,8 @@ import java.util.Set;
 public class NcssController extends AbstractNcssController {
   //static private final Logger log = LoggerFactory.getLogger(NcssController.class);
 
-  @Autowired
-  FeatureDatasetService datasetService;
+  //@Autowired
+  //FeatureDatasetService datasetService;
 
   @Autowired
   TdsContext tdsContext;
@@ -108,12 +108,8 @@ public class NcssController extends AbstractNcssController {
     }
 
     String datasetPath = getDatasetPath(req);
-    try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
-      if (fd == null) {
-        //handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND,
-        //        "dataset path not found " + datasetPath);
-        return;
-      }
+    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
+      if (fd == null) return;
 
       Formatter errs = new Formatter();
       if (!params.intersectsTime(fd, errs)) {

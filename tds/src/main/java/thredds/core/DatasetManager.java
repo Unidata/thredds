@@ -36,7 +36,6 @@ package thredds.core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
-import thredds.inventory.MFile;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
@@ -46,19 +45,19 @@ import thredds.servlet.restrict.RestrictedDatasetServlet;
 import thredds.util.TdsPathUtils;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.cache.FileFactory;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Access to CDM Datasets as NetcdfFile or GridDataset.
@@ -235,8 +234,40 @@ public class DatasetManager {
     return ncfile;
   }
 
-  public FeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    return getFeatureCollection(req, res, TdsPathUtils.extractPath(req, null));
+  public FeatureDataset getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+    FeatureType type;
+    FeatureDataset fd = null;
+    FeatureCollection ftCollection = getFeatureCollection(req, res, reqPath);
+
+    if (ftCollection != null) {
+      type = ftCollection.getFeatureType();
+      if (type == FeatureType.GRID) {
+        return openGridDataset(req, res, reqPath);
+        //builds a FeatureDataset from an TypedDataset
+        // fd = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(gds.getNetcdfFile()));
+      }
+
+      if (type.isPointFeatureType()) {
+        fd = null; // ftCollection.getFeatureDataset();  // LOOK WTF ??
+      }
+
+    } else {
+
+      //Try as file?
+      NetcdfFile ncfile = getNetcdfFile(req, res, reqPath);
+      if (ncfile != null) {
+        //Wrap it into a FeatureDataset
+        Set<NetcdfDataset.Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(NetcdfDataset.Enhance.CoordSystems, NetcdfDataset.Enhance.ConvertEnums));
+        fd = FeatureDatasetFactoryManager.wrap(
+                FeatureType.ANY,                  // will check FeatureType below if needed...
+                NetcdfDataset.wrap(ncfile, enhance),
+                null,
+                new Formatter(System.err));       // better way to do this?
+      }
+    }
+
+    return fd;
+
   }
 
   // return null means request has been handled, and calling routine should exit without further processing
@@ -366,7 +397,7 @@ public class DatasetManager {
    * @return true if ok to proceed. If false, the appropriate error or redirect message has been sent, the caller only needs to return.
    * @throws IOException on read error
    */
-  public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) { // throws IOException {
     if (null == reqPath)
       reqPath = TdsPathUtils.extractPath(req, null);
 
@@ -380,8 +411,8 @@ public class DatasetManager {
         if (!RestrictedDatasetServlet.authorize(req, res, rc)) {
           return false;
         }
-      } catch (ServletException e) {
-        throw new IOException(e.getMessage());
+      } catch (Exception e) {
+        throw new RuntimeException(e.getMessage());
       }
 
       if (debugResourceControl) System.out.println("ResourceControl granted = " + rc);

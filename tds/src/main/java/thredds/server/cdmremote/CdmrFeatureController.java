@@ -69,11 +69,9 @@ import ucar.unidata.geoloc.Station;
  * Controller for CdmrFeature service.
  * At the moment, only handles station time series
  *
- * @Deprecatred deprecated in favor of CdmrfController
- *
  * @author caron
+ * @Deprecatred deprecated in favor of CdmrfController
  * @since May 28, 2009
- *  
  */
 @Deprecated
 public class CdmrFeatureController extends AbstractCommandController { // implements LastModified {
@@ -135,57 +133,31 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     }
     if (debug) System.out.printf(" %s%n", query);
 
-    FeatureDatasetPoint fdp = null;
+    try (FeatureDatasetPoint fdp = findFeatureDatasetPointByPath(req, res, null)) {
+      if (fdp == null) return null;
 
-    // this looks for a featureCollection
-    FeatureDataset fc = TdsRequestedDataset.getFeatureCollection(req, res);
-    if (fc != null) {
-      fdp = (FeatureDatasetPoint) fc;
-
-    } else {
-      // tom kunicki 12/18/10
-      // allows a single NetcdfFile to be turned into a FeatureDataset  LOOK seems like this should work from getFeatureCollection()
-      NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res);
-      if (ncfile != null) {
-        FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
-                FeatureType.ANY,                  // will check FeatureType below if needed...
-                NetcdfDataset.wrap(ncfile, null),
-                null,
-                new Formatter(System.err));       // better way to do this?
-        if (fd instanceof FeatureDatasetPoint) {
-          fdp = (FeatureDatasetPoint) fd;
-        }
+      List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
+      if (list.size() == 0) {
+        log.error(fdp.getLocation() + " does not have any PointFeatureCollections");
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, fdp.getLocation() + " does not have any PointFeatureCollections");
+        return null;
       }
-    }
 
-    if (fdp == null) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point or station dataset");
-      return null;
-    }
+      // check on feature type, using suffix convention LOOK
+      String path = req.getPathInfo();
+      FeatureType ft = null;
+      if (path.endsWith("/station")) {
+        ft = FeatureType.STATION;
+        path = path.substring(0, path.lastIndexOf('/'));
+      } else if (path.endsWith("/point")) {
+        ft = FeatureType.POINT;
+        path = path.substring(0, path.lastIndexOf('/'));
+      }
 
-    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
-    if (list.size() == 0) {
-      log.error(fdp.getLocation()+" does not have any PointFeatureCollections");
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, fdp.getLocation()+" does not have any PointFeatureCollections");
-      return null;
-    }
+      if (ft != null && ft != fdp.getFeatureType()) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
+      }
 
-    // check on feature type, using suffix convention LOOK
-    String path = req.getPathInfo();
-    FeatureType ft = null;
-    if (path.endsWith("/station")) {
-      ft = FeatureType.STATION;
-      path = path.substring(0, path.lastIndexOf('/'));
-    } else if (path.endsWith("/point")) {
-      ft = FeatureType.POINT;
-      path = path.substring(0, path.lastIndexOf('/'));
-    }
-
-    if (ft != null && ft != fdp.getFeatureType()) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
-    }
-
-    try {
       CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
       CdmRemoteQueryBean.ResponseType resType = query.getResponseType();
       switch (reqType) {
@@ -216,17 +188,64 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage());
       return null;
 
-    } finally {
-      if (showReq) System.out.printf(" done%n");
-      if (null != fdp)
-        try {
-          fdp.close();
-        } catch (IOException ioe) {
-          log.error("Failed to close = " + path);
-        }
     }
 
     return null;
+  }
+
+  public FeatureDatasetPoint findFeatureDatasetPointByPath(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
+
+    // this looks for a featureCollection
+    FeatureDataset fc = TdsRequestedDataset.getFeatureDataset(req, res, path);
+
+    FeatureDatasetPoint fdp = null;
+    if (fc != null) {
+      fdp = (FeatureDatasetPoint) fc;
+
+    } else {
+      // tom kunicki 12/18/10
+      // allows a single NetcdfFile to be turned into a FeatureDataset
+      NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, path); // LOOK above call should do thie ??
+      if (ncfile == null) return null;  // restricted access
+
+      FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
+              FeatureType.ANY,                  // will check FeatureType below if needed...
+              NetcdfDataset.wrap(ncfile, null),
+              null,
+              new Formatter(System.err));       // better way to do this?
+      if (fd instanceof FeatureDatasetPoint)
+        fdp = (FeatureDatasetPoint) fd;
+    }
+
+    //---//
+    if (fdp == null) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point or station dataset");
+      return null;
+    }
+
+    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
+    if (list.size() == 0) {
+      // log.error(fdp.getLocation() + " does not have any PointFeatureCollections");
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, fdp.getLocation() + " does not have any PointFeatureCollections");
+      return null;
+    }
+
+    // check on feature type, using suffix convention LOOK
+    FeatureType ft = null;
+    if (path.endsWith("/station")) {
+      ft = FeatureType.STATION;
+      path = path.substring(0, path.lastIndexOf('/'));
+    } else if (path.endsWith("/point")) {
+      ft = FeatureType.POINT;
+      path = path.substring(0, path.lastIndexOf('/'));
+    }
+
+    if (ft != null && ft != fdp.getFeatureType()) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
+    }
+
+    return fdp;
+
   }
 
   private String getContentType(CdmRemoteQueryBean query) {
@@ -375,7 +394,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       ucar.unidata.io.RandomAccessFile.setDebugAccess(false);  // LOOK !!
     }*/
 
-    return null; 
+    return null;
   }
 
   private ModelAndView processStations(HttpServletResponse res, FeatureDatasetPoint fdp, CdmRemoteQueryBean query) throws IOException {
@@ -459,7 +478,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
         infoString = fmt.outputString(doc);
 
       } else if (reqType == CdmRemoteQueryBean.RequestType.form) {
-        String xslt = fdp.getFeatureType() == FeatureType.STATION ?  "ncssSobs.xsl" : "fmrcPoint.xsl";
+        String xslt = fdp.getFeatureType() == FeatureType.STATION ? "ncssSobs.xsl" : "fmrcPoint.xsl";
         InputStream is = getXSLT(xslt);
         Document doc = xmlWriter.getCapabilitiesDocument();
         XSLTransformer transformer = new XSLTransformer(is);
@@ -472,7 +491,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       }
 
     } catch (Exception e) {
-      log.error("SobsServlet internal error on "+fdp.getLocation(), e);
+      log.error("SobsServlet internal error on " + fdp.getLocation(), e);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
       return null;
     }

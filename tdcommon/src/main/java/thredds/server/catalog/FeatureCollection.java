@@ -40,7 +40,7 @@ import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 
 import java.io.IOException;
 import java.net.URI;
