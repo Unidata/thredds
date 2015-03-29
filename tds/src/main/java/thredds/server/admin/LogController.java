@@ -34,11 +34,7 @@
 package thredds.server.admin;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -117,13 +113,10 @@ public class LogController{
 
     File file = null;
     if (path.equals("/log/dataroots.txt")) {
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
-      PathMatcher pathMatcher = matcher.getPathMatcher();
-      Iterator iter = pathMatcher.iterator();
-      while (iter.hasNext()) {
-        DataRoot ds = (DataRoot) iter.next();
-        pw.format("%s%n", ds.toString2()); // path,dir
-      }
+      Formatter f = new Formatter();
+      matcher.showRoots(f);
+      PrintWriter pw = res.getWriter();
+      pw.print(f.toString());
       pw.flush();
 
     } else if (path.equals("/log/access/current")) {
@@ -163,7 +156,7 @@ public class LogController{
       return null;
 
     } else {
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
+      PrintWriter pw = res.getWriter();
       pw.format("/log/access/current%n");
       pw.format("/log/access/%n");
       pw.format("/log/thredds/current%n");
@@ -192,7 +185,7 @@ public class LogController{
     List<File> fileList = Arrays.asList(files);
     Collections.sort(fileList);
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
+    PrintWriter pw = res.getWriter();
     for (File f : fileList)
       pw.format("%s %d%n", f.getName(), f.length());
     pw.flush();

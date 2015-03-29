@@ -35,6 +35,19 @@
       <artifactId>spring-core</artifactId>
     </dependency>
 
+    <!-- DB -->
+    <dependency>
+       <groupId>org.mapdb</groupId>
+       <artifactId>mapdb</artifactId>
+       <version>1.0.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.openhft</groupId>
+      <artifactId>chronicle-map</artifactId>
+      <version>2.1.4</version>
+    </dependency>
+
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -47,7 +47,6 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.ThreddsMetadata;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.catalog.writer.ThreddsMetadataExtractor;
-import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDataset;
@@ -80,19 +79,16 @@ public class MetadataController {
       return;
     }
 
-    String path = ServletUtil.getRequestPath(req);
-    path = path.substring(10);
+    //String path = ServletUtil.getRequestPath(req);
+    //path = path.substring(10);
     //String info = ServletUtil.showRequestDetail(null, req);
     //System.out.printf("%s%n", info);
 
-    try (GridDataset gridDataset = TdsRequestedDataset.openGridDataset(req, res, path)) {
-      if (gridDataset == null) {
-        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        log.debug("DatasetHandler.FAIL path={}", path);
+    try (GridDataset gridDataset = TdsRequestedDataset.openGridDataset(req, res, null)) {
+      if (gridDataset == null)
         return;
-      }
 
-      NetcdfFile ncfile = gridDataset.getNetcdfFile();
+      NetcdfFile ncfile = gridDataset.getNetcdfFile();   // LOOK maybe gridDataset.getFileTypeId ??
       String fileType = ncfile.getFileTypeId();
       ucar.nc2.constants.DataFormatType fileFormat = ucar.nc2.constants.DataFormatType.getType(fileType);
       ThreddsMetadata.VariableGroup vars = new ThreddsMetadataExtractor().extractVariables(fileFormat.toString(), gridDataset);

@@ -97,7 +97,6 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     CatalogXmlWriter.useBytesForDataSize(useBytesForDataSize);
     startupLog.info("CdmInit: catalogWriting.useBytesForDataSize= "+useBytesForDataSize);
 
-
      // datasetSource plug-in
     for (String className : ThreddsConfig.getRootList("datasetSource"))  {
       datasetManager.registerDatasetSource(className);

@@ -120,8 +120,7 @@ public class DebugController{
     response.setStatus( HttpServletResponse.SC_OK );
 
     // send it out
-    PrintWriter responsePS = new PrintWriter(new OutputStreamWriter(
-            response.getOutputStream(), CDM.utf8Charset));
+    PrintWriter responsePS = response.getWriter();
     responsePS.write(bos.toString(CDM.UTF8));
     responsePS.flush();
   }
