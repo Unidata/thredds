@@ -64,7 +64,7 @@ public class ThreddsDSP extends CDMDSP
     {
         try {
             path = DapUtil.canonicalpath(location);
-            NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(this.request, this.response);
+            NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(this.request, this.response, null);
 //            NetcdfFile ncfile = DatasetHandler.getNetcdfFile(this.request, this.response,location);
             return ncfile;
         } catch (Exception e) {

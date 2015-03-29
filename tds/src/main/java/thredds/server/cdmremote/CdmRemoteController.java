@@ -127,7 +127,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
     }
     if (debug) System.out.printf(" %s%n", qb);
 
-    try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res)) {
+    try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, null)) {
       if (ncfile == null) return;
       /*
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);

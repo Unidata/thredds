@@ -32,7 +32,6 @@
  */
 package thredds.server.ncss.controller;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +42,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import thredds.server.ncss.dataservice.FeatureDatasetService;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
@@ -62,8 +61,8 @@ import ucar.nc2.ft.FeatureDataset;
 // @RequestMapping(value = "/ncss/**/datasetBoundaries.xml")
 public class NcssDatasetBoundariesController extends AbstractNcssController {
 
-  @Autowired
-  FeatureDatasetService datasetService;
+  //@Autowired
+  //FeatureDatasetService datasetService;
 
   /* @RequestMapping("/ncss/grid/**")
   public String forwardGrid(HttpServletRequest req) {
@@ -84,9 +83,9 @@ public class NcssDatasetBoundariesController extends AbstractNcssController {
     SupportedFormat sf = getSupportedFormat(params, SupportedOperation.DATASET_BOUNDARIES_REQUEST);
     String datasetPath = getDatasetPath(req);
 
-    try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
+    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
       if (fd == null)
-        throw new FileNotFoundException("Could not find Dataset "+datasetPath);
+        return;
 
       if (fd.getFeatureType() != FeatureType.GRID)
         throw new UnsupportedOperationException("Dataset Boundaries request is only supported on Grid features");
