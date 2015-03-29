@@ -209,54 +209,30 @@ public class DatasetManager {
           netcdfElem = dscan.getNcmlElement();
       }
 
-      MFile file = dataRootManager.getFileFromRequestPath(reqPath);
-      if (file == null)
+      String location = dataRootManager.getLocationFromRequestPath(reqPath);
+      if (location == null)
         throw new FileNotFoundException(reqPath);
 
       // if theres an ncml element, open it directly through NcMLReader, therefore not being cached.
       // this is safer given all the trouble we have with ncml and caching.
       if (netcdfElem != null) {
-        String ncmlLocation = "DatasetScan#" + file.getName(); // some descriptive name
-        NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, netcdfElem, "file:" + file.getPath(), null);
+        String ncmlLocation = "DatasetScan#" + location; // LOOK some descriptive name
+        NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, netcdfElem, "file:" + location, null);
         //new NcMLReader().readNetcdf(reqPath, ncd, ncd, netcdfElem, null);
         if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found DataRoot NcML = " + ds);
         return ncd;
       }
 
       if (doCache)
-        ncfile = NetcdfDataset.acquireFile(file.getPath(), null);
+        ncfile = NetcdfDataset.acquireFile(location, null);
       else
-        ncfile = NetcdfDataset.openFile(file.getPath(), null);
+        ncfile = NetcdfDataset.openFile(location, null);
 
       if (ncfile == null) throw new FileNotFoundException(reqPath);
 
     }
 
     return ncfile;
-  }
-
-  public String getNetcdfFilePath(HttpServletRequest req, /*HttpServletResponse res,*/ String reqPath) throws IOException {
-    if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
-    if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
-
-    if (reqPath == null)
-      return null;
-
-    if (reqPath.startsWith("/"))
-      reqPath = reqPath.substring(1);
-
-    // look for a match
-    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
-
-    String fullpath = null;
-    if (match != null)
-      fullpath = match.dirLocation + match.remaining;
-    else {
-      MFile file = dataRootManager.getFileFromRequestPath(reqPath);
-      if (file != null)
-        fullpath = file.getPath();
-    }
-    return fullpath;
   }
 
   public FeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {

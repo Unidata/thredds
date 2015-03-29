@@ -623,10 +623,10 @@ public class ServletUtil {
       // Return the file
       ServletOutputStream out = res.getOutputStream();
       // IO.copyFileB(file, out, 60 * 1000);
-      WritableByteChannel cOut = Channels.newChannel(out);
-      IO.copyFileWithChannels(file, cOut, 60 * 1000);
-      res.flushBuffer();
-      out.close();
+      try (WritableByteChannel cOut = Channels.newChannel(out)) {
+        IO.copyFileWithChannels(file, cOut, 60 * 1000);
+        res.flushBuffer();
+      }
       if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
     }
 

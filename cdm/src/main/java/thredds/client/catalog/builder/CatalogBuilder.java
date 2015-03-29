@@ -46,6 +46,7 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.URLnaming;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,6 +78,7 @@ public class CatalogBuilder {
   public Catalog buildFromLocation(String location) throws IOException {
     URI uri;
     try {
+      location = StringUtil2.replace(location, "\\", "/");
       uri = new URI(location);
     } catch (URISyntaxException e) {
       errlog.format("Bad location = '%s' err='%s'%n", location, e.getMessage());
@@ -211,7 +213,7 @@ public class CatalogBuilder {
     } catch (Exception e) {
       errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
       logger.error("failed to read catalog at " + uri.toString(), e);
-      e.printStackTrace();
+      // e.printStackTrace();
       fatalError = true;
     }
 

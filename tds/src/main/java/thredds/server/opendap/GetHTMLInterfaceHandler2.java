@@ -127,7 +127,7 @@ public class GetHTMLInterfaceHandler2
                         )
                 );
             } else
-                pw = new PrintWriter(response.getOutputStream());
+                pw = response.getWriter();
 
 
             wwwOutPut wOut = new wwwOutPut(pw);

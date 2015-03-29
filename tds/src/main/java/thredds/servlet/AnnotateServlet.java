@@ -94,7 +94,7 @@ public class AnnotateServlet extends AbstractServlet {
 
       res.setStatus(HttpServletResponse.SC_OK);
       res.setContentType(ContentType.html.getContentHeader());
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
+      PrintWriter pw = res.getWriter();
 
       pw.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n");
       pw.println("        \"http://www.w3.org/TR/html4/loose.dtd\">\n");
@@ -166,7 +166,7 @@ public class AnnotateServlet extends AbstractServlet {
         return;
       }
 
-      PrintStream  pw = new PrintStream (res.getOutputStream(), false, CDM.UTF8);
+      PrintWriter pw = res.getWriter();
 
       String jnlpString = req.getParameter("jnlp");
       File dir = new File(contentPath);

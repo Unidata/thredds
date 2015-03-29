@@ -127,9 +127,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
     }
     if (debug) System.out.printf(" %s%n", qb);
 
-    NetcdfFile ncfile = null;
-    try {
-      ncfile = new TdsRequestedDataset(req).openAsNetcdfFile(req, res);
+    try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res)) {
       if (ncfile == null) return;
       /*
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -225,14 +223,6 @@ public class CdmRemoteController extends AbstractController implements LastModif
     } catch (Throwable e) {
       log.error(e.getMessage(), e);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-
-    } finally {
-      if (null != ncfile)
-        try {
-          ncfile.close();
-        } catch (IOException ioe) {
-          log.error("Failed to close = " + datasetPath);
-        }
     }
 
   }
