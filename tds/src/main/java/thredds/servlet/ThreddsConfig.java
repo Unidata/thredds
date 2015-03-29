@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import thredds.core.DatasetManager;
 import thredds.util.ThreddsConfigReader;
 
 /**

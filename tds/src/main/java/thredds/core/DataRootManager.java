@@ -70,7 +70,7 @@ import java.util.*;
  */
 @Component("DataRootManager")
 @DependsOn("CdmInit")
-public final class DataRootManager { // implements InitializingBean {
+public class DataRootManager {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootManager.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootManager.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
@@ -273,27 +273,21 @@ public final class DataRootManager { // implements InitializingBean {
    * matching DatasetScan or DataRoot filters out the requested MFile, the MFile does not represent a File
    * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs
    *
-   * @param path the request path.
-   * @return the requested java.io.File or null.
+   * @param reqPath the request path.
+   * @return the location of the file on disk, or null
    * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
-  public MFile getFileFromRequestPath(String path) {
-    if (path.length() > 0) {
-      if (path.startsWith("/"))
-        path = path.substring(1);
+  public String getLocationFromRequestPath(String reqPath) {
+    if (reqPath.length() > 0) {
+      if (reqPath.startsWith("/"))
+        reqPath = reqPath.substring(1);
     }
 
-    DataRoot reqDataRoot = findDataRoot(path);
+    DataRoot reqDataRoot = findDataRoot(reqPath);
     if (reqDataRoot == null)
       return null;
 
-    String location = reqDataRoot.getFileLocationFromRequestPath(path);
-
-    try {
-      return new MFileOS7(location);
-    } catch (IOException e) {
-      return null;  // LOOK would happen if file does not exist
-    }
+    return reqDataRoot.getFileLocationFromRequestPath(reqPath);
   }
 
   /**
@@ -418,9 +412,6 @@ public final class DataRootManager { // implements InitializingBean {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // debugging only !!
-  public PathMatcher getPathMatcher() {
-    return pathMatcher;
-  }
 
   public void showRoots(Formatter f) {
     Iterator iter = pathMatcher.iterator();
@@ -433,7 +424,6 @@ public final class DataRootManager { // implements InitializingBean {
   public List<InvDatasetFeatureCollection> getFeatureCollections() {
     return null;
   }
-
 
 
   public void makeDebugActions() {

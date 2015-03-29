@@ -42,6 +42,10 @@ import ucar.nc2.util.Indent;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -105,14 +109,16 @@ public class CatalogCrawler {
     Catalog cat = catFactory.buildFromLocation(catUrl);
     boolean isValid = !catFactory.hasFatalError();
     if (out != null) {
-      out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
+      out.println("catalog <" + catUrl + "> " + (isValid ? "is" : "is not") + " valid");
       out.println(" validation output=\n" + catFactory.getErrorMessage());
     }
-    if (out != null)
+    if (out != null && cat != null)
       out.println("***CATALOG " + cat.getBaseURI());
 
     if (isValid)
       return crawl(cat, task, out, context, new Indent(2));
+    else
+      System.err.printf("%s%n", catFactory.getErrorMessage());
     return 0;
   }
 
@@ -144,7 +150,7 @@ public class CatalogCrawler {
    * @param task    user can cancel the task (may be null)
    * @param out     send status messages to here (may be null)
    * @param context caller can pass this object in (used for thread safety)
-   * @param indent print indentation
+   * @param indent  print indentation
    */
   private void crawlDataset(Dataset ds, boolean isTop, CancelTask task, PrintWriter out, Object context, Indent indent) throws IOException {
     if (filter != null && filter.skipAll(ds))
@@ -215,6 +221,7 @@ public class CatalogCrawler {
       if (dds.hasNestedDatasets() || (dds instanceof CatalogRef)) {
         crawlDataset(dds, false, task, out, context, indent.incr());
         indent.decr();
+        if ((task != null) && task.isCancel()) break;
       }
 
       if ((task != null) && task.isCancel()) break;
@@ -231,7 +238,7 @@ public class CatalogCrawler {
       }
       return cat;
     } catch (IOException e) {
-      if (out != null) out.printf("%sError reading catref %s err=%s%n", indent,catref.getName(), e.getMessage());
+      if (out != null) out.printf("%sError reading catref %s err=%s%n", indent, catref.getName(), e.getMessage());
     }
     return null;
   }
@@ -299,5 +306,56 @@ public class CatalogCrawler {
     public boolean skipAll(Dataset ds) {
       return skipDatasetScan && (ds instanceof CatalogRef) && (ds.findProperty("DatasetScan") != null);
     }
+  }
+
+  public int crawlAllInDirectory(Path directory, boolean recurse, CancelTask task, PrintWriter out, Object context) throws IOException {
+    int count = 0;
+    try (DirectoryStream<Path> ds = Files.newDirectoryStream(directory)) {
+      for (Path p : ds) {
+        if (Files.isDirectory(p)) {
+          if (recurse)
+            crawlAllInDirectory(p, recurse, task, out, context);
+        } else {
+          count += crawl("file:" + p.toString(), null, null, null);
+        }
+        if ((task != null) && task.isCancel()) break;
+      }
+    }
+    return count;
+  }
+
+  public static void main(String[] args) throws IOException {
+    long start = System.currentTimeMillis();
+    final int[] countDs = {0, 0};
+
+    CatalogCrawler crawler = new CatalogCrawler(Type.all, -1, null, new Listener() {
+      public void getDataset(Dataset dd, Object context) {
+        countDs[0]++;
+        if (countDs[0] % 10000 == 0) System.out.printf("%d ", countDs[0]);
+      }
+
+      public boolean getCatalogRef(CatalogRef dd, Object context) {
+        countDs[1]++;
+        return true;
+      }
+    });
+
+    PrintWriter pw = new PrintWriter(System.out);
+    int count = 0;
+
+    //count += crawler.crawl("file:B:/esgf/ncar/esgcet/catalog.xml", null, null, null);
+    count += crawler.crawl("file:B://esgf/ncar/esgcet/56/ucar.cgd.ccsm4.CESM_CAM5_BGC_LE_COMPROJ.ice.proc.monthly_ave.fswthru.v1.xml", null, null, null);
+
+    /*
+    Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
+    count += crawler.crawlAllInDirectory(top, false, null, null, null); */
+
+    pw.flush();
+
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("took %d msecs%n", took);
+    System.out.printf("count %d%n", count);
+    System.out.printf("countDs %d%n", countDs[0]);
+    System.out.printf("countCatref %d%n", countDs[1]);
   }
 }

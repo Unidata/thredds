@@ -1,0 +1,26 @@
+option java_package = "thredds.server.catalog.proto";
+option java_outer_classname = "ConfigCatalogProto";
+
+message Access {
+  required string serviceName = 1;
+  required string urlPath = 2;
+  optional string dataFormatS = 3;
+  optional uint64 dataSize = 4;
+}
+
+message Dataset {
+  required string name = 1;
+  optional string path = 2;
+  optional string id = 3;
+
+  repeated Access access = 10;
+  repeated Property property = 11;
+}
+
+message Property {
+  required string name = 1;
+  required string value = 2;
+}
+
+// cd c:/dev/github/thredds50/tdcommon/src/main/java
+// protoc --proto_path=. --java_out=. thredds/server/catalog/proto/configCatalog.proto

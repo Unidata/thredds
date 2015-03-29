@@ -304,7 +304,7 @@ public class OpendapServlet extends AbstractServlet {
       ce.parseConstraint(rs);
       checkSize(dds, true);
 
-      PrintWriter pw = new PrintWriter(response.getOutputStream());
+      PrintWriter pw = response.getWriter();
       dds.printConstrained(pw);
       pw.println("---------------------------------------------");
 
@@ -546,7 +546,7 @@ public class OpendapServlet extends AbstractServlet {
     response.setHeader("XDODS-Server", getServerVersion());
     response.setHeader("Content-Description", "dods-version");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream()));
+    PrintWriter pw = response.getWriter();
 
     pw.println("Server Version: " + getServerVersion());
     pw.flush();
@@ -559,7 +559,7 @@ public class OpendapServlet extends AbstractServlet {
     response.setHeader("XDODS-Server", getServerVersion());
     response.setHeader("Content-Description", "dods-help");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream()));
+    PrintWriter pw = response.getWriter();
     printHelpPage(pw);
     pw.flush();
   }
@@ -584,7 +584,7 @@ public class OpendapServlet extends AbstractServlet {
       ds = getDataset(rs);
       if (null == ds) return;
 
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream(),Util.UTF8));
+      PrintWriter pw = response.getWriter();
       response.setHeader("XDODS-Server", getServerVersion());
       response.setContentType("text/html");
       response.setHeader("Content-Description", "dods-description");
@@ -981,7 +981,7 @@ public class OpendapServlet extends AbstractServlet {
       response.setHeader("Content-Description", "dods-error");
       response.setContentType("text/plain");
 
-      PrintWriter pw = new PrintWriter(response.getOutputStream());
+      PrintWriter pw = response.getWriter();
       pw.println("Error {");
       pw.println("    code = " + errorCode + ";");
       pw.println("    message = \"" + errorMessage + "\";");
