@@ -69,7 +69,7 @@ public class WcsRequestParser {
     Request.Operation operation;
     String datasetPath = TdsPathUtils.extractPath(req, "wcs/");
 
-    try (GridDataset dataset = TdsRequestedDataset.openGridDataset(req, res, null)) {
+    try (GridDataset dataset = TdsRequestedDataset.getGridDataset(req, res, null)) {
       if (dataset == null) return null;
 
       // GetCapabilities request info

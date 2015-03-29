@@ -35,26 +35,32 @@ package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import thredds.server.catalog.FeatureCollection;
 import thredds.servlet.ServletUtil;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Formatter;
+import java.util.Set;
 
 /**
- * Extracts the dataset ID from the HttpServletRequest and determines if it is
- * a local dataset path or a remote dataset URL.
- * <p/>
- * <p>The requested dataset can be opened by using the
- * {@link #openAsGridDataset(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
- * method.
+ * Open the requested dataset as a FeatureDataset/GridDataset/NetcdfFile.
+ * If the request requires an authentication challenge, a challenge will be sent back to the client using
+ * the response object, and this method will return null.  (This is the only
+ * circumstance in which this method will return null.)
+ * The client will then repeat the request.
  */
 @Component
 public class TdsRequestedDataset {
@@ -66,26 +72,28 @@ public class TdsRequestedDataset {
   @Autowired
   private static DataRootManager dataRootManager;
 
-  public static FeatureDataset getFeatureCollection(HttpServletRequest request, HttpServletResponse response) {
-    return null;
-  }
-  public static FeatureDataset getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) {
-    return null;
+  public static FeatureCollection getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+    TdsRequestedDataset trd = new TdsRequestedDataset(request);
+    if (path != null) trd.path = path;
+    return trd.openAsFeatureCollection(request, response);
   }
 
-  public static GridDataset openGridDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+  public static FeatureDataset getFeatureDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+    TdsRequestedDataset trd = new TdsRequestedDataset(request);
+    if (path != null) trd.path = path;
+    return trd.openAsFeatureDataset(request, response);
+  }
+
+  public static GridDataset getGridDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request);
     if (path != null) trd.path = path;
     return trd.openAsGridDataset(request, response);
   }
 
-  public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request);
+    if (path != null) trd.path = path;
     return trd.openAsNetcdfFile(request, response);
-  }
-
-  public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response, String path) {
-    return null;
   }
 
   public static long getLastModified(String reqPath) {
@@ -99,7 +107,7 @@ public class TdsRequestedDataset {
   }
 
   public static boolean resourceControlOk(HttpServletRequest request, HttpServletResponse response, String path) {
-    return true;
+    return datasetManager.resourceControlOk(request, response, path);
   }
 
 
@@ -118,32 +126,18 @@ public class TdsRequestedDataset {
     }
   }
 
-  /**
-   * Open the requested dataset as a GridDataset. If the request requires an
-   * authentication challenge, a challenge will be sent back to the client using
-   * the response object, and this method will return null.  (This is the only
-   * circumstance in which this method will return null.)
-   *
-   * @param request  the HttpServletRequest
-   * @param response the HttpServletResponse
-   * @return the requested dataset as a GridDataset
-   * @throws java.io.IOException if have trouble opening the dataset
-   */
+  public FeatureCollection openAsFeatureCollection(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    return datasetManager.getFeatureCollection(request, response, path);
+  }
+
+  public FeatureDataset openAsFeatureDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    return datasetManager.getFeatureDataset(request, response, path);
+  }
+
   public GridDataset openAsGridDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return isRemote ? ucar.nc2.dt.grid.GridDataset.open(path) : datasetManager.openGridDataset(request, response, path);
   }
 
-  /**
-   * Open the requested dataset as a NetcdfFile. If the request requires an
-   * authentication challenge, a challenge will be sent back to the client using
-   * the response object, and this method will return null.  (This is the only
-   * circumstance in which this method will return null.)
-   *
-   * @param request  the HttpServletRequest
-   * @param response the HttpServletResponse
-   * @return the requested dataset as a NetcdfFile
-   * @throws java.io.IOException if have trouble opening the dataset
-   */
   public NetcdfFile openAsNetcdfFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return isRemote ? NetcdfDataset.openDataset(path) : datasetManager.getNetcdfFile(request, response, path);
   }
@@ -201,4 +195,28 @@ public class TdsRequestedDataset {
     return fullpath;  */
     return null;
   }
+
+  /*
+      @Override
+    public FeatureDataset findDatasetByPath(HttpServletRequest req, HttpServletResponse res, String datasetPath) throws IOException {
+
+      FeatureDataset fd = TdsRequestedDataset.getFeatureCollection(req, res, datasetPath);
+
+      if (fd == null) {
+
+        NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, datasetPath); // LOOK should handle this case ??
+        if (ncfile != null) {
+          //Wrap it into a FeatureDataset
+          Set<NetcdfDataset.Enhance> enhance = Collections.unmodifiableSet(EnumSet.of(NetcdfDataset.Enhance.CoordSystems, NetcdfDataset.Enhance.ConvertEnums));
+          fd = FeatureDatasetFactoryManager.wrap(
+                  FeatureType.ANY,                  // will check FeatureType below if needed...
+                  NetcdfDataset.wrap(ncfile, enhance),
+                  null,
+                  new Formatter(System.err));       // better way to do this?
+        }
+      }
+
+      return fd;
+    }
+   */
 }

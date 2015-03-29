@@ -29,7 +29,7 @@ public final class DatasetHandlerAdapter {
 		req.setPathInfo(pathInfo);
 		
     String datasetPath = AbstractNcssController.getDatasetPath(pathInfo);
-		return TdsRequestedDataset.openGridDataset(req, res, datasetPath);
+		return TdsRequestedDataset.getGridDataset(req, res, datasetPath);
 	}
 
 }

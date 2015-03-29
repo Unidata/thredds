@@ -84,7 +84,7 @@ public class MetadataController {
     //String info = ServletUtil.showRequestDetail(null, req);
     //System.out.printf("%s%n", info);
 
-    try (GridDataset gridDataset = TdsRequestedDataset.openGridDataset(req, res, null)) {
+    try (GridDataset gridDataset = TdsRequestedDataset.getGridDataset(req, res, null)) {
       if (gridDataset == null)
         return;
 
