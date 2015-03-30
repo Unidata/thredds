@@ -76,7 +76,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since 12/13/13
  */
 public class Tdm {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( Tdm.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Tdm.class);
   private static final boolean debug = false;
   private static final boolean debugOpenFiles = false;
 
@@ -97,6 +97,7 @@ public class Tdm {
   private boolean forceOnStartup = false; // if true, just show dirs and exit
 
   LoggerFactory loggerFactory;
+  List<Resource> catalogRoots = new ArrayList<>();
 
   private static class Server {
     String name;
@@ -106,7 +107,7 @@ public class Tdm {
       this.name = name;
       this.session = session;
       System.out.printf("Server added %s%n", name);
-      log.info("TDS server added "+name);
+      log.info("TDS server added " + name);
     }
   }
 
@@ -157,14 +158,17 @@ public class Tdm {
       HTTPSession session = new HTTPSession(name);
       // AuthScope scope = new AuthScope(ANY_HOST, -1, ANY_REALM, "Digest");
       session.setCredentialsProvider(new CredentialsProvider() {
-         public Credentials getCredentials(AuthScope scope)
-         {
-           //System.out.printf("getCredentials called %s %s%n", user, pass);
-           return new UsernamePasswordCredentials(user, pass);
-         }
-         public void setCredentials(AuthScope scope, Credentials creds) {}
-         public void clear() {}
-       });
+        public Credentials getCredentials(AuthScope scope) {
+          //System.out.printf("getCredentials called %s %s%n", user, pass);
+          return new UsernamePasswordCredentials(user, pass);
+        }
+
+        public void setCredentials(AuthScope scope, Credentials creds) {
+        }
+
+        public void clear() {
+        }
+      });
 
       session.setUserAgent("TDM");
       servers.add(new Server(name, session));
@@ -172,6 +176,7 @@ public class Tdm {
   }
 
   AliasHandler aliasHandler;
+
   public void setPathAliasReplacements(List<PathAliasReplacement> aliasExpanders) {
     aliasHandler = new AliasHandler(aliasExpanders);
   }
@@ -186,8 +191,12 @@ public class Tdm {
     }
     ThreddsConfigReader reader = new ThreddsConfigReader(threddsConfig.toString(), log);
 
-   // LOOK following has been duplicated from tds cdmInit
+    for (String location : reader.getRootList("catalogRoot")) {
+      Resource r = new FileSystemResource(contentThreddsDir.toString() + "/" + location);
+      catalogRoots.add(r);
+    }
 
+    // LOOK following has been duplicated from tds cdmInit
     // 4.3.17
     long maxFileSize = reader.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
     int maxBackupIndex = reader.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 10);
@@ -205,48 +214,54 @@ public class Tdm {
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);
     GribIndexCache.setDiskCache2(gribCache);
-    log.info("TDM set "+gribCache);
+    log.info("TDM set " + gribCache);
 
     return true;
   }
 
   void start() throws IOException {
-     System.out.printf("Tdm startup at %s%n", new Date());
+    System.out.printf("Tdm startup at %s%n", new Date());
 
-     //CatalogConfigReader reader = new CatalogConfigReader(catalog, aliasExpanders);
-     CatalogConfigReader reader = new CatalogConfigReader(catalog, aliasHandler);
-     List<FeatureCollectionConfig> fcList = reader.getFcList();
+    List<FeatureCollectionConfig> fcList = new ArrayList<>();
+    CatalogConfigReader reader = new CatalogConfigReader(catalog, aliasHandler);
+    fcList.addAll(reader.getFcList());
 
-     if (showOnly) {
-       List<String> result = new ArrayList<>();
-       for (FeatureCollectionConfig config : fcList) {
-         result.add(config.collectionName);
-       }
-       Collections.sort(result);
+    // do the catalogRoots
+    for (Resource catr : catalogRoots) {
+      CatalogConfigReader r = new CatalogConfigReader(catr, aliasHandler);
+      fcList.addAll(r.getFcList());
+    }
 
-       System.out.printf("%nFeature Collection names:%n");
-       for (String name : result)
-         System.out.printf(" %s%n", name);
+    if (showOnly) {
+      List<String> result = new ArrayList<>();
+      for (FeatureCollectionConfig config : fcList) {
+        result.add(config.collectionName);
+      }
+      Collections.sort(result);
 
-       System.out.printf("%nTriggers:%n");
-       for (String name : result)
-         System.out.printf(" %s%n", makeTriggerUrl(name));
+      System.out.printf("%nFeature Collection names:%n");
+      for (String name : result)
+        System.out.printf(" %s%n", name);
 
-       executor.shutdown();
-       return;
-     }
+      System.out.printf("%nTriggers:%n");
+      for (String name : result)
+        System.out.printf(" %s%n", makeTriggerUrl(name));
 
-     for (FeatureCollectionConfig config : fcList) {
-       if (config.type != FeatureCollectionType.GRIB1 && config.type != FeatureCollectionType.GRIB2) continue;
-       System.out.printf("FeatureCollection %s scheduled %n", config.collectionName);
+      executor.shutdown();
+      return;
+    }
 
-       if (forceOnStartup) // on startup, force rewrite of indexes
-         config.tdmConfig.startupType = CollectionUpdateType.always;
+    for (FeatureCollectionConfig config : fcList) {
+      if (config.type != FeatureCollectionType.GRIB1 && config.type != FeatureCollectionType.GRIB2) continue;
+      System.out.printf("FeatureCollection %s scheduled %n", config.collectionName);
 
-       Logger logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection (!!)
-       logger.info("FeatureCollection config=" + config);
-       CollectionUpdater.INSTANCE.scheduleTasks(config, new Listener(config, logger), logger); // now wired for events
-     }
+      if (forceOnStartup) // on startup, force rewrite of indexes
+        config.tdmConfig.startupType = CollectionUpdateType.always;
+
+      Logger logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection (!!)
+      logger.info("FeatureCollection config=" + config);
+      CollectionUpdater.INSTANCE.scheduleTasks(config, new Listener(config, logger), logger); // now wired for events
+    }
 
      /* show whats up
      Formatter f = new Formatter();
@@ -256,7 +271,7 @@ public class Tdm {
        f.format("  %s == %s%n%s%n%n", fc, fc.getClass().getName(), dcm);
      }
      System.out.printf("%s%n", f.toString()); */
-   }
+  }
 
   // these objects listen for schedule events from quartz.
   // one listener for each fc.
@@ -420,7 +435,7 @@ public class Tdm {
   }
 
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /* public static void main2(String[] args) throws IOException {
     long start = System.currentTimeMillis();
