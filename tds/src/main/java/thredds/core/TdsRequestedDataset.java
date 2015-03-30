@@ -102,14 +102,17 @@ public class TdsRequestedDataset {
   }
 
   public static File getFile(String reqPath) {
-    String location = dataRootManager.getLocationFromRequestPath(reqPath);
+    String location = dataRootManager.getLocationFromRequestPath(reqPath);  // LOOK maybe go through DatasetManager
     return (location == null) ? null : new File(location);
+  }
+
+  public static String getLocationFromRequestPath(String reqPath) {
+    return dataRootManager.getLocationFromRequestPath(reqPath);
   }
 
   public static boolean resourceControlOk(HttpServletRequest request, HttpServletResponse response, String path) {
     return datasetManager.resourceControlOk(request, response, path);
   }
-
 
   ///////////////////////////////////////////////////////////////////////////////////
   private boolean isRemote = false;
@@ -148,52 +151,6 @@ public class TdsRequestedDataset {
 
   public String getPath() {
     return path;
-  }
-
-  static public String getNetcdfFilePath(HttpServletRequest req, String reqPath) throws IOException {
-    /*
-    if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
-    if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
-
-    if (reqPath == null)
-      return null;
-
-    if (reqPath.startsWith("/"))
-      reqPath = reqPath.substring(1);
-
-    // look for a match
-    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
-
-    String fullpath = null;
-    if (match != null)
-      fullpath = match.dirLocation + match.remaining;
-    else {
-      String location = dataRootManager.getLocationFromRequestPath(reqPath);
-      if (file != null)
-        fullpath = file.getPath();
-    }
-    return fullpath;
-  }
-
-    if (reqPath == null)
-      return null;
-
-    if (reqPath.startsWith("/"))
-      reqPath = reqPath.substring(1);
-
-    // look for a match
-    DataRootHandler.DataRootMatch match = datasetManager.findDataRootMatch(reqPath);
-
-    String fullpath = null;
-    if (match != null)
-      fullpath = match.dirLocation + match.remaining;
-    else {
-      File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
-      if (file != null)
-        fullpath = file.getAbsolutePath();
-    }
-    return fullpath;  */
-    return null;
   }
 
   /*
