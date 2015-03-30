@@ -9,7 +9,7 @@ in Log4j1. Need to tell it where the log files go.
 WEB-INF/classes/log4j2.xml
 
   <properties>
-    <property name="tds.content.root.path">../../content</property>
+    <property name="tds.content.root.path">../content</property>
     <property name="tds.log.dir">${sys:tds.content.root.path}/thredds/logs</property>
   </properties>
 
@@ -114,5 +114,22 @@ tds.dir.share=/share
 tds.dir.cdmUnitTest=/share/testdata/cdmUnitTest
 
 ** problem is that tds.content.root.path is specified in 2 places.
+
+4. TdsContext.afterPropertiesSet
+
+  // Some properties are set from the tds.properties
+  // would be nice to make Immutable
+
+
+    ServletUtil.setContextPath(contextPath);
+	ServletUtil.setRootPath(this.rootDirSource.getRootDirectoryPath());
+    ServletUtil.setContentPath(this.contentDirSource.getRootDirectoryPath());
+    ThreddsConfig.init(tdsConfigFile.getPath());
+    InvDatasetFeatureCollection.setContext(contextPath);
+    TdsConfigMapper tdsConfigMapper = new TdsConfigMapper();  // not sure if this is used ? perhaps intended as replaccement for CdmInit?
+	
+	
+5. CmInit.afterPropertiesSet
+
 
 
