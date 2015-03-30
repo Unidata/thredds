@@ -38,8 +38,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
-//import thredds.catalog.InvCatalog;
-//import thredds.catalog.InvDatasetImpl;
 import thredds.server.config.HtmlConfig;
 
 import java.util.Map;

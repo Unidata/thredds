@@ -1,5 +1,5 @@
-<%@ page import="thredds.catalog.InvCatalogImpl" %>
-<%@ page import="thredds.catalog.InvDatasetImpl" %>
+<%@ page import="thredds.client.catalog.Catalog" %>
+<%@ page import="thredds.client.catalog.Dataset" %>
 <%@ page import="org.springframework.web.util.HtmlUtils" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Enumeration" %>
@@ -10,7 +10,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <%
-  InvCatalogImpl catalog = (InvCatalogImpl) request.getAttribute( "catalog" );
+  Catalog catalog = (Catalog) request.getAttribute( "catalog" );
   String catName = (String) request.getAttribute( "catName");
   String catUri = (String) request.getAttribute( "catUri");
   // isLocalCatalog

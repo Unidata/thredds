@@ -86,7 +86,7 @@ import java.util.*;
  * @author edavis
  * @since 4.0
  */
-@Component("tdsContext")
+@Component("TdsContext")
 public final class TdsContext implements ServletContextAware, InitializingBean, DisposableBean {
   private final Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
 

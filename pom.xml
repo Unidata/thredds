@@ -13,7 +13,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.6.0-SNAPSHOT</version>
+  <version>5.0.0</version>
   <name>Parent THREDDS and CDM modules</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
@@ -933,7 +933,7 @@
 
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
-    <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.6.0-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
+    <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.6.0</uk.ac.rdg.resc.ncwms.version>
     <geoapi.version>3.1-M04</geoapi.version>
     <eds.threddsIso.version>2.2.5-SNAPSHOT</eds.threddsIso.version>
     <com.google.guava.version>18.0</com.google.guava.version>

@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.6.0-SNAPSHOT</version>
+    <version>5.0.0</version>
   </parent>
 
 
@@ -160,13 +160,13 @@
     </dependency -->
 
     <!-- THREDDS ISO -->
-    <dependency>
+    <!-- dependency>
       <groupId>EDS</groupId>
       <artifactId>threddsIso</artifactId>
-    </dependency>
+    </dependency -->
 
     <!-- wms -->
-    <dependency>
+    <!-- dependency>
       <groupId>uk.ac.rdg.resc</groupId>
       <artifactId>ncwms</artifactId>
     </dependency>
@@ -179,7 +179,7 @@
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
-    </dependency>
+    </dependency -->
 
     <dependency>
       <groupId>javax.servlet</groupId>
