@@ -77,7 +77,7 @@ public class DatasetManager {
   DataRootManager dataRootManager;
 
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
-  private HashMap<String, Dataset> ncmlDatasetHash = new HashMap<>();
+  private Map<String, Dataset> ncmlDatasetHash = new HashMap<>();
 
   // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
   // possible change to one global hash table request
@@ -383,7 +383,7 @@ public class DatasetManager {
 
     String rc = resourceControlHash.get(path);
     if (null == rc)
-      rc = (String) resourceControlMatcher.match(path);
+      rc = resourceControlMatcher.match(path);
 
     return rc;
   }

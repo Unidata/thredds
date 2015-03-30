@@ -39,9 +39,9 @@ import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollection;
 
 /**
-* A DataRoot matches URLs to the objects that can serve them.
- *
+ * A DataRoot matches URLs to the objects that can serve them.
  * A PathMatcher manages a hash table of path -> DataRoot
+ *
  * Possible design:
  *   catKey : which catalog defined this?   not present at the moment
  *   directory : if its a simple DataRoot
@@ -128,21 +128,24 @@ public class DataRoot {
 
   ////////////////
 
-  public String getFileLocationFromRequestPath(String path) {
+  public String getFileLocationFromRequestPath(String reqPath) {
 
-    if (scan != null)
-      return getFileLocationFromRequestPath(path, scan.getPath(), scan.getScanLocation());
+    if (scan != null) {
+      // LOOK should check to see if its been filtered out by scan
+      return getFileLocationFromRequestPath(reqPath, scan.getPath(), scan.getScanLocation());
 
-    if (featCollection != null)
-      return getFileLocationFromRequestPath(path, featCollection.getPath(), featCollection.getTopDirectoryLocation());
-    //   return null; // if featCollection exists, bail out and deal with it in caller LOOK why ?
+    } else if (featCollection != null) {
+       // LOOK should check to see if its allowed in fc
+      return getFileLocationFromRequestPath(reqPath, featCollection.getPath(), featCollection.getTopDirectoryLocation());
 
-    // must be a datasetRoot
-    return getFileLocationFromRequestPath(path, getPath(), getDirLocation());
+    } else {  // must be a datasetRoot
+       // LOOK should check to see if it exists ??
+      return getFileLocationFromRequestPath(reqPath, getPath(), getDirLocation());
+    }
 
   }
 
-  public static String getFileLocationFromRequestPath(String reqPath, String rootPath, String rootLocation) {
+  private String getFileLocationFromRequestPath(String reqPath, String rootPath, String rootLocation) {
     if (reqPath == null) return null;
      if (reqPath.length() == 0) return null;
 
