@@ -33,6 +33,7 @@
 
 package thredds.core;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
@@ -69,7 +70,7 @@ import java.util.*;
   * @since 1/23/2015
  */
 @Component
-public class DatasetManager {
+public class DatasetManager implements InitializingBean  {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetManager.class);
   static private final boolean debugResourceControl = false;
 
@@ -87,6 +88,11 @@ public class DatasetManager {
   private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
   private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
   private boolean hasResourceControl = false;
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    TdsRequestedDataset.setDatasetManager( this);
+  }
 
   void reinit() {
     ncmlDatasetHash = new HashMap<>();
@@ -143,6 +149,10 @@ public class DatasetManager {
   public void registerDatasetSource(DatasetSource v) {
     sourceList.add(v);
     if (debugResourceControl) System.out.println("registerDatasetSource " + v.getClass().getName());
+  }
+
+  public String getLocationFromRequestPath(String reqPath) {
+    return dataRootManager.getLocationFromRequestPath(reqPath);
   }
 
   public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {

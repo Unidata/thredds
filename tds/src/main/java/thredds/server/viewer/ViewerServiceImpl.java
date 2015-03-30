@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
-import thredds.server.wms.ViewerGodiva;
+// import thredds.server.wms.ViewerGodiva;
 import thredds.servlet.Viewer;
 import thredds.servlet.ViewerLinkProvider;
 import ucar.nc2.constants.FeatureType;
@@ -58,7 +58,7 @@ import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
 
 @Component
-public abstract class ViewerServiceImpl implements ViewerService {
+public class ViewerServiceImpl implements ViewerService {
   private static Logger logger = LoggerFactory.getLogger(ViewerServiceImpl.class);
 
   public static ViewerLinkProvider getStaticView() {
@@ -137,7 +137,7 @@ public abstract class ViewerServiceImpl implements ViewerService {
   @SuppressWarnings("unused")
   @PostConstruct
   private void registerViewers() {
-    registerViewer(new ViewerGodiva());
+    // registerViewer(new ViewerGodiva());
     registerViewer(new ToolsUI());
     registerViewer(new IDV());
     registerViewer(new StaticView());

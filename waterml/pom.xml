@@ -5,7 +5,7 @@
     <parent>
         <artifactId>thredds-parent</artifactId>
         <groupId>edu.ucar</groupId>
-        <version>4.6.1-SNAPSHOT</version>
+        <version>5.0.0</version>
     </parent>
 
     <artifactId>waterml</artifactId>

@@ -71,8 +71,8 @@ import java.util.TimerTask;
  */
 
 @Component ("CdmInit")
-@DependsOn ("tdsContext")
-public class CdmInit implements InitializingBean,  DisposableBean{
+@DependsOn("TdsContext")
+public class CdmInit implements InitializingBean,  DisposableBean {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private DiskCache2 aggCache, gribCache, cdmrCache;
@@ -84,6 +84,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
   @Autowired
   private DatasetManager datasetManager;
 
+  @Override
   public void afterPropertiesSet(){
     startupLog.info("CdmInit getContentRootPathAbsolute= "+tdsContext.getContentRootPath());
 
