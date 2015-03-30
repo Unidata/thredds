@@ -38,9 +38,13 @@ import com.google.common.cache.LoadingCache;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
+import thredds.server.config.TdsContext;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -56,19 +60,38 @@ import java.util.concurrent.ExecutionException;
  * @author caron
  * @since 3/21/2015
  */
-@Immutable
 @Component("ConfigCatalogCache")
-public class ConfigCatalogCache {
+@DependsOn("TdsContext")
+public class ConfigCatalogCache implements InitializingBean {
   static private final Logger logger = LoggerFactory.getLogger(ConfigCatalogCache.class);
   static private final String ERROR = "*** ERROR ";
 
-  private final String rootPath;
-  private final LoadingCache<String, ConfigCatalog> cache;
+  @Autowired
+  private TdsContext tdsContext;
+
+  private String rootPath;
+  private LoadingCache<String, ConfigCatalog> cache;
+
+  public ConfigCatalogCache() {
+  }
 
   public ConfigCatalogCache(String rootPath, int maxSize) {
     this.rootPath = rootPath;
     this.cache = CacheBuilder.newBuilder()
             .maximumSize(maxSize)
+            .recordStats()
+                    // .removalListener(MY_LISTENER)
+            .build( new CacheLoader<String, ConfigCatalog>() {
+                      public ConfigCatalog load(String key) throws IOException {
+                        return readCatalog(key);
+                      }
+                    });
+  }
+
+  public void afterPropertiesSet() {
+    this.rootPath = tdsContext.getContentRootPath() +"cache/ccc";
+    this.cache = CacheBuilder.newBuilder()
+            .maximumSize(1000)
             .recordStats()
                     // .removalListener(MY_LISTENER)
             .build( new CacheLoader<String, ConfigCatalog>() {

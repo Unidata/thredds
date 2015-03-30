@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <!-- Configuration of this ncWMS server. -->
+  <bean id="config" class="thredds.server.wms.ThreddsServerConfig">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="defaultPaletteLocation" value="/WEB-INF/palettes/"/>
+  </bean>
+  
+  <!-- This Controller will handle all the requests to the WMS -->
+  <bean id="wmsController" class="thredds.server.wms.ThreddsWmsController" init-method="init">
+    <property name="supportedMethods" value="GET"/>
+    <property name="serverConfig">
+      <ref bean="config"/>
+    </property>
+  </bean>
+  
+
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <value><!-- Maps values starting by /wms (defined in web.xml servlet mappings) -->
+        /**=wmsController
+      </value>
+    </property>
+  </bean>
+
+  <!-- 
+  	AbstractWmsController returns views using /WEB-INF/jsp/wms/ as root directory for finding them. So we need a viewResolver different
+  	from the TDS controllers that use /WEB-INF/jsp/    
+  -->  
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/jsp/wms/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+  
+  
+  <!-- Exception Handling: this ensures that all WmsExceptions are returned to
+     the user as an XML document, created by displayWmsException.jsp.
+     Note that we don't have to register this anywhere as an exception handler
+     because Spring automagically detects it.
+    -->
+  <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <property name="exceptionMappings">
+      <props>
+        <prop key="uk.ac.rdg.resc.ncwms.exceptions.WmsException">displayWmsException</prop>
+        <prop key="uk.ac.rdg.resc.ncwms.exceptions.Wms1_1_1Exception">displayWms1_1_1Exception</prop>
+        <prop key="uk.ac.rdg.resc.ncwms.exceptions.MetadataException">displayMetadataException</prop>
+      </props>
+    </property>
+    <!-- If an unexpected error occurs (i.e. one that doesn't get expressed as
+       a WmsException) we will handle it using displayDefaultException.jsp
+      -->
+    <property name="defaultErrorView" value="displayDefaultException"/>
+  </bean>
+
+</beans>

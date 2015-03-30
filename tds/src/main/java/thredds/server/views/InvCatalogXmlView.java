@@ -44,7 +44,7 @@ import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.util.ContentType;
 
 /**
- * Configured by Spring, not sure if its actually used
+ * Configured by Spring, used in thredds.server.catalogservice
  *
  * @author edavis
  * @since 4.0
@@ -57,24 +57,19 @@ public class InvCatalogXmlView extends AbstractView {
       throw new IllegalArgumentException("Model must not be null or empty.");
 
     if (!model.containsKey("catalog"))
-      throw new IllegalArgumentException("Model must contain \"catalog\" key.");
+      throw new IllegalArgumentException("Model must contain 'catalog' key.");
 
     Object o = model.get("catalog");
     if (!(o instanceof Catalog))
-      throw new IllegalArgumentException("Model must contain an InvCatalogImpl object.");
-    Catalog cat = (Catalog) o;
+      throw new IllegalArgumentException("Model must contain a Catalog object.");
 
+    Catalog cat = (Catalog) o;
     res.setContentType(ContentType.xml.getContentHeader());
-    OutputStream os = null;
+
     if (!req.getMethod().equals("HEAD")) {
-      try {
-        os = res.getOutputStream();
-        // Return catalog as XML response.
+      try (OutputStream os = res.getOutputStream()) {
         CatalogXmlWriter catFactory = new CatalogXmlWriter();
         catFactory.writeXML(cat, os);
-      } finally {
-        if (os != null)
-          os.close();
       }
     }
   }

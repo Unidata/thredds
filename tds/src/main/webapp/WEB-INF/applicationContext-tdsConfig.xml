@@ -49,7 +49,6 @@
   </bean>
 
   <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
-
   <bean id="corsConfig" class="thredds.server.config.CorsConfig" />
   <bean id="corsFilter" class="thredds.servlet.filter.RequestCORSFilter" />
 
@@ -70,6 +69,7 @@
 
   <!--- thredds 4.6 / 5.0 -->
   <bean id="pathMatcher" class="thredds.core.PathMatcher" />
-  <bean id="ccManager" class="thredds.core.ConfigCatalogManager" />
+  <bean id="ConfigCatalogManager" class="thredds.core.ConfigCatalogManager" />
+  <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
 
 </beans>

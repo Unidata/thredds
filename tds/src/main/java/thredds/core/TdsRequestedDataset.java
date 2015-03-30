@@ -62,15 +62,15 @@ import java.util.Set;
  * circumstance in which this method will return null.)
  * The client will then repeat the request.
  */
-@Component
 public class TdsRequestedDataset {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TdsRequestedDataset.class);
 
-  @Autowired
-  private static DatasetManager datasetManager;
+  // LOOK maybe static not such a good idea? can 3rd parties wire in an instance ??
+  static void setDatasetManager(DatasetManager _datasetManager) {
+    datasetManager = _datasetManager;
+  }
 
-  @Autowired
-  private static DataRootManager dataRootManager;
+  static private DatasetManager datasetManager;
 
   public static FeatureCollection getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request);
@@ -102,12 +102,12 @@ public class TdsRequestedDataset {
   }
 
   public static File getFile(String reqPath) {
-    String location = dataRootManager.getLocationFromRequestPath(reqPath);  // LOOK maybe go through DatasetManager
+    String location = getLocationFromRequestPath(reqPath);  // LOOK maybe go through DatasetManager
     return (location == null) ? null : new File(location);
   }
 
   public static String getLocationFromRequestPath(String reqPath) {
-    return dataRootManager.getLocationFromRequestPath(reqPath);
+    return datasetManager.getLocationFromRequestPath(reqPath);
   }
 
   public static boolean resourceControlOk(HttpServletRequest request, HttpServletResponse response, String path) {
