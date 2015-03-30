@@ -61,7 +61,7 @@ import java.util.*;
  * @author caron
  * @since 3/21/2015
  */
-@Component("ConfigCatalogManagerNew")
+@Component("ConfigCatalogManager")
 @DependsOn("CdmInit")
 public class ConfigCatalogManager {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class);
@@ -72,7 +72,7 @@ public class ConfigCatalogManager {
   @Autowired
   private TdsContext tdsContext;
 
-  @Autowired
+  @Autowired                                 // Let Spring autowire so shared object
   private PathMatcher<DataRoot> pathMatcher; // collection of DataRoot objects
 
   @Autowired

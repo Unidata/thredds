@@ -91,7 +91,7 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 	 * If the test is annotated with TdsContentPath, override the contentRootPath with the provided path  
 	 */
 	private void checkContentRootPath(XmlWebApplicationContext webApplicationContext, TdsContext tdsContext){
-		if(tdsContentRootPath !=null )
+		if(tdsContentRootPath != null )
 			tdsContext.setContentRootPath(tdsContentRootPath.path());
 	}
 	

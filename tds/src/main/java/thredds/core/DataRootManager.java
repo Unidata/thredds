@@ -39,8 +39,6 @@ import org.springframework.stereotype.Component;
 
 import thredds.client.catalog.*;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.filesystem.MFileOS7;
-import thredds.inventory.MFile;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.*;
 import thredds.server.config.TdsContext;
@@ -81,7 +79,7 @@ public class DataRootManager {
   static public final boolean debug = false;
 
   static public DataRootManager getInstance() {
-    return new DataRootManager(); // LOOK wrong
+    return new DataRootManager(); // Used for testing only
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +87,7 @@ public class DataRootManager {
   private TdsContext tdsContext;
 
   @Autowired
-  private PathMatcher pathMatcher;
+  private PathMatcher<DataRoot> pathMatcher;
 
   @Autowired
   private ConfigCatalogManager ccManager;
@@ -97,7 +95,7 @@ public class DataRootManager {
   @Autowired
   private ConfigCatalogCache ccc;
 
-  private List<ConfigListener> configListeners = new ArrayList<>();
+  private List<ConfigListener> configListeners = new ArrayList<>();   // LOOK not used
 
   private DataRootManager() {
 
@@ -193,21 +191,8 @@ public class DataRootManager {
     if ((path.length() > 0) && (path.charAt(0) == '/'))
       path = path.substring(1);
 
-    DataRoot dataRoot = (DataRoot) pathMatcher.match(path);
+    DataRoot dataRoot = pathMatcher.match(path);
     return (dataRoot == null) ? null : dataRoot.getDirLocation();
-  }
-
-  /**
-   * Find the longest match for this path.
-   *
-   * @param fullpath the complete path name
-   * @return best DataRoot or null if no match.
-   */
-  private DataRoot findDataRoot(String fullpath) {
-    if ((fullpath.length() > 0) && (fullpath.charAt(0) == '/'))
-      fullpath = fullpath.substring(1);
-
-    return (DataRoot) pathMatcher.match(fullpath);
   }
 
   /**
@@ -217,22 +202,17 @@ public class DataRootManager {
    * @param req the request
    * @return the DataRootMatch, or null if not found
    */
-  //  see essupport SEG-622383
-  public DataRootMatch findDataRootMatch(HttpServletRequest req) {
+  private DataRootMatch findDataRootMatch(HttpServletRequest req) {
     String spath = TdsPathUtils.extractPath(req, null);
-
-    if (spath.length() > 0) {
-      if (spath.startsWith("/"))
-        spath = spath.substring(1);
-    }
-
     return findDataRootMatch(spath);
   }
 
   public DataRootMatch findDataRootMatch(String spath) {
+    if (spath == null)
+      return null;
     if (spath.startsWith("/"))
       spath = spath.substring(1);
-    DataRoot dataRoot = findDataRoot(spath);
+    DataRoot dataRoot = pathMatcher.match(spath);
     if (dataRoot == null)
       return null;
 
@@ -246,29 +226,16 @@ public class DataRootManager {
     return match;
   }
 
-  /**
-   * Return true if the given path matches a dataRoot, otherwise return false.
-   * A succesful match means that the request is either for a dynamic catalog
-   * or a dataset.
-   *
-   * @param path the request path, ie req.getServletPath() + req.getPathInfo()
-   * @return true if the given path matches a dataRoot, otherwise false.
-   */
-  public boolean hasDataRootMatch(String path) {
-    if (path.length() > 0)
-      if (path.startsWith("/"))
-        path = path.substring(1);
-
-    DataRoot dataRoot = findDataRoot(path);
-    if (dataRoot == null) {
-      if (log.isDebugEnabled()) log.debug("hasDataRootMatch(): no DatasetScan for " + path);
-      return false;
-    }
-    return true;
+  private DataRoot findDataRoot(String spath) {
+    if (spath == null)
+      return null;
+    if (spath.startsWith("/"))
+      spath = spath.substring(1);
+    return pathMatcher.match(spath);
   }
 
   /**
-   * Return the the MFile to which the given path maps.
+   * Return the the location to which the given path maps.
    * Null is returned if the dataset does not exist, the
    * matching DatasetScan or DataRoot filters out the requested MFile, the MFile does not represent a File
    * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs
@@ -278,17 +245,62 @@ public class DataRootManager {
    * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
   public String getLocationFromRequestPath(String reqPath) {
-    if (reqPath.length() > 0) {
-      if (reqPath.startsWith("/"))
-        reqPath = reqPath.substring(1);
-    }
-
     DataRoot reqDataRoot = findDataRoot(reqPath);
     if (reqDataRoot == null)
       return null;
 
     return reqDataRoot.getFileLocationFromRequestPath(reqPath);
   }
+
+  /*
+   * Return the the location to which the given path maps.
+   * Null is returned if 1) there is no dataRoot match, 2) the dataset does not exist, or
+   * 3) the matching DatasetScan filters it out the requested MFile
+   *
+   * @param reqPath the request path.
+   * @return the location of the file on disk, or null
+   * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
+   *
+  public String getLocationFromRequestPath(String reqPath) {
+    DataRootMatch match = findDataRootMatch(reqPath);
+    if (match == null) return null;
+
+    String fullPath = match.dirLocation + match.remaining;
+    if (match.dataRoot.getFeatureCollection() != null) {
+      return match.dirLocation + match.remaining;
+    }
+
+    match.dataRoot.getFileLocationFromRequestPath(reqPath);
+    return fullPath;
+  }
+
+  static public String getNetcdfFilePath(HttpServletRequest req, String reqPath) throws IOException {
+    if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
+    if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));
+
+    if (reqPath == null)
+      return null;
+
+    if (reqPath.startsWith("/"))
+      reqPath = reqPath.substring(1);
+
+    // look for a match
+    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+
+    String fullpath = null;
+    if (match != null)
+      fullpath = match.dirLocation + match.remaining;
+    else {
+      File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+      if (file != null)
+        fullpath = file.getAbsolutePath();
+    }
+    return fullpath;
+  }
+
+  }   */
+
+  ///////////////////////////////////////////////////////////
 
   /**
    * If a catalog exists and is allowed (not filtered out) for the given path, return

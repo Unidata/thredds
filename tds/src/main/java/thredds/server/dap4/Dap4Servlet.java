@@ -83,7 +83,7 @@ public class Dap4Servlet extends DapServlet
         String datasetpath = drq.getDataset();
         if(datasetpath.startsWith("/"))
             datasetpath = datasetpath.substring(1);
-        return TdsRequestedDataset.getNetcdfFilePath(drq.getRequest(), datasetpath);
+        return TdsRequestedDataset.getLocationFromRequestPath(datasetpath);
     }
 
     @Override
