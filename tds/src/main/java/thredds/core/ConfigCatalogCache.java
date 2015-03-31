@@ -88,6 +88,7 @@ public class ConfigCatalogCache implements InitializingBean {
                     });
   }
 
+  @Override
   public void afterPropertiesSet() {
     this.rootPath = tdsContext.getContentRootPath() +"cache/ccc";
     this.cache = CacheBuilder.newBuilder()

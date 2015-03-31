@@ -34,6 +34,7 @@
 package thredds.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.DatasetHtmlWriter;
 import thredds.server.config.HtmlConfig;
@@ -59,6 +60,7 @@ import java.util.List;
  * @author caron
  * @since 1/19/2015
  */
+@Component
 public class ConfigCatalogHtmlWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogHtmlWriter.class);
 
@@ -83,12 +85,6 @@ public class ConfigCatalogHtmlWriter {
   @Autowired
   private HtmlConfig htmlConfig;
 
-  String contextPath;
-
-  public ConfigCatalogHtmlWriter(HtmlConfig htmlConfig, String contextPath) {
-    this.htmlConfig = htmlConfig;
-    this.contextPath = contextPath;
-  }
 
   /**
    * Write an Catalog to the HttpServletResponse, return the size in bytes of the catalog written to the response.
@@ -189,7 +185,7 @@ public class ConfigCatalogHtmlWriter {
     String catHtml;
     if (!isLocalCatalog) {
       // Setup HREF url to link to HTML dataset page (more below).
-      catHtml = contextPath + "/remoteCatalogService?command=subset&catalog=" + cat.getUriString() + "&";
+      catHtml = tdsContext.getContextPath() + "/remoteCatalogService?command=subset&catalog=" + cat.getUriString() + "&";
       // Can't be "/catalogServices?..." because subset decides on xml or html by trailing ".html" on URL path
 
     } else { // replace xml with html
@@ -244,7 +240,7 @@ public class ConfigCatalogHtmlWriter {
 
             // now, do the right thing with using the remoteCatalogService, or not
             if (useRemoteCatalogService) {
-              href = contextPath + "/remoteCatalogService?catalog=" + href;
+              href = tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + href;
             } else {
               int pos = href.lastIndexOf('.');
               href = href.substring(0, pos) + ".html";
@@ -284,7 +280,7 @@ public class ConfigCatalogHtmlWriter {
             if (pos != -1) {
               catBaseUriPath = catBaseUri.substring(0, pos);
             }
-            accessUrlName = contextPath + "/remoteCatalogService?catalog=" + catBaseUriPath + accessUrlName;
+            accessUrlName = tdsContext.getContextPath() + "/remoteCatalogService?catalog=" + catBaseUriPath + accessUrlName;
           } else if (pos != -1) {
             accessUrlName = accessUrlName.substring(0, pos) + ".html";
           }

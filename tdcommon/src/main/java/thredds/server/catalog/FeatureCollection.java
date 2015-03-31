@@ -55,7 +55,7 @@ import java.util.Map;
  */
 public class FeatureCollection extends CatalogRef {
   FeatureCollectionConfig config;
-  String path;
+  // String path;
   String topDirectoryLocation;
   String collectionName;
 
@@ -66,7 +66,7 @@ public class FeatureCollection extends CatalogRef {
   }
 
   public String getPath() {
-    return path;
+    return config.path;
   }
 
   public String getTopDirectoryLocation() {
