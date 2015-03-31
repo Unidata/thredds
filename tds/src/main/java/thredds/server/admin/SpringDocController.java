@@ -48,12 +48,13 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @see "http://www.java-allandsundry.com/2012/03/endpoint-documentation-controller-for.html"
  */
 @Controller
+@RequestMapping(value ="/spring", method= RequestMethod.GET)
 public class SpringDocController {
 
   @Autowired
   private RequestMappingHandlerMapping handlerMapping;
 
-  @RequestMapping(value = "/requestMaps", method = RequestMethod.GET)
+  @RequestMapping(value = "/handlerMapping", method = RequestMethod.GET)
   public void show(Model model) {
     model.addAttribute("handlerMethods", this.handlerMapping.getHandlerMethods());
   }

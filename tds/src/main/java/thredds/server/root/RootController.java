@@ -35,6 +35,7 @@ package thredds.server.root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.server.config.TdsContext;
@@ -60,12 +61,17 @@ public class RootController implements LastModified {
   private TdsContext tdsContext;
 
 
-  @RequestMapping(value = "/")
-  public String getRootPage() {
-    return "redirect:/catalog.html";
+  @RequestMapping(value = {"/", "/catalog.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
+  public String getRootCatalog() {
+    return "redirect:/catalog/catalog.html";
   }
 
-  @RequestMapping(value = {"*.css", "*.gif", "*.jpg"})
+  @RequestMapping(value = {"/catalog.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
+  public String getRootCatalogXml() {
+    return "redirect:/catalog/catalog.xml";
+  }
+
+  @RequestMapping(value = {"*.css", "*.gif", "*.jpg"}, method = RequestMethod.GET)
   public ModelAndView checkPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
     String path = TdsPathUtils.extractPath(req, null);
     File file = tdsContext.getPublicDocFileSource().getFile(path);

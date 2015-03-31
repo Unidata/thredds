@@ -44,12 +44,8 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.core.ConfigCatalogHtmlWriter;
-import thredds.server.catalogservice.CatalogServiceUtils;
-import thredds.server.catalogservice.Command;
-import thredds.server.catalogservice.RemoteCatalogRequest;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.TdsContext;
-import thredds.servlet.HtmlWriter;
 import thredds.servlet.ThreddsConfig;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,10 +68,10 @@ public class RemoteCatalogServiceController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
   @Autowired
-  private TdsContext tdsContext;
+  private HtmlConfig htmlConfig;
 
   @Autowired
-  private HtmlConfig htmlConfig;
+  private ConfigCatalogHtmlWriter writer;
 
   @RequestMapping("**")
   protected ModelAndView handleAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -93,7 +89,7 @@ public class RemoteCatalogServiceController {
       if (request.getServletPath().equals("/remoteCatalogValidation.html")) {
         Map<String, Object> model = new HashMap<>();
 
-        htmlConfig.addHtmlConfigInfoToModel(model);
+        htmlConfig.addHtmlConfigInfoToModel(model); // LOOK cant be right
 
         return new ModelAndView("/thredds/server/catalogservice/validationForm", model);
       }
@@ -138,7 +134,6 @@ public class RemoteCatalogServiceController {
 
       ///////////////////////////////////////////
       // Otherwise, handle catalog as indicated by "command".
-      ConfigCatalogHtmlWriter writer = new ConfigCatalogHtmlWriter(htmlConfig, tdsContext.getContextPath());
 
       if (catalogServiceRequest.getCommand().equals(Command.SHOW)) {
         writer.writeCatalog(request, response, catalog, false);

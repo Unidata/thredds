@@ -112,7 +112,7 @@ public class CatalogServiceUtils {
     model.put("catalogUrl", uri);
     model.put("message", validationMessage);
 
-    htmlConfig.addHtmlConfigInfoToModel(model);
+    htmlConfig.addHtmlConfigInfoToModel(model);  // LOOK cant be right
     return new ModelAndView("/thredds/server/catalogservice/validationMessage", model);
   }
 
@@ -121,7 +121,7 @@ public class CatalogServiceUtils {
     model.put("catalogUrl", uri);
     model.put("message", validationMessage);
 
-    htmlConfig.addHtmlConfigInfoToModel(model);
+    htmlConfig.addHtmlConfigInfoToModel(model);  // LOOK cant be right
     return new ModelAndView("/thredds/server/catalogservice/validationError", model);
   }
 }

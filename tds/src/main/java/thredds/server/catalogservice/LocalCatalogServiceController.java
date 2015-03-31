@@ -53,8 +53,6 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.core.DataRootManager;
-import thredds.server.config.HtmlConfig;
-import thredds.servlet.HtmlWriter;
 import thredds.server.config.TdsContext;
 import thredds.util.RequestForwardUtils;
 
@@ -73,6 +71,7 @@ import java.net.URISyntaxException;
  */
 
 @Controller
+@RequestMapping(value ="/catalog")
 public class LocalCatalogServiceController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
@@ -80,12 +79,12 @@ public class LocalCatalogServiceController {
   private TdsContext tdsContext;
 
   @Autowired
-  private HtmlConfig htmlConfig;
-
-  @Autowired
   private DataRootManager dataRootManager;
 
-  @RequestMapping(value = {"/catalog/**/*.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
+  @Autowired
+  ConfigCatalogHtmlWriter writer;
+
+  @RequestMapping(value = {"**/*.xml", "*.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   protected ModelAndView handleXmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.
@@ -156,7 +155,7 @@ public class LocalCatalogServiceController {
     }
   }
 
-  @RequestMapping(value = {"/catalog/**/*.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
+  @RequestMapping(value = {"**/*.html", "*.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   protected ModelAndView handleHtmlRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
     try {
       // Bind HTTP request to a LocalCatalogRequest.
@@ -196,7 +195,6 @@ public class LocalCatalogServiceController {
         return handlePublicDocumentRequest(request, response, path);
 
       // Otherwise, handle catalog as indicated by "command".
-      ConfigCatalogHtmlWriter writer = new ConfigCatalogHtmlWriter(htmlConfig, tdsContext.getContextPath());
       if (catalogServiceRequest.getCommand().equals(Command.SHOW)) {
           int i = writer.writeCatalog(request, response, catalog, true);
           return null;
