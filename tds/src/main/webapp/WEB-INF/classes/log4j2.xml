@@ -72,7 +72,7 @@
     </logger>
 
 
-    <logger name="thredds.catalog.parser" level="info" additivity="false">
+    <logger name="thredds.core.ConfigCatalogManager.catalogInit" level="debug" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>
 
@@ -81,10 +81,6 @@
     </logger>
 
     <logger name="ucar.nc2.thredds.MetadataExtractorAcdd" level="info" additivity="false">
-      <appender-ref ref="catalogInit"/>
-    </logger>
-
-    <logger name="thredds.featurecollection.InvDatasetFeatureCollection.catalogInit" level="info" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>
 

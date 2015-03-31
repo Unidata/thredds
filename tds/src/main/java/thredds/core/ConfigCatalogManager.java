@@ -32,6 +32,7 @@
  */
 package thredds.core;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -63,11 +64,11 @@ import java.util.*;
  */
 @Component("ConfigCatalogManager")
 @DependsOn("CdmInit")
-public class ConfigCatalogManager {
+public class ConfigCatalogManager implements InitializingBean {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class);
-  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class.getName() + ".catalogInit");
+  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class.getName()+".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  static private final String ERROR = "*** ERROR ";
+  static private final String ERROR = "*** ERROR: ";
 
   @Autowired
   private TdsContext tdsContext;
@@ -78,10 +79,21 @@ public class ConfigCatalogManager {
   @Autowired
   DatasetManager datasetManager;
 
-  private final AllowedServices allowedServices;
-  private final List<String> rootCatalogKeys;
+  @Autowired
+  private ConfigCatalogCache ccc;
+
+  private AllowedServices allowedServices;
+  private List<String> rootCatalogKeys;
 
   ConfigCatalogManager() {
+  }
+
+  public List<String> getRootCatalogKeys() {
+    return rootCatalogKeys;
+  }
+
+  @Override
+  public void afterPropertiesSet() {
     rootCatalogKeys = new ArrayList<>();
     rootCatalogKeys.add("catalog.xml"); // always first
     rootCatalogKeys.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
@@ -95,7 +107,7 @@ public class ConfigCatalogManager {
     for (String path : rootCatalogKeys) {
       try {
         path = StringUtils.cleanPath(path);
-        logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + CalendarDate.present() + "]");
+        logCatalogInit.info("\n**************************************\nCatalog init " + path + "[" + CalendarDate.present() + "]");
         initCatalog(path, pathHash, idHash);
       } catch (Throwable e) {
         logCatalogInit.error(ERROR + "initializing catalog " + path + "; " + e.getMessage(), e);
@@ -103,9 +115,6 @@ public class ConfigCatalogManager {
     }
   }
 
-  public List<String> getRootCatalogKeys() {
-    return rootCatalogKeys;
-  }
 
   private void initCatalog(String path, Set<String> pathHash, Set<String> idHash) throws IOException {
     path = StringUtils.cleanPath(path);
@@ -122,7 +131,7 @@ public class ConfigCatalogManager {
       return;
     }
     pathHash.add(path);
-    if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
+    // if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("initCatalog {} -> {}", path, f.getAbsolutePath());
 
     // read it
     ConfigCatalog cat = readCatalog(path, f.getPath());
@@ -130,6 +139,7 @@ public class ConfigCatalogManager {
       logCatalogInit.error(ERROR + "initCatalog(): failed to read catalog <" + f.getPath() + ">.");
       return;
     }
+    ccc.put(path, cat);
 
     // look for datasetRoots
     for (DatasetRootConfig p : cat.getDatasetRoots()) {
@@ -196,7 +206,7 @@ public class ConfigCatalogManager {
       if (ds instanceof CatalogRef) {
         CatalogRef catref = (CatalogRef) ds;
         String href = catref.getXlinkHref();
-        if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
+        // if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
 
         // Check that catRef is relative
         if (!href.startsWith("http:")) {
@@ -286,7 +296,7 @@ public class ConfigCatalogManager {
     String path = dscan.getPath();
 
     if (path == null) {
-      logCatalogInit.error(ERROR + dscan.getName() + " missing a path attribute.");
+      logCatalogInit.error(ERROR + "DatasetScan '" + dscan.getName() + "' missing the path attribute.");
       return false;
     }
 
@@ -312,7 +322,7 @@ public class ConfigCatalogManager {
     String path = fc.getPath();
 
     if (path == null) {
-      logCatalogInit.error(ERROR + fc.getName() + " missing a path attribute.");
+      logCatalogInit.error(ERROR + "FeatureCollection '"+ fc.getName() + "' missing the path attribute.");
       return false;
     }
 
@@ -347,7 +357,7 @@ public class ConfigCatalogManager {
     DataRoot droot = pathMatcher.get(path);
     if (droot != null) {
       if (wantErr)
-        logCatalogInit.error(ERROR + "DataRootConfig already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
+        logCatalogInit.error(ERROR + "DatasetRootConfig already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
                 " wanted to map to <" + location + ">");
 
       return false;
@@ -356,7 +366,7 @@ public class ConfigCatalogManager {
     location = ConfigCatalog.translateAlias(location);
     File file = new File(location);
     if (!file.exists()) {
-      logCatalogInit.error(ERROR + "DataRootConfig path =" + path + " directory= <" + location + "> does not exist");
+      logCatalogInit.error(ERROR + "DatasetRootConfig path ='" + path + "' directory= <" + location + "> does not exist");
       return false;
     }
 
