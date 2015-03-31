@@ -122,6 +122,49 @@ ConfigCatalogManager</h3>
   <li>Fronted by TdsRequestedDataset </li>
 </ol>
 <p>&nbsp;</p>
+<h2>URL redesign</h2>
+<p>https://localhost:8443/thredds/admin/spring/map</p>
+<pre>
+    [/admin/showFmrc, /admin/showFmrc/*]: thredds.server.admin.CollectionController.showFmrcCache()
+    [/admin/collection/showStatus]: thredds.server.admin.CollectionController.handleCollectionStatus()
+    [/admin/collection/showStatus.csv]: thredds.server.admin.CollectionController.handleCollectionStatusCsv()
+    [/admin/collection, /admin/collection/trigger]: thredds.server.admin.CollectionController.handleCollectionTriggers()
+    [/admin/debug, /admin/debug/*]: thredds.server.admin.DebugController.showDebugPage()
+    [/admin/**]: thredds.server.admin.DirDisplayController.handleRequestInternal()
+    [/admin/log/**, /admin/roots]: thredds.server.admin.LogController.handleRequestInternal()
+    [/admin/spring/map]: thredds.server.admin.SpringInfoController.show()
+    [/catalog/**/*.xml, /catalog/*.xml]: thredds.server.catalogservice.LocalCatalogServiceController.handleXmlRequest()
+    [/catalog/**/*.html, /catalog/*.html]: thredds.server.catalogservice.LocalCatalogServiceController.handleHtmlRequest()
+    [/cdmremote/**]: thredds.server.cdmremote.CdmRemoteController.handleRequest()
+    [/cdmrfeature/**]: thredds.server.cdmremote.CdmrfController.metadataRequestHandler()
+    [/cdmrfeature/**]: thredds.server.cdmremote.CdmrfController.headerRequestHandler()
+    [/cdmrfeature/**]: thredds.server.cdmremote.CdmrfController.dataRequestHandler()
+    [/fileServer/**]: thredds.server.fileserver.FileServerController.doGet()
+    [/metadata/**]: thredds.server.metadata.MetadataController.getMetadata()
+    [/ncss/**]: thredds.server.ncss.controller.NcssController.handleRequest()
+    [/ncss/**/datasetBoundaries.xml]: thredds.server.ncss.controller.NcssDatasetBoundariesController.getDatasetBoundaries()
+    [/ncss/**/station.xml]: thredds.server.ncss.controller.NcssDatasetInfoController.getStations()
+    [/ncss/**/dataset.html, /ncss/**/dataset.xml, /ncss/**/pointDataset.html, /ncss/**/pointDataset.xml]: thredds.server.ncss.controller.NcssDatasetInfoController.getDatasetDescription()
+    [/radarServer2/{dataset}/dataset.xml]: thredds.server.radarServer2.RadarServerController.datasetCatalog()
+    [/radarServer2/{dataset}]: thredds.server.radarServer2.RadarServerController.stations()
+    [/radarServer2/{dataset}/stations.xml]: thredds.server.radarServer2.RadarServerController.stationsFile()
+    [/radarServer2/catalog.xml]: thredds.server.radarServer2.RadarServerController.topLevelCatalog()
+    [/radarServer2/{dataset}]: thredds.server.radarServer2.RadarServerController.handleQuery()
+    [/catalog.xml]: thredds.server.root.RootController.getRootCatalogXml()
+    [/*.css, /*.gif, /*.jpg]: thredds.server.root.RootController.checkPublicDirectory()
+    [/, /catalog.html]: thredds.server.root.RootController.getRootCatalog()
+    [/info/serverVersion.txt]: thredds.server.serverinfo.ServerInfoController.getServerVersion()
+    [/info/serverInfo.html]: thredds.server.serverinfo.ServerInfoController.getServerInfoHtml()
+    [/info/serverInfo.xml]: thredds.server.serverinfo.ServerInfoController.getServerInfoXML()
+    [/view/{viewer}.jnlp]: thredds.server.viewer.ViewerController.launchViewer()
+    [/wcs/**]: thredds.server.wcs.WCSController.doGet()
+</pre>
+<p>NOtes</p>
+<ul>
+  <li>opendap not in here</li>
+  <li>cdmrfeature is wrong</li>
+  <li>ncss needss to be disambiguated, prob back to ncss/grid and ncss/point</li>
+</ul>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
