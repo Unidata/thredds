@@ -53,7 +53,7 @@ public class TestTdsLocal {
 
     try {
       CatalogBuilder builder = new CatalogBuilder();
-      Catalog cat = builder.buildFromLocation(catalogPath);
+      Catalog cat = builder.buildFromLocation(catalogPath, null);
       if (builder.hasFatalError()) {
         System.out.println("Validate failed "+ catalogName+" = \n<"+ builder.getErrorMessage()+">");
         assert false : builder.getErrorMessage();

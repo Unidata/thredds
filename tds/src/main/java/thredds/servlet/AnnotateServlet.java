@@ -160,7 +160,7 @@ public class AnnotateServlet extends AbstractServlet {
       CatalogBuilder builder = new CatalogBuilder();
       Catalog catalog;
       try {
-        catalog = builder.buildFromLocation(catURL);
+        catalog = builder.buildFromLocation(catURL, null);
       } catch (Exception e) {
         ServletUtil.handleException(e, res);
         return;

@@ -432,7 +432,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     CatalogBuilder result = new CatalogBuilder();
     result.setName(makeCollectionShortName(fromGc.getName()));
     result.setVersion(parentCatalog.getVersion());
-    result.setBaseURI(catURI);                       // LOOK is catURL right ??
+    result.setBaseURI(catURI);
     result.addService(virtualService);
 
     DatasetBuilder ds = makeDatasetFromCollection(false, result, parentCollectionName, fromGc);

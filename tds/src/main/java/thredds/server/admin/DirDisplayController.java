@@ -42,7 +42,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import thredds.core.DataRootManager;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
 import thredds.servlet.HtmlWriter;
@@ -60,7 +59,6 @@ import thredds.util.RequestForwardUtils;
  */
 @Controller
 public class DirDisplayController {
-  //private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( DirDisplayController.class );
 
   @Autowired
   private TdsContext tdsContext;

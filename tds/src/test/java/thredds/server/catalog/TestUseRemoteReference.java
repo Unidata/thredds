@@ -60,7 +60,8 @@ public class TestUseRemoteReference {
     ClassLoader cl = this.getClass().getClassLoader();
     URL url = cl.getResource(testCatalog);
     ConfigCatalogBuilder catFactory = new ConfigCatalogBuilder();
-    cat = catFactory.buildFromLocation("file:" + url.getPath());
+    cat = catFactory.buildFromLocation("file:" + url.getPath(), null);
+    //cat = catFactory.buildFromURI(url);  // LOOK does this work ??
   }
 
   @Test

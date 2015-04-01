@@ -345,7 +345,7 @@ public class CatalogTreeView extends JPanel {
     CatalogBuilder builder = new CatalogBuilder();
 
     try {
-      Catalog cat = builder.buildFromLocation(location);
+      Catalog cat = builder.buildFromLocation(location, null);
       setCatalog(cat);
 
     } catch (IOException ioe) {

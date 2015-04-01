@@ -53,7 +53,7 @@ public class CatalogValidityTestUtils {
     assertNotNull("Null catalog URL not allowed.", catalogUrl);
 
     CatalogBuilder builder = new CatalogBuilder();
-    Catalog cat = builder.buildFromLocation(catalogUrl);
+    Catalog cat = builder.buildFromLocation(catalogUrl, null);
     assert !builder.hasFatalError();
     assertCatalogIsValid(cat, catalogUrl);
 

@@ -69,8 +69,8 @@ import ucar.unidata.util.StringUtil2;
  * @since May 4, 2010
  */
 @Controller
-@RequestMapping(value={"/admin"})
-public class CollectionController  {
+@RequestMapping(value = {"/admin/collection"})
+public class CollectionController {
   private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
   private static final String PATH = "/admin/collection";
@@ -79,7 +79,7 @@ public class CollectionController  {
   private static final String TRIGGER = "trigger";
 
   @Autowired
-    DataRootManager matcher;
+  DataRootManager matcher;
 
   @Autowired
   private TdsContext tdsContext;
@@ -107,7 +107,7 @@ public class CollectionController  {
           e.pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
           FeatureCollectionConfig config = fc.getConfig();
           if (config != null)
-            e.pw.printf("%s%n",config.spec);
+            e.pw.printf("%s%n", config.spec);
         }
 
         String url = tdsContext.getContextPath() + PATH + "/" + SHOW;
@@ -155,12 +155,12 @@ public class CollectionController  {
 
     act = new DebugController.Action("showFmrcCache", "Show FMRC Cache") {
       public void doAction(DebugController.Event e) {
-        e.pw.println("<p>cache location = "+monitor.getCacheLocation()+"<p>");
-        String statUrl = tdsContext.getContextPath() + FMRC_PATH + "/"+STATISTICS;
+        e.pw.println("<p>cache location = " + monitor.getCacheLocation() + "<p>");
+        String statUrl = tdsContext.getContextPath() + FMRC_PATH + "/" + STATISTICS;
         e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
         for (String name : monitor.getCachedCollections()) {
           String ename = StringUtil2.quoteHtmlContent(name);
-          String url = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ename;
+          String url = tdsContext.getContextPath() + FMRC_PATH + "?" + COLLECTION + "=" + ename;
           e.pw.println("<p/> <a href='" + url + "'>" + name + "</a>");
         }
       }
@@ -170,19 +170,19 @@ public class CollectionController  {
     act = new DebugController.Action("syncFmrcCache", "Flush FMRC Cache to disk") {
       public void doAction(DebugController.Event e) {
         monitor.sync();
-        e.pw.println("<p>bdb cache location = "+monitor.getCacheLocation()+"<p> flushed to disk");
+        e.pw.println("<p>bdb cache location = " + monitor.getCacheLocation() + "<p> flushed to disk");
       }
     };
     debugHandler.addAction(act);
 
   }
 
-  @RequestMapping(value={"/collection/showStatus"})
+  @RequestMapping(value = {"/showStatus"})
   protected ModelAndView handleCollectionStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
     res.setContentType(ContentType.html.getContentHeader());
     PrintWriter pw = res.getWriter();
 
-   // get sorted list of collections
+    // get sorted list of collections
     List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
     Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
       public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
@@ -199,12 +199,12 @@ public class CollectionController  {
     return null;
   }
 
-  @RequestMapping(value={"/collection/showStatus.csv"})
+  @RequestMapping(value = {"/showStatus.csv"})
   protected ModelAndView handleCollectionStatusCsv(HttpServletRequest req, HttpServletResponse res) throws Exception {
     res.setContentType(ContentType.csv.getContentHeader());
     PrintWriter pw = res.getWriter();
 
-   // get sorted list of collections
+    // get sorted list of collections
     List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
     Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
       public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
@@ -222,36 +222,63 @@ public class CollectionController  {
     return null;
   }
 
-  @RequestMapping(value={"/collection", "/collection/trigger"})
-  protected ModelAndView handleCollectionTriggers(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    //String path = req.getPathInfo();
-    String path = req.getServletPath();
-    if (path == null) path = "";
-    
-    if (path.startsWith("/admin") )
-    	path = path.substring("/admin".length(), path.length());
+  @RequestMapping(value = {"/trigger"})  // LOOK should require collection and trigger type params
+  protected ModelAndView triggerFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
     res.setContentType(ContentType.html.getContentHeader());
     PrintWriter pw = res.getWriter();
 
-    // deal with a trigger
     CollectionUpdateType triggerType = null;
-    if (path.equals("/"+COLLECTION+"/"+TRIGGER)) {
-      String triggerTypeS = req.getParameter(TRIGGER);
-      try {
-        triggerType = CollectionUpdateType.valueOf(triggerTypeS);
-      } catch (Throwable t) {
-        ;  // noop
-      }
-      if (triggerType == null) {
-        res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        pw.printf(" TRIGGER Type %s not legal%n", Escape.html(triggerTypeS));
-        pw.flush();
-        return null;
-      }
+    String triggerTypeS = req.getParameter(TRIGGER);
+    try {
+      triggerType = CollectionUpdateType.valueOf(triggerTypeS);
+    } catch (Throwable t) {
+      ;  // noop
     }
 
-    String collectName = StringUtil2.unescape( req.getParameter(COLLECTION)); // this is the collection name
+    if (triggerType == null) {
+      res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      pw.printf(" TRIGGER Type '%s' not legal%n", Escape.html(triggerTypeS));
+      pw.flush();
+      return null;
+    }
+
+    String collectName = StringUtil2.unescape(req.getParameter(COLLECTION)); // this is the collection name
+    List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
+    InvDatasetFeatureCollection want = null;
+    for (InvDatasetFeatureCollection fc : fcList) {
+      if (fc.getName().equalsIgnoreCase(collectName)) want = fc;
+    }
+
+    if (want == null) {
+      res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      pw.append("NOT FOUND");
+      pw.flush();
+      return null;
+    }
+
+    pw.printf("<h3>Collection %s</h3>%n", Escape.html(collectName));
+
+    if (!want.getConfig().isTrigggerOk()) {
+      res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      pw.printf(" TRIGGER NOT ENABLED%n");
+      pw.flush();
+      return null;
+    }
+
+    CollectionUpdater.INSTANCE.triggerUpdate(collectName, triggerType);
+    pw.printf(" TRIGGER SENT%n");
+
+    pw.flush();
+    return null;
+  }
+
+  @RequestMapping(value = {""})
+  protected ModelAndView showFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    res.setContentType(ContentType.html.getContentHeader());
+    PrintWriter pw = res.getWriter();
+
+    String collectName = StringUtil2.unescape(req.getParameter(COLLECTION)); // this is the collection name
     List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
     InvDatasetFeatureCollection want = null;
     for (InvDatasetFeatureCollection fc : fcList) {
@@ -266,24 +293,11 @@ public class CollectionController  {
 
     pw.printf("<h3>Collection %s</h3>%n", Escape.html(collectName));
 
-    if (triggerType != null) {
-      if (!want.getConfig().isTrigggerOk()) {
-        res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        pw.printf(" TRIGGER NOT ENABLED%n");
-        pw.flush();
-        return null;
-      }
+    showFeatureCollection(pw, want);
 
-      CollectionUpdater.INSTANCE.triggerUpdate(collectName, triggerType);
-      pw.printf(" TRIGGER SENT%n");
-
-    } else {
-      showFeatureCollection(pw, want);
-
-      String uriParam = Escape.uriParam(want.getCollectionName());
-      String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + uriParam + "&" + TRIGGER + "=" + CollectionUpdateType.nocheck;
-      pw.printf("<p/><a href='%s'>Send trigger to %s</a>%n", url, Escape.html(want.getName()));
-    }
+    String uriParam = Escape.uriParam(want.getCollectionName());
+    String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + uriParam + "&" + TRIGGER + "=" + CollectionUpdateType.nocheck;
+    pw.printf("<p/><a href='%s'>Send trigger to %s</a>%n", url, Escape.html(want.getName()));
 
     pw.flush();
     return null;
@@ -304,13 +318,13 @@ public class CollectionController  {
 
   /////////////////////////////////////////////////////////////
   // old FmrcController - deprecated
-  private static final String FMRC_PATH = "/admin/showFmrc";
+  private static final String FMRC_PATH = "/admin/collection/showFmrc";
   private static final String STATISTICS = "cacheStatistics.txt";
   private static final String CMD = "cmd";
   private static final String FILE = "file";
   private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
 
-  @RequestMapping(value={"/showFmrc", "/showFmrc/*"})
+  @RequestMapping(value = {"/showFmrc", "/showFmrc/*"})
   protected ModelAndView showFmrcCache(HttpServletRequest req, HttpServletResponse res) throws Exception {
     String path = TdsPathUtils.extractPath(req, "admin/");   // LOOK probably wrong
 
@@ -325,7 +339,7 @@ public class CollectionController  {
       return null;
     }
 
-    String collectName = StringUtil2.unescape( req.getParameter(COLLECTION)); // this is the collection name
+    String collectName = StringUtil2.unescape(req.getParameter(COLLECTION)); // this is the collection name
     String fileName = req.getParameter(FILE);
     String cmd = req.getParameter(CMD);
 
@@ -336,8 +350,8 @@ public class CollectionController  {
       if (null == contents) {
         res.setContentType(ContentType.html.getContentHeader());
         PrintWriter pw = res.getWriter();
-        pw.println("<p/> Cant find filename="+Escape.html(fileName)+" in collection = "+ Escape.html(collectName));
-      }  else {
+        pw.println("<p/> Cant find filename=" + Escape.html(fileName) + " in collection = " + Escape.html(collectName));
+      } else {
         res.setContentType(ContentType.xml.getContentHeader());
         PrintWriter pw = res.getWriter();
         pw.println(contents);
@@ -349,22 +363,22 @@ public class CollectionController  {
     // list the collection
     if (collectName != null) {
       String ecollectName = Escape.uriParam(collectName);
-      String url = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ecollectName;
+      String url = tdsContext.getContextPath() + FMRC_PATH + "?" + COLLECTION + "=" + ecollectName;
       res.setContentType(ContentType.html.getContentHeader());
       PrintWriter pw = res.getWriter();
 
-      pw.println("Files for collection = "+Escape.html(collectName)+"");
+      pw.println("Files for collection = " + Escape.html(collectName) + "");
 
       // allow delete
-      String deleteUrl = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ecollectName+"&"+CMD+"=delete";
+      String deleteUrl = tdsContext.getContextPath() + FMRC_PATH + "?" + COLLECTION + "=" + ecollectName + "&" + CMD + "=delete";
       pw.println("<a href='" + deleteUrl + "'> Delete" + "</a>");
 
       pw.println("<ol>");
       for (String filename : monitor.getFilesInCollection(collectName)) {
         String efileName = java.net.URLEncoder.encode(filename, CDM.UTF8);
-        pw.println("<li> <a href='" + url + "&"+FILE+"="+efileName + "'>" + filename + "</a>");
+        pw.println("<li> <a href='" + url + "&" + FILE + "=" + efileName + "'>" + filename + "</a>");
       }
-     pw.println("</ol>");
+      pw.println("</ol>");
     }
 
     if (cmd != null && cmd.equals("delete")) {
@@ -375,7 +389,7 @@ public class CollectionController  {
         monitor.deleteCollection(collectName);
         pw.println("<p/>deleted");
       } catch (Exception e) {
-        pw.println("<pre>delete failed on collection = "+Escape.html(collectName));
+        pw.println("<pre>delete failed on collection = " + Escape.html(collectName));
         e.printStackTrace(pw);
         pw.println("</pre>");
       }
@@ -386,11 +400,9 @@ public class CollectionController  {
 
   public static void main(String[] args) throws UnsupportedEncodingException {
     String s = "B:/lead/fmrc/ECMWF_Global_2p5_20150301_0000.nc#fmrInv.xml";
-    String enc = java.net.URLEncoder.encode( s, CDM.UTF8 );
+    String enc = java.net.URLEncoder.encode(s, CDM.UTF8);
     String unenc = java.net.URLDecoder.decode(s, CDM.UTF8);
     System.out.printf("%s == %s == %s%n", s, enc, unenc);
-
-
   }
 
 }

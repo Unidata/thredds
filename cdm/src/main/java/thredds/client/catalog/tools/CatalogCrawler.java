@@ -43,7 +43,6 @@ import ucar.nc2.util.Indent;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -106,7 +105,7 @@ public class CatalogCrawler {
   public int crawl(String catUrl, CancelTask task, PrintWriter out, Object context) throws IOException {
 
     CatalogBuilder catFactory = new CatalogBuilder();
-    Catalog cat = catFactory.buildFromLocation(catUrl);
+    Catalog cat = catFactory.buildFromLocation(catUrl, null);
     boolean isValid = !catFactory.hasFatalError();
     if (out != null) {
       out.println("catalog <" + catUrl + "> " + (isValid ? "is" : "is not") + " valid");
@@ -332,6 +331,7 @@ public class CatalogCrawler {
       public void getDataset(Dataset dd, Object context) {
         countDs[0]++;
         if (countDs[0] % 10000 == 0) System.out.printf("%d ", countDs[0]);
+        if (countDs[0] % 100000 == 0) System.out.printf("%n");
       }
 
       public boolean getCatalogRef(CatalogRef dd, Object context) {
@@ -344,7 +344,7 @@ public class CatalogCrawler {
     int count = 0;
 
     //count += crawler.crawl("file:B:/esgf/ncar/esgcet/catalog.xml", null, null, null);
-    count += crawler.crawl("file:B://esgf/ncar/esgcet/56/ucar.cgd.ccsm4.CESM_CAM5_BGC_LE_COMPROJ.ice.proc.monthly_ave.fswthru.v1.xml", null, null, null);
+    count += crawler.crawl("file:B:/esgf/gfdl/esgcet/catalog.xml", null, null, null);
 
     /*
     Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
