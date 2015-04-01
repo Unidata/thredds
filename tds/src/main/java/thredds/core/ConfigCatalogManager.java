@@ -172,7 +172,8 @@ public class ConfigCatalogManager implements InitializingBean {
   private ConfigCatalog readCatalog(String path, String catalogFullPath)  {
     URI uri;
     try {
-      uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
+      // uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
+      uri = new URI(tdsContext.getContextPath() + "/catalog/" + path);
     } catch (URISyntaxException e) {
       logCatalogInit.error(ERROR + "readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
@@ -181,8 +182,8 @@ public class ConfigCatalogManager implements InitializingBean {
     ConfigCatalogBuilder builder = new ConfigCatalogBuilder();
     try {
       // read the catalog
-      logCatalogInit.info("\n-------readCatalog(): full path=" + catalogFullPath + "; path=" + path);
-      ConfigCatalog cat = (ConfigCatalog) builder.buildFromURI(uri);
+      logCatalogInit.info("\n-------readCatalog(): full path=" + catalogFullPath + "; path=" + path+ "; uri=" + uri);
+      ConfigCatalog cat = (ConfigCatalog) builder.buildFromLocation(catalogFullPath, uri);
       if (builder.hasFatalError()) {
         logCatalogInit.error(ERROR + "   invalid catalog -- " + builder.getErrorMessage());
         return null;

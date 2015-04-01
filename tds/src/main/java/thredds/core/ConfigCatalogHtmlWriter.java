@@ -55,7 +55,8 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Write HTML representations of a Catalog or Dataset
+ * Write HTML representations of a Catalog or Dataset.
+ * Used by both client and server.
  *
  * @author caron
  * @since 1/19/2015

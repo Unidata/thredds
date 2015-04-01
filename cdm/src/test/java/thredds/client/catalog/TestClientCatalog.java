@@ -68,7 +68,7 @@ public class TestClientCatalog {
     }
     System.out.printf("Open %s%n", urlString);
     CatalogBuilder builder = new CatalogBuilder();
-    Catalog cat = builder.buildFromLocation(urlString);
+    Catalog cat = builder.buildFromLocation(urlString, null);
     if (builder.hasFatalError()) {
       System.out.printf("ERRORS %s%n", builder.getErrorMessage());
       assert false;

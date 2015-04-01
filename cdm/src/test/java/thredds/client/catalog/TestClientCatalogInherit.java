@@ -54,7 +54,7 @@ public class TestClientCatalogInherit {
   @Before
   public void openCatalog() throws IOException {
     CatalogBuilder builder = new CatalogBuilder();
-    cat = builder.buildFromLocation(urlString);
+    cat = builder.buildFromLocation(urlString, null);
     if (builder.hasFatalError()) {
       System.out.printf("ERRORS %s%n", builder.getErrorMessage());
       assert false;

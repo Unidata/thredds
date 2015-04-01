@@ -30,26 +30,34 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.views;
 
-import org.springframework.web.servlet.view.AbstractView;
+package thredds.server.admin;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
- * _more_
+ * Show spring request maps
  *
- * @author edavis
- * @since 4.0
+ * @author caron
+ * @since 10/23/13
+ * @see "http://www.java-allandsundry.com/2012/03/endpoint-documentation-controller-for.html"
  */
-public class ByteRangeFileView extends AbstractView
-{
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( ByteRangeFileView.class );
+@Controller
+@RequestMapping(value ="/admin/spring", method= RequestMethod.GET)
+public class SpringInfoController {
 
-  protected void renderMergedOutputModel( Map model, HttpServletRequest request, HttpServletResponse response ) throws Exception
-  {
+  @Autowired
+  private RequestMappingHandlerMapping handlerMapping;
+
+  @RequestMapping(value = "/map", method = RequestMethod.GET)
+  public ModelAndView show() {
+    return new ModelAndView("springRequestMap", "handlerMethods", this.handlerMapping.getHandlerMethods());
   }
+
 }

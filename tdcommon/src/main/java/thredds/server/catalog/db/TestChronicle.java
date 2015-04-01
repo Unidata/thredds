@@ -34,7 +34,7 @@ public class TestChronicle {
       File file = new File(pathname);
 
       ChronicleMapBuilder<Long, CharSequence> builder = ChronicleMapBuilder.of(Long.class, CharSequence.class)
-              .averageValueSize(1000).entries(2000);
+              .averageValueSize(500).entries(1100 * 1000);
 
       ChronicleMap<Long, CharSequence> map = builder.createPersistedTo(file);
 
@@ -66,16 +66,17 @@ public class TestChronicle {
       File file = new File(pathname);
 
       ChronicleMapBuilder<String, Externalizable> builder = ChronicleMapBuilder.of(String.class, Externalizable.class)
-              .averageValueSize(400).entries(660 * 1000);
+              .averageValueSize(1000).entries(1100 * 1000);
 
       final ChronicleMap<String, Externalizable> map = builder.createPersistedTo(file);
 
-
+      final int chunk = 10000;
+      final int chunk10 = 100000;
       CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.Type.all, -1, null, new CatalogCrawler.Listener() {
         public void getDataset(Dataset dd, Object context) {
           countDs[0]++;
-          if (countDs[0] % 1000 == 0) System.out.printf("%d ", countDs[0]);
-          if (countDs[0] % 10000 == 0) System.out.printf("%n");
+          if (countDs[0] % chunk == 0) System.out.printf("%d ", countDs[0]);
+          if (countDs[0] % chunk10 == 0) System.out.printf("%n");
           String key = dd.getId();
           if (key != null) {
             DatasetExt dsext = new DatasetExt(dd);
@@ -100,8 +101,9 @@ public class TestChronicle {
       // count += crawler.crawl("file:B://esgf/ncar/esgcet/56/ucar.cgd.ccsm4.CESM_CAM5_BGC_LE_COMPROJ.ice.proc.monthly_ave.fswthru.v1.xml", null, null, null);
 
 
-      Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
-      count += crawler.crawlAllInDirectory(top, false, null, null, null);
+      //Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
+      //count += crawler.crawlAllInDirectory(top, false, null, null, null);
+      count += crawler.crawl("file:B:/esgf/gfdl/esgcet/catalog.xml", null, null, null);
 
       pw.flush();
 

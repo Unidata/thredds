@@ -242,7 +242,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
       try {
         CatalogBuilder catFactory = new CatalogBuilder();
-        Catalog cat = catFactory.buildFromLocation(urlString);
+        Catalog cat = catFactory.buildFromLocation(urlString, null);
         boolean isValid = !catFactory.hasFatalError();
 
        javax.swing.JOptionPane.showMessageDialog(this,
