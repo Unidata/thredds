@@ -176,7 +176,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     CatalogBuilder result = new CatalogBuilder();
     result.setName(makeFullName(parent));
     result.setVersion(parentCatalog.getVersion());
-    result.setBaseURI(catURI);                       // LOOK is catURL right ??
+    result.setBaseURI(catURI);                       // LOOK is catURI right ??
     result.addService(virtualService);
 
     DatasetBuilder top = new DatasetBuilder(null);

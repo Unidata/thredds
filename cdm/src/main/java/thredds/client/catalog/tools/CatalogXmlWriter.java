@@ -51,7 +51,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Write client side catalogs out as XML
+ * Write client side catalogs out as XML.
+ * Used for server catalogs too.
+ * Note there is no reference to the catalog's baseURI.
  *
  * @author caron
  * @since 1/11/2015

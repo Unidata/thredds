@@ -60,19 +60,18 @@ public class RootController implements LastModified {
   @Autowired
   private TdsContext tdsContext;
 
-
   @RequestMapping(value = {"/", "/catalog.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
-  public String getRootCatalog() {
+  public String redirectRootCatalog() {
     return "redirect:/catalog/catalog.html";
   }
 
   @RequestMapping(value = {"/catalog.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
-  public String getRootCatalogXml() {
+  public String redirectRootCatalogXml() {
     return "redirect:/catalog/catalog.xml";
   }
 
-  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png"})
-  public ModelAndView checkPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png"}, method = RequestMethod.GET)
+  public ModelAndView serveFromPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
     String path = TdsPathUtils.extractPath(req, null);
     File file = tdsContext.getPublicDocFileSource().getFile(path);
     if (file == null) {

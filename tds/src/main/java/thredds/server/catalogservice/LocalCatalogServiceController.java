@@ -107,10 +107,13 @@ public class LocalCatalogServiceController {
       // Determine path and catalogPath
       String catalogPath = catalogServiceRequest.getPath();
 
-      Catalog catalog = null;
+      Catalog catalog;
+      URI baseUri;
       String baseUriString = request.getRequestURL().toString();
       try {
-        catalog = dataRootManager.getCatalog(catalogPath, new URI(baseUriString));
+        baseUri = new URI(baseUriString);
+        catalog = dataRootManager.getCatalog(catalogPath, baseUri);
+
       } catch (URISyntaxException e) {
         String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
         log.error("handleRequestInternal(): " + msg);
@@ -179,10 +182,13 @@ public class LocalCatalogServiceController {
       String path = catalogServiceRequest.getPath();
       String catalogPath = path.replaceAll(".html$", ".xml");
 
-      Catalog catalog = null;
+      Catalog catalog;
+      URI baseUri;
       String baseUriString = request.getRequestURL().toString();
       try {
-        catalog = dataRootManager.getCatalog(catalogPath, new URI(baseUriString));
+        baseUri = new URI(baseUriString);
+        catalog = dataRootManager.getCatalog(catalogPath, baseUri);
+
       } catch (URISyntaxException e) {
         String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
         log.error("handleRequestInternal(): " + msg);

@@ -79,7 +79,7 @@ public class TestIDVdatasets {
     out.println("******* read "+catName);
     Catalog cat;
     try {
-      cat = catFactory.buildFromLocation(catName);
+      cat = catFactory.buildFromLocation(catName, null);
       boolean isValid = catFactory.hasFatalError();
       out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
       out.println(" validation output=\n" + catFactory.getErrorMessage());

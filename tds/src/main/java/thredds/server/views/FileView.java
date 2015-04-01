@@ -43,27 +43,25 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import thredds.servlet.Debug;
-import thredds.servlet.ServletUtil;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.cache.FileCacheIF;
-import ucar.nc2.util.cache.FileCacheable;
-import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
- *  Render the response to a request for a local file including byte range requests.
+ * LOOK: wants to replace ServletUtil.returnFile()
+ * Associated with threddsFileView in tds/src/main/webapp/WEB-INF/view.xml
  *
- * <p>
+ * Render the response to a request for a local file including byte range requests.
+ * <p/>
+ * <p/>
  * This view supports the following model elements:
  * <pre>
  *  KEY                  OBJECT             Required
  *  ===                  ======             ========
  * "file"               java.io.File         yes
  * "contentType"        java.lang.String     no
- * "characterEncoding"  java.lang.Stringb    no
+ * "characterEncoding"  java.lang.String     no
  * </pre>
- *
+ * <p/>
  * NOTE: If the content type is determined to be text, the character encoding
  * is assumed to be UTF-8 unless
  *
@@ -71,118 +69,89 @@ import ucar.unidata.io.RandomAccessFile;
  * @since 4.0
  */
 public class FileView extends AbstractView {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( FileView.class );
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileView.class);
 
-  /* private static final ucar.nc2.util.cache.FileFactory fileFactory = new FileFactory() {
-    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      return RandomAccessFile.acquire(location);
-    }
-  };
+  protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
+    if (model == null || model.isEmpty())
+      throw new IllegalArgumentException("Model must not be null or empty.");
+    if (!model.containsKey("file"))
+      throw new IllegalArgumentException("Model must contain \"file\" key.");
 
-  private FileCacheIF fileCacheRaf;
-  public void setFileCacheRaf( FileCacheIF fileCacheRaf) { this.fileCacheRaf = fileCacheRaf; }
-
-  public void init() {
-    if ( this.fileCacheRaf == null )
-      this.fileCacheRaf = ServletUtil.getFileCache();
-    if ( this.fileCacheRaf == null )
-      throw new IllegalStateException( "FileCacheRaf not configured.");
-  } */
-
-  protected void renderMergedOutputModel( Map model, HttpServletRequest req, HttpServletResponse res )
-          throws Exception
-  {
-    if ( model == null || model.isEmpty() )
-      throw new IllegalArgumentException( "Model must not be null or empty." );
-    if ( ! model.containsKey( "file" ) )
-      throw new IllegalArgumentException( "Model must contain \"file\" key." );
-    Object o = model.get( "file" );
-    if ( ! ( o instanceof File ) )
-      throw new IllegalArgumentException( "Object mapped by \"file\" key  must be a File." );
+    Object o = model.get("file");
+    if (!(o instanceof File))
+      throw new IllegalArgumentException("Object mapped by \"file\" key  must be a File.");
     File file = (File) o;
 
     // Check that file exists and is not a directory.
-    if ( ! file.isFile() )
-    {
+    if (!file.isFile()) {
       // ToDo Send error or throw exception to be handled by Spring exception handling stuff.
-//      throw new IllegalArgumentException( "File must exist and not be a directory." );
-      res.sendError( HttpServletResponse.SC_BAD_REQUEST );
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 
     // Check if content type is specified.
     String contentType = null;
-    if ( model.containsKey( "contentType"))
-    {
-      o = model.get( "contentType");
-      if ( o instanceof String )
+    if (model.containsKey("contentType")) {
+      o = model.get("contentType");
+      if (o instanceof String)
         contentType = (String) o;
     }
 
-    // Check if content type is specified.
+    // Check if characterEncoding is specified.
     String characterEncoding = null;
-    if ( model.containsKey( "characterEncoding"))
-    {
-      o = model.get( "characterEncoding");
-      if ( o instanceof String )
+    if (model.containsKey("characterEncoding")) {
+      o = model.get("characterEncoding");
+      if (o instanceof String)
         characterEncoding = (String) o;
     }
 
-    // Set the type of the file
+    // Set the type of the file LOOK at thredds.util.ContentType
     String filename = file.getPath();
-    if ( null == contentType )
-    {
-      if ( filename.endsWith( ".html" ) )
+    if (null == contentType) {
+      if (filename.endsWith(".html"))
         contentType = "text/html; charset=utf-8";
-      else if ( filename.endsWith( ".xml" ) )
+      else if (filename.endsWith(".xml"))
         contentType = "application/xml; charset=utf-8";
-      else if ( filename.endsWith( ".txt" ) || filename.endsWith( ".log" ) || filename.endsWith( ".out" ) )
+      else if (filename.endsWith(".txt") || filename.endsWith(".log") || filename.endsWith(".out"))
         contentType = "text/plain; charset=utf-8";
-      else if ( filename.indexOf( ".log." ) > 0 )
+      else if (filename.indexOf(".log.") > 0)
         contentType = "text/plain; charset=utf-8";
-      else if ( filename.endsWith( ".nc" ) )
+      else if (filename.endsWith(".nc"))
         contentType = "application/x-netcdf";
       else
-        contentType = this.getServletContext().getMimeType( filename );
+        contentType = this.getServletContext().getMimeType(filename);
 
-      if ( contentType == null )
+      if (contentType == null)
         contentType = "application/octet-stream";
     }
 
     // ToDo Do I need/want to do this?
-    if ( characterEncoding == null )
-    {
-      if ( ( ! contentType.contains( "charset=") ) &&
-           ( contentType.startsWith( "text/" ) ||
-             contentType.startsWith( "application/xml")))
-      {
+    if (characterEncoding == null) {
+      if ((!contentType.contains("charset=")) && (contentType.startsWith("text/") || contentType.startsWith("application/xml"))) {
         characterEncoding = "utf-8";
       }
     }
 
     // Set content type and character encoding as given/determined.
-    res.setContentType( contentType );
-    if ( characterEncoding != null )
-      res.setCharacterEncoding( characterEncoding );
+    res.setContentType(contentType);
+    if (characterEncoding != null)
+      res.setCharacterEncoding(characterEncoding);
 
     // The rest of this is from John's thredds.servlet.ServletUtil.returnFile(...)
     // see if its a Range Request
     boolean isRangeRequest = false;
     long startPos = 0, endPos = Long.MAX_VALUE;
-    String rangeRequest = req.getHeader( "Range" );
-    if ( rangeRequest != null )
-    { // bytes=12-34 or bytes=12-
-      int pos = rangeRequest.indexOf( "=" );
-      if ( pos > 0 )
-      {
-        int pos2 = rangeRequest.indexOf( "-" );
-        if ( pos2 > 0 )
-        {
-          String startString = rangeRequest.substring( pos + 1, pos2 );
-          String endString = rangeRequest.substring( pos2 + 1 );
-          startPos = Long.parseLong( startString );
-          if ( endString.length() > 0 )
-            endPos = Long.parseLong( endString ) + 1;
+    String rangeRequest = req.getHeader("Range");
+    if (rangeRequest != null) { // bytes=12-34 or bytes=12-
+      int pos = rangeRequest.indexOf("=");
+      if (pos > 0) {
+        int pos2 = rangeRequest.indexOf("-");
+        if (pos2 > 0) {
+          String startString = rangeRequest.substring(pos + 1, pos2);
+          String endString = rangeRequest.substring(pos2 + 1);
+          startPos = Long.parseLong(startString);
+          if (endString.length() > 0)
+            endPos = Long.parseLong(endString) + 1;
           isRangeRequest = true;
         }
       }
@@ -191,72 +160,65 @@ public class FileView extends AbstractView {
     // set content length
     long fileSize = file.length();
     long contentLength = fileSize;
-    if ( isRangeRequest )
-    {
-      endPos = Math.min( endPos, fileSize );
+    if (isRangeRequest) {
+      endPos = Math.min(endPos, fileSize);
       contentLength = endPos - startPos;
     }
-    res.setContentLength( (int) contentLength );
+    res.setContentLength((int) contentLength);
 
-    boolean debugRequest = Debug.isSet( "returnFile" );
-    if ( debugRequest )
-      log.debug( "renderMergedOutputModel(): filename = " + filename +
-                 " contentType = " + contentType + " contentLength = " + contentLength );
+    boolean debugRequest = Debug.isSet("returnFile");
+    if (debugRequest)
+      log.debug("renderMergedOutputModel(): filename = " + filename +
+              " contentType = " + contentType + " contentLength = " + contentLength);
 
     // indicate we allow Range Requests
-    if ( ! isRangeRequest )
-      res.addHeader( "Accept-Ranges", "bytes" );
+    if (!isRangeRequest)
+      res.addHeader("Accept-Ranges", "bytes");
 
-    if ( req.getMethod().equals( "HEAD" ) )
-    {
+    if (req.getMethod().equals("HEAD")) {
       return;
     }
 
-    try
-    {
-      if ( isRangeRequest )
-      {
+    try {
+      if (isRangeRequest) {
         // set before content is sent
-        res.addHeader( "Content-Range", "bytes " + startPos + "-" + ( endPos - 1 ) + "/" + fileSize );
-        res.setStatus( HttpServletResponse.SC_PARTIAL_CONTENT );
+        res.addHeader("Content-Range", "bytes " + startPos + "-" + (endPos - 1) + "/" + fileSize);
+        res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-        try (RandomAccessFile craf = RandomAccessFile.acquire( filename)) {
-          IO.copyRafB( craf, startPos, contentLength, res.getOutputStream(), new byte[60000] );
+        try (RandomAccessFile craf = RandomAccessFile.acquire(filename)) {
+          IO.copyRafB(craf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
           return;
         }
       }
 
       // Return the file
       ServletOutputStream out = res.getOutputStream();
-      IO.copyFileB( file, out, 60000 );
+      IO.copyFileB(file, out, 60000);
       res.flushBuffer();
       out.close();
-      if ( debugRequest )
-        log.debug( "renderMergedOutputModel(): file response ok = " + filename );
+      if (debugRequest)
+        log.debug("renderMergedOutputModel(): file response ok = " + filename);
     }
+
     // @todo Split up this exception handling: those from file access vs those from dealing with response
     //       File access: catch and res.sendError()
     //       response: don't catch (let bubble up out of doGet() etc)
-    catch ( FileNotFoundException e )
-    {
-      log.error( "returnFile(): FileNotFoundException= " + filename );
-      if ( ! res.isCommitted() ) res.sendError( HttpServletResponse.SC_NOT_FOUND );
-    }
-    catch ( java.net.SocketException e )
-    {
-      log.info( "returnFile(): SocketException sending file: " + filename + " " + e.getMessage() );
-    }
-    catch ( IOException e )
-    {
+    catch (FileNotFoundException e) {
+      log.error("returnFile(): FileNotFoundException= " + filename);
+      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
+
+    } catch (java.net.SocketException e) {
+      log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
+
+    } catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
-      if ( eName.equals( "org.apache.catalina.connector.ClientAbortException" ) )
-      {
-        log.info( "returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage() );
+      if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
+        log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
         return;
       }
 
-      log.error( "returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e );
-      res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Problem sending file" );
+      log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Problem sending file");
     }
   }
 }

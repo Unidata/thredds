@@ -56,7 +56,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * Builds client Catalogs using JDOM
+ * Builds client Catalogs using JDOM2
  *
  * @author caron
  * @since 1/8/2015
@@ -70,27 +70,32 @@ public class CatalogBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  protected URI docBaseURI;
+  // protected String location; // read from where?
   private Map<String, Service> serviceMap = new HashMap<>();
   protected Formatter errlog = new Formatter();
   protected boolean fatalError = false;
 
-  public Catalog buildFromLocation(String location) throws IOException {
-    URI uri;
-    try {
-      location = StringUtil2.replace(location, "\\", "/");
-      uri = new URI(location);
-    } catch (URISyntaxException e) {
-      errlog.format("Bad location = '%s' err='%s'%n", location, e.getMessage());
-      fatalError = true;
-      return null;
+  public Catalog buildFromLocation(String location, URI baseURI) throws IOException {
+    location = StringUtil2.replace(location, "\\", "/");
+
+    if (baseURI == null) {
+      try {
+        baseURI = new URI(location);
+      } catch (URISyntaxException e) {
+        errlog.format("Bad location = '%s' err='%s'%n", location, e.getMessage());
+        fatalError = true;
+        return null;
+      }
     }
-    return buildFromURI(uri);
+
+    this.baseURI = baseURI;
+    readXML(location);
+      return makeCatalog();
   }
 
   public Catalog buildFromURI(URI uri) throws IOException {
-    setBaseURI(uri);
-    readXML(this, uri);
+    this.baseURI = uri;
+    readXML(uri);
     return makeCatalog();
   }
 
@@ -101,29 +106,29 @@ public class CatalogBuilder {
       fatalError = true;
       return null;
     }
+    this.baseURI = catrefURI;
     Catalog result =  buildFromURI(catrefURI);
     catref.setRead(!fatalError);
     return result;
   }
 
   public Catalog buildFromString(String catalogAsString, URI docBaseUri) throws IOException {
-    setBaseURI(docBaseUri);
-    readXML(this, docBaseUri, catalogAsString);
+    this.baseURI = docBaseUri;
+    readXMLfromString(catalogAsString);
     return makeCatalog();
   }
 
   public Catalog buildFromStream(InputStream stream, URI docBaseUri) throws IOException {
-    setBaseURI(docBaseUri);
-    readXML(this, docBaseUri, stream);
+    this.baseURI = docBaseUri;
+    readXML(stream);
     return makeCatalog();
   }
-
 
   public Catalog buildFromJdom(Element root, URI docBaseUri) throws IOException {
-    readCatalog(this, root, baseURI);
+    this.baseURI = docBaseUri;
+    readCatalog(root);
     return makeCatalog();
   }
-
 
   public String getErrorMessage() {
     return errlog.toString();
@@ -203,12 +208,26 @@ public class CatalogBuilder {
   /////////////////////////////////////////////////////////////////////
   // JDOM
 
-  private void readXML(CatalogBuilder catBuilder, URI uri) throws IOException {
+  private void readXML(String location) throws IOException {
+     try {
+       SAXBuilder saxBuilder = new SAXBuilder();
+       org.jdom2.Document jdomDoc = saxBuilder.build(location);
+       readCatalog(jdomDoc.getRootElement());
 
+     } catch (Exception e) {
+       errlog.format("failed to read catalog at '%s' err='%s'%n", location, e);
+       logger.error("failed to read catalog at " + location, e);
+       // e.printStackTrace();
+       fatalError = true;
+     }
+   }
+
+
+  private void readXML(URI uri) throws IOException {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
       org.jdom2.Document jdomDoc = saxBuilder.build(uri.toURL());
-      readCatalog(catBuilder, jdomDoc.getRootElement(), uri);
+      readCatalog(jdomDoc.getRootElement());
 
     } catch (Exception e) {
       errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
@@ -216,39 +235,35 @@ public class CatalogBuilder {
       // e.printStackTrace();
       fatalError = true;
     }
-
   }
 
-  private void readXML(CatalogBuilder catBuilder, URI docBaseUri, String catalogAsString) throws IOException {
-
+  private void readXMLfromString(String catalogAsString) throws IOException {
     try {
       StringReader in = new StringReader(catalogAsString);
       SAXBuilder saxBuilder = new SAXBuilder();
       org.jdom2.Document jdomDoc = saxBuilder.build(in);
-      readCatalog(catBuilder, jdomDoc.getRootElement(), docBaseUri);
+      readCatalog(jdomDoc.getRootElement());
 
     } catch (Exception e) {
       errlog.format("failed to read catalogAsString err='%s'%n", e);
-      logger.error("failed to read catalogAsString at" + docBaseUri.toString(), e);
+      logger.error("failed to read catalogAsString at" + baseURI.toString(), e);
       e.printStackTrace();
       fatalError = true;
     }
-
   }
 
-  private void readXML(CatalogBuilder catBuilder, URI docBaseUri, InputStream stream) throws IOException {
+  private void readXML(InputStream stream) throws IOException {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
       org.jdom2.Document jdomDoc = saxBuilder.build(stream);
-      readCatalog(catBuilder, jdomDoc.getRootElement(), docBaseUri);
+      readCatalog(jdomDoc.getRootElement());
 
     } catch (Exception e) {
       errlog.format("failed to read catalogAsString err='%s'%n", e);
-      logger.error("failed to read catalogAsString at" + docBaseUri.toString(), e);
+      logger.error("failed to read catalogAsString at" + baseURI.toString(), e);
       e.printStackTrace();
       fatalError = true;
     }
-
   }
 
   /* <xsd:element name="catalog">
@@ -265,8 +280,7 @@ public class CatalogBuilder {
      </xsd:complexType>
    </xsd:element>
    */
-  public void readCatalog(CatalogBuilder catBuilder, Element catalogElem, URI docBaseURI) {
-    this.docBaseURI = docBaseURI;
+  private void readCatalog(Element catalogElem) {
 
     String name = catalogElem.getAttributeValue("name");
     String catSpecifiedBaseURL = catalogElem.getAttributeValue("base");   // LOOK what is this ??
@@ -282,44 +296,42 @@ public class CatalogBuilder {
       }
     }
 
-    URI baseURI = docBaseURI;
     if (catSpecifiedBaseURL != null) {
       try {
-        baseURI = new URI(catSpecifiedBaseURL);
+        URI userSpecifiedBaseUri = new URI(catSpecifiedBaseURL);
+        this.baseURI = userSpecifiedBaseUri;
       } catch (URISyntaxException e) {
         errlog.format("readCatalog(): bad catalog specified base URI='%s' %n", catSpecifiedBaseURL);
-        baseURI = docBaseURI;
       }
     }
 
-    catBuilder.setName(name);
-    catBuilder.setBaseURI(baseURI);
-    catBuilder.setExpires(expires);
-    catBuilder.setVersion(version);
+    setName(name);
+    setExpires(expires);
+    setVersion(version);
 
     // read top-level services
     java.util.List<Element> sList = catalogElem.getChildren("service", Catalog.defNS);
     for (Element e : sList) {
-      catBuilder.addService(readService(e));
+      addService(readService(e));
     }
 
     // read top-level properties
     java.util.List<Element> pList = catalogElem.getChildren("property", Catalog.defNS);
     for (Element e : pList) {
-      catBuilder.addProperty(readProperty(e));
+      addProperty(readProperty(e));
     }
 
     // look for top-level dataset and catalogRefs elements (keep them in order)
     java.util.List<Element> allChildren = catalogElem.getChildren();
     for (Element e : allChildren) {
       if (e.getName().equals("dataset")) {
-        catBuilder.addDataset(readDataset(null, e));
+        addDataset(readDataset(null, e));
 
       } else if (e.getName().equals("catalogRef")) {
-        catBuilder.addDataset(readCatalogRef(null, e));
+        addDataset(readCatalogRef(null, e));
 
       } else {
-        catBuilder.addDataset( buildOtherDataset(null, e));
+        addDataset(buildOtherDataset(null, e));
       }
     }
   }
@@ -1072,7 +1084,7 @@ public class CatalogBuilder {
     if (mapHref == null) return null;
 
     try {
-      String mapUri = URLnaming.resolve(docBaseURI.toString(), mapHref);
+      String mapUri = URLnaming.resolve(baseURI.toString(), mapHref);
       return new ThreddsMetadata.UriResolved(mapHref, new URI(mapUri));
     } catch (Exception e) {
       errlog.format(" ** Invalid %s URI= '%s' err='%s'%n", what, mapHref, e.getMessage());

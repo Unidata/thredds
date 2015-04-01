@@ -250,7 +250,7 @@ public class TestAll extends TestCase {
       curSysTimeAsString = CalendarDateFormatter.toDateTimeStringISO(CalendarDate.present()); // DateUtil.getCurrentSystemTimeAsISO8601();
 
       CatalogBuilder catFactory = new CatalogBuilder();
-      Catalog cat = catFactory.buildFromLocation(catUrl);
+      Catalog cat = catFactory.buildFromLocation(catUrl, null);
       boolean isValid = !catFactory.hasFatalError();
 
       if (!isValid) {

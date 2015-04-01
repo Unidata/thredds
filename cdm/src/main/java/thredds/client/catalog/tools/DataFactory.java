@@ -183,7 +183,7 @@ public class DataFactory {
 
     CatalogBuilder catFactory = new CatalogBuilder();
     String catalogLocation = location.substring(0, pos);
-    catalog = catFactory.buildFromLocation(catalogLocation);
+    catalog = catFactory.buildFromLocation(catalogLocation, null);
     if (catalog == null) {
       result.errLog.format("Invalid catalog from Resolver <%s>%n%s%n", catalogLocation, catFactory.getErrorMessage());
       result.fatalError = true;
@@ -559,7 +559,7 @@ public class DataFactory {
 
   private Dataset openResolver(String urlString, ucar.nc2.util.CancelTask task, Result result) throws IOException {
     CatalogBuilder catFactory = new CatalogBuilder();
-    Catalog catalog = catFactory.buildFromLocation(urlString);
+    Catalog catalog = catFactory.buildFromLocation(urlString, null);
     if (catalog == null) {
       result.errLog.format("Couldnt open Resolver %s err=%s%n ", urlString, catFactory.getErrorMessage());
       return null;

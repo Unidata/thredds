@@ -101,7 +101,7 @@ public class CompareGribVarNamesUtils {
 
     // Read the "FMRC Run" catalog
     CatalogBuilder builder = new CatalogBuilder();
-    Catalog cat = builder.buildFromLocation(fmrcRunCatUrl);
+    Catalog cat = builder.buildFromLocation(fmrcRunCatUrl, null);
     assertFalse("GRIB Collection catalog [" + fmrcRunCatUrl + "] had a fatal error= " + " " + builder.getErrorMessage(),
             builder.hasFatalError());
 
@@ -189,7 +189,7 @@ public class CompareGribVarNamesUtils {
     // Read the "Scan" catalog.
      // Read the "FMRC Run" catalog
     CatalogBuilder builder = new CatalogBuilder();
-    Catalog cat = builder.buildFromLocation(scanCatalogUrl);
+    Catalog cat = builder.buildFromLocation(scanCatalogUrl, null);
     assertFalse("FMRC Raw File catalog [" + scanCatalogUrl + "] had a fatal error= " + " " + builder.getErrorMessage(),
             builder.hasFatalError());
 
