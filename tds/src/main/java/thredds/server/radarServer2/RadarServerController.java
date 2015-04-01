@@ -100,7 +100,7 @@ public class RadarServerController {
             data.put(conf.urlPath, di);
             vars.put(conf.urlPath, conf.vars);
             StationList sl = di.getStationList();
-            sl.loadFromXmlFile(contentPath + conf.stationFile);
+            sl.loadFromXmlFile(contentPath + "/" + conf.stationFile);
         }
     }
 
@@ -159,8 +159,15 @@ public class RadarServerController {
     {
         String match = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        return match.substring(match.indexOf(entryPoint) + entryPoint.length());
+    }
+
+    private String parseDatasetFromURL(final HttpServletRequest request, String ending)
+    {
+        String match = (String) request.getAttribute(
+                HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         return match.substring(match.indexOf(entryPoint) + entryPoint.length(),
-                match.indexOf("/dataset.xml"));
+                match.indexOf(ending));
     }
 
     @RequestMapping(value="**/dataset.xml")
@@ -178,7 +185,7 @@ public class RadarServerController {
 
         // Parse the request URL to get the name of the dataset that was
         // requested.
-        String dataset = parseDatasetFromURL(request);
+        String dataset = parseDatasetFromURL(request, "/dataset.xml");
         RadarDataInventory di = getInventory(dataset);
 
         CatalogBuilder cb = new CatalogBuilder();
@@ -250,19 +257,22 @@ public class RadarServerController {
         return new HttpEntity<>(xmlBytes, header);
     }
 
-    @RequestMapping(value="{dataset}", params="station=all")
+    @RequestMapping(value="**/{dataset}", params="station=all")
     @ResponseBody
-    public StationList stations(@PathVariable String dataset)
+    public StationList stations(@PathVariable String dataset,
+                                final HttpServletRequest request)
     {
         if (!enabled) return null;
+        dataset = parseDatasetFromURL(request);
         return listStations(dataset);
     }
 
-    @RequestMapping(value="{dataset}/stations.xml")
+    @RequestMapping(value="**/stations.xml")
     @ResponseBody
-    public StationList stationsFile(@PathVariable String dataset)
+    public StationList stationsFile(final HttpServletRequest request)
     {
         if (!enabled) return null;
+        String dataset = parseDatasetFromURL(request, "/stations.xml");
         return listStations(dataset);
     }
 
@@ -286,7 +296,7 @@ public class RadarServerController {
         return new HttpEntity<>(bytes, header);
     }
 
-    @RequestMapping(value="{dataset}")
+    @RequestMapping(value="**/{dataset}")
     HttpEntity<byte[]> handleQuery(@PathVariable String dataset,
             @RequestParam(value="stn", required=false) String[] stations,
             @RequestParam(value="longitude", required=false) Double lon,
@@ -300,10 +310,13 @@ public class RadarServerController {
             @RequestParam(value="time_end", required=false) String end,
             @RequestParam(value="time_duration", required=false) String period,
             @RequestParam(value="temporal", required=false) String temporal,
-            @RequestParam(value="var", required=false) String[] vars)
+            @RequestParam(value="var", required=false) String[] vars,
+            final HttpServletRequest request)
             throws ParseException, UnsupportedOperationException, IOException
     {
         if (!enabled) return null;
+
+        dataset = parseDatasetFromURL(request);
         RadarDataInventory di = getInventory(dataset);
         if (di == null) {
             return simpleString("Could not find dataset: " + dataset);
