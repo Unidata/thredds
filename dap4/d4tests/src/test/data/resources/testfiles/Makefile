@@ -14,6 +14,7 @@ test_vlen1 \
 test_vlen2 \
 test_opaque \
 test_opaque_array \
+test_fill \
 test_utf8
 
 HDF5=\
@@ -23,12 +24,19 @@ test_vlen3 \
 test_vlen4 \
 test_vlen5
 
+C=tst_fills.c
+
 BUGS=
 
 all::
 	which ncgen ; which ncdump
+	for x in ${C} ; do ${MAKE} C1=$$x c1; done
 	for x in ${NC} ${HDF5} ; do ncgen -k3 $${x}.cdl ; done
 	for x in ${HDF5} ; do cp $${x}.nc $${x}.hdf5 ; done 
+
+c1:
+	gcc -g -O0 -o ${C1:.c=.exe} ${C1} -L/usr/local/lib -lnetcdf -lcurl -lhdf5 -lhdf5_hl
+	./${C1:.c=.exe}		
 
 clean::
 	for x in ${NC} ; do rm -f $${x}.nc ; done
