@@ -177,7 +177,7 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_sequence_1.syn");
+            chosentests = locate("tst_fills.nc");
             prop_visual = true;
         } else {
             for(ServletTest tc : alltestcases) {
@@ -190,35 +190,17 @@ public class TestServlet extends DapTestCommon
     defineAllTestcases()
     {
         this.alltestcases.add(
-            new ServletTest("test_sequence_1.syn", "dmr,dap", true,  //0
+            new ServletTest("tst_fills.nc", "dmr,dap", true,  //0
                 // S4
                 new Dump.Commands()
                 {
                     public void run(Dump printer) throws IOException
                     {
-                        int count = printer.printcount();
-                        for(int j = 0;j < count;j++) {
-                            printer.printvalue('S', 4);
-                            printer.printvalue('S', 2);
-                        }
+                        printer.printvalue('U', 1);
                         printer.printchecksum();
-                    }
-                }));
-        this.alltestcases.add(
-            new ServletTest("test_sequence_2.syn", "dmr,dap", true,  //0
-                // S4
-                new Dump.Commands()
-                {
-                    public void run(Dump printer) throws IOException
-                    {
-                        for(int i = 0;i < 2;i++) {
-                            int count = printer.printcount();
-                            for(int j = 0;j < count;j++) {
-                                printer.printvalue('S', 4);
-                                printer.printvalue('S', 2);
-                            }
-                            printer.newline();
-                        }
+                        printer.printvalue('S', 2);
+                        printer.printchecksum();
+                        printer.printvalue('U', 4);
                         printer.printchecksum();
                     }
                 }));
@@ -457,6 +439,39 @@ public class TestServlet extends DapTestCommon
                     public void run(Dump printer) throws IOException
                     {
                         printer.printvalue('S', 4);
+                        printer.printchecksum();
+                    }
+                }));
+        this.alltestcases.add(
+            new ServletTest("test_sequence_1.syn", "dmr,dap", true,  //0
+                // S4
+                new Dump.Commands()
+                {
+                    public void run(Dump printer) throws IOException
+                    {
+                        int count = printer.printcount();
+                        for(int j = 0;j < count;j++) {
+                            printer.printvalue('S', 4);
+                            printer.printvalue('S', 2);
+                        }
+                        printer.printchecksum();
+                    }
+                }));
+        this.alltestcases.add(
+            new ServletTest("test_sequence_2.syn", "dmr,dap", true,  //0
+                // S4
+                new Dump.Commands()
+                {
+                    public void run(Dump printer) throws IOException
+                    {
+                        for(int i = 0;i < 2;i++) {
+                            int count = printer.printcount();
+                            for(int j = 0;j < count;j++) {
+                                printer.printvalue('S', 4);
+                                printer.printvalue('S', 2);
+                            }
+                            printer.newline();
+                        }
                         printer.printchecksum();
                     }
                 }));
