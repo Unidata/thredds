@@ -18,6 +18,7 @@ import java.lang.UnsupportedOperationException;
 import java.text.ParseException;
 import java.util.*;
 
+import org.springframework.web.servlet.HandlerMapping;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
@@ -25,7 +26,6 @@ import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ThreddsConfig;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -49,7 +49,10 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/radarServer2")
 public class RadarServerController {
     Map<String, RadarDataInventory> data;
-    final String URLbase = "/thredds/radarServer2/";
+    static final String appName = "/thredds/";
+    static final String entryPoint = "radarServer2/";
+    static final String URLbase = appName + entryPoint;
+    static Map<String, List<RadarServerConfig.RadarConfigEntry.VarInfo>> vars;
     boolean enabled = false;
 
     @Autowired
@@ -77,22 +80,27 @@ public class RadarServerController {
         enabled = ThreddsConfig.getBoolean("RadarServer.allow", false);
         if (!enabled) return;
 
-        // TODO: Need to pull this information from a config file
         data = new TreeMap<>();
-        Path dataRoot = Paths.get("/data/ldm/pub/native/radar");
-        String[] paths = {"level3"};
+        vars = new TreeMap<>();
         String contentPath = tdsContext.getContentDirectory().getPath();
-        for (String path : paths) {
-            RadarDataInventory di = new RadarDataInventory(dataRoot, path);
-            di.setName(path);
-            di.addVariableDir();
+        List<RadarServerConfig.RadarConfigEntry> configs = RadarServerConfig.readXML(contentPath + "/radar/radarCollections.xml");
+        for (RadarServerConfig.RadarConfigEntry conf : configs) {
+            RadarDataInventory di = new RadarDataInventory(Paths.get(conf.diskPath));
+            di.setName(conf.name);
+            di.setDescription(conf.doc);
+            if (!conf.dataFormat.equals("NEXRAD2")) di.addVariableDir();
             di.addStationDir();
             di.addDateDir("yyyyMMdd");
-            di.addFileTime("yyyyMMdd_HHmm#.nids#");
+            di.addFileTime(conf.dataFormat.equals("NEXRAD2") ? "yyyyMMdd_HHmm#.ar2v#" : "yyyyMMdd_HHmm#.nids#");
             di.setNearestWindow(CalendarPeriod.of(1, CalendarPeriod.Field.Hour));
-            data.put(path, di);
+
+            // TODO: This needs to come from files instead
+            di.setDataFormat(conf.dataFormat);
+
+            data.put(conf.urlPath, di);
+            vars.put(conf.urlPath, conf.vars);
             StationList sl = di.getStationList();
-            sl.loadFromXmlFile(contentPath + "/radar/RadarNexradStations.xml");
+            sl.loadFromXmlFile(contentPath + conf.stationFile);
         }
     }
 
@@ -111,12 +119,12 @@ public class RadarServerController {
         DatasetBuilder mainDB = new DatasetBuilder(null);
         mainDB.setName("Radar Data");
 
-        for (RadarDataInventory di: data.values()) {
+        for (Map.Entry<String, RadarDataInventory> ent: data.entrySet()) {
+            RadarDataInventory di = ent.getValue();
             CatalogRefBuilder crb = new CatalogRefBuilder(mainDB);
             crb.setName(di.getName());
             crb.setTitle(di.getName());
-            Path dataBase = di.getRoot().relativize(di.getCollectionDir());
-            crb.setHref(dataBase.resolve("dataset.xml").toString());
+            crb.setHref(ent.getKey() + "/dataset.xml");
             mainDB.addDataset(crb);
         }
         cb.addDataset(mainDB);
@@ -132,26 +140,45 @@ public class RadarServerController {
         return new HttpEntity<>(xmlBytes, header);
     }
 
+    // Old IDV code doesn't actually parse a catalog, but a custom XML file.
+    // This code tweaks our catalog output to match.
     private String idvDatasetCatalog(String xml)
     {
         String ret = xml.replace("variables", "Variables");
         ret = ret.replace("timeCoverage", "TimeSpan");
-        ret = ret.replace("geospatialCoverage", "LatLonBox");
-        return ret;
+        StringBuilder sub = new StringBuilder(ret.substring(0,
+                ret.indexOf("<geospatialCoverage>")));
+        sub.append("<LatLonBox>\n\t<north>90.0</north>\n\t<south>-90.0</south>");
+        sub.append("\n\t<east>180.0</east>\n\t<west>-180.0</west></LatLonBox>");
+        String endCoverage = "</geospatialCoverage>";
+        sub.append(ret.substring(ret.indexOf(endCoverage) + endCoverage.length()));
+        return sub.toString();
     }
 
-    @RequestMapping(value="level3/dataset.xml")
+    private String parseDatasetFromURL(final HttpServletRequest request)
+    {
+        String match = (String) request.getAttribute(
+                HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        return match.substring(match.indexOf(entryPoint) + entryPoint.length(),
+                match.indexOf("/dataset.xml"));
+    }
+
+    @RequestMapping(value="**/dataset.xml")
     @ResponseBody
     public HttpEntity<byte[]> datasetCatalog(final HttpServletRequest request) throws IOException
     {
         if (!enabled) return null;
 
+        // Check the user-agent to try to guess if this request is coming from
+        // the IDV--if so, we'll need to tweak the returned catalog XML.
         String agent = request.getHeader("user-agent");
         boolean makeIDVCatalog = false;
         if (agent != null && agent.startsWith("Java/1."))
             makeIDVCatalog = true;
 
-        String dataset = "level3";
+        // Parse the request URL to get the name of the dataset that was
+        // requested.
+        String dataset = parseDatasetFromURL(request);
         RadarDataInventory di = getInventory(dataset);
 
         CatalogBuilder cb = new CatalogBuilder();
@@ -160,13 +187,12 @@ public class RadarServerController {
                 new ArrayList<Property>()));
         cb.setName("Radar Data");
 
-        Path dataBase = di.getRoot().relativize(di.getCollectionDir());
         DatasetBuilder mainDB = new DatasetBuilder(null);
         mainDB.setName(di.getName());
-        mainDB.put(Dataset.Id, dataBase.toString());
-        mainDB.put(Dataset.UrlPath, dataBase.toString());
-        mainDB.put(Dataset.DataFormatType, "NIDS"); // TODO: Pull from inventory
-        mainDB.put(Dataset.FeatureType, FeatureType.RADIAL.toString());
+        mainDB.put(Dataset.Id, dataset);
+        mainDB.put(Dataset.UrlPath, dataset);
+        mainDB.put(Dataset.DataFormatType, di.getDataFormat());
+        mainDB.put(Dataset.FeatureType, di.getFeatureType().toString());
         mainDB.put(Dataset.ServiceName, "radarServer");
 
         ThreddsMetadata tmd = new ThreddsMetadata();
@@ -191,12 +217,14 @@ public class RadarServerController {
         metadata.put(Dataset.TimeCoverage, new DateRange(start.toDate(),
                 now.toDate()));
 
-        List<ThreddsMetadata.Variable> vars = new ArrayList<>();
-        vars.add(new ThreddsMetadata.Variable("Reflectivity", null,
-                "EARTH SCIENCE > Spectral/Engineering > Radar > Radar " +
-                        "Reflectivity", "dB", null));
+        // TODO: Need to be able to get this from the inventory
+        List<ThreddsMetadata.Variable> catalogVars = new ArrayList<>();
+        for (RadarServerConfig.RadarConfigEntry.VarInfo vi: vars.get(dataset)) {
+            catalogVars.add(new ThreddsMetadata.Variable(vi.name, null,
+                    vi.vocabName, vi.units, null));
+        }
         ThreddsMetadata.VariableGroup vg = new ThreddsMetadata.VariableGroup(
-                "DIF", null, null, vars);
+                "DIF", null, null, catalogVars);
         metadata.put(Dataset.VariableGroups, vg);
 
         mainDB.put(Dataset.ThreddsMetadataInheritable, tmd);
@@ -321,7 +349,7 @@ public class RadarServerController {
             addQueryElement(queryString, "var", vars);
         }
 
-        return makeCatalog(di, q, queryString.toString());
+        return makeCatalog(dataset, di, q, queryString.toString());
     }
 
     private void addQueryElement(StringBuilder sb, String name,
@@ -339,17 +367,16 @@ public class RadarServerController {
         }
     }
 
-    private HttpEntity<byte[]> makeCatalog(RadarDataInventory inv,
+    private HttpEntity<byte[]> makeCatalog(String dataset,
+                                           RadarDataInventory inv,
                                            RadarDataInventory.Query query,
                                            String queryString) throws
             IOException, ParseException
     {
-        Path dataBase = inv.getRoot().relativize(inv.getCollectionDir());
-
         List<RadarDataInventory.Query.QueryResultItem> res = query.results();
         CatalogBuilder cb = new CatalogBuilder();
         cb.addService(new Service("OPENDAP",
-                "/thredds/dodsC/" + dataBase.toString(),
+                "/thredds/dodsC/" + dataset,
                 ServiceType.OPENDAP.toString(), null, null,
                 new ArrayList<Service>(), new ArrayList<Property>()));
         cb.setName("Radar " + inv.getName() + " datasets in near real time");
@@ -362,8 +389,8 @@ public class RadarServerController {
 
         ThreddsMetadata tmd = new ThreddsMetadata();
         Map<String, Object> metadata = tmd.getFlds();
-        metadata.put(Dataset.DataFormatType, "NIDS");
-        metadata.put(Dataset.FeatureType, "Radial");//FeatureType.RADIAL.toString());
+        metadata.put(Dataset.DataFormatType, inv.getDataFormat());
+        metadata.put(Dataset.FeatureType, inv.getFeatureType().toString());
         metadata.put(Dataset.ServiceName, "OPENDAP");
         metadata.put(Dataset.Documentation, new Documentation(null, null, null,
                 null, res.size() + " datasets found for query"));
