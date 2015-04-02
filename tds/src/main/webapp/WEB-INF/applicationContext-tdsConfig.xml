@@ -68,7 +68,7 @@
 	</bean> -->
 
   <!--- thredds 4.6 / 5.0 -->
-  <bean id="pathMatcher" class="thredds.core.PathMatcher" />
+  <bean id="pathMatcher" class="thredds.core.DataRootPathMatcher" />
   <bean id="ConfigCatalogManager" class="thredds.core.ConfigCatalogManager" />
   <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
 

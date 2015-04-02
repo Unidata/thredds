@@ -38,7 +38,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import thredds.client.catalog.Dataset;
-import thredds.servlet.Viewer;
 
 public interface ViewerService {
 

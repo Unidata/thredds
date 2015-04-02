@@ -34,9 +34,10 @@
 package thredds.core;
 
 import net.jcip.annotations.Immutable;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetScan;
-import thredds.server.catalog.FeatureCollection;
+import thredds.server.catalog.FeatureCollectionRef;
 
 /**
  * A DataRoot matches URLs to the objects that can serve them.
@@ -56,9 +57,9 @@ public class DataRoot {
   private final String path;          // match this path
   private final String dirLocation;   // to this directory
   private final DatasetScan scan;     // the DatasetScan that created this (may be null)
-  private final FeatureCollection featCollection; // the FeatureCollection that created this (may be null)
+  private final FeatureCollectionRef featCollection; // the FeatureCollection that created this (may be null)
 
-  DataRoot(FeatureCollection featCollection) {
+  DataRoot(FeatureCollectionRef featCollection) {
     this.path = featCollection.getPath();
     this.dirLocation = featCollection.getTopDirectoryLocation();
     this.scan = null;
@@ -98,7 +99,7 @@ public class DataRoot {
     return scan;
   }
 
-  public FeatureCollection getFeatureCollection() {
+  public FeatureCollectionRef getFeatureCollection() {
     return featCollection;
   }
 

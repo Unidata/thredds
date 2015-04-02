@@ -31,7 +31,7 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server;
+package thredds.server.cdmremote;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,6 +46,7 @@ import java.io.FileNotFoundException;
 
 /**
  * For Annotated Spring Controllers, going through the root servlet
+ * LOOK get rid of this
  *
  * @author caron
  * @since 10/20/13

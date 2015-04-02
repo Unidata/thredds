@@ -99,7 +99,10 @@ public class DatasetBuilder {
   }
 
   public void put(String fldName, Object fldValue) {
-    if (fldValue != null) flds.put(fldName, fldValue);
+    if (fldValue != null)
+      flds.put(fldName, fldValue);
+    else
+      flds.remove(fldName);
   }
 
   public void putInheritedField(String fldName, Object fldValue) {

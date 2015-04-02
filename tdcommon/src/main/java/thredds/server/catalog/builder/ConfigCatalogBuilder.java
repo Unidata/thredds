@@ -38,7 +38,6 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.featurecollection.FeatureCollectionConfigBuilder;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetRootConfig;
 import thredds.server.catalog.DatasetScanConfig;
@@ -120,14 +119,14 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
   }
 
   private DatasetBuilder readFeatureCollection(DatasetBuilder parent, Element fcElem) {
-    FeatureCollectionConfigBuilder configBuilder = new FeatureCollectionConfigBuilder(errlog);
+    thredds.featurecollection.FeatureCollectionConfigBuilder configBuilder = new thredds.featurecollection.FeatureCollectionConfigBuilder(errlog);
     FeatureCollectionConfig config = configBuilder.readConfig(fcElem);
     if (configBuilder.fatalError) {
       this.fatalError = true;
       return null;
 
     } else {
-      FeatureCollectionBuilder dataset = new FeatureCollectionBuilder(parent, config);
+      FeatureCollectionRefBuilder dataset = new FeatureCollectionRefBuilder(parent, config);
       readDatasetInfo(dataset, fcElem);
       for (Element elem : fcElem.getChildren("netcdf", Catalog.ncmlNS)) {   // ??
         dataset.put(Dataset.Ncml, elem.detach());

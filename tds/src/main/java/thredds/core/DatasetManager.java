@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.DatasetScan;
-import thredds.server.catalog.FeatureCollection;
+import thredds.server.catalog.FeatureCollectionRef;
 import thredds.servlet.DatasetSource;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
@@ -61,7 +61,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Access to CDM Datasets as NetcdfFile or GridDataset.
+ * Manages the Dataset objects.
  *
  * 1) if dataset with ncml, open that
  * 2) if datasetScan with ncml, wrap
@@ -190,7 +190,7 @@ public class DatasetManager implements InitializingBean  {
 
     // look for an feature collection dataset
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
-      FeatureCollection featCollection = match.dataRoot.getFeatureCollection();
+      FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
       NetcdfFile ncfile = featCollection.getNetcdfDataset(match.remaining);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
@@ -247,7 +247,7 @@ public class DatasetManager implements InitializingBean  {
   public FeatureDataset getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     FeatureType type;
     FeatureDataset fd = null;
-    FeatureCollection ftCollection = getFeatureCollection(req, res, reqPath);
+    FeatureCollectionRef ftCollection = getFeatureCollection(req, res, reqPath);
 
     if (ftCollection != null) {
       type = ftCollection.getFeatureType();
@@ -281,7 +281,7 @@ public class DatasetManager implements InitializingBean  {
   }
 
   // return null means request has been handled, and calling routine should exit without further processing
-  public FeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+  public FeatureCollectionRef getFeatureCollection(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     if (reqPath == null)
       return null;
 
@@ -345,7 +345,7 @@ public class DatasetManager implements InitializingBean  {
     // first look for a grid feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
-      FeatureCollection featCollection = match.dataRoot.getFeatureCollection();
+      FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
       GridDataset gds = featCollection.getGridDataset(match.remaining);
       if (gds == null) throw new FileNotFoundException(reqPath);

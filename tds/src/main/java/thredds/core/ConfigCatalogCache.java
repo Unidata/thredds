@@ -32,10 +32,9 @@
  */
 package thredds.core;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,6 +46,8 @@ import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import thredds.server.config.TdsContext;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -70,7 +71,7 @@ public class ConfigCatalogCache implements InitializingBean {
   private TdsContext tdsContext;
 
   private String rootPath;
-  private LoadingCache<String, ConfigCatalog> cache;
+  private Cache<String, ConfigCatalog> cache;
 
   public ConfigCatalogCache() {
   }
@@ -80,17 +81,12 @@ public class ConfigCatalogCache implements InitializingBean {
     this.cache = CacheBuilder.newBuilder()
             .maximumSize(maxSize)
             .recordStats()
-                    // .removalListener(MY_LISTENER)
-            .build( new CacheLoader<String, ConfigCatalog>() {
-                      public ConfigCatalog load(String key) throws IOException {
-                        return readCatalog(key);
-                      }
-                    });
+            .build();
   }
 
   @Override
   public void afterPropertiesSet() {
-    this.rootPath = tdsContext.getContentRootPath() +"cache/ccc";
+    this.rootPath = tdsContext.getContentRootPath() +"thredds/";
     this.cache = CacheBuilder.newBuilder()
             .maximumSize(1000)
             .recordStats()
@@ -110,10 +106,21 @@ public class ConfigCatalogCache implements InitializingBean {
     cache.invalidate(catKey);
   }
 
+  public ConfigCatalog getIfPresent(String catKey) throws IOException {
+    return cache.getIfPresent(catKey);
+  }
+
   public ConfigCatalog get(final String catKey) throws IOException {
     try {
-      // If the key wasn't in the "easy to compute" group, we need to
-      // do things the hard way.
+
+      /* LOOK could check expires here
+          if (catalog != null) {  // see if its stale
+      CalendarDate expiresDateType = catalog.getExpires();
+      if ((expiresDateType != null) && expiresDateType.getMillis() < System.currentTimeMillis())
+        reread = true;     // LOOK reread ??
+    }
+       */
+
       return cache.get(catKey, new Callable<ConfigCatalog>() {
         @Override
         public ConfigCatalog call() throws IOException {
@@ -122,12 +129,20 @@ public class ConfigCatalogCache implements InitializingBean {
       });
 
     } catch (ExecutionException e) {
+      Throwable c = e.getCause();
+      if (c instanceof IOException) throw (IOException) c;
       throw new RuntimeException(e.getCause());
     }
   }
 
   private ConfigCatalog readCatalog(String catKey) throws IOException {
     String catalogFullPath = rootPath + catKey;
+
+    // see if it exists
+    File catFile = new File(catalogFullPath);
+    if (!catFile.exists())
+      throw new FileNotFoundException();
+
     URI uri;
     try {
       uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
@@ -139,15 +154,15 @@ public class ConfigCatalogCache implements InitializingBean {
     ConfigCatalogBuilder builder = new ConfigCatalogBuilder();
     //try {
       // read the catalog
-      logger.info("\n-------readCatalog(): full path=" + catalogFullPath + "; catKey=" + catKey);
+      //logger.info("\n-------readCatalog(): full path=" + catalogFullPath + "; catKey=" + catKey);
       ConfigCatalog cat = (ConfigCatalog) builder.buildFromURI(uri);          // LOOK use file and keep lastModified
       if (builder.hasFatalError()) {
-        logger.error(ERROR + "   invalid catalog -- " + builder.getErrorMessage());
+        // logger.error(ERROR + "   invalid catalog -- " + builder.getErrorMessage());
         throw new IOException("invalid catalog "+catKey);
       }
 
-      if (builder.getErrorMessage().length() > 0)
-        logger.debug(builder.getErrorMessage());
+      //if (builder.getErrorMessage().length() > 0)
+      //  logger.debug(builder.getErrorMessage());
 
       return cat;
 

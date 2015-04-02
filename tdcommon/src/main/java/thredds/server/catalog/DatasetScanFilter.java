@@ -40,6 +40,7 @@ import java.util.List;
 
 /**
  * Implements filtering for DatasetScan
+ * LOOK replaced with DatasetScanConfig.Filter, which is used to create MFileFilter's in DatasetScan
  *
  * @author John
  * @since 1/14/2015

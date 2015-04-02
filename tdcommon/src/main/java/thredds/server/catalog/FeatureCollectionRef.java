@@ -30,36 +30,45 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.catalog.builder;
+package thredds.server.catalog;
 
+import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.DatasetNode;
+import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.server.catalog.FeatureCollection;
+import thredds.inventory.CollectionSpecParser;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Description
+ * The point of this appears to be to subclasss CatalogRef
  *
  * @author John
  * @since 1/17/2015
  */
-public class FeatureCollectionBuilder extends DatasetBuilder {
-  FeatureCollectionConfig config;
+public class FeatureCollectionRef extends CatalogRef {
+  final thredds.featurecollection.FeatureCollectionConfig config;
+  final String topDirectoryLocation;
 
-  public FeatureCollectionBuilder(DatasetBuilder parent, FeatureCollectionConfig config) {
-    super(parent);
+  public FeatureCollectionRef(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders,
+                              thredds.featurecollection.FeatureCollectionConfig config) {
+    super(parent, name, xlink, flds, accessBuilders, datasetBuilders);
     this.config = config;
+
+    CollectionSpecParser specp = new CollectionSpecParser(config.spec, null);
+    topDirectoryLocation = specp.getRootDir();
   }
 
-  public FeatureCollection makeDataset(DatasetNode parent) {
-    String xlink = "/thredds/catalog/"+config.path+"/catalog.xml";   // LOOK hardcoded thredds, need context ??
-    return new FeatureCollection(parent, name, xlink, flds, accessBuilders, datasetBuilders, config);
+  public String getPath() {
+    return config.path;
+  }
 
-    /*
-    switch (config.type) {
-      case GRIB1:
-      case GRIB2:   // maybe a factory is better
-        return new FeatureCollectionGrib(parent, name, flds, accessBuilders, datasetBuilders, config);
-    }  */
+  public String getTopDirectoryLocation() {
+    return topDirectoryLocation;
+  }
+
+  public String getCollectionName() {
+    return config.collectionName;
   }
 }

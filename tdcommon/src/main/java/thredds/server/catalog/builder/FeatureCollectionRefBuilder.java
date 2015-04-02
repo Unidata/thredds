@@ -30,72 +30,28 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.catalog;
+package thredds.server.catalog.builder;
 
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.DatasetNode;
-import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.MFile;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dt.grid.GridDataset;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import thredds.server.catalog.FeatureCollectionRef;
 
 /**
- * Description
+ * Builder of FeatureCollectionRef
  *
  * @author John
  * @since 1/17/2015
  */
-public class FeatureCollection extends CatalogRef {
-  FeatureCollectionConfig config;
-  // String path;
-  String topDirectoryLocation;
-  String collectionName;
+public class FeatureCollectionRefBuilder extends DatasetBuilder {
+  thredds.featurecollection.FeatureCollectionConfig config;
 
-  public FeatureCollection(DatasetNode parent, String name, String xlink, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders,
-                           FeatureCollectionConfig config) {
-    super(parent, name, xlink, flds, accessBuilders, datasetBuilders);
+  public FeatureCollectionRefBuilder(DatasetBuilder parent, thredds.featurecollection.FeatureCollectionConfig config) {
+    super(parent);
     this.config = config;
   }
 
-  public String getPath() {
-    return config.path;
+  public FeatureCollectionRef makeDataset(DatasetNode parent) {
+    String xlink = "/thredds/catalog/"+config.path+"/catalog.xml";   // LOOK hardcoded thredds, need context ??
+    return new FeatureCollectionRef(parent, name, xlink, flds, accessBuilders, datasetBuilders, config);
   }
-
-  public String getTopDirectoryLocation() {
-    return topDirectoryLocation;
-  }
-
-  public String getCollectionName() {
-    return collectionName;
-  }
-
-  public NetcdfFile getNetcdfDataset(String remaining) {
-    return null;
-  }
-
-  public GridDataset getGridDataset(String remaining) {
-    return null;
-  }
-
-  public Catalog makeCatalog(String match, String orgPath, URI catURI) throws IOException {
-    return null;
-  }
-
-  public Catalog makeLatest(String matchPath, String reqPath, URI catURI) throws IOException {
-    return null;
-  }
-
-  public MFile getFileFromRequestPath(String path) {
-    return null;
-  }
-
-
 }

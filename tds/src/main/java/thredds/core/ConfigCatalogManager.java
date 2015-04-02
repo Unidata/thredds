@@ -43,12 +43,11 @@ import thredds.client.catalog.Service;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetRootConfig;
 import thredds.server.catalog.DatasetScan;
-import thredds.server.catalog.FeatureCollection;
+import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +56,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * Describe
+ * Reads in the Config catalogs on startup.
+ * Manges any changes while running.
  *
  * @author caron
  * @since 3/21/2015
@@ -74,7 +74,7 @@ public class ConfigCatalogManager implements InitializingBean {
   private TdsContext tdsContext;
 
   @Autowired                                 // Let Spring autowire so shared object
-  private PathMatcher<DataRoot> pathMatcher; // collection of DataRoot objects
+  private DataRootPathMatcher<DataRoot> pathMatcher; // collection of DataRoot objects
 
   @Autowired
   DatasetManager datasetManager;
@@ -83,7 +83,7 @@ public class ConfigCatalogManager implements InitializingBean {
   private ConfigCatalogCache ccc;
 
   private AllowedServices allowedServices;
-  private List<String> rootCatalogKeys;
+  private List<String> rootCatalogKeys;    // needed ??
 
   ConfigCatalogManager() {
   }
@@ -202,7 +202,7 @@ public class ConfigCatalogManager implements InitializingBean {
 
   private void processDatasets(String dirPath, List<Dataset> datasets, Set<String> pathHash, Set<String> idHash) throws IOException {
     for (Dataset ds : datasets) {
-      if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollection)) continue;
+      if ((ds instanceof DatasetScan) || (ds instanceof FeatureCollectionRef)) continue;
 
       if (ds instanceof CatalogRef) {
         CatalogRef catref = (CatalogRef) ds;
@@ -273,8 +273,8 @@ public class ConfigCatalogManager implements InitializingBean {
         if (!addRoot(ds))
           iter.remove();  // LOOK WTF ??
 
-      } else if (dataset instanceof FeatureCollection) {
-        FeatureCollection fc = (FeatureCollection) dataset;
+      } else if (dataset instanceof FeatureCollectionRef) {
+        FeatureCollectionRef fc = (FeatureCollectionRef) dataset;
         addRoot(fc);
         needsCache = true;
 
@@ -318,7 +318,7 @@ public class ConfigCatalogManager implements InitializingBean {
     return true;
   }
 
-  private boolean addRoot(FeatureCollection fc) {
+  private boolean addRoot(FeatureCollectionRef fc) {
     // check for duplicates
     String path = fc.getPath();
 

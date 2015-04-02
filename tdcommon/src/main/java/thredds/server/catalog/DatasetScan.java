@@ -47,7 +47,6 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CloseableIterator;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -115,16 +114,14 @@ public class DatasetScan extends CatalogRef {
     } else if (cfilter.lastModLimitAttVal > 0) {
       filter = new LastModifiedLimit(cfilter.lastModLimitAttVal);
     } else {
+      log.error("Unimplemented DatasetScan filter "+cfilter);
       return;
     }
 
-    if (!cfilter.includer)  // excluder
-      filter = new FilterNegate(filter);
-
     if (cfilter.collection)
-      dirFilters.addFilter(filter);
+      dirFilters.addFilter(filter, cfilter.includer);
     if (cfilter.atomic)
-      fileFilters.addFilter(filter);
+      fileFilters.addFilter(filter, cfilter.includer);
   }
 
   public String getPath() { return config.path; }
@@ -138,7 +135,7 @@ public class DatasetScan extends CatalogRef {
   /////////////////////////////////////////////////////////
 
   /**
-   * Called from DataRootHandler.makeDynamicCatalog(), called from LocalCatalogServiceController ...
+   * Called from DataRootManager.makeDynamicCatalog(), called from LocalCatalogServiceController ...
    * <p/>
    * Build a catalog for the given path by scanning the location
    * associated with this DatasetScan. The given path must start with the path of this DatasetScan.
@@ -159,7 +156,7 @@ public class DatasetScan extends CatalogRef {
     String parentPath = (dataDirReletive.length() > 1) ? config.path + "/" + dataDirReletive : config.path + "/";
     String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
 
-    // translate any properties
+    // translate any properties         LOOK this should be done at configure time
     String scanDir = ConfigCatalog.translateAlias(config.scanDir);
     String dataDirComplete = (dataDirReletive.length() > 1) ? scanDir + "/" + dataDirReletive : scanDir;
 
@@ -174,7 +171,7 @@ public class DatasetScan extends CatalogRef {
     String name = (dataDirReletive.length() > 1) ? dataDirReletive : getName();
     top.transferMetadata(this, true);
     top.setName(name);
-    top.put(Dataset.Id, parentId);
+    top.put(Dataset.Id, null); // no id for top
     catBuilder.addDataset(top);
 
     Path p = Paths.get(dataDirComplete);
@@ -251,7 +248,7 @@ public class DatasetScan extends CatalogRef {
 
     // scan the directory
     List<MFile> mfiles = new ArrayList<>();
-    try (MFileIterator iter = new MFileIterator(p)) {
+    try (DatasetScanMFileIterator iter = new DatasetScanMFileIterator(p)) {
       while (iter.hasNext())
         mfiles.add(iter.next());
     }
@@ -272,13 +269,13 @@ public class DatasetScan extends CatalogRef {
     return mfiles;
   }
 
-  private class MFileIterator implements CloseableIterator<MFile> {
+  private class DatasetScanMFileIterator implements CloseableIterator<MFile> {
     DirectoryStream<Path> dirStream;
     Iterator<Path> dirStreamIterator;
     MFile nextMFile;
     long now;
 
-    MFileIterator(Path p) throws IOException {
+    DatasetScanMFileIterator(Path p) throws IOException {
       dirStream = Files.newDirectoryStream(p);
       dirStreamIterator = dirStream.iterator();
       now = System.currentTimeMillis();

@@ -44,7 +44,6 @@ import thredds.server.catalog.*;
 import thredds.server.config.TdsContext;
 
 import thredds.util.*;
-import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Resource;
@@ -55,13 +54,12 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * The DataRootHandler manages all the "data roots" for a given web application
+ * The DataRootHandler manages all the "data roots" for a TDS
  * and provides mappings from URLs to catalog and datasets
  * <p/>
  * <p>The "data roots" are read in from one or more trees of config catalogs
- * and are defined by the datasetScan and datasetRoot elements in the config catalogs.
+ * and are defined by the datasetScan and datasetRoot and featureColelction elements in the config catalogs.
  * <p/>
- * <p> Uses the singleton design pattern.
  *
  * @author caron
  * @since 1/23/2015
@@ -73,9 +71,6 @@ public class DataRootManager {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootManager.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
-  //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
-  static private final String ERROR = "*** ERROR ";
   static public final boolean debug = false;
 
   static public DataRootManager getInstance() {
@@ -94,8 +89,6 @@ public class DataRootManager {
 
   @Autowired
   private ConfigCatalogCache ccc;
-
-  private List<ConfigListener> configListeners = new ArrayList<>();   // LOOK not used
 
   private DataRootManager() {
 
@@ -303,6 +296,7 @@ public class DataRootManager {
   ///////////////////////////////////////////////////////////
 
   /**
+   * LOOK not sure why in this class, maybe better in ??
    * If a catalog exists and is allowed (not filtered out) for the given path, return
    * the catalog as an Catalog. Otherwise, return null.
    * <p/>
@@ -321,14 +315,16 @@ public class DataRootManager {
     if (workPath.startsWith("/"))
       workPath = workPath.substring(1);
 
-    // Check for static catalog.
-    boolean reread = false;
-    Catalog catalog = ccc.get(workPath);
-    if (catalog != null) {  // see if its stale
-      CalendarDate expiresDateType = catalog.getExpires();
-      if ((expiresDateType != null) && expiresDateType.getMillis() < System.currentTimeMillis())
-        reread = true;     // LOOK reread ??
-    }
+    // check cache for quick hit
+    Catalog catalog = ccc.getIfPresent(workPath);
+    if (catalog != null) return catalog;
+
+    // Check if its a dataRoot.
+    catalog = makeDynamicCatalog(workPath, baseURI);
+    if (catalog != null) return catalog;
+
+    // check cache and read if needed
+    catalog = ccc.get(workPath);
 
     /* its a static catalog that needs to be read
     if (reread) {
@@ -355,10 +351,6 @@ public class DataRootManager {
       }
     }  */
 
-
-    // Check for dynamic catalog.
-    if (catalog == null)
-      catalog = makeDynamicCatalog(workPath, baseURI);
 
     // Check for proxy dataset resolver catalog.
     //if (catalog == null && this.isProxyDatasetResolver(workPath))
@@ -413,7 +405,7 @@ public class DataRootManager {
     DatasetScan dscan = match.dataRoot.getDatasetScan();
     if (log.isDebugEnabled())
       log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
-    Catalog cat = dscan.makeCatalogForDirectory(path, baseURI);
+    Catalog cat = dscan.makeCatalogForDirectory(workPath, baseURI);
 
     if (null == cat) {
       log.error("makeDynamicCatalog(): makeCatalogForDirectory failed = " + workPath);
@@ -537,51 +529,6 @@ public class DataRootManager {
     };
     debugHandler.addAction(act); */
 
-  }
-
-  /**
-   * To receive notice of TDS configuration events, implement this interface
-   * and use the DataRootHandler.registerConfigListener() method to register
-   * an instance with a DataRootHandler instance.
-   * <p/>
-   * Configuration events include start and end of configuration, inclusion
-   * of a catalog in configuration, and finding a dataset in configuration.
-   * <p/>
-   * Concurrency issues:<br>
-   * 1) As this is a servlet framework, requests that configuration be reinitialized
-   * may occur concurrently with requests for the information the listener is
-   * keeping. Be careful not to allow access to the information during
-   * configuration.<br>
-   * 2) The longer the configuration process, the more time there is to have
-   * a concurrency issue come up. So, try to keep responses to these events
-   * fairly light weight. Or build new configuration information and synchronize
-   * and switch only when the already built config information is being switched
-   * with the existing config information.
-   */
-  public interface ConfigListener {
-    /**
-     * Recieve notification that configuration has started.
-     */
-    public void configStart();
-
-    /**
-     * Recieve notification that configuration has completed.
-     */
-    public void configEnd();
-
-    /**
-     * Recieve notification on the inclusion of a configuration catalog.
-     *
-     * @param catalog the catalog being included in configuration.
-     */
-    public void configCatalog(Catalog catalog);
-
-    /**
-     * Recieve notification that configuration has found a dataset.
-     *
-     * @param dataset the dataset found during configuration.
-     */
-    public void configDataset(Dataset dataset);
   }
 
 }

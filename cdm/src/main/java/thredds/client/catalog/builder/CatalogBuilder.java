@@ -90,7 +90,7 @@ public class CatalogBuilder {
 
     this.baseURI = baseURI;
     readXML(location);
-      return makeCatalog();
+    return makeCatalog();
   }
 
   public Catalog buildFromURI(URI uri) throws IOException {

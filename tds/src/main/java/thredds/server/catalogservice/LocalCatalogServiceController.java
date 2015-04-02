@@ -148,9 +148,10 @@ public class LocalCatalogServiceController {
         return null;
       }
 
-    } catch (IOException e) {
-      log.error("handleRequestInternal(): Trouble writing to response.", e);
+    } catch (FileNotFoundException e) {
+      if (!response.isCommitted()) response.sendError(HttpServletResponse.SC_NOT_FOUND);
       return null;
+
     } catch (Throwable e) {
       log.error("handleRequestInternal(): Problem handling request.", e);
       if (!response.isCommitted()) response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -224,8 +225,9 @@ public class LocalCatalogServiceController {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return null;
       }
-    } catch (IOException e) {
-      log.error("handleRequestInternal(): Trouble writing to response.", e);
+
+    } catch (FileNotFoundException e) {
+      if (!response.isCommitted()) response.sendError(HttpServletResponse.SC_NOT_FOUND);
       return null;
 
     } catch (Throwable e) {

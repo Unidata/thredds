@@ -33,29 +33,23 @@
 
 package thredds.core;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import thredds.server.catalog.FeatureCollection;
+import thredds.server.catalog.FeatureCollectionRef;
 import thredds.servlet.ServletUtil;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Formatter;
-import java.util.Set;
 
 /**
+ * This is the public interface to TDS objects for all services.
+ *
  * Open the requested dataset as a FeatureDataset/GridDataset/NetcdfFile.
  * If the request requires an authentication challenge, a challenge will be sent back to the client using
  * the response object, and this method will return null.  (This is the only
@@ -72,7 +66,7 @@ public class TdsRequestedDataset {
 
   static private DatasetManager datasetManager;
 
-  public static FeatureCollection getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+  public static FeatureCollectionRef getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request);
     if (path != null) trd.path = path;
     return trd.openAsFeatureCollection(request, response);
@@ -129,7 +123,7 @@ public class TdsRequestedDataset {
     }
   }
 
-  public FeatureCollection openAsFeatureCollection(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public FeatureCollectionRef openAsFeatureCollection(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return datasetManager.getFeatureCollection(request, response, path);
   }
 
