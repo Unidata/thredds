@@ -121,7 +121,7 @@
       &lt;/xsd:extension&gt;<br/>    &lt;/xsd:complexContent&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;</pre>
 <p>The <em>datasetScan</em> element generates nested THREDDS catalogs by scanning the directory named in the <em>location</em> attribute, and creating a
   <em>dataset</em> for each file found, and a <em>catalogRef</em> for each subdirectory. The <em>path</em> attribute is used to create the URL for these files and
-  catalogs. <br/>
+  catalogs. The path must be globally unique over all paths for the TDS. Do not put leading or trailing slashes on the path.<br/>
 </p>
 
 <p>A <em>datasetScan</em> element is in the dataset substitutionGroup, so it can
