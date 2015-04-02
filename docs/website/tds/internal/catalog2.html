@@ -36,6 +36,14 @@
 <ol>
   <li>Ids vs paths</li>
   <li>dont requires default service, can be added globally</li>
+  <li>should we also cache dynamic catalogs (catref, fc) ?</li>
+</ol>
+<p>4/1/2015</p>
+<p>Config version 2</p>
+<ol>
+  <li>Put dataset roots, services seperate, maybe a catalog ?</li>
+  <li>Put catalogs that might change in a seperate directory tree.</li>
+  <li></li>
 </ol>
 <h3>TdsContext</h3>
 <p>Implements&#32;ServletContextAware&#32;so&#32;it&#32;gets&#32;a&#32;ServletContext&#32;and&#32;performs&#32;most&#32;initial&#32;THREDDS&#32;set&#32;up. </p>
@@ -54,7 +62,16 @@
 </ol>
     <pre>lots of state in TdsContext; not immutable; effectively a singleton</pre>
     <h3>
-ConfigCatalogManager</h3>
+ConfigCatalogCache</h3>
+    <ol>
+      <li>reloads when not in cache</li>
+      <li>set maximum number of cache entries (1000)</li>
+      <li>expires ??</li>
+      <li>should we also cache dynamic catalogs (catref, fc) ?</li>
+    </ol>
+    <pre>com.google.common.cache.LoadingCache&lt;String,&#32;ConfigCatalog&gt; cache    
+    </pre>
+    <h3>ConfigCatalogManager</h3>
 <ol>
   <li>reads configuration catalogs
     <ol>
@@ -66,14 +83,19 @@ ConfigCatalogManager</h3>
   <li>constructs the PathMatcher</li>
   <li>configures the datasetManager</li>
   <li>adds a watch on all configCatalogs, or on directories (ESG mode)</li>
-  <li>Keep track of all root catalogs (all other catalogs can be found from these):
-<pre>List&lt;String&gt;&#32;rootCatalogKeys;</pre>
+  <li>Keep track of all root catalogs (all other catalogs can be found from these)
+    <pre>List&lt;String&gt;&#32;rootCatalogKeys;</pre>
 </li>
+</ol>
+<h3>DataRootPathMatcher</h3>
+<ol>
+  <li>An in-memory SortedSet of DataRoot paths, allowing &quot;longest match&quot; of request -&gt; DataRoot path</li>
+  <li>A map DataRoot path -&gt; DataRoot. Could be stored in external cache if needed.</li>
 </ol>
 <h3>DataRootManager
 </h3>
 <ol>
-  <li>PathMatcher is a map of <strong>requestPath -&gt; DataRoot</strong>
+  <li>DataRootPathMatcher is a map of <strong>requestPath -&gt; DataRoot</strong>
     <pre>TreeMap&lt;String, DataRoot&gt; </pre>
   </li>
   <li>DataRoots
@@ -88,6 +110,14 @@ ConfigCatalogManager</h3>
   </li>
 </ol>
 <h3>DatasetManager</h3>
+<p>We want an efficient request -&gt; Dataset</p>
+<ol>
+  <li>DataRootPathMatcher gives you the dataRoot; if DatasetScan or FeatureCollection then done.</li>
+  <li>Otherwise, can we have a (possibly external) map of urlPath -&gt; Dataset ?? </li>
+  <li>Can we get dataset to be independent so can be serialized and cached ?</li>
+  <li>Open the file, extract metaddata into the Dataset element. What about for datasetScan ??</li>
+  <li>Let the Catalog use the new Dataset, maybe write the catalog back out with it ??</li>
+</ol>
 <p>If you pay the price of fetching Dataset for every request, can do away with special purpose maps to NcML and restrict. </p>
 <p>Could keep a memory cache of reqPath -&gt; Object to handle the common case. expire after a some minutes of inactivity.</p>
 <ol>
