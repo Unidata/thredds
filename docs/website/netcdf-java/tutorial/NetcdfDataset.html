@@ -26,7 +26,7 @@ NcML is an XML document format that allows you to create "virtual" netCDF datase
   <strong><em>NetcdfDataset.openFile</em></strong> to open a NetcdfFile</h3>
 
 <p>The preferred way to  open a NetcdfFile is through the <strong>NetcdfDataset.openFile</strong> factory method: </p>
-<pre >  String filename = &quot;http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20061019_0000.grib1&quot;;
+<pre >  String filename = &quot;http://thredds.ucar.edu/thredds/dodsC/model/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20061019_0000.grib1&quot;;
   NetcdfFile ncfile = null;<br>  <strong>try</strong> {<br>    ncfile = <strong>NetcdfDataset.openFile</strong>(filename, null);<br>    process( ncfile);<br>  } <strong>catch</strong> (IOException ioe) {<br>    log(&quot;trying to open &quot; + filename, ioe);
   } <strong>finally</strong> { 
     if (null != ncfile) try {
@@ -55,7 +55,7 @@ NetcdfDataset.openFile does the follwing:
 
 <p>When you want  the Netcdf-Java library to deal with missing values and scale/offset unpacking, and to identify Coordinate Systems, you should use the <strong>NetcdfDataset.openDataset</strong>
   factory call, for example: </p>
-<pre >  String filename = &quot;http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20061019_0000.grib1&quot;;
+<pre >  String filename = &quot;http://thredds.ucar.edu/thredds/dodsC/model/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20061019_0000.grib1&quot;;
   NetcdfDataset ncd = null;<br>  <strong>try</strong> {<br>    ncd = <strong>NetcdfDataset.openDataset</strong>(filename);<br>    process( ncd);<br>  } <strong>catch</strong> (IOException ioe) {<br>    log(&quot;trying to open &quot; + filename, ioe);
   } <strong>finally</strong> { 
     if (null != ncd) try {
@@ -97,7 +97,7 @@ double.
 <p>To write your Coordinate System Builder, see <a href="CoordSysBuilder.html">here</a>. To see the list of CoordinateBuilder classes, look at the source code
   in the<strong> ucar.nc2.dataset.conv</strong> package.</p>
 
-<p>When writing netCDF files, we recommend using the <a href="http://cf-pcmdi.llnl.gov/">Climate and Forcast (CF) Convention</a> if possible. When an IOSP reads
+<p>When writing netCDF files, we recommend using the <a href="http://cfconventions.org/">Climate and Forcast (CF) Convention</a> if possible. When an IOSP reads
   in a non-netCDF file, it should choose a Convention to use to encode the Coordinate Systems. </p>
 
 <h3>Using ToolsUI </h3>
