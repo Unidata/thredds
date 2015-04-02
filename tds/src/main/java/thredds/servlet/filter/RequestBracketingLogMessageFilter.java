@@ -30,34 +30,58 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalogservice;
 
-import java.beans.PropertyEditorSupport;
+package thredds.servlet.filter;
+
+import org.slf4j.MDC;
+import thredds.servlet.UsageLog;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
- * _more_
+ * Wraps a request with the UsageLog.setup and UsageLog.closing log messages
  *
  * @author edavis
- * @since 4.0
+ * @since 4.1
  */
-public class CommandEditor extends PropertyEditorSupport
-{
-  public CommandEditor()
-  {
-    super();
+public class RequestBracketingLogMessageFilter implements javax.servlet.Filter {
+
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("threddsServlet");
+
+  public void init(FilterConfig filterConfig) throws ServletException {
   }
 
-  public String getAsText()
-  {
-    Command c = (Command) super.getValue();
-    return c.toString();
+  public void destroy() {
   }
 
-  public void setAsText( String text ) throws IllegalArgumentException
-  {
-    if ( text == null )
-      throw new IllegalArgumentException( "Text must not be null.");
-    Command c = Command.valueOf( text.toUpperCase() );
-    super.setValue( c );
+  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+          throws IOException, ServletException {
+
+    if (!(servletRequest instanceof HttpServletRequest)) {
+      log.error("doFilter(): Not an HTTP request! How did this filter get here?");
+      filterChain.doFilter(servletRequest, servletResponse);
+      return;
+    }
+
+    HttpServletRequest request = (HttpServletRequest) servletRequest;
+    TdsServletResponseWrapper response = new TdsServletResponseWrapper((HttpServletResponse) servletResponse);
+
+    //request.getServletPath();
+
+    // Just checking
+    if (response.isCommitted())
+      log.error("doFilter(): Yikes! Response is already committed (Heiko's bug?).");
+
+    // Initial setup
+    log.info(UsageLog.setupRequestContext(request));
+
+    filterChain.doFilter(request, response);
+
+    log.info(UsageLog.closingMessageForRequestContext(response.getHttpStatusCode(), response.getHttpResponseBodyLength()));
+    MDC.clear();
   }
+
 }

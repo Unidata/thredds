@@ -51,8 +51,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 // import thredds.server.wms.ViewerGodiva;
-import thredds.servlet.Viewer;
-import thredds.servlet.ViewerLinkProvider;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;

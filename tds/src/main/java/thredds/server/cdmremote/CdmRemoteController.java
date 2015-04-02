@@ -38,7 +38,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.core.TdsRequestedDataset;
-import thredds.server.AbstractController;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;

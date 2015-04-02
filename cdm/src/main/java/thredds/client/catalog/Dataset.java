@@ -210,7 +210,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (String) flds.get(Id);
   }
   public String getID() {
-    return (String) flds.get(Id);
+    return getId();
   }
   public String getUrlPath() {
     return (String) flds.get(UrlPath);

@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -30,70 +30,38 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.inventory.filter;
+package thredds.server.viewer;
 
-import thredds.inventory.MFileFilter;
-import thredds.inventory.MFile;
+import thredds.client.catalog.Dataset;
 
-import java.util.List;
-import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * Composite of MFileFilter
+ * Interface for plugging in Viewers.
+ * Generally, these are implemented with jnlp files in /content/thredds/view/views/*.jnlp
+ * You can customize by adding parameters to the jnlp file, eg parm=subst&name=value.
+ * Then all instances of "{param}" will be replaced by subst, and
+ * all instances of "{name}" will be replaced by value, etc.
  *
- * @author caron
- * @since Jul 8, 2009
  */
+public interface Viewer {
 
-public class CompositeMFileFilter implements MFileFilter {
-  private List<MFileFilter> includeFilters;
-  private List<MFileFilter> excludeFilters;
+  /**
+   * Is this dataset vieweable by me?
+   * @param ds the dataset
+   * @return  true if viewable
+   */
+   public boolean isViewable( Dataset ds);
 
-  public CompositeMFileFilter() {
-  }
-
-  public CompositeMFileFilter(List<MFileFilter> filters) {
-    for (MFileFilter ff : filters)
-      addIncludeFilter(ff);
-  }
-
-  public void addFilter(MFileFilter filter, boolean include) {
-    if (include)
-      addIncludeFilter(filter);
-    else
-      addExcludeFilter(filter);
-  }
-
-  public void addIncludeFilter(MFileFilter filter) {
-    if (includeFilters == null) includeFilters = new ArrayList<>();
-    includeFilters.add(filter);
-  }
-
-  public void addExcludeFilter(MFileFilter filter) {
-    if (excludeFilters == null) excludeFilters = new ArrayList<>();
-    excludeFilters.add(filter);
-  }
-
-  public boolean accept(MFile mfile) {
-    return include(mfile) && !exclude(mfile);
-  }
-
-  // inclusion is an OR
-  private boolean include(MFile mfile) {
-    if (includeFilters == null) return true;
-    for (MFileFilter filter : includeFilters) {
-      if (filter.accept(mfile)) return true;
-    }
-    return false;
-  }
-
-  // exclusion is an AND
-  private boolean exclude(MFile mfile) {
-    if (excludeFilters == null) return false;
-    for (MFileFilter filter : excludeFilters) {
-      if (!filter.accept(mfile)) return true;
-    }
-    return false;
-  }
+  /**
+   * Get an HTML fragment link to the viewer JNLP file, for this dataset.
+   * Example:
+   *   return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
+   *
+   * @param ds the dataset to view
+   * @param req the request
+   * @return HTML fragment string
+   */
+   public String getViewerLinkHtml( Dataset ds, HttpServletRequest req);
 
 }
