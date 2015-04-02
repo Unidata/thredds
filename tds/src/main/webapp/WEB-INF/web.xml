@@ -16,7 +16,7 @@
   <!-- Turn on some more targeted debugging. -->
   <filter>
     <filter-name>RequestBracketingLogMessageFilter</filter-name>
-    <filter-class>thredds.server.RequestBracketingLogMessageFilter</filter-class>
+    <filter-class>thredds.servlet.filter.RequestBracketingLogMessageFilter</filter-class>
   </filter>
 
   <filter>

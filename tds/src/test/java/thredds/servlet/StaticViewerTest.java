@@ -5,6 +5,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.server.viewer.ViewerLinkProvider;
 import thredds.server.viewer.ViewerServiceImpl;
 
 import java.io.IOException;
