@@ -38,7 +38,7 @@
 <p>The simplest use of NcML is to describe the metadata and structural content of a netCDF file, like the output of <strong>ncdump -h</strong>. There are
   several ways to generate NcML ouput from an existing netCDF file:</p>
 <ol>
-  <li>In the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">ToolsUI</a> application, use the NcML tab to open a
+  <li>In the <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp">ToolsUI</a> application, use the NcML tab to open a
     NetCDF dataset, and the NcML will be displayed. You can edit and then save the NcML with the <strong>&quot;Save NcML</strong>&quot; button.
   </li>
   <li>In the NetCDF-Java library, use <strong>NetcdfFile.writeNcML()</strong> or <strong>NcMLWriter().writeXML().</strong></li>
@@ -53,7 +53,7 @@
 <ol>
   <li>Using a text or XML editor, create the NcML file with an &quot;xml&quot; or &quot;ncml&quot; file extension. Open the NcML file with <strong>NetcdfDataset.open()</strong>,
     then call <strong>ucar.nc2.FileWriter.writeFile()</strong></li>
-  <li>In the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">ToolsUI</a> application, open an existing NcML file in
+  <li>In the <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp">ToolsUI</a> application, open an existing NcML file in
     the NcML tab, or create a new one. You can edit and save the NcML with the <strong>&quot;Save NcML</strong>&quot; button. You can create the equivilent
     binary NetCDF file with the <strong>&quot;Write NetCDF</strong>&quot; button.
   </li>
@@ -71,7 +71,7 @@
         write the new file, eg:
         <pre><em><strong></strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.dataset.NetcdfDataset -in myFile.ncml -out myFile.nc</strong></em></pre>
       </li>
-      <li> (or) In the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">ToolsUI</a> application, open the NcML file in
+      <li> (or) In the <a href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp">ToolsUI</a> application, open the NcML file in
         the NcML tab. You can create the equivilent binary NetCDF file with the <strong>&quot;Write NetCDF</strong>&quot; button.
       </li>
     </ol>

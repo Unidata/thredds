@@ -119,7 +119,7 @@ Array data = grid.readDataSlice(timeIndex, levelIndex, -1, -1);</pre>
 </blockquote>
 <h3><strong>Writing a GridDataset to a Netcdf-3 fil</strong>e <strong>using CF-1.0 Conventions </strong></h3>
 
-<p>Once you have a GridDataset, you can write it as a Netcdf-3 file using the <a href="http://cf-pcmdi.llnl.gov/">CF Conventions</a>, using <em><strong>ucar.nc2.dt.grid.NetcdfCFWriter</strong></em>
+<p>Once you have a GridDataset, you can write it as a Netcdf-3 file using the <a href="http://cfconventions.org/">CF Conventions</a>, using <em><strong>ucar.nc2.dt.grid.NetcdfCFWriter</strong></em>
 </p>
 <pre>      NetcdfCFWriter writer = new NetcdfCFWriter();<br>      writer.makeFile(filename, gds, gridList, boundingBox, timeRange, addLatLon, horizStride, vertStride, timeStride);
 
