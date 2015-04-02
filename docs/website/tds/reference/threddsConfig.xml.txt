@@ -169,7 +169,7 @@
   <NetcdfSubsetService>
     <allow>false</allow>
     <scour>10 min</scour>
-    <maxAge>-1 min</maxAge>
+    <maxAge>5 min</maxAge>
   </NetcdfSubsetService>
   -->
 
