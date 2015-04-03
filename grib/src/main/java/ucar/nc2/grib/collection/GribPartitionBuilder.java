@@ -308,7 +308,7 @@ abstract class GribPartitionBuilder  {
           GribCollectionMutable.VariableIndex vi = group.variList.get(varIdx);
           //int flag = 0;
           PartitionCollectionMutable.VariableIndexPartitioned vip = (PartitionCollectionMutable.VariableIndexPartitioned) resultGroup.findVariableByHash(vi);
-          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing );
+          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing, vi );
         } // loop over variable
       } // loop over partition
 

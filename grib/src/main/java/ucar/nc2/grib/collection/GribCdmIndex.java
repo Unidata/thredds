@@ -136,7 +136,7 @@ public class GribCdmIndex implements IndexReader {
    */
   static private File makeTopIndexFileFromConfig(FeatureCollectionConfig config) {
     Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
 
     String name = StringUtil2.replace(config.collectionName, '\\', "/");
     // String cname = DirectoryCollection.makeCollectionName(name, Paths.get(specp.getRootDir()));
@@ -313,7 +313,7 @@ public class GribCdmIndex implements IndexReader {
     long start = System.currentTimeMillis();
 
     Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
     Path rootPath = Paths.get(specp.getRootDir());
     boolean isGrib1 = config.type == FeatureCollectionType.GRIB1;
 
@@ -445,7 +445,7 @@ public class GribCdmIndex implements IndexReader {
       for (MCollection part : dpart.makePartitions(updateType)) {
         part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
         try {
-          if (part instanceof DirectoryPartition) {
+          if (part instanceof DirectoryPartition) {   // LOOK if child partition fails, the parent partition doesnt know that - suckage
             updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, updateType, logger);
           } else {
             Path partPath = Paths.get(part.getRoot());
@@ -486,12 +486,12 @@ public class GribCdmIndex implements IndexReader {
 
     } else {
       Formatter errlog = new Formatter();
-      CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+      CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
 
       try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
         if (specp.getFilter() != null)
-          dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
+          dcm.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
 
         boolean changed = updateGribCollection(isGrib1, dcm, updateType, FeatureCollectionConfig.PartitionType.directory, logger, errlog);
         if (debug) System.out.printf("  GribCdmIndex.updateDirectoryPartition was updated=%s on %s%n", changed, dirPath);
@@ -516,12 +516,12 @@ public class GribCdmIndex implements IndexReader {
                                              final Logger logger, Path dirPath) throws IOException {
     long start = System.currentTimeMillis();
     final Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
 
     try (FilePartition partition = new FilePartition(config.collectionName, dirPath, isTop, config.olderThan, logger)) {
       partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (specp.getFilter() != null)
-        partition.setStreamFilter(new StreamFilter(specp.getFilter()));
+        partition.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
 
       if (debug) System.out.printf("GribCdmIndex.updateFilePartition %s %s%n", partition.getCollectionName(), updateType);
       if (!isUpdateNeeded(partition.getIndexFilename(), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger)) return false;

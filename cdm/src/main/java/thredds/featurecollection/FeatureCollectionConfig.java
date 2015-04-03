@@ -74,6 +74,7 @@ public class FeatureCollectionConfig {
   public static void setRegularizeDefault(boolean t) {
     regularizeDefault = t;
   }
+
   public static boolean getRegularizeDefault() {
     return regularizeDefault;
   }
@@ -83,10 +84,11 @@ public class FeatureCollectionConfig {
 
   //////////////////////////////////////////////
 
+  public String name, path, spec, collectionName, dateFormatMark, olderThan;
+  private String rootDir, regExp;
   public FeatureCollectionType type;
   public PartitionType ptype = PartitionType.directory;
   public CalendarPeriod timePeriod;
-  public String name, path, spec, collectionName, dateFormatMark, olderThan;
   public UpdateConfig tdmConfig = new UpdateConfig();
   public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
@@ -115,11 +117,24 @@ public class FeatureCollectionConfig {
         timePeriod = CalendarPeriod.of(timePartition);
         ptype = PartitionType.timePeriod;
         if (timePeriod == null)
-          throw new IllegalArgumentException("Illegal timePeriod= "+timePartition);
+          throw new IllegalArgumentException("Illegal timePeriod= " + timePartition);
       }
     }
     this.innerNcml = innerNcml;
   }
+
+  public void setFilter(String rootDir, String regExp) {
+    this.rootDir = rootDir;
+    this.regExp = regExp;
+  }
+
+  public CollectionSpecParser getCollectionSpecParser(Formatter errlog) {
+    if (rootDir != null)
+      return new CollectionSpecParser(rootDir, regExp, errlog);
+    else
+      return new CollectionSpecParser(spec, errlog);
+  }
+
 
   public boolean isTrigggerOk() {
     return updateConfig.triggerOk || (tdmConfig != null) && tdmConfig.triggerOk;
@@ -130,6 +145,8 @@ public class FeatureCollectionConfig {
     Formatter f = new Formatter();
     f.format("FeatureCollectionConfig name ='%s' collectionName='%s' type='%s'%n", name, collectionName, type);
     f.format("  spec='%s'%n", spec);
+    if (rootDir != null)
+      f.format("  rootDir= '%s' regExp= '%s'%n", rootDir, regExp);
     if (dateFormatMark != null)
       f.format("  dateFormatMark ='%s'%n", dateFormatMark);
     if (olderThan != null)
@@ -166,6 +183,8 @@ public class FeatureCollectionConfig {
   public void show(Formatter f) {
     f.format("FeatureCollectionConfig name= '%s' collectionName= '%s' type= '%s'%n", name, collectionName, type);
     f.format("  spec= '%s'%n", spec);
+    if (rootDir != null)
+      f.format("  rootDir= '%s' regExp= '%s'%n", rootDir, regExp);
     if (dateFormatMark != null)
       f.format("  dateFormatMark='%s'%n", dateFormatMark);
     if (olderThan != null)
@@ -214,7 +233,7 @@ public class FeatureCollectionConfig {
     if (dateFormatMark != null)
       return new DateExtractorFromName(dateFormatMark, false);
     else {
-      CollectionSpecParser sp = new CollectionSpecParser(spec, null);
+      CollectionSpecParser sp = getCollectionSpecParser(null);
       if (sp.getDateFormatMark() != null)
         return new DateExtractorFromName(sp.getDateFormatMark(), true);
     }

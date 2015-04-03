@@ -47,12 +47,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Formatter;
 
-/**
- * Describe
- *
- * @author caron
- * @since 12/24/2014
- */
 @Category(NeedsCdmUnitTest.class)
 public class TestMCollection {
   org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
@@ -71,7 +65,7 @@ public class TestMCollection {
     try (DirectoryCollection dcm = new DirectoryCollection(config.collectionName, rootPath, true, config.olderThan, logger)) {
       dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
       if (specp.getFilter() != null)
-        dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
+        dcm.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
 
       int count = 0;
       for (MFile mfile : dcm.getFilesSorted()) {

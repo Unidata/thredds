@@ -111,6 +111,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   private String expandAliasForCollectionSpec(String location) {
+    if (location == null) return null;
     for (PathAliasReplacement par : this.dataRootLocAliasExpanders) {
       String result = par.replaceIfMatch(location);
       if (result != null) return result;

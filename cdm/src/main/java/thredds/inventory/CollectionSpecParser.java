@@ -32,6 +32,9 @@
  */
 package thredds.inventory;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.io.File;
@@ -67,6 +70,7 @@ public class CollectionSpecParser {
   private final String spec;
   private final String rootDir;
   private final boolean subdirs; // recurse into subdirectories under the root dir
+  private final boolean filterOnName; // filter on name, else on entire path
   private final java.util.regex.Pattern filter; // regexp filter
   private final String dateFormatMark;
 
@@ -136,10 +140,33 @@ public class CollectionSpecParser {
       dateFormatMark = null;
       this.filter = null;
     }
+
+    this.filterOnName = true;
   }
 
-  public String getSpec() {
-    return spec;
+  public CollectionSpecParser(String rootDir, String regExp, Formatter errlog) {
+    this.rootDir = StringUtil2.removeFromEnd(rootDir, '/');
+    this.subdirs = true;
+    this.spec = rootDir +"/" + regExp;
+    this.filter = java.util.regex.Pattern.compile(spec);
+    this.dateFormatMark = null;
+    this.filterOnName = false;
+  }
+
+  public PathMatcher getPathMatcher() {
+    if (spec.startsWith("regex:") || spec.startsWith("glob:")) {  // experimental
+      return FileSystems.getDefault().getPathMatcher(spec);
+    } else {
+      return new BySpecp();
+    }
+  }
+
+  private class BySpecp implements java.nio.file.PathMatcher {
+    @Override
+    public boolean matches(Path path) {
+      java.util.regex.Matcher matcher = filter.matcher(path.getFileName().toString());
+      return matcher.matches();
+    }
   }
 
   public String getRootDir() {
@@ -152,6 +179,10 @@ public class CollectionSpecParser {
 
   public Pattern getFilter() {
     return filter;
+  }
+
+  public boolean getFilterOnName() {
+    return filterOnName;
   }
 
   public String getDateFormatMark() {

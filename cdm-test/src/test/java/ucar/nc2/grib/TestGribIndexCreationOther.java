@@ -256,15 +256,28 @@ public class TestGribIndexCreationOther {
     System.out.printf("changed = %s%n", changed);
   }
 
-  @Ignore("B: not visible on spock")
-  @Test
-  public void testCarlosMoraga() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("CarlosMoragaEcmwf", "CarlosMoragaEcmwf", FeatureCollectionType.GRIB1,
-            "Q:/testdata/support/CarlosMoraga/ECMWF_GNERA.*", null, null, null, null, null);
+   @Ignore("B: not visible on spock")
+   @Test
+   public void testCarlosMoraga() throws IOException {
+     FeatureCollectionConfig config = new FeatureCollectionConfig("CarlosMoragaEcmwf", "CarlosMoragaEcmwf", FeatureCollectionType.GRIB1,
+             "B:/testdata/support/CarlosMoraga/ECMWF_GNERA.*", null, null, null, null, null);
 
+     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+     System.out.printf("changed = %s%n", changed);
+   }
+
+  // @Ignore("B: not visible on spock")
+  @Test
+  public void testNcdcNarr() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NcdcNarr", "NcdcNarr", FeatureCollectionType.GRIB1,
+            "B:/ncdc/0402/home/tomcat/dans-tdm-content/content/tdm/cache/GribIndex/global/nomads/nexus/narr/**/.*gbx9", null, null, null, null, null);
+    config.setFilter("B:/ncdc/0402/home/tomcat/dans-tdm-content/content/tdm/cache/GribIndex/global/nomads/nexus/narr/", "\\d{6}/\\d{8}/.*gbx9$");
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
   /*

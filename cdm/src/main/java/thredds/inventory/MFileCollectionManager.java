@@ -124,7 +124,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     super(config.collectionName != null ? config.collectionName : config.spec, logger);
     this.config = config;
 
-    CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParser sp = config.getCollectionSpecParser(errlog);
     this.root = sp.getRootDir();
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);

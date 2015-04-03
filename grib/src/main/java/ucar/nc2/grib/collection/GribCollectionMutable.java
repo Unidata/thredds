@@ -409,7 +409,10 @@ public class GribCollectionMutable implements AutoCloseable {
       if (varMap == null) {
         varMap = new HashMap<>(variList.size() * 2);
         for (VariableIndex vi : variList) {
-          varMap.put(vi, vi);
+          VariableIndex old = varMap.put(vi, vi);
+          if (old != null) {
+            logger.error("GribCollectionMutable has duplicate variable hash %s == %s%n", vi, old);
+          }
           //System.out.printf("%s%n", vi.hashCode());
         }
       }
