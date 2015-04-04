@@ -44,7 +44,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
-import thredds.servlet.HtmlWriter;
 import thredds.util.RequestForwardUtils;
 
 /**
@@ -63,8 +62,8 @@ public class DirDisplayController {
   @Autowired
   private TdsContext tdsContext;
   
-  @Autowired  
-  private HtmlWriter htmlWriter;
+  @Autowired
+  thredds.servlet.HtmlWritingUtils htmlu;
   
   @RequestMapping("/admin/**")
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -112,7 +111,7 @@ public class DirDisplayController {
     }
 
     if (file.isDirectory()) {
-      int i = this.htmlWriter.writeDirectory(res, file, path);
+      int i = htmlu.writeDirectory(res, file, path);
       int status = (i == 0) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_OK;
       return null;
     }

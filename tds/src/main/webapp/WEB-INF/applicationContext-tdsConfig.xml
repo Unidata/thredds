@@ -71,5 +71,6 @@
   <bean id="pathMatcher" class="thredds.core.DataRootPathMatcher" />
   <bean id="ConfigCatalogManager" class="thredds.core.ConfigCatalogManager" />
   <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
+  <bean id="HtmlWritingUtils" class="thredds.servlet.HtmlWritingUtils" />
 
 </beans>

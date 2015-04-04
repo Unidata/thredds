@@ -49,8 +49,8 @@ public class DataRootPathMatcher<T> {
    * Get an iterator over the dataRoot paths, in sorted order.
    * @return iterator
    */
-  public Iterator<String> getKeys() {
-    return treeSet.iterator();
+  public Iterable<String> getKeys() {
+    return treeSet;
   }
 
   /**

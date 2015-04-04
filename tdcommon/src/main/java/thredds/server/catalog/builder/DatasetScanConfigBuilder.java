@@ -37,6 +37,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.server.catalog.DatasetScanConfig;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -84,7 +85,7 @@ public class DatasetScanConfigBuilder {
     DatasetScanConfig result = new DatasetScanConfig();
 
     result.name = dsElem.getAttributeValue("name");
-    result.path = dsElem.getAttributeValue("path");
+    result.path = StringUtil2.trim(dsElem.getAttributeValue("path"), '/');
     result.scanDir = dsElem.getAttributeValue("location");
     result.restrictAccess = dsElem.getAttributeValue("restrictAccess");
 

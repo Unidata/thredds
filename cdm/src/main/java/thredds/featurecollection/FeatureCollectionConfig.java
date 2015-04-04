@@ -101,7 +101,7 @@ public class FeatureCollectionConfig {
   public FeatureCollectionConfig(String name, String path, FeatureCollectionType fcType, String spec, String collectionName,
                                  String dateFormatMark, String olderThan, String timePartition, Element innerNcml) {
     this.name = name;
-    this.path = path;
+    this.path = StringUtil2.trim(path, '/');
     this.type = fcType;
     this.spec = spec;
     this.collectionName = collectionName == null ? name : collectionName;

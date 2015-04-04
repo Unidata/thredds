@@ -37,6 +37,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
+import thredds.featurecollection.FeatureCollectionCache;
+import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
@@ -76,6 +78,9 @@ public class DatasetManager implements InitializingBean  {
 
   @Autowired
   DataRootManager dataRootManager;
+
+  @Autowired
+  FeatureCollectionCache featureCollectionCache;
 
   // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
   private Map<String, Dataset> ncmlDatasetHash = new HashMap<>();
@@ -192,7 +197,8 @@ public class DatasetManager implements InitializingBean  {
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
-      NetcdfFile ncfile = featCollection.getNetcdfDataset(match.remaining);
+      InvDatasetFeatureCollection fc = featureCollectionCache.get(featCollection);
+      NetcdfFile ncfile = fc.getNetcdfDataset(match.remaining);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
       return ncfile;
     }
@@ -347,7 +353,9 @@ public class DatasetManager implements InitializingBean  {
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
       FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
-      GridDataset gds = featCollection.getGridDataset(match.remaining);
+
+      InvDatasetFeatureCollection fc = featureCollectionCache.get(featCollection);
+      GridDataset gds = fc.getGridDataset(match.remaining);
       if (gds == null) throw new FileNotFoundException(reqPath);
       return gds;
     }
