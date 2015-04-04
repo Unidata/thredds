@@ -317,7 +317,7 @@ public class ConfigCatalogHtmlWriter {
 
       sb.append("<td align='right'><tt>");
       double size = ds.getDataSize();
-      if ((size != 0.0) && !Double.isNaN(size)) {
+      if ((size > 0) && !Double.isNaN(size)) {
         sb.append(Format.formatByteSize(size));
       } else {
         sb.append("&nbsp;");
