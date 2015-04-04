@@ -35,11 +35,11 @@ package thredds.server.admin;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import thredds.servlet.HtmlWriter;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 
@@ -56,6 +56,9 @@ import java.util.*;
 @Controller
 @RequestMapping(value ="/admin", method=RequestMethod.GET)
 public class DebugController{
+  
+  @Autowired
+  thredds.servlet.HtmlWritingUtils htmlu;
 
   @RequestMapping(value={"/debug", "/debug/*"})
    protected void showDebugPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -64,14 +67,14 @@ public class DebugController{
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     PrintStream pw = new PrintStream(bos, false, CDM.UTF8);
-    pw.println( HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
+    pw.println( htmlu.getHtmlDoctypeAndOpenTag());
     pw.println("<head>");
     pw.println("<title> THREDDS Debug</title>");
     pw.println("<meta http-equiv=\"Content-Type\" content=\"text/html\">");
-    pw.println(HtmlWriter.getInstance().getTdsPageCssLink());
+    pw.println(htmlu.getTdsPageCssLink());
     pw.println("</head>");
     pw.println("<body>");
-    pw.println(HtmlWriter.getInstance().getOldStyleHeader());
+    pw.println(htmlu.getOldStyleHeader());
     pw.println("<br><a href='content/logs/'>Show TDS Logs</a>");
     pw.println("<br><a href='content/tdm/'>Show TDM Logs</a>");
     pw.println("<br><a href='logs/'>Show Tomcat Logs</a>");

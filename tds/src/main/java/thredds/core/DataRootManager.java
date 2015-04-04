@@ -38,6 +38,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import thredds.client.catalog.*;
+import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.admin.DebugController;
 import thredds.server.catalog.*;
@@ -77,12 +78,16 @@ public class DataRootManager {
     return new DataRootManager(); // Used for testing only
   }
 
+
+  @Autowired
+  FeatureCollectionCache featureCollectionCache;
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   @Autowired
   private TdsContext tdsContext;
 
   @Autowired
-  private PathMatcher<DataRoot> pathMatcher;
+  private DataRootPathMatcher<DataRoot> pathMatcher;
 
   @Autowired
   private ConfigCatalogManager ccManager;
@@ -184,7 +189,7 @@ public class DataRootManager {
     if ((path.length() > 0) && (path.charAt(0) == '/'))
       path = path.substring(1);
 
-    DataRoot dataRoot = pathMatcher.match(path);
+    DataRoot dataRoot = pathMatcher.findLongestMatch(path);
     return (dataRoot == null) ? null : dataRoot.getDirLocation();
   }
 
@@ -205,7 +210,7 @@ public class DataRootManager {
       return null;
     if (spath.startsWith("/"))
       spath = spath.substring(1);
-    DataRoot dataRoot = pathMatcher.match(spath);
+    DataRoot dataRoot = pathMatcher.findLongestMatch(spath);
     if (dataRoot == null)
       return null;
 
@@ -224,7 +229,7 @@ public class DataRootManager {
       return null;
     if (spath.startsWith("/"))
       spath = spath.substring(1);
-    return pathMatcher.match(spath);
+    return pathMatcher.findLongestMatch(spath);
   }
 
   /**
@@ -378,11 +383,13 @@ public class DataRootManager {
 
     // look for the feature Collection
     if (match.dataRoot.getFeatureCollection() != null) {
+      InvDatasetFeatureCollection fc = featureCollectionCache.get(match.dataRoot.getFeatureCollection());
+
       boolean isLatest = path.endsWith("/latest.xml");
       if (isLatest)
-        return match.dataRoot.getFeatureCollection().makeLatest(match.remaining, path, baseURI);
+        return fc.makeLatest(match.remaining, path, baseURI);
       else
-        return match.dataRoot.getFeatureCollection().makeCatalog(match.remaining, path, baseURI);
+        return fc.makeCatalog(match.remaining, path, baseURI);
     }
 
     /* Check that path is allowed, ie not filtered out LOOK
@@ -418,10 +425,8 @@ public class DataRootManager {
   // debugging only !!
 
   public void showRoots(Formatter f) {
-    Iterator iter = pathMatcher.iterator();
-    while (iter.hasNext()) {
-      DataRoot ds = (DataRoot) iter.next();
-      f.format(" %s%n", ds.toString2());
+    for (Map.Entry<String, DataRoot> entry : pathMatcher.getValues()) {
+      f.format(" %s%n", entry.getValue());
     }
   }
 
@@ -469,12 +474,22 @@ public class DataRootManager {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("showRoots", "Show data roots") {
+    act = new DebugController.Action("showDataRootPaths", "Show data roots paths") {
       public void doAction(DebugController.Event e) {
         synchronized (DataRootManager.this) {
-          Iterator iter = pathMatcher.iterator();
-          while (iter.hasNext()) {
-            DataRoot ds = (DataRoot) iter.next();
+          for (String drPath : pathMatcher.getKeys()) {
+            e.pw.println(" <b>" + drPath + "</b>");
+          }
+        }
+      }
+    };
+    debugHandler.addAction(act);
+
+    act = new DebugController.Action("showDataRoots", "Show data roots") {
+      public void doAction(DebugController.Event e) {
+        synchronized (DataRootManager.this) {
+          for (Map.Entry<String, DataRoot> entry : pathMatcher.getValues()) {
+            DataRoot ds = entry.getValue();
             e.pw.print(" <b>" + ds.getPath() + "</b>");
             String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";
             String type = (ds.getDatasetScan() == null) ? "root" : "scan";
@@ -485,35 +500,6 @@ public class DataRootManager {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("getRoots", "Check data roots") {
-      public void doAction(DebugController.Event e) {
-        synchronized (DataRootManager.this) {
-          e.pw.print("<pre>\n");
-          Iterator iter = pathMatcher.iterator();
-          boolean ok = true;
-          while (iter.hasNext()) {
-            DataRoot ds = (DataRoot) iter.next();
-            if ((ds.getDirLocation() == null)) continue;
-
-            try {
-              File f = new File(ds.getDirLocation());
-              if (!f.exists()) {
-                e.pw.print("MISSING on dir = " + ds.getDirLocation() + " for path = " + ds.getPath() + "\n");
-                ok = false;
-              }
-            } catch (Throwable t) {
-              e.pw.print("ERROR on dir = " + ds.getDirLocation() + " for path = " + ds.getPath() + "\n");
-              e.pw.print(t.getMessage() + "\n");
-              ok = false;
-            }
-          }
-          if (ok)
-            e.pw.print("ALL OK\n");
-          e.pw.print("</pre>\n");
-        }
-      }
-    };
-    debugHandler.addAction(act);
 
     /* act = new DebugController.Action("reinit", "Reinitialize") {
       public void doAction(DebugController.Event e) {

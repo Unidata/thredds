@@ -44,7 +44,7 @@ import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.util.ContentType;
 
 /**
- * Configured by Spring, used in thredds.server.catalogservice
+ * Configured by Spring MVC, used in thredds.server.catalogservice
  *
  * @author edavis
  * @since 4.0
