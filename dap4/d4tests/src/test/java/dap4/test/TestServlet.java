@@ -176,8 +176,8 @@ public class TestServlet extends DapTestCommon
     protected void
     chooseTestcases()
     {
-        if(false) {
-            chosentests = locate("tst_fills.nc");
+        if(true) {
+            chosentests = locate("test_fill.nc");
             prop_visual = true;
         } else {
             for(ServletTest tc : alltestcases) {
@@ -190,7 +190,33 @@ public class TestServlet extends DapTestCommon
     defineAllTestcases()
     {
         this.alltestcases.add(
+            new ServletTest("tst_h5fill.h5", "dmr,dap", true,  //0
+                // S4
+                new Dump.Commands()
+                {
+                    public void run(Dump printer) throws IOException
+                    {
+                        printer.printvalue('U', 4);
+                        printer.printchecksum();
+                    }
+                }));
+        this.alltestcases.add(
             new ServletTest("tst_fills.nc", "dmr,dap", true,  //0
+                // S4
+                new Dump.Commands()
+                {
+                    public void run(Dump printer) throws IOException
+                    {
+                        printer.printvalue('U', 1);
+                        printer.printchecksum();
+                        printer.printvalue('S', 2);
+                        printer.printchecksum();
+                        printer.printvalue('U', 4);
+                        printer.printchecksum();
+                    }
+                }));
+        this.alltestcases.add(
+            new ServletTest("test_fill.nc", "dmr,dap", true,  //0
                 // S4
                 new Dump.Commands()
                 {

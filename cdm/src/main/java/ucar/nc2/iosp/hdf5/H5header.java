@@ -1330,7 +1330,6 @@ public class H5header {
       }
     }
 
-    // find fill value
     Attribute fillAttribute = null;
     if(HDF5FILL) {
       for(HeaderMessage mess : facade.dobj.messages) {
@@ -1352,8 +1351,6 @@ public class H5header {
             fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
         }
       }
-    } else {
-
     }
 
     long dataAddress = facade.dobj.msl.dataAddress;

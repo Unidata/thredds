@@ -24,24 +24,24 @@ test_vlen3 \
 test_vlen4 \
 test_vlen5
 
-C=tst_fills.c
+C=tst_fills tst_h5fill
 
 BUGS=
 
 all::
 	which ncgen ; which ncdump
-	for x in ${C} ; do ${MAKE} C1=$$x c1; done
+	for x in ${C} ; do \
+	    gcc -g -O0 -o $$x.exe $$x.c -L/usr/local/lib -lnetcdf -lcurl -lhdf5 -lhdf5_hl ; \
+	    ./$$x ; \
+	done
 	for x in ${NC} ${HDF5} ; do ncgen -k3 $${x}.cdl ; done
 	for x in ${HDF5} ; do cp $${x}.nc $${x}.hdf5 ; done 
 
-c1:
-	gcc -g -O0 -o ${C1:.c=.exe} ${C1} -L/usr/local/lib -lnetcdf -lcurl -lhdf5 -lhdf5_hl
-	./${C1:.c=.exe}		
-
 clean::
-	for x in ${NC} ; do rm -f $${x}.nc ; done
-	for x in ${HDF5} ; do rm -f $${x}.hdf5 ; done
+	rm -f *.nc; rm -f *.hdf5; rm -f *.h5
+	for x in ${C} ; do rm -f $$x.exe ; done
 	rm -fr dump
+	
 
 verify:
 	rm -fr dump
