@@ -35,7 +35,7 @@ package ucar.nc2;
 import org.junit.Test;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ServiceType;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.*;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
