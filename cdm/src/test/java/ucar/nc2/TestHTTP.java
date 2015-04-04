@@ -32,16 +32,12 @@
  */
 package ucar.nc2;
 
-import javafx.scene.input.DataFormat;
 import org.junit.Test;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Service;
 import thredds.client.catalog.ServiceType;
-import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.writer.DataFactory;
 import ucar.ma2.*;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
