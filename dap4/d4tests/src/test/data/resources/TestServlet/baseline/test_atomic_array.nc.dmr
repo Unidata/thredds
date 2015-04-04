@@ -26,6 +26,9 @@
     <UInt8 name="vu8">
         <Dim name="/d2"/>
         <Dim name="/d3"/>
+        <Attribute name="_FillValue" type="UInt8">
+            <Value value="255"/>
+        </Attribute>
     </UInt8>
     <Int16 name="v16">
         <Dim name="/d4"/>
@@ -33,6 +36,9 @@
     <UInt32 name="vu32">
         <Dim name="/d2"/>
         <Dim name="/d3"/>
+        <Attribute name="_FillValue" type="UInt32">
+            <Value value="4294967295"/>
+        </Attribute>
     </UInt32>
     <Float64 name="vd">
         <Dim name="/d2"/>
