@@ -267,7 +267,7 @@ public class TestGribIndexCreationOther {
      System.out.printf("changed = %s%n", changed);
    }
 
-  // @Ignore("B: not visible on spock")
+  @Ignore("B: not visible on spock")
   @Test
   public void testNcdcNarr() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));

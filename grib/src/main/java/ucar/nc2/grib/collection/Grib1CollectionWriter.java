@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Grib1 specific ncx2 writer
+ * Grib1 specific ncx writer
  *
  * @author caron
  * @since 2/20/14

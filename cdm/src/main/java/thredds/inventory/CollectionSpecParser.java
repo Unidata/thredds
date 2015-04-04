@@ -147,7 +147,7 @@ public class CollectionSpecParser {
   public CollectionSpecParser(String rootDir, String regExp, Formatter errlog) {
     this.rootDir = StringUtil2.removeFromEnd(rootDir, '/');
     this.subdirs = true;
-    this.spec = rootDir +"/" + regExp;
+    this.spec = this.rootDir +"/" + regExp;
     this.filter = java.util.regex.Pattern.compile(spec);
     this.dateFormatMark = null;
     this.filterOnName = false;
