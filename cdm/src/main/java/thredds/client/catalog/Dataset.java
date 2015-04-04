@@ -35,6 +35,7 @@ package thredds.client.catalog;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
+import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -47,13 +48,13 @@ import java.util.*;
  */
 @Immutable
 public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
-  public static final String Access = "Access";
+  public static final String Access = "Access";                 // Access or list of Access
   public static final String Alias = "Alias";
   public static final String Authority = "Authority";
   public static final String CollectionType = "CollectionType";
-  public static final String Contributors = "Contributors";
-  public static final String Creators = "Creators";
-  public static final String DataFormatType = "DataFormatType"; // DataFormat
+  public static final String Contributors = "Contributors";     // Contributor or List of Contributor
+  public static final String Creators = "Creators";             // String or List of String
+  public static final String DataFormatType = "DataFormatType"; // String
   public static final String Datasets = "Datasets";
   public static final String DatasetHash = "DatasetHash";
   public static final String DatasetRoots = "DatasetRoots";
@@ -61,7 +62,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String Dates = "Dates";
   public static final String Documentation = "Documentation";
   public static final String Expires = "Expires";
-  public static final String FeatureType = "FeatureType"; // DataType
+  public static final String FeatureType = "FeatureType";       // String
   public static final String GeospatialCoverage = "GeospatialCoverage";
   public static final String Harvest = "Harvest";
   public static final String Id = "Id";
@@ -99,17 +100,17 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
    * An "anonymous" Service is created and attached to the Dataset.
    *
    * @param urlPath  : construct URL from this path
-   * @param featureType : data type
-   * @param stype    : ServiceType
+   * @param featureType : feature type
+   * @param dataFormatS : data format
+   * @param serviceType    : ServiceType
    */
-  public Dataset(String urlPath, ucar.nc2.constants.FeatureType featureType, String stype) {
+  public Dataset(String urlPath, String featureType, String dataFormatS, String serviceType) {
     super(null, urlPath, new HashMap<String, Object>(), null);
     flds.put(FeatureType, featureType);
-    flds.put(ServiceName, "anon");
-    flds.put(UrlPath, urlPath);
-    flds.put(Services, new Service("anon", "", stype, null, null, null, null));
+    Service service = new Service("anon", "", serviceType, null, null, null, null);
+    Access access = new Access(this, urlPath, service, dataFormatS, 0);
+    flds.put(Access, access);
   }
-
 
   /////////////////////////////////////////////////////
 
@@ -121,17 +122,18 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     long dataSize = getDataSize();
 
     Catalog cat = getParentCatalog();
-    if (cat == null) return result; // empty list
-    Service s = cat.findService(serviceDefault);
+    if (cat != null) {
+      Service s = cat.findService(serviceDefault);
 
-    // add access element if urlPath and service is specified
-    if ((urlPath != null) && (s != null)) {
-      Access a = new Access(this, urlPath, s, dataFormat, dataSize);
-      addAllAccess(a, result);
+      // add access element if urlPath and service is specified
+      if ((urlPath != null) && (s != null)) {
+        Access a = new Access(this, urlPath, s, dataFormat, dataSize);
+        addAllAccess(a, result);
+      }
     }
 
     // add local access elements
-    List<Access> access = (List<Access>) flds.get(Access);
+    List<Access> access = (List<Access>) getLocalFieldAsList(Access);
     if (access != null) {
       for (Access a : access) {
         addAllAccess(a, result);

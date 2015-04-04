@@ -60,7 +60,7 @@ import ucar.httpservices.HTTPSession;
  */
 @RunWith(Parameterized.class)
 public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
-  public static String server = "http://thredds-dev.unidata.ucar.edu/thredds";
+  public static String server = "http://thredds-test.unidata.ucar.edu/thredds";
 
   @Parameterized.Parameters
  	public static Collection<Object[]> getTestParameters() {
@@ -133,10 +133,8 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   public void getDataset(Dataset ds, Object context) {
     countDatasets++;
 
-    NetcdfDataset ncd = null;
-    try {
-      Formatter log = new Formatter();
-      ncd = tdataFactory.openDataset(ds, false, null, log);
+    Formatter log = new Formatter();
+    try (NetcdfDataset ncd = tdataFactory.openDataset(ds, false, null, log)) {
 
       if (ncd == null) {
         // out.printf("**** failed= %s err=%s%n", ds.getName(), log);
@@ -180,11 +178,6 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
       e.printStackTrace();
       
       countNoOpen++;
-    } finally {
-      if (ncd != null) try {
-        ncd.close();
-      } catch (IOException e) {
-      }
     }
 
   }
