@@ -65,7 +65,7 @@ public class RootController implements LastModified {
     return "redirect:/catalog.html";
   }
 
-  @RequestMapping(value = {"*.css", "*.gif", "*.jpg"})
+  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png"})
   public ModelAndView checkPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
     String path = TdsPathUtils.extractPath(req, null);
     File file = tdsContext.getPublicDocFileSource().getFile(path);

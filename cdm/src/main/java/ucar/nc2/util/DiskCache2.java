@@ -484,7 +484,7 @@ public class DiskCache2 {
         duration /= 1000 * 60; // minutes
         if (duration > persistMinutes) {
           boolean ret = file.delete();
-          assert ret;
+          // assert ret;
           if (sbuff != null)
             sbuff.append(" deleted ").append(file.getPath()).append(" last= ").append(new Date(file.lastModified())).append("\n");
         }
