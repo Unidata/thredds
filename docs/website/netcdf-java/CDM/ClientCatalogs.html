@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Client Catalogs</title>
+  <link rel="stylesheet" href="../cdm.css" type="text/css"/>
+</head>
+
+<body>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<pre>CatalogBuilder&#32;builder&#32;=&#32;new&#32;CatalogBuilder();
+Catalog&#32;cat&#32;=&#32;builder.buildFromLocation(catalogPath);
+
+if&#32;(builder.hasFatalError())&#32;{
+&#32;&#32;log.warn(&quot;Validate&#32;failed&#32;&quot;+&#32;catalogName+&quot;&#32;=&#32;\n&lt;&quot;+&#32;builder.getErrorMessage()+&quot;&gt;&quot;);
+&#32;&#32;throw new Exception();
+}&#32;
+
+return&#32;cat;
+ 
+ </pre>
+<p>&nbsp;</p>
+</body>
+</html>

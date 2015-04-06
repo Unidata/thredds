@@ -33,19 +33,51 @@
 package ucar.nc2;
 
 import org.junit.Test;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.ServiceType;
+import thredds.client.catalog.writer.DataFactory;
 import ucar.ma2.*;
+import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
+import java.util.Formatter;
 
 /** Test remote netcdf over HTTP in the JUnit framework. */
 
 public class TestHTTP  {
+  String url = "http://" + TestDir.threddsTestServer + "/thredds/fileServer/testdata/mydata1.nc";
 
   @Test
-  public void testNC2() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open("http://"+ TestDir.threddsTestServer + "/thredds/fileServer/testdata/mydata1.nc");
+  public void testOpenNetcdfFile() throws IOException {
+    try (NetcdfFile ncfile = NetcdfFile.open(url)) {
+      test(ncfile);
+      System.out.println("*****************  Test testOpenNetcdfFile over HTTP done");
+    }
+  }
+
+  @Test
+  public void testOpenNetcdfDataset() throws IOException {
+    try (NetcdfFile ncfile = NetcdfDataset.openDataset(url)) {
+      test(ncfile);
+      System.out.println("*****************  Test testOpenNetcdfDataset over HTTP done");
+    }
+  }
+
+  @Test
+  public void testOpenDataFactory() throws IOException {
+    Formatter log = new Formatter();
+    Dataset ds = new Dataset(url, null, DataFormatType.NETCDF.toString(), ServiceType.HTTPServer.toString());
+    DataFactory tdataFactory = new DataFactory();
+    try (NetcdfDataset ncfile = tdataFactory.openDataset(ds, false, null, log)) {
+      test(ncfile);
+      System.out.println("*****************  Test testDataFactory over HTTP done");
+    }
+  }
+
+  private void test(NetcdfFile ncfile) throws IOException {
     assert ncfile != null;
 
     assert(null != ncfile.findDimension("lat"));
@@ -53,8 +85,8 @@ public class TestHTTP  {
 
     assert("face".equals(ncfile.findAttValueIgnoreCase(null, "yo", "barf")));
 
-    Variable temp = null;
-    assert (null != (temp = ncfile.findVariable("temperature")));
+    Variable temp = ncfile.findVariable("temperature");
+    assert (null != temp);
     assert("K".equals(ncfile.findAttValueIgnoreCase(temp, "units", "barf")));
 
     Attribute att = temp.findAttribute("scale");
@@ -107,10 +139,6 @@ public class TestHTTP  {
         assert( A.getDouble(ima.set(i,j)) == (double) (i*1000000+j*1000));
       }
     }
-
-    //System.out.println( "ncfile = "+ ncfile);
-    ncfile.close();
-    System.out.println( "*****************  Test HTTP done");
   }
 
 }

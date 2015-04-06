@@ -30,39 +30,36 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.inventory.filter;
+package ucar.coord;
 
-import ucar.unidata.util.StringUtil2;
+import ucar.nc2.time.CalendarDate;
 
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Path;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * A java.nio.file.DirectoryStream.Filter using a regexp on the last entry of the Path
+ * A way to minimize memory by reusing immutable calendar date objects
  *
- * @author John
- * @since 1/28/14
+ * @author caron
+ * @since 4/3/2015
  */
-public class StreamFilter implements DirectoryStream.Filter<Path> {
-  private Pattern pattern;
-  private boolean nameOnly;
+public class CalendarDateFactory {
+  int miss = 0;
+  Map<Long, CalendarDate> map;
 
-  public StreamFilter(Pattern pattern, boolean nameOnly) {
-    this.pattern = pattern;
-    this.nameOnly = nameOnly;
-    // System.out.printf("Pattern %s%n", pattern);
+  public CalendarDateFactory(CoordinateRuntime master) {
+    map = new HashMap<>(master.getSize() * 2);
+    for (Object valo : master.getValues()) {
+      CalendarDate cd = CalendarDate.of((Long) valo);
+      map.put(cd.getMillis(), cd);
+    }
   }
 
-  @Override
-  public boolean accept(Path entry) throws IOException {
-
-    String matchOn = nameOnly ? entry.getName(entry.getNameCount()-1).toString() : StringUtil2.replace(entry.toString(), "\\", "/");
-
-    java.util.regex.Matcher matcher = this.pattern.matcher(matchOn);
-    boolean ok =  matcher.matches();
-    //System.out.printf("%s %s%n", ok, matchOn);
-    return ok;
+  public CalendarDate get( CalendarDate cd) {
+    CalendarDate cdc = map.get(cd.getMillis());
+    if (cdc != null) return cdc;
+    miss++;
+    map.put(cd.getMillis(), cd);
+    return cd;
   }
 }

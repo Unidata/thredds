@@ -105,6 +105,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     public void finish() {
       if (partList == null) return;  // nothing to do
+      if (partList.size() > nparts)
+        System.out.println("PartitionCollectionMutable partList.size() > nparts");   // might be smaller due to failed partition
 
       int[] partno = new int[nparts];
       int[] groupno = new int[nparts];
@@ -124,7 +126,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     // only used by PartitionBuilder, not PartitionBuilderFromIndex
-    public void addPartition(int partno, int groupno, int varno, int ndups, int nrecords, int nmissing) {
+    public void addPartition(int partno, int groupno, int varno, int ndups, int nrecords, int nmissing, GribCollectionMutable.VariableIndex vi) {
       if (partList == null) partList = new ArrayList<>(nparts);
       partList.add(new PartitionForVariable2D(partno, groupno, varno));
       this.ndups += ndups;
@@ -438,7 +440,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       VariableIndexPartitioned vipFrom = (VariableIndexPartitioned) from;
       assert vipFrom.partList == null; // // check if vipFrom has been finished
       for (int i=0; i<vipFrom.nparts; i++)
-        vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i), 0, 0, 0);
+        vip.addPartition(vipFrom.partnoSA.get(i), vipFrom.groupnoSA.get(i), vipFrom.varnoSA.get(i), 0, 0, 0, vipFrom);
     }
 
     return vip;

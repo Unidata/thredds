@@ -43,6 +43,7 @@ import ucar.nc2.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.http.HTTPRandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -354,6 +355,7 @@ public class Grib2Iosp extends GribIosp {
   // accept grib2 or ncx2 files
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
+    if (raf instanceof HTTPRandomAccessFile) return false;
     GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
     if (type == GribCdmIndex.GribCollectionType.GRIB2) return true;
     if (type == GribCdmIndex.GribCollectionType.Partition2) return true;

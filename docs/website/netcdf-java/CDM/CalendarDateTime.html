@@ -10,8 +10,8 @@
 <h1>CDM Calendar Date Handling </h1>
 
 <p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling
-  <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects <em><strong>datetime</strong></em>
-  coordinate handling, called <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#time-coordinate">time coordinates</a> in CF.
+  <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects <em><strong>datetime</strong></em>
+  coordinate handling, called <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate">time coordinates</a> in CF.
   For all <a href="http://en.wikipedia.org/wiki/Dimensional_analysis">dimensional units</a>, the udunits package is still used. </p>
 <hr width="100%"/>
 <h3>Definitions and Background</h3>
@@ -36,7 +36,7 @@
 <ol>
   <li><strong><a href="#udunit">udunit coordinate</a>:</strong> Variables of any numeric type (<em>byte, short, int, long, float, double</em>) with a
     <em><strong>units</strong></em> attribute that is a udunit date string, eg &quot;hours since 1930-01-01&quot;. This is the only form that conforms to the
-    <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#time-coordinate">current CF spec</a>.
+    <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate">current CF spec</a>.
   </li>
   <li><strong><a href="#calendar_field">calendar field coordinate</a>: </strong>Variables of any integer type (<em>byte, short, int, long</em>) with a
     <em><strong>units</strong></em> attribute that is a udunit date string but with &quot;calendar&quot; added, eg &quot;calendar months since 1930-01-01&quot;.

@@ -46,6 +46,7 @@ import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.*;
 import ucar.nc2.grib.*;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -326,6 +327,7 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
+    if (raf instanceof HTTPRandomAccessFile) return false;
     GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
     if (type == GribCdmIndex.GribCollectionType.GRIB1) return true;
     if (type == GribCdmIndex.GribCollectionType.Partition1) return true;

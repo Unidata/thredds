@@ -57,6 +57,11 @@ public class TestServletConstraints extends DapTestCommon
 
         static {
             alltests = new ConstraintTest[2048];
+            reset();
+        }
+
+        static public void reset()
+        {
             Arrays.fill(alltests, null);
         }
 
@@ -173,6 +178,7 @@ public class TestServletConstraints extends DapTestCommon
 
     void defineAllTestcases()
     {
+        ConstraintTest.reset();
         this.alltestcases.add(
                 new ConstraintTest(1, "test_one_vararray.nc", "dmr,dap", "/t[1]",
                         // S4
@@ -335,7 +341,11 @@ public class TestServletConstraints extends DapTestCommon
                 assert (false);
                 if(!pass) break;
             }
-            if(!pass) break;
+            if(!pass) {
+                System.err.printf("TestServletConstraint: fail: %s ext=%s\n",testcase,extension);
+                System.err.flush();
+                break;
+            }
         }
         return pass;
     }

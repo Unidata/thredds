@@ -242,11 +242,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    /* try {
+    try {
       registerIOProvider("ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
-    } */
+    }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.AreaServiceProvider");
       registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
@@ -528,8 +528,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     if (uriString.startsWith("http:")) { // open through URL
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
 
-    } else if (uriString.startsWith("nodods:")) { // open through URL
+    } else if (uriString.startsWith("nodods:")) { // deprecated use httpserver
       uriString = "http" + uriString.substring(6);
+      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+
+    } else if (uriString.startsWith("httpserver:")) { // open through URL
+      uriString = "http" + uriString.substring(10);
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
 
     } else if (uriString.startsWith("slurp:")) { // open through URL

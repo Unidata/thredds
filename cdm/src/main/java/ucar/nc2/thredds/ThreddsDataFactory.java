@@ -506,7 +506,7 @@ public class ThreddsDataFactory {
 
     // open CdmRemote
     else if ((serviceType == ServiceType.HTTP) || (serviceType == ServiceType.HTTPServer)) {
-      String curl =  (datasetLocation.startsWith("http:")) ? "nodods:" + datasetLocation.substring(5) : datasetLocation;
+      String curl =  (datasetLocation.startsWith("http:")) ? "httpserver::" + datasetLocation.substring(5) : datasetLocation;
       ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 

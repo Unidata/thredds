@@ -730,8 +730,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         throw new IOException(log.toString());
       return ncfile;
 
-    } else if (svctype != null)
+    } else if (svctype == ServiceType.HTTPServer) {
+      ; // fall through
+
+    } else if (svctype != null) {
       throw new IOException("Unknown service type: " + svctype.toString());
+    }
 
     // Next to last resort: look in the cache
     if (cache != null) {
@@ -785,7 +789,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     else if (protocol.equals("dap4"))
       return ServiceType.DAP4;
 
-    else if (protocol.equals(CdmRemote.PROTOCOL))
+    else if (protocol.equals("httpserver") || protocol.equals("nodods"))
+       return ServiceType.HTTPServer;
+
+     else if (protocol.equals(CdmRemote.PROTOCOL))
       return ServiceType.CdmRemote;
 
     else if (protocol.equals(DataFactory.PROTOCOL)) //thredds

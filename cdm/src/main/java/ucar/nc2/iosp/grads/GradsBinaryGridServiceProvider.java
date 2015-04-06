@@ -182,13 +182,16 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException problem reading file
    */
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    // need a fast failure for non GRADS files
+    // need a fast failure for non-GRADS files
     if (GradsDataDescriptorFile.failFast(raf))
       return false;
+    raf.seek(0);
 
     // we think its a GRADS file, but we have lots of restrictions on what we can handle
     try {
-      gradsDDF = new GradsDataDescriptorFile(raf.getLocation());
+      gradsDDF = new GradsDataDescriptorFile(raf.getLocation(), 5000);
+      if (gradsDDF.error) return false;
+
       GradsDimension x = gradsDDF.getXDimension();
       GradsDimension y = gradsDDF.getYDimension();
       //J-
@@ -236,7 +239,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     this.ncFile = ncfile;
     // debugProj = true;
     if (gradsDDF == null) {
-      gradsDDF = new GradsDataDescriptorFile(raf.getLocation());
+      gradsDDF = new GradsDataDescriptorFile(raf.getLocation(), 1000);
     }
     xyHeaderBytes = gradsDDF.getXYHeaderBytes();
     fileHeaderBytes = gradsDDF.getFileHeaderBytes();
@@ -589,9 +592,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException problem closing files
    */
   public void close() throws IOException {
-    if (dataFile != null) {
+    if (dataFile != null)
       dataFile.close();
-    }
     dataFile = null;
     super.close();
   }

@@ -156,7 +156,8 @@ public class TestMisc extends UnitTestCommon
         assertTrue(tag, protocheck("file:///x/y/z", "file:"));
         assertTrue(tag, protocheck("file://c:/x/y/z", "file:"));
         assertTrue(tag, protocheck("file:c:/x/y/z", "file:"));
-        assertTrue(tag, protocheck("file:../x/y/z", "file:"));
+        assertTrue(tag, protocheck("file:/blah/blah/some_file_2014-04-13_16:00:00.nc.dds", "file:"));
+        assertTrue(tag, protocheck("/blah/blah/some_file_2014-04-13_16:00:00.nc.dds", ""));
         assertTrue(tag, protocheck("c:/x/y/z", null));
         assertTrue(tag, protocheck("x::a/y/z", null));
         assertTrue(tag, protocheck("x::/y/z", null));

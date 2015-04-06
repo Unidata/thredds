@@ -198,7 +198,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected void makeCollection() {
 
     Formatter errlog = new Formatter();
-    if (config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
+    if (config.spec != null && config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
       datasetCollection = new CollectionManagerCatalog(config.collectionName, config.spec, null, errlog);
     } else {
       datasetCollection = new MFileCollectionManager(config, errlog, this.logger);

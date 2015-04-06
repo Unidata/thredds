@@ -164,6 +164,10 @@ public class Grib1Index extends GribIndex {
       return false;
 
     } catch (IOException e) {
+      //for (String fn : RandomAccessFile.getOpenFiles()) {
+      //  System.out.printf("  %s%n", fn);
+      //}
+
       logger.error("GribIndex failed on " + filename, e);
       return false;
 

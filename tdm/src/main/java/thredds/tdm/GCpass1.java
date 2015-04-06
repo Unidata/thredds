@@ -29,6 +29,7 @@ import java.util.Formatter;
 
 /**
  * GribCollection Building - pass1 : gather information, optionally make gbx9 files
+ * LOOK use
  *
  * @author caron
  * @since 11/15/2014
@@ -215,7 +216,7 @@ public class GCpass1 {
       reportOneHeader(indent, fm);
 
     Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
     Path rootPath = Paths.get(specp.getRootDir());
     boolean isGrib1 = config.type == FeatureCollectionType.GRIB1;
 
@@ -361,13 +362,13 @@ public class GCpass1 {
     Counters countersThisDir = parentCounters.makeSubCounters();
 
     Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
 
     DirectoryCollection dcm = new DirectoryCollection(config.collectionName, dirPath, isTop, config.olderThan, logger);
     // dcm.setUseGribFilter(false);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (specp.getFilter() != null)
-      dcm.setStreamFilter(new StreamFilter(specp.getFilter()));
+      dcm.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
 
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
       while (iter.hasNext()) {
