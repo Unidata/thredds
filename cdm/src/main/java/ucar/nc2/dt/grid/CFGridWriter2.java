@@ -155,7 +155,7 @@ public class CFGridWriter2 {
         continue;
       GridDatatype grid = gds.findGridDatatype(gridName);
       if (grid == null) {
-        System.out.printf("cant find %s%n", gridName);
+        log.warn("writeOrTestSize cant find grid %s - skipping%n", gridName);
         continue;
       }
 
