@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>thredds.catalog2 Development</title>
+  <link href="../tds.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<h1>Catalog redesign</h1>
+<p><em>3/30/2015</em></p>
+<ol>
+  <li>Client / server catalog split
+    <ul>
+      <li>thredds.client.catalog</li>
+      <li>thredds.server.catalog</li>
+    </ul>
+  </li>
+  <li>Catalog objects are immutable
+    <ul>
+      <li>Builder pattern</li>
+    </ul>
+  </li>
+  <li>Server objects cacheable  </li>
+  <ul>
+    <li>ConfigCatalogCache</li>
+  </ul>
+  <li>Probably have to be serializable
+    
+    <ul>
+      <li>Externalizable </li>
+      <li>protobuf </li>
+      <li>thredds.server.catalog.proto</li>
+    </ul>
+  </li>
+</ol>
+<p>&nbsp;</p>
+<h1>State redesign</h1>
+<p><em>3/30/2015</em></p>
+<ol>
+  <li>Ids vs paths</li>
+  <li>dont requires default service, can be added globally</li>
+  <li>should we also cache dynamic catalogs (catref, fc) ?</li>
+</ol>
+<p>4/1/2015</p>
+<p>Config version 2</p>
+<ol>
+  <li>Put dataset roots, services seperate, maybe a catalog ?</li>
+  <li>Put catalogs that might change in a seperate directory tree.</li>
+  <li></li>
+</ol>
+<h3>TdsContext</h3>
+<p>Implements&#32;ServletContextAware&#32;so&#32;it&#32;gets&#32;a&#32;ServletContext&#32;and&#32;performs&#32;most&#32;initial&#32;THREDDS&#32;set&#32;up. </p>
+<p>Not sure if it needs to have a &quot;reinit&quot; ? Perhaps this should be the objet that does not reinit.</p>
+<ol>
+  <li> checks&#32;version</li>
+  <li> check&#32;for&#32;latest&#32;stable&#32;and&#32;development&#32;release&#32;versions</li>
+  <li> sets&#32;the&#32;content&#32;directory</li>
+  <li> reads&#32;persistent&#32;user&#32;defined&#32;params&#32;and&#32;runs&#32;ThreddsConfig.init</li>
+  <li> creates,&#32;if&#32;don't&#32;exist,&#32;log&#32;and&#32;public&#32;dirs&#32;in&#32;content&#32;directory</li>
+  <li> Sets&#32;InvDatasetScan&#32;and&#32;InvDatasetFeatureCollection&#32;properties</li>
+  <li> Get&#32;default&#32;and&#32;jsp&#32;dispatchers&#32;from&#32;servletContext</li>
+  <li> Creates&#32;and&#32;initializes&#32;the&#32;TdsConfigMapper (how is this used? is not a instance field)
+  </li>
+  <li>CdmInit is then called (by Spring)</li>
+</ol>
+    <pre>lots of state in TdsContext; not immutable; effectively a singleton</pre>
+    <h3>
+ConfigCatalogCache</h3>
+    <ol>
+      <li>reloads when not in cache</li>
+      <li>set maximum number of cache entries (1000)</li>
+      <li>expires ??</li>
+      <li>should we also cache dynamic catalogs (catref, fc) ?</li>
+    </ol>
+    <pre>com.google.common.cache.LoadingCache&lt;String,&#32;ConfigCatalog&gt; cache    
+    </pre>
+    <h3>ConfigCatalogManager</h3>
+<ol>
+  <li>reads configuration catalogs
+    <ol>
+      <li>finds DatasetRoots, DatasetScan, FeatureCollection</li>
+      <li>finds NcML</li>
+      <li>look for duplicate ids (paths?)</li>
+    </ol>
+  </li>
+  <li>constructs the PathMatcher</li>
+  <li>configures the datasetManager</li>
+  <li>adds a watch on all configCatalogs, or on directories (ESG mode)</li>
+  <li>Keep track of all root catalogs (all other catalogs can be found from these)
+    <pre>List&lt;String&gt;&#32;rootCatalogKeys;</pre>
+</li>
+</ol>
+<h3>DataRootPathMatcher</h3>
+<ol>
+  <li>An in-memory SortedSet of DataRoot paths, allowing &quot;longest match&quot; of request -&gt; DataRoot path</li>
+  <li>A map DataRoot path -&gt; DataRoot. Could be stored in external cache if needed.</li>
+</ol>
+<h3>DataRootManager
+</h3>
+<ol>
+  <li>DataRootPathMatcher is a map of <strong>requestPath -&gt; DataRoot</strong>
+    <pre>TreeMap&lt;String, DataRoot&gt; </pre>
+  </li>
+  <li>DataRoots
+    <pre>String&#32;path;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;//&#32;match&#32;this&#32;path<br>String&#32;dirLocation;&#32;&#32;&#32;//&#32;to&#32;this&#32;directory<br>DatasetScan&#32;scan;&#32;&#32;&#32;&#32;&#32;//&#32;the&#32;DatasetScan&#32;that&#32;created&#32;this&#32;(may&#32;be&#32;null)<br>FeatureCollection&#32;featCollection;&#32;//&#32;the&#32;FeatureCollection&#32;that&#32;created&#32;this&#32;(may&#32;be&#32;null)<br></pre>
+  </li>
+  <li>Functionality
+    <ol>
+      <li>        getLocationFromRequestPath        ()
+      </li>
+      <li>getCatalog(); this is here because of need for dataRoots to find datasetScan, featureCollection</li>
+    </ol>
+  </li>
+</ol>
+<h3>DatasetManager</h3>
+<p>We want an efficient request -&gt; Dataset</p>
+<ol>
+  <li>DataRootPathMatcher gives you the dataRoot; if DatasetScan or FeatureCollection then done.</li>
+  <li>Otherwise, can we have a (possibly external) map of urlPath -&gt; Dataset ?? </li>
+  <li>Can we get dataset to be independent so can be serialized and cached ?</li>
+  <li>Open the file, extract metaddata into the Dataset element. What about for datasetScan ??</li>
+  <li>Let the Catalog use the new Dataset, maybe write the catalog back out with it ??</li>
+</ol>
+<p>If you pay the price of fetching Dataset for every request, can do away with special purpose maps to NcML and restrict. </p>
+<p>Could keep a memory cache of reqPath -&gt; Object to handle the common case. expire after a some minutes of inactivity.</p>
+<ol>
+  <li>Tracks NcML as a map <strong>requestPath -&gt; Dataset</strong>
+    <ul>
+      <li>Dataset.getNcmlElement()</li>
+    </ul>
+    <pre>//&#32;InvDataset&#32;(not&#32;DatasetScan,&#32;DatasetFmrc)&#32;that&#32;have&#32;an&#32;NcML&#32;element&#32;in&#32;it.&#32;key&#32;is&#32;the&#32;request&#32;Path<br>private&#32;Map&lt;String,&#32;Dataset&gt;&#32;ncmlDatasetHash&#32;=&#32;new&#32;HashMap&lt;&gt;();</pre>
+  <ul>
+    <li>could have Set&lt;reqPath&gt; hasNcml, and  Map&lt;reqPath,Dataset&gt; all ??</li>
+    </ul>
+  </li>
+  <li>Track restricted access datasets 
+  </li>
+  <ul>
+    <li>map of <strong>requestPath -&gt; restrictAccess</strong></li>
+    <li>PathMatcher of <strong>requestPath -&gt; restrictAccess</strong></li>
+  </ul>
+  
+  <pre>//&#32;resource&#32;control<br>private&#32;HashMap&lt;String,&#32;String&gt;&#32;resourceControlHash&#32;=&#32;new&#32;HashMap&lt;&gt;();&#32;//&#32;path,&#32;restrictAccess&#32;string&#32;for&#32;datasets<br>private&#32;volatile&#32;PathMatcher&lt;String&gt;&#32;resourceControlMatcher&#32;=&#32;new&#32;PathMatcher&lt;&gt;();&#32;//&#32;path,&#32;restrictAccess&#32;string&#32;for&#32;datasetScan<br></pre>
+  <li>Track DatasetSource (only used by LAS)
+    <pre>//&#32;list&#32;of&#32;dataset&#32;sources.&#32;note&#32;we&#32;have&#32;to&#32;search&#32;this&#32;each&#32;call&#32;to&#32;getNetcdfFile&#32;-&#32;most&#32;requests&#32;(!)<br>//&#32;possible&#32;change&#32;to&#32;one&#32;global&#32;hash&#32;table&#32;request<br>private&#32;ArrayList&lt;DatasetSource&gt;&#32;sourceList&#32;=&#32;new&#32;ArrayList&lt;&gt;();</pre>
+  </li>
+  <li>Functionality
+    <ol>
+      <li>        findResourceControl()</li>
+      <li>getNetcdfFile()</li>
+      <li>getGridDataset()</li>
+      <li>getFeatureDataset()</li>
+    </ol>
+  </li>
+  <li>Fronted by TdsRequestedDataset </li>
+</ol>
+<p>&nbsp;</p>
+<h2>URL redesign</h2>
+<p>https://localhost:8443/thredds/admin/spring/map</p>
+<pre>
+    [/admin/showFmrc, /admin/showFmrc/*]: thredds.server.admin.CollectionController.showFmrcCache()
+    [/admin/collection/showStatus]: thredds.server.admin.CollectionController.handleCollectionStatus()
+    [/admin/collection/showStatus.csv]: thredds.server.admin.CollectionController.handleCollectionStatusCsv()
+    [/admin/collection, /admin/collection/trigger]: thredds.server.admin.CollectionController.handleCollectionTriggers()
+    [/admin/debug, /admin/debug/*]: thredds.server.admin.DebugController.showDebugPage()
+    [/admin/**]: thredds.server.admin.DirDisplayController.handleRequestInternal()
+    [/admin/log/**, /admin/roots]: thredds.server.admin.LogController.handleRequestInternal()
+    [/admin/spring/map]: thredds.server.admin.SpringInfoController.show()
+    [/catalog/**/*.xml, /catalog/*.xml]: thredds.server.catalogservice.LocalCatalogServiceController.handleXmlRequest()
+    [/catalog/**/*.html, /catalog/*.html]: thredds.server.catalogservice.LocalCatalogServiceController.handleHtmlRequest()
+    [/cdmremote/**]: thredds.server.cdmremote.CdmRemoteController.handleRequest()
+    [/cdmrfeature/**]: thredds.server.cdmremote.CdmrfController.metadataRequestHandler()
+    [/cdmrfeature/**]: thredds.server.cdmremote.CdmrfController.headerRequestHandler()
+    [/cdmrfeature/**]: thredds.server.cdmremote.CdmrfController.dataRequestHandler()
+    [/fileServer/**]: thredds.server.fileserver.FileServerController.doGet()
+    [/metadata/**]: thredds.server.metadata.MetadataController.getMetadata()
+    [/ncss/**]: thredds.server.ncss.controller.NcssController.handleRequest()
+    [/ncss/**/datasetBoundaries.xml]: thredds.server.ncss.controller.NcssDatasetBoundariesController.getDatasetBoundaries()
+    [/ncss/**/station.xml]: thredds.server.ncss.controller.NcssDatasetInfoController.getStations()
+    [/ncss/**/dataset.html, /ncss/**/dataset.xml, /ncss/**/pointDataset.html, /ncss/**/pointDataset.xml]: thredds.server.ncss.controller.NcssDatasetInfoController.getDatasetDescription()
+    [/radarServer2/{dataset}/dataset.xml]: thredds.server.radarServer2.RadarServerController.datasetCatalog()
+    [/radarServer2/{dataset}]: thredds.server.radarServer2.RadarServerController.stations()
+    [/radarServer2/{dataset}/stations.xml]: thredds.server.radarServer2.RadarServerController.stationsFile()
+    [/radarServer2/catalog.xml]: thredds.server.radarServer2.RadarServerController.topLevelCatalog()
+    [/radarServer2/{dataset}]: thredds.server.radarServer2.RadarServerController.handleQuery()
+    [/catalog.xml]: thredds.server.root.RootController.getRootCatalogXml()
+    [/*.css, /*.gif, /*.jpg]: thredds.server.root.RootController.checkPublicDirectory()
+    [/, /catalog.html]: thredds.server.root.RootController.getRootCatalog()
+    [/info/serverVersion.txt]: thredds.server.serverinfo.ServerInfoController.getServerVersion()
+    [/info/serverInfo.html]: thredds.server.serverinfo.ServerInfoController.getServerInfoHtml()
+    [/info/serverInfo.xml]: thredds.server.serverinfo.ServerInfoController.getServerInfoXML()
+    [/view/{viewer}.jnlp]: thredds.server.viewer.ViewerController.launchViewer()
+    [/wcs/**]: thredds.server.wcs.WCSController.doGet()
+</pre>
+<p>NOtes</p>
+<ul>
+  <li>opendap not in here</li>
+  <li>cdmrfeature is wrong</li>
+  <li>ncss needss to be disambiguated, prob back to ncss/grid and ncss/point</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h1></h1></body></html>

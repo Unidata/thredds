@@ -32,6 +32,8 @@
  */
 package thredds.inventory.filter;
 
+import ucar.unidata.util.StringUtil2;
+
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
@@ -45,14 +47,22 @@ import java.util.regex.Pattern;
  */
 public class StreamFilter implements DirectoryStream.Filter<Path> {
   private Pattern pattern;
-  public StreamFilter(Pattern pattern) {
+  private boolean nameOnly;
+
+  public StreamFilter(Pattern pattern, boolean nameOnly) {
     this.pattern = pattern;
+    this.nameOnly = nameOnly;
+    // System.out.printf("Pattern %s%n", pattern);
   }
 
   @Override
   public boolean accept(Path entry) throws IOException {
-    String last = entry.getName(entry.getNameCount()-1).toString();
-    java.util.regex.Matcher matcher = this.pattern.matcher(last);
-    return matcher.matches();
+
+    String matchOn = nameOnly ? entry.getName(entry.getNameCount()-1).toString() : StringUtil2.replace(entry.toString(), "\\", "/");
+
+    java.util.regex.Matcher matcher = this.pattern.matcher(matchOn);
+    boolean ok =  matcher.matches();
+    //System.out.printf("%s %s%n", ok, matchOn);
+    return ok;
   }
 }

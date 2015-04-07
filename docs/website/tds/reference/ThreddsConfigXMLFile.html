@@ -260,7 +260,7 @@ where:
     before being sent to the client (see <a href="#Cache_Locations">choosing a cache directory</a>). If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/wcs/</strong> directory. We recommend that you do not specify a <strong>WCS.dir</strong> element, and use the default.</li>
   <li><strong>scour</strong>: how often to scour the working directory, to delete files that were not successfully downloaded.</li>
   <li><strong>maxAge</strong>: how long to leave the files in the working directory while
-    the download is occurring. The files are deleted after a successful download.</li>
+    the download is occurring. The files are deleted after a successful download. Do not set to &lt;= 0.</li>
 </ol>
 <h3><a name="WMS" id="WMS">WMS Service</a></h3>
 
@@ -335,8 +335,8 @@ where:
   <li><strong>maxAge</strong>:
     how long to leave the files in the working directory while the download
     is occurring. The files are deleted after a successful download.
-  </li>
-  <li><strong>maxFileDownloadSize (version 4.3)</strong>: maximum size of file that can be requested. Optional; default is that there is no size limitation. If
+  Do not set to &lt;= 0.</li>
+  <li><strong>maxFileDownloadSize</strong>: maximum size of file that can be requested. Optional; default is that there is no size limitation. If
     the file is &gt; 2 GB, large format netCDF will be written.
   </li>
 </ol>
@@ -710,7 +710,7 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by elves and was last updated Oct 2014.
+  This document is maintained by elves and was last updated April 2015.
   Send comments to
 <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

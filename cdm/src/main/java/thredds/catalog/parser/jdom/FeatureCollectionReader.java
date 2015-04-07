@@ -112,21 +112,20 @@ public class FeatureCollectionReader {
     collectionName = CollectionAbstract.cleanName(collectionName != null ? collectionName : name);
 
     String spec = collElem.getAttributeValue("spec");
-    // String spec = expandAliasForCollectionSpec(collElem.getAttributeValue("spec")); // LOOK
+    // String spec = expandAliasForCollectionSpec(collElem.getAttributeValue("spec")); // now done externally
     String timePartition = collElem.getAttributeValue("timePartition");
     String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
     String olderThan = collElem.getAttributeValue("olderThan");
-    // String useIndexOnly = collElem.getAttributeValue("useIndexOnly");
-    //String recheckAfter = collElem.getAttributeValue("recheckAfter");
-    //if (recheckAfter == null)
-    //   recheckAfter = collElem.getAttributeValue("recheckEvery"); // old name
-    if (spec == null) {
-      logger.error( "featureCollection "+name+" must have a spec attribute." );
+    String rootDir = collElem.getAttributeValue("rootDir");
+    String regExp = collElem.getAttributeValue("regExp");
+    if (spec == null && rootDir == null) {
+      logger.error( "featureCollection "+name+" must have a spec or rootDir attribute." );
       return null;
     }
     Element innerNcml = featureCollectionElement.getChild( "netcdf", InvCatalogFactory10.ncmlNS );
     FeatureCollectionConfig config = new FeatureCollectionConfig(name, path, fcType, spec, collectionName, dateFormatMark, olderThan,
             timePartition, innerNcml);
+    config.setFilter(rootDir, regExp);
 
     // tds and update elements
     Element tdmElem = featureCollectionElement.getChild( "tdm", InvCatalogFactory10.defNS );

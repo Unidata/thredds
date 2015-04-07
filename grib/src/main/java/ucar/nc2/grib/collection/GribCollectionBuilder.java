@@ -148,10 +148,14 @@ abstract class GribCollectionBuilder {
     List<MFile> files = new ArrayList<>();
     List<? extends Group> groups = makeGroups(files, false, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
-    if (allFiles.size() == 0)
-      throw new IllegalArgumentException("No files in this collection ="+name);
-    if (groups.size() == 0)
-      throw new IllegalArgumentException("No records in this collection ="+name);
+    if (allFiles.size() == 0) {
+      logger.warn("No files in this collection =" + name + " topdir=" + dcm.getRoot());
+      return false;
+    }
+    if (groups.size() == 0) {
+      logger.warn("No records in this collection =" + name + " topdir=" + dcm.getRoot());
+      return false;
+    }
 
     // create the master runtimes, classify the result
     boolean allTimesAreOne = true;

@@ -272,6 +272,8 @@ abstract class GribPartitionBuilder  {
 
     List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
     result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish();
+    if (result.isPartitionOfPartitions) // cache calendar dates for efficiency
+      CoordinateTimeAbstract.cdf = new CalendarDateFactory(result.masterRuntime);
     if (allAre1D)
       ds2D.gctype = GribCollectionImmutable.Type.TP;
 
@@ -308,7 +310,7 @@ abstract class GribPartitionBuilder  {
           GribCollectionMutable.VariableIndex vi = group.variList.get(varIdx);
           //int flag = 0;
           PartitionCollectionMutable.VariableIndexPartitioned vip = (PartitionCollectionMutable.VariableIndexPartitioned) resultGroup.findVariableByHash(vi);
-          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing );
+          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing, vi );
         } // loop over variable
       } // loop over partition
 
@@ -374,6 +376,7 @@ abstract class GribPartitionBuilder  {
 
     } // loop over groups
 
+    CoordinateTimeAbstract.cdf = null;
     return ds2D;
   }
 

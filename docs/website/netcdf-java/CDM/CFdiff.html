@@ -16,7 +16,7 @@
 
 <h3>Units of <em><strong>false_easting </strong></em>and<em><strong> false_northing</strong></em></h3>
 <ul>
-  <li><a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#appendix-grid-mappings">CF</a>:
+  <li><a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#appendix-grid-mappings">CF</a>:
     <em><strong>false_easting, </strong></em>and<em><strong> false_northing</strong></em> attribute values must be in the same units as the x and y projection
     coordinates.
   </li>
@@ -27,7 +27,7 @@
 </ul>
 <h3>Required use of Lat/Lon Coordinates</h3>
 <ul>
-  <li><a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/ch05s06.html">CF:</a> requires that all files include latitude and longitude coordinates.
+  <li><a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#grid-mappings-and-projections">CF:</a> requires that all files include latitude and longitude coordinates.
   </li>
   <li>CDM: When the data are on a projection, this requirement implies that 2 dimension lat(y,x) and lon(y,x) must be included in the file. When the 1D x(x) and
     y(y) coordinates are also included, along with a <a href="../reference/StandardCoordinateTransforms.html">standard grid_mapping</a> that specifies the
@@ -39,9 +39,9 @@
 </ul>
 <h2>Calendar Date Coordinates</h2>
 <ul>
-  <li><a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#time-coordinate">CF</a>: <em>Variables representing time must always
+  <li><a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate">CF</a>: <em>Variables representing time must always
     explicitly include the units attribute. The units attribute takes a string value formatted as per the recommendations in the Udunits package
-    [<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#udunits" title="[UDUNITS]"><abbr>UDUNITS</abbr></a>] </em>This implies
+    [<a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#udunits" title="[UDUNITS]"><abbr>UDUNITS</abbr></a>] </em>This implies
     that a time coordinate always has a numeric data type, and uses udunits to transform <em>&quot;value time_unit since reference&quot;</em> into a date.
   </li>
   <li>CDM:
@@ -49,7 +49,7 @@
     <ul>
       <li>Also accepts time coordinates as ISO formatted Strings. The variable data type may be String or Char.</li>
       <li>As of CDM 4.3, <a href="http://joda-time.sourceforge.net/">joda time</a> is used to parse time units, instead of udunits. This allows the CDM to
-        process the <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#calendar">CF 'calendar' attribute</a>.
+        process the <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#calendar">CF 'calendar' attribute</a>.
       </li>
       <li>An extended date syntax is also supported : &quot;CALENDAR period SINCE reference_date&quot;</li>
     </ul>
@@ -60,7 +60,7 @@
 </ul>
 <h2>Discrete Sampling Geometries</h2>
 <ul>
-  <li><a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#discrete-sampling-geometries">CF</a>: Convention for Discrete Sampling
+  <li><a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#discrete-sampling-geometries">CF</a>: Convention for Discrete Sampling
     Geometries (aka &quot;point data&quot;) were added to CF version 1.6.
   </li>
   <li>CDM: the implementation has some differences, described <a href="../reference/FeatureDatasets/CFpointImplement.html">here</a>.</li>

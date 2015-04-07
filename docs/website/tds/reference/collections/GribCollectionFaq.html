@@ -9,7 +9,7 @@
 <body>
 <h1>GRIB Feature Collections FAQ</h1>
 <hr/>
-<p><strong>Q: How do I control where the index files are written?</strong></p>
+<p><strong>Q: How do I control where the index files are written?</strong><a name="GribIndex" id="GribIndex"></a></p>
 <blockquote>
   <p>In <strong>${tomcat}/content/thredds/threddsConfig.xml</strong>, add or change the <strong>&lt;GribIndex&gt;</strong> element:</p>
 <pre>
@@ -28,7 +28,7 @@
  GribCdmIndex.initDefaultCollectionCache(100, 200, -1);</pre>
 </blockquote>
 <hr/>
-<p><strong>Q: How do I control  the way the collection is divided up?</strong></p>
+<p><strong>Q: How do I control  the way the collection is divided up?</strong><a name="TimePartition" id="TimePartition"></a></p>
 <blockquote>
   <p>By default, the collection will be time partitioned by directory. To change this, add a <strong>timePartition</strong> attribute on the <strong>collection</strong> element:</p>
   <pre>  &lt;featureCollection name=&quot;NCEP GFS model&quot; featureType=&quot;GRIB1&quot; path=&quot;test/all&quot;&gt;<br />    &lt;metadata inherited=&quot;true&quot;&gt;<br />      &lt;serviceName&gt;all&lt;/serviceName&gt;<br />      &lt;dataFormat&gt;GRIB-1&lt;/<u></u>dataFormat&gt;<br />    &lt;/metadata&gt;<br />    &lt;collection name=&quot;gfs&quot; spec=&quot;/data/GFS/**/.*\<u></u>.grb$&quot; timePartition=&quot;file&quot;/&gt;<br />  &lt;/featureCollection&gt;</pre>
@@ -42,12 +42,66 @@
   <p>There are a number of requirements that you must understand for each type. <a href="Partitions.html">Details</a>. </p>
 </blockquote>
 <hr/>
-<p><strong>Q: Can I use NcML inside the featureCollection?</strong></p>
+<p><strong>Q: Can I use NcML inside the featureCollection?</strong><a name="NcML" id="NcML"></a></p>
 <blockquote>
   <p>Not currently, please send us your use cases so we can evaluate  feasibility.</p>
 </blockquote>
 <hr />
-<p>&nbsp;</p>
+<p><strong>Q: How do I get both the reference and the forecast time of the data?</strong><a name="TwoD" id="TwoD"></a></p>
+<blockquote>
+<p>This information is available for versions 4.6.0+. Each variable has a <em>coordinates</em> attribute that names both the <strong>reference time</strong> and the <strong>forecast time</strong> coordinate. If the variable  needs only one time dimension, this will look like:</p>
+  <pre>   float Ground_heat_flux_surface_3_Hour_Average(time=166552, lat=320, lon=640);<br />      :long_name = &quot;Ground heat flux (3_Hour Average) @ Ground or water surface&quot;;<br />      :units = &quot;W m^-2&quot;;<br />      :coordinates = &quot;reftime time lat lon&quot;;<br />
+   double time(time=166552);
+     :units = &quot;Hour since 1958-01-01T00:00:00Z&quot;;
+     :standard_name = &quot;time&quot;;
+     :long_name = &quot;GRIB forecast or observation time&quot;;
+
+   double reftime(time=166552);
+     :standard_name = &quot;forecast_reference_time&quot;;
+     :long_name = &quot;GRIB reference time&quot;;
+     :units = &quot;Hour since 1958-01-01T00:00:00Z&quot;;
+</pre>
+<p>Note that in this  case, both reference time and forecast time use the same dimension. These variables are called <em>one-dimensional</em> time variables.</p>
+<p>If the variable  needs two time dimensions, this will look like:</p>
+<pre> float Geopotential_height_isobaric(reftime=742, time=18, isobaric=37, y=337, x=451);<br />      :long_name = &quot;Geopotential height @ Isobaric surface&quot;;<br />      :units = &quot;gpm&quot;;<br />      :coordinates = &quot;reftime time1 isobaric y x&quot;;<br /> 
+double reftime(reftime=742);
+   :units = &quot;Hour since 2015-03-03T00:00:00Z&quot;;
+   :standard_name = &quot;forecast_reference_time&quot;;
+   :long_name = &quot;GRIB reference time&quot;;
+   
+double time(reftime=742, time=18);
+   :units = &quot;Hour since 2015-03-03T00:00:00Z&quot;;
+   :standard_name = &quot;time&quot;;
+   :long_name = &quot;GRIB forecast or observation time&quot;;
+</pre>
+<p>In this  case, the form is always <strong>reftime(reftime)</strong> and <strong>time(reftime, time)</strong>. These are called <em>two-dimensional</em> time variables. What we are seeing here are 742 different model runs, with 18 forecast times for each run. You can look at these in the ToolsUI CoordSys tab, select a time coordinate from the lowest table, then right clieck and choose &quot;Show values&quot;, ans you will see, for example:</p>
+<pre>time =
+{
+ {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0},
+ {2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0},
+ {3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0},
+ {4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0},
+ {5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0},
+ {6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0},
+ ...</pre>
+<p>There is one other variant, namely when there is a single runtime. Then you get a<em> scalar runtime coordinate</em>, eg:</p>
+<pre>float Dewpoint_temperature_height_above_ground(time=14, height_above_ground1=1, y=1059, x=1799);
+  :long_name = &quot;Dewpoint temperature @ Specified height level above ground&quot;;
+  :units = &quot;K&quot;;
+  :coordinates = &quot;reftime time height_above_ground1 y x&quot;;
+
+double reftime;
+  :units = &quot;Minute since 2015-03-30T06:00:00Z&quot;;
+  :standard_name = &quot;forecast_reference_time&quot;;
+  :long_name = &quot;GRIB reference time&quot;;
+ 
+double time(time=14);
+  :units = &quot;Minute since 2015-03-30T06:00:00Z&quot;;
+  :standard_name = &quot;time&quot;;
+  :long_name = &quot;GRIB forecast or observation time&quot;;
+</pre>
+<p>This is a  <em>one-dimensional</em> time variable, and we use a scalar to avoid introducing an unneeded dimension of length 1. </p>
+</blockquote>
 <hr width="100%"/>
 <address>
   <img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Mar 2015

@@ -109,7 +109,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     super(parent, config);
 
     Formatter errlog = new Formatter();
-    CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParser sp = config.getCollectionSpecParser(errlog);
     topDirectory = sp.getRootDir();
 
     String errs = errlog.toString();

@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -30,60 +30,36 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.root;
+package ucar.coord;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.LastModified;
-import thredds.server.config.TdsContext;
-import thredds.util.RequestForwardUtils;
-import thredds.util.TdsPathUtils;
+import ucar.nc2.time.CalendarDate;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Spring Controller redirects "/" to "/catalog.html"
+ * A way to minimize memory by reusing immutable calendar date objects
  *
- * @author edavis
- * @since 4.0
+ * @author caron
+ * @since 4/3/2015
  */
-@Controller
-public class RootController implements LastModified {
+public class CalendarDateFactory {
+  int miss = 0;
+  Map<Long, CalendarDate> map;
 
-  @Autowired
-  private TdsContext tdsContext;
-
-
-  @RequestMapping(value = "/")
-  public String getRootPage() {
-    return "redirect:/catalog.html";
-  }
-
-  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png"})
-  public ModelAndView checkPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-    String path = TdsPathUtils.extractPath(req, null);
-    File file = tdsContext.getPublicDocFileSource().getFile(path);
-    if (file == null) {
-      RequestForwardUtils.forwardRequest(path, tdsContext.getDefaultRequestDispatcher(), req, res);
-      return null;
+  public CalendarDateFactory(CoordinateRuntime master) {
+    map = new HashMap<>(master.getSize() * 2);
+    for (Object valo : master.getValues()) {
+      CalendarDate cd = CalendarDate.of((Long) valo);
+      map.put(cd.getMillis(), cd);
     }
-    return new ModelAndView("threddsFileView", "file", file);
   }
 
-  public long getLastModified(HttpServletRequest req) {
-    String path = TdsPathUtils.extractPath(req, null);
-    File file = tdsContext.getPublicDocFileSource().getFile(path);
-    if (file == null)
-      return -1;
-    long lastModTime = file.lastModified();
-    if (lastModTime == 0L)
-      return -1;
-    return lastModTime;
+  public CalendarDate get( CalendarDate cd) {
+    CalendarDate cdc = map.get(cd.getMillis());
+    if (cdc != null) return cdc;
+    miss++;
+    map.put(cd.getMillis(), cd);
+    return cd;
   }
 }

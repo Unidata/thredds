@@ -83,8 +83,8 @@
 </ul>
 <hr/>
 <h3><a name="catalog" id="catalog"></a>The catalog element</h3>
-<p>The <strong>datasetRoot</strong> element is specific to server side catalogs:</p>
-<pre>&lt;xsd:element name=&quot;catalog&quot;&gt;  <br />  &lt;xsd:complexType&gt;<br />    &lt;xsd:sequence&gt;<br />      &lt;xsd:element ref=&quot;service&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br />      <strong>&lt;xsd:element ref=&quot;datasetRoot&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br /></strong>      &lt;xsd:element ref=&quot;property&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br />	    &lt;xsd:element ref=&quot;dataset&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br />    &lt;/xsd:sequence&gt;<br /><br />    &lt;xsd:attribute name=&quot;base&quot; type=&quot;xsd:anyURI&quot;/&gt;<br />    &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; /&gt;<br />    &lt;xsd:attribute name=&quot;expires&quot; type=&quot;dateType&quot;/&gt; <br />    &lt;xsd:attribute name=&quot;version&quot; type=&quot;xsd:token&quot; default=&quot;1.0.2&quot; /&gt; <br />  &lt;/xsd:complexType&gt; <br />&lt;/xsd:element&gt;
+<p>In addition to all of the elements of a client catalog, a server catalog may also have  <strong>datasetRoot</strong> elements, and also <strong>dataset</strong> elements may be <strong>datasetScan</strong> or a <strong>featureCollection</strong>, because they are in the <em>dataset substitution group</em>.</p>
+<pre>&lt;xsd:element name=&quot;catalog&quot;&gt;  <br />  &lt;xsd:complexType&gt;<br />    &lt;xsd:sequence&gt;<br />      &lt;xsd:element ref=&quot;service&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br />      <strong>&lt;xsd:element ref=&quot;datasetRoot&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br /></strong>      &lt;xsd:element ref=&quot;property&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br />	    &lt;xsd:element ref=&quot;dataset&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br />    &lt;/xsd:sequence&gt;<br /><br />    &lt;xsd:attribute name=&quot;base&quot; type=&quot;xsd:anyURI&quot;/&gt;<br />    &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; /&gt;<br />    &lt;xsd:attribute name=&quot;expires&quot; type=&quot;dateType&quot;/&gt; <br />    &lt;xsd:attribute name=&quot;version&quot; type=&quot;xsd:token&quot; default=&quot;1.0.7&quot; /&gt; <br />  &lt;/xsd:complexType&gt; <br />&lt;/xsd:element&gt;
 </pre>
 <h3><a name="dataset" id="dataset"></a>The dataset element</h3>
 <p>The<strong> <a href="../tutorial/NcML.htm">ncml:netcdf</a></strong> element is specific to server side catalogs, along with the <strong><a href="../reference/RestrictedAccess.html">restrictAccess</a></strong> attribute:</p>
@@ -98,15 +98,17 @@
 <h3><a name="datasetRoot_Element" id="datasetRoot_Element"></a>The <em>datasetRoot</em> Element<br/>
 </h3>
 <pre>  &lt;xsd:element name=&quot;datasetRoot&quot;&gt;<br/>    &lt;xsd:complexType&gt;<br/>      &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>      &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br/>    &lt;/xsd:complexType&gt;<br/>  &lt;/xsd:element&gt;<br/></pre>
-<p>The <em>datasetRoot</em> element associates a portion of the URL path with a directory on disk where the data files are stored. It must be contained directly in the catalog element.<br/>
+<p>The <em>datasetRoot</em> element associates a portion of the URL path with a directory on disk where the data files are stored. It must be contained directly in the catalog element. </p>
+<p>The <strong>datasetRoots</strong> are global to a TDS, they only need to be declared once; put them in a catalog that is proecessed before they are used, by convention, in the top catalog.<br/>
 </p>
 
 <p>Example:<br/>
 </p>
-<pre>&lt;datasetRoot path=&quot;dsR1&quot; location=&quot;C:/data/mydata/&quot; /&gt;
-&lt;datasetRoot path=&quot;dsR1/sub2&quot; location=&quot;Q:/smaug/floober/&quot; /&gt;<br/>...<br/>&lt;dataset name=&quot;dataset1&quot; urlPath=&quot;dsR1/dataset1.nc&quot; /&gt;
-&lt;dataset name=&quot;dataset2&quot; urlPath=&quot;dsR1/sub/dataset2.nc&quot; /&gt;
-&lt;dataset name=&quot;dataset3&quot; urlPath=&quot;dsR1/sub2/dataset3.nc&quot; /&gt;<br/></pre>
+<pre>&lt;catalog&#32;xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&#32;name=&quot;TDS&#32;configuration&#32;file&quot;&#32;&gt;<br /> &lt;datasetRoot path=&quot;dsR1&quot; location=&quot;C:/data/mydata/&quot; /&gt;
+ &lt;datasetRoot path=&quot;dsR1/sub2&quot; location=&quot;Q:/smaug/floober/&quot; /&gt;<br/> ...<br/> &lt;dataset name=&quot;dataset1&quot; urlPath=&quot;dsR1/dataset1.nc&quot; /&gt;
+ &lt;dataset name=&quot;dataset2&quot; urlPath=&quot;dsR1/sub/dataset2.nc&quot; /&gt;
+ &lt;dataset name=&quot;dataset3&quot; urlPath=&quot;dsR1/sub2/dataset3.nc&quot; /&gt;
+&lt;/catalog&gt;<br/></pre>
 <p>In the client catalog, <strong>dataset1</strong> will have URL <strong>dsR1/dataset1.nc</strong> (reletive to the catalog URL), and it will be mapped by the server
   to the file <strong>C:/data/mydata/dataset1.nc</strong>. The <strong>dataset2</strong> has URL <strong>dsR1/sub/dataset2.nc</strong>, and refers to the file
   <strong>C:/data/mydata/sub/dataset2.nc</strong>. The dataset roots are searched for the longest match, so <strong>dataset3</strong> with URL <strong>dsR1/sub2/dataset3.nc</strong>,
@@ -119,7 +121,7 @@
       &lt;/xsd:extension&gt;<br/>    &lt;/xsd:complexContent&gt;<br/>  &lt;/xsd:complexType&gt;<br/>&lt;/xsd:element&gt;</pre>
 <p>The <em>datasetScan</em> element generates nested THREDDS catalogs by scanning the directory named in the <em>location</em> attribute, and creating a
   <em>dataset</em> for each file found, and a <em>catalogRef</em> for each subdirectory. The <em>path</em> attribute is used to create the URL for these files and
-  catalogs. <br/>
+  catalogs. The path must be globally unique over all paths for the TDS. Do not put leading or trailing slashes on the path.<br/>
 </p>
 
 <p>A <em>datasetScan</em> element is in the dataset substitutionGroup, so it can
@@ -154,8 +156,7 @@
 <p>If the <code>grib2</code> directory contained three files (<code>data1.wmo</code>, <code>data2.wmo</code>, and <code>readme.txt</code>) and one directory
   (<code>test</code>), the catalog at the URL given in the above <span style="font-style: italic;">xlink:href</span> attribute would look something like:<br/>
 </p>
-<pre>
-&lt;catalog ...&gt;
+<pre>&lt;catalog&#32;xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&#32;name=&quot;WMO catalogs&quot;&gt;
   &lt;service name=&quot;myserv&quot; ... /&gt;
   &lt;dataset name=&quot;GRIB2 Data&quot;&gt;
     &lt;metadata inherited=&quot;true&quot;&gt;
@@ -178,13 +179,15 @@
   dataset is included or excluded as
   specified. By default, includes and excludes apply only to atomic
   datasets (regular files). You can specify that they apply to atomic
-  and/or collection datasets (directories) by using the <em>atomic</em> and <em>collection</em> attributes.<br/>
+  and/or collection datasets (directories) by using the <em>atomic</em> and <em>collection</em> attributes. <br/>
 </p>
 
 <p>Expanding on the above example: </p>
 <pre>&lt;datasetScan name=&quot;GRIB2 Data&quot; path=&quot;grib2&quot; location=&quot;C:/data/grib2/&quot; &gt;<br/>  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br/>  &lt;filter&gt;<br/>    &lt;include wildcard=&quot;*.wmo&quot; /&gt;<br/>  &lt;/filter&gt;<br/>&lt;/datasetScan &gt;<br/></pre>
 results in:<br/>
-<pre>&lt;catalog ...&gt;<br/>  &lt;service name=&quot;myserv&quot; ... /&gt;<br/>  &lt;dataset name=&quot;GRIB2 Data&quot;&gt;<br/>    &lt;metadata inherited=&quot;true&quot;&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br/>    &lt;dataset name=&quot;data1.wmo&quot; urlPath=&quot;data1.wmo&quot; /&gt;<br/>    &lt;dataset name=&quot;data2.wmo&quot; urlPath=&quot;data2.wmo&quot; /&gt;<br/>  &lt;/dataset&gt;<br/>&lt;/catalog&gt;<br/></pre>
+<pre>&lt;catalog&#32;xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&gt;<br/>  &lt;service name=&quot;myserv&quot; ... /&gt;<br/>  &lt;dataset name=&quot;GRIB2 Data&quot;&gt;<br/>    &lt;metadata inherited=&quot;true&quot;&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br/>    &lt;dataset name=&quot;data1.wmo&quot; urlPath=&quot;data1.wmo&quot; /&gt;<br/>    &lt;dataset name=&quot;data2.wmo&quot; urlPath=&quot;data2.wmo&quot; /&gt;<br/>  &lt;/dataset&gt;<br/>&lt;/catalog&gt;<br/></pre>
+<p>When there are one or more <strong>include</strong> filters, datasets must pass at least one of them. When there are one or more <strong>exclude</strong> filters, datasets must pass all of them. The logic can be summarized as </p>
+<pre>dataset is included = (include1 OR include2 OR ...) AND (!exclude1 AND !exclude2 AND ...)</pre>
 <p>More examples are available in the <a href="../reference/DatasetScan.html#Including_Only_the_Desired_Files">TDS datasetsScan documentation</a>.<br/>
 </p>
 

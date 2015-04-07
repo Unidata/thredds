@@ -65,7 +65,7 @@ public class GridCollectionBuilder {
     List<CoverageDatasetImpl> collection = new ArrayList<>();
 
     Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
     System.out.printf("specp=%s%n", specp);
     boolean changed = false;
 

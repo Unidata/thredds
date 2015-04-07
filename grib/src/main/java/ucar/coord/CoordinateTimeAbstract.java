@@ -52,6 +52,7 @@ import java.util.List;
 @Immutable
 public abstract class CoordinateTimeAbstract implements Coordinate {
   static public final String MIXED_INTERVALS = "Mixed_intervals";
+  static public CalendarDateFactory cdf;
 
   protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
   protected final CalendarPeriod timeUnit;   // time duration, based on code
@@ -64,7 +65,7 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   CoordinateTimeAbstract(int code, CalendarPeriod timeUnit, CalendarDate refDate, int[] time2runtime) {
     this.code = code;
     this.timeUnit = timeUnit;
-    this.refDate = refDate;
+    this.refDate = (cdf == null) ? refDate : cdf.get(refDate);
     this.time2runtime = time2runtime;
 
     CalendarPeriod.Field cf = timeUnit.getField();

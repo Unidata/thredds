@@ -92,13 +92,12 @@
   or more <em><a href="#service">service</a></em> elements, followed by zero
   or more <em><a href="InvCatalogServerSpec.html#datasetRoot_Element">datasetRoot</a></em> elements,  followed by zero
   or more <em><a href="#property">property</a></em> elements, followed by one or
-  more <em><a href="#dataset">dataset</a></em> elements (actually any element in the dataset substitution group). The base is the base URL of the catalog, that is, where it was read from. Other URLs used in the catalog are usually are reletive to it. Optionally the catalog may have a display 
-  <em>name</em>. The <em>expires</em><a name="expires"></a>
+  more <em><a href="#dataset">dataset</a></em> elements. The <em>base</em> is used to resolve any reletive URLsin the catalog such as  catalogRefs, services, etc. It is usually  the URL of the catalog document itself. Optionally the catalog may have a display <em>name</em>. The <em>expires</em><a name="expires"></a>
   element tells clients when this catalog should be reread, so they can cache
   the catalog information. The value of the <em>version</em> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The
   <em>version</em> attribute is optional, but should be used to document which version of the schema was used.</p>
 
-<p>Example of simplest useful catalog. Note that to provide access to a dataset you need at least one service element. </p>
+<p>Example of simplest useful catalog. Note the necessary presence of the <a href="http://en.wikipedia.org/wiki/XML_namespace">xml namespace</a> attribute <em><strong>xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1&quot; </strong></em>on the catalog element.</p>
 
 <pre> &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1" &gt;<br>   &lt;service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/dodsC/" /&gt;<br>   &lt;dataset name="SAGE III Ozone Loss" urlPath="sage.nc"&gt;<br>     &lt;serviceName&gt;aggServer&lt;/serviceName&gt;<br>   &lt;/dataset&gt;<br> &lt;/catalog&gt;</pre>
 
@@ -817,8 +816,8 @@ The common case is that the access element is <em>implicit</em>, based on the da
 &lt;/xsd:simpleType&gt;</pre>
 
 <p>These are the known vocabularies for standard variable names, used in the <a href="#variables">variables</a> element. <strong>CF</strong> refers to the
-  <a href="http://cf-pcmdi.llnl.gov/">Climate and Forecast Conventions</a> metadata conventions for netCDF; they have a list of
-  <a href="http://cf-pcmdi.llnl.gov/documents/cf-standard-names/">standard variable names</a>. <strong>DIF</strong> is
+  <a href="http://cfconventions.org">Climate and Forecast Conventions</a> metadata conventions for netCDF; they have a list of
+  <a href="http://cfconventions.org/standard-names.html">standard variable names</a>. <strong>DIF</strong> is
   <a href="http://gcmd.gsfc.nasa.gov/User/difguide/difman.html">Directory Interchange Format</a> from NASA's Global Change Master Directory, which has a
   controlled variable <a href="http://gcmd.gsfc.nasa.gov/User/difguide/parameters.html">classification scheme</a>. The World Meteorological Organization's
   <a href="http://dss.ucar.edu/docs/formats/grib/gribdoc/">GRIB (version 1)</a> data file format defines a set of standard parameters.</p>
@@ -1100,7 +1099,7 @@ The common case is that the access element is <em>implicit</em>, based on the da
 <hr width="100%">
 <address>
 <img alt="THREDDS" src="../thread.png" height="108" width="110">This document is maintained by Unidata and was
-  last updated January 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated April 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 <p></p>

@@ -28,33 +28,27 @@ public class RadarDataInventory {
         Station, Variable, Date
     }
 
+    private static final long updateIntervalMsec = 600000;
     private EnumMap<DirType, Set<String>> items;
-    private Path root, collectionDir;
+    private Path collectionDir;
     private DirectoryStructure structure;
-    private String fileTimeFmt;
+    private String fileTimeFmt, dataFormat;
     private boolean dirty;
+    private CalendarDate lastUpdate;
     private int maxCrawlItems, maxCrawlDepth;
     private StationList stations;
     private CalendarPeriod nearestWindow, rangeAdjustment;
     private String name, description;
 
-    public RadarDataInventory(Path datasetRoot, String collection) {
+    public RadarDataInventory(Path datasetRoot) {
         items = new EnumMap<>(DirType.class);
-        root = datasetRoot;
-        name = collection;
-        description = collection;
-        collectionDir = root.resolve(collection);
+        collectionDir = datasetRoot;
         structure = new DirectoryStructure(collectionDir);
         dirty = true;
         maxCrawlItems = 10;
         maxCrawlDepth = 2;
         stations = new StationList();
         nearestWindow = CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
-    }
-
-    public Path getRoot()
-    {
-        return root;
     }
 
     public Path getCollectionDir()
@@ -68,6 +62,19 @@ public class RadarDataInventory {
 
     public String getName() {
         return name;
+    }
+
+    // TODO: Can we pull this from data?
+    public FeatureType getFeatureType() {
+        return FeatureType.RADIAL;
+    }
+
+    public void setDataFormat(String format) {
+        this.dataFormat = format;
+    }
+
+    public String getDataFormat() {
+        return dataFormat;
     }
 
     public String getDescription() {
@@ -85,6 +92,8 @@ public class RadarDataInventory {
     public StationList getStationList() {
         return stations;
     }
+
+    public List<String> getVariableList() { return listItems(DirType.Variable); }
 
     public void setNearestWindow(CalendarPeriod pd) {
         nearestWindow = pd;
@@ -210,8 +219,7 @@ public class RadarDataInventory {
         fileTimeFmt = fmt;
     }
 
-    private void findItems(Path start, int level) throws
-            IOException {
+    private void findItems(Path start, int level) throws IOException {
         // Add each entry from this level to the appropriate item box
         // and recurse
         if (level >= structure.order.size() || level >= maxCrawlDepth)
@@ -277,13 +285,20 @@ public class RadarDataInventory {
 
     private void update() {
         try {
-            if (dirty) {
+            if (dirty || timeToUpdate()) {
                 findItems(structure.base, 0);
-//                dirty = false;
+                dirty = false;
+                lastUpdate = CalendarDate.present();
             }
         } catch (IOException e) {
             System.out.println("Error updating data inventory.");
         }
+    }
+
+    private boolean timeToUpdate() {
+        // See if it's been more than enough time since the last update
+        CalendarDate now = CalendarDate.present();
+        return now.getDifferenceInMsecs(lastUpdate) > updateIntervalMsec;
     }
 
     public List<String> listItems(DirType type) {
@@ -463,7 +478,7 @@ public class RadarDataInventory {
         for (String name : args) {
             File baseDir = new File(name);
             if (baseDir.isDirectory()) {
-                RadarDataInventory dw = new RadarDataInventory(baseDir.toPath(), "");
+                RadarDataInventory dw = new RadarDataInventory(baseDir.toPath());
                 dw.addVariableDir();
                 dw.addStationDir();
                 dw.addDateDir("yyyyMMdd");

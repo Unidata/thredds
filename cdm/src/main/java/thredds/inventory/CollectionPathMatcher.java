@@ -35,7 +35,6 @@ package thredds.inventory;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
-import thredds.inventory.filter.StreamFilter;
 import ucar.nc2.util.CloseableIterator;
 
 import java.io.IOException;
@@ -43,7 +42,6 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * A collection defined by the collection spec (not directory sensitive)
@@ -67,15 +65,8 @@ public class CollectionPathMatcher extends CollectionAbstract {
     if (extract != null && !(extract instanceof DateExtractorNone))
       setDateExtractor(extract);
 
-    //if (specp.getFilter() != null)
-    //  setStreamFilter(new StreamFilter(specp.getFilter()));
     putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-
-    if (specp.getSpec().startsWith("regex:") || specp.getSpec().startsWith("glob:")) {
-      matcher = FileSystems.getDefault().getPathMatcher(specp.getSpec());
-    } else {
-      matcher = new BySpecp(specp);
-    }
+    matcher = specp.getPathMatcher();                       // LOOK still need to decide what you are matching on name, path, etc
 
     this.rootPath = Paths.get(this.root);
     this.olderThanMillis = parseOlderThanString( config.olderThan);
@@ -194,18 +185,4 @@ public class CollectionPathMatcher extends CollectionAbstract {
       dirStream.close();
     }
   }
-
-  static public class BySpecp implements java.nio.file.PathMatcher {
-    final Pattern pattern;
-    BySpecp(CollectionSpecParser specp) {
-       this.pattern = specp.getFilter();
-    }
-
-    @Override
-    public boolean matches(Path path) {
-      java.util.regex.Matcher matcher = this.pattern.matcher(path.getFileName().toString());
-      return matcher.matches();
-    }
-  }
-
 }

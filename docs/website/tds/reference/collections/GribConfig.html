@@ -97,7 +97,7 @@
   &lt;/xsd:element&gt;</pre>
 <blockquote>
 <blockquote>
-  <p>GRIB makes extensive use of time intervals as coordinates. In <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries">CF</a>, time interval coordinates use an auxiliary
+  <p>GRIB makes extensive use of time intervals as coordinates. In <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#cell-boundaries">CF</a>, time interval coordinates use an auxiliary
       coordinate to describe the intervals, for example a coordinate named<em> time1(30) </em>will have an auxiliary coordinate <em>time1_bounds(30,2)</em> containing the lower and upper bounds of the time interval for each coordinate. Currently, the CDM places all intervals in the same variable (rather than
       create seperate variables for each interval size), unless <strong>intvMerge</strong> is set to false. When all intervals have the same size, the interval size is added to the variable name. Otherwise the
       phrase &quot;mixed_intervals&quot; is added to the variable name.</p>

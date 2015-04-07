@@ -32,6 +32,8 @@
 
 package ucar.nc2.time;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.jcip.annotations.Immutable;
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
@@ -49,6 +51,11 @@ import ucar.unidata.util.StringUtil2;
 @Immutable
 public class CalendarPeriod {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
+
+  private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder()
+                .maximumSize(100)  // limit cache size....
+                .build();
+
   static public final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
 
   public enum Field {
@@ -96,8 +103,14 @@ public class CalendarPeriod {
     }
   }
 
+  // minimize memory use by interning. wacko shit in GribPartitionBuilder TimeCoordinate, whoduhthunk?
   public static CalendarPeriod of(int value, Field field) {
-    return new CalendarPeriod(value, field);
+    CalendarPeriod want = new CalendarPeriod(value, field);
+    if (cache == null) return want;
+    CalendarPeriod got = cache.getIfPresent(want);
+    if (got != null) return got;
+    cache.put(want, want);
+    return want;
   }
 
   /**
@@ -145,7 +158,7 @@ public class CalendarPeriod {
    * @return new period
    */
   public CalendarPeriod multiply(int value) {
-    return new CalendarPeriod(this.value * value, this.field);
+    return CalendarPeriod.of(this.value * value, this.field);
   }
 
   public int getValue() {
@@ -252,7 +265,7 @@ public class CalendarPeriod {
   }
 
   public static void main(String[] args) {
-    CalendarPeriod cp = new CalendarPeriod(1, Field.Day);
+    CalendarPeriod cp = CalendarPeriod.of(1, Field.Day);
     CalendarDate start =  CalendarDate.parseUdunits(null, "3 days since 1970-01-01 12:00");
     CalendarDate end =  CalendarDate.parseUdunits(null, "6 days since 1970-01-01 12:00");
     int offset = cp.getOffset(start, end);

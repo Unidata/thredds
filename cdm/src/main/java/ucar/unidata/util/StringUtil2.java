@@ -438,7 +438,7 @@ public class StringUtil2 {
       return s;
 
     int len = s.length();
-    while (s.charAt(len - 1) == c)
+    while ((s.charAt(len - 1) == c) && (len > 0))
       len--;
 
     if (len == s.length())
@@ -864,29 +864,52 @@ public class StringUtil2 {
     }
   }
 
+  /**
+   * Remove bad char from beginning or end of string
+   * @param s operate on this
+   * @return trimmed string
+   */
 
-  static public StringBuilder trim(StringBuilder sb) {
-    int count = 0;
-    for (int i = 0; i < sb.length(); i++) {
-      int c = sb.charAt(i);
-      if (c == ' ') count++;
-      else break;
-    }
-    if (count > 0) sb = sb.delete(0, count);
+  static public String trim(String s, int bad) {
+      int len = s.length();
+      int st = 0;
 
-    count = 0;
-    for (int i = sb.length() - 1; i >= 0; i--) {
-      int c = sb.charAt(i);
-      if (c == ' ') count++;
-      else break;
-    }
-    if (count > 0)
-      sb.setLength(sb.length() - count);
-
-    return sb;
+      while ((st < len) && (s.charAt(st) == bad)) {
+          st++;
+      }
+      while ((st < len) && (s.charAt(len - 1) == bad)) {
+          len--;
+      }
+      return ((st > 0) || (len < s.length())) ? s.substring(st, len) : s;
   }
 
-  ////////
+  /*
+  static public StringBuilder trim(StringBuilder sb) {
+     return trim(sb, ' ');
+  }
+
+   static public StringBuilder trim(StringBuilder sb, int bad) {
+     int count = 0;
+     for (int i = 0; i < sb.length(); i++) {
+       int c = sb.charAt(i);
+       if (c == bad) count++;
+       else break;
+     }
+     if (count > 0) sb = sb.delete(0, count);
+
+     count = 0;
+     for (int i = sb.length() - 1; i >= 0; i--) {
+       int c = sb.charAt(i);
+       if (c == bad) count++;
+       else break;
+     }
+     if (count > 0)
+       sb.setLength(sb.length() - count);
+
+     return sb;
+   } */
+
+   ////////
 
 
   /**

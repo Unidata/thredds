@@ -253,8 +253,8 @@ public class DirectoryPartitionViewer extends JPanel {
 
     Formatter errlog = new Formatter();
     config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
-    CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
-    partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
+    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
+    partitionTreeBrowser.setRoot(Paths.get(specp.getRootDir()));
   }
 
   // ncx2 index

@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>THREDDS Catalogs</title>
+  <link href="../cdm.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<h1>THREDDS Catalogs </h1>
+<h3>Reading Thredds Catalogs</h3>
+<pre>import thredds.client.catalog;
+
+public&#32;Catalog&#32;open(String&#32;urlString, boolean showMessages)&#32;throws&#32;IOException&#32;{
+<br />&#32;&#32;CatalogBuilder&#32;builder&#32;=&#32;new&#32;CatalogBuilder();<br />&#32;&#32;Catalog&#32;cat&#32;=&#32;builder.buildFromLocation(urlString);<br />&#32;&#32;if&#32;(builder.hasFatalError())&#32;{<br />&#32;&#32;&#32;&#32;System.out.printf(&quot;ERRORS&#32;%s%n&quot;,&#32;builder.getErrorMessage());<br />&#32;&#32;&#32;&#32;assert&#32;false;<br />&#32;&#32;&#32;&#32;return&#32;null;
+<br />&#32;&#32;}&#32;else&#32;if (showMessages) {<br />&#32;&#32;&#32;&#32;String&#32;mess&#32;=&#32;builder.getErrorMessage();<br />&#32;&#32;&#32;&#32;if&#32;(mess.length()&#32;&gt;&#32;0)<br />&#32;&#32;&#32;&#32;&#32;&#32;System.out.printf(&quot;&#32;parse&#32;Messages&#32;=&#32;%s%n&quot;,&#32;builder.getErrorMessage());<br />&#32;&#32;}<br />&#32;&#32;return&#32;cat;<br />}</pre>
+<p>If you are running throug the catalog, and you find a catalog reference, you can open it through:</p>
+<pre>public&#32;Catalog&#32;buildFromCatref(CatalogRef&#32;catref)&#32;throws&#32;IOException;<br /></pre>
+<h3>Writing Catalog</h3>
+<pre>import&#32;thredds.client.catalog.tools.CatalogXmlWriter;<br />
+CatalogXmlWriter&#32;writer&#32;=&#32;new&#32;CatalogXmlWriter();<br />writer.writeXML(cat,&#32;System.out,&#32;false);
+</pre>
+<h3>Opening Datasets from Catalogs</h3>
+<pre>import&#32;thredds.client.catalog.tools.DataFactory;<br />
+DataFactory&#32;tdf&#32;=&#32;new&#32;DataFactory();<br />NetcdfFile&#32;ncfile&#32;=&#32;tdf.openDataset(location,&#32;false,&#32;cancelTask,&#32;log);&#32;//&#32;LOOK&#32;acquire&#32;??<br /></pre>
+<h3>Opening Feature Collections</h3>
+<pre>RadialDatasetSweep&#32;rds&#32;=&#32;(RadialDatasetSweep)&#32;FeatureDatasetFactoryManager.open(FeatureType.RADIAL,&#32;fullpath,&#32;null,&#32;errlog);<br />
+</pre>
+<p>&nbsp;</p>
+</body>
+</html>

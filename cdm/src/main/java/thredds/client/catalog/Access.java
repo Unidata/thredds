@@ -74,6 +74,7 @@ public class Access {                 // (5)
   }
 
   public DataFormatType getDataFormatType() {
+    if (dataFormatS == null) return null;
     try {
       return DataFormatType.getType(dataFormatS);
     } catch (Exception e) {
