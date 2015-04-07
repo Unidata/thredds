@@ -108,7 +108,7 @@ public class H5header {
 
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
   static private final String hdf5magic = new String(head, CDM.utf8Charset);
-  static private final long maxHeaderPos = 500000; // header's gotta be within this
+  static private final long maxHeaderPos = 50000; // header's gotta be within this
   static private final boolean transformReference = true;
 
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -116,7 +116,7 @@ public class H5header {
     long size = raf.length();
 
     // search forward for the header
-    while ((filePos < size) && (filePos < maxHeaderPos)) {
+    while ((filePos < size - 8) && (filePos < maxHeaderPos)) {
       raf.seek(filePos);
       String magic = raf.readString(8);
       if (magic.equals(hdf5magic))
