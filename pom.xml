@@ -966,8 +966,8 @@
     <bounce.version>0.14</bounce.version>
     <imgscalr-lib.version>4.2</imgscalr-lib.version>
     <xmlbeans.version>2.6.0</xmlbeans.version>
-    <org.n52.xmlbeans.version>1.12</org.n52.xmlbeans.version>
-    <org.n52.common.xml.version>1.1.5</org.n52.common.xml.version>
+    <org.n52.xmlbeans.version>2.0.0-alpha.3.3</org.n52.xmlbeans.version>
+    <org.n52.common.xml.version>2.1.0</org.n52.common.xml.version>
     <oro.version>2.0.8</oro.version>
     <jna.version>4.1.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>
