@@ -155,7 +155,7 @@ public class CFGridWriter2 {
         continue;
       GridDatatype grid = gds.findGridDatatype(gridName);
       if (grid == null) {
-        log.warn("writeOrTestSize cant find grid %s - skipping%n", gridName);
+        log.debug("writeOrTestSize cant find grid %s - skipping%n", gridName);
         continue;
       }
 
@@ -330,7 +330,7 @@ public class CFGridWriter2 {
       GridDatatype grid = gds.findGridDatatype(gridName);
       Variable newV = writer.findVariable(gridName);
       if (newV == null) {
-        log.warn("NetcdfCFWriter cant find " + gridName + " in gds " + gds.getLocationURI());
+        log.debug("NetcdfCFWriter cant find " + gridName + " in gds " + gds.getLocationURI());
         continue;
       }
 
