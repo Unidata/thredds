@@ -357,7 +357,7 @@ public class IO {
     }
   }
 
-  static public void copyFileWithChannels(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
+  static public void copyFileWithChannels(File fileIn, WritableByteChannel out) throws IOException {
     try (FileChannel in = new FileInputStream(fileIn).getChannel()) {
       long want =  fileIn.length();
       long did = in.transferTo(0, fileIn.length(), out);

@@ -178,7 +178,7 @@ public class H5header {
     // find the superblock - no limits on how far in
     boolean ok = false;
     long filePos = 0;
-    while ((filePos < actualSize)) {
+    while ((filePos < actualSize-8)) {
       raf.seek(filePos);
       String magic = raf.readString(8);
       if (magic.equals(hdf5magic)) {
