@@ -160,8 +160,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
       if (first == null) {
         deleteOnClose = true;
-        logger.error("GribCollection {}: has no files", name);
-        throw new IOException("GribCollection " + name + " has no files");
+        throw new IOException("GribCollection " + name + " has no records");
       }
 
       long pos = raf.getFilePointer();

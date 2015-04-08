@@ -720,7 +720,7 @@ public class DatasetViewer extends JPanel {
   	}
   	else {
 	  List<VariableBean> l = from.getSelectedBeans();
-	  List<Variable> vl = new ArrayList<Variable>();
+	  List<Variable> vl = new ArrayList<>();
 
 	  for(VariableBean vb1  : l) {
 		  if (vb1 == null) return;
@@ -740,31 +740,26 @@ public class DatasetViewer extends JPanel {
     Rectangle r = (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle( 50, 300, 1000, 1200));
     dataWindow.setBounds( r );
   	dataWindow.show();
-  
-    return;
   }
 
-  private void dataPlot(BeanTable from) {	  	
-	    List<VariableBean> l = from.getSelectedBeans();
-	    
-	    for(VariableBean vb  : l) {
-		    if (vb == null) return;
-		    Variable v = vb.vs;
-		    if (v != null) {
-		      try {
-		    	  dataPlot.setDataset(ds);
-                  dataPlot.setVariable(v);
-		      }
-		      catch (Exception ex) {
-		        ex.printStackTrace();
-		      }
-		    }
-		    else return;
-	    }
-	    plotWindow.show();
-	  }
-  
-  
+  private void dataPlot(BeanTable from) {
+    List<VariableBean> l = from.getSelectedBeans();
+
+    for (VariableBean vb : l) {
+      if (vb == null) return;
+      Variable v = vb.vs;
+      if (v != null) {
+        try {
+          dataPlot.setDataset(ds);
+          dataPlot.setVariable(v);
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      } else return;
+    }
+    plotWindow.show();
+  }
+
   private Variable getCurrentVariable(BeanTable from) {
     VariableBean vb = (VariableBean) from.getSelectedBean();
     if (vb == null) return null;

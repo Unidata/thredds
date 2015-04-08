@@ -130,6 +130,7 @@ abstract class GribPartitionBuilder  {
   ///////////////////////////////////////////////////
   // build the index
 
+   // return true if changed, exception on failure
   public boolean createPartitionedIndex(CollectionUpdateType forcePartition, Formatter errlog) throws IOException {
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 
@@ -145,18 +146,16 @@ abstract class GribPartitionBuilder  {
     int n = result.getPartitionSize();
     if (n == 0) {
       errlog.format("ERR Nothing in this partition = %s%n", result.getName());
-      logger.error(" Nothing in this partition = {}", result.getName());
-      return false;
+      throw new IllegalStateException("Nothing in this partition =" + result.getName());
     }
     int idx = partitionManager.getProtoIndex(n);
     PartitionCollectionMutable.Partition canon = result.getPartition(idx);
     logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
     try (GribCollectionMutable gc = canon.makeGribCollection()) {  // LOOK open/close canonical partition
-      if (gc == null) {
-       logger.error(" canon.makeGribCollection failed on {} errs= {}", canon.getName(), errlog.toString());
-       return false;
-     }
+      if (gc == null)
+        throw new IllegalStateException("canon.makeGribCollection failed on =" + canon.getName()+"; errs="+errlog);
+
           // copy info from canon gribCollection to result partitionCollection
       result.copyInfo(gc);
       result.isPartitionOfPartitions = (gc instanceof PartitionCollectionMutable);
@@ -168,8 +167,7 @@ abstract class GribPartitionBuilder  {
     PartitionCollectionMutable.Dataset ds2D = makeDataset2D(errlog);
     if (ds2D == null) {
       errlog.format(" ERR makeDataset2D failed, index not written on %s%n", result.getName());
-      logger.error(" makeDataset2D failed, index not written on {} errors = \n{}", result.getName(), errlog.toString());
-      return false;
+      throw new IllegalStateException("makeDataset2D failed, index not written on =" + result.getName()+"; errs="+errlog);
     }
 
     // this finishes the 2D stuff
@@ -179,8 +177,8 @@ abstract class GribPartitionBuilder  {
       makeDatasetBest(ds2D, false);
 
     // ready to write the index file
-    writeIndex(result, errlog);
-    return true;
+    return writeIndex(result, errlog);
+    // return true;
   }
 
   // each dataset / group has one of these, across all partitions

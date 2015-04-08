@@ -45,12 +45,7 @@ import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
@@ -59,14 +54,11 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
-import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -304,7 +296,7 @@ public class GribCdmIndex implements IndexReader {
   // used by Tdm (indirectly by InvDatasetFcGrib)
 
   /**
-   * update all the different Grib Collection variants collection as needed
+   * update Grib Collection if needed
    * @return true if the collection was updated
    * @throws IOException
    */
@@ -351,6 +343,7 @@ public class GribCdmIndex implements IndexReader {
     return changed;
   }
 
+  // return true if changed, exception on failure
   static private boolean updateGribCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, FeatureCollectionConfig.PartitionType ptype,
                                               Logger logger, Formatter errlog) throws IOException {
 
@@ -368,6 +361,7 @@ public class GribCdmIndex implements IndexReader {
     return changed;
   }
 
+  // return true if changed, exception on failure
   static private boolean updatePartition(boolean isGrib1, PartitionManager dcm, CollectionUpdateType updateType,
                                               Logger logger, Formatter errlog) throws IOException {
     boolean changed;
@@ -392,8 +386,15 @@ public class GribCdmIndex implements IndexReader {
     Formatter errlog = new Formatter();
 
     for (MCollection part : tp.makePartitions(updateType)) {
-      updateGribCollection(isGrib1, part, updateType, FeatureCollectionConfig.PartitionType.timePeriod, logger, errlog);
+      try {
+        updateGribCollection(isGrib1, part, updateType, FeatureCollectionConfig.PartitionType.timePeriod, logger, errlog);
+
+      }  catch (Throwable t) {
+        logger.warn("Error making partition " + part.getRoot(), t);
+        tp.removePartition( part); // keep on truckin; can happen if directory is empty
+      }
     }   // loop over component grib collections
+
 
     boolean changed = updatePartition(isGrib1, tp, updateType, logger, errlog);
 
@@ -451,14 +452,16 @@ public class GribCdmIndex implements IndexReader {
             Path partPath = Paths.get(part.getRoot());
             updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // LOOK why not using part ??
           }
+        } catch (IllegalStateException t) {
+          logger.warn("Error making partition {} '{}'", part.getRoot(), t.getMessage());
+          dpart.removePartition( part); // keep on truckin; can happen if directory is empty
+
         } catch (Throwable t) {
-          logger.warn("Error making partition " + part.getRoot(), t);
-          throw t;
-          // continue; // keep on truckin; can happen if directory is empty
+          logger.error("Error making partition " + part.getRoot(), t);
+          dpart.removePartition( part);
         }
       }   // loop over partitions
     }
-
 
     // update the partition
     Formatter errlog = new Formatter();
@@ -472,9 +475,10 @@ public class GribCdmIndex implements IndexReader {
 
   /**
    * Update all the gbx indices in one directory, and the ncx index for that directory
-   *
+
    * @param config  FeatureCollectionConfig
    * @param dirPath directory path
+   * @return true if collection was rewritten, exception on failure
    * @throws IOException
    */
   static private boolean updateLeafCollection(boolean isGrib1, FeatureCollectionConfig config,
@@ -508,7 +512,7 @@ public class GribCdmIndex implements IndexReader {
    *
    * @param config              FeatureCollectionConfig
    * @param updateType          always, test, nocheck, never
-   * @return true if partition was rewritten
+   * @return true if partition was rewritten, exception on failure
    * @throws IOException
    */
   static private boolean updateFilePartition(final boolean isGrib1, final FeatureCollectionConfig config,
