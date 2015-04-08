@@ -927,7 +927,7 @@
 
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
-    <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.6.0</uk.ac.rdg.resc.ncwms.version>
+    <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.6.1-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
     <geoapi.version>3.1-M04</geoapi.version>
     <eds.threddsIso.version>2.2.5</eds.threddsIso.version>
     <com.google.guava.version>18.0</com.google.guava.version>

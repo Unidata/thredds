@@ -12,7 +12,7 @@
         
         <link rel="stylesheet" type="text/css" href="css/godiva2.css">
         
-        <script type="text/javascript" src="js/OpenLayers-2.8.js"></script>
+        <script type="text/javascript" src="js/OpenLayers-2.10.js"></script>
         <script type="text/javascript" src="js/WMS1_1_1.js"></script>
         <script type="text/javascript" src="js/WMS1_3.js"></script>
         <!-- Comment out the line below to stop using Google Maps -->
@@ -98,7 +98,7 @@
                 <div id="scaleControls">
                     <select id="stylePicker" title="Selects the style of the current layer" disabled="true" onchange="javascript:updateMap()"> 
                         <option value="default" selected>default</option> 
-                    </select>                
+                    </select>
                     <select id="scaleSpacing" title="Sets the spacing of the colour scale" onchange="javascript:validateScale()">
                         <option value="linear" selected>linear</option>
                         <option value="logarithmic">log</option>
@@ -110,7 +110,7 @@
                 <input id="scaleMin" class="scaleMin" type="text" size="11" onblur="javascript:validateScale()"/>
             </div>
             <div id="copyright"></div>
-            <div id="underMap"><span id="testImage"></span>&nbsp;&nbsp;<span id="googleEarth"></span></div>
+            <div id="underMap"><span id="testImage"></span>&nbsp;&nbsp;<span id="googleEarth"></span>&nbsp;&nbsp;<span id="screenshot" style="visibility:hidden"><a href="#" onclick="javascript:loadScreenshot()">Screenshot</a></span></div>
             <span id="opacityControl">Overlay opacity:
                 <select id="opacityValue" onchange="javascript:setDataOpacity(this.value)">
                     <option value="1" selected="selected">100%</option>
@@ -159,6 +159,6 @@
             </div>
         </div>
     </div>
-
+    
     </body>
 </html>
