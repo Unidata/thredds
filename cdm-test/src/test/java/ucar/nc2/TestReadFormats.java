@@ -44,7 +44,7 @@ public class TestReadFormats {
       if (name.endsWith(".txt")) return false;
       if (name.endsWith(".xml")) return false;
 
-      if (name.endsWith(".unf") && pathname.getPath().contains("grads")) return false;
+      if (!name.endsWith(".ctl") && pathname.getPath().contains("grads")) return false;
       if (name.endsWith(".HDR") && pathname.getPath().contains("gtopo")) return false;
       return true;
     }

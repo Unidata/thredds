@@ -49,7 +49,7 @@ public class TestReadAndCountMisc {
   @Category(NotTravis.class)
   public void testLiveServer() throws Exception {
     TestReadandCount.doOne("thredds:resolve:http://thredds.ucar.edu/thredds/",
-            "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
+            "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);  // flips between 40 and 33
   }
 
   @Test

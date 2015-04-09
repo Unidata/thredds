@@ -88,9 +88,11 @@ class GridResponder extends GridDatasetResponder {
 			NetcdfFileWriter.Version version)
 			throws NcssException, InvalidRangeException, ParseException, IOException {
 
-		if (!checkRequestedVars(gds, params) && params.getVertCoord() != null ) // LOOK should catch validation error earlier
-			throw new UnsupportedOperationException("The variables requested: " + params.getVar() + " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
-			
+		if (!checkRequestedVars(gds, params) && params.getVertCoord() != null ) { // LOOK should catch validation error earlier
+      throw new UnsupportedOperationException("The variables requested: " + params.getVar() +
+              " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
+    }
+
 		File netcdfResult;
 		if (isSpatialSubset(params)) {
 			netcdfResult = writeLatLonSubset(params, version);

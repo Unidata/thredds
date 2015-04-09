@@ -520,8 +520,10 @@ public class DataFactory {
        access = findAccessByServiceType(accessList, ServiceType.DAP4);
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.File); // should mean that it can be opened through netcdf API
+    if (access == null)
+      access = findAccessByServiceType(accessList, ServiceType.HTTPServer); // should mean that it can be opened through netcdf API
 
-    // look for HTTP with format we can read
+    /* look for HTTP with format we can read
     if (access == null) {
       Access tryAccess = findAccessByServiceType(accessList, ServiceType.HTTPServer);
 
@@ -536,7 +538,7 @@ public class DataFactory {
           access = tryAccess;
         }
       }
-    }
+    } */
 
     // ADDE
     if (access == null)

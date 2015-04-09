@@ -101,6 +101,41 @@ public class AbstractNcssController {
 
     ////////////////////////////////////////////////////////
     // Exception handlers
+    @ExceptionHandler(NcssException.class)
+    public ResponseEntity<String> handle(NcssException e) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(e.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<String> handle(FileNotFoundException e) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(e.getMessage(), responseHeaders, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<String> handle(UnsupportedOperationException e) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(e.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<String> handle(Throwable t) {
+        logger.error("Uncaught exception", t);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(t.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+  /*
 
     @ResponseStatus(value=HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NcssException.class)
@@ -124,7 +159,7 @@ public class AbstractNcssController {
     @ExceptionHandler(Throwable.class)
     public void handle(Throwable t) {
       logger.error("Uncaught exception", t);
-    }
+    }   */
 
     public static String getNCSSServletPath() {
         return servletPath;

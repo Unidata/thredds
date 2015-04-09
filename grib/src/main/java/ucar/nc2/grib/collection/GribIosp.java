@@ -77,7 +77,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   static public int debugIndexOnlyCount = 0;  // count number of data accesses
   static boolean debugIndexOnly = false;  // we are running with only ncx2 index files, no data
   static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
-  static boolean debugGbxIndexOnly = false;  // we are running with only ncx2 and gbx8 index files, no data
+  static public boolean debugGbxIndexOnly = false;  // we are running with only ncx2 and gbx8 index files, no data
 
   static private final boolean debug = false, debugTime = false, debugName = false;
 

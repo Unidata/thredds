@@ -1,5 +1,6 @@
 package ucar.nc2.grib;
 
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.DiskCache2;
 
 import java.io.File;
@@ -43,6 +44,12 @@ public class GribIndexCache {
    * @return existing file if you can find it, else null
    */
   static public File getExistingFileOrCache(String fileLocation) {
-    return getDiskCache2().getExistingFileOrCache(fileLocation);
+    File result =  getDiskCache2().getExistingFileOrCache(fileLocation);
+    if (result == null && GribIosp.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx3")) {
+      int length = fileLocation.length();
+      String maybeIndexAlreadyExists = fileLocation.substring(0, length-10)+".ncx3";
+      result =  getDiskCache2().getExistingFileOrCache(maybeIndexAlreadyExists);
+    }
+    return result;
   }
 }
