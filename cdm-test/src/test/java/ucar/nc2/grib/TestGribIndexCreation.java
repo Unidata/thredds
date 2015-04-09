@@ -249,4 +249,18 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
   }
 
+  @Test
+   public void testTP() throws IOException {   // should be a TP (multiple runtime, single offset
+     // String name, String path, FeatureCollectionType fcType,
+     // String spec, String collectionName,
+     // String dateFormatMark, String olderThan, String timePartition, Element innerNcml)
+     FeatureCollectionConfig config = new FeatureCollectionConfig("GFSonedega", "test/GFSonedega", FeatureCollectionType.GRIB2,
+             TestDir.cdmUnitTestDir + "gribCollections/tp/.*grib2", null,
+             null, null, "file", null);
+     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+     System.out.printf("changed = %s%n", changed);
+   }
+
+
 }

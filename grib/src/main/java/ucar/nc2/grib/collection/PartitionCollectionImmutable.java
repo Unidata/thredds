@@ -569,7 +569,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
 
     /**
-     * Given the index in the whole (indexWhole), translate to index in component (compVindex2D) by matching the coordinate values
+     * Given the index in the whole (wholeIndex), translate to index in component (compVindex2D) by matching the coordinate values
      * @param wholeIndex    index in the whole
      * @param compVindex2D  want index in here
      * @return  index into  compVindex2D, or null if missing

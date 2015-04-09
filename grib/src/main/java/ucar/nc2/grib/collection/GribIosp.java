@@ -77,7 +77,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   static public int debugIndexOnlyCount = 0;  // count number of data accesses
   static boolean debugIndexOnly = false;  // we are running with only ncx2 index files, no data
   static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
-  static public boolean debugGbxIndexOnly = false;  // we are running with only ncx2 and gbx8 index files, no data
+  static public boolean debugGbxIndexOnly = false;  // we are running with only ncx and gbx index files, no data
 
   static private final boolean debug = false, debugTime = false, debugName = false;
 
@@ -1125,6 +1125,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Section sectionWanted = section.subSection(0, sectionLen - 2); // all but x, y
     Section.Iterator iterWanted = sectionWanted.getIterator(v.getShape());  // iterator over wanted indices in vindexP
     int[] indexWanted = new int[sectionLen - 2];                              // place to put the iterator result
+    int[] useIndex = indexWanted;
 
     // collect all the records that need to be read
     DataReaderPartitioned dataReader = new DataReaderPartitioned();
@@ -1138,10 +1139,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         indexReallyWanted[0] = indexWanted[0];
         indexReallyWanted[1] = 0;
         System.arraycopy(indexWanted, 0, indexReallyWanted, 2, indexWanted.length-1);
-        indexWanted = indexReallyWanted;
+        useIndex = indexReallyWanted;
       }
 
-      PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(indexWanted);
+      PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(useIndex);
       if (record == null) {
         if (debug || debugRead) System.out.printf("readDataFromPartition missing data%n");
         // vindexP.getDataRecord(indexWanted); // debug
