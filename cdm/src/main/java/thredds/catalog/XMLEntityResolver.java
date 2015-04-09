@@ -34,6 +34,9 @@
 package thredds.catalog;
 
 import javax.xml.parsers.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.*;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Namespace;
@@ -160,7 +163,9 @@ Add these to the jnlp file: (see Viewer.jnlp):
 */
 
 public class XMLEntityResolver implements org.xml.sax.EntityResolver {
-  static private boolean debugEntityResolution = false; //, debugFactory = false, debugMessages = false;
+  static private final Logger logger = LoggerFactory.getLogger(XMLEntityResolver.class);
+
+  //static private boolean debugEntityResolution = false; //, debugFactory = false, debugMessages = false;
   static private Map<String, String> entityHash = new HashMap<>();
 
   // schema validation
@@ -266,7 +271,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   static public String getExternalSchemas() {
     if (externalSchemas == null) {
       externalSchemas =
-        XMLEntityResolver.CATALOG_NAMESPACE_10 + " " + "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd" +" "
+        XMLEntityResolver.CATALOG_NAMESPACE_10 + " " + "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd" +" "
         + XMLEntityResolver.NJ22_NAMESPACE + " " + "http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd" +" "
         + XMLEntityResolver.DQC_NAMESPACE_04 + " " + "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.4.xsd" +" "
         /* + XMLEntityResolver.DQC_NAMESPACE_03 + " " + "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd" +" " +
@@ -292,11 +297,11 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
       if (is != null) {
         IO.copy(is, sbuff);
         entity = new String(sbuff.toByteArray(), CDM.utf8Charset);
-        if (debugEntityResolution) System.out.println(" *** entity "+entityName+" mapped to local resource at "+resourceName);
+        logger.debug(" *** entity " + entityName + " mapped to local resource at " + resourceName);
 
       } else if (urlName != null) { // otherwise, get from network
         entity = IO.readURLcontentsWithException(urlName);
-        if (debugEntityResolution) System.out.println(" *** entity "+entityName+" mapped to remote URL at "+urlName);
+        logger.debug(" *** entity "+entityName+" mapped to remote URL at "+urlName);
       }
 
     } catch (IOException e) {
@@ -416,22 +421,22 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
   // we read the DTD/schema locally if we can.
   public org.xml.sax.InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-    if (debugEntityResolution) System.out.print("  publicId="+publicId+" systemId="+systemId);
+    logger.debug("  publicId="+publicId+" systemId="+systemId);
     String entity = entityHash.get( systemId);
     if (entity != null) {
-      if (debugEntityResolution) System.out.println(" *** resolved  with local copy");
+      logger.debug(" *** resolved  with local copy");
       return new MyInputSource(entity);
     }
 
     if (systemId.contains("InvCatalog.0.6.dtd")) {
       entity = entityHash.get( "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.dtd");
       if (entity != null) {
-        if (debugEntityResolution) System.out.println(" *** resolved2 with local copy");
+        logger.debug(" *** resolved2 with local copy");
         return new MyInputSource(entity);
       }
     }
 
-    if (debugEntityResolution) System.out.println(" *** not resolved");
+    logger.debug(" *** not resolved");
     return null;
   }
 

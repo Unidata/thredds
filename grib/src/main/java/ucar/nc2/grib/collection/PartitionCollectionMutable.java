@@ -479,7 +479,6 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       }
       f.format("%n");
     }
-
   }
 
 }

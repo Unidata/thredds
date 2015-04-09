@@ -75,10 +75,6 @@
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="httpclient" level="warn" additivity="false">
-      <appender-ref ref="fileLogger"/>
-    </logger>
-
     <root level="info" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
       <appender-ref ref="fileLogger"/>

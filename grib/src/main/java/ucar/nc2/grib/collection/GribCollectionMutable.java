@@ -787,7 +787,6 @@ public class GribCollectionMutable implements AutoCloseable {
       }
       f.format("%n");
     }
-
   }
 
   @Override
@@ -807,6 +806,10 @@ public class GribCollectionMutable implements AutoCloseable {
     sb.append("\n backProcessId=").append(backProcessId);
     sb.append("\n}");
     return sb.toString();
+  }
+
+  public String showLocation() {
+    return "name="+name+" directory="+directory;
   }
 
   public GroupGC makeGroup() {

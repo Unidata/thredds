@@ -67,7 +67,6 @@ abstract class GribPartitionBuilder  {
 
   protected final PartitionManager partitionManager; // defines the partition
   protected String name;            // collection name
-  //protected File directory;         // top directory
   protected org.slf4j.Logger logger;
   protected PartitionCollectionMutable result;  // build this object
 
@@ -145,8 +144,8 @@ abstract class GribPartitionBuilder  {
     // only used in copyInfo
     int n = result.getPartitionSize();
     if (n == 0) {
-      errlog.format("ERR Nothing in this partition = %s%n", result.getName());
-      throw new IllegalStateException("Nothing in this partition =" + result.getName());
+      errlog.format("ERR Nothing in this partition = %s%n", result.showLocation());
+      throw new IllegalStateException("Nothing in this partition =" + result.showLocation());
     }
     int idx = partitionManager.getProtoIndex(n);
     PartitionCollectionMutable.Partition canon = result.getPartition(idx);
@@ -154,7 +153,7 @@ abstract class GribPartitionBuilder  {
 
     try (GribCollectionMutable gc = canon.makeGribCollection()) {  // LOOK open/close canonical partition
       if (gc == null)
-        throw new IllegalStateException("canon.makeGribCollection failed on =" + canon.getName()+"; errs="+errlog);
+        throw new IllegalStateException("canon.makeGribCollection failed on =" + result.showLocation() + " "+ canon.getName()+"; errs="+errlog);
 
           // copy info from canon gribCollection to result partitionCollection
       result.copyInfo(gc);
@@ -166,8 +165,8 @@ abstract class GribPartitionBuilder  {
     // partition index is used - do not resort partitions
     PartitionCollectionMutable.Dataset ds2D = makeDataset2D(errlog);
     if (ds2D == null) {
-      errlog.format(" ERR makeDataset2D failed, index not written on %s%n", result.getName());
-      throw new IllegalStateException("makeDataset2D failed, index not written on =" + result.getName()+"; errs="+errlog);
+      errlog.format(" ERR makeDataset2D failed, index not written on %s%n", result.showLocation());
+      throw new IllegalStateException("makeDataset2D failed, index not written on =" + result.showLocation()+"; errs="+errlog);
     }
 
     // this finishes the 2D stuff
@@ -227,7 +226,7 @@ abstract class GribPartitionBuilder  {
       try (GribCollectionMutable gc = tpp.makeGribCollection()) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
         if (gc == null) {                                                       // note its not recursive, maybe leave open, or cache
           tpp.setBad(true);                                                     // actually we keep a pointer to the partition's group in the GroupPartitions
-          logger.warn("Bad partition - skip "+tpp.getName());
+          logger.warn("Bad partition - skip "+tpp.getName()+" in "+result.showLocation());
           continue;
         }
 
