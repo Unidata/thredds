@@ -380,7 +380,7 @@ public class DataFactory {
       // ready to open it through netcdf API
       NetcdfDataset ds;
 
-// try to open
+      // try to open
       try {
         ds = openDataset(access, acquire, task, result);
 
@@ -400,7 +400,7 @@ public class DataFactory {
       return ds;
     } // loop over accesses
 
-    if (saveException != null) throw saveException;
+    // if (saveException != null) throw saveException;
     return null;
   }
 

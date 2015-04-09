@@ -45,6 +45,7 @@ import thredds.client.catalog.writer.CatalogCrawler;
 import thredds.client.catalog.writer.DataFactory;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -133,15 +134,18 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   public void getDataset(Dataset ds, Object context) {
     countDatasets++;
 
-    Formatter log = new Formatter();
-    try (NetcdfDataset ncd = tdataFactory.openDataset(ds, false, null, log)) {
+    // Formatter log = new Formatter();
+    try {
+      DataFactory.Result threddsData = tdataFactory.openFeatureDataset(ds, null);
 
-      if (ncd == null) {
-        // out.printf("**** failed= %s err=%s%n", ds.getName(), log);
+    // try (NetcdfDataset ncd = tdataFactory.openDataset(ds, false, null, log)) {
+
+      if (threddsData.fatalError) {
+        out.printf("**** failed= %s err=%s%n", ds.getName(), threddsData.errLog);
         countNoAccess++;
 
-      } else {
-        GridDataset gds = new GridDataset(ncd);
+      } else if (threddsData.featureType == FeatureType.GRID) {
+        GridDataset gds = (GridDataset) threddsData.featureDataset;
         java.util.List<GridDatatype> grids =  gds.getGrids();
         int n = grids.size();
         if (n == 0)
@@ -154,7 +158,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
           out.printf("   GeospatialCoverage NULL id = %s%n", ds.getId());
 
         if (compareCdm)
-          compareCdm(ds, ncd);
+          compareCdm(ds, gds.getNetcdfDataset());
 
         if (checkUnknown) {
           for (GridDatatype vs : grids) {

@@ -41,7 +41,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.coord.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
