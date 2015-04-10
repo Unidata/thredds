@@ -443,7 +443,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       } catch (IOException e) {
         if (sbuff != null) {
-          sbuff.format("Error reading runtime coord= %s err= %s%n", t.getFullName(), e.getMessage());
+          sbuff.format("Error reading runtime coord= %s err= %s%n", rtAxis.getFullName(), e.getMessage());
         }
       }
     }

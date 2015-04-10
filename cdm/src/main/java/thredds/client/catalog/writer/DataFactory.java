@@ -678,7 +678,8 @@ public class DataFactory {
 
   private Access findAccessByDataFormatType(List<Access> accessList, DataFormatType type) {
     for (Access a : accessList) {
-      if (type.toString().equalsIgnoreCase(a.getDataFormatType().toString()))
+      DataFormatType has = a.getDataFormatType();
+      if (has != null && type.toString().equalsIgnoreCase(has.toString()))
         return a;
     }
     return null;

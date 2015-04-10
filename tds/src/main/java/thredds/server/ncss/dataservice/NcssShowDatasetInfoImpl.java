@@ -167,7 +167,7 @@ public class NcssShowDatasetInfoImpl implements NcssShowFeatureDatasetInfo, Serv
       Document html = out.getDocument();
 
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-      return fmt.outputString(html);
+      return (html == null) ? "showGridForm error" : fmt.outputString(html);
     }
   }
 
