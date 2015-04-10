@@ -74,8 +74,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   // do not use
   static public boolean debugRead = false;
   static public int debugIndexOnlyCount = 0;  // count number of data accesses
-  static boolean debugIndexOnly = false;  // we are running with only ncx2 index files, no data
   static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
+  static boolean debugIndexOnly = false;      // we are running with only ncx index files, no data
   static public boolean debugGbxIndexOnly = false;  // we are running with only ncx and gbx index files, no data
 
   static private final boolean debug = false, debugTime = false, debugName = false;
@@ -1137,7 +1137,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         int[] indexReallyWanted = new int[indexWanted.length+1];
         indexReallyWanted[0] = indexWanted[0];
         indexReallyWanted[1] = 0;
-        System.arraycopy(indexWanted, 0, indexReallyWanted, 2, indexWanted.length-1);
+        System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length-1);
         useIndex = indexReallyWanted;
       }
 

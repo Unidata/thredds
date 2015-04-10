@@ -37,6 +37,7 @@ import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
@@ -50,11 +51,10 @@ import java.io.IOException;
  * @author caron
  * @since 4/9/2015
  */
-public class TestGribReading {
+public class TestGribCollectionReading {
 
   @Test
   public void testReadTimeRange() throws IOException, InvalidRangeException {
-
     // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
     try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
       Variable v = ds.findVariable(null, "Pressure_surface");
@@ -66,6 +66,51 @@ public class TestGribReading {
       assert data.getSize() == 2;
       float[] got = (float []) data.copyTo1DJavaArray();
       float[] expect = new float[] {103031.914f, 103064.164f};
+      Assert.assertArrayEquals(expect, got, (float) Misc.maxReletiveError);
+    }
+  }
+
+  @Test
+  public void testReadTimeRangeWithSingleVerticalLevel() throws IOException, InvalidRangeException {
+    // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
+      Variable v = ds.findVariable(null, "Relative_humidity_sigma");
+      assert v != null;
+      Array data = v.read("0:1, 0, 50, 50");
+      assert data != null;
+      assert data.getRank() == 4;
+      assert data.getDataType() == DataType.FLOAT;
+      assert data.getSize() == 2;
+      System.out.printf("%s%n", NCdumpW.toString(data));
+      while (data.hasNext()) {
+        float val = data.nextFloat();
+        assert !Float.isNaN(val);
+      }
+      float[] got = (float []) data.copyTo1DJavaArray();
+      float[] expect = new float[] {68.0f, 74.0f};
+      Assert.assertArrayEquals(expect, got, (float) Misc.maxReletiveError);
+    }
+  }
+
+
+  @Test
+  public void testReadTimeRangeWithMultipleVerticalLevel() throws IOException, InvalidRangeException {
+    // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
+      Variable v = ds.findVariable(null, "Relative_humidity_isobaric");
+      assert v != null;
+      Array data = v.read("0:1, 10:20:2, 50, 50");
+      assert data != null;
+      assert data.getRank() == 4;
+      assert data.getDataType() == DataType.FLOAT;
+      assert data.getSize() == 12;
+      System.out.printf("%s%n", NCdumpW.toString(data));
+      while (data.hasNext()) {
+        float val = data.nextFloat();
+        assert !Float.isNaN(val);
+      }
+      float[] got = (float []) data.copyTo1DJavaArray();
+      float[] expect = new float[] {57.8f, 53.1f, 91.3f, 85.5f, 80.0f, 69.3f, 32.8f, 41.8f, 88.9f, 81.3f, 70.9f, 70.6f};
       Assert.assertArrayEquals(expect, got, (float) Misc.maxReletiveError);
     }
   }

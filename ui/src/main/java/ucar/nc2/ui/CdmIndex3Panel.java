@@ -23,20 +23,18 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.List;
 
 /**
- * Read ncx2 index files.
+ * Read ncx3 index files.
  *
  * @author John
  * @since 12/5/13
  */
-public class CdmIndex2Panel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndex2Panel.class);
+public class CdmIndex3Panel extends JPanel {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndex3Panel.class);
 
   private PreferencesExt prefs;
 
@@ -47,7 +45,7 @@ public class CdmIndex2Panel extends JPanel {
   private IndependentWindow infoWindow;
   private MFileTable fileTable;
 
-  public CdmIndex2Panel(PreferencesExt prefs, JPanel buttPanel) {
+  public CdmIndex3Panel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     if (buttPanel != null) {
@@ -63,7 +61,7 @@ public class CdmIndex2Panel extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
+      AbstractButton filesButton = BAMutil.makeButtcon("catalog", "Show Files", false);
       filesButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (gc != null)
@@ -72,7 +70,7 @@ public class CdmIndex2Panel extends JPanel {
       });
       buttPanel.add(filesButton);
 
-      AbstractButton rawButton = BAMutil.makeButtcon("Information", "Estimate memory use", false);
+      AbstractButton rawButton = BAMutil.makeButtcon("TableAppearence", "Estimate memory use", false);
       rawButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
@@ -83,6 +81,20 @@ public class CdmIndex2Panel extends JPanel {
         }
       });
       buttPanel.add(rawButton);
+
+
+      AbstractButton checkAllButton = BAMutil.makeButtcon("Select", "Check entire file", false);
+      rawButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          checkAll(f);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      });
+      buttPanel.add(checkAllButton);
+
     }
 
     ////////////////////////////
@@ -329,7 +341,58 @@ public class CdmIndex2Panel extends JPanel {
     }
   }
 
-  public void showMemoryEst(Formatter f) {
+
+  private void checkAll(Formatter f) {
+    if (gc == null) return;
+    for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
+      f.format("Dataset %s%n", ds.getType());
+      int bytesTotal = 0;
+      int bytesSATotal = 0;
+      int coordsAllTotal = 0;
+
+      for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
+        f.format(" Group %s%n", g.getDescription());
+
+        int count = 0;
+        for (GribCollectionImmutable.VariableIndex v : g.getVariables()) {
+          VarBean bean = new VarBean(v, g);
+
+          if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
+            if (count == 0) f.format(" total   VariablePartitioned%n");
+
+            PartitionCollectionImmutable.VariableIndexPartitioned vip = (PartitionCollectionImmutable.VariableIndexPartitioned) v;
+             int nparts = vip.getNparts();
+             int memEstBytes = 368 + nparts * 4;  // very rough
+             bytesTotal += memEstBytes;
+             f.format("%6d %-50s nparts=%6d%n", memEstBytes, bean.getName(), nparts);
+
+          } else {
+            if (count == 0) f.format(" total   SA  Variable%n");
+            try {
+              v.readRecords();
+              SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
+              int ntracks  = sa.getTotalSize();
+              int nrecords = sa.getContent().size();
+              int memEstForSA = 276 + nrecords * 40 + ntracks * 4;
+              int memEstBytes = 280 + memEstForSA;
+              f.format("%6d %6d %-50s nrecords=%6d%n", memEstBytes, memEstForSA, bean.getName(), nrecords);
+              bytesTotal += memEstBytes;
+              bytesSATotal += memEstForSA;
+
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+          count++;
+        }
+      }
+      int noSA =  bytesTotal - bytesSATotal;
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal/1000, bytesSATotal/1000, noSA/1000, coordsAllTotal/1000);
+      f.format("%n");
+    }
+  }
+
+  private void showMemoryEst(Formatter f) {
     if (gc == null) return;
 
     for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {

@@ -56,7 +56,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private FeatureCollectionConfig config;
   private String collectionName;
-  private CdmIndex2Panel cdmIndexTables;
+  private CdmIndex3Panel cdmIndexTables;
   private PartitionsTable partitionsTable;
 
   private JPanel tablePanel;
@@ -76,7 +76,7 @@ public class DirectoryPartitionViewer extends JPanel {
     partitionTreeBrowser = new PartitionTreeBrowser();
     partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
 
-    cdmIndexTables = new CdmIndex2Panel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
+    cdmIndexTables = new CdmIndex3Panel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
     cdmIndexTables.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
         firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());

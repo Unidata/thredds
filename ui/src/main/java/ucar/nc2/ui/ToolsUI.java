@@ -133,7 +133,7 @@ public class ToolsUI extends JPanel {
   private BufrCdmIndexPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
-  private CdmIndex2Panel cdmIndex2Panel;
+  private CdmIndexPanel cdmIndex2Panel;
   private ReportOpPanel cdmIndexReportPanel;
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
@@ -470,7 +470,7 @@ public class ToolsUI extends JPanel {
 
         break;
       case "CdmIndex3":
-        cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx3"));
+        cdmIndex2Panel = new CdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
         c = cdmIndex2Panel;
 
         break;
@@ -3105,16 +3105,16 @@ public class ToolsUI extends JPanel {
   } */
 
     /////////////////////////////////////////////////////////////////////
-  private class CdmIndex2Panel extends OpPanel {
-    ucar.nc2.ui.CdmIndex2Panel indexPanel;
+  private class CdmIndexPanel extends OpPanel {
+    CdmIndex3Panel indexPanel;
 
     void closeOpenFiles() throws IOException {
       indexPanel.clear();
     }
 
-      CdmIndex2Panel(PreferencesExt p) {
+      CdmIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-        indexPanel = new ucar.nc2.ui.CdmIndex2Panel(prefs, buttPanel);
+        indexPanel = new CdmIndex3Panel(prefs, buttPanel);
         indexPanel.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib2Collection")) {
