@@ -55,7 +55,7 @@ public class ProjectionRect implements java.io.Serializable {
   }
 
   /**
-   * Construct a MapArea from any two opposite corner points.
+   * Construct a ProjectionRect from any two opposite corner points.
    *
    * @param corner1  a corner.
    * @param corner2  the opposite corner.
@@ -65,6 +65,17 @@ public class ProjectionRect implements java.io.Serializable {
   }
 
   /**
+    * Construct a ProjectionRect from any two opposite corner points.
+    *
+    * @param minimum  lower left corner, ie the minumum x and y
+    * @param width    x width.
+    * @param height   y height
+    */
+   public ProjectionRect(ProjectionPoint minimum, double width, double height) {
+     setRect(minimum.getX(), minimum.getY(), width, height);
+   }
+
+   /**
    * Copy Constructor
    *
    * @param r rectangle to copy

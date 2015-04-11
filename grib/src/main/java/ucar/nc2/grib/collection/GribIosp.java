@@ -336,28 +336,56 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } */
 
     for (GribCollectionImmutable.VariableIndex vindex : group.variList) {
-      Formatter dims = new Formatter();
-      Formatter coords = new Formatter();
+      Formatter dimNames = new Formatter();
+      Formatter coordinateAtt = new Formatter();
 
-      for (Coordinate coord : vindex.getCoordinates()) {
-        // dont use reftime dimension if scalar or MRSTC
-        String dimName = ((coord.getType() == Coordinate.Type.runtime) && ((coord.getSize() == 1) || is1Dtime)) ? "" : coord.getName();
-        String coordName = (coord.getType() == Coordinate.Type.vert) ? coord.getName().toLowerCase() : coord.getName();
+      // do the times first
+      Coordinate run = vindex.getCoordinate(Coordinate.Type.runtime);
+      Coordinate time = vindex.getCoordinateTime();
 
-        if (coord instanceof CoordinateTimeAbstract) {
-          CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) coord;
-          if (coordTime.getTime2runtime() != null)
-            coords.format("ref%s ", coordName);  // auxilary runtime coordinate for Best
-        }
+      switch (gctype) {
+        case GC:
+        case SRC:     // GC: Single Runtime Collection                          [ntimes]           (run, 2D)  scalar runtime
+          assert run.getSize() == 1;
+          dimNames.format("%s ", time.getName());
+          coordinateAtt.format("%s %s ", run.getName(), time.getName());
+          break;
 
-        dims.format("%s ", dimName);
-        coords.format("%s ", coordName);
+        case MRSTC:             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
+        case TP:                // PC: Multiple Runtime Single Time Partition   [nruns, 1]         (run, 2D)  ignore the run, its generated from the 2D in
+          dimNames.format("%s ", time.getName());
+          coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
+          break;
+
+        case MRC:               // GC: Multiple Runtime Collection              [nruns, ntimes]    (run, 2D) use Both
+        case TwoD:              // PC: TwoD time partition                      [nruns, ntimes]
+          dimNames.format("%s %s ", run.getName(), time.getName());
+          coordinateAtt.format("%s %s ", run.getName(), time.getName());
+          break;
+
+        case Best:              // PC: Best time partition                      [ntimes]          (time)   reftime is generated in makeTimeAuxReference()
+        case BestComplete:      // PC: Best complete time partition             [ntimes]
+          dimNames.format("%s ", time.getName());
+          coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
+          break;
+
+        default:
+          throw new IllegalStateException("Uknown GribCollection TYpe = "+gctype);
       }
-      dims.format("%s", horizDims);
-      coords.format("%s", horizDims);
+
+      // do other (vert, ens) coordinates
+      for (Coordinate coord : vindex.getCoordinates()) {
+        if (coord instanceof CoordinateTimeAbstract || coord instanceof CoordinateRuntime) continue;
+        String name = coord.getName().toLowerCase();
+        dimNames.format("%s ", name);
+        coordinateAtt.format("%s ", name);
+      }
+      // do horiz coordinates
+      dimNames.format("%s", horizDims);
+      coordinateAtt.format("%s", horizDims);
 
       String vname = makeVariableName(vindex);
-      Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dims.toString());
+      Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dimNames.toString());
       ncfile.addVariable(g, v);
       if (debugName) System.out.printf("added %s%n", vname);
 
@@ -387,12 +415,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           v.addAttribute(new Attribute(CDM.UNITS, units));
 
         } else {
-          coords.format("%s ", s);
+          coordinateAtt.format("%s ", s);
         }
       } else {
         v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
-      v.addAttribute(new Attribute(CF.COORDINATES, coords.toString()));
+      v.addAttribute(new Attribute(CF.COORDINATES, coordinateAtt.toString()));
 
       // statistical interval type
       if (vindex.getIntvType() >= 0) {
