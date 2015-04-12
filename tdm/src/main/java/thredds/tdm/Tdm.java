@@ -42,6 +42,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;

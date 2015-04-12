@@ -33,7 +33,6 @@
 
 package thredds.inventory;
 
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.ListenerManager;

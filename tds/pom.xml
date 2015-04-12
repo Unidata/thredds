@@ -72,6 +72,17 @@
         <artifactId>coverity-escapers</artifactId>
     </dependency>
 
+    <!-- server stuff -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
+
     <!-- Apache httpclient libraries -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -177,30 +188,35 @@
       <artifactId>oro</artifactId>
     </dependency -->
 
+    <!-- dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency -->
+
+    <!-- ncss: Needed for XPath operations in NcssShowDatasetInfoImpl.addElement() -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
     </dependency>
 
-    <!-- JSR 303 with Hibernate Validator -->
+    <!-- JSR 303 with Hibernate Validator, which is dragging in jboss logging -->
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
-    <!-- Needed for XPath operations in NcssShowDatasetInfoImpl.addElement() -->
+    <!-- thymeleaf -->
     <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
+    	<groupId>org.thymeleaf</groupId>
+    	<artifactId>thymeleaf-spring3</artifactId>
+    	<version>2.1.4.RELEASE</version>
     </dependency>
+
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>

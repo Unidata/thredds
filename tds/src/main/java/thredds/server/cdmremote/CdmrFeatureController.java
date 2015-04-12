@@ -120,10 +120,10 @@ public class CdmrFeatureController { // implements LastModified {
       System.out.printf(" path=%s%n query=%s%n", req.getPathInfo(), req.getQueryString());
     }
 
-    CdmRemoteQueryBean query = null;
+    CdmrFeatureQueryBean query = null;
     try {
       // query validation - first pass
-      query = (CdmRemoteQueryBean) command;
+      query = (CdmrFeatureQueryBean) command;
       if (!query.validate()) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
         if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
@@ -159,8 +159,8 @@ public class CdmrFeatureController { // implements LastModified {
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
       }
 
-      CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
-      CdmRemoteQueryBean.ResponseType resType = query.getResponseType();
+      CdmrFeatureQueryBean.RequestType reqType = query.getRequestType();
+      CdmrFeatureQueryBean.ResponseType resType = query.getResponseType();
       switch (reqType) {
         case capabilities:
         case form:
@@ -174,7 +174,7 @@ public class CdmrFeatureController { // implements LastModified {
           return processData(req, res, fdp, path, query);
 
         case stations:
-          if (resType == CdmRemoteQueryBean.ResponseType.xml)
+          if (resType == CdmrFeatureQueryBean.ResponseType.xml)
             return processXml(req, res, fdp, absPath, query);
           else
             return processStations(res, fdp, query);
@@ -249,12 +249,12 @@ public class CdmrFeatureController { // implements LastModified {
 
   }
 
-  private String getContentType(CdmRemoteQueryBean query) {
-    CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
-    if (reqType == CdmRemoteQueryBean.RequestType.form)
+  private String getContentType(CdmrFeatureQueryBean query) {
+    CdmrFeatureQueryBean.RequestType reqType = query.getRequestType();
+    if (reqType == CdmrFeatureQueryBean.RequestType.form)
       return "text/html; charset=iso-8859-1";
 
-    CdmRemoteQueryBean.ResponseType resType = query.getResponseType();
+    CdmrFeatureQueryBean.ResponseType resType = query.getResponseType();
     switch (resType) {
       case csv:
         return "text/plain";
@@ -268,8 +268,8 @@ public class CdmrFeatureController { // implements LastModified {
     return "text/plain";
   }
 
-  private String getContentDescription(CdmRemoteQueryBean query) {
-    CdmRemoteQueryBean.ResponseType resType = query.getResponseType();
+  private String getContentDescription(CdmrFeatureQueryBean query) {
+    CdmrFeatureQueryBean.ResponseType resType = query.getResponseType();
     switch (resType) {
       case ncstream:
         return "ncstream";
@@ -278,7 +278,7 @@ public class CdmrFeatureController { // implements LastModified {
     }
   }
 
-  private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
+  private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrFeatureQueryBean qb) throws IOException {
 
     switch (fdp.getFeatureType()) {
       case POINT:
@@ -290,7 +290,7 @@ public class CdmrFeatureController { // implements LastModified {
     return null;
   }
 
-  private ModelAndView processPointData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
+  private ModelAndView processPointData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrFeatureQueryBean qb) throws IOException {
     /*long start = 0;
     if (showTime) {
       start = System.currentTimeMillis();
@@ -344,7 +344,7 @@ public class CdmrFeatureController { // implements LastModified {
     return null;
   }
 
-  private ModelAndView processStationData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
+  private ModelAndView processStationData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrFeatureQueryBean qb) throws IOException {
   /*  long start = 0;
     if (showTime) {
       start = System.currentTimeMillis();
@@ -398,7 +398,7 @@ public class CdmrFeatureController { // implements LastModified {
     return null;
   }
 
-  private ModelAndView processStations(HttpServletResponse res, FeatureDatasetPoint fdp, CdmRemoteQueryBean query) throws IOException {
+  private ModelAndView processStations(HttpServletResponse res, FeatureDatasetPoint fdp, CdmrFeatureQueryBean query) throws IOException {
 
     OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
     res.setContentType(getContentType(query));
@@ -439,7 +439,7 @@ public class CdmrFeatureController { // implements LastModified {
     return null;
   }
 
-  private ModelAndView processHeader(String absPath, HttpServletResponse res, FeatureDatasetPoint fdp, CdmRemoteQueryBean query) throws IOException {
+  private ModelAndView processHeader(String absPath, HttpServletResponse res, FeatureDatasetPoint fdp, CdmrFeatureQueryBean query) throws IOException {
 
     OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
     res.setContentType(getContentType(query));
@@ -458,27 +458,27 @@ public class CdmrFeatureController { // implements LastModified {
     return null;
   }
 
-  private ModelAndView processXml(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String absPath, CdmRemoteQueryBean query) throws IOException {
+  private ModelAndView processXml(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String absPath, CdmrFeatureQueryBean query) throws IOException {
 
     //String path = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + datasetPath;
     FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fdp, absPath);
 
-    CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
+    CdmrFeatureQueryBean.RequestType reqType = query.getRequestType();
     String infoString;
 
     try {
 
-      if (reqType == CdmRemoteQueryBean.RequestType.capabilities) {
+      if (reqType == CdmrFeatureQueryBean.RequestType.capabilities) {
         Document doc = xmlWriter.getCapabilitiesDocument();
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(doc);
 
-      } else if (reqType == CdmRemoteQueryBean.RequestType.stations) {
+      } else if (reqType == CdmrFeatureQueryBean.RequestType.stations) {
         Document doc = xmlWriter.makeStationCollectionDocument(query.getLatLonRect(), query.getStnNames());
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(doc);
 
-      } else if (reqType == CdmRemoteQueryBean.RequestType.form) {
+      } else if (reqType == CdmrFeatureQueryBean.RequestType.form) {
         String xslt = fdp.getFeatureType() == FeatureType.STATION ? "ncssSobs.xsl" : "fmrcPoint.xsl";
         InputStream is = getXSLT(xslt);
         Document doc = xmlWriter.getCapabilitiesDocument();

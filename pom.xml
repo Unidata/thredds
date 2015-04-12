@@ -248,11 +248,6 @@
         <artifactId>waterml</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>legacy</artifactId>
-        <version>${project.version}</version>
-      </dependency>
 
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -906,8 +901,7 @@
     <module>httpservices</module>
     <module>waterml</module>
     <module>legacy</module>
-    <!-- module>wmotables</module -->
-    <!-- module>cdmvalidator</module -->
+
     <module>dap4/d4core</module>
     <module>dap4/d4shared</module>
     <module>dap4/d4client</module>
@@ -935,7 +929,7 @@
     <visad.version>2.0-20130124</visad.version>
     <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.6.1-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
     <geoapi.version>3.1-M04</geoapi.version>
-    <eds.threddsIso.version>2.2.5-SNAPSHOT</eds.threddsIso.version>
+    <eds.threddsIso.version>2.2.5</eds.threddsIso.version>
     <com.google.guava.version>18.0</com.google.guava.version>
     <com.google.protobuf.version>2.5.0</com.google.protobuf.version>
     <com.jgoodies.version>1.6.0</com.jgoodies.version>

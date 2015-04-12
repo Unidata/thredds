@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.core.DataRootManager;
+import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;

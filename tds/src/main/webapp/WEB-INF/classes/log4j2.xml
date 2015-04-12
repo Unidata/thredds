@@ -5,7 +5,7 @@
     <property name="tds.log.dir">${sys:tds.content.root.path}/thredds/logs</property>
   </properties>
 
-  <appenders>
+  <Appenders>
 
     <File name="serverStartupAppender" fileName="${tds.log.dir}/serverStartup.log" append="false">
       <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p %c: %m%n"/>
@@ -43,7 +43,7 @@
       <DefaultRolloverStrategy max="10"/>
     </RollingFile -->
 
-    <RollingFile name="threddsServlet" fileName="${tds.log.dir}/threddsServlet.log" filePattern="${tds.log.dir}/threddsServlet.%d{yyyy-MM-dd-HH}.log">
+    <RollingFile name="threddsServlet" fileName="${tds.log.dir}/threddsServlet.log" filePattern="${tds.log.dir}/threddsServlet.%d{yyyy-MM-dd-HH}.log" immediateFlush="false">
       <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
       <Policies>
         <TimeBasedTriggeringPolicy/>
@@ -63,7 +63,7 @@
       <PatternLayout pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p %c: %m%n"/>
     </Console>
 
-  </appenders>
+  </Appenders>
 
   <loggers>
 
@@ -123,7 +123,7 @@
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.inventory.CollectionUpdater" level="info" additivity="false">
+    <logger name="thredds.featurecollection.CollectionUpdater" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
@@ -168,19 +168,21 @@
       <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <logger name="org.springframework.beans.factory" level="info" additivity="false">
-      <appender-ref ref="serverStartupAppender"/>
-    </logger>
+    <!-- spring -->
 
     <logger name="org.springframework.http" level="info" additivity="false">
       <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <logger name="org.springframework.web" level="info" additivity="false">
+    <logger name="org.springframework.beans.factory" level="debug" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 
-    <logger name="org.springframework" level="info" additivity="false">
+    <logger name="org.springframework.web" level="debug" additivity="false">
+      <appender-ref ref="serverStartupAppender"/>
+    </logger>
+
+    <logger name="org.springframework" level="debug" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
 

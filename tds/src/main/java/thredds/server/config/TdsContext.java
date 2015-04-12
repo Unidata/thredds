@@ -54,7 +54,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.inventory.CollectionUpdater;
+import thredds.featurecollection.CollectionUpdater;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.filesource.*;

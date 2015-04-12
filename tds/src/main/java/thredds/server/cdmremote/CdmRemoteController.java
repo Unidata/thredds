@@ -34,10 +34,15 @@
 package thredds.server.cdmremote;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import thredds.core.TdsRequestedDataset;
+import thredds.util.Constants;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -95,184 +100,191 @@ public class CdmRemoteController extends AbstractController implements LastModif
 
   @Override
   public long getLastModified(HttpServletRequest req) {
-    String path = TdsPathUtils.extractPath(req, "wcs/");
+    String path = TdsPathUtils.extractPath(req, "cdmremote/");
     return TdsRequestedDataset.getLastModified(path);
   }
 
-  @RequestMapping("**")
-  public void handleRequest(HttpServletRequest req, HttpServletResponse res,
-                       @Valid CdmRemoteQueryBean qb,
-                       BindingResult validationResult) throws IOException { //}, NcssException, ParseException, InvalidRangeException {
+  @InitBinder
+  protected void initBinder(WebDataBinder binder) {
+    binder.setValidator(new CdmRemoteQueryBeanValidator());
+  }
+
+  // everything but header, data
+  @RequestMapping(value="/**", method = RequestMethod.GET)
+  public ResponseEntity<String> handleCapabilitiesRequest(HttpServletRequest request, HttpServletResponse response, @RequestParam String req) throws IOException {
 
     if (!allow) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      return;
+      return new ResponseEntity<>("Service not supported", null, HttpStatus.FORBIDDEN);
     }
 
-    String datasetPath = getDatasetPath(req);
-    String absPath = getAbsolutePath(req);
+    String datasetPath = getDatasetPath(request);
+    String absPath = getAbsolutePath(request);
+    HttpHeaders responseHeaders;
 
     if (showReq)
-      System.out.printf("CdmRemoteController req=%s%n", absPath+"?"+req.getQueryString());
+      System.out.printf("CdmRemoteController req=%s%n", absPath + "?" + request.getQueryString());
     if (debug) {
-      System.out.printf(" path=%s%n query=%s%n", datasetPath, req.getQueryString());
+      System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
     }
 
-    // query validation - first pass
-    if (!qb.validate()) {
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, qb.getErrorMessage());
-      if (debug) System.out.printf(" query error= %s %n", qb.getErrorMessage());
-      return;
-    }
-    if (debug) System.out.printf(" %s%n", qb);
+    // LOOK heres where we want the Dataset, not the netcdfFile (!)
+    try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
+      if (ncfile == null) return null;  // ??
 
-    try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, null)) {
-      if (ncfile == null) return;
-      /*
-        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        log.debug("DatasetHandler.FAIL path={}", datasetPath);
-        return;
-      } */
+      switch (req.toLowerCase()) {
+        case "capabilities":
+          Element rootElem = new Element("cdmRemoteCapabilities");
+          Document doc = new Document(rootElem);
+          rootElem.setAttribute("location", absPath);
 
-      long size = -1;
+          Element elem = new Element("featureDataset");
+          FeatureType ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ncfile); // LOOK BAD - must figure out what is the featureType and save it
+          if (ftFromMetadata != null)
+            elem.setAttribute("type", ftFromMetadata.toString());
+          elem.setAttribute("url", absPath);
+          rootElem.addContent(elem);
 
-      switch (qb.getRequestType()) {
-        case capabilities: {
-          res.setContentType(ContentType.xml.getContentHeader());
-          PrintWriter pw = res.getWriter();
+          XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+          String result = fmt.outputString(doc);
 
-          FeatureType ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ncfile);
-          sendCapabilities(pw, ftFromMetadata, absPath); // LOOK BAD - must figure out what is the featureType and save it
-          res.flushBuffer();
-          return;
-        }
+          responseHeaders = new HttpHeaders();
+          //responseHeaders.setContentType(ContentType.HEADER, ContentType.xml.getMediaType);
+          // responseHeaders.setContentDispositionFormData("MyResponseHeader", "MyValue");
+          responseHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
+          //responseHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(datasetPath, ".xml"));
+          return new ResponseEntity<>(result, responseHeaders, HttpStatus.OK);
 
-        case form: // LOOK could do a ncss style form
-        case cdl:  {
-          res.setContentType(ContentType.text.getContentHeader());
-          PrintWriter pw = res.getWriter();
-
-          ncfile.setLocation(datasetPath); // hide where the file is stored
+        case "form":
+        case "cdl":
+          ncfile.setLocation(datasetPath); // hide where the file is stored  LOOK
           String cdl = ncfile.toString();
-          res.setContentLength(cdl.length());
-          pw.write(cdl);
-          size = cdl.length();
-          break;
-        }
+          responseHeaders = new HttpHeaders();
+          responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
+          return new ResponseEntity<>(cdl, responseHeaders, HttpStatus.OK);
 
-        case ncml: {
-          res.setContentType(ContentType.xml.getContentHeader());
-          PrintWriter pw = res.getWriter();
-          ncfile.writeNcML(pw, absPath);
-          break;
-        }
+        case "ncml":
+          String ncml = ncfile.toNcML(absPath);
+          responseHeaders = new HttpHeaders();
+          responseHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
+          return new ResponseEntity<>(ncml, responseHeaders, HttpStatus.OK);
 
-        case header: {
-          res.setContentType(ContentType.binary.getContentHeader());
-          res.setHeader("Content-Description", "ncstream");
-
-          OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-          //WritableByteChannel wbc = Channels.newChannel(out);
-          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          size = ncWriter.sendHeader(out);
-          out.flush();
-          break;
-        }
-
-        default: {
-          res.setContentType(ContentType.binary.getContentHeader());
-          res.setHeader("Content-Description", "ncstream");
-
-          size = 0;
-          //WritableByteChannel wbc = Channels.newChannel(out);
-          NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          String query;
-          if(qb.getVar() != null)
-              query = qb.getVar();
-          else
-              query = req.getQueryString();
-
-          if ((query == null) || (query.length() == 0)) {
-            res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
-            return;
-          }
-
-          OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
-          query = EscapeStrings.unescapeURLQuery(query);
-          StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
-          while (stoke.hasMoreTokens()) {
-            ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-            size += ncWriter.sendData(cer.v, cer.section, out, false);
-          }
-          out.flush();
-        }
-      } // end switch on req type
-
-      res.flushBuffer();
-      if (showReq)
-        System.out.printf("CdmRemoteController ok, size=%s%n", size);
+        default:
+          return new ResponseEntity<>("Unrecognized request", null, HttpStatus.BAD_REQUEST);
+      }
 
     } catch (FileNotFoundException e) {
-      log.debug("FAIL", e);
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-
-    } catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+      return new ResponseEntity<>("Unrecognized request", null, HttpStatus.NOT_FOUND);
 
     } catch (Throwable e) {
       log.error(e.getMessage(), e);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+      return new ResponseEntity<>("Server Error", null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @RequestMapping(value="/**", method = RequestMethod.GET, params="req=header")
+  public void handleHeaderRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
+
+    if (!allow) {
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return; //  "Service not supported";
+    }
+
+    String datasetPath = getDatasetPath(request);
+    String absPath = getAbsolutePath(request);
+
+    if (showReq)
+      System.out.printf("CdmRemoteController req=%s%n", absPath+"?"+request.getQueryString());
+    if (debug) {
+      System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
+    }
+
+    try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
+      if (ncfile == null) return;
+
+      response.setContentType(ContentType.binary.getContentHeader());
+      response.setHeader("Content-Description", "ncstream");
+      NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(request));
+      long size = ncWriter.sendHeader(out);
+      out.flush();
+
+      if (showReq)
+        System.out.printf("CdmRemoteController header ok, size=%s%n", size);
+
+    } catch (FileNotFoundException e) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());;
+
+    } catch (Throwable e) {
+      log.error(e.getMessage(), e);
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
   }
 
-  private void sendCapabilities(PrintWriter pw, FeatureType ft, String absPath) throws IOException {
-    Element rootElem = new Element("cdmRemoteCapabilities");
-    Document doc = new Document(rootElem);
-    rootElem.setAttribute("location", absPath);
-    Element elem = new Element("featureDataset");
-    if (ft != null)                            // LOOK lame
-      elem.setAttribute("type", ft.toString());
-    elem.setAttribute("url", absPath);
-    rootElem.addContent(elem);
+  @RequestMapping(value="/**", method = RequestMethod.GET, params="req=data")
+   public void handleRequest(HttpServletRequest request, HttpServletResponse response,
+                        @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException {
 
-    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(doc, pw);
-  }
-
-  /*  private ModelAndView sendCapabilities(HttpServletResponse res, NetcdfFile ncfile, String absPath, PointQueryBean query) throws IOException {
-
-     NetcdfDataset ds = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
-     Formatter errlog = new Formatter();
-     try {
-       FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
-       if (featureDataset != null) {
-         FeatureType ft = featureDataset.getFeatureType();
-         if (ft != null)
-           ftype = featureType.toString();
-       }
-     } catch (Throwable t) {
+     if (!allow) {
+       response.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+       return; //  "Service not supported";
      }
 
-   this.fdp = fdp;
+     if (qb.hasErrors()) {
+       response.sendError(HttpServletResponse.SC_BAD_REQUEST, qb.toString());
+       return;
+     }
 
-   List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
-   this.sobs = (StationTimeSeriesFeatureCollection) list.get(0);
+     String datasetPath = getDatasetPath(request);
+     String absPath = getAbsolutePath(request);
 
-   String infoString;
-   Document doc = xmlWriter.getCapabilitiesDocument();
-   XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-   infoString = fmt.outputString(doc);
+     if (showReq)
+       System.out.printf("CdmRemoteController req=%s%n", absPath+"?"+request.getQueryString());
+     if (debug) {
+       System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
+     }
 
-   res.setContentLength(infoString.length());
-   res.setContentType(getContentType(query));
+     try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
+       if (ncfile == null) return;
 
-   OutputStream out = res.getOutputStream();
-   out.write(infoString.getBytes());
-   out.flush();
+       response.setContentType(ContentType.binary.getContentHeader());
+       response.setHeader("Content-Description", "ncstream");
 
-   return null;
- } */
+       long size = 0;
+       //WritableByteChannel wbc = Channels.newChannel(out);
+       NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(request));
+       String query;
+       if (qb.getVar() != null)
+           query = qb.getVar();
+       else
+           query = request.getQueryString(); // LOOK ??
 
+       if ((query == null) || (query.length() == 0)) {
+         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
+         return;
+       }
+
+       query = EscapeStrings.unescapeURLQuery(query);
+       StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
+       while (stoke.hasMoreTokens()) {
+         ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
+         size += ncWriter.sendData(cer.v, cer.section, out, false);
+       }
+       out.flush();
+
+       if (showReq)
+         System.out.printf("CdmRemoteController data ok, size=%s%n", size);
+
+     } catch (FileNotFoundException e) {
+       response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+
+     } catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed
+       response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+
+     } catch (Throwable e) {
+       log.error(e.getMessage(), e);
+       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+     }
+
+   }
 
 }
