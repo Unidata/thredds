@@ -62,10 +62,10 @@ public class ServletUtil {
   static private String contextPath = null;
   static private String rootPath = null;
   static private String contentPath = null;
-  static private thredds.servlet.HtmlWritingUtils htmlu;
+  static private thredds.servlet.HtmlWriting htmlu;
 
   // LOOK who sets this
-  static public void setHtmlWritingUtils(thredds.servlet.HtmlWritingUtils _htmlu) {
+  static public void setHtmlWritingUtils(thredds.servlet.HtmlWriting _htmlu) {
     htmlu = _htmlu;
   }
 

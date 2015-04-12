@@ -56,12 +56,6 @@
       <artifactId>jcip-annotations</artifactId>
     </dependency>
 
-    <!-- Required for reading THREDDS files. -->
-    <dependency>
-      <groupId>org.quartz-scheduler</groupId>
-      <artifactId>quartz</artifactId>
-    </dependency>
-
     <!-- Required for ncstream, cdmRemote. -->
     <dependency>
       <groupId>com.google.protobuf</groupId>

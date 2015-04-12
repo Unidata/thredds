@@ -46,4 +46,14 @@ public class Constants {
   public static String setContentDispositionValue(String filename) {
     return "attachment; filename=" + filename;
   }
+
+    //       res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
+  public static String setContentDispositionValue(String filename, String suffix) {
+    int pos = filename.lastIndexOf('/');
+    String outname = (pos > 0) ? filename.substring(pos+1) : filename;
+    int pos2 = outname.lastIndexOf('.');
+    outname = (pos > 0) ? outname.substring(0,pos2) : outname;
+    outname = outname + suffix;
+    return setContentDispositionValue(outname);
+  }
 }

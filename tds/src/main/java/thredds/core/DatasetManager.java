@@ -444,7 +444,7 @@ public class DatasetManager implements InitializingBean  {
    *
    * @param ds the dataset
    */
-  static void putResourceControl(Dataset ds) {
+  void putResourceControl(Dataset ds) {
     if (log.isDebugEnabled()) log.debug("putResourceControl " + ds.getRestrictAccess() + " for " + ds.getName());
 
     // resourceControl is inherited, but no guarentee that children paths are related, unless its a

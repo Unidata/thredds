@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+              http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+              http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+              http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+  
+  <!-- Application root Context: defines shared resources visible to all other web components -->
+  
+  <!-- Enables the Spring MVC @Controller programming model  -->
+  <mvc:annotation-driven />
+  
+  <!-- enabling component-scan in Spring for annotated wirings --> 
+  <context:component-scan base-package="thredds"/>  
+  
+  <!-- Handler Mapping -->
+  <!--  In Spring 3.2  DefaultAnnotationHandlerMapping was deprecated in favor of   RequestMappingHandlerMapping-->
+  <!--  bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /-->  
+  <!-- bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" / -->
+   
+  <!-- tell spring that tds.properties gets read in first and overrides anything else -->
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="locations">
+      <list>
+        <value>classpath:thredds/server/tds.properties</value>
+      </list>
+    </property>
+  </bean>
+
+   <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
+     <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
+   </util:map>
+
+  <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
+
+  <bean id="htmlConfig" class="thredds.server.config.HtmlConfig">
+    <property name="webappUrl" value="${tds.url}" />
+    <property name="webappDocsUrl" value="${tds.documentation.url}" />
+    <property name="webappLogoUrl" value="${tds.logo.url}" />
+    <property name="webappLogoAlt" value="${tds.logo.alt}" />
+    <property name="installUrl" value="${tds.install.url}" />
+  </bean>
+
+  <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
+  <bean id="corsConfig" class="thredds.server.config.CorsConfig" />
+  <bean id="corsFilter" class="thredds.servlet.filter.RequestCORSFilter" />
+
+    <!-- JMX -->
+  <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>
+  <bean id="netcdfFileCacheMonitor" class="thredds.monitor.NetcdfFileCacheMonitorImpl"/>
+  <bean id="fmrcCacheMonitor" class="thredds.monitor.FmrcCacheMonitorImpl"/>
+
+	<!-- Configuration for JMX exposure in the application
+	<bean id="mbeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+		<property name="beans">
+			<util:map>
+				<entry key="thredds:name=OpenRAF" value-ref="openRAFMonitor"/>
+				<entry key="thredds:name=netcdfFileCache" value-ref="netcdfFileCacheMonitor"/>
+			</util:map>
+		</property>
+	</bean> -->
+
+  <!--- thredds 4.6 / 5.0 -->
+  <bean id="pathMatcher" class="thredds.core.DataRootPathMatcher" />
+  <bean id="ConfigCatalogManager" class="thredds.core.ConfigCatalogManager" />
+  <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
+  <!-- bean id="HtmlWriting" class="thredds.servlet.HtmlWriting" / -->
+
+</beans>

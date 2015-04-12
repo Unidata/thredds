@@ -42,10 +42,7 @@ import java.util.Date;
  * @author caron
  * @since Jan 15, 2010
  */
-
-
 public class DateExtractorNone implements DateExtractor {
-
   public Date getDate(MFile mfile) {
     return null;
   }

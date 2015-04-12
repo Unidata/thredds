@@ -43,7 +43,7 @@ import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.core.DatasetManager;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.inventory.CollectionUpdater;
+import thredds.featurecollection.CollectionUpdater;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.LoggerFactorySpecial;

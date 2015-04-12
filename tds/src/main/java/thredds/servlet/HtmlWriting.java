@@ -56,17 +56,13 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
- * <p/>
- * HtmlWriter is implemented as a singleton. Before HtmlWriter can be used it
- * must be initialized with init(...). The singleton instance can then be
- * obtained with getInstance().
  *
  * @author edavis
  */
 
 @Component
-public class HtmlWritingUtils {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HtmlWritingUtils.class);
+public class HtmlWriting {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HtmlWriting.class);
 
   @Autowired
   private TdsContext tdsContext;

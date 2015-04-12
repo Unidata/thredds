@@ -59,7 +59,7 @@ public class DatasetHtmlWriter {
    * <p> With datasetEvents, catrefEvents = false, this is used to construct an HTML page on the server.
    * (eg using HtmlPage); the client then detects URL clicks and processes.
    *
-   * @param out          put HTML here.
+   * @param out           put HTML here.
    * @param ds            the dataset.
    * @param complete      if true, add HTML header and ender so its a complete, valid HTML page.
    * @param isServer      if true, then we are in the thredds data server, so do the following: <ul>
@@ -135,48 +135,63 @@ public class DatasetHtmlWriter {
         }
       }
       out.format("</ul>%n");
-    }  
+    }
 
     java.util.List<Access> access = ds.getAccess();
     if (access.size() > 0) {
       out.format("<h3>Access:</h3>%n<ol>%n");
       for (Access a : access) {
         Service s = a.getService();
-        String urlString = resolveRelativeUrls || datasetEvents
-                ? a.getStandardUrlName()
-                : a.getUnresolvedUrlName();
+        String urlString = resolveRelativeUrls || datasetEvents ? a.getStandardUrlName() : a.getUnresolvedUrlName();
         String fullUrlString = urlString;
         if (datasetEvents) fullUrlString = "dataset:" + fullUrlString;
-        if (isServer) {
-          ServiceType stype = s.getType();
-          if ((stype == ServiceType.OPENDAP) || (stype == ServiceType.DODS))
-            fullUrlString = fullUrlString + ".html";
-          else if (stype == ServiceType.DAP4)
-            fullUrlString = fullUrlString + ".dmr.xml";
-          else if (stype == ServiceType.WCS)
-            fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
-          else if (stype == ServiceType.WMS)
-            fullUrlString = fullUrlString + "?service=WMS&version=1.3.0&request=GetCapabilities";
-            //NGDC update 8/18/2011
-          else if (stype == ServiceType.NCML || stype == ServiceType.UDDC || stype == ServiceType.ISO) {
-            String catalogUrl = ds.getCatalogUrl();
-            String datasetId = ds.getId();
-            if (catalogUrl != null && datasetId != null) {
-              if (catalogUrl.indexOf('#') > 0)
-                catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
-              try {
-                catalogUrl = URLEncoder.encode(catalogUrl, "UTF-8");
-                datasetId = URLEncoder.encode(datasetId, "UTF-8");
-              } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+
+        ServiceType stype = s.getType();
+        if (isServer && stype != null)
+          switch (stype) {
+            case OPENDAP:
+            case DODS:
+              fullUrlString = fullUrlString + ".html";
+              break;
+
+            case DAP4:
+              fullUrlString = fullUrlString + ".dmr.xml";
+              break;
+
+            case WCS:
+              fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
+              break;
+
+            case WMS:
+              fullUrlString = fullUrlString + "?service=WMS&version=1.3.0&request=GetCapabilities";
+              break;
+
+            case NCML:
+            case UDDC:
+            case ISO:
+              String catalogUrl = ds.getCatalogUrl();
+              String datasetId = ds.getId();
+              if (catalogUrl != null && datasetId != null) {
+                if (catalogUrl.indexOf('#') > 0)
+                  catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
+                try {
+                  catalogUrl = URLEncoder.encode(catalogUrl, "UTF-8");
+                  datasetId = URLEncoder.encode(datasetId, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                  e.printStackTrace();
+                }
+                fullUrlString = fullUrlString + "?catalog=" + catalogUrl + "&dataset=" + datasetId;
               }
-              fullUrlString = fullUrlString + "?catalog=" + catalogUrl + "&dataset=" + datasetId;
-            } else if (stype == ServiceType.NetcdfSubset)
+              break;
+
+            case NetcdfSubset:
               fullUrlString = fullUrlString + "/dataset.html";
-            else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
+              break;
+
+            case CdmRemote:
+            case CdmrFeature:
               fullUrlString = fullUrlString + "?req=form";
           }
-        }
         out.format(" <li> <b>%s:</b>%s</li>%n", s.getServiceTypeName(), makeHref(fullUrlString, urlString));
       }
       out.format("</ol>%n");
@@ -298,7 +313,7 @@ public class DatasetHtmlWriter {
         if (t.getVocabUri() != null) {
           ThreddsMetadata.UriResolved uri = t.getVocabUri();
           String vocabLink = resolveRelativeUrls ? makeHref(uri.resolved.toString(), t.getVocabulary())
-                                                 : makeHref(uri.href, t.getVocabulary());
+                  : makeHref(uri.href, t.getVocabulary());
           out.format(vocabLink);
         } else {
           out.format(StringUtil2.quoteHtmlContent(t.getVocabulary()));
@@ -438,7 +453,7 @@ public class DatasetHtmlWriter {
         java.net.URI uri = cat.resolveUri(href);
         href = uri.toString();
       } catch (java.net.URISyntaxException e) {
-        return "DatasetHtmlWriter: error parsing URL= "+href;
+        return "DatasetHtmlWriter: error parsing URL= " + href;
       }
     }
     return href;

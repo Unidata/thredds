@@ -58,7 +58,7 @@ import java.util.*;
 public class DebugController{
   
   @Autowired
-  thredds.servlet.HtmlWritingUtils htmlu;
+  thredds.servlet.HtmlWriting htmlu;
 
   @RequestMapping(value={"/debug", "/debug/*"})
    protected void showDebugPage(HttpServletRequest request, HttpServletResponse response) throws IOException {

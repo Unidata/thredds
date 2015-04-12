@@ -63,7 +63,7 @@ public class DirDisplayController {
   private TdsContext tdsContext;
   
   @Autowired
-  thredds.servlet.HtmlWritingUtils htmlu;
+  thredds.servlet.HtmlWriting htmlu;
   
   @RequestMapping("/admin/**")
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
