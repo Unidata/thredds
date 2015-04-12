@@ -32,7 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -977,7 +977,7 @@ public class TestGridSubset {
       assert time != null;
       assert runtime.getSize() == time.getSize();
       assert runtime.getSize() == 1;
-      assert runtime.getDimension(0) == time.getDimension(0);
+      Assert.assertEquals(runtime.getDimension(0), time.getDimension(0));
 
       // read a random point
       Array data = grid.readDataSlice(1, 0, 10, 20);

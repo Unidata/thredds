@@ -33,6 +33,7 @@
 
 package ucar.nc2.dt.grid;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
@@ -179,6 +180,7 @@ public class TestCFWriter2 {
 
   // time_start=2014-10-01T21%3A00%3A00Z&time_end=2014-10-02T21%3A00%3A00Z
 
+  @Ignore("not visible on spock")
   @Test
   public void testWriteFileOnNarr() throws Exception {
 
@@ -188,6 +190,7 @@ public class TestCFWriter2 {
             "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", null, false);
   }
 
+  @Ignore("not visible on spock")
   @Test
   public void testWriteFileOnNarr2() throws Exception {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
@@ -196,6 +199,7 @@ public class TestCFWriter2 {
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
   }
 
+  @Ignore("not visible on spock")
   @Test
   public void testWriteFileOnNarr3() throws Exception {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
@@ -205,6 +209,7 @@ public class TestCFWriter2 {
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
   }
 
+  @Ignore("not visible on spock")
   @Test
   public void testWriteFileOnNarr4() throws Exception {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
@@ -217,7 +222,7 @@ public class TestCFWriter2 {
   private void testFileSize(String fileIn, String gridNames, String startDate, String endDate, ProjectionRect rect, boolean writeFile) throws Exception {
     System.out.printf("Open %s%n", fileIn);
 
-    String dir = "C:/temp"; // TestDir.temporaryLocalDataDir;
+    String dir = TestDir.temporaryLocalDataDir;
     String fileOut = dir+"/testWriteFileOnTP.nc";
     long subsetSize;
 
