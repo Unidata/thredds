@@ -22,7 +22,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import ucar.unidata.test.util.NotTravis;
 
 @WebAppConfiguration
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 
 	//RemoteCatalogRequest parameters:

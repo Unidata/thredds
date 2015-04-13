@@ -15,7 +15,7 @@ import thredds.mock.web.MockTdsContextLoader;
 
 
 @WebAppConfiguration
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
 
 	@Autowired
