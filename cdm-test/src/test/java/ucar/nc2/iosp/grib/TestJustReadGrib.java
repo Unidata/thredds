@@ -44,7 +44,6 @@ import ucar.unidata.test.util.TestDir;
 public class TestJustReadGrib  {
   private boolean show = false;
 
-
   @Test
   public void readGrib1Files() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "formats/grib1", null, false);
@@ -69,9 +68,9 @@ public class TestJustReadGrib  {
     TestDir.actOnAll(dirName, new GribFilter(), new GribAct(), recurse);
   }
 
-  //@Test
+  @Test
   public void testProblem() throws IOException {
-    String filename = "Q:\\cdmUnitTest\\tds\\fnmoc\\NAVGEM/FNMOC_NAVGEM_Global_0p5deg_20130805_0000.grib1";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/testproj2.grb";
     System.out.println("read file= "+filename);
     NetcdfFile ncfile = NetcdfDataset.openFile( filename, null);
     ncfile.close();

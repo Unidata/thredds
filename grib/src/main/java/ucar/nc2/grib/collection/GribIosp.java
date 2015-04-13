@@ -342,6 +342,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       // do the times first
       Coordinate run = vindex.getCoordinate(Coordinate.Type.runtime);
       Coordinate time = vindex.getCoordinateTime();
+      boolean isRunScaler = run.getSize() == 1;
 
       switch (gctype) {
         case GC:
@@ -359,7 +360,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
         case MRC:               // GC: Multiple Runtime Collection              [nruns, ntimes]    (run, 2D) use Both
         case TwoD:              // PC: TwoD time partition                      [nruns, ntimes]
-          dimNames.format("%s %s ", run.getName(), time.getName());
+          if (isRunScaler)
+            dimNames.format("%s ", time.getName());
+          else
+            dimNames.format("%s %s ", run.getName(), time.getName());
           coordinateAtt.format("%s %s ", run.getName(), time.getName());
           break;
 
