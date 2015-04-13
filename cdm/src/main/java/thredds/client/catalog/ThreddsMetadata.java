@@ -284,7 +284,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
     }
 
     public List<ThreddsMetadata.Vocab> getNames() {
-      return names;
+      return names != null ? names : new ArrayList<ThreddsMetadata.Vocab>();
     }
 
     /**

@@ -65,8 +65,8 @@ public class ThreddsMetadataAcdd {
           CF.FeatureType cf = CF.FeatureType.getFeatureType(val);
           if (cf != null) ft = CF.FeatureType.convert(cf);
         }
-        if (ft != null) tmi.set(Dataset.DataFormatType, ft.name());
-        else tmi.set(Dataset.DataFormatType, val);
+        if (ft != null) tmi.set(Dataset.FeatureType, ft.name());
+        else tmi.set(Dataset.FeatureType, val);
       }
     }
 
