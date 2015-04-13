@@ -139,7 +139,7 @@ public class DatasetBuilder {
     accessBuilders.add(d);
   }
 
-  public Dataset makeDataset(DatasetNode parent) {
+  public Dataset makeDataset(DatasetNode parent) {  // LOOK whats relationship of parent with this.parent ??
     ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
     if (tmi != null) tmi.finish();
     return new Dataset(parent, name, flds, accessBuilders, datasetBuilders);

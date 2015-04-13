@@ -56,8 +56,8 @@ public class GridDatasetTestUtils
     }
     if ( ! same )
     {
-      String msg = "Differences between:\n[" + baseGridDs.getLocationURI() + "]\n["
-                   + testGridDs.getLocationURI() + "]";
+      String msg = "Differences between:\n[" + baseGridDs.getLocation() + "]\n["
+                   + testGridDs.getLocation() + "]";
       localDiffLog.insert( 0, msg );
     }
 

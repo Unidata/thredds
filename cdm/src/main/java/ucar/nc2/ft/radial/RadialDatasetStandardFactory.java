@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.radial;
 
+import ucar.nc2.dt.radial.*;
 import ucar.nc2.ft.FeatureDatasetFactory;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.constants.FeatureType;
@@ -55,12 +56,12 @@ public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
   private static List<FeatureDatasetFactory> factories = new ArrayList<>(10);
 
   static {
-    registerFactory(ucar.nc2.dt.radial.Netcdf2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.Dorade2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.LevelII2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.Nids2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.UF2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.CFnetCDF2Dataset.class);
+    registerFactory(NsslRadialAdapter.class);
+    registerFactory(Dorade2RadialAdapter.class);
+    registerFactory(Nexrad2RadialAdapter.class);
+    registerFactory(NidsRadialAdapter.class);
+    registerFactory(UF2RadialAdapter.class);
+    registerFactory(CFRadialAdapter.class);
   }
 
   static void registerFactory(Class c) {
@@ -97,7 +98,7 @@ public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
 
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
     FeatureDatasetFactory fac = (FeatureDatasetFactory) analysis;
-    return fac.open(FeatureType.RADIAL, ncd, analysis, task, errlog);
+    return fac.open(FeatureType.RADIAL, ncd, null, task, errlog);
   }
 
   public FeatureType[] getFeatureTypes() {

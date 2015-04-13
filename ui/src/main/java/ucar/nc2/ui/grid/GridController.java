@@ -70,6 +70,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -548,7 +549,10 @@ public class GridController {
   Array getCurrentHorizDataSlice() { return renderGrid.getCurrentHorizDataSlice(); }
 
   String getDatasetInfo() {
-    return (null == gridDataset) ? "" : gridDataset.getDetailInfo();
+    if (null == gridDataset) return "";
+    Formatter info = new Formatter();
+    gridDataset.getDetailInfo(info);
+    return info.toString();
   }
 
  /** iterator returns NamedObject CHANGE TO GENERIC */

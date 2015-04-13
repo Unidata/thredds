@@ -392,7 +392,9 @@ public class Fmrc2Panel extends JPanel {
   }
 
   private void showGridDatasetInfo(GridDataset gds) {
-    infoTA.setText(gds.getDetailInfo());
+    Formatter info = new Formatter();
+    gds.getDetailInfo(info);
+    infoTA.setText(info.toString());
     infoWindow.show();
   }
 

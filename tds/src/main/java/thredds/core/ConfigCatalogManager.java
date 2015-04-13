@@ -305,7 +305,7 @@ public class ConfigCatalogManager implements InitializingBean {
     if (droot != null) {
       if (!droot.getDirLocation().equals(dscan.getScanLocation())) {
         logCatalogInit.error(ERROR + "DatasetScan already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
-                " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog " + dscan.getParentCatalog().getUriString());
+                " wanted to map to =<" + dscan.getScanLocation() + "> in catalog " + dscan.getParentCatalog().getUriString());
       }
       return false;
     }

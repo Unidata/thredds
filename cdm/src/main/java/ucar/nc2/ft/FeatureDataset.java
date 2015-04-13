@@ -207,6 +207,4 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
    */
   public Date getEndDate();
 
-
-
 }

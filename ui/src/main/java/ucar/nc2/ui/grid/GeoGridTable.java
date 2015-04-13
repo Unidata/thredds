@@ -247,7 +247,7 @@ public class GeoGridTable extends JPanel {
             }
           });
         }
-        outChooser.setOutputFilename(gridDataset.getLocationURI());
+        outChooser.setOutputFilename(gridDataset.getLocation());
         outChooser.setVisible(true);
       }
     };

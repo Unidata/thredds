@@ -39,7 +39,6 @@ import ucar.nc2.dt.*;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.ma2.*;
@@ -53,14 +52,14 @@ import java.util.*;
  * @author yuan
  */
 
-public class Nids2Dataset extends RadialDatasetSweepAdapter {
+public class NidsRadialAdapter extends AbstractRadialAdapter {
   private NetcdfDataset ds;
 
   /////////////////////////////////////////////////
   public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
-    String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
-      String format = ds.findAttValueIgnoreCase(null, "Format", null);
+      String format = ncd.findAttValueIgnoreCase(null, "Format", null);
       if (format != null && format.equals("Level3/NIDS"))
         return this;
     }
@@ -68,15 +67,15 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
-    return new Nids2Dataset(ncd);
+    return new NidsRadialAdapter(ncd);
   }
 
   public FeatureType getScientificDataType() {
     return FeatureType.RADIAL;
   }
 
-
-  public Nids2Dataset() {
+  // needed for FeatureDatasetFactory
+  public NidsRadialAdapter() {
   }
 
   /**
@@ -84,7 +83,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
    *
    * @param ds must be from nids IOSP
    */
-  public Nids2Dataset(NetcdfDataset ds) {
+  public NidsRadialAdapter(NetcdfDataset ds) {
     super(ds);
     this.ds = ds;
     desc = "Nids 2 radar dataset";
