@@ -53,7 +53,7 @@ public class TestMetadataExtractor {
 
     Dataset ds = cat.findDatasetByID("testAcdd");
     assert ds != null;
-    assertEquals(ds.getFeatureType(), FeatureType.STATION);
+    assertEquals(FeatureType.STATION, ds.getFeatureType());
 
     assert ds.getDocumentation("title").startsWith("Seawater temperature data collected from Bodega Head");
     assert ds.getDocumentation("summary").startsWith("These seawater data are collected");
