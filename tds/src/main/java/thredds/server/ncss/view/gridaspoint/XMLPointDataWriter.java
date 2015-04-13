@@ -84,7 +84,7 @@ class XMLPointDataWriter implements PointDataWriter {
 			xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
 			xmlStreamWriter.writeStartElement("grid");
 			xmlStreamWriter.writeAttribute("dataset",
-					gridDataset.getLocationURI());
+					gridDataset.getLocation());
 			headerWritten = true;
 		} catch (XMLStreamException xse) {
 			log.error("Error writting xml header", xse);

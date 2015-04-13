@@ -159,7 +159,7 @@ public class CompareGribVarNamesUtils {
   private static Date parseTimestampInFmrcRunDatasetUrl(GridDataset fmrcRunGridDs) {
     // Parse the timestamp from the URL of a "FMRC Run" dataset
     // (".../<model>_RUN_<yyyy-MM-dd'T'HH:mm:ss>Z").
-    String url = fmrcRunGridDs.getLocationURI();
+    String url = fmrcRunGridDs.getLocation();
     if (!url.endsWith("Z"))
       fail("No \"Z\" at end of FMRC Run dataset URL [" + url + "].");
     int start = url.lastIndexOf("_RUN_") + 5;

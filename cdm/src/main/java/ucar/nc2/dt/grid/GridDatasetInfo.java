@@ -105,7 +105,7 @@ public class GridDatasetInfo {
 	public Document makeDatasetDescription() {
 		Element rootElem = new Element("gridDataset");
 		Document doc = new Document(rootElem);
-		rootElem.setAttribute("location", gds.getLocationURI());
+		rootElem.setAttribute("location", gds.getLocation());
 		if (null != path)
 			rootElem.setAttribute("path", path);
 
@@ -199,7 +199,7 @@ public class GridDatasetInfo {
 	public Document makeGridForm() {
 		Element rootElem = new Element("gridForm");
 		Document doc = new Document(rootElem);
-		rootElem.setAttribute("location", gds.getLocationURI());
+		rootElem.setAttribute("location", gds.getLocation());
 		if (null != path)
 			rootElem.setAttribute("path", path);
 

@@ -98,7 +98,7 @@ final class CFTimeSeriesProfileCollectionWriterWrapper implements CFPointWriterW
 		}		
 		
 		List<Attribute> atts = new ArrayList<>();
-		atts.add(new Attribute( CDM.TITLE,  "Extract time series profiles data from Grid file "+ gds.getLocationURI()) );   		    		    	
+		atts.add(new Attribute( CDM.TITLE,  "Extract time series profiles data from Grid file "+ gds.getLocation()) );
 
 		//Create the list of stations (only one)
 		String stnName="Grid Point";

@@ -39,6 +39,7 @@ import java.io.IOException;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dt.radial.*;
 
 /**
  * Manager of factories for TypedDatasets.
@@ -65,12 +66,12 @@ public class TypedDatasetFactory {
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.OldUnidataStationObsDataset.class);
     registerFactory(FeatureType.POINT, ucar.nc2.dt.point.OldUnidataPointObsDataset.class);
 
-    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.Netcdf2Dataset.class);
-    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.Dorade2Dataset.class);
-    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.LevelII2Dataset.class);
-    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.Nids2Dataset.class);
-    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.UF2Dataset.class);
-    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.CFnetCDF2Dataset.class);
+    registerFactory(FeatureType.RADIAL, NsslRadialAdapter.class);
+    registerFactory(FeatureType.RADIAL, Dorade2RadialAdapter.class);
+    registerFactory(FeatureType.RADIAL, Nexrad2RadialAdapter.class);
+    registerFactory(FeatureType.RADIAL, NidsRadialAdapter.class);
+    registerFactory(FeatureType.RADIAL, UF2RadialAdapter.class);
+    registerFactory(FeatureType.RADIAL, CFRadialAdapter.class);
 
     registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.RafTrajectoryObsDataset.class);
     registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.UnidataTrajectoryObsDataset.class);
@@ -191,14 +192,14 @@ public class TypedDatasetFactory {
 
       // if explicitly requested, give em a GridDataset even if no Grids
       if (datatype == FeatureType.GRID) {
-        return new ucar.nc2.dt.grid.GridDataset( ncd);
+        return null; // new ucar.nc2.dt.grid.GridDataset( ncd);   LOOK have to copy old  GridDataset to archive
       }
 
       if (null == datatype) {
         // if no datatype was requested, give em a GridDataset only if some Grids are found.
         ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset( ncd);
         if (gds.getGrids().size() > 0)
-          return gds;
+          return null; // gds;    LOOK have to copy old  GridDataset to archive
       }
 
       errlog.append("**Failed to find Datatype Factory for= ").append(ncd.getLocation()).append(" datatype= ").append(datatype).append("\n");

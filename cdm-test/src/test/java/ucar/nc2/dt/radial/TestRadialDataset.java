@@ -116,7 +116,8 @@ public class TestRadialDataset extends TestCase {
     RadialDatasetSweep rds = (RadialDatasetSweep) FeatureDatasetFactoryManager.open(FeatureType.RADIAL, location, null, errlog);
 
     System.out.println(location+"-----------");
-    if (show) System.out.println(rds.getDetailInfo());
+    rds.getDetailInfo(errlog);
+    if (show) System.out.println(errlog);
 
     Date d1 = rds.getStartDate();
     Date d2 = rds.getEndDate();

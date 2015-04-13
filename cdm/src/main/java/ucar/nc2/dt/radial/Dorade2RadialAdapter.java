@@ -39,7 +39,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.ma2.*;
@@ -51,10 +50,9 @@ import java.util.*;
  * Make a Dorade 2 NetcdfDataset into a RadialDataset.
  *
  * @author yuan
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-public class Dorade2Dataset extends RadialDatasetSweepAdapter {
+public class Dorade2RadialAdapter extends AbstractRadialAdapter {
   private NetcdfDataset ncd;
   float[] elev, aziv, disv, lonv, altv, latv;
   double[] timv;
@@ -73,15 +71,15 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
-    return new Dorade2Dataset(ncd);
+    return new Dorade2RadialAdapter(ncd);
   }
 
   public FeatureType getScientificDataType() {
     return FeatureType.RADIAL;
   }
 
-
-  public Dorade2Dataset() {
+  // needed for FeatureDatasetFactory
+  public Dorade2RadialAdapter() {
   }
 
   /**
@@ -89,7 +87,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
    *
    * @param ds must be from dorade IOSP
    */
-  public Dorade2Dataset(NetcdfDataset ds) {
+  public Dorade2RadialAdapter(NetcdfDataset ds) {
     super(ds);
     this.ncd = ds;
 

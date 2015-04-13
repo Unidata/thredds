@@ -316,7 +316,7 @@ public class CFGridWriter2 {
 
     writer.addGroupAttribute(null, new Attribute("History",
             "Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridWriter2)\n" +
-                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + CalendarDate.present()));
+                    "Original Dataset = " + gds.getLocation() + "; Translation Date = " + CalendarDate.present()));
 
     // this will replace any existing
     writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
@@ -333,7 +333,7 @@ public class CFGridWriter2 {
       GridDatatype grid = gds.findGridDatatype(gridName);
       Variable newV = writer.findVariable(gridName);
       if (newV == null) {
-        log.debug("NetcdfCFWriter cant find " + gridName + " in gds " + gds.getLocationURI());
+        log.debug("NetcdfCFWriter cant find " + gridName + " in gds " + gds.getLocation());
         continue;
       }
 

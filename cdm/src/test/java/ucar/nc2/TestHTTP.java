@@ -69,7 +69,7 @@ public class TestHTTP  {
   @Test
   public void testOpenDataFactory() throws IOException {
     Formatter log = new Formatter();
-    Dataset ds = new Dataset(url, null, DataFormatType.NETCDF.toString(), ServiceType.HTTPServer.toString());
+    Dataset ds = Dataset.makeStandalone(url, null, DataFormatType.NETCDF.toString(), ServiceType.HTTPServer.toString());
     DataFactory tdataFactory = new DataFactory();
     try (NetcdfDataset ncfile = tdataFactory.openDataset(ds, false, null, log)) {
       test(ncfile);

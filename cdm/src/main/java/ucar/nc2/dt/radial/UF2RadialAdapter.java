@@ -31,7 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.dt.radial;
-
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
@@ -51,49 +50,40 @@ import java.io.IOException;
 import java.util.*;
 
 
-/**
- * Make a NEXRAD Level 2 NetcdfDataset into a RadialDataset.
- *
- * @author yuan
- */
-
-public class LevelII2Dataset extends RadialDatasetSweepAdapter {
+public class UF2RadialAdapter extends AbstractRadialAdapter {
   private NetcdfDataset ds;
   double latv, lonv, elev;
   DateFormatter formatter = new DateFormatter();
 
   /////////////////////////////////////////////////
   public Object isMine( FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
-    String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
-      String format = ds.findAttValueIgnoreCase(null, "Format", null);
-      if (format != null && (format.equals("ARCHIVE2")
-              || format.equals("AR2V0001") || format.equals("CINRAD-SA")
-              || format.equals("AR2V0003") || format.equals("AR2V0002") || format.equals("AR2V0004")
-              || format.equals("AR2V0006") || format.equals("AR2V0007")))
+      String format = ncd.findAttValueIgnoreCase(null, "Format", null);
+      if (format != null && format.equals("UNIVERSALFORMAT"))
         return this;
     }
     return null;
   }
 
   public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, Object analysis, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
-    return new LevelII2Dataset(ncd);
+    return new UF2RadialAdapter(ncd);
   }
 
   public FeatureType getScientificDataType() { return FeatureType.RADIAL; }
 
-
-  public LevelII2Dataset() {}
+  // needed for FeatureDatasetFactory
+  public UF2RadialAdapter() {}
 
   /**
    * Constructor.
    *
    * @param ds must be from nexrad2 IOSP
    */
-  public LevelII2Dataset(NetcdfDataset ds) {
+  public UF2RadialAdapter(NetcdfDataset ds) {
     super(ds);
     this.ds = ds;
-    desc = "Nexrad 2 radar dataset";
+    desc = "UF 2 radar dataset";
 
     setEarthLocation();
     try {
@@ -128,8 +118,8 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
     Iterator iter = dataVariables.iterator();
 
     while (iter.hasNext()) {
-        RadialVariable rv = (RadialVariable) iter.next();
-        Sweep sp = rv.getSweep(0);
+        RadialDatasetSweep.RadialVariable rv = (RadialDatasetSweep.RadialVariable) iter.next();
+        RadialDatasetSweep.Sweep sp = rv.getSweep(0);
         double dist = sp.getGateNumber() * sp.getGateSize();
 
         if (dist > maxdist)
@@ -166,7 +156,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public String getRadarID() {
-    Attribute ga = ds.findGlobalAttribute("Station");
+    Attribute ga = ds.findGlobalAttribute("instrument_name");
     if(ga != null)
         return ga.getStringValue();
     else
@@ -174,7 +164,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public String getRadarName() {
-    Attribute ga = ds.findGlobalAttribute("StationName");
+    Attribute ga = ds.findGlobalAttribute("site_name");
     if(ga != null)
         return ga.getStringValue();
     else
@@ -182,7 +172,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public String getDataFormat() {
-    return "Level II";
+    return "Universal Format";
   }
 
 
@@ -191,15 +181,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
     return true;
   }
 
-  public boolean isHighResolution(NetcdfDataset nds) {
-   // return true;
-    Dimension r = nds.findDimension("scanR_HI");
-    Dimension v = nds.findDimension("scanV_HI");
-    if(r != null || v != null)
-        return true;
-    else
-        return false;
-  }
+
 
   public boolean isStationary() {
     return true;
@@ -239,29 +221,20 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
       List  rvars = getDataVariables();
       Iterator iter = rvars.iterator();
       while (iter.hasNext()) {
-          RadialVariable radVar = (RadialVariable)iter.next();
+          RadialDatasetSweep.RadialVariable radVar = (RadialDatasetSweep.RadialVariable)iter.next();
           radVar.clearVariableMemory();
       }
   }
 
-  public void getRadialsNum() {
-  }
 
   protected void addRadialVariable(NetcdfDataset nds, Variable var) {
-      RadialVariable rsvar = null;
+      RadialDatasetSweep.RadialVariable rsvar = null;
       String vName = var.getShortName() ;
       int rnk = var.getRank();
 
       if ( rnk == 3 ) {
-          if (!isHighResolution(nds)) {
-             VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
-             rsvar = makeRadialVariable(nds, v, var);
-          } else {
-            if(! vName.endsWith("_HI")) {
-                 VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
-                 rsvar = makeRadialVariable(nds, v, var);
-          }
-      }
+         VariableSimpleIF v = new AbstractRadialAdapter.MyRadialVariableAdapter(vName, var.getAttributes());
+         rsvar = makeRadialVariable(nds, v, var);
       }
 
       if(rsvar != null)
@@ -270,14 +243,14 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
 
 
 
-  protected RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0)  {
+  protected RadialDatasetSweep.RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0)  {
       // this function is null in level 2
-      return new LevelII2Variable(nds, v, v0);
+      return new UF2Variable(nds, v, v0);
   }
 
   public String getInfo() {
-    StringBuffer sbuff = new StringBuffer();
-    sbuff.append("LevelII2Dataset\n");
+    StringBuilder sbuff = new StringBuilder();
+    sbuff.append("UF2Dataset\n");
     sbuff.append(super.getDetailInfo());
     sbuff.append("\n\n");
     sbuff.append(parseInfo.toString());
@@ -285,36 +258,19 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
   }
 
 
-  private class LevelII2Variable extends MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
+  private class UF2Variable extends AbstractRadialAdapter.MyRadialVariableAdapter implements RadialDatasetSweep.RadialVariable {
     int nsweeps;
-    int nsweepsHR;
+
     ArrayList sweeps;
     String name;
 
-    private LevelII2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
+    private UF2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
       super(v.getShortName(), v0.getAttributes());
 
-      nsweepsHR = 0;
+
       sweeps = new ArrayList();
       name = v.getShortName();
-      if(isHighResolution(nds)) {
-          String vname = v0.getFullNameEscaped();
-          Variable vehr = nds.findVariable(vname+"_HI");
 
-          int [] shape1;
-          if(vehr != null) {
-            shape1 = vehr.getShape();
-            int count1 = vehr.getRank() - 1;
-            int ngatesHR = shape1[count1];
-            count1--;
-            int nraysHR = shape1[count1];
-            count1--;
-            nsweepsHR = shape1[count1];
-            for(int i = 0; i< nsweepsHR; i++)
-                sweeps.add(new LevelII2Sweep(vehr, i, nraysHR, ngatesHR) );
-
-          }
-       }
 
       int[] shape = v0.getShape();
       int count = v0.getRank() - 1;
@@ -324,9 +280,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
       int nrays = shape[count];
       count--;
       nsweeps = shape[count];
-      for(int i = nsweepsHR; i< (nsweeps+nsweepsHR); i++)
-        sweeps.add( new LevelII2Sweep(v0, i, nrays, ngates)) ;
 
+      for(int i = 0; i< nsweeps; i++)
+        sweeps.add( new UF2Sweep(v0, i, nrays, ngates)) ;
 
     }
     public String toString() {
@@ -334,14 +290,11 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
     }
 
     public int getNumSweeps() {
-      if(isHighResolution(ds)) {
-          return nsweepsHR + nsweeps;
-      }
       return nsweeps;
     }
 
-    public Sweep getSweep(int sweepNo) {
-       return (Sweep) sweeps.get(sweepNo);
+    public RadialDatasetSweep.Sweep getSweep(int sweepNo) {
+       return (RadialDatasetSweep.Sweep) sweeps.get(sweepNo);
     }
 
     public int getNumRadials() {
@@ -352,56 +305,17 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
     // if high resolution data, it will be transfered to the same dimension
     public float[] readAllData() throws IOException {
       Array allData;
-      Sweep spn = (Sweep)sweeps.get(sweeps.size()-1);
+      Array hrData = null;
+      RadialDatasetSweep.Sweep spn = (RadialDatasetSweep.Sweep)sweeps.get(sweeps.size()-1);
       Variable v = spn.getsweepVar();
-      float vGateSize = spn.getGateSize();
-      allData = v.read();
-      if( !isHighResolution(ds) )
-            return (float []) allData.get1DJavaArray(float.class);
-      else {
-            Sweep sp0 = (Sweep)sweeps.get(0);
-            Variable v0 = sp0.getsweepVar();
-            float v0GateSize = sp0.getGateSize();
-            int [] stride;
-
-            if(v0.getShortName().startsWith("Reflect"))
-                  stride = new int [] {1, 2, 4};
-            else
-                  stride = new int [] {1, 2, 1};
-          
-            int[] shape1 = v.getShape();
-            int[] shape2 = v0.getShape();
-            int  shp1 = (shape1[1]*stride[1] > shape2[1]) ? shape2[1] : shape1[1]*stride[1];
-
-
-            int shp2 = (shape1[2]*stride[2] > shape2[2]) ? shape2[2] : shape1[2]*stride[2];
-            
-            int[] shape = {shape2[0], shp1, shp2};
-            // this dual pole  or new high res
-            // where the lower and upper has same gate size, no stride needed
-            if(shape2[2] == shape1[2] || v0GateSize == vGateSize) {
-                stride = new int [] {1, 2, 1};
-                shape[2] = shape1[2];
-            }
-
-            int [] origin = {0, 0, 0};
-
-            try {
-                Section section = new Section(origin, shape, stride);
-                Array hrData = v0.read(section);
-
-                // now append hrData and allData
-                float [] fa1 =(float []) hrData.get1DJavaArray(float.class);
-                float [] fa2 =(float []) allData.get1DJavaArray(float.class);
-                float [] fa = new float[fa1.length + fa2.length];
-                System.arraycopy(fa1, 0, fa, 0, fa1.length);
-                System.arraycopy(fa2, 0, fa, fa1.length, fa2.length);
-
-                return fa;
-            } catch (ucar.ma2.InvalidRangeException e) {
-                throw new IOException(e);
-            }
+      try {
+        allData = v.read();
+      } catch (IOException e) {
+        throw new IOException(e.getMessage());
       }
+
+      return (float []) allData.get1DJavaArray(float.class);
+
     }
 
     public void clearVariableMemory() {
@@ -416,20 +330,23 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
    // level, since the coordinate is 1D at this level, this checking also
    // remove those missing radials within a sweep.
 
-    private class LevelII2Sweep implements RadialDatasetSweep.Sweep {
+    private class UF2Sweep implements RadialDatasetSweep.Sweep {
       double meanElevation = Double.NaN;
       double meanAzimuth = Double.NaN;
       int nrays, ngates;
       int sweepno;
       Variable sweepVar;
+      String abbrev;
 
-
-      LevelII2Sweep(Variable v, int sweepno, int rays, int gates) {
+      UF2Sweep(Variable v, int sweepno, int rays, int gates) {
         this.sweepVar = v;
         this.sweepno = sweepno;
         this.nrays = rays;
         this.ngates = gates;
         // ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable mine");
+
+        Attribute att = sweepVar.findAttribute("abbrev");
+        abbrev = att.getStringValue();
       }
 
       public Variable getsweepVar(){
@@ -438,25 +355,13 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
 
       /* read 2d sweep data nradials * ngates */
       public float[] readData() throws java.io.IOException {
-
-        if(!isHighResolution(ds) )  {
-            return  sweepData(sweepno);
-        } else {
-            if( sweepno > (nsweepsHR-1) ) {
-                int swpNo = sweepno - nsweepsHR;
-                return  sweepData(swpNo);
-            }
-            else {
-                return  sweepData(sweepno);
-            }
-        }
-
+          return  sweepData(sweepno);
       }
 
       /* read from the radial variable */
-      private float [] sweepData(int swpNumber) throws IOException {
-        int [] shape = sweepVar.getShape();
-        int[] origin = new int[3];
+      private float [] sweepData(int swpNumber) throws java.io.IOException {
+        int[] shape = sweepVar.getShape();
+        int[] origin = new int[shape.length];
 
         // init section
         origin[0] = swpNumber;
@@ -473,23 +378,13 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
       //  private Object MUTEX =new Object();
       /* read 1d data ngates */
       public float[] readData(int ray) throws java.io.IOException {
-        if(!isHighResolution(ds) )  {
              return  rayData(sweepno, ray);
-        }  else {
-            if( sweepno >= nsweepsHR ) {
-                int swpNo = sweepno - (nsweepsHR);
-                return  rayData(swpNo, ray);
-            }
-            else {
-                return  rayData(sweepno, ray);
-            }
-        }
       }
 
      /* read the radial data from the radial variable */
       public float[] rayData( int swpNumber, int ray) throws java.io.IOException {
         int[] shape = sweepVar.getShape();
-        int[] origin = new int[3];
+        int[] origin = new int[shape.length];
 
         // init section
         origin[0] = swpNumber;
@@ -505,40 +400,30 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
         }
       }
 
-
       public void setMeanElevation() {
-         String eleName = getRadialVarCoordinateName("elevation", sweepVar.getShortName());
+          String eleName;
 
-         if(!isHighResolution(ds) )  {
-              setMeanEle(eleName, sweepno);
-         }  else {
-            if( sweepno >= nsweepsHR ) {
-                int swpNo = sweepno - (nsweepsHR);
-                setMeanEle(eleName,  swpNo);
-            }
-            else {
-                setMeanEle(eleName+"_HI", sweepno);
-            }
-        }
+          eleName = "elevation" + abbrev;
+          setMeanEle(eleName, sweepno);
       }
 
       private void setMeanEle(String elevName, int swpNumber) {
-        float sum = 0;
-        int sumSize = 0;
+          try {
+              float[] eleData = getEle(elevName, swpNumber);
 
-        try{
-            float[] eleArray = getEle(elevName, swpNumber);
-            for(float v : eleArray) {
-                if(!Float.isNaN(v)) {
-                    sum += v;
-                    sumSize++;
-                }
-            }
-            if (sumSize > 0)
-                meanElevation = sum / sumSize;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+              float sum = 0;
+              int sumSize = 0;
+              for (float v : eleData)
+                  if(!Float.isNaN(v)) {
+                      sum += v;
+                      sumSize++;
+                  }
+
+              if (sumSize > 0)
+                  meanElevation = sum / sumSize;
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
       }
 
       public float getMeanElevation() {
@@ -569,7 +454,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
       public int getGateNumber() {
         return ngates;
       }
-        
+
       public int getRadialNumber() {
          return nrays;
       }
@@ -597,24 +482,11 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
 
 
       public void setMeanAzimuth() {
-        String aziName = getRadialVarCoordinateName("azimuth", sweepVar.getShortName());
-
-       if(!isHighResolution(ds) )  {
-              setMeanAzi(aziName, sweepno);
-        }  else {
-            if( sweepno >= nsweepsHR ) {
-                int swpNo = sweepno - (nsweepsHR);
-                setMeanAzi(aziName, swpNo);
-            }
-            else {
-                setMeanAzi(aziName+"_HI", sweepno);
-            }
-        }
+         String aziName = "azimuth" + abbrev;
+         setMeanAzi(aziName, sweepno);
      }
 
      private void setMeanAzi(String aziName,  int swpNumber) {
-       Array aziData = null;
-
        if (getType() != null) {
           try {
                Array data =  ds.findVariable(aziName).read();
@@ -622,7 +494,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
                aziOrigin[0] = swpNumber;
                aziOrigin[1] = 0;  //shape[1] - getRadialNumber();
                int [] aziShape = {1, getRadialNumber()};
-               aziData = data.section(aziOrigin, aziShape);
+              Array aziData = data.section(aziOrigin, aziShape);
                meanAzimuth = MAMath.sumDouble( aziData) / aziData.getSize();
            } catch (IOException e) {
                e.printStackTrace();
@@ -631,9 +503,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
             e.printStackTrace();
         }
 
-       } else
+       } else {
            meanAzimuth = 0.0;
-
+       }
      }
 
       public float getMeanAzimuth() {
@@ -643,23 +515,13 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
       }
 
       public boolean isConic() {
-        return true;
+          return true;
       }
 
       public float getElevation(int ray) throws IOException {
-        String eleName = getRadialVarCoordinateName("elevation", sweepVar.getShortName());
+          String eleName = "elevation" + abbrev;
+          return  getEle(eleName, sweepno, ray);
 
-        if(!isHighResolution(ds) )  {
-             return  getEle(eleName, sweepno, ray);
-        }  else {
-            if( sweepno >= nsweepsHR ) {
-                int swpNo = sweepno - (nsweepsHR);
-                return  getEle(eleName, swpNo, ray);
-            }
-            else {
-                return  getEle(eleName+"_HI", sweepno, ray);
-            }
-        }
       }
 
       public float getEle(String elevName, int swpNumber, int ray) throws IOException {
@@ -668,152 +530,72 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
       }
 
       public float[] getElevation() throws IOException {
-        String eleName = getRadialVarCoordinateName("elevation", sweepVar.getShortName());
-
-        if(!isHighResolution(ds) )  {
-             return  getEle(eleName, sweepno);
-        }  else {
-            if( sweepno >= nsweepsHR ) {
-                int swpNo = sweepno - (nsweepsHR);
-                return  getEle(eleName, swpNo);
-            }
-            else {
-                return  getEle(eleName+"_HI", sweepno);
-            }
-        }
+          String eleName = "elevation" + abbrev;
+          return  getEle(eleName, sweepno);
       }
 
      public float[] getEle(String elevName, int swpNumber) throws IOException {
-            try {
-                Variable evar = ds.findVariable(elevName);
-                Array eleData = evar.read();
-                evar.setCachedData(eleData, false);
-                int [] eleOrigin = new int[2];
-                eleOrigin[0] = swpNumber;
-                eleOrigin[1] = 0;
-                int [] eleShape = {1, getRadialNumber()};
-                eleData = eleData.section(eleOrigin, eleShape);
-                return (float [])eleData.get1DJavaArray(Float.TYPE);
-            } catch (ucar.ma2.InvalidRangeException e) {
-                throw new IOException(e);
-            }
+         try {
+             Array eleData = ds.findVariable(elevName).read();
+             int [] eleOrigin = new int[2];
+             eleOrigin[0] = swpNumber;
+             eleOrigin[1] = 0;
+             int [] eleShape = {1, getRadialNumber()};
+             eleData = eleData.section(eleOrigin, eleShape);
+             return (float [])eleData.get1DJavaArray(Float.TYPE);
+         } catch (ucar.ma2.InvalidRangeException e) {
+             throw new IOException(e);
+         }
      }
 
      public float[] getAzimuth() throws IOException {
-        String aziName = getRadialVarCoordinateName("azimuth", sweepVar.getShortName());
-
-        if(!isHighResolution(ds) )  {
-             return  getAzi(aziName, sweepno);
-        }  else {
-            if( sweepno >= nsweepsHR ) {
-                int swpNo = sweepno - (nsweepsHR);
-                return  getAzi(aziName, swpNo);
-            }
-            else {
-                return  getAzi(aziName+"_HI", sweepno);
-            }
-        }
+         String aziName = "azimuth" + abbrev;
+         return  getAzi(aziName, sweepno);
      }
 
      public float[] getAzi(String aziName, int swpNumber) throws IOException {
-            try {
-                Variable avar = ds.findVariable(aziName);
-                Array aziData = avar.read();
-                avar.setCachedData(aziData, false);
-                int[] aziOrigin = new int[2];
-                aziOrigin[0] = swpNumber;
-                aziOrigin[1] = 0;  //shape[1] - getRadialNumber();
-                int[] aziShape = {1, getRadialNumber()};
-                aziData = aziData.section(aziOrigin, aziShape);
-                return (float[])aziData.get1DJavaArray(Float.TYPE);
-            } catch (ucar.ma2.InvalidRangeException e) {
-                throw new IOException(e);
-            }
-
+         try {
+             Array aziData = ds.findVariable(aziName).read();
+             int [] aziOrigin = new int[2];
+             aziOrigin[0] = swpNumber;
+             aziOrigin[1] = 0;  //shape[1] - getRadialNumber();
+             int [] aziShape = {1, getRadialNumber()};
+             aziData = aziData.section(aziOrigin, aziShape);
+             return (float [])aziData.get1DJavaArray(Float.TYPE);
+         } catch (ucar.ma2.InvalidRangeException e) {
+             throw new IOException(e);
+         }
      }
 
      public float getAzimuth(int ray) throws IOException {
-        String aziName = getRadialVarCoordinateName("azimuth", sweepVar.getShortName());
-
-        if(!isHighResolution(ds) )  {
-             return  getAzi(aziName, sweepno, ray);
-        }  else {
-            if( sweepno >= nsweepsHR ) {
-                int swpNo = sweepno - (nsweepsHR);
-                return  getAzi(aziName, swpNo, ray);
-            }
-            else {
-                return  getAzi(aziName+"_HI", sweepno, ray);
-            }
-        }
+         String aziName = "azimuth" + abbrev;
+         return  getAzi(aziName, sweepno, ray);
      }
 
       public float getAzi(String aziName, int swpNumber, int ray) throws IOException {
-        float[] aziData = getAzi(aziName, swpNumber);
-        return aziData[ray];
+          float[] aziData = getAzi(aziName, swpNumber);
+          return aziData[ray];
       }
 
       public float getRadialDistance(int gate) throws IOException {
-        String disName = getRadialVarCoordinateName("distance", sweepVar.getShortName());
+         String disName = "distance" + abbrev;
+         return  getRadialDist(disName, gate);
 
-        if(!isHighResolution(ds) )  {
-             return  getRadialDist(disName, gate);
-        }  else {
-            if( sweepno >= nsweepsHR ) {
-
-                return  getRadialDist(disName, gate);
-            }
-            else {
-                return  getRadialDist(disName+"_HI", gate);
-            }
-        }
       }
 
       public float getRadialDist(String dName, int gate) throws IOException {
-        Variable dvar = ds.findVariable(dName);
-        Array data = dvar.read();
-        dvar.setCachedData(data, false);
+        Array data = ds.findVariable(dName).read();
         Index index = data.getIndex();
         return data.getFloat(index.set(gate));
       }
 
       public float getTime(int ray) throws IOException {
-        String tName = getRadialVarCoordinateName("time", sweepVar.getShortName());
-
-        if(!isHighResolution(ds) )  {
-             return  getT(tName, sweepno, ray);
-        }  else {
-            if( sweepno >= nsweepsHR ) {
-                int swpNo = sweepno - (nsweepsHR);
-                return  getT(tName, swpNo, ray);
-            }
-            else {
-                return  getT(tName+"_HI", sweepno,ray);
-            }
-        }
+        String tName = "time" + abbrev;
+        return  getT(tName, sweepno, ray);
       }
-
-      public String getRadialVarCoordinateName(String coord, String rVar){
-        String cName;
-        if(rVar.startsWith("Reflectivity"))
-            cName = coord + "R";
-        else if(rVar.startsWith("DifferentialReflectivity"))
-            cName = coord + "D";
-        else if(rVar.startsWith("CorrelationCoefficient"))
-            cName = coord + "C";
-        else if(rVar.startsWith("DifferentialPhase"))
-            cName = coord + "P";
-        else
-            cName = coord + "V";
-
-        return cName;
-      }
-
 
       public float getT(String tName, int swpNumber, int ray) throws IOException {
-        Variable tvar = ds.findVariable(tName);
-        Array timeData = tvar.read();
-        tvar.setCachedData(timeData, false);
+        Array timeData = ds.findVariable(tName).read();
         Index timeIndex = timeData.getIndex();
         return timeData.getFloat(timeIndex.set(swpNumber, ray));
       }
@@ -859,7 +641,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
   private static void testRadialVariable(RadialDatasetSweep.RadialVariable rv) throws IOException {
     int nsweep = rv.getNumSweeps();
     //System.out.println("*** radar Sweep number is: \n" + nsweep);
-    Sweep sw;
+    RadialDatasetSweep.Sweep sw;
     for (int i = 0; i < nsweep; i++) {
       //ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable getSweep " + i);
       sw = rv.getSweep(i);
@@ -874,16 +656,11 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
         float azi = sw.getAzimuth(j);
         az[j] = azi;
       }
-      sw.getAzimuth();
-      sw.readData();
       // System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
     }
     sw = rv.getSweep(0);
       //ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable readData");
-    rv.readAllData();
     float [] ddd = sw.readData();
-    sw.getAzimuth();
-    sw.getElevation();
       //ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable readData");
     assert(null != ddd);
     int nrays = sw.getRadialNumber();
@@ -911,4 +688,4 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
     assert(0 != nrays);
   }
 
-} // LevelII2Dataset
+}

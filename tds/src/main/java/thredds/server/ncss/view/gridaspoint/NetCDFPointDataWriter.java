@@ -113,7 +113,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 
         try {
             List<Attribute> atts = new ArrayList<>();
-            atts.add(new Attribute(CDM.TITLE, "Extract Points data from Grid file " + gridDataset.getLocationURI()));
+            atts.add(new Attribute(CDM.TITLE, "Extract Points data from Grid file " + gridDataset.getLocation()));
             pointWriterWrapper = CFPointWriterWrapperFactory.getWriterForFeatureType(
                     version, featureType, netcdfResult.getAbsolutePath(), atts);
             headerDone = pointWriterWrapper.header(groupedVars, gridDataset, wDates, timeDimAtts, point, vertCoord);

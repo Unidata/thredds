@@ -4975,7 +4975,7 @@ public class ToolsUI extends JPanel {
         e.printStackTrace();
         return;
       }
-      setSelectedItem(gds.getLocationURI());
+      setSelectedItem(gds.getLocation());
     }
 
     void save() {
@@ -5135,12 +5135,11 @@ public class ToolsUI extends JPanel {
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           RadialDatasetSweep radialDataset = dsTable.getRadialDataset();
-          String info;
-          if ((radialDataset != null) && ((info = radialDataset.getDetailInfo()) != null)) {
-            detailTA.setText(info);
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
+          Formatter info = new Formatter();
+          radialDataset.getDetailInfo(info);
+          detailTA.setText(info.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
         }
       });
       buttPanel.add(infoButton);
@@ -5193,7 +5192,7 @@ public class ToolsUI extends JPanel {
 
       this.ds = newds;
       dsTable.setDataset(newds);
-      setSelectedItem(newds.getLocationURI());
+      setSelectedItem(newds.getLocation());
     }
 
     void closeOpenFiles() throws IOException {
