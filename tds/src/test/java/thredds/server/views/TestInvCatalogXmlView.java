@@ -32,8 +32,9 @@
  */
 package thredds.server.views;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.test.web.AbstractModelAndViewTests;
+import org.springframework.test.web.ModelAndViewAssert;
 import org.springframework.web.servlet.View;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -50,7 +51,7 @@ import java.util.Collections;
  * @author edavis
  * @since 4.0
  */
-public class TestInvCatalogXmlView extends AbstractModelAndViewTests
+public class TestInvCatalogXmlView
 {
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( TestInvCatalogXmlView.class );
@@ -80,7 +81,7 @@ public class TestInvCatalogXmlView extends AbstractModelAndViewTests
     }
     catch ( URISyntaxException e )
     {
-      fail( "URISyntaxException: " + e.getMessage() );
+      Assert.fail("URISyntaxException: " + e.getMessage());
       return;
     }
 

@@ -36,7 +36,7 @@ libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "3.2.12.RELEASE"
+versions["spring"] = "4.1.6.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -115,9 +115,9 @@ libraries["bounce"] = "org.bounce:bounce:0.14"
 
 libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"
 
-libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.2.6"
+libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.3.6"
 
-libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.2.5"
+libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.3.3"
 
 libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
 
