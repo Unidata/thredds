@@ -83,8 +83,7 @@ class GridResponder extends GridDatasetResponder {
 	 * 
 	 * Returns the resulting file
 	 */
-	File getResponseFile(HttpServletRequest request,
-			HttpServletResponse response, NcssParamsBean params,
+	File getResponseFile(HttpServletResponse response, NcssParamsBean params,
 			NetcdfFileWriter.Version version)
 			throws NcssException, InvalidRangeException, ParseException, IOException {
 
