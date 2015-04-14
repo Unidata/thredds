@@ -53,7 +53,6 @@ public final class GridPathParams {
 	
 	static {
 		pathInfo = Arrays.asList(
-            "/ncss/grid/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc",//single dataset
             "/ncss/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc",//single dataset
             "/ncss/testGridScan/GFS_CONUS_80km_20120227_0000.grib1", //datasetScan
             "/ncss/testGFSfmrc/GFS_CONUS_80km_nc_fmrc.ncd", //FeatureCollection --> TwoD

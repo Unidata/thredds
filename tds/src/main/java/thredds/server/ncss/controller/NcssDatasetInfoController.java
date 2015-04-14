@@ -69,7 +69,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
   @Autowired
   FeatureDatasetService datasetService;
 
-  @RequestMapping("/ncss/grid/**")
+  /* @RequestMapping("/ncss/grid/**")
   public String forwardGrid(HttpServletRequest req) {
     String reqString = req.getServletPath();
     assert reqString.startsWith("/ncss/grid");
@@ -79,7 +79,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
       forwardString += "?"+req.getQueryString();
 
      return forwardString;
-  }
+  } */
 
   @RequestMapping(
           value = {"/ncss/**/dataset.html", "/ncss/**/dataset.xml",

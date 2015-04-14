@@ -85,7 +85,7 @@ public class NcssController extends AbstractNcssController {
   @Autowired
   TdsContext tdsContext;
 
-  @RequestMapping("/grid/**")
+  /* @RequestMapping("/ncss/grid/**")
   public String forwardGrid(HttpServletRequest req) {
     String reqString = req.getServletPath();
     assert reqString.startsWith("/ncss/grid");
@@ -95,7 +95,7 @@ public class NcssController extends AbstractNcssController {
       forwardString += "?"+req.getQueryString();
 
      return forwardString;
-  }
+  }  */
 
   /**
    * Handles ncss data requests.
