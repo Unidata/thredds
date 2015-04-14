@@ -32,15 +32,19 @@
  */
 package ucar.nc2.iosp.grib;
 
-import java.io.*;
-
-import org.junit.*;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-/** Test reading grib files */
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 
+/** Test reading grib files */
+@Category(NeedsCdmUnitTest.class)
 public class TestJustReadGrib  {
   private boolean show = false;
 

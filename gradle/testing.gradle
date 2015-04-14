@@ -71,54 +71,40 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     }
 
     boolean isCdmUnitTestDirAvailable = true
-    String testdataDirPath = getTestdataDirPath()
+    String testdataDirKey = "unidata.testdata.path"
+    String testdataDirVal
 
-    if (!testdataDirPath) {
-        logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
+    if (!hasProperty(testdataDirKey)) {
+        logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirKey\" property not defined."
         isCdmUnitTestDirAvailable = false
-    } else if (!new File(testdataDirPath).isDirectory()) {
-        logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
-        isCdmUnitTestDirAvailable = false
+    } else {
+        testdataDirVal = property(testdataDirKey) as String;
+
+        if (!new File(testdataDirVal).isDirectory()) {
+            logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirVal\" directory not found."
+            isCdmUnitTestDirAvailable = false
+        }
     }
+
 
     testTasks*.configure {
         useJUnit {
             if (isTravis) {
                 excludeCategories 'ucar.unidata.test.util.NotTravis'
             }
-            if (!isCdmUnitTestDirAvailable) {
+
+            if (isCdmUnitTestDirAvailable) {
+                systemProperty testdataDirKey, testdataDirVal  // Propagate to Gradle Test Executor.
+            } else {
                 excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+
+                // As the code stands, we really need to assign *some* value to the testdataDir key.
+                // Don't try a sensible default; we want to know about the misconfiguration.
+                // Instead, give it something that corresponds to a directory that surely does not exist.
+                systemProperty testdataDirKey, "/NO/$testdataDirVal/FOUND/"
             }
         }
     }
-}
-
-// Copied from ucar.nc2.util.Misc with minor modification.
-String getTestdataDirPath() {
-    String threddsPropFileName = "thredds.properties";
-    String testdataDirPropName = "unidata.testdata.path";
-    String testdataDirPath = null;
-
-    if (testdataDirPath == null)
-        testdataDirPath = System.getProperty(testdataDirPropName);  // Check for system property
-
-    if (testdataDirPath == null) {
-        File userHomeDirFile = new File(System.getProperty("user.home"));
-        File userThreddsPropsFile = new File(userHomeDirFile, threddsPropFileName);
-        if (userThreddsPropsFile.exists() && userThreddsPropsFile.canRead()) {
-            Properties userThreddsProps = new Properties();
-            try {
-                userThreddsProps.load(new FileInputStream(userThreddsPropsFile));
-            } catch (IOException e) {
-                System.out.println("**Failed loading user THREDDS property file: " + e.getMessage());
-            }
-            if (!userThreddsProps.isEmpty()) {
-                testdataDirPath = userThreddsProps.getProperty(testdataDirPropName);
-            }
-        }
-    }
-
-    return testdataDirPath;
 }
 
 ///////////////////////////////////////////////// Root /////////////////////////////////////////////////

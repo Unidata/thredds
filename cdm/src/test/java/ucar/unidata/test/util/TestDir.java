@@ -20,7 +20,7 @@ import java.util.*;
  * @author caron
  * @since 3/23/12
  * Modified 5/15/14 to add remote test server paths
- * 
+ *
  * This singleton class computes and stores a variety of constants.
  * <p>
  * <table>
@@ -135,14 +135,11 @@ public class TestDir {
       }
     }
 
-    // As the code stands, we really need to assign *some* value to testdataDir.
-    // Don't try a sensible default; we want to know about the misconfiguration.
-    // Instead, give it something that corresponds to a directory that surely does not exist.
+    // Use default paths if needed.
     if ( testdataDir == null ) {
-      testdataDir = "/NO/" + testdataDirPropName + "/FOUND/";
+      testdataDir = "/share/testdata/";
       System.err.printf( "**No '%s' property, defaulting to '%s'%n", testdataDirPropName, testdataDir );
     }
-
     // Make sure paths ends with a slash.
     testdataDir = testdataDir.replace('\\','/'); //canonical
     if ((!testdataDir.endsWith( "/")))
@@ -348,7 +345,7 @@ public class TestDir {
     ReadAllVariables act = new ReadAllVariables();
     act.doAct(filename);
   }
-  
+
   private static class ReadAllVariables implements Act {
 
     @Override

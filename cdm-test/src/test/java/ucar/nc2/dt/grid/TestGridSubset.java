@@ -38,9 +38,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.writer.DataFactory;
 import ucar.ma2.*;
-import ucar.nc2.Dimension;
 import ucar.nc2.NCdumpW;
-import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -48,13 +47,10 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
-
-import ucar.nc2.constants.FeatureType;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.TestDir;
@@ -952,6 +948,7 @@ public class TestGridSubset {
 
   // has runtime(time), time(time)
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testTPgribCollection() throws Exception {
     try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
       GeoGrid grid = dataset.findGridByName("Pressure_surface");
