@@ -28,7 +28,7 @@
     <xsl:variable name="standardNameCnt" select="count(/nc:netcdf/nc:variable/nc:attribute[@name='standard_name'])"/>
     <xsl:variable name="dimensionCnt" select="count(/nc:netcdf/nc:dimension)"/>
     <!-- Identifier Fields: 4 possible -->
-    <xsl:variable name="id" as="xs:string*" select="(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='id']/@value,/nc:netcdf/nc:attribute[@name='id']/@value)"/>
+    <xsl:variable name="id" as="xs:string*" select="(/nc:attribute[@name='id']/@value,/nc:netcdf/nc:attribute[@name='id']/@value,/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='id']/@value)"/>
     <xsl:variable name="identifierNameSpace" as="xs:string*" select="(/nc:netcdf/nc:attribute[@name='naming_authority']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='authority']/@value)"/>
     <xsl:variable name="metadataConvention" as="xs:string*" select="/nc:netcdf/nc:attribute[@name='Metadata_Conventions']/@value"/>
@@ -178,7 +178,7 @@
             </xsl:attribute>
             <gmd:fileIdentifier>
                 <xsl:call-template name="writeCharacterString">
-                    <xsl:with-param name="stringToWrite" select="$id[1]"/>
+                    <xsl:with-param name="stringToWrite" select="concat($identifierNameSpace[1], '.', $id[1])"/>
                 </xsl:call-template>
             </gmd:fileIdentifier>
             <gmd:language>
