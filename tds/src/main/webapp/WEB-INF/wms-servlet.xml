@@ -13,7 +13,7 @@
   <bean id="wmsController" class="thredds.server.wms.ThreddsWmsController" init-method="init">
     <property name="supportedMethods" value="GET"/>
     <property name="serverConfig">
-      <ref local="config"/>
+      <ref bean="config"/>
     </property>
   </bean>
   

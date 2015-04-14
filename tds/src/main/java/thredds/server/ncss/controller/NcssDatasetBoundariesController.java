@@ -65,7 +65,7 @@ public class NcssDatasetBoundariesController extends AbstractNcssController {
   @Autowired
   FeatureDatasetService datasetService;
 
-  @RequestMapping("/ncss/grid/**")
+  /* @RequestMapping("/ncss/grid/**")
   public String forwardGrid(HttpServletRequest req) {
     String reqString = req.getServletPath();
     assert reqString.startsWith("/ncss/grid");
@@ -75,7 +75,7 @@ public class NcssDatasetBoundariesController extends AbstractNcssController {
       forwardString += "?"+req.getQueryString();
 
      return forwardString;
-  }
+  }   */
 
   @RequestMapping(value = {"datasetBoundaries"})
   void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException {
