@@ -57,6 +57,8 @@ import java.util.*;
 
 /**
  * Builds client Catalogs using JDOM2
+ * Non validating.
+ * If you want validation, consider calling saxBuilder.setEntityResolver();
  *
  * @author caron
  * @since 1/8/2015
@@ -240,7 +242,7 @@ public class CatalogBuilder {
   private void readXMLfromString(String catalogAsString) throws IOException {
     try {
       StringReader in = new StringReader(catalogAsString);
-      SAXBuilder saxBuilder = new SAXBuilder();
+      SAXBuilder saxBuilder = new SAXBuilder();    // LOOK non-validating
       org.jdom2.Document jdomDoc = saxBuilder.build(in);
       readCatalog(jdomDoc.getRootElement());
 
