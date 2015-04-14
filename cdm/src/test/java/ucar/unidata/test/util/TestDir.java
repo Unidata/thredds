@@ -135,11 +135,14 @@ public class TestDir {
       }
     }
 
-    // Use default paths if needed.
+    // As the code stands, we really need to assign *some* value to testdataDir.
+    // Don't try a sensible default; we want to know about the misconfiguration.
+    // Instead, give it something that corresponds to a directory that surely does not exist.
     if ( testdataDir == null ) {
-      testdataDir = "/share/testdata/";
+      testdataDir = "/NO/" + testdataDirPropName + "/FOUND/";
       System.err.printf( "**No '%s' property, defaulting to '%s'%n", testdataDirPropName, testdataDir );
     }
+
     // Make sure paths ends with a slash.
     testdataDir = testdataDir.replace('\\','/'); //canonical
     if ((!testdataDir.endsWith( "/")))
