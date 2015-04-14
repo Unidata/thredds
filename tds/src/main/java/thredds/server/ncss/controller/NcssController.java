@@ -75,7 +75,6 @@ import java.util.Set;
  * @author mhermida
  */
 @Controller
-@RequestMapping("/ncss")
 public class NcssController extends AbstractNcssController {
   //static private final Logger log = LoggerFactory.getLogger(NcssController.class);
 
@@ -85,7 +84,7 @@ public class NcssController extends AbstractNcssController {
   @Autowired
   TdsContext tdsContext;
 
-  @RequestMapping("/grid/**")
+  /* @RequestMapping("/ncss/grid/**")
   public String forwardGrid(HttpServletRequest req) {
     String reqString = req.getServletPath();
     assert reqString.startsWith("/ncss/grid");
@@ -95,7 +94,7 @@ public class NcssController extends AbstractNcssController {
       forwardString += "?"+req.getQueryString();
 
      return forwardString;
-  }
+  }  */
 
   /**
    * Handles ncss data requests.
@@ -108,7 +107,7 @@ public class NcssController extends AbstractNcssController {
    * @throws InvalidRangeException
    * @throws ParseException
    */
-  @RequestMapping("**")
+  @RequestMapping("/ncss/**")
   public void handleRequest(HttpServletRequest req, HttpServletResponse res,
                             @Valid NcssParamsBean params,
                             BindingResult validationResult) throws Exception {
