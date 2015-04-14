@@ -1,5 +1,6 @@
 package thredds.servlet;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import thredds.client.catalog.Catalog;
@@ -39,12 +40,12 @@ public class StaticViewerTest {
     ViewerLinkProvider sv = ViewerServiceImpl.getStaticView();
     List<ViewerLinkProvider.ViewerLink> viewerLinks = sv.getViewerLinks( ds1, request);
     assertNotNull(viewerLinks);
-    assertEquals(1, viewerLinks.size());
+    Assert.assertEquals(1, viewerLinks.size());
 
     ViewerLinkProvider.ViewerLink vl = viewerLinks.get(0);
     assertNotNull(vl);
-    assertEquals("DS info", vl.getTitle());
-    assertEquals(host + contextPath + "/dodsC" + "/test/ds1.nc.info", vl.getUrl());
+    Assert.assertEquals("DS info", vl.getTitle());
+    Assert.assertEquals(host + contextPath + "/dodsC" + "/test/ds1.nc.info", vl.getUrl());
   }
 
   @Test
@@ -70,12 +71,12 @@ public class StaticViewerTest {
     ViewerLinkProvider sv = ViewerServiceImpl.getStaticView();
     List<ViewerLinkProvider.ViewerLink> viewerLinks = sv.getViewerLinks( ds1, request);
     assertNotNull(viewerLinks);
-    assertEquals(1, viewerLinks.size());
+    Assert.assertEquals(1, viewerLinks.size());
 
     ViewerLinkProvider.ViewerLink vl = viewerLinks.get(0);
     assertNotNull(vl);
-    assertEquals("ODAP DS info", vl.getTitle());
-    assertEquals(host + contextPath + "/dodsC" + "/test/ds1.nc.info", vl.getUrl());
+    Assert.assertEquals("ODAP DS info", vl.getTitle());
+    Assert.assertEquals(host + contextPath + "/dodsC" + "/test/ds1.nc.info", vl.getUrl());
   }
 
   @Test
@@ -101,12 +102,12 @@ public class StaticViewerTest {
     ViewerLinkProvider sv = ViewerServiceImpl.getStaticView();
     List<ViewerLinkProvider.ViewerLink> viewerLinks = sv.getViewerLinks( ds1, request);
     assertNotNull(viewerLinks);
-    assertEquals(1, viewerLinks.size());
+    Assert.assertEquals(1, viewerLinks.size());
 
     ViewerLinkProvider.ViewerLink vl = viewerLinks.get(0);
     assertNotNull(vl);
-    assertEquals("RemoteWms DS info", vl.getTitle());
-    assertEquals("http://server/thredds/wms/test/ds1.nc.info", vl.getUrl());
+    Assert.assertEquals("RemoteWms DS info", vl.getTitle());
+    Assert.assertEquals("http://server/thredds/wms/test/ds1.nc.info", vl.getUrl());
   }
 
   private Dataset constructCatalogAndAssertAsExpected(URI docBaseUri, String catalogAsString) {
@@ -123,10 +124,10 @@ public class StaticViewerTest {
 
       List<Dataset> datasets = cat.getDatasets();
       assertNotNull(datasets);
-      assertEquals(1, datasets.size());
+      Assert.assertEquals(1, datasets.size());
       Dataset ds1 = datasets.get(0);
       assertNotNull(ds1);
-      assertEquals("ds 1", ds1.getName());
+      Assert.assertEquals("ds 1", ds1.getName());
       return ds1;
 
     } catch (IOException e) {
