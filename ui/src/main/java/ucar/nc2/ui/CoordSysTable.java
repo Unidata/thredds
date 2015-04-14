@@ -52,6 +52,8 @@ import ucar.util.prefs.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.List;
 import java.io.IOException;
@@ -228,6 +230,22 @@ public class CoordSysTable extends JPanel {
 
     setLayout(new BorderLayout());
     add(split2, BorderLayout.CENTER);
+  }
+
+  public void summaryInfo(Formatter f) {
+    if (ds == null) return;
+    f.format("%s%n", ds.getLocation());
+    int ngrids = 0;
+
+    for (Object varo : varTable.getBeans()) {
+      VariableBean varBean = (VariableBean) varo;
+      if (varBean.getDataType().trim().equalsIgnoreCase("grid"))
+        ngrids++;
+    }
+    int ncoordSys = csTable.getBeans().size();
+    int ncoords = axisTable.getBeans().size();
+
+    f.format(" ngrids=%d, ncoords=%d, ncoordSys=%d%n", ngrids, ncoords, ncoordSys);
   }
 
   private BeanTable attTable;

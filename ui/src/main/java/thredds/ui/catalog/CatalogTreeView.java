@@ -348,7 +348,7 @@ public class CatalogTreeView extends JPanel {
       Catalog cat = builder.buildFromLocation(location);
       setCatalog(cat);
 
-    } catch (IOException ioe) {
+    } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "Error opening catalog location " + location+" err="+builder.getErrorMessage());
     }
   }

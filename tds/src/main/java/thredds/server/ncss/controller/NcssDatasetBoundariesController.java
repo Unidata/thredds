@@ -59,7 +59,7 @@ import ucar.nc2.ft.FeatureDataset;
  */
 @Controller
 @Scope("request")
-@RequestMapping(value = "/ncss/**/datasetBoundaries.xml")
+// @RequestMapping(value = "/ncss/**/datasetBoundaries.xml")
 public class NcssDatasetBoundariesController extends AbstractNcssController {
 
   @Autowired
@@ -77,7 +77,7 @@ public class NcssDatasetBoundariesController extends AbstractNcssController {
      return forwardString;
   }   */
 
-  @RequestMapping(value = {"datasetBoundaries"})
+  @RequestMapping("/ncss/**/datasetBoundaries.xml")
   void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException {
 
     //Checking request format...

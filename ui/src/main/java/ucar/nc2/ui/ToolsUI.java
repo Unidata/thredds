@@ -2061,6 +2061,17 @@ public class ToolsUI extends JPanel {
       coordSysTable = new CoordSysTable(prefs, buttPanel);
       add(coordSysTable, BorderLayout.CENTER);
 
+      AbstractButton summaryButton = BAMutil.makeButtcon("Information", "Summary Info", false);
+      summaryButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          coordSysTable.summaryInfo(f);
+          detailTA.setText(f.toString());
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(summaryButton);
+
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -2081,6 +2092,7 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(infoButton);
+
 
       JButton dsButton = new JButton("Object dump");
       dsButton.addActionListener(new ActionListener() {

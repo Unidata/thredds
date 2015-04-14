@@ -75,6 +75,7 @@ import java.util.Set;
  * @author mhermida
  */
 @Controller
+@RequestMapping("/ncss")
 public class NcssController extends AbstractNcssController {
   //static private final Logger log = LoggerFactory.getLogger(NcssController.class);
 
@@ -107,7 +108,7 @@ public class NcssController extends AbstractNcssController {
    * @throws InvalidRangeException
    * @throws ParseException
    */
-  @RequestMapping("/ncss/**")
+  @RequestMapping("**")
   public void handleRequest(HttpServletRequest req, HttpServletResponse res,
                             @Valid NcssParamsBean params,
                             BindingResult validationResult) throws Exception {
