@@ -59,6 +59,7 @@ shadow {
     exclude 'META-INF/DEPENDENCIES'
     exclude 'META-INF/LICENSE'
     exclude 'META-INF/NOTICE'
+    exclude 'META-INF/*.SF'
     exclude 'META-INF/*.DSA'
     exclude 'META-INF/*.RSA'
     exclude 'META-INF/*.txt'
