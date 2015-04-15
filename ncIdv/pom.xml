@@ -39,6 +39,11 @@
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
+      <artifactId>clcommon</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
       <scope>compile</scope>
     </dependency>

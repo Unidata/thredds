@@ -4,6 +4,7 @@ dependencies {
   compile project(':cdm')
   compile project(':bufr')
   compile project(':grib')
+  compile project(':clcommon')
   compile project(':opendap')
   compile project(':visad')
 
