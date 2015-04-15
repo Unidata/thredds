@@ -93,13 +93,14 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   private String webappName;
   private String contextPath;
 
-  //Properties from tds.properties
+  // The values for these properties all come from tds/src/main/template/thredds/server/tds.properties except for
+  // "tds.content.root.path", which must be defined on the command line.
+
   @Value("${tds.version}")
   private String webappVersion;
 
   //@Value("${tds.version.brief}")
   //private String webappVersionBrief;
-
 
   @Value("${tds.version.builddate}")
   private String webappVersionBuildDate;
@@ -121,6 +122,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
   @Value("${tds.content.startup.path}")
   private String startupContentPath;
+
   ////////////////////////////////////
 
   private String webinfPath;
@@ -166,7 +168,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
   private TdsContext() {
   }
-
 
   public void setWebappVersion(String verFull) {
     this.webappVersion = verFull;
@@ -322,18 +323,30 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       logServerStartup.error("TdsContext.init(): " + msg);
     }
 
-    // Set the content directory and source.
+
+    String contentRootPathKey = "tds.content.root.path";
+
+    // In applicationContext-tdsConfig.xml, we have ignoreUnresolvablePlaceholders set to "true".
+    // As a result, when properties aren't defined, they will keep their placeholder String.
+    // In this case, that's "${tds.content.root.path}".
+    if (this.contentRootPath.equals("${tds.content.root.path}")) {
+      String message = String.format("\"%s\" property isn't defined.", contentRootPathKey);
+      logServerStartup.error(message);
+      throw new IllegalStateException(message);
+    }
+
     File contentRootDir = new File(this.contentRootPath);
-    if (!contentRootDir.isAbsolute())
-      this.contentDirectory = new File(new File(this.rootDirectory, this.contentRootPath), this.contentPath);
-    else {
-      if (contentRootDir.isDirectory())
-        this.contentDirectory = new File(contentRootDir, this.contentPath);
-      else {
-        String msg = "Content root directory [" + this.contentRootPath + "] not a directory.";
-        logServerStartup.error("TdsContext.init(): " + msg);
-        throw new IllegalStateException(msg);
-      }
+    if (!contentRootDir.isAbsolute()) {
+      contentRootDir = new File(this.rootDirectory, this.contentRootPath);
+    }
+
+    if (contentRootDir.isDirectory()) {
+      this.contentDirectory = new File(contentRootDir, this.contentPath);
+    } else {
+      String message = String.format("\"%s\" property doesn't define a directory: %s",
+              contentRootPathKey, contentRootPath);
+      logServerStartup.error(message);
+      throw new IllegalStateException(message);
     }
 
     // If content directory exists, make sure it is a directory.
@@ -346,6 +359,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
       logServerStartup.error(message);
       throw new IllegalStateException(message);
     }
+
     ServletUtil.setContentPath(this.contentDirSource.getRootDirectoryPath());
 
     //////////////////////////////////// Copy default startup files, if necessary ////////////////////////////////////
