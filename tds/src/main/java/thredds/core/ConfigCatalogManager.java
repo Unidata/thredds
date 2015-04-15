@@ -115,7 +115,6 @@ public class ConfigCatalogManager implements InitializingBean {
     }
   }
 
-
   private void initCatalog(String path, Set<String> pathHash, Set<String> idHash) throws IOException {
     path = StringUtils.cleanPath(path);
     File f = this.tdsContext.getConfigFileSource().getFile(path);

@@ -105,7 +105,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     DatasetScanConfigBuilder configBuilder = new DatasetScanConfigBuilder(errlog);
     DatasetScanConfig config = configBuilder.readDatasetScanConfig(dsElem);
     if (configBuilder.fatalError) {
-       this.fatalError = true;
+       // this.fatalError = true;
        return null;
 
      } else {
@@ -122,7 +122,7 @@ public class ConfigCatalogBuilder extends CatalogBuilder {
     thredds.featurecollection.FeatureCollectionConfigBuilder configBuilder = new thredds.featurecollection.FeatureCollectionConfigBuilder(errlog);
     FeatureCollectionConfig config = configBuilder.readConfig(fcElem);
     if (configBuilder.fatalError) {
-      this.fatalError = true;
+      // this.fatalError = true;
       return null;
 
     } else {

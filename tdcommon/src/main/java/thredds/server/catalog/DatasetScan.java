@@ -157,8 +157,8 @@ public class DatasetScan extends CatalogRef {
     String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
 
     // translate any properties         LOOK this should be done at configure time
-    String scanDir = ConfigCatalog.translateAlias(config.scanDir);
-    String dataDirComplete = (dataDirReletive.length() > 1) ? scanDir + "/" + dataDirReletive : scanDir;
+    //String scanDir = ConfigCatalog.translateAlias(config.scanDir);
+    String dataDirComplete = (dataDirReletive.length() > 1) ? config.scanDir + "/" + dataDirReletive : config.scanDir;
 
     // Setup and create catalog builder.
     CatalogBuilder catBuilder = new CatalogBuilder();
@@ -487,8 +487,8 @@ public class DatasetScan extends CatalogRef {
     String parentId = (dataDirReletive.length() > 1) ? this.getId() + "/" + dataDirReletive : this.getId() + "/";
 
     // translate any properties
-    String scanDir = ConfigCatalog.translateAlias(config.scanDir);
-    String dataDirComplete = (dataDirReletive.length() > 1) ? scanDir + "/" + dataDirReletive : scanDir;
+    // String scanDir = ConfigCatalog.translateAlias(config.scanDir);
+    String dataDirComplete = (dataDirReletive.length() > 1) ? config.scanDir + "/" + dataDirReletive : config.scanDir;
 
     // Setup and create catalog builder.
     CatalogBuilder catBuilder = new CatalogBuilder();

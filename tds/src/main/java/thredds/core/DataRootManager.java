@@ -103,7 +103,7 @@ public class DataRootManager {
   @Resource(name = "dataRootLocationAliasExpanders")
   public void setDataRootLocationAliasExpanders(Map<String, String> aliases) {
     for (Map.Entry<String, String> entry : aliases.entrySet())
-      ConfigCatalog.addAlias(entry.getKey(), entry.getValue());
+      ConfigCatalog.addAlias("${"+entry.getKey()+"}", entry.getValue());
   }
 
   //////////////////////////////////////////////

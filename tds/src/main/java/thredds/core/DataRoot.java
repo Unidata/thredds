@@ -165,9 +165,9 @@ public class DataRoot {
        locationReletive = locationReletive + "/";
 
         // translate any properties
-    String scanDir = ConfigCatalog.translateAlias(rootLocation); // LOOK we may have already done this
+    //String scanDir = ConfigCatalog.translateAlias(rootLocation); // LOOK we may have already done this
 
     // put it together
-    return (locationReletive.length() > 1) ? scanDir + "/" + locationReletive : scanDir;
+    return (locationReletive.length() > 1) ? rootLocation + "/" + locationReletive : rootLocation;
   }
 }
