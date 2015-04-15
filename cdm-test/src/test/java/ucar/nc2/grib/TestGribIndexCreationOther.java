@@ -295,7 +295,7 @@ public class TestGribIndexCreationOther {
 
 
   // String name, String path, FeatureCollectionType fcType, String spec, String collectionName, String dateFormatMark, String olderThan, String timePartition, Element innerNcml
-  //@Ignore("B: not visible on spock")
+  @Ignore("B: not visible on spock")
   @Test
   public void testNdfdNoaaport() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));

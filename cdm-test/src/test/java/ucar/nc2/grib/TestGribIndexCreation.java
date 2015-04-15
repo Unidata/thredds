@@ -1,12 +1,15 @@
 package ucar.nc2.grib;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
@@ -79,19 +82,29 @@ public class TestGribIndexCreation {
 
   /////////////////////////////////////////////////////////
 
-
   @Test
   public void testGdsHashChange() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("NDFD-CONUS_5km_conduit", "test/NDFD-CONUS_5km_conduit", FeatureCollectionType.GRIB2,
-            TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/.*grib2", null, null, null, "file", null);
-    config.gribConfig.addGdsHash("-328645426", "1821883766");
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NDFD-CONUS_noaaport", "test/NDFD-CONUS_noaaport", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/.*gbx9", null, null, null, "file", null);
+    // 	  <gdsHash from='-1506003048' to='-1505079527'/>
+    config.gribConfig.addGdsHash("-1506003048", "-1505079527");
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
     // LOOK add check that records were combined
-  }
+    try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx3", null)) {
+      Group root = ncfile.getRootGroup();
+      Assert.assertEquals(2, root.getGroups().size());
+      Group twoD = root.findGroup("TwoD");
+      assert twoD != null;
+      Assert.assertEquals(0, twoD.getGroups().size());
+    }
 
+
+    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+  }
 
   @Test
   public void testCfrsAnalysisOnly() throws IOException {
