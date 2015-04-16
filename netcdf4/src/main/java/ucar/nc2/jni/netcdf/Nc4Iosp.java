@@ -188,13 +188,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return nc4;
   }
 
+  private static Boolean isClibraryPresent = null;
+
   /**
    * Test if the netcdf C library is present and loaded
    *
    * @return true if present
    */
   public static boolean isClibraryPresent() {
-    return load() != null;
+    if (isClibraryPresent == null) {
+      isClibraryPresent = load() != null;
+    }
+
+    return isClibraryPresent;
   }
 
   /**
