@@ -67,25 +67,25 @@ public class TdsRequestedDataset {
   static private DatasetManager datasetManager;
 
   public static FeatureCollectionRef getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
-    TdsRequestedDataset trd = new TdsRequestedDataset(request);
+    TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsFeatureCollection(request, response);
   }
 
   public static FeatureDataset getFeatureDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
-    TdsRequestedDataset trd = new TdsRequestedDataset(request);
+    TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsFeatureDataset(request, response);
   }
 
   public static GridDataset getGridDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
-    TdsRequestedDataset trd = new TdsRequestedDataset(request);
+    TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsGridDataset(request, response);
   }
 
   public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
-    TdsRequestedDataset trd = new TdsRequestedDataset(request);
+    TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsNetcdfFile(request, response);
   }
@@ -112,8 +112,8 @@ public class TdsRequestedDataset {
   private boolean isRemote = false;
   private String path;
 
-  public TdsRequestedDataset(HttpServletRequest request) throws IOException {
-    this.path = TdsPathUtils.extractPath(request, null);
+  public TdsRequestedDataset(HttpServletRequest request, String removePrefix) throws IOException {
+    this.path = TdsPathUtils.extractPath(request, removePrefix);
     if (this.path == null) {
       this.path = ServletUtil.getParameterIgnoreCase(request, "dataset");
       isRemote = (path != null);

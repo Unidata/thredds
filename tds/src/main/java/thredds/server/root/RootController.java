@@ -60,6 +60,11 @@ public class RootController implements LastModified {
   @Autowired
   private TdsContext tdsContext;
 
+  @RequestMapping("**")
+  public String wtf() {
+    return "";
+  }
+
   @RequestMapping(value = {"/", "/catalog.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   public String redirectRootCatalog() {
     return "redirect:/catalog/catalog.html";

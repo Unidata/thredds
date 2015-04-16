@@ -38,7 +38,7 @@ import org.springframework.validation.*;
 
 import java.util.List;
 
-public class TestLocalCatalogRequest extends TestCase {
+public class TestLocalCatalogRequest {
 
   private String parameterNameCommand = "command";
   private String parameterNameDatasetId = "dataset";
@@ -56,14 +56,10 @@ public class TestLocalCatalogRequest extends TestCase {
   private String dsId = "my/cool/dataset";
 
 
-  public TestLocalCatalogRequest(String name) {
-    super(name);
-  }
-
-  public void testCommandDefaultValues() {
+/*   public void testCommandDefaultValues() {
     // Command defaults to SHOW when dataset ID not given [xml]:
-    //     check that [/catalog/**/*.xml, command=null, dataset=null] is
-    //     valid and becomes [**/*.xml, command=SHOW, dataset=null]
+    //     check that [/catalog/** /*.xml, command=null, dataset=null] is
+    //     valid and becomes [** /*.xml, command=SHOW, dataset=null]
     req = this.basicSetup("/catalog", "/" + xmlPath, null, null);
     htmlView = false;
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest(req, htmlView);
@@ -76,8 +72,8 @@ public class TestLocalCatalogRequest extends TestCase {
     assertEquals(lcr.getDataset(), "");
 
     // Command defaults to SHOW when dataset ID not given [html]:
-    //     check that [/catalog/**/*.html, command=null, dataset=null] is
-    //     valid and becomes [**/*.html, command=SHOW, dataset=null]
+    //     check that [/catalog/** /*.html, command=null, dataset=null] is
+    //     valid and becomes [** /*.html, command=SHOW, dataset=null]
     req = this.basicSetup("/catalog", "/" + htmlPath, null, null);
     htmlView = true;
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest(req, htmlView);
@@ -90,8 +86,8 @@ public class TestLocalCatalogRequest extends TestCase {
     assertEquals(lcr.getDataset(), "");
 
     // Command defaults to SUBSET when dataset ID is given [xml]:
-    //     check that [/catalog/**/*.xml, command=null, dataset=ID] is
-    //     valid and becomes [**/*.xml, command=SUBSET, dataset=ID]
+    //     check that [/catalog/** /*.xml, command=null, dataset=ID] is
+    //     valid and becomes [** /*.xml, command=SUBSET, dataset=ID]
     req = this.basicSetup("/catalog", "/" + xmlPath, null, dsId);
     htmlView = false;
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest(req, htmlView);
@@ -104,8 +100,8 @@ public class TestLocalCatalogRequest extends TestCase {
     assertEquals(lcr.getDataset(), dsId);
 
     // Command defaults to SUBSET when dataset ID is given [html]:
-    //     check that [/catalog/**/*.html, command=null, dataset=ID] is
-    //     valid and becomes [**/*.html, command=SUBSET, dataset=ID]
+    //     check that [/catalog/** /*.html, command=null, dataset=ID] is
+    //     valid and becomes [** /*.html, command=SUBSET, dataset=ID]
     req = this.basicSetup("/catalog", "/" + htmlPath, null, dsId);
     htmlView = true;
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest(req, htmlView);
@@ -120,7 +116,7 @@ public class TestLocalCatalogRequest extends TestCase {
 
   public void testCommandShow() {
     // Test validity:
-    // - path="/catalog/**/*.xml";
+    // - path="/catalog/** /*.xml";
     // - command=SHOW;
     // - dataset=null
     req = this.basicSetup("/catalog", "/" + xmlPath, cmdShow, null);
@@ -135,7 +131,7 @@ public class TestLocalCatalogRequest extends TestCase {
     assertEquals(lcr.getDataset(), "");
 
     // Test validity:
-    // - path="/catalog/**/*.xml",
+    // - path="/catalog/** /*.xml",
     // - command=SHOW
     // - dataset=ID
     req = this.basicSetup("/catalog", "/" + xmlPath, cmdShow, dsId);
@@ -152,7 +148,7 @@ public class TestLocalCatalogRequest extends TestCase {
 
   public void testCommandSubsetValid() {
     // Test validity:
-    // - path="/catalog/**/*.xml",
+    // - path="/catalog/** /*.xml",
     // - command=SUBSET
     // - dataset=ID
     req = this.basicSetup("/catalog", "/" + xmlPath, cmdSubset, dsId);
@@ -169,7 +165,7 @@ public class TestLocalCatalogRequest extends TestCase {
 
   public void testCommandSubsetNoDatasetInvalid() {
     // Test that invalid:
-    // - path="/catalog/**/*.xml",
+    // - path="/catalog/** /*.xml",
     // - command=SUBSET
     // - dataset=null
     req = this.basicSetup("/catalog", "/" + xmlPath, cmdSubset, null);
@@ -338,5 +334,5 @@ public class TestLocalCatalogRequest extends TestCase {
     req.setParameter(parameterNameCommand, command);
     req.setParameter(parameterNameDatasetId, datasetId);
     return req;
-  }
+  }  */
 }

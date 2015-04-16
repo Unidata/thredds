@@ -64,6 +64,7 @@ public class TdsPathUtils {
         if (dataPath.startsWith(removePrefix))
           dataPath = dataPath.substring(removePrefix.length());
       }
+
     }
 
     if (dataPath.startsWith("/"))

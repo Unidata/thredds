@@ -75,35 +75,5 @@ public abstract class AbstractController {
      return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
   }
 
-  @ExceptionHandler(FileNotFoundException.class)
- 	public ResponseEntity<String> handle(FileNotFoundException ncsse) {
- 		HttpHeaders responseHeaders = new HttpHeaders();
- 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
- 		return new ResponseEntity<>(
- 				"FileNotFoundException exception handled : " + ncsse.getMessage(), responseHeaders,
- 				HttpStatus.NOT_FOUND);
- 	}
-
- 	@ExceptionHandler(UnsupportedOperationException.class)
- 	public ResponseEntity<String> handle(UnsupportedOperationException ex) {
- 		HttpHeaders responseHeaders = new HttpHeaders();
- 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
- 		return new ResponseEntity<>(
- 				"UnsupportedOperationException exception handled : " + ex.getMessage(), responseHeaders,
- 				HttpStatus.BAD_REQUEST);
- 	}
-
-  @ExceptionHandler(Throwable.class)
- 	public ResponseEntity<String> handle(Throwable ex) {
-   //  ex.printStackTrace();
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
-    logger.error("uncaught exception", ex);
-
- 		HttpHeaders responseHeaders = new HttpHeaders();
- 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
- 		return new ResponseEntity<>("Throwable exception handled : " + ex.getMessage(), responseHeaders,
-             HttpStatus.INTERNAL_SERVER_ERROR);
- 	}
 
 }
