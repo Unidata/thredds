@@ -102,7 +102,7 @@ afterEvaluate {
         // (e.g. one of its onlyIf()s returns false), but those situations are rare.
         onlyIf {
             Task task = tasks.integrationTest
-            if (!task.enabled) {
+            if (!task.enabled) {    // May have been disabled in testing.gradle.
                 return false;
             }
 

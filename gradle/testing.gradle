@@ -18,22 +18,6 @@ subprojects {
             }
         }
     }
-
-    tasks.withType(Test) {
-        // Eventually create a JUnit category for tests that need this.
-        String propKey = 'tds.content.root.path'
-        def propVal = System.properties[propKey]  // Defined in gradle.properties or command line.
-
-        if (propVal) {
-            systemProperty propKey, propVal  // Propagate to Gradle Test Executor.
-        } else {
-            logger.warn "\"$propKey\" not defined! Some tests will fail."
-        }
-
-        if (!System.env['TRAVIS']) {
-            ignoreFailures true  // Don't fail the build on test failure unless we're running on Travis.
-        }
-    }
 }
 
 boolean testRuntimeHasDepNamed(String depName) {
@@ -46,6 +30,12 @@ boolean testRuntimeHasDepNamed(String depName) {
     }
 }
 
+ext.contentRootKey = "tds.content.root.path"
+ext.contentRootVal = null  // To be set in isContentRootAvailable()
+
+ext.testdataDirKey = "unidata.testdata.path"
+ext.testdataDirVal = null  // To be assigned in ___
+
 // Process test exclusions.
 gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     Collection<Task> testTasks = taskGraph.allTasks.findAll { it instanceof Test }
@@ -57,52 +47,100 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     // Is there a better way to detect Jenkins?
     boolean isJenkins = System.env['JENKINS_URL']  // We only care if prop is defined, not its actual value.
 
-    if (isJenkins) {
-        // Never exclude any tests when running on Jenkins.
-        // We're explicitly checking for this so that we don't accidentally exclude tests due to a mis-configuration
-        // of one of the properties below. In that scenario, we want tests to fail so that we know to fix our config.
-        return
-    }
-
     boolean isTravis = System.env['TRAVIS']
+
+    // We only want to write these log messages once, which is why we don't have them in the "testTasks*.configure{}"
+    // block below.
 
     if (isTravis) {
         logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
     }
 
-    boolean isCdmUnitTestDirAvailable = true
-    String testdataDirKey = "unidata.testdata.path"
-    String testdataDirVal
-
-    if (!hasProperty(testdataDirKey)) {
-        logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirKey\" property not defined."
-        isCdmUnitTestDirAvailable = false
-    } else {
-        testdataDirVal = property(testdataDirKey) as String;
-
-        if (!new File(testdataDirVal).isDirectory()) {
-            logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirVal\" directory not found."
-            isCdmUnitTestDirAvailable = false
-        }
+    boolean isContentRootAvailable = isContentRootAvailable()
+    if (!isContentRootAvailable && !isJenkins) {
+        logger.warn "Skipping all NeedsContentRoot tests."
     }
 
+    boolean isCdmUnitTestDirAvailable = isCdmUnitTestDirAvailable()
+    if (!isCdmUnitTestDirAvailable && !isJenkins) {
+        logger.warn "Skipping all NeedsCdmUnitTest tests."
+    }
 
     testTasks*.configure {
         useJUnit {
             if (isTravis) {
+                ignoreFailures false  // On Travis, abort the build if any tests fail.
                 excludeCategories 'ucar.unidata.test.util.NotTravis'
+            } else {
+                ignoreFailures true  // In every other environment, don't let test failures abort the build.
+            }
+
+            if (isContentRootAvailable) {
+                systemProperty contentRootKey, contentRootVal   // Propagate to Gradle Test Executor.
+            } else {
+                // As the code stands, we really need to assign *some* value to this property.
+                // Don't try a sensible default; we want to know about the misconfiguration.
+                // Instead, give it something that corresponds to a directory that surely does not exist.
+                systemProperty contentRootKey, "/NO/$contentRootKey/FOUND/"
+
+                if (!isJenkins) {  // Never exclude any tests when running on Jenkins.
+                    excludeCategories 'ucar.unidata.test.util.NeedsContentRoot'
+
+                    if (path == ":it:integrationTest") {
+                        logger.warn "Skipping all integration tests (task \'$path\'): " +
+                                "\'$contentRootKey\' property not defined."
+
+                        // We can't stand up a functioning TDS test instance without a valid content root,
+                        // so disable the integration test task altogether.
+                        setEnabled false
+                    }
+                }
             }
 
             if (isCdmUnitTestDirAvailable) {
-                systemProperty testdataDirKey, testdataDirVal  // Propagate to Gradle Test Executor.
+                systemProperty testdataDirKey, testdataDirVal
             } else {
-                excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+                systemProperty testdataDirKey, "/NO/$testdataDirKey/FOUND/"
 
-                // As the code stands, we really need to assign *some* value to the testdataDir key.
-                // Don't try a sensible default; we want to know about the misconfiguration.
-                // Instead, give it something that corresponds to a directory that surely does not exist.
-                systemProperty testdataDirKey, "/NO/$testdataDirVal/FOUND/"
+                if (!isJenkins) {
+                    excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+                }
             }
+        }
+    }
+}
+
+// TODO: There's a lot of redundant code here. These two methods could be replaced by "isPropertyValidDirectory()".
+// I could set system properties in there as well.
+
+boolean isContentRootAvailable() {
+    if (!hasProperty(contentRootKey)) {
+        logger.warn "\'$contentRootKey\' property not defined."
+        return false
+    } else {
+        contentRootVal = property(contentRootKey) as String;
+
+        if (!new File(contentRootVal).isDirectory()) {
+            logger.warn "\'$contentRootVal\' directory not found."
+            return false
+        } else {
+            return true
+        }
+    }
+}
+
+boolean isCdmUnitTestDirAvailable() {
+    if (!hasProperty(testdataDirKey)) {
+        logger.warn "\'$testdataDirKey\' property not defined."
+        return false
+    } else {
+        testdataDirVal = property(testdataDirKey) as String;
+
+        if (!new File(testdataDirVal).isDirectory()) {
+            logger.warn "\'$testdataDirVal\' directory not found."
+            return false
+        } else {
+            return true
         }
     }
 }

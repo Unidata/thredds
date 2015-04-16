@@ -1,18 +1,19 @@
 package thredds.server.config;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.mock.web.TdsContentRootPath;
+import ucar.unidata.test.util.NeedsContentRoot;
+
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"},loader=MockTdsContextLoader.class)
+@Category(NeedsContentRoot.class)
 public class TdsContextTest {
 
 	@Autowired
