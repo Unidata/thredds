@@ -75,9 +75,9 @@ import ucar.nc2.ParsedSectionSpec;
  */
 @Controller
 @RequestMapping("/cdmremote")
-public class CdmRemoteController extends AbstractController implements LastModified {
+public class CdmRemoteController implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmRemoteController.class);
-  private static final boolean debug = false, showReq=false;
+  private static final boolean debug = false, showReq = false;
 
   @Autowired
   TdsContext tdsContext;
@@ -93,12 +93,6 @@ public class CdmRemoteController extends AbstractController implements LastModif
   }
 
   @Override
-  protected String getControllerPath() { return "/cdmremote/"; }
-
-  @Override
-  protected String[] getEndings() { return new String[0]; }
-
-  @Override
   public long getLastModified(HttpServletRequest req) {
     String path = TdsPathUtils.extractPath(req, "cdmremote/");
     return TdsRequestedDataset.getLastModified(path);
@@ -110,14 +104,14 @@ public class CdmRemoteController extends AbstractController implements LastModif
   }
 
   // everything but header, data
-  @RequestMapping(value="/**", method = RequestMethod.GET)
+  @RequestMapping(value = "/**", method = RequestMethod.GET)
   public ResponseEntity<String> handleCapabilitiesRequest(HttpServletRequest request, HttpServletResponse response, @RequestParam String req) throws IOException {
 
     if (!allow) {
       return new ResponseEntity<>("Service not supported", null, HttpStatus.FORBIDDEN);
     }
 
-    String datasetPath = getDatasetPath(request);
+    String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);
     HttpHeaders responseHeaders;
 
@@ -181,7 +175,7 @@ public class CdmRemoteController extends AbstractController implements LastModif
     }
   }
 
-  @RequestMapping(value="/**", method = RequestMethod.GET, params="req=header")
+  @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=header")
   public void handleHeaderRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
 
     if (!allow) {
@@ -189,11 +183,11 @@ public class CdmRemoteController extends AbstractController implements LastModif
       return; //  "Service not supported";
     }
 
-    String datasetPath = getDatasetPath(request);
+    String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);
 
     if (showReq)
-      System.out.printf("CdmRemoteController req=%s%n", absPath+"?"+request.getQueryString());
+      System.out.printf("CdmRemoteController req=%s%n", absPath + "?" + request.getQueryString());
     if (debug) {
       System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
     }
@@ -211,7 +205,8 @@ public class CdmRemoteController extends AbstractController implements LastModif
         System.out.printf("CdmRemoteController header ok, size=%s%n", size);
 
     } catch (FileNotFoundException e) {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());;
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+      ;
 
     } catch (Throwable e) {
       log.error(e.getMessage(), e);
@@ -220,71 +215,75 @@ public class CdmRemoteController extends AbstractController implements LastModif
 
   }
 
-  @RequestMapping(value="/**", method = RequestMethod.GET, params="req=data")
-   public void handleRequest(HttpServletRequest request, HttpServletResponse response,
-                        @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException {
+  @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=data")
+  public void handleRequest(HttpServletRequest request, HttpServletResponse response,
+                            @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException {
 
-     if (!allow) {
-       response.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-       return; //  "Service not supported";
-     }
+    if (!allow) {
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return; //  "Service not supported";
+    }
 
-     if (qb.hasErrors()) {
-       response.sendError(HttpServletResponse.SC_BAD_REQUEST, qb.toString());
-       return;
-     }
+    if (qb.hasErrors()) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, qb.toString());
+      return;
+    }
 
-     String datasetPath = getDatasetPath(request);
-     String absPath = getAbsolutePath(request);
+    String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
+    String absPath = getAbsolutePath(request);
 
-     if (showReq)
-       System.out.printf("CdmRemoteController req=%s%n", absPath+"?"+request.getQueryString());
-     if (debug) {
-       System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
-     }
+    if (showReq)
+      System.out.printf("CdmRemoteController req=%s%n", absPath + "?" + request.getQueryString());
+    if (debug) {
+      System.out.printf(" path=%s%n query=%s%n", datasetPath, request.getQueryString());
+    }
 
-     try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
-       if (ncfile == null) return;
+    try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
+      if (ncfile == null) return;
 
-       response.setContentType(ContentType.binary.getContentHeader());
-       response.setHeader("Content-Description", "ncstream");
+      response.setContentType(ContentType.binary.getContentHeader());
+      response.setHeader("Content-Description", "ncstream");
 
-       long size = 0;
-       //WritableByteChannel wbc = Channels.newChannel(out);
-       NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(request));
-       String query;
-       if (qb.getVar() != null)
-           query = qb.getVar();
-       else
-           query = request.getQueryString(); // LOOK ??
+      long size = 0;
+      //WritableByteChannel wbc = Channels.newChannel(out);
+      NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(request));
+      String query;
+      if (qb.getVar() != null)
+        query = qb.getVar();
+      else
+        query = request.getQueryString(); // LOOK ??
 
-       if ((query == null) || (query.length() == 0)) {
-         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
-         return;
-       }
+      if ((query == null) || (query.length() == 0)) {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
+        return;
+      }
 
-       query = EscapeStrings.unescapeURLQuery(query);
-       StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
-       while (stoke.hasMoreTokens()) {
-         ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-         size += ncWriter.sendData(cer.v, cer.section, out, false);
-       }
-       out.flush();
+      query = EscapeStrings.unescapeURLQuery(query);
+      StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
+      while (stoke.hasMoreTokens()) {
+        ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
+        size += ncWriter.sendData(cer.v, cer.section, out, false);
+      }
+      out.flush();
 
-       if (showReq)
-         System.out.printf("CdmRemoteController data ok, size=%s%n", size);
+      if (showReq)
+        System.out.printf("CdmRemoteController data ok, size=%s%n", size);
 
-     } catch (FileNotFoundException e) {
-       response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+    } catch (FileNotFoundException e) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
-     } catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed
-       response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+    } catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 
-     } catch (Throwable e) {
-       log.error(e.getMessage(), e);
-       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-     }
+    } catch (Throwable e) {
+      log.error(e.getMessage(), e);
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+    }
 
-   }
+  }
+
+  public String getAbsolutePath(HttpServletRequest req) {
+    return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
+  }
 
 }
