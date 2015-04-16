@@ -5,7 +5,108 @@
 <title>Untitled Document</title>
 </head>
 <body>
-<h1>Servlets and Controllers mappings summary</h1>
+<h2>Spring DI</h2>
+<ul>
+  <li>dont do any heavy processing in the bean initialization phase, just get the beans wired in</li>
+  <li>http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc
+    <ul>
+      <li><a href="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/context/ApplicationListener.html">ApplicationListener</a>&lt;<a href="http://static.springsource.org/spring/docs/3.0.0.M3/javadoc-api/org/springframework/context/event/ContextRefreshedEvent.html">ContextRefreshedEvent</a>&gt;</li>
+      <li>        &lt;bean id=&quot;eventListenerBean&quot; class=&quot;test.pack.age.ApplicationListenerBean&quot; /&gt;      </li>
+    </ul>
+  </li>
+</ul>
+<h3>Beans</h3>
+<ul>
+  <li>    TdsContext
+    <ul>
+      <li>calls        ThreddsConfig.init(), creates TdsConfigMapper      </li>
+    </ul>
+  </li>
+  <li>DataRootManager
+    <ul>
+    <li>*TdsContext</li>
+    <li>DataRootPathMatcher</li>
+    <li>ConfigCatalogManager</li>
+    <li>ConfigCatalogCache    </li>
+    
+    <li>FeatureCollectionCache</li>
+    </ul>
+  </li>
+  <li>DatasetManager
+    <ul>
+      <li>DataRootManager</li>
+      <li>FeatureCollectionCache</li>
+    </ul>
+  </li>
+  <li>ConfigCatalogManager
+    <ul>
+      <li>TdsContext</li>
+      <li>DataRootPathMatcher</li>
+      <li>DatasetManager</li>
+      <li>ConfigCatalogCache</li>
+    </ul>
+  </li>
+  <li>CdmInit      
+    <ul>
+      <li>TdsContext</li>
+      <li>DatasetManager</li>
+    </ul>
+  </li>
+  <li>ConfigCatalogCache
+    <ul>
+      <li>TdsContext</li>
+    </ul>
+  </li>
+</ul>
+<h3>Startup</h3>
+<ol>
+  <li>    Tomcat loads <em>thredds.war</em> with /WEB-INF/web.xml</li>
+  <li>org.springframework.web.context.<em>ContextLoaderListener</em> listens for context loading</li>
+  <li>beans in <em>applicationContext.xml</em> are created and wired</li>
+  <li>    ContextRefreshedEvent caught by TdsInit</li>
+</ol>
+<h3>threddsConfig.xml
+</h3>
+<ul>
+  <li>CdmInit using ThreddsConfig</li>
+  <li>ThreddsConfig.init() called from TdsContext.afterPropertiesSet()</li>
+  <li>TdsConfigMapper seems to be ethan's replacement ??</li>
+  <li>none of it using autowire</li>
+</ul>
+<p><br>
+</p>
+<h2>Spring MVC</h2>
+<p>http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html</p>
+<p>Lots of ways, we want to standardize on one idiom.</p>
+<h3>Handle completely</h3>
+<ul>
+  <li>see CdmRemoteController</li>
+  <li>return  ResponseEntity&lt;String&gt;</li>
+  <li>errors: handle these in the controller</li>
+</ul>
+<h3>ModelView</h3>
+<ul>
+  <li>use a view technology</li>
+  <li>return a ModelView</li>
+  <li>errors: throw exception, grab in an exception handler; essentially a way to switch return types</li>
+  <li>see LocalCatalogServiceController</li>
+</ul>
+<h3>Validation</h3>
+<ul>
+  <li>@Valid JSP 303, with hibernate implementation</li>
+  <li>org.springframework.validation.Validator</li>
+  <li>must put initBinder() into Controller  </li>
+  <li>see RemoteCatalogServiceController</li>
+  <li>dont need DataBinder  </li>
+</ul>
+<h4>Error handling</h4>
+<ul>
+  <li>All errors are handled by throwing an excception which is picked up by an ExceptionHandler</li>
+  <li> essentially a way to switch return types</li>
+  <li>see https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc</li>
+</ul>
+<h2>&nbsp;</h2>
+<h2>Servlets and Controllers mappings summary</h2>
 <h2><a name="TDSServletsConfiguration%284.4.0-alpha%29-4.1Servlets" id="TDSServletsConfiguration%284.4.0-alpha%29-4.1Servlets"></a>4.1 Servlets</h2>
 <div>
   <table border="2">
