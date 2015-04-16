@@ -83,7 +83,7 @@ public class WcsRequestParser {
       } */
 
 
-    TdsRequestedDataset trd = new TdsRequestedDataset(req);
+    TdsRequestedDataset trd = new TdsRequestedDataset(req, "/wcs");
     try (GridDataset gridDataset = trd.openAsGridDataset(req, res)) {
       if (gridDataset == null)
         return null;

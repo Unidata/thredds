@@ -82,7 +82,8 @@ public class CompositeMFileFilter implements MFileFilter {
   private boolean include(MFile mfile) {
     if (includeFilters == null) return true;
     for (MFileFilter filter : includeFilters) {
-      if (filter.accept(mfile)) return true;
+      if (filter.accept(mfile))
+        return true;
     }
     return false;
   }
@@ -91,7 +92,8 @@ public class CompositeMFileFilter implements MFileFilter {
   private boolean exclude(MFile mfile) {
     if (excludeFilters == null) return false;
     for (MFileFilter filter : excludeFilters) {
-      if (!filter.accept(mfile)) return true;
+      if (filter.accept(mfile))
+        return true;
     }
     return false;
   }

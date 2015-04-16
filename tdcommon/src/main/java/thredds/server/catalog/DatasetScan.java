@@ -141,10 +141,10 @@ public class DatasetScan extends CatalogRef {
    * associated with this DatasetScan. The given path must start with the path of this DatasetScan.
    *
    * @param orgPath the part of the baseURI that is the path
-   * @param catURI  the base URL for the catalog, used to resolve relative URLs.
+   * @param baseURI  the base URL for the catalog, used to resolve relative URLs.
    * @return the catalog for this path or null if build unsuccessful.
    */
-  public Catalog makeCatalogForDirectory(String orgPath, URI catURI) throws IOException {
+  public Catalog makeCatalogForDirectory(String orgPath, URI baseURI) throws IOException {
 
     // Get the dataset location.
     String dataDirReletive = translatePathToLocation(orgPath);
@@ -162,7 +162,7 @@ public class DatasetScan extends CatalogRef {
 
     // Setup and create catalog builder.
     CatalogBuilder catBuilder = new CatalogBuilder();
-    catBuilder.setBaseURI(catURI);
+    catBuilder.setBaseURI(baseURI);
     assert this.getParentCatalog() != null;
     for (Service s : this.getParentCatalog().getServices())
       catBuilder.addService(s);

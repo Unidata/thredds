@@ -74,7 +74,6 @@ import ucar.unidata.geoloc.Station;
  * @since May 28, 2009
  */
 @Deprecated
-@Controller
 public class CdmrFeatureController { // implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrFeatureController.class);
   private static boolean debug = false, showTime = false, showReq = false;

@@ -34,9 +34,12 @@
 package thredds.server.catalogservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 
@@ -44,17 +47,17 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.core.ConfigCatalogHtmlWriter;
+import thredds.server.cdmremote.CdmRemoteQueryBeanValidator;
 import thredds.server.config.HtmlConfig;
-import thredds.server.config.TdsContext;
 import thredds.servlet.ThreddsConfig;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,9 +66,12 @@ import java.util.Map;
  * @author caron
  * @since 1/19/2015
  */
+@Controller
+@RequestMapping("/remoteCatalogService")
 public class RemoteCatalogServiceController {
 
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+  private boolean allowRemote = ThreddsConfig.getBoolean("CatalogServices.allowRemote", false);
 
   @Autowired
   private HtmlConfig htmlConfig;
@@ -73,74 +79,45 @@ public class RemoteCatalogServiceController {
   @Autowired
   private ConfigCatalogHtmlWriter writer;
 
-  @RequestMapping("**")
-  protected ModelAndView handleAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  @InitBinder
+  protected void initBinder(WebDataBinder binder) {
+    binder.setValidator(new RemoteCatalogRequestValidator());
+  }
 
-    try {
-      // Send error response if remote catalog service requests are not allowed.
-      // ToDo Look - Move this into TdsConfig?
-      boolean allowRemote = ThreddsConfig.getBoolean("CatalogServices.allowRemote", false);
-      if (!allowRemote) {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Catalog services not supported for remote catalogs.");
-        return null;
-      }
+  @RequestMapping(method = {RequestMethod.GET})
+  protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response,
+                                       @Valid RemoteCatalogRequest params, BindingResult validationResult) throws Exception {
 
-      //
-      if (request.getServletPath().equals("/remoteCatalogValidation.html")) {
-        Map<String, Object> model = new HashMap<>();
+    if (!allowRemote)
+      throw new UnsupportedOperationException("Catalog services not supported for remote catalogs.");
 
-        htmlConfig.addHtmlConfigInfoToModel(model); // LOOK cant be right
+    // Determine path and catalogPath
+    URI uri = params.getCatalogUri();
 
-        return new ModelAndView("/thredds/server/catalogservice/validationForm", model);
-      }
+    CatalogBuilder builder = new CatalogBuilder();
+    Catalog catalog = builder.buildFromURI(uri);
+    if (builder.hasFatalError() || catalog == null) {
+      Formatter f = new Formatter();
+      f.format("Error reading catalog '%s' err=%s%n", uri, builder.getErrorMessage());
+      log.debug(f.toString());
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, f.toString());
+      return null;
 
-      // Bind HTTP request to a LocalCatalogRequest.
-      BindingResult bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest(request);
+    } else {
+      String mess = builder.getErrorMessage();
+      if (mess.length() > 0)
+        System.out.printf(" parse Messages = %s%n", builder.getErrorMessage());
+    }
 
-      // If any binding or validation errors, return BAD_REQUEST.
-      if (bindingResult.hasErrors()) {
-        StringBuilder msg = new StringBuilder("Bad request");
-        List<ObjectError> oeList = bindingResult.getAllErrors();
-        for (ObjectError e : oeList)
-          msg.append(": ").append(e.getDefaultMessage() != null ? e.getDefaultMessage() : e.toString());
-        log.info("handleRequestInternal(): " + msg);
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg.toString());
-        return null;
-      }
-
-      // Retrieve the resulting RemoteCatalogRequest.
-      RemoteCatalogRequest catalogServiceRequest = (RemoteCatalogRequest) bindingResult.getTarget();
-
-      // Determine path and catalogPath
-      URI uri = catalogServiceRequest.getCatalogUri();
-
-      CatalogBuilder builder = new CatalogBuilder();
-      Catalog catalog = builder.buildFromURI(uri);
-      if (builder.hasFatalError() || catalog == null) {
-        Formatter f = new Formatter();
-        f.format("Error reading catalog '%s' err=%s%n", uri, builder.getErrorMessage());
-        log.debug(f.toString());
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, f.toString());
-        return null;
-
-      } else {
-        String mess = builder.getErrorMessage();
-        if (mess.length() > 0)
-          System.out.printf(" parse Messages = %s%n", builder.getErrorMessage());
-      }
-
-      // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
-      response.setHeader("Validate", "OK");
-
-      ///////////////////////////////////////////
-      // Otherwise, handle catalog as indicated by "command".
-
-      if (catalogServiceRequest.getCommand().equals(Command.SHOW)) {
+    ///////////////////////////////////////////
+    // Otherwise, handle catalog as indicated by "command".
+     switch (params.getCommand()) {
+      case SHOW:
         writer.writeCatalog(request, response, catalog, false);
         return null;
 
-      } else if (catalogServiceRequest.getCommand().equals(Command.SUBSET)) {
-        String datasetId = catalogServiceRequest.getDataset();
+      case SUBSET:
+        String datasetId = params.getDataset();
         Dataset dataset = catalog.findDatasetByID(datasetId);
         if (dataset == null) {
           String msg = "Did not find dataset [" + HtmlUtils.htmlEscape(datasetId) + "] in catalog [" + uri + "].";
@@ -149,7 +126,7 @@ public class RemoteCatalogServiceController {
           return null;
         }
 
-        if (catalogServiceRequest.isHtmlView()) {
+        if (params.isHtmlView()) {
           writer.showDataset(uri.toString(), dataset, request, response, false);
           return null;
 
@@ -158,24 +135,39 @@ public class RemoteCatalogServiceController {
           return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
         }
 
-      } else if (catalogServiceRequest.getCommand().equals(Command.VALIDATE)) {
-        return CatalogServiceUtils.constructValidationMessageModelAndView(uri, builder.getValidationMessage(), htmlConfig);
+      case VALIDATE:
+        return constructValidationMessageModelAndView(uri, builder.getValidationMessage(), htmlConfig);
 
-      } else {
-        String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
+      default:
+        String msg = "Unsupported request command [" + params.getCommand() + "].";
         log.error("handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation.");
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return null;
-      }
-
-    } catch (IOException e) {
-      log.error("handleRequestInternal(): Trouble writing to response.", e);
-      return null;
-
-    } catch (Throwable e) {
-      log.error("handleRequestInternal(): Problem handling request.", e);
-      if (!response.isCommitted()) response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      return null;
     }
+
   }
+
+  public static ModelAndView constructValidationMessageModelAndView(URI uri, String validationMessage, HtmlConfig htmlConfig) {
+    Map<String, Object> model = new HashMap<>();
+    model.put("catalogUrl", uri);
+    model.put("message", validationMessage);
+
+    htmlConfig.addHtmlConfigInfoToModel(model);  // LOOK cant be right
+    return new ModelAndView("/thredds/server/catalogservice/validationMessage", model);
+  }
+
+  /*
+  @RequestMapping(value = "/remoteCatalogValidation.html", method = {RequestMethod.GET})
+  protected ModelAndView handleFormRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+    if (!allowRemote)
+      throw new UnsupportedOperationException("Catalog services not supported for remote catalogs.");
+
+    Map<String, Object> model = new HashMap<>();
+
+    htmlConfig.addHtmlConfigInfoToModel(model); // LOOK cant be right
+
+    return new ModelAndView("/thredds/server/catalogservice/validationForm", model);
+  } */
+
 }

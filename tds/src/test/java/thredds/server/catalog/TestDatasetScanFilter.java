@@ -69,11 +69,12 @@ public class TestDatasetScanFilter {
     tmpTestDataDir.mkdirs();
 
     assertNotNull(tmpTestDataDir);
-    assertTrue( tmpTestDataDir.exists());
+    assertTrue(tmpTestDataDir.exists());
     assertTrue( tmpTestDataDir.canRead());
     assertTrue( tmpTestDataDir.canWrite());
 
     ConfigCatalog.addAlias("${tmpDir}", tmpTestDataDir.getPath());
+    ConfigCatalog.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);
 
     File tmpTestDir = TestFileDirUtils.addDirectory(tmpTestDataDir, "testDatafilesInDateTimeNestedDirs");
     assertNotNull(tmpTestDir);
@@ -93,6 +94,7 @@ public class TestDatasetScanFilter {
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131107_0008.nc");
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131107_0014.nc");
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131108_0016.nc");
+
   }
 
   /* public void createEtaDirWithCvsAndDotGitDirs( File targetDir) {
@@ -213,6 +215,8 @@ public class TestDatasetScanFilter {
   @Test
   public void testExcludeDir() throws IOException {
     ConfigCatalog cat = TestServerCatalogs.getFromResource("thredds/server/catalog/TestDatasetScan.xml");
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    System.out.printf("%n%s%n", writer.writeXML(cat));
 
     Dataset ds = cat.findDatasetByID("testExclude");
     assert ds != null;
@@ -224,7 +228,6 @@ public class TestDatasetScanFilter {
     Catalog scanCat = dss.makeCatalogForDirectory("testExclude", cat.getBaseURI());
     assert scanCat != null;
 
-    CatalogXmlWriter writer = new CatalogXmlWriter();
     System.out.printf("%n%s%n", writer.writeXML(scanCat));
     assert scanCat.getDatasets().size() == 1;
     Dataset root = scanCat.getDatasets().get(0);

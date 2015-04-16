@@ -63,7 +63,7 @@ public class WcsRequestParser {
 
     // General request info
     thredds.wcs.v1_0_0_Plus.WcsRequest.Operation operation;
-    TdsRequestedDataset trd = new TdsRequestedDataset(req);
+    TdsRequestedDataset trd = new TdsRequestedDataset(req, "/wcs");
     try (GridDataset gridDataset = trd.openAsGridDataset(req, res)) {
       if (gridDataset == null)
         return null;

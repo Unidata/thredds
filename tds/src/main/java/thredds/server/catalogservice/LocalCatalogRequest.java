@@ -32,27 +32,15 @@
  */
 package thredds.server.catalogservice;
 
-/**
- * Command object for local catalog service requests.
- *
- * More details in {@link LocalCatalogServiceController}
- *
- * @author edavis
- * @since 4.0
- * @see LocalCatalogServiceController
- */
-public class LocalCatalogRequest
-{
-  private String path;
-  private Command command;
-  private String dataset;
+public class LocalCatalogRequest {
+  String dataset;
 
-  public String getPath() { return path; }
-  public void setPath( String path ) { this.path = path; }
+  public String getDataset() {
+    return dataset;
+  }
 
-  public Command getCommand() { return command; }
-  public void setCommand( Command command ) { this.command = command; }
+  public void setDataset(String dataset) {
+    this.dataset = dataset;
+  }
 
-  public String getDataset() { return dataset; }
-  public void setDataset( String dataset ) { this.dataset = dataset; }
 }
