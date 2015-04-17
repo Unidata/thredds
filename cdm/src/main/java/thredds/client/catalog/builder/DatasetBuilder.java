@@ -152,7 +152,7 @@ public class DatasetBuilder {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  public void transferMetadata( Dataset from, boolean inherit) {
+  public void transferMetadata( DatasetNode from, boolean inherit) {
     if (inherit)
       inheritMetadata(flds, from);
 
@@ -164,7 +164,7 @@ public class DatasetBuilder {
     // LOOK do tmi
   }
 
-  private void inheritMetadata( Map<String, Object> flds, Dataset from) {
+  private void inheritMetadata( Map<String, Object> flds, DatasetNode from) {
 
     Dataset fromParent = from.getParentDataset();
     if (fromParent == null) return;

@@ -57,7 +57,6 @@ import ucar.unidata.util.StringUtil2;
 public class ServletUtil {
   public static final org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServletUtil.class);
-  static private boolean isDebugInit = false;
 
   static private String contextPath = null;
   static private String rootPath = null;

@@ -400,7 +400,7 @@ public class DataRootManager implements InitializingBean {
       return null;
     } */
 
-    if (path.endsWith("/latest.xml")) return null; // latest is not handled here
+    if (path.endsWith("/latest.xml")) return null; // latest is not handled here  LOOK are you sure ??
 
     DatasetScan dscan = match.dataRoot.getDatasetScan();
     if (log.isDebugEnabled())

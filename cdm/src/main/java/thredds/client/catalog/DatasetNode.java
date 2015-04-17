@@ -101,7 +101,7 @@ public class DatasetNode {
 
   public Dataset getParentDataset() {
     if (parent == null) return null;
-    return  (parent instanceof Dataset) ? (Dataset) parent : null;
+    return (parent instanceof Dataset) ? (Dataset) parent : null;
  }
 
 }

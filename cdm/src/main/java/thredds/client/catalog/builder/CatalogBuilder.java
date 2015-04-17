@@ -665,7 +665,7 @@ public class CatalogBuilder {
     // LOOK: we seem to have put a variableMap element not contained by <variables>
     ThreddsMetadata.UriResolved mapUri = readUri(parent.getChild("variableMap", Catalog.defNS), "variableMap");
     if (mapUri != null)
-      flds.put(Dataset.VariableMapLink, mapUri);
+      flds.put(Dataset.VariableMapLinkURI, mapUri);
   }
 
 

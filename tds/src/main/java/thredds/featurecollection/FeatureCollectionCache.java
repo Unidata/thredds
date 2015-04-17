@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import thredds.client.catalog.Dataset;
 import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.config.TdsContext;
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class FeatureCollectionCache implements InitializingBean {
       return cache.get(fcr.getCollectionName(), new Callable<InvDatasetFeatureCollection>() {
         @Override
         public InvDatasetFeatureCollection call() throws IOException {
-          return readCatalog(fcr);
+          return makeFeatureCollection(fcr);
         }
       });
 
@@ -76,7 +77,14 @@ public class FeatureCollectionCache implements InitializingBean {
     }
   }
 
-  private InvDatasetFeatureCollection readCatalog(FeatureCollectionRef catKey) throws IOException {
-    return null;
+  private InvDatasetFeatureCollection makeFeatureCollection(FeatureCollectionRef fcr) throws IOException {
+    try {
+      InvDatasetFeatureCollection result = InvDatasetFeatureCollection.factory(fcr, fcr.getConfig());
+      return result;
+
+    } catch (Throwable t) {
+      t.printStackTrace();
+      throw new IOException(t);
+    }
   }
 }

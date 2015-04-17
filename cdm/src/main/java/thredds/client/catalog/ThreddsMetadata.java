@@ -41,10 +41,12 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.SimpleUnit;
+import ucar.nc2.util.URLnaming;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -523,6 +525,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       this.href = href;
       this.resolved = resolved;
     }
+
   }
 
   @Immutable

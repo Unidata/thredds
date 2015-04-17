@@ -74,7 +74,7 @@ import java.util.TimerTask;
  */
 
 @Component
-public class TdsInit implements  DisposableBean, ApplicationListener<ContextRefreshedEvent> {
+public class TdsInit implements DisposableBean, ApplicationListener<ContextRefreshedEvent> {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private DiskCache2 aggCache, gribCache, cdmrCache;
@@ -93,10 +93,12 @@ public class TdsInit implements  DisposableBean, ApplicationListener<ContextRefr
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     startupLog.info("TdsInit {}", event);
-    if (!wasInitialized) {
-      wasInitialized = true;
-      init();
-      configCatalogManager.init();
+    synchronized (this) {
+      if (!wasInitialized) {
+        wasInitialized = true;
+        init();
+        configCatalogManager.init();
+      }
     }
   }
 

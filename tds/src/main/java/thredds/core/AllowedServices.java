@@ -48,13 +48,13 @@ import java.util.*;
  * @author caron
  * @since 1/23/2015
  */
-@Component
-@DependsOn("TdsContext")  // which initializes ThreddsConfig
+//@Component
+//@DependsOn("TdsContext")  // which initializes ThreddsConfig
 public class AllowedServices {
 
   private Map<ServiceType, AllowedService> allowed = new HashMap<>();
 
-  private class AllowedService {
+  private static class AllowedService {
     StandardServices ss;
     boolean allowed;
 
@@ -90,6 +90,8 @@ public class AllowedServices {
 
   public void addIfAllowed(ServiceType type, List<Service> result) {
     AllowedService s = allowed.get(type);
+    if (s == null)
+      return ;
     if (s.allowed) result.add( s.ss.getService());
   }
 
