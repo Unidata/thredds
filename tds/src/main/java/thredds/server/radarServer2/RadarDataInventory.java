@@ -45,8 +45,8 @@ public class RadarDataInventory {
         collectionDir = datasetRoot;
         structure = new DirectoryStructure(collectionDir);
         dirty = true;
-        maxCrawlItems = 10;
-        maxCrawlDepth = 2;
+        maxCrawlItems = 5;
+        maxCrawlDepth = 3;
         stations = new StationList();
         nearestWindow = CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
     }
@@ -62,6 +62,10 @@ public class RadarDataInventory {
 
     public String getName() {
         return name;
+    }
+
+    CalendarDate getLastUpdate() {
+        return this.lastUpdate;
     }
 
     // TODO: Can we pull this from data?
@@ -93,7 +97,9 @@ public class RadarDataInventory {
         return stations;
     }
 
-    public List<String> getVariableList() { return listItems(DirType.Variable); }
+    public List<String> getVariableList() {
+        return listItems(DirType.Variable);
+    }
 
     public void setNearestWindow(CalendarPeriod pd) {
         nearestWindow = pd;
@@ -238,11 +244,12 @@ public class RadarDataInventory {
         int crawled = 0;
         for (Path p : Files.newDirectoryStream(start)) {
             if (p.toFile().isDirectory()) {
-//                System.out.println(p.toString());
                 String item = p.getFileName().toString();
                 values.add(item);
-                if (entry.type == DirType.Station)
-                    updateStations(item, p);
+                // Try to grab station info from some file
+                // TODO: Fix or remove
+//                    if (entry.type == DirType.Station)
+//                        updateStations(item, p);
                 if (crawled < maxCrawlItems) {
                     findItems(p, level + 1);
                     ++crawled;
@@ -292,10 +299,11 @@ public class RadarDataInventory {
             }
         } catch (IOException e) {
             System.out.println("Error updating data inventory.");
+            e.printStackTrace();
         }
     }
 
-    private boolean timeToUpdate() {
+    boolean timeToUpdate() {
         // See if it's been more than enough time since the last update
         CalendarDate now = CalendarDate.present();
         return now.getDifferenceInMsecs(lastUpdate) > updateIntervalMsec;
@@ -304,10 +312,11 @@ public class RadarDataInventory {
     public List<String> listItems(DirType type) {
         update();
         Set<String> vals = items.get(type);
-        if (vals == null)
+        if (vals == null) {
             return new ArrayList<>();
-        else
-            return new ArrayList<>(items.get(type));
+        } else {
+            return new ArrayList<>(vals);
+        }
     }
 
     public Query newQuery() {
