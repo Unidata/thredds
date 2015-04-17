@@ -67,7 +67,13 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     }
 
     testTasks*.configure {
-        systemProperties = System.properties
+        // Propagate "jna.library.path", if it's been defined.
+        String jnaLibPathKey = "jna.library.path"
+        String jnaLibPathVal = System.getProperty(jnaLibPathKey)
+
+        if (jnaLibPathVal) {
+            systemProperty jnaLibPathKey, jnaLibPathVal
+        }
 
         useJUnit {
             if (isTravis) {
