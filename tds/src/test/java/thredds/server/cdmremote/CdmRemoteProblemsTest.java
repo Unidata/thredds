@@ -45,6 +45,7 @@ public class CdmRemoteProblemsTest {
   @Test
   @Category(NeedsCdmUnitTest.class)
    public void cdmRemoteRequestCapabilitiesTest() throws Exception {
+     System.out.printf("Path = %s%n", path);
      RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
    				.param("req", "capabilities");
 

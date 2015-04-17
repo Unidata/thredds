@@ -73,4 +73,7 @@
   <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
   <!-- bean id="HtmlWriting" class="thredds.servlet.HtmlWriting" / -->
 
+  <!--- doesnt seem to be needed to list here - finds it anyway -->
+  <bean id="eventListenerBean" class="thredds.server.config.TdsInit" />
+
 </beans>

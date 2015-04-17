@@ -33,14 +33,17 @@
 
 package thredds.server.admin;
 
-import thredds.servlet.Debug;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.dataset.NetcdfDataset;
 
+import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.io.PrintStream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -53,8 +56,73 @@ import ucar.unidata.io.RandomAccessFile;
  * @author caron
  * @since Jan 15, 2009
  */
+@Component
 public class DebugCommands {
-  private String version, builddate;
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+
+  private List<Category> dhList = new ArrayList<>();
+
+  public List<Category> getCategories() {
+    return dhList;
+  }
+
+  public Category findCategory(String name) {
+    for (Category dh : dhList) {
+      if (dh.name.equals(name))
+        return dh;
+    }
+    return new Category(name);
+  }
+
+  public class Category {
+    Map<String, Action> actions = new LinkedHashMap<>();
+    String name;
+
+    private Category(String name) {
+      this.name = name;
+      dhList.add(this);
+    }
+
+    public void addAction(Action act) {
+      actions.put(act.name, act);
+    }
+  }
+
+  static public abstract class Action {
+    public String name, desc;
+
+    public Action(String name, String desc) {
+      this.name = name;
+      this.desc = desc;
+    }
+
+    public abstract void doAction(Event e);
+  }
+
+  static public class Event {
+    public HttpServletRequest req;
+    public HttpServletResponse res;
+    public PrintStream pw;
+    public ByteArrayOutputStream bos;
+    public String target;
+
+    public Event(HttpServletRequest req, HttpServletResponse res, PrintStream pw, ByteArrayOutputStream bos, String target) {
+      this.req = req;
+      this.res = res;
+      this.pw = pw;
+      this.bos = bos;
+      this.target = target;
+    }
+  }
+
+  ///////////////////////////////////////////////////
+
+  @Value("${tds.version}")
+  private String webappVersion;
+
+  @Value("${tds.version.builddate}")
+  private String webappVersionBuildDate;
 
   public DebugCommands() {
     makeGeneralActions();
@@ -62,20 +130,12 @@ public class DebugCommands {
     makeCacheActions();
   }
 
-  public void setVersion(String version) {
-    this.version = version;
-  }
-
-  public void setBuilddate(String builddate) {
-    this.builddate = builddate;
-  }
-
   protected void makeCacheActions() {
-    DebugController.Category debugHandler = DebugController.find("Caches");
-    DebugController.Action act;
+    Category debugHandler = findCategory("Caches");
+    Action act;
 
-    act = new DebugController.Action("showCaches", "Show All File Object Caches") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("showCaches", "Show All File Object Caches") {
+      public void doAction(Event e) {
         Formatter f = new Formatter(e.pw);
         FileCacheIF fc;
 
@@ -105,8 +165,8 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("clearCaches", "Clear All File Object Caches") {
-       public void doAction(DebugController.Event e) {
+    act = new Action("clearCaches", "Clear All File Object Caches") {
+       public void doAction(Event e) {
          NetcdfDataset.getNetcdfFileCache().clearCache(false);
          RandomAccessFile.getGlobalFileCache().clearCache(false);
          FileCacheIF fc = GribCdmIndex.gribCollectionCache;
@@ -116,16 +176,16 @@ public class DebugCommands {
      };
      debugHandler.addAction(act);
 
-    act = new DebugController.Action("disableRAFCache", "Disable RandomAccessFile Cache") {
-       public void doAction(DebugController.Event e) {
+    act = new Action("disableRAFCache", "Disable RandomAccessFile Cache") {
+       public void doAction(Event e) {
          RandomAccessFile.getGlobalFileCache().disable();
          e.pw.println("  Disable RandomAccessFile Cache ok");
        }
      };
      debugHandler.addAction(act);
 
-    act = new DebugController.Action("forceRAFCache", "Force clear RandomAccessFile Cache") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("forceRAFCache", "Force clear RandomAccessFile Cache") {
+      public void doAction(Event e) {
         RandomAccessFile.getGlobalFileCache().clearCache(true);
         e.pw.println("  RandomAccessFile force clearCache done");
       }
@@ -133,32 +193,32 @@ public class DebugCommands {
     debugHandler.addAction(act);
 
 
-    act = new DebugController.Action("disableNetcdfCache", "Disable NetcdfDatasetFile Cache") {
-       public void doAction(DebugController.Event e) {
+    act = new Action("disableNetcdfCache", "Disable NetcdfDatasetFile Cache") {
+       public void doAction(Event e) {
          NetcdfDataset.disableNetcdfFileCache();
          e.pw.println("  Disable NetcdfFile Cache ok");
        }
      };
      debugHandler.addAction(act);
 
-     act = new DebugController.Action("forceNCCache", "Force clear NetcdfDatasetFile Cache") {
-      public void doAction(DebugController.Event e) {
+     act = new Action("forceNCCache", "Force clear NetcdfDatasetFile Cache") {
+      public void doAction(Event e) {
         NetcdfDataset.getNetcdfFileCache().clearCache(true);
         e.pw.println("  NetcdfFileCache force clearCache done");
       }
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("disableTimePartitionCache", "Disable TimePartition Cache") {
-       public void doAction(DebugController.Event e) {
+    act = new Action("disableTimePartitionCache", "Disable TimePartition Cache") {
+       public void doAction(Event e) {
          GribCdmIndex.disableGribCollectionCache();
          e.pw.println("  Disable gribCollectionCache ok");
        }
      };
      debugHandler.addAction(act);
 
-    act = new DebugController.Action("forceGCCache", "Force clear TimePartition Cache") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("forceGCCache", "Force clear TimePartition Cache") {
+      public void doAction(Event e) {
         FileCacheIF fc = GribCdmIndex.gribCollectionCache;
         if (fc != null) fc.clearCache(true);
         e.pw.println("  gribCollectionCache force clearCache done");
@@ -169,11 +229,11 @@ public class DebugCommands {
   }
 
   protected void makeDebugActions() {
-    DebugController.Category debugHandler = DebugController.find("Debug");
-    DebugController.Action act;
+    Category debugHandler = findCategory("Debug");
+    Action act;
 
-    act = new DebugController.Action("enableRafHandles", "Toggle tracking open RAF") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("enableRafHandles", "Toggle tracking open RAF") {
+      public void doAction(Event e) {
         try {
           RandomAccessFile.setDebugLeaks( !RandomAccessFile.getDebugLeaks());
           e.pw.println("  Tracking RAF=" + RandomAccessFile.getDebugLeaks());
@@ -184,8 +244,8 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("showRafHandles", "Show open RAF") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("showRafHandles", "Show open RAF") {
+      public void doAction(Event e) {
         try {
           List<String> names = RandomAccessFile.getOpenFiles();
           e.pw.println("count=" + names.size());
@@ -202,14 +262,14 @@ public class DebugCommands {
 
 
   protected void makeGeneralActions() {
-    DebugController.Category debugHandler = DebugController.find("General");
-    DebugController.Action act;
+    Category debugHandler = findCategory("General");
+    Action act;
 
-    act = new DebugController.Action("showVersion", "Show Build Version") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("showVersion", "Show Build Version") {
+      public void doAction(Event e) {
         try {
-          e.pw.println("version= "+version);
-          e.pw.println("build date= "+builddate);
+          e.pw.println("version= "+webappVersion);                 // LOOK could show all of TdsContext
+          e.pw.println("build date= "+webappVersionBuildDate);
         } catch (Exception ioe) {
           e.pw.println(ioe.getMessage());
         }
@@ -217,8 +277,8 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("showRuntime", "Show Runtime info") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("showRuntime", "Show Runtime info") {
+      public void doAction(Event e) {
         Runtime runt = Runtime.getRuntime();
         double scale = 1.0 / (1000.0 * 1000.0);
         e.pw.println(" freeMemory= " + scale * runt.freeMemory() + " Mb");
@@ -227,26 +287,6 @@ public class DebugCommands {
         e.pw.println(" availableProcessors= " + runt.availableProcessors());
         e.pw.println();
         ServletUtil.showThreads(e.pw);
-      }
-    };
-    debugHandler.addAction(act);
-
-    act = new DebugController.Action("showFlags", "Show Debugging Flags") {
-      public void doAction(DebugController.Event e) {
-        showFlags(e.req, e.pw);
-      }
-    };
-    debugHandler.addAction(act);
-
-    act = new DebugController.Action("toggleFlag", null) {
-      public void doAction(DebugController.Event e) {
-        if (e.target != null) {
-          String flag = e.target;
-          Debug.set(flag, !Debug.isSet(flag));
-        } else
-          e.pw.println(" Must be toggleFlag=<flagName>");
-
-        showFlags(e.req, e.pw);
       }
     };
     debugHandler.addAction(act);
@@ -294,15 +334,15 @@ public class DebugCommands {
     };
     debugHandler.addAction(act); */
 
-    act = new DebugController.Action("showRequest", "Show HTTP Request info") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("showRequest", "Show HTTP Request info") {
+      public void doAction(Event e) {
         e.pw.println(ServletUtil.showRequestDetail(null, e.req));
       }
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("showSystemProperties", "Show Server info") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("showSystemProperties", "Show Server info") {
+      public void doAction(Event e) {
         ServletUtil.showServerInfo(e.pw);
       }
     };
@@ -315,15 +355,15 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);  */
 
-    act = new DebugController.Action("showSession", "Show HTTP Session info") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("showSession", "Show HTTP Session info") {
+      public void doAction(Event e) {
         ServletUtil.showSession(e.req, e.res, e.pw);
       }
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("showSecurity", "Show Security info") {
-      public void doAction(DebugController.Event e) {
+    act = new Action("showSecurity", "Show Security info") {
+      public void doAction(Event e) {
         e.pw.println(ServletUtil.showSecurity(e.req, "admin"));
       }
     };
@@ -342,14 +382,6 @@ public class DebugCommands {
     };
     debugHandler.addAction(act); */
   }  
-
-  void showFlags(HttpServletRequest req, PrintStream pw) {
-    for (String key : Debug.keySet()) {
-      String url = req.getRequestURI() + "?toggleFlag=" + key;
-      pw.println("  <a href='" + url + "'>" + key + " = " + Debug.isSet(key) + "</a>");
-    }
-  }
-
 
   /* private void changeLogs(String datePattern, long maxFileSize, int maxFiles) {
     // get the existing appender

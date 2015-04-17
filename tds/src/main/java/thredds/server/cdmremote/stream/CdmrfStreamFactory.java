@@ -48,7 +48,7 @@ import thredds.server.cdmremote.StationWriter;
 import thredds.server.cdmremote.params.CdmrfQueryBean;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ft.FeatureCollection;

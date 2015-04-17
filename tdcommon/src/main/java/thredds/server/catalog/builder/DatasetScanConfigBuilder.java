@@ -37,6 +37,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.server.catalog.ConfigCatalog;
+import thredds.server.catalog.DataRootAlias;
 import thredds.server.catalog.DatasetScanConfig;
 import ucar.unidata.util.StringUtil2;
 
@@ -98,7 +99,7 @@ public class DatasetScanConfigBuilder {
       errlog.format("ERROR: must specify directory root in location attribute.%n");
       fatalError = true;
     } else {
-      result.scanDir = ConfigCatalog.translateAlias(scanDir);
+      result.scanDir = DataRootAlias.translateAlias(scanDir);
       File scanFile = new File(result.scanDir);
       if (!scanFile.exists()) {
         errlog.format("ERROR: directory %s does not exist%n", result.scanDir);

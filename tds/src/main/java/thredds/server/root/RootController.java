@@ -46,6 +46,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -60,9 +61,11 @@ public class RootController implements LastModified {
   @Autowired
   private TdsContext tdsContext;
 
-  @RequestMapping("**")
-  public String wtf() {
-    return "";
+  // this is to catch old style catalog requests that dont start with catalog
+  @RequestMapping({"**"})
+  public String wtf(HttpServletRequest req) throws FileNotFoundException {
+    System.out.printf("%s%n", req.getRequestURI());
+    throw new FileNotFoundException(req.getRequestURI());
   }
 
   @RequestMapping(value = {"/", "/catalog.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})

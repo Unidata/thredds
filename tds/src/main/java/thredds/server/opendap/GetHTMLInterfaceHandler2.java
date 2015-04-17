@@ -43,7 +43,7 @@ import opendap.dap.parsers.ParseException;
 import opendap.servlet.www.jscriptCore;
 import opendap.servlet.www.wwwFactory;
 import opendap.servlet.www.wwwOutPut;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

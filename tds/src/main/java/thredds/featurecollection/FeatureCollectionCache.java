@@ -16,7 +16,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Describe
+ * Keep cache of InvDatasetFeatureCollection
+ * Using guava cache.
  *
  * @author caron
  * @since 4/2/2015

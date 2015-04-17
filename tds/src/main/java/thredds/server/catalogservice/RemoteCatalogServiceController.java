@@ -47,14 +47,12 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.core.ConfigCatalogHtmlWriter;
-import thredds.server.cdmremote.CdmRemoteQueryBeanValidator;
 import thredds.server.config.HtmlConfig;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Formatter;
 import java.util.HashMap;

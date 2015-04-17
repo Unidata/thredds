@@ -26,7 +26,7 @@ public class TestCatalogMapping {
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
 
-    List<Object[]> result = new ArrayList<Object[]>(10);
+    List<Object[]> result = new ArrayList<>(10);
     result.add(new Object[]{""});
     result.add(new Object[]{"/"});
     result.add(new Object[]{"catalog.xml"});
@@ -36,10 +36,10 @@ public class TestCatalogMapping {
     result.add(new Object[]{"catalog/scanLocal/catalog.xml"});
     result.add(new Object[]{"catalog/scanCdmUnitTests/formats/netcdf3/catalog.xml"});
     result.add(new Object[]{"catalog/scanCdmUnitTests/formats/netcdf3/catalog.html"});
-    result.add(new Object[]{"somedir/somecat.xml"});
-    result.add(new Object[]{"somedir/somecat.html"});
-    result.add(new Object[]{"somedir/anotherdir/anothercat.xml"});
-    result.add(new Object[]{"somedir/anotherdir/anothercat.html"});
+    result.add(new Object[]{"catalog/somedir/somecat.xml"});
+    result.add(new Object[]{"catalog/somedir/somecat.html"});
+    result.add(new Object[]{"catalog/somedir/anotherdir/anothercat.xml"});
+    result.add(new Object[]{"catalog/somedir/anotherdir/anothercat.html"});
     return result;
   }
 

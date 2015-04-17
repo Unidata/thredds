@@ -33,18 +33,20 @@
 
 package thredds.core;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
+import org.springframework.util.StringUtils;
 import thredds.client.catalog.*;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.server.admin.DebugController;
+import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.config.TdsContext;
 
 import thredds.util.*;
+import thredds.util.filesource.FileSource;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Resource;
@@ -66,8 +68,7 @@ import java.util.*;
  * @since 1/23/2015
  */
 @Component("DataRootManager")
-@DependsOn("CdmInit")
-public class DataRootManager {
+public class DataRootManager implements InitializingBean {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootManager.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootManager.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
@@ -78,16 +79,13 @@ public class DataRootManager {
     return new DataRootManager(); // Used for testing only
   }
 
-
-  @Autowired
-  FeatureCollectionCache featureCollectionCache;
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   @Autowired
   private TdsContext tdsContext;
 
   @Autowired
-  private DataRootPathMatcher<DataRoot> pathMatcher;
+  private DataRootPathMatcher<DataRoot> dataRootPathMatcher;
 
   @Autowired
   private ConfigCatalogManager ccManager;
@@ -95,39 +93,34 @@ public class DataRootManager {
   @Autowired
   private ConfigCatalogCache ccc;
 
-  private DataRootManager() {
+  @Autowired
+  FeatureCollectionCache featureCollectionCache;
+  
+  @Autowired
+  DebugCommands debugCommands;
 
+  private DataRootManager() {
   }
 
   //Set method must be called so annotation at method level rather than property level
   @Resource(name = "dataRootLocationAliasExpanders")
   public void setDataRootLocationAliasExpanders(Map<String, String> aliases) {
     for (Map.Entry<String, String> entry : aliases.entrySet())
-      ConfigCatalog.addAlias("${"+entry.getKey()+"}", entry.getValue());
+      DataRootAlias.addAlias("${" + entry.getKey() + "}", entry.getValue());
   }
 
-  //////////////////////////////////////////////
-
-  /* public void init() {
-  public void afterPropertiesSet() {
-
-    //Registering first the AccessConfigListener
-    registerConfigListener(new RestrictedAccessConfigListener());
-
-    // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
+  @Override
+  public void afterPropertiesSet() throws Exception {
     FileSource fileSource = tdsContext.getPublicDocFileSource();
     if (fileSource != null) {
       File file = fileSource.getFile("");
       if (file != null)
-        ConfigCatalog.addAlias("content", StringUtils.cleanPath(file.getPath())); // LOOK
+        DataRootAlias.addAlias("content", StringUtils.cleanPath(file.getPath())); // LOOK
     }
 
-    this.makeDebugActions();
-    DatasetHandler.makeDebugActions();
-
-    //Set the instance
-    DataRootManager.setInstance(this);
-  }  */
+    makeDebugActions();
+    startupLog.info("DataRootManager:" + DataRootAlias.size() +" aliases set ");
+  }
 
   /* public boolean registerConfigListener(ConfigListener cl) {
     if (cl == null) return false;
@@ -189,7 +182,7 @@ public class DataRootManager {
     if ((path.length() > 0) && (path.charAt(0) == '/'))
       path = path.substring(1);
 
-    DataRoot dataRoot = pathMatcher.findLongestMatch(path);
+    DataRoot dataRoot = dataRootPathMatcher.findLongestMatch(path);
     return (dataRoot == null) ? null : dataRoot.getDirLocation();
   }
 
@@ -210,7 +203,7 @@ public class DataRootManager {
       return null;
     if (spath.startsWith("/"))
       spath = spath.substring(1);
-    DataRoot dataRoot = pathMatcher.findLongestMatch(spath);
+    DataRoot dataRoot = dataRootPathMatcher.findLongestMatch(spath);
     if (dataRoot == null)
       return null;
 
@@ -229,7 +222,7 @@ public class DataRootManager {
       return null;
     if (spath.startsWith("/"))
       spath = spath.substring(1);
-    return pathMatcher.findLongestMatch(spath);
+    return dataRootPathMatcher.findLongestMatch(spath);
   }
 
   /**
@@ -425,7 +418,7 @@ public class DataRootManager {
   // debugging only !!
 
   public void showRoots(Formatter f) {
-    for (Map.Entry<String, DataRoot> entry : pathMatcher.getValues()) {
+    for (Map.Entry<String, DataRoot> entry : dataRootPathMatcher.getValues()) {
       f.format(" %s%n", entry.getValue());
     }
   }
@@ -436,8 +429,8 @@ public class DataRootManager {
 
 
   public void makeDebugActions() {
-    DebugController.Category debugHandler = DebugController.find("catalogs");
-    DebugController.Action act;
+    DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
+    DebugCommands.Action act;
     /* act = new DebugHandler.Action("showError", "Show catalog error logs") {
      public void doAction(DebugHandler.Event e) {
        synchronized ( DataRootHandler.this )
@@ -458,8 +451,8 @@ public class DataRootManager {
    };
    debugHandler.addAction( act);  */
 
-    act = new DebugController.Action("showStatic", "Show root catalogs") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("showStatic", "Show root catalogs") {
+      public void doAction(DebugCommands.Event e) {
         StringBuilder sbuff = new StringBuilder();
         synchronized (DataRootManager.this) {
           List<String> list = ccManager.getRootCatalogKeys();
@@ -474,10 +467,10 @@ public class DataRootManager {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("showDataRootPaths", "Show data roots paths") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("showDataRootPaths", "Show data roots paths") {
+      public void doAction(DebugCommands.Event e) {
         synchronized (DataRootManager.this) {
-          for (String drPath : pathMatcher.getKeys()) {
+          for (String drPath : dataRootPathMatcher.getKeys()) {
             e.pw.println(" <b>" + drPath + "</b>");
           }
         }
@@ -485,10 +478,10 @@ public class DataRootManager {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("showDataRoots", "Show data roots") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("showDataRoots", "Show data roots") {
+      public void doAction(DebugCommands.Event e) {
         synchronized (DataRootManager.this) {
-          for (Map.Entry<String, DataRoot> entry : pathMatcher.getValues()) {
+          for (Map.Entry<String, DataRoot> entry : dataRootPathMatcher.getValues()) {
             DataRoot ds = entry.getValue();
             e.pw.print(" <b>" + ds.getPath() + "</b>");
             String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";
@@ -501,8 +494,8 @@ public class DataRootManager {
     debugHandler.addAction(act);
 
 
-    /* act = new DebugController.Action("reinit", "Reinitialize") {
-      public void doAction(DebugController.Event e) {
+    /* act = new DebugCommands.Action("reinit", "Reinitialize") {
+      public void doAction(DebugCommands.Event e) {
         try {
           singleton.reinit();
           e.pw.println("reinit ok");

@@ -53,22 +53,6 @@ import java.util.Map;
 @Immutable
 public class ConfigCatalog extends Catalog {
 
-  private static Map<String, String> alias = new HashMap<>(); // LOOK temp kludge
-
-  public static void addAlias(String aliasKey, String actual) {
-    alias.put(aliasKey, StringUtil2.substitute(actual, "\\", "/"));
-  }
-
-  public static String translateAlias(String scanDir) {
-    for (Map.Entry<String, String> entry : alias.entrySet()) {
-      if (scanDir.contains(entry.getKey()))
-        return StringUtil2.substitute(scanDir, entry.getKey(), entry.getValue());
-    }
-    return scanDir;
-  }
-
-  /////////////////////////////////////////////////////////////
-
   public ConfigCatalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
     super(baseURI, name, flds, datasets);
   }

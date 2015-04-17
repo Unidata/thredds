@@ -629,7 +629,6 @@ public class StringUtil2 {
     return s;
   }
 
-
   /**
    * Escape any char not alphanumeric or in okChars.
    * Escape by replacing char with %xx (hex).

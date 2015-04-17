@@ -54,20 +54,23 @@ import java.util.*;
  */
 //
 @Controller
-@RequestMapping(value ="/admin", method=RequestMethod.GET)
-public class DebugController{
-  
+@RequestMapping(value = "/admin/debug")
+public class DebugController {
+
+  @Autowired
+  DebugCommands debugCommands;
+
   @Autowired
   thredds.servlet.HtmlWriting htmlu;
 
-  @RequestMapping(value={"/debug", "/debug/*"})
-   protected void showDebugPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  @RequestMapping( method = RequestMethod.GET)
+  protected void showDebugPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType(ContentType.html.getContentHeader());
     response.setHeader("Content-Description", "thredds_debug");
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     PrintStream pw = new PrintStream(bos, false, CDM.UTF8);
-    pw.println( htmlu.getHtmlDoctypeAndOpenTag());
+    pw.println(htmlu.getHtmlDoctypeAndOpenTag());
     pw.println("<head>");
     pw.println("<title> THREDDS Debug</title>");
     pw.println("<meta http-equiv=\"Content-Type\" content=\"text/html\">");
@@ -87,40 +90,40 @@ public class DebugController{
 
     } else {
 
-      StringTokenizer tz = new StringTokenizer( cmds, ";");
+      StringTokenizer tz = new StringTokenizer(cmds, ";");
       while (tz.hasMoreTokens()) {
-        String cmd=tz.nextToken();
+        String cmd = tz.nextToken();
         String target = null;
 
-        pw.println("Cmd= "+cmd);
+        pw.println("Cmd= " + cmd);
         int pos = cmd.indexOf('/');
         String dhName = "General";
         if (pos > 0) {
-          dhName = cmd.substring(0,pos);
-          cmd = cmd.substring(pos+1);
+          dhName = cmd.substring(0, pos);
+          cmd = cmd.substring(pos + 1);
         }
 
         pos = cmd.indexOf('=');
         if (pos >= 0) {
-          target = cmd.substring(pos+1);
-          cmd = cmd.substring(0,pos);
+          target = cmd.substring(pos + 1);
+          cmd = cmd.substring(0, pos);
         }
 
-        Category dh = find( dhName);
+        DebugCommands.Category dh = debugCommands.findCategory(dhName);
         if (dh == null) {
-          pw.println(" Unknown Debug Category="+dhName+"=");
+          pw.println(" Unknown Debug Category=" + dhName + "=");
         } else {
-          Action action = dh.actions.get( cmd);
+          DebugCommands.Action action = dh.actions.get(cmd);
           if (action == null)
-            pw.println(" Unknown action="+cmd+"=");
+            pw.println(" Unknown action=" + cmd + "=");
           else
-            action.doAction( new Event( request, response, pw, bos, target));
+            action.doAction(new DebugCommands.Event(request, response, pw, bos, target));
         }
       }
     }
     pw.println("</pre></body></html>");
 
-    response.setStatus( HttpServletResponse.SC_OK );
+    response.setStatus(HttpServletResponse.SC_OK);
 
     // send it out
     PrintWriter responsePS = response.getWriter();
@@ -129,10 +132,10 @@ public class DebugController{
   }
 
   private void showDebugActions(HttpServletRequest req, PrintStream pw) {
-    for (Category dh : dhList) {
+    for (DebugCommands.Category dh : debugCommands.getCategories()) {
       pw.println("<h2>" + dh.name + "</h2>");
 
-      for (Action act : dh.actions.values()) {
+      for (DebugCommands.Action act : dh.actions.values()) {
         if (act.desc == null) continue;
 
         String url = req.getRequestURI() + "?" + dh.name + "/" + act.name;
@@ -141,59 +144,4 @@ public class DebugController{
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
-
-  static private List<Category> dhList = new ArrayList<>();
-  static public Category find(String name) {
-    for (Category dh : dhList) {
-      if (dh.name.equals(name))
-        return dh;
-    }
-    return new Category(name);
-  }
-
-  static public class Category {
-    private Map<String, Action> actions = new LinkedHashMap<>();
-    private String name;
-
-   private Category( String name) {
-     this.name = name;
-     dhList.add( this);
-   }
-
-   public void addAction(DebugController.Action act) {
-     actions.put( act.name, act);
-   }
-  }
-
-  static public abstract class Action {
-    public String name, desc;
-    // public Object userObject; // for subclass to save stuff
-    public Action(String name, String desc) {
-      this.name = name;
-      this.desc = desc;
-    }
-    /* public Action(String name, String desc, Object userObject) {
-      this.name = name;
-      this.desc = desc;
-      this.userObject = userObject;
-    } */
-    public abstract void doAction(Event e);
-  }
-
-  static public class Event {
-    public HttpServletRequest req;
-    public HttpServletResponse res;
-    public PrintStream pw;
-    public ByteArrayOutputStream bos;
-    public String target;
-
-    public Event(HttpServletRequest req, HttpServletResponse res, PrintStream pw, ByteArrayOutputStream bos, String target) {
-      this.req = req;
-      this.res = res;
-      this.pw = pw;
-      this.bos = bos;
-      this.target = target;
-    }
-  }
 }

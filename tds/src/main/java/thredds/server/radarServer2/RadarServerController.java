@@ -25,7 +25,7 @@ import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.server.config.TdsContext;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;

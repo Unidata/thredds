@@ -80,6 +80,9 @@ public class CollectionController {
   private static final String TRIGGER = "trigger";
 
   @Autowired
+  DebugCommands debugCommands;
+
+  @Autowired
   DataRootManager matcher;
 
   @Autowired
@@ -89,11 +92,11 @@ public class CollectionController {
   public void afterPropertiesSet() {
     //this.tdsContext = _tdsContext;
 
-    DebugController.Category debugHandler = DebugController.find("Collections");
-    DebugController.Action act;
+    DebugCommands.Category debugHandler = debugCommands.findCategory("Collections");
+    DebugCommands.Action act;
 
-    act = new DebugController.Action("showCollection", "Show Collections") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("showCollection", "Show Collections") {
+      public void doAction(DebugCommands.Event e) {
         // get sorted list of collections
         List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
         Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
@@ -117,8 +120,8 @@ public class CollectionController {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("sched", "Show scheduler") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("sched", "Show scheduler") {
+      public void doAction(DebugCommands.Event e) {
         org.quartz.Scheduler scheduler = CollectionUpdater.INSTANCE.getScheduler();
         if (scheduler == null) return;
 
@@ -154,8 +157,8 @@ public class CollectionController {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("showFmrcCache", "Show FMRC Cache") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("showFmrcCache", "Show FMRC Cache") {
+      public void doAction(DebugCommands.Event e) {
         e.pw.println("<p>cache location = " + monitor.getCacheLocation() + "<p>");
         String statUrl = tdsContext.getContextPath() + FMRC_PATH + "/" + STATISTICS;
         e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
@@ -168,8 +171,8 @@ public class CollectionController {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("syncFmrcCache", "Flush FMRC Cache to disk") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("syncFmrcCache", "Flush FMRC Cache to disk") {
+      public void doAction(DebugCommands.Event e) {
         monitor.sync();
         e.pw.println("<p>bdb cache location = " + monitor.getCacheLocation() + "<p> flushed to disk");
       }

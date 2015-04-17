@@ -5,12 +5,16 @@
 package thredds.server.dap4;
 
 import dap4.servlet.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.core.TdsRequestedDataset;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 import ucar.nc2.constants.CDM;
 
 import java.io.*;
 
+@Controller
+@RequestMapping("/dap4")
 public class Dap4Servlet extends DapServlet
 {
 

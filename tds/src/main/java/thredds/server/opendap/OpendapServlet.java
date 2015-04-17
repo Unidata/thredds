@@ -48,8 +48,12 @@ import java.net.URI;
 
 import opendap.servlet.*;
 import opendap.servlet.AbstractServlet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.core.TdsRequestedDataset;
-import thredds.server.admin.DebugController;
+import thredds.server.admin.DebugCommands;
+import thredds.server.config.ThreddsConfig;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;
@@ -67,8 +71,13 @@ import ucar.nc2.util.EscapeStrings;
  * @author Nathan David Potter
  * @since Apr 27, 2009 (branched)
  */
+@Controller
+@RequestMapping("/dodsC")
 public class OpendapServlet extends AbstractServlet {
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
+
+  @Autowired
+  DebugCommands debugCommands;
 
   private boolean allowSessions = false;
   private boolean allowDeflate = false; // handled by Tomcat
@@ -153,9 +162,7 @@ public class OpendapServlet extends AbstractServlet {
     try {
       path = request.getPathInfo();
       log.debug("doGet path={}", path);
-
-      if (thredds.servlet.Debug.isSet("showRequestDetail"))
-        log.debug(ServletUtil.showRequestDetail(this, request));
+      log.debug(ServletUtil.showRequestDetail(this, request));
 
       if (path == null) {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -626,11 +633,11 @@ public class OpendapServlet extends AbstractServlet {
   ///////////////////////////////////////////////////////////////////////////////////////////////
   // debugging
   private void makeDebugActions() {
-    DebugController.Category debugHandler = DebugController.find("ncdodsServer");
-    DebugController.Action act;
+    DebugCommands.Category debugHandler = debugCommands.findCategory("OPeNDAP");
+    DebugCommands.Action act;
 
-    act = new DebugController.Action("help", "Show help page") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("help", "Show help page") {
+      public void doAction(DebugCommands.Event e) {
         try {
           doGetHELP(getRequestState(e.req, e.res));
         } catch (Exception ioe) {
@@ -640,8 +647,8 @@ public class OpendapServlet extends AbstractServlet {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("version", "Show server version") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("version", "Show server version") {
+      public void doAction(DebugCommands.Event e) {
         e.pw.println("  version= " + getServerVersion());
       }
     };

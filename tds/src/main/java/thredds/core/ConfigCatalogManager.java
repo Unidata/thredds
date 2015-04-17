@@ -32,21 +32,16 @@
  */
 package thredds.core;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
-import thredds.server.catalog.ConfigCatalog;
-import thredds.server.catalog.DatasetRootConfig;
-import thredds.server.catalog.DatasetScan;
-import thredds.server.catalog.FeatureCollectionRef;
+import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import thredds.server.config.TdsContext;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
 
 import java.io.File;
@@ -63,9 +58,7 @@ import java.util.*;
  * @since 3/21/2015
  */
 @Component("ConfigCatalogManager")
-@DependsOn("CdmInit")
-public class ConfigCatalogManager implements InitializingBean {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class);
+public class ConfigCatalogManager  {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(ConfigCatalogManager.class.getName()+".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private final String ERROR = "*** ERROR: ";
@@ -73,8 +66,8 @@ public class ConfigCatalogManager implements InitializingBean {
   @Autowired
   private TdsContext tdsContext;
 
-  @Autowired                                 // Let Spring autowire so shared object
-  private DataRootPathMatcher<DataRoot> pathMatcher; // collection of DataRoot objects
+  @Autowired                                                 // Let Spring autowire so shared object
+  private DataRootPathMatcher<DataRoot> dataRootPathMatcher; // collection of DataRoot objects
 
   @Autowired
   DatasetManager datasetManager;
@@ -92,12 +85,11 @@ public class ConfigCatalogManager implements InitializingBean {
     return rootCatalogKeys;
   }
 
-  @Override
-  public void afterPropertiesSet() {
+  public void init() {
     rootCatalogKeys = new ArrayList<>();
     rootCatalogKeys.add("catalog.xml"); // always first
     rootCatalogKeys.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
-    allowedServices = new AllowedServices();
+    allowedServices = new AllowedServices();  // ??
 
     logCatalogInit.info("ConfigCatalogManage: initializing " + rootCatalogKeys.size() + " root catalogs.");
 
@@ -300,7 +292,7 @@ public class ConfigCatalogManager implements InitializingBean {
       return false;
     }
 
-    DataRoot droot = pathMatcher.get(path);
+    DataRoot droot = dataRootPathMatcher.get(path);
     if (droot != null) {
       if (!droot.getDirLocation().equals(dscan.getScanLocation())) {
         logCatalogInit.error(ERROR + "DatasetScan already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
@@ -311,7 +303,7 @@ public class ConfigCatalogManager implements InitializingBean {
 
     // add it
     droot = new DataRoot(dscan);
-    pathMatcher.put(path, droot);
+    dataRootPathMatcher.put(path, droot);
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
     return true;
@@ -326,7 +318,7 @@ public class ConfigCatalogManager implements InitializingBean {
       return false;
     }
 
-    DataRoot droot = pathMatcher.get(path);
+    DataRoot droot = dataRootPathMatcher.get(path);
     if (droot != null) {
       logCatalogInit.error(ERROR + "FeatureCollection already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
               " wanted to use by FeatureCollection Dataset =<" + fc.getName() + ">");
@@ -344,7 +336,7 @@ public class ConfigCatalogManager implements InitializingBean {
       }
     }
 
-    pathMatcher.put(path, droot);
+    dataRootPathMatcher.put(path, droot);
     logCatalogInit.debug(" added rootPath=<" + path + ">  for feature collection= <" + fc.getName() + ">");
     return true;
   }
@@ -354,7 +346,7 @@ public class ConfigCatalogManager implements InitializingBean {
     String location = config.getLocation();
 
     // check for duplicates
-    DataRoot droot = pathMatcher.get(path);
+    DataRoot droot = dataRootPathMatcher.get(path);
     if (droot != null) {
       if (wantErr)
         logCatalogInit.error(ERROR + "DatasetRootConfig already have dataRoot =<" + path + ">  mapped to directory= <" + droot.getDirLocation() + ">" +
@@ -363,7 +355,7 @@ public class ConfigCatalogManager implements InitializingBean {
       return false;
     }
 
-    location = ConfigCatalog.translateAlias(location);
+    location = DataRootAlias.translateAlias(location);
     File file = new File(location);
     if (!file.exists()) {
       logCatalogInit.error(ERROR + "DatasetRootConfig path ='" + path + "' directory= <" + location + "> does not exist");
@@ -372,7 +364,7 @@ public class ConfigCatalogManager implements InitializingBean {
 
     // add it
     droot = new DataRoot(path, location);
-    pathMatcher.put(path, droot);
+    dataRootPathMatcher.put(path, droot);
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + location + ">");
     return true;

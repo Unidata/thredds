@@ -19,5 +19,4 @@ public class TdsUpdateConfig {
         this.logVersionInfo = logVersionInfo;
     }
 
-
 }
