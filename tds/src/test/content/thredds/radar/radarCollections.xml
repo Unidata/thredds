@@ -2,7 +2,7 @@
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS Radar Server" version="1.0.1">
 
   <service name="radial" serviceType="Compound" base="">
-    <service name="radarServer" serviceType="QueryCapability" base="/thredds/radarServer/" />
+    <service name="radarServer" serviceType="QueryCapability" base="/thredds/radarServer2/" />
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
   </service>
@@ -23,7 +23,7 @@
           <variable name="Velocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="m/s" />
           <variable name="SpectrumWidth" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Spectrum Width" units="m/s" />
         </variables>
-        <documentation xlink:title="Available Stations" xlink:href="/thredds/radarServer/nexrad/level2/IDD/stations.xml"/>
+        <documentation xlink:title="Available Stations" xlink:href="/thredds/radarServer2/nexrad/level2/IDD/stations.xml"/>
         <documentation type="path">nexrad/level2/IDD</documentation>
       <geospatialCoverage>
         <northsouth>

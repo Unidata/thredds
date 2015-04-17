@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.featurecollection.FeatureCollectionCache;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.DatasetScan;
@@ -164,6 +165,8 @@ public class DatasetManager implements InitializingBean  {
     return dataRootManager.getLocationFromRequestPath(reqPath);
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
     return getNetcdfFile(req, res, TdsPathUtils.extractPath(req, null));
   }
@@ -254,21 +257,22 @@ public class DatasetManager implements InitializingBean  {
     return ncfile;
   }
 
+  // LOOK convoluted - simplify
   public FeatureDataset getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     FeatureType type;
     FeatureDataset fd = null;
     FeatureCollectionRef ftCollection = getFeatureCollection(req, res, reqPath);
 
     if (ftCollection != null) {
-      type = ftCollection.getFeatureType();
+      type = ftCollection.getFeatureCollectionType().getFeatureType();
+      assert type != null;
+
       if (type == FeatureType.GRID) {
         return openGridDataset(req, res, reqPath);
-        //builds a FeatureDataset from an TypedDataset
-        // fd = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(gds.getNetcdfFile()));
       }
 
       if (type.isPointFeatureType()) {
-        fd = null; // ftCollection.getFeatureDataset();  // LOOK WTF ??
+        return openPointDataset(req, res, reqPath);
       }
 
     } else {
@@ -336,22 +340,6 @@ public class DatasetManager implements InitializingBean  {
    * @throws IOException on read error
    */
   public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
-
-    return openGridDataset(req, res, reqPath, NetcdfDataset.getDefaultEnhanceMode());
-  }
-
-  /**
-   * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
-   *
-   * @param req         the request
-   * @param res         the response
-   * @param reqPath     the request path
-   * @param enhanceMode optional enhance mode or null
-   * @return GridDataset
-   * @throws IOException on read error
-   */
-  public GridDataset openGridDataset(HttpServletRequest req, HttpServletResponse res, String reqPath, Set<NetcdfDataset.Enhance> enhanceMode) throws IOException {
-
     // first look for a grid feature collection
     DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
     if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
@@ -371,7 +359,7 @@ public class DatasetManager implements InitializingBean  {
     NetcdfDataset ncd = null;
     try {
       // Convert to NetcdfDataset
-      ncd = NetcdfDataset.wrap(ncfile, enhanceMode);
+      ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
       return new ucar.nc2.dt.grid.GridDataset(ncd);
 
 
@@ -386,6 +374,52 @@ public class DatasetManager implements InitializingBean  {
 
       String msg = ncd == null ? "Problem wrapping NetcdfFile in NetcdfDataset"
               : "Problem creating GridDataset from NetcdfDataset";
+      log.error("openGridDataset(): " + msg, t);
+      throw new IOException(msg + t.getMessage());
+    }
+  }
+
+  /**
+   * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
+   *
+   * @param req     the request
+   * @param res     the response
+   * @param reqPath the request path
+   * @return GridDataset
+   * @throws IOException on read error
+   */
+  public FeatureDataset openPointDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+    // first look for a feature collection
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
+    if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
+      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
+
+      InvDatasetFeatureCollection fc = featureCollectionCache.get(featCollection);
+      return fc.getFeatureDataset();
+    }
+
+    // fetch it as a NetcdfFile; this deals with possible NcML
+    NetcdfFile ncfile = getNetcdfFile(req, res, reqPath);
+    if (ncfile == null) return null;
+
+    Formatter errlog = new Formatter();
+    NetcdfDataset ncd = null;
+    try {
+      ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+      return FeatureDatasetFactoryManager.wrap(FeatureType.ANY_POINT, ncd, null, errlog);
+
+    } catch (Throwable t) {
+      if (ncd == null)
+        ncfile.close();
+      else
+        ncd.close();
+
+      if (t instanceof IOException)
+        throw (IOException) t;
+
+      String msg = ncd == null ? "Problem wrapping NetcdfFile in NetcdfDataset; " : "Problem calling FeatureDatasetFactoryManager; ";
+      msg += errlog.toString();
       log.error("openGridDataset(): " + msg, t);
       throw new IOException(msg + t.getMessage());
     }
