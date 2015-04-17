@@ -73,7 +73,10 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
 
         if (jnaLibPathVal) {
             systemProperty jnaLibPathKey, jnaLibPathVal
+            systemProperty "jna.debug_load", "true"
         }
+
+
 
         useJUnit {
             if (isTravis) {
