@@ -4,7 +4,7 @@ sudo: false
 env:
   global:
     - BUILD_IDV=false
-    - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64
+    - GRADLE_OPTS="-Djna.library.path=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64"
 
 matrix:
   include:

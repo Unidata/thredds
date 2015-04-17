@@ -67,6 +67,8 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     }
 
     testTasks*.configure {
+        systemProperties = System.properties
+
         useJUnit {
             if (isTravis) {
                 ignoreFailures false  // On Travis, abort the build if any tests fail.
