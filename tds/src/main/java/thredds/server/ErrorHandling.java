@@ -49,7 +49,7 @@ public class ErrorHandling {
       throw ex;
 
 
-    //  ex.printStackTrace();
+    ex.printStackTrace();
     logger.error("uncaught exception", ex);
 
     HttpHeaders responseHeaders = new HttpHeaders();

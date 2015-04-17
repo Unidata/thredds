@@ -2,10 +2,7 @@ package thredds.featurecollection;
 
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.Dataset;
-import thredds.client.catalog.Documentation;
-import thredds.client.catalog.ThreddsMetadata;
+import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
@@ -299,6 +296,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////
 
+  @Override
   protected void makeDatasetTop(State localState) {
     DatasetBuilder top = new DatasetBuilder(null);
     top.transferMetadata(parent, true); // make all inherited metadata local

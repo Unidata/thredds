@@ -75,7 +75,8 @@ public class ConfigCatalogManager  {
   @Autowired
   private ConfigCatalogCache ccc;
 
-  private AllowedServices allowedServices;
+  private AllowedServices allowedServices = new AllowedServices();
+
   private List<String> rootCatalogKeys;    // needed ??
 
   ConfigCatalogManager() {
@@ -89,7 +90,6 @@ public class ConfigCatalogManager  {
     rootCatalogKeys = new ArrayList<>();
     rootCatalogKeys.add("catalog.xml"); // always first
     rootCatalogKeys.addAll(ThreddsConfig.getCatalogRoots()); // add any others listed in ThreddsConfig
-    allowedServices = new AllowedServices();  // ??
 
     logCatalogInit.info("ConfigCatalogManage: initializing " + rootCatalogKeys.size() + " root catalogs.");
 
@@ -240,10 +240,7 @@ public class ConfigCatalogManager  {
   private boolean extractRoots(List<Dataset> dsList, Set<String> idHash) {
     boolean needsCache = false;
 
-    Iterator<Dataset> iter = dsList.iterator();
-    while (iter.hasNext()) {
-      Dataset dataset = iter.next();
-
+    for (Dataset dataset : dsList) {
       // look for duplicate ids
       String id = dataset.getID();
       if (id != null) {
@@ -261,8 +258,7 @@ public class ConfigCatalogManager  {
           logCatalogInit.error(ERROR + "DatasetScan " + ds.getName() + " has no default Service - skipping");  // LOOK needed?
           continue;
         }
-        if (!addRoot(ds))
-          iter.remove();  // LOOK WTF ??
+        addRoot(ds);
 
       } else if (dataset instanceof FeatureCollectionRef) {
         FeatureCollectionRef fc = (FeatureCollectionRef) dataset;

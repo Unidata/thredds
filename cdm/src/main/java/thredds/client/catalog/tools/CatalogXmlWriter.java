@@ -560,7 +560,8 @@ public class CatalogXmlWriter {
       elem.addContent(writeVariables(v));
     }
 
-    URI varMapLink = (URI) ds.getLocalField(Dataset.VariableMapLink);
+    // LOOK what about VariableMapLink ??
+    ThreddsMetadata.UriResolved varMapLink = (ThreddsMetadata.UriResolved) ds.getLocalField(Dataset.VariableMapLinkURI);
     if (varMapLink != null) {
       Element velem = new Element("variableMap", Catalog.defNS);
       velem.setAttribute("title", "variables", Catalog.xlinkNS);

@@ -78,7 +78,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable";
   public static final String TimeCoverage = "TimeCoverage";
   public static final String VariableGroups = "VariableGroups";
-  public static final String VariableMapLink = "VariableMapLink";
+  // public static final String VariableMapLink = "VariableMapLink";    // String
+  public static final String VariableMapLinkURI = "VariableMapLinkURI";    // ThreddsMetadata.UriResolved
   public static final String Version = "Version";
   public static final String UrlPath = "UrlPath";
   public static final String UseRemoteCatalogService = "UseRemoteCatalogService";
@@ -311,7 +312,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   }
 
   public ThreddsMetadata.UriResolved getVariableMapLink() {
-    return (ThreddsMetadata.UriResolved) getInheritedField(VariableMapLink);
+    return (ThreddsMetadata.UriResolved) getInheritedField(VariableMapLinkURI);
   }
 
   ///////////////////////////////////////////

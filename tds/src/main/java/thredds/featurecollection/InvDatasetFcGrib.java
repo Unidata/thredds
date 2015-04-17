@@ -176,7 +176,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return collectionName;
   }
 
-  private DatasetBuilder makeDatasetFromCollection(boolean isTop, CatalogBuilder parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
+  private DatasetBuilder makeDatasetFromCollection(URI catURI, boolean isTop, CatalogBuilder parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
 
     String dsName = isTop ? name : makeCollectionShortName(fromGc.getName());
     DatasetBuilder result = new DatasetBuilder(null);
@@ -186,7 +186,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     String tpath = getPath() + "/" + COLLECTION;
     ThreddsMetadata tmi = result.getInheritableMetadata();
-    tmi.set(Dataset.VariableMapLink, makeMetadataLink(tpath, VARIABLES));
+    tmi.set(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(tpath, VARIABLES), catURI));
     tmi.set(Dataset.ServiceName, Virtual_Services_Name);
     tmi.set(Dataset.DataFormatType, fromGc.isGrib1 ? DataFormatType.GRIB1.toString() : DataFormatType.GRIB2.toString());
     tmi.set(Dataset.Properties, Property.convertToProperties(fromGc.getGlobalAttributes()));
@@ -209,7 +209,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           result.addDataset(twoD);
 
           // Collections.sort(groups);
-          makeDatasetsFromGroups(twoD, groups, isSingleGroup);
+          makeDatasetsFromGroups(catURI, twoD, groups, isSingleGroup);
         }
 
       } else if (ds.getType() == GribCollectionImmutable.Type.Best) {
@@ -222,7 +222,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           best.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time"));
           result.addDataset(best);
 
-          makeDatasetsFromGroups(best, groups, isSingleGroup);
+          makeDatasetsFromGroups(catURI, best, groups, isSingleGroup);
         }
 
       } else if (ds.getType() == GribCollectionImmutable.Type.TP) {
@@ -232,7 +232,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         tp.put(Dataset.UrlPath, path);
         tp.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference, single time Grib Partition"));
 
-        makeDatasetsFromGroups(tp, groups, isSingleGroup);
+        makeDatasetsFromGroups(catURI, tp, groups, isSingleGroup);
 
       } else { // not a partition
 
@@ -249,7 +249,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference time Grib Collection"));
         }
 
-        makeDatasetsFromGroups(result, groups, isSingleGroup);
+        makeDatasetsFromGroups(catURI, result, groups, isSingleGroup);
 
         if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
           String filesPath = pathStart + "/" + FILES;
@@ -281,7 +281,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return result;
   }
 
-  private void makeDatasetsFromGroups(DatasetBuilder parent, Iterable<GribCollectionImmutable.GroupGC> groups, boolean isSingleGroup) {
+  private void makeDatasetsFromGroups(URI catURI, DatasetBuilder parent, Iterable<GribCollectionImmutable.GroupGC> groups, boolean isSingleGroup) {
 
     for (GribCollectionImmutable.GroupGC group : groups) {
       DatasetBuilder ds;
@@ -308,7 +308,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ThreddsMetadata tmi = ds.getInheritableMetadata();
       tmi.set(Dataset.GeospatialCoverage, extractGeospatial(group));
       tmi.set(Dataset.TimeCoverage, group.makeCalendarDateRange());
-      tmi.set(Dataset.VariableMapLink, makeMetadataLink(dpath, VARIABLES));
+      tmi.set(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(dpath, VARIABLES), catURI));
     }
   }
 
@@ -435,7 +435,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     result.setBaseURI(catURI);
     result.addService(virtualService);
 
-    DatasetBuilder ds = makeDatasetFromCollection(false, result, parentCollectionName, fromGc);
+    DatasetBuilder ds = makeDatasetFromCollection(catURI, false, result, parentCollectionName, fromGc);
     result.addDataset(ds);
 
     return result.makeCatalog();
@@ -447,7 +447,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   @Override
   protected void makeDatasetTop(State state) throws IOException {
     StateGrib localState = (StateGrib) state;
-    localState.top = makeDatasetFromCollection(true, null, null, localState.gribCollection);
+    localState.top = makeDatasetFromCollection(null, true, null, null, localState.gribCollection);
   }
 
   // path/latest.xml

@@ -35,7 +35,6 @@ package thredds.featurecollection;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
@@ -125,7 +124,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     protected ThreddsMetadata.GeospatialCoverage coverage;
     protected CalendarDateRange dateRange;
 
-    protected DatasetBuilder top;        // top dataset
+    protected DatasetBuilder top;        // top dataset LOOK why ??
     protected long lastInvChange;        // last time dataset inventory was changed
     protected long lastProtoChange;      // last time proto dataset was changed
 
@@ -148,8 +147,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   /////////////////////////////////////////////////////////////////////////////
 
-  @Autowired
-  protected AllowedServices allowedServices;
+  protected AllowedServices allowedServices = new AllowedServices();
 
   // not changed after first call
   protected Dataset parent;
@@ -271,7 +269,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   protected Service makeDefaultServices() {
     List<Service> nested = new ArrayList<>();
     allowedServices.addIfAllowed(ServiceType.OPENDAP, nested);
-    allowedServices.addIfAllowed(ServiceType.File, nested);
+    allowedServices.addIfAllowed(ServiceType.HTTPServer, nested);  // ??
     allowedServices.addIfAllowed(ServiceType.CdmRemote, nested);
     allowedServices.addIfAllowed(ServiceType.NetcdfSubset, nested);
     allowedServices.addIfAllowed(ServiceType.WMS, nested);
@@ -404,7 +402,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
 
   protected String makeFullName(DatasetNode ds) {
-    if (parent == null) return ds.getName();
+    if (ds.getParent() == null) return ds.getName();
     String parentName = makeFullName( ds.getParent());
     if (parentName == null || parentName.length() == 0) return ds.getName();
     return parentName + "/" + ds.getName();
@@ -497,7 +495,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
       String lpath = getPath() + "/" + FILES + "/" + fname;
       ds.put(Dataset.UrlPath, lpath);
       ds.put(Dataset.Id, lpath);
-      ds.put(Dataset.VariableMapLink, makeMetadataLink(lpath, VARIABLES));
+      ds.put(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(lpath, VARIABLES), catURI));
 
       File file = new File(f);
       ds.put(Dataset.DataSize, file.length());
@@ -541,7 +539,8 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     String path = FILES + "/" + fname;
     top.put( Dataset.UrlPath, this.configPath + "/" + path);
     top.put( Dataset.Id, this.configPath + "/" + path);
-    top.put(Dataset.VariableMapLink, makeMetadataLink(this.configPath + "/" + path, VARIABLES));
+    String lpath = this.configPath + "/" + path;
+    top.put(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(lpath, VARIABLES), catURI));
     top.put(Dataset.DataSize, mfile.getLength());
 
     return result.makeCatalog();

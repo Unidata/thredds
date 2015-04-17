@@ -36,6 +36,7 @@ import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionSpecParser;
 
 import java.util.List;
@@ -71,5 +72,9 @@ public class FeatureCollectionRef extends CatalogRef {
 
   public String getCollectionName() {
     return config.collectionName;
+  }
+
+  public FeatureCollectionConfig getConfig() {
+    return config;
   }
 }
