@@ -3,9 +3,11 @@ package ucar.nc2.iosp.sigmet;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.util.List;
  * Created by rmay on 3/28/14.
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestSigmet {
 
     String filename;

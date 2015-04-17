@@ -6,6 +6,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.DataType;
@@ -14,6 +15,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -30,6 +32,7 @@ import java.util.List;
  * @since 10/22/13
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestNc4JniReadCompare {
 
   @Before

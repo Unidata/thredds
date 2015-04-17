@@ -32,15 +32,18 @@
  */
 package ucar.nc2.iosp.hdf5;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Read all hdf5 files in cdmUnitTestDir + "formats/hdf5/"
@@ -48,6 +51,7 @@ import ucar.unidata.test.util.TestDir;
  */
 
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestH5readAll {
 
   @AfterClass

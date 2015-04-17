@@ -34,11 +34,13 @@
 package ucar.nc2.iosp.hdf4;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -47,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestH4eosRdAll {
 
   @Parameterized.Parameters

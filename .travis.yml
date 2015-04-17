@@ -4,13 +4,13 @@ sudo: false
 env:
   global:
     - BUILD_IDV=false
+    - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64
 
 matrix:
   include:
     - jdk: oraclejdk7
     - jdk: oraclejdk8
     - jdk: openjdk7
-#    - jdk: oraclejdk7
 #      env: BUILD_IDV=true
 
 script:

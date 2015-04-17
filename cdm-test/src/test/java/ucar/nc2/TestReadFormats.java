@@ -1,7 +1,9 @@
 package ucar.nc2;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -18,6 +20,7 @@ import java.util.List;
  * @author caron
  * @since 2/28/11
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestReadFormats {
   static int countGood = 0;
   static int countFail = 0;

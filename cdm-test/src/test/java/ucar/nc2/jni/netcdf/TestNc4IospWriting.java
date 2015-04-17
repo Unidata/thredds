@@ -2,10 +2,12 @@ package ucar.nc2.jni.netcdf;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -20,6 +22,7 @@ import java.util.Formatter;
  * @author caron
  * @since 7/27/12
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestNc4IospWriting {
   int countNotOK = 0;
 
