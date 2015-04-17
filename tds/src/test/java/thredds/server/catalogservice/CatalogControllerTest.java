@@ -2,6 +2,7 @@ package thredds.server.catalogservice;
 
 import org.hamcrest.core.StringContains;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ public class CatalogControllerTest {
 	  this.expectType = expectType;
 	}
 
+	@Ignore("No longer fails - we ignore command=xxxx")
 	@Test
 	public void validateCommandTest() throws Exception{
 

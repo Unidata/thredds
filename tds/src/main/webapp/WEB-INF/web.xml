@@ -130,11 +130,6 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <listener>
-    <listener-class>thredds.server.opendap.OpendapSessionAttributeListener</listener-class>
-  </listener>
-
-
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   <!-- spring servlet -->

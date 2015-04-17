@@ -48,6 +48,7 @@ import java.net.URI;
 
 import opendap.servlet.*;
 import opendap.servlet.AbstractServlet;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,13 +72,13 @@ import ucar.nc2.util.EscapeStrings;
  * @author Nathan David Potter
  * @since Apr 27, 2009 (branched)
  */
-@Controller
-@RequestMapping("/dodsC")
-public class OpendapServlet extends AbstractServlet {
+//@Controller
+//@RequestMapping("/dodsC")
+public class OpendapServlet extends AbstractServlet implements InitializingBean {
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 
-  @Autowired
-  DebugCommands debugCommands;
+  //@Autowired
+  //DebugCommands debugCommands;
 
   private boolean allowSessions = false;
   private boolean allowDeflate = false; // handled by Tomcat
@@ -90,6 +91,12 @@ public class OpendapServlet extends AbstractServlet {
   private int binLimit = 500;
 
   private boolean debugSession = false;
+
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+
+  }
 
   public void init() throws javax.servlet.ServletException {
     super.init();
@@ -104,7 +111,7 @@ public class OpendapServlet extends AbstractServlet {
     logServerStartup.info(getClass().getName() + " version= " + odapVersionString + " ascLimit = " + ascLimit + " binLimit = " + binLimit);
 
     // debugging actions
-    makeDebugActions();
+    // makeDebugActions();
 
     logServerStartup.info(getClass().getName() + " initialization done");
   }
@@ -631,7 +638,7 @@ public class OpendapServlet extends AbstractServlet {
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
-  // debugging
+  /* debugging
   private void makeDebugActions() {
     DebugCommands.Category debugHandler = debugCommands.findCategory("OPeNDAP");
     DebugCommands.Action act;
@@ -653,8 +660,7 @@ public class OpendapServlet extends AbstractServlet {
       }
     };
     debugHandler.addAction(act);
-
-  }
+  }  */
 
   public String getServerName() {
     return this.getClass().getName();
