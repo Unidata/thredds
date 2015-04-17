@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import thredds.servlet.Debug;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -166,10 +165,10 @@ public class FileView extends AbstractView {
     }
     res.setContentLength((int) contentLength);
 
-    boolean debugRequest = Debug.isSet("returnFile");
+    /* boolean debugRequest = Debug.isSet("returnFile");
     if (debugRequest)
       log.debug("renderMergedOutputModel(): filename = " + filename +
-              " contentType = " + contentType + " contentLength = " + contentLength);
+              " contentType = " + contentType + " contentLength = " + contentLength); */
 
     // indicate we allow Range Requests
     if (!isRangeRequest)
@@ -196,8 +195,6 @@ public class FileView extends AbstractView {
       IO.copyFileB(file, out, 60000);
       res.flushBuffer();
       out.close();
-      if (debugRequest)
-        log.debug("renderMergedOutputModel(): file response ok = " + filename);
     }
 
     // @todo Split up this exception handling: those from file access vs those from dealing with response

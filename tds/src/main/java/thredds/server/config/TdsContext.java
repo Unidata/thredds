@@ -56,7 +56,6 @@ import org.xml.sax.SAXException;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.featurecollection.CollectionUpdater;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.ThreddsConfig;
 import thredds.util.filesource.*;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
@@ -78,7 +77,6 @@ import java.util.*;
  * - sets the content directory
  * - reads persistent user defined params and runs ThreddsConfig.init
  * - creates, if don't exist, log and public dirs in content directory
- * - Sets InvDatasetScan and InvDatasetFeatureCollection properties
  * - Get default and jsp dispatchers from servletContext
  * - Creates and initializes the TdsConfigMapper
  *
@@ -191,9 +189,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     // ToDo Instead of stdout, use servletContext.log( "...") [NOTE: it writes to localhost.*.log rather than catalina.out].
     if (servletContext == null)
       throw new IllegalArgumentException("ServletContext must not be null.");
-
-    // ToDo LOOK - Are we still using this.
-    ServletUtil.initDebugging(servletContext);
 
     // Set the webapp name.
     this.webappName = servletContext.getServletContextName();
@@ -659,55 +654,5 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   public void setContentRootPath(String contentRootPath) {
     this.contentRootPath = contentRootPath;
   }
-
-  /*
-
-  public void setWebappVersion(String verFull) {
-    this.webappVersion = verFull;
-  }
-
-  public void setWebappVersionBuildDate(String buildDateString) {
-    this.webappVersionBuildDate = buildDateString;
-  }
-
-   public void setContentPath(String contentPath) {
-    this.contentPath = contentPath;
-  }
-
-  public void setStartupContentPath(String startupContentPath) {
-    this.startupContentPath = startupContentPath;
-  }
-
-  public void setIddContentPath(String iddContentPath) {
-    this.iddContentPath = iddContentPath;
-  }
-
-  public void setMotherlodeContentPath(String motherlodeContentPath) {
-    this.motherlodeContentPath = motherlodeContentPath;
-  }
-
-  public void setTdsConfigFileName(String filename) {
-    this.tdsConfigFileName = filename;
-  }
-
-  public void setServerInfo(TdsServerInfo serverInfo) {
-    this.serverInfo = serverInfo;
-  }
-
-  public void setHtmlConfig(HtmlConfig htmlConfig) {
-    this.htmlConfig = htmlConfig;
-  }
-
-
-  public void setCorsConfig(CorsConfig corsConfig) {
-      this.corsConfig = corsConfig;
-  }
-
-
-  public void setTdsUpdateConfig(TdsUpdateConfig tdsUpdateConfig) {
-      this.tdsUpdateConfig = tdsUpdateConfig;
-  }
-
-    */
 
 }

@@ -44,7 +44,6 @@ import javax.servlet.http.*;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.util.ContentType;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
 /**
@@ -63,11 +62,6 @@ public class AnnotateServlet extends AbstractServlet {
       throws ServletException, IOException {
 
     try {
-      if (Debug.isSet("showRequest"))
-        log.debug("**CatalogAnnotate req=" + ServletUtil.getRequest(req));
-      if (Debug.isSet("showRequestDetail"))
-        log.debug(ServletUtil.showRequestDetail(this, req));
-
       // see if it has a catalog parameter
       String catURL = req.getParameter("catalog");
       boolean isDefaultCatalog = (catURL == null) || (catURL.length() == 0);
@@ -77,9 +71,6 @@ public class AnnotateServlet extends AbstractServlet {
         URI catURI = reqURI.resolve("catalog.xml");
         catURL = catURI.toString();
       }
-      if (Debug.isSet("showCatalog"))
-        log.debug("CatalogServices: catalog = " + catURL);
-
       String datasetID;
       // see if it has a dataset parameter
       datasetID = req.getParameter("dataset");
@@ -87,9 +78,6 @@ public class AnnotateServlet extends AbstractServlet {
         log.error("CatalogAnnotate: must have dataset query parameter" + ServletUtil.getRequest(req));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have dataset query parameter");
         return;
-      } else {
-        if (Debug.isSet("showCatalog"))
-          log.debug("CatalogAnnotate: dataset = " + datasetID);
       }
 
       res.setStatus(HttpServletResponse.SC_OK);
@@ -127,11 +115,6 @@ public class AnnotateServlet extends AbstractServlet {
       throws ServletException, IOException {
 
     try {
-      if (Debug.isSet("showRequest"))
-        log.debug("**CatalogAnnotate post=" + ServletUtil.getRequest(req));
-      if (Debug.isSet("showRequestDetail"))
-        log.debug(ServletUtil.showRequestDetail(this, req));
-
       // see if it has a catalog parameter
       String catURL = req.getParameter("catalog");
       boolean isDefaultCatalog = (catURL == null) || (catURL.length() == 0);
@@ -141,8 +124,6 @@ public class AnnotateServlet extends AbstractServlet {
         URI catURI = reqURI.resolve("catalog.xml");
         catURL = catURI.toString();
       }
-      if (Debug.isSet("showCatalog"))
-        log.debug("CatalogServices: catalog = " + catURL);
 
       String datasetID;
       // see if it has a dataset parameter
@@ -151,9 +132,6 @@ public class AnnotateServlet extends AbstractServlet {
         log.error("CatalogAnnotate: must have dataset query parameter" + ServletUtil.getRequest(req));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have dataset query parameter");
         return;
-      } else {
-        if (Debug.isSet("showCatalog"))
-          log.debug("CatalogAnnotate: dataset = " + datasetID);
       }
 
       // parse the catalog LOOK not used

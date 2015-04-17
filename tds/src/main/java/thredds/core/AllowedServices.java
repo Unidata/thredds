@@ -36,7 +36,7 @@ package thredds.core;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 
 import java.util.*;
 
@@ -49,7 +49,7 @@ import java.util.*;
  * @since 1/23/2015
  */
 @Component
-@DependsOn("CdmInit")
+@DependsOn("TdsContext")  // which initializes ThreddsConfig
 public class AllowedServices {
 
   private Map<ServiceType, AllowedService> allowed = new HashMap<>();

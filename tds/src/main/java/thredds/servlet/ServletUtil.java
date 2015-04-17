@@ -83,18 +83,6 @@ public class ServletUtil {
       contentPath = contentPath + "/";
   }
 
-  static public void initDebugging(ServletContext webapp) {
-    if (isDebugInit) return;
-    isDebugInit = true;
-
-    String debugOn = webapp.getInitParameter("DebugOn");
-    if (debugOn != null) {
-      StringTokenizer toker = new StringTokenizer(debugOn);
-      while (toker.hasMoreTokens())
-        Debug.set(toker.nextToken(), true);
-    }
-  }
-
   /**
    * Return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
    *
@@ -553,10 +541,6 @@ public class ServletUtil {
       res.setContentLength((int) contentLength);
 
     String filename = file.getPath();
-    boolean debugRequest = Debug.isSet("returnFile");
-    if (debugRequest) log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
-            " contentLength = " + contentLength);
-
     // indicate we allow Range Requests
     res.addHeader("Accept-Ranges", "bytes");
 
@@ -584,7 +568,6 @@ public class ServletUtil {
         IO.copyFileWithChannels(file, cOut);
         res.flushBuffer();
       }
-      if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
     }
 
     // @todo Split up this exception handling: those from file access vs those from dealing with response
@@ -666,10 +649,6 @@ public class ServletUtil {
   public static boolean saveFile(HttpServlet servlet, String contentPath, String path, HttpServletRequest req,
                                  HttpServletResponse res) {
 
-    // @todo Need to use logServerAccess() below here.
-    boolean debugRequest = Debug.isSet("SaveFile");
-    if (debugRequest) log.debug(" saveFile(): path= " + path);
-
     String filename = contentPath + path; // absolute path
     File want = new File(filename);
 
@@ -689,7 +668,6 @@ public class ServletUtil {
     // save new file
     try (OutputStream out = new BufferedOutputStream(new FileOutputStream(filename))) {
       IO.copy(req.getInputStream(), out);
-      if (debugRequest) log.debug("saveFile(): ok= " + filename);
       res.setStatus(HttpServletResponse.SC_CREATED);
       return true;
 
@@ -746,11 +724,6 @@ public class ServletUtil {
     try {
       String message = t.getMessage();
       if (message == null) message = "NULL message " + t.getClass().getName();
-      if (Debug.isSet("trustedMode")) { // security issue: only show stack if trusted
-        StringWriter sw = new StringWriter(10000);
-        t.printStackTrace(new PrintWriter(sw));
-        message = sw.toString();
-      }
       log.error("handleException", t);
       t.printStackTrace(); // debugging - log.error not showing stack trace !!   
       if (!res.isCommitted())

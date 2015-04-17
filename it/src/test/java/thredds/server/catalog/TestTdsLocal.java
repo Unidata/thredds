@@ -39,6 +39,8 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
+import java.io.IOException;
+
 /**
  * Test catalog utilities
  */
@@ -46,34 +48,31 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 public class TestTdsLocal {
   public static boolean showValidationMessages = false;
 
-  public static Catalog open(String catalogName) {
+  public static Catalog open(String catalogName) throws IOException {
     if (catalogName == null) catalogName = "/catalog.xml";
     String catalogPath = TestWithLocalServer.withPath(catalogName);
     System.out.println("\n open= "+catalogPath);
 
-    try {
-      CatalogBuilder builder = new CatalogBuilder();
-      Catalog cat = builder.buildFromLocation(catalogPath, null);
-      if (builder.hasFatalError()) {
-        System.out.println("Validate failed "+ catalogName+" = \n<"+ builder.getErrorMessage()+">");
-        assert false : builder.getErrorMessage();
-      } else if (showValidationMessages)
-        System.out.println("Validate ok "+ catalogName+" = \n<"+ builder.getErrorMessage()+">");
+    CatalogBuilder builder = new CatalogBuilder();
+    Catalog cat = builder.buildFromLocation(catalogPath, null);
+    if (builder.hasFatalError()) {
+      System.out.println("Validate failed "+ catalogName+" = \n<"+ builder.getErrorMessage()+">");
+      assert false : builder.getErrorMessage();
+    } else if (showValidationMessages)
+      System.out.println("Validate ok "+ catalogName+" = \n<"+ builder.getErrorMessage()+">");
 
-      return cat;
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      assert false;
-    }
-
-    return null;
+    return cat;
   }
 
   @Test
   public void readCatalog() {
-    Catalog mainCat = open(null);
-    assert mainCat != null;
+    Catalog mainCat = null;
+    try {
+      mainCat = open(null);
+      assert mainCat != null;
+    } catch (IOException e) {
+      assert false;
+    }
   }
 
 }

@@ -36,7 +36,7 @@ import thredds.server.ncss.exception.*;
 import thredds.server.ncss.exception.UnsupportedOperationException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
@@ -51,7 +51,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;

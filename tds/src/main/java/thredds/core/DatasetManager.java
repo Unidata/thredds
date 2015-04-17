@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
-import thredds.server.admin.DebugController;
+import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.DatasetScan;
 import thredds.server.catalog.FeatureCollectionRef;
 import thredds.servlet.DatasetSource;
@@ -77,6 +77,9 @@ public class DatasetManager implements InitializingBean  {
   static private final boolean debugResourceControl = false;
 
   @Autowired
+  DebugCommands debugCommands;
+
+  @Autowired
   DataRootManager dataRootManager;
 
   @Autowired
@@ -96,7 +99,8 @@ public class DatasetManager implements InitializingBean  {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    TdsRequestedDataset.setDatasetManager( this);
+    TdsRequestedDataset.setDatasetManager( this);      // LOOK why not autowire this ?  maybe because staatic ??
+    makeDebugActions();
   }
 
   void reinit() {
@@ -109,11 +113,11 @@ public class DatasetManager implements InitializingBean  {
   }
 
   void makeDebugActions() {
-    DebugController.Category debugHandler = DebugController.find("catalogs");
-    DebugController.Action act;
+    DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
+    DebugCommands.Action act;
 
-    act = new DebugController.Action("showNcml", "Show ncml datasets") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("showNcml", "Show ncml datasets") {
+      public void doAction(DebugCommands.Event e) {
         for (Object key : ncmlDatasetHash.keySet()) {
           e.pw.println(" url=" + key);
         }
