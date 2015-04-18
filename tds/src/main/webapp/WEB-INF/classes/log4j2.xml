@@ -138,7 +138,7 @@
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="thredds.server.admin.CollectionController" level="info" additivity="false">
+    <logger name="thredds.server.admin.AdminCollectionController" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 

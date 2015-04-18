@@ -71,7 +71,7 @@ import ucar.unidata.util.StringUtil2;
  */
 @Controller
 @RequestMapping(value = {"/admin/collection"})
-public class CollectionController {
+public class AdminCollectionController {
   private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
   private static final String PATH = "/admin/collection";

@@ -32,11 +32,8 @@
  */
 package thredds.server.catalogservice;
 
-import junit.framework.*;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.*;
-
-import java.util.List;
 
 public class TestLocalCatalogRequest {
 
@@ -46,7 +43,7 @@ public class TestLocalCatalogRequest {
   private MockHttpServletRequest req;
   private BindingResult bindingResult;
   private String bindResultMsg;
-  private LocalCatalogRequest lcr;
+  private CatalogRequest lcr;
 
   private boolean htmlView;
   private String xmlPath = "my/cool/catalog.xml";

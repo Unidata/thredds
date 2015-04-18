@@ -55,7 +55,7 @@ import java.util.*;
 //
 @Controller
 @RequestMapping(value = "/admin/debug")
-public class DebugController {
+public class AdminDebugController {
 
   @Autowired
   DebugCommands debugCommands;
@@ -78,9 +78,9 @@ public class DebugController {
     pw.println("</head>");
     pw.println("<body>");
     pw.println(htmlu.getOldStyleHeader());
-    pw.println("<br><a href='content/logs/'>Show TDS Logs</a>");
-    pw.println("<br><a href='content/tdm/'>Show TDM Logs</a>");
-    pw.println("<br><a href='logs/'>Show Tomcat Logs</a>");
+    pw.println("<br><a href='dir/content/logs/'>Show TDS Logs</a>");
+    pw.println("<br><a href='dir/content/tdm/'>Show TDM Logs</a>");
+    pw.println("<br><a href='dir/logs/'>Show Tomcat Logs</a>");
     pw.println("<h2>Debug Actions</h2>");
     pw.println("<pre>");
 

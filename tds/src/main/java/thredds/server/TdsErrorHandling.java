@@ -27,14 +27,21 @@ public class TdsErrorHandling {
   public ResponseEntity<String> handle(FileNotFoundException ex) {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("FileNotFoundException : " + ex.getMessage(), responseHeaders, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>("FileNotFoundException: " + ex.getMessage(), responseHeaders, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(UnsupportedOperationException.class)
   public ResponseEntity<String> handle(UnsupportedOperationException ex) {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("UnsupportedOperationException exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>("UnsupportedOperationException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<String> handle(IllegalArgumentException ex) {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity<>("IllegalArgumentException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
   // LOOK this could be a problem

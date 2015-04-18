@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
 import thredds.util.RequestForwardUtils;
+import thredds.util.TdsPathUtils;
 
 /**
  * Handle /admin/content/
@@ -57,7 +58,8 @@ import thredds.util.RequestForwardUtils;
  * @since 4.0
  */
 @Controller
-public class DirDisplayController {
+@RequestMapping("/admin/dir")
+public class AdminDirDisplayController {
 
   @Autowired
   private TdsContext tdsContext;
@@ -65,26 +67,19 @@ public class DirDisplayController {
   @Autowired
   thredds.servlet.HtmlWriting htmlu;
   
-  @RequestMapping("/admin/**")
+  @RequestMapping("**")
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
 	  
-    //String path = req.getPathInfo();
-    //if (path == null) path = "";
-    
-    String path = req.getServletPath();
-    if (path == null) path = "";
-    
-    if(path.startsWith("/admin") )
-    	path = path.substring("/admin".length(), path.length());    
+    String path = TdsPathUtils.extractPath(req, "/admin/dir");
 
-    // Don't allow ".." directories in path.
+    /* Don't allow ".." directories in path.   now done in TdsPathUtils.extractPath
     if (path.contains("/../")
         || path.equals("..")
         || path.startsWith("../")
         || path.endsWith("/..")) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain ..");
       return null;
-    }
+    } */
 
     File file = null;
     if (path.startsWith("/content/tdm")) {
@@ -106,7 +101,7 @@ public class DirDisplayController {
     }
 
     if (file == null) {
-      RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(), req, res );
+      // RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(), req, res );  // LOOK wtf ?
       return null;
     }
 
