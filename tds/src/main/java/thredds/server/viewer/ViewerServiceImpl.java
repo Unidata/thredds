@@ -281,7 +281,7 @@ public class ViewerServiceImpl implements ViewerService {
 
       // look through all access for {serviceName}
       for (Access acc : access) {
-        String sname = "{" + acc.getService().getType() + "}";
+        String sname = "{" + acc.getService().getServiceTypeName() + "}";
         if (org.contains(sname)) {
           URI uri = acc.getStandardUri();
           if (uri != null)

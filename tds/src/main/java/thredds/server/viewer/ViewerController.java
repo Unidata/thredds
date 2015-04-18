@@ -53,7 +53,7 @@ import thredds.util.ContentType;
 import ucar.unidata.util.StringUtil2;
 
 @Controller
-@RequestMapping("/view/*")
+@RequestMapping("/view")
 public class ViewerController {
   private static Logger log = LoggerFactory.getLogger(ViewerController.class);
 
@@ -94,7 +94,7 @@ public class ViewerController {
 
 
   @SuppressWarnings("unchecked")
-  private String fillTemplate(HttpServletRequest req, String template) {
+  public String fillTemplate(HttpServletRequest req, String template) {
 
     StringBuilder sbuff = new StringBuilder(template);
 

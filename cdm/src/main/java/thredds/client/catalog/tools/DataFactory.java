@@ -673,7 +673,7 @@ public class DataFactory {
 
   private Access findAccessByServiceType(List<Access> accessList, ServiceType type) {
     for (Access a : accessList) {
-      if (type.toString().equalsIgnoreCase(a.getService().getType().toString()))
+      if (type.toString().equalsIgnoreCase(a.getService().getServiceTypeName()))
         return a;
     }
     return null;
