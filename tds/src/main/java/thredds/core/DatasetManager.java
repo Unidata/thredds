@@ -329,6 +329,11 @@ public class DatasetManager implements InitializingBean  {
     }
   }
 
+  public InvDatasetFeatureCollection openFeatureCollection(FeatureCollectionRef ftCollection) throws IOException {
+      return featureCollectionCache.get(ftCollection);
+  }
+
+
   /**
    * Open a file as a GridDataset, using getNetcdfFile(), so that it gets wrapped in NcML if needed.
    *

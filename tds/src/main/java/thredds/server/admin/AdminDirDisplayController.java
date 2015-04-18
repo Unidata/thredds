@@ -82,21 +82,18 @@ public class AdminDirDisplayController {
     } */
 
     File file = null;
-    if (path.startsWith("/content/tdm")) {
-      file = new File(tdsContext.getContentRootPath(), path.substring(9));
+    if (path.startsWith("content/")) {
+      // Check in content/thredds directory (which includes content/thredds/public).
+      file = new File(tdsContext.getContentDirectory(), path.substring(8));
+      // If not found, check in content/thredds and altContent (but not content/thredds/public).
+      if ( ! file.exists() )
+        file = tdsContext.getConfigFileSource().getFile( path.substring(8));
 
-    } else if (path.startsWith("/content/")) {
-        // Check in content/thredds directory (which includes content/thredds/public).
-        file = new File(tdsContext.getContentDirectory(), path.substring(9));
-        // If not found, check in content/thredds and altContent (but not content/thredds/public).
-        if ( ! file.exists() )
-          file = tdsContext.getConfigFileSource().getFile( path.substring(9));
+    } else if (path.startsWith("logs/")) {
+      file = new File(tdsContext.getTomcatLogDirectory(), path.substring(5));
 
-    } else if (path.startsWith("/logs/")) {
-      file = new File(tdsContext.getTomcatLogDirectory(), path.substring(6));
-
-    } else if (path.startsWith("/dataDir/")) {
-      String root = path.substring(9);
+    } else if (path.startsWith("dataDir/")) {
+      String root = path.substring(8);
       file = TdsRequestedDataset.getFile(root);
     }
 
