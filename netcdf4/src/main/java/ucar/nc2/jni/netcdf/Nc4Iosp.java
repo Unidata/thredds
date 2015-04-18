@@ -181,7 +181,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
         if (debugLoad) {
           System.out.println(message);
-          t.printStackTrace();
         }
       }
     }

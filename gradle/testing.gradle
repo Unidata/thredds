@@ -67,17 +67,6 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     }
 
     testTasks*.configure {
-        // Propagate "jna.library.path", if it's been defined.
-        String jnaLibPathKey = "jna.library.path"
-        String jnaLibPathVal = System.getProperty(jnaLibPathKey)
-
-        if (jnaLibPathVal) {
-            systemProperty jnaLibPathKey, jnaLibPathVal
-            systemProperty "jna.debug_load", "true"
-        }
-
-
-
         useJUnit {
             if (isTravis) {
                 ignoreFailures false  // On Travis, abort the build if any tests fail.
