@@ -30,17 +30,34 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.catalogservice;
 
-public class LocalCatalogRequest {
-  String dataset;
+package thredds.server.admin;
 
-  public String getDataset() {
-    return dataset;
-  }
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-  public void setDataset(String dataset) {
-    this.dataset = dataset;
+/**
+ * Show spring request maps
+ *
+ * @author caron
+ * @since 10/23/13
+ * @see "http://www.java-allandsundry.com/2012/03/endpoint-documentation-controller-for.html"
+ */
+@Controller
+@RequestMapping(value ="/admin/spring", method= RequestMethod.GET)
+public class AdminSpringInfoController {
+
+  @Autowired
+  private RequestMappingHandlerMapping handlerMapping;
+
+  @RequestMapping(value = "/showControllers", method = RequestMethod.GET)
+  public ModelAndView show() {
+    return new ModelAndView("springRequestMap", "handlerMethods", this.handlerMapping.getHandlerMethods());
   }
 
 }

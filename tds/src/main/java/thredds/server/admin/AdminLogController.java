@@ -50,6 +50,7 @@ import thredds.core.DataRootManager;
 import thredds.server.config.TdsContext;
 import thredds.core.PathMatcher;
 import thredds.servlet.ServletUtil;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.constants.CDM;
 
 /**
@@ -59,8 +60,8 @@ import ucar.nc2.constants.CDM;
  * @since 4.0
  */
 @Controller
-@RequestMapping(value="/admin", method=RequestMethod.GET)
-public class LogController{
+@RequestMapping(value="/admin/log", method=RequestMethod.GET)
+public class AdminLogController {
 	
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private File accessLogDirectory;
@@ -68,7 +69,6 @@ public class LogController{
 
   @Autowired
   private TdsContext tdsContext;
-
 
   @Autowired
   private DataRootManager matcher;
@@ -91,35 +91,12 @@ public class LogController{
     }
   }
 
-  @RequestMapping( value={"/log/**", "/roots"})
+  @RequestMapping( "**")
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    //String path = req.getPathInfo();
-    //if (path == null) path = "";
-
-    String path = req.getServletPath();
-    if (path == null) path = "";
-    
-    if(path.startsWith("/admin") )
-    	path = path.substring("/admin".length(), path.length());    
-    
-    // Don't allow ".." directories in path.
-    if (path.contains("/../")
-            || path.equals("..")
-            || path.startsWith("../")
-            || path.endsWith("/..")) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain ..");
-      return null;
-    }
+    String path = TdsPathUtils.extractPath(req, "/admin/log");
 
     File file = null;
-    if (path.equals("/log/dataroots.txt")) {
-      Formatter f = new Formatter();
-      matcher.showRoots(f);
-      PrintWriter pw = res.getWriter();
-      pw.print(f.toString());
-      pw.flush();
-
-    } else if (path.equals("/log/access/current")) {
+    if (path.equals("/access/current")) {
 
       File dir = tdsContext.getTomcatLogDirectory();
       File[] files = dir.listFiles(new FilenameFilter() {
@@ -136,23 +113,23 @@ public class LogController{
       Collections.sort(fileList);
       file = (File) fileList.get(fileList.size() - 1); // last one
 
-    } else if (path.equals("/log/access/")) {
+    } else if (path.equals("/access/")) {
       showFiles(tdsContext.getTomcatLogDirectory(), "access", res);
 
-    } else if (path.startsWith("/log/access/")) {
-      file = new File(tdsContext.getTomcatLogDirectory(), path.substring(12));
-      ServletUtil.returnFile( req, res, file, "text/plain");
+    } else if (path.startsWith("/access/")) {
+      file = new File(tdsContext.getTomcatLogDirectory(), path.substring(8));
+      ServletUtil.returnFile(req, res, file, "text/plain");
       return null;
 
-    } else if (path.equals("/log/thredds/current")) {
+    } else if (path.equals("/thredds/current")) {
       file = new File(tdsContext.getContentDirectory(), "logs/threddsServlet.log");
 
-    } else if (path.equals("/log/thredds/")) {
+    } else if (path.equals("/thredds/")) {
       showFiles(new File(tdsContext.getContentDirectory(),"logs"), "thredds", res);
 
-    } else if (path.startsWith("/log/thredds/")) {
-      file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(13));
-      ServletUtil.returnFile( req, res, file, "text/plain");
+    } else if (path.startsWith("/thredds/")) {
+      file = new File(tdsContext.getContentDirectory(), "logs/" + path.substring(9));
+      ServletUtil.returnFile(req, res, file, "text/plain");
       return null;
 
     } else {
@@ -168,6 +145,13 @@ public class LogController{
       return new ModelAndView("threddsFileView", "file", file);
     else
       return null;
+  }
+
+  @RequestMapping("/dataroots.txt")
+  protected String showRoots() throws Exception {
+    Formatter f = new Formatter();
+    matcher.showRoots(f);
+    return f.toString();
   }
 
   private void showFiles(File dir, final String filter, HttpServletResponse res) throws IOException {
