@@ -267,7 +267,7 @@ public class DatasetManager implements InitializingBean  {
       type = ftCollection.getFeatureCollectionType().getFeatureType();
       assert type != null;
 
-      if (type == FeatureType.GRID) {
+      if (type == FeatureType.GRID || type == FeatureType.FMRC) {
         return openGridDataset(req, res, reqPath);
       }
 
