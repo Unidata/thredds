@@ -166,12 +166,6 @@ public class CdmRemoteController implements LastModified {
           return new ResponseEntity<>("Unrecognized request", null, HttpStatus.BAD_REQUEST);
       }
 
-    } catch (FileNotFoundException e) {
-      return new ResponseEntity<>("Unrecognized request", null, HttpStatus.NOT_FOUND);
-
-    } catch (Throwable e) {
-      log.error(e.getMessage(), e);
-      return new ResponseEntity<>("Server Error", null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -204,13 +198,6 @@ public class CdmRemoteController implements LastModified {
       if (showReq)
         System.out.printf("CdmRemoteController header ok, size=%s%n", size);
 
-    } catch (FileNotFoundException e) {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-      ;
-
-    } catch (Throwable e) {
-      log.error(e.getMessage(), e);
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
   }
@@ -269,15 +256,8 @@ public class CdmRemoteController implements LastModified {
       if (showReq)
         System.out.printf("CdmRemoteController data ok, size=%s%n", size);
 
-    } catch (FileNotFoundException e) {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-
     } catch (IllegalArgumentException | InvalidRangeException e) { // ParsedSectionSpec failed
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-
-    } catch (Throwable e) {
-      log.error(e.getMessage(), e);
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
   }

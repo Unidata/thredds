@@ -149,7 +149,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
         if (n == 0)
           out.printf("  # Grids == 0 id = %s%n", ds.getId());
         else if (verbose)
-          out.printf("     OK ngrids=%d %s%n", n, gds.getLocationURI());
+          out.printf("     OK ngrids=%d %s%n", n, gds.getLocation());
 
         ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
         if (gc == null)

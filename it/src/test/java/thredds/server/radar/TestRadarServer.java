@@ -24,7 +24,7 @@ public class TestRadarServer {
   @Parameterized.Parameters
   public static java.util.Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-            {"/radar/radarCollections.xml"},
+           //  {"/radar/radarCollections.xml"},
             {"/radarServer2/nexrad/level2/IDD/dataset.xml"},
             {"/radarServer2/nexrad/level2/IDD/stations.xml"},
             {"/radarServer2/nexrad/level2/IDD?stn=KDGX&time_start=2014-06-05T12:47:17&time_end=2014-06-05T16:07:17"},

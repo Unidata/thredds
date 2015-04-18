@@ -161,13 +161,10 @@ public class DataRoot {
      if (locationReletive.startsWith("/"))
        locationReletive = locationReletive.substring(1);
 
-     if (!locationReletive.endsWith("/"))
-       locationReletive = locationReletive + "/";
-
-        // translate any properties
-    //String scanDir = ConfigCatalog.translateAlias(rootLocation); // LOOK we may have already done this
+     if (!rootLocation.endsWith("/"))
+       rootLocation = rootLocation + "/";
 
     // put it together
-    return (locationReletive.length() > 1) ? rootLocation + "/" + locationReletive : rootLocation;
+    return (locationReletive.length() > 1) ? rootLocation + locationReletive : rootLocation;
   }
 }

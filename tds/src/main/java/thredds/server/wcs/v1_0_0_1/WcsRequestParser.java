@@ -56,8 +56,7 @@ import java.net.URI;
  * @since 4.0
  */
 public class WcsRequestParser {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger(WcsRequestParser.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WcsRequestParser.class);
 
   public static thredds.wcs.v1_0_0_1.WcsRequest parseRequest(String version, URI serverURI, HttpServletRequest req, HttpServletResponse res)
           throws thredds.wcs.v1_0_0_1.WcsException, IOException {
@@ -84,7 +83,9 @@ public class WcsRequestParser {
 
 
     TdsRequestedDataset trd = new TdsRequestedDataset(req, "/wcs");
-    try (GridDataset gridDataset = trd.openAsGridDataset(req, res)) {
+    GridDataset gridDataset = null;
+    try {
+      gridDataset = trd.openAsGridDataset(req, res);
       if (gridDataset == null)
         return null;
 
@@ -168,6 +169,11 @@ public class WcsRequestParser {
       }
       throw new thredds.wcs.v1_0_0_1.WcsException(thredds.wcs.v1_0_0_1.WcsException.Code.InvalidParameterValue, "Request",
               "Invalid requested operation [" + requestParam + "].");
+
+    } catch (thredds.wcs.v1_0_0_1.WcsException e) {
+      if (gridDataset != null)
+        gridDataset.close();
+      throw e;
     }
   }
 
@@ -200,8 +206,7 @@ public class WcsRequestParser {
     return null;
   }
 
-  private static Request.BoundingBox parseBoundingBox(String bboxString)
-          throws thredds.wcs.v1_0_0_1.WcsException {
+  private static Request.BoundingBox parseBoundingBox(String bboxString) throws thredds.wcs.v1_0_0_1.WcsException {
     if (bboxString == null || bboxString.equals(""))
       return null;
 
@@ -234,8 +239,7 @@ public class WcsRequestParser {
     return new Request.BoundingBox(minP, maxP);
   }
 
-  private static CalendarDateRange parseTime(String time)
-          throws thredds.wcs.v1_0_0_1.WcsException {
+  private static CalendarDateRange parseTime(String time) throws thredds.wcs.v1_0_0_1.WcsException {
     if (time == null || time.equals(""))
       return null;
 
@@ -333,21 +337,4 @@ public class WcsRequestParser {
     }
     return idList;
   }
-
-  /* private static GridDataset openDataset(HttpServletRequest req, HttpServletResponse res,
-                                         String datasetPath, boolean isRemote)
-          throws thredds.wcs.v1_0_0_1.WcsException {
-    GridDataset dataset; // LOOK TdsRequestedDataset should simplfy this
-    try {
-      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath) : TdsRequestedDataset.openGridDataset(req, res, datasetPath);
-    } catch (IOException e) {
-      log.debug("openDataset(): Failed to open dataset [" + datasetPath + "]: " + e.getMessage());
-      throw new thredds.wcs.v1_0_0_1.WcsException("Failed to open dataset, [" + datasetPath + "].");
-    }
-    if (dataset == null) {
-      log.debug("openDataset(): Unknown dataset [" + datasetPath + "].");
-      throw new thredds.wcs.v1_0_0_1.WcsException("Unknown dataset, [" + datasetPath + "].");
-    }
-    return dataset;
-  } */
 }
