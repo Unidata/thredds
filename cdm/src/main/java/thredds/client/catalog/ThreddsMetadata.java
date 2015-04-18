@@ -72,7 +72,8 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
   }
 
   public void set(String fldName, Object fldValue) {
-    if (immutable) throw new UnsupportedOperationException();
+    if (immutable)
+      throw new UnsupportedOperationException();
     if (fldValue != null)
       flds.put( fldName, fldValue);
     else

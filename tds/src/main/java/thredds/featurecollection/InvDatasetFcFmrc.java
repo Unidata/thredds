@@ -305,7 +305,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     String id = getId();
     top.put(Dataset.Id, id);
 
-    ThreddsMetadata tmi = top.getInheritableMetadata();
+    ThreddsMetadata tmi = top.getInheritableMetadata();  // LOOK allow to change ??
     tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
     tmi.set(Dataset.ServiceName, Virtual_Services_Name);
     if (localState.coverage != null) tmi.set(Dataset.GeospatialCoverage, localState.coverage);

@@ -185,7 +185,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       result.transferMetadata(parent, true); // make all inherited metadata local
 
     String tpath = getPath() + "/" + COLLECTION;
-    ThreddsMetadata tmi = result.getInheritableMetadata();
+    ThreddsMetadata tmi = result.getInheritableMetadata();  // LOOK should we be allowed to modify this ??
     tmi.set(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(tpath, VARIABLES), catURI));
     tmi.set(Dataset.ServiceName, Virtual_Services_Name);
     tmi.set(Dataset.DataFormatType, fromGc.isGrib1 ? DataFormatType.GRIB1.toString() : DataFormatType.GRIB2.toString());

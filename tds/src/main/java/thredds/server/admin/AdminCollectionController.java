@@ -33,6 +33,7 @@
 
 package thredds.server.admin;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -51,12 +52,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.core.DataRootManager;
+import thredds.core.DatasetManager;
 import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import thredds.monitor.FmrcCacheMonitorImpl;
+import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.config.TdsContext;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
@@ -88,6 +91,9 @@ public class AdminCollectionController {
   @Autowired
   private TdsContext tdsContext;
 
+  @Autowired
+  private DatasetManager datasetManager;
+
   @PostConstruct
   public void afterPropertiesSet() {
     //this.tdsContext = _tdsContext;
@@ -98,14 +104,14 @@ public class AdminCollectionController {
     act = new DebugCommands.Action("showCollection", "Show Collections") {
       public void doAction(DebugCommands.Event e) {
         // get sorted list of collections
-        List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
-        Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
-          public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
+        List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
+        Collections.sort(fcList, new Comparator<FeatureCollectionRef>() {
+          public int compare(FeatureCollectionRef o1, FeatureCollectionRef o2) {
             return o1.getName().compareTo(o2.getName());
           }
         });
 
-        for (InvDatasetFeatureCollection fc : fcList) {
+        for (FeatureCollectionRef fc : fcList) {
           String uriParam = Escape.uriParam(fc.getCollectionName());
           String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + uriParam;
           e.pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
@@ -187,18 +193,20 @@ public class AdminCollectionController {
     PrintWriter pw = res.getWriter();
 
     // get sorted list of collections
-    List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
-    Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
-      public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
-        return o1.getName().compareTo(o2.getName());
+    List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
+    Collections.sort(fcList, new Comparator<FeatureCollectionRef>() {
+      public int compare(FeatureCollectionRef o1, FeatureCollectionRef o2) {
+        return o1.getCollectionName().compareTo(o2.getCollectionName());
       }
     });
 
-    for (InvDatasetFeatureCollection fc : fcList) {
+    for (FeatureCollectionRef fc : fcList) {
       String uriParam = Escape.uriParam(fc.getCollectionName());
       String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + uriParam;
       pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
-      pw.printf("<pre>%s</pre>%n", fc.showStatusShort("txt"));
+      InvDatasetFeatureCollection fcd = datasetManager.openFeatureCollection(fc);
+
+      pw.printf("<pre>%s</pre>%n", fcd.showStatusShort("txt"));
     }
     return null;
   }
@@ -209,19 +217,20 @@ public class AdminCollectionController {
     PrintWriter pw = res.getWriter();
 
     // get sorted list of collections
-    List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
-    Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
-      public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
+    List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
+    Collections.sort(fcList, new Comparator<FeatureCollectionRef>() {
+      public int compare(FeatureCollectionRef o1, FeatureCollectionRef o2) {
         int compareType = o1.getConfig().type.toString().compareTo(o1.getConfig().type.toString());
         if (compareType != 0) return compareType;
-        return o1.getName().compareTo(o2.getName());
+        return o1.getCollectionName().compareTo(o2.getCollectionName());
       }
     });
 
     pw.printf("%s, %s, %s, %s, %s, %s, %s, %s%n", "collection", "type", "group", "nrecords", "ndups", "%", "nmiss", "%");
-    for (InvDatasetFeatureCollection fc : fcList) {
+    for (FeatureCollectionRef fc : fcList) {
       if (fc.getConfig().type != FeatureCollectionType.GRIB1 && fc.getConfig().type != FeatureCollectionType.GRIB2) continue;
-      pw.printf("%s", fc.showStatusShort("csv"));
+      InvDatasetFeatureCollection fcd = datasetManager.openFeatureCollection(fc);
+      pw.printf("%s", fcd.showStatusShort("csv"));
     }
     return null;
   }
@@ -248,10 +257,10 @@ public class AdminCollectionController {
     }
 
     String collectName = StringUtil2.unescape(req.getParameter(COLLECTION)); // this is the collection name
-    List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
-    InvDatasetFeatureCollection want = null;
-    for (InvDatasetFeatureCollection fc : fcList) {
-      if (fc.getName().equalsIgnoreCase(collectName)) want = fc;
+    List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
+    FeatureCollectionRef want = null;
+    for (FeatureCollectionRef fc : fcList) {
+      if (fc.getCollectionName().equalsIgnoreCase(collectName)) want = fc;
     }
 
     if (want == null) {
@@ -283,10 +292,10 @@ public class AdminCollectionController {
     PrintWriter pw = res.getWriter();
 
     String collectName = StringUtil2.unescape(req.getParameter(COLLECTION)); // this is the collection name
-    List<InvDatasetFeatureCollection> fcList = matcher.getFeatureCollections();
-    InvDatasetFeatureCollection want = null;
-    for (InvDatasetFeatureCollection fc : fcList) {
-      if (fc.getName().equalsIgnoreCase(collectName)) want = fc;
+    List<FeatureCollectionRef> fcList = matcher.getFeatureCollections();
+    FeatureCollectionRef want = null;
+    for (FeatureCollectionRef fc : fcList) {
+      if (fc.getCollectionName().equalsIgnoreCase(collectName)) want = fc;
     }
     if (want == null) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -307,7 +316,7 @@ public class AdminCollectionController {
     return null;
   }
 
-  private void showFeatureCollection(PrintWriter pw, InvDatasetFeatureCollection fc) {
+  private void showFeatureCollection(PrintWriter pw, FeatureCollectionRef fc) throws IOException {
     FeatureCollectionConfig config = fc.getConfig(); // LOOK
     if (config != null) {
       Formatter f = new Formatter();
@@ -315,8 +324,9 @@ public class AdminCollectionController {
       pw.printf("%n<pre>%s%n</pre>", f.toString());
     }
 
+    InvDatasetFeatureCollection fcd = datasetManager.openFeatureCollection(fc);
     Formatter f = new Formatter();
-    fc.showStatus(f);
+    fcd.showStatus(f);
     pw.printf("%n<pre>%s%n</pre>", f.toString());
   }
 

@@ -78,7 +78,7 @@ public class CatalogServiceController {
   @Autowired
   ConfigCatalogHtmlWriter writer;
 
-  @RequestMapping(method = {RequestMethod.GET})
+  @RequestMapping(value="**", method = {RequestMethod.GET})
   protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response, CatalogRequest params) throws Exception {
 
     TdsRequestedDataset reqD = new TdsRequestedDataset(request, "/catalog");

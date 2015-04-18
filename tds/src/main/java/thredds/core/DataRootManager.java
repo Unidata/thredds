@@ -423,33 +423,19 @@ public class DataRootManager implements InitializingBean {
     }
   }
 
-  public List<InvDatasetFeatureCollection> getFeatureCollections() {
-    return null;
+  public List<FeatureCollectionRef> getFeatureCollections() {
+    List<FeatureCollectionRef> result = new ArrayList<>();
+    for (Map.Entry<String, DataRoot> entry : dataRootPathMatcher.getValues()) {
+      DataRoot droot = entry.getValue();
+      if (droot.getFeatureCollection() != null)
+        result.add(droot.getFeatureCollection());
+    }
+    return result;
   }
-
 
   public void makeDebugActions() {
     DebugCommands.Category debugHandler = debugCommands.findCategory("catalogs");
     DebugCommands.Action act;
-    /* act = new DebugHandler.Action("showError", "Show catalog error logs") {
-     public void doAction(DebugHandler.Event e) {
-       synchronized ( DataRootHandler.this )
-       {
-         try {
-          File fileOut = new File(contentPath + "logs/catalogError.log");
-          FileOutputStream fos = new FileOutputStream(fileOut);
-          //String contents = catalogErrorLog.toString();
-          thredds.util.IO.writeContents(contents, fos);
-          fos.close();
-        } catch (IOException ioe) {
-          log.error("DataRootHandler.writeCatalogErrorLog error ", ioe);
-        }
-
-         e.pw.println( StringUtil.quoteHtmlContent( "\n"+catalogErrorLog.toString()));
-       }
-     }
-   };
-   debugHandler.addAction( act);  */
 
     act = new DebugCommands.Action("showStatic", "Show root catalogs") {
       public void doAction(DebugCommands.Event e) {
@@ -481,7 +467,7 @@ public class DataRootManager implements InitializingBean {
     act = new DebugCommands.Action("showDataRoots", "Show data roots") {
       public void doAction(DebugCommands.Event e) {
         synchronized (DataRootManager.this) {
-          for (Map.Entry<String, DataRoot> entry : dataRootPathMatcher.getValues()) {
+          for (Map.Entry<String, DataRoot> entry : dataRootPathMatcher.getValues()) {     // LOOK sort
             DataRoot ds = entry.getValue();
             e.pw.print(" <b>" + ds.getPath() + "</b>");
             String url = DataRootManager.this.tdsContext.getContextPath() + "/admin/dataDir/" + ds.getPath() + "/";
