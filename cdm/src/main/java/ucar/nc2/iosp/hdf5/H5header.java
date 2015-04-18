@@ -1451,8 +1451,8 @@ public class H5header {
     vinfo.setOwner(v);
     if ((vinfo.typeInfo.hdfType == 7) && warnings)
       if (debugOut != null) debugOut.println("WARN:  Variable " + facade.name + " is a Reference type");
-    if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1) && warnings)
-      if (debugOut != null) debugOut.println("WARN:  Variable " + facade.name + " has a Filter = " + vinfo.mfp);
+    //if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1) && warnings)
+    //  if (debugOut != null) debugOut.println("WARN:  Variable " + facade.name + " has a Filter = " + vinfo.mfp);
     if (debug1) debugOut.println("makeVariable " + v.getFullName() + "; vinfo= " + vinfo);
 
     return v;

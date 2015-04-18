@@ -53,7 +53,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.util.DiskCache2;
 
 /**
- * _more_
+ * WCS 1.0 handler
  *
  * @author edavis
  * @since 4.0
@@ -64,11 +64,6 @@ public class WcsHandler implements VersionHandler {
 
   private Version version;
 
-  /**
-   * Declare the default constructor to be package private.
-   *
-   * @param verString the version string.
-   */
   public WcsHandler(String verString) {
     this.version = new Version(verString);
   }
@@ -132,11 +127,14 @@ public class WcsHandler implements VersionHandler {
       }
     } catch (thredds.wcs.v1_0_0_1.WcsException e) {
       handleExceptionReport(res, e);
+
     } catch (URISyntaxException e) {
       handleExceptionReport(res, new thredds.wcs.v1_0_0_1.WcsException("Bad URI: " + e.getMessage()));
+
     } catch (Throwable t) {
       log.error("Unknown problem.", t);
       handleExceptionReport(res, new thredds.wcs.v1_0_0_1.WcsException("Unknown problem", t));
+
     } finally {
       if (request != null && request.getDataset() != null) {
         request.getDataset().close();
@@ -168,8 +166,7 @@ public class WcsHandler implements VersionHandler {
     return sid;
   }
 
-  public void handleExceptionReport(HttpServletResponse res, thredds.wcs.v1_0_0_1.WcsException exception)
-          throws IOException {
+  public void handleExceptionReport(HttpServletResponse res, thredds.wcs.v1_0_0_1.WcsException exception) throws IOException {
     res.setContentType(ContentType.ogc_exception.getContentHeader());
     res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
@@ -180,8 +177,7 @@ public class WcsHandler implements VersionHandler {
     pw.flush();
   }
 
-  public void handleExceptionReport(HttpServletResponse res, String code, String locator, String message)
-          throws IOException {
+  public void handleExceptionReport(HttpServletResponse res, String code, String locator, String message) throws IOException {
     thredds.wcs.v1_0_0_1.WcsException.Code c;
     thredds.wcs.v1_0_0_1.WcsException exception;
     try {
@@ -195,8 +191,7 @@ public class WcsHandler implements VersionHandler {
     handleExceptionReport(res, exception);
   }
 
-  public void handleExceptionReport(HttpServletResponse res, String code, String locator, Throwable t)
-          throws IOException {
+  public void handleExceptionReport(HttpServletResponse res, String code, String locator, Throwable t) throws IOException {
     handleExceptionReport(res, code, locator, t.getMessage());
 
     if (t instanceof FileNotFoundException)

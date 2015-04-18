@@ -66,8 +66,7 @@ import java.util.*;
 /**
  * Manages the Dataset objects.
  *
- * 1) if dataset with ncml, open that
- * 2) if datasetScan with ncml, wrap
+ * Need to rethink return type - using null to mean many things
  *
  *  @author caron
   * @since 1/23/2015

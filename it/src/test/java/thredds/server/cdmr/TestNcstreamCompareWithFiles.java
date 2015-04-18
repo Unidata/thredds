@@ -233,7 +233,7 @@ public class TestNcstreamCompareWithFiles {
   }
 
 
-  public static void main(String[] args) {
+  public static void main1(String[] args) {
     //write("C:/dev/github/thredds/cdm/src/test/data/testWrite.nc", "C:/tmp/out.ncs");
     write("G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.00Z.grb2", "C:/tmp/out.ncs");
   }

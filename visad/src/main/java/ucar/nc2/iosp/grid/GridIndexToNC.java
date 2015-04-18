@@ -178,7 +178,7 @@ public class GridIndexToNC {
     // CDM attributes
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
     ncfile.addAttribute(null, new Attribute("file_format", lookup.getGridType()));
-    ncfile.addAttribute(null, new Attribute("location", ncfile.getLocation()));
+    // ncfile.addAttribute(null, new Attribute("location", ncfile.getLocation()));
     ncfile.addAttribute(null, new Attribute(_Coordinate.ModelRunDate,
             formatter.toDateTimeStringISO(lookup.getFirstBaseTime())));
 

@@ -59,8 +59,10 @@ public class CompareNetcdf2 {
     return tc.compare(org, copy);
   }
 
-  static public interface ObjFilter {
+  public interface ObjFilter {
+    // if true, compare attribute, else skip comparision
     boolean attCheckOk(Variable v, Attribute att);
+    // if true, compare variable, else skip comparision
     boolean varDataTypeCheckOk(Variable v);
   }
 

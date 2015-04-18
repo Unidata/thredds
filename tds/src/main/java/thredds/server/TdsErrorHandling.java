@@ -20,8 +20,8 @@ import java.io.FileNotFoundException;
  * @since 4/15/2015
  */
 @ControllerAdvice
-public class ErrorHandling {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ErrorHandling.class);
+public class TdsErrorHandling {
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TdsErrorHandling.class);
 
   @ExceptionHandler(FileNotFoundException.class)
   public ResponseEntity<String> handle(FileNotFoundException ex) {

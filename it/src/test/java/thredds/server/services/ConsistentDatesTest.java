@@ -18,6 +18,7 @@ import org.jdom2.xpath.XPath;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -83,6 +84,7 @@ public class ConsistentDatesTest {
   public void setUp() {
   }
 
+  @Ignore("WMS not operating")
   @HttpTest(method = Method.GET, path = "/wms/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WMS&version=1.3.0&request=GetCapabilities")
   public void checkWMSDates() throws JDOMException, IOException {
 
