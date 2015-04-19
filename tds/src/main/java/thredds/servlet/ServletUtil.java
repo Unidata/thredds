@@ -622,11 +622,11 @@ public class ServletUtil {
 
       // Return the file
       ServletOutputStream out = res.getOutputStream();
-      // IO.copyFileB(file, out, 60 * 1000);
-      WritableByteChannel cOut = Channels.newChannel(out);
-      IO.copyFileWithChannels(file, cOut);
-      res.flushBuffer();
-      out.close();
+      IO.copyFileB(file, out, 60 * 1000);
+      /* try (WritableByteChannel cOut = Channels.newChannel(out)) {
+        IO.copyFileWithChannels(file, cOut);
+        res.flushBuffer();
+      } */
       if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
     }
 
