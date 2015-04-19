@@ -24,6 +24,7 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.server.admin.DebugController;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
@@ -75,10 +76,49 @@ public class RadarServerController {
     public RadarServerController() {
     }
 
+    void setupDebug() {
+        DebugController.Category debugHandler = DebugController.find("RadarServer");
+        DebugController.Action act = new DebugController.Action("showDatasets", "Show Datasets") {
+            public void doAction(DebugController.Event e) {
+                try {
+                    for (Map.Entry<String, RadarDataInventory> ent : data.entrySet()) {
+                        e.pw.println(ent.getKey());
+
+                        RadarDataInventory di = ent.getValue();
+                        if (di == null) {
+                            e.pw.println("Dataset is null");
+                            continue;
+                        }
+                        e.pw.printf("Collection Dir: %s%n", di.getCollectionDir().toString());
+                        e.pw.printf("Last Update: %s%n", di.getLastUpdate());
+                        e.pw.printf("Need update: %d%n", di.timeToUpdate());
+                        e.pw.println("Dates:");
+                        for (String item : di.listItems(RadarDataInventory.DirType.Date)) {
+                            e.pw.println("\t" + item);
+                        }
+                        e.pw.println("Stations:");
+                        for (String item : di.listItems(RadarDataInventory.DirType.Station)) {
+                            e.pw.println("\t" + item);
+                        }
+                        e.pw.println("Vars:");
+                        for (String item : di.listItems(RadarDataInventory.DirType.Variable)) {
+                            e.pw.println("\t" + item);
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace(e.pw);
+                }
+            }
+        };
+        debugHandler.addAction(act);
+    }
+
     @PostConstruct
     public void init() {
         enabled = ThreddsConfig.getBoolean("RadarServer.allow", false);
         if (!enabled) return;
+
+        setupDebug();
 
         data = new TreeMap<>();
         vars = new TreeMap<>();
