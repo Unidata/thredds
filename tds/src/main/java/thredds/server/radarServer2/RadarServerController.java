@@ -377,12 +377,12 @@ public class RadarServerController {
             try {
                 stations = getStations(di.getStationList(), lon, lat, north,
                         south, east, west);
-                addQueryElement(queryString, "longitude", lon.toString());
-                addQueryElement(queryString, "latitude", lat.toString());
-                addQueryElement(queryString, "north", north.toString());
-                addQueryElement(queryString, "south", south.toString());
-                addQueryElement(queryString, "east", east.toString());
-                addQueryElement(queryString, "west", west.toString());
+                addQueryElement(queryString, "longitude", lon);
+                addQueryElement(queryString, "latitude", lat);
+                addQueryElement(queryString, "north", north);
+                addQueryElement(queryString, "south", south);
+                addQueryElement(queryString, "east", east);
+                addQueryElement(queryString, "west", west);
             } catch (UnsupportedOperationException e) {
                 throw new UnsupportedOperationException("Either a list of " +
                         "stations, a lat/lon point, or a box defined by " +
@@ -408,6 +408,12 @@ public class RadarServerController {
                                  String[] values) {
         if (values != null) {
             addQueryElement(sb, name, StringUtils.join(values, ','));
+        }
+    }
+
+    private void addQueryElement(StringBuilder sb, String name, Double value) {
+        if (value != null) {
+            addQueryElement(sb, name, value.toString());
         }
     }
 
