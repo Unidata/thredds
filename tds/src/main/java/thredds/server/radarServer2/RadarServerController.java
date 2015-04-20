@@ -91,7 +91,6 @@ public class RadarServerController {
                         }
                         e.pw.printf("Collection Dir: %s%n", di.getCollectionDir().toString());
                         e.pw.printf("Last Update: %s%n", di.getLastUpdate());
-                        e.pw.printf("Need update: %d%n", di.timeToUpdate());
                         e.pw.println("Dates:");
                         for (String item : di.listItems(RadarDataInventory.DirType.Date)) {
                             e.pw.println("\t" + item);
@@ -506,8 +505,9 @@ public class RadarServerController {
                 return true;
             }
         } else if (timeEnd != null && duration != null) {
-            query.addDateRange(new CalendarDateRange(timeEnd,
-                    (long) -duration.getValueInSeconds()));
+            query.addDateRange(new CalendarDateRange(
+                    timeEnd.add((long) -duration.getValueInSeconds(), CalendarPeriod.Field.Second),
+                    (long) duration.getValueInSeconds()));
             return true;
         }
 
