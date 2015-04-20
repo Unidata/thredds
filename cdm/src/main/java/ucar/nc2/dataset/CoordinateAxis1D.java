@@ -111,9 +111,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
     this.isAscending = org.isAscending;
     this.isInterval = org.isInterval();
     this.isRegular = org.isRegular();
-
-    this.coords = org.getCoordValues();
-    this.edge = org.getCoordEdges();
+    if(isNumeric()){
+    	this.coords = org.getCoordValues();
+    	this.edge = org.getCoordEdges();
+    }
     this.names = org.names;
 
     if (isInterval) {
@@ -157,35 +158,38 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     // deal with the midpoints, bounds
     double[] new_mids = new double[len];
-    for (int idx = 0; idx < len; idx++) {
-      int old_idx = r.element(idx);
-      new_mids[idx] = coords[old_idx];
-    }
-    result.coords = new_mids;
+    if(isNumeric()){
+	    for (int idx = 0; idx < len; idx++) {
+	      int old_idx = r.element(idx);
+	      new_mids[idx] = coords[old_idx];
+	    }
+	    result.coords = new_mids;
 
-    if (isInterval) {
-      double[] new_bound1 = new double[len];
-      double[] new_bound2 = new double[len];
-      double[] new_edge = new double[len+1];
-      for (int idx = 0; idx < len; idx++) {
-        int old_idx = r.element(idx);
-        new_bound1[idx] = bound1[old_idx];
-        new_bound2[idx] = bound2[old_idx];
-        new_edge[idx] = bound1[old_idx];
-        new_edge[idx+1] = bound2[old_idx]; // all but last are overwritten
-      }
-      result.bound1 = new_bound1;
-      result.bound2 = new_bound2;
-      result.edge = new_edge;
-
-    } else {
-      double[] new_edge = new double[len+1];
-      for (int idx = 0; idx < len; idx++) {
-        int old_idx = r.element(idx);
-        new_edge[idx] = edge[old_idx];
-        new_edge[idx+1] = edge[old_idx+1]; // all but last are overwritten
-      }
-      result.edge = new_edge;
+	
+	    if (isInterval) {
+	      double[] new_bound1 = new double[len];
+	      double[] new_bound2 = new double[len];
+	      double[] new_edge = new double[len+1];
+	      for (int idx = 0; idx < len; idx++) {
+	        int old_idx = r.element(idx);
+	        new_bound1[idx] = bound1[old_idx];
+	        new_bound2[idx] = bound2[old_idx];
+	        new_edge[idx] = bound1[old_idx];
+	        new_edge[idx+1] = bound2[old_idx]; // all but last are overwritten
+	      }
+	      result.bound1 = new_bound1;
+	      result.bound2 = new_bound2;
+	      result.edge = new_edge;
+	
+	    } else {
+	      double[] new_edge = new double[len+1];
+	      for (int idx = 0; idx < len; idx++) {
+	        int old_idx = r.element(idx);
+	        new_edge[idx] = edge[old_idx];
+	        new_edge[idx+1] = edge[old_idx+1]; // all but last are overwritten
+	      }
+	      result.edge = new_edge;
+	    }    
     }
 
     if (names != null) {
