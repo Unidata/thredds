@@ -35,7 +35,6 @@ package thredds.tds.ethan;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.junit.experimental.categories.Category;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.writer.CatalogCrawler;
@@ -55,7 +54,6 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.*;
@@ -69,7 +67,6 @@ import java.util.*;
  * @author edavis
  * @since Feb 15, 2007 10:10:08 PM
  */
-@Category(NotTravis.class)
 public class TestAll extends TestCase
 {
   public static Test suite()

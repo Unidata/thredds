@@ -36,14 +36,12 @@
 package ucar.nc2.util.net;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.IOException;
@@ -58,9 +56,7 @@ import java.net.URISyntaxException;
  * @since 3/5/14
  */
 public class TestStream {
-
   @Test
-  @Category(NotTravis.class)
   public void testStream1() throws URISyntaxException {
     ThreddsServer.LIVE.assumeIsAvailable();
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
@@ -91,7 +87,6 @@ public class TestStream {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testString() throws URISyntaxException {
     ThreddsServer.LIVE.assumeIsAvailable();
     String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";

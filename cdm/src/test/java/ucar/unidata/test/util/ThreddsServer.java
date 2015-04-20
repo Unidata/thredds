@@ -9,6 +9,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
+ * An enumeration of external THREDDS servers used during testing. Tests that call {@link #assumeIsAvailable} will be
+ * ignored if the associated server is unavailable.
+ *
  * @author cwardgar
  * @since 2015/04/18
  */

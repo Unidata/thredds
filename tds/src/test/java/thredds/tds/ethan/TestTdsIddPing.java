@@ -32,10 +32,8 @@
  */
 package thredds.tds.ethan;
 
-import junit.framework.*;
-import org.junit.experimental.categories.Category;
+import junit.framework.TestCase;
 import thredds.client.catalog.Catalog;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.ThreddsServer;
 
 /**
@@ -44,7 +42,6 @@ import ucar.unidata.test.util.ThreddsServer;
  * @author edavis
  * @since Nov 30, 2006 11:13:36 AM
  */
-@Category(NotTravis.class)
 public class TestTdsIddPing extends TestCase
 {
 

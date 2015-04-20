@@ -33,10 +33,8 @@
 package thredds.server.catalogservice;
 
 import junit.framework.TestCase;
-import org.junit.experimental.categories.Category;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindingResult;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.ThreddsServer;
 
 /**
@@ -45,7 +43,6 @@ import ucar.unidata.test.util.ThreddsServer;
  * @author edavis
  * @since 4.0
  */
-@Category(NotTravis.class)
 public class TestRemoteCatalogRequest extends TestCase
 {
   private String parameterNameCatalog = "catalog";

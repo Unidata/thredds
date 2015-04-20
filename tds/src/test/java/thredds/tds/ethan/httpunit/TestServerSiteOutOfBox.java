@@ -32,10 +32,9 @@
  */
 package thredds.tds.ethan.httpunit;
 
-import com.meterware.httpunit.*;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebResponse;
 import junit.framework.TestCase;
-import org.junit.experimental.categories.Category;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.Properties;
@@ -46,7 +45,6 @@ import java.util.Properties;
  * @author edavis
  * @since 15 July 2005 15:50:59 -0600
  */
-@Category(NotTravis.class)
 public class TestServerSiteOutOfBox extends TestCase
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestServerSiteOutOfBox.class );

@@ -11,7 +11,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.mock.web.MockTdsContextLoader;
 import ucar.unidata.test.util.NeedsContentRoot;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.ThreddsServer;
 
 import static org.junit.Assert.assertNull;
@@ -57,7 +56,6 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 	}
 
 	@Test
-	@Category(NotTravis.class)
 	public void showCommandTest() throws Exception{
 		ThreddsServer.LIVE.assumeIsAvailable();
 		// Testing against some reliable remote TDS
@@ -88,7 +86,6 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 
 	// http://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_80km/catalog.html?dataset=grib/NCEP/NAM/CONUS_80km/best
 	@Test
-	@Category(NotTravis.class)
 	public void subsetCommandTest() throws Exception{
 		ThreddsServer.LIVE.assumeIsAvailable();
 		// SUBSET REQUEST PROVIDING A datasetId
@@ -116,7 +113,6 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 	
 	//@Ignore
 	@Test
-	@Category(NotTravis.class)
 	public void validateCommandTest() throws Exception {
 		ThreddsServer.LIVE.assumeIsAvailable();
 		// VALIDATE REQUEST 

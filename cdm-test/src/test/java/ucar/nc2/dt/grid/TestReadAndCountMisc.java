@@ -33,8 +33,6 @@
 package ucar.nc2.dt.grid;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.ThreddsServer;
 
 /**
@@ -47,7 +45,6 @@ public class TestReadAndCountMisc {
   // For some reason, this fails on Travis after a 10-minute timeout. It succeeds everywhere else.
   // We assume that thredds.ucar.edu is unreachable due to some limitation and/or bug in Travis.
   @Test
-  @Category(NotTravis.class)
   public void testLiveServer() throws Exception {
     ThreddsServer.LIVE.assumeIsAvailable();
     TestReadandCount.doOne("thredds:resolve:http://thredds.ucar.edu/thredds/",

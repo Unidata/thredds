@@ -52,7 +52,6 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.ThreddsServer;
 
@@ -196,7 +195,6 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testDODS() throws Exception {
     ThreddsServer.LIVE.assumeIsAvailable();
     String ds = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
@@ -495,7 +493,6 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testBBSubset() throws Exception {
     ThreddsServer.LIVE.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best")) {
@@ -525,7 +522,6 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testBBSubset2() throws Exception {
     ThreddsServer.LIVE.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best")) {
@@ -752,7 +748,6 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testFindVerticalCoordinate() throws Exception {
     ThreddsServer.LIVE.assumeIsAvailable();
     String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
