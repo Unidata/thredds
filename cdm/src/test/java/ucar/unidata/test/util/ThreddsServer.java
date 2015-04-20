@@ -15,7 +15,8 @@ import java.net.URL;
 public enum ThreddsServer {
     LIVE("http://thredds.ucar.edu/thredds/"),
     TEST("http://thredds-test.unidata.ucar.edu/thredds/"),
-    DEV("http://thredds-dev.unidata.ucar.edu/thredds/");
+    DEV("http://thredds-dev.unidata.ucar.edu/thredds/"),
+    REMOTETEST("http://remotetest.unidata.ucar.edu/thredds/");
 
     private static final Logger logger = LoggerFactory.getLogger(ThreddsServer.class);
 

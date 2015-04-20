@@ -33,21 +33,20 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.http.Header;
-import org.junit.Ignore;
-
-import ucar.httpservices.*;
-import org.apache.http.Header;
-import org.apache.http.auth.*;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import ucar.nc2.util.EscapeStrings;
+import ucar.httpservices.*;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.*;
 import java.util.List;
-import java.util.Map;
 
 public class TestAuth extends UnitTestCommon
 {
@@ -186,6 +185,11 @@ public class TestAuth extends UnitTestCommon
     public TestAuth()
     {
         this("TestAuth", null);
+    }
+
+    @Before
+    public void setUp() {
+        ThreddsServer.REMOTETEST.assumeIsAvailable();
     }
 
     @Test
