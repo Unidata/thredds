@@ -113,6 +113,7 @@ public class DConnect2
 
     private boolean debugHeaders = false, debugStream = false;
 
+    private static HTTPSession _session;
 
     public void setServerVersion(int major, int minor)
     {
@@ -248,44 +249,41 @@ public class DConnect2
      */
     private void openConnection(String urlString, Command command) throws IOException, DAP2Exception
     {
-        HTTPMethod method = null;
         InputStream is = null;
 
-        HTTPSession _session = null;
-
         try {
-            _session = HTTPFactory.newSession(urlString);
-            method = HTTPFactory.Get(_session);
-
-            if(acceptCompress)
-                method.setRequestHeader("Accept-Encoding", "deflate,gzip");
+        	
+//            if(acceptCompress)
+//                method.setRequestHeader("Accept-Encoding", "deflate,gzip");
 
             // enable sessions
-            if(allowSessions)
-                method.setRequestHeader("X-Accept-Session", "true");
+//            if(allowSessions)
+//                method.setRequestHeader("X-Accept-Session", "true");
 
-            int statusCode = method.execute();
+        	HttpResponse httpResponse = MyHTTPFactory.GET(urlString);
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            String reasonPhrase = httpResponse.getStatusLine().getReasonPhrase();
 
             // debug
             // if (debugHeaders) ucar.httpservices.HttpClientManager.showHttpRequestInfo(f, method);
 
             if(statusCode == HttpStatus.SC_NOT_FOUND) {
-                throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);
+                throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, reasonPhrase + ": " + urlString);
             }
 
             if(statusCode == HttpStatus.SC_UNAUTHORIZED) {
-                throw new InvalidCredentialsException(method.getStatusText());
+                throw new InvalidCredentialsException(reasonPhrase);
             }
 
             if(statusCode != HttpStatus.SC_OK) {
-                throw new DAP2Exception("Method failed:" + method.getStatusText() + " on URL= " + urlString);
+                throw new DAP2Exception("Method failed:" + reasonPhrase + " on URL= " + urlString);
             }
 
             // Get the response body.
-            is = method.getResponseAsStream();
+            is = httpResponse.getEntity().getContent();
 
             // check if its an error
-            Header header = method.getResponseHeader("Content-Description");
+            Header header = httpResponse.getFirstHeader("Content-Description");
             if(header != null && (header.getValue().equals("dods-error")
                 || header.getValue().equals("dods_error"))) {
                 // create server exception object
@@ -295,12 +293,12 @@ public class DConnect2
                 throw ds;
             }
 
-            ver = new ServerVersion(method);
+            //TODO: ver = new ServerVersion(method);
 
-            checkHeaders(method);
+            //TODO: checkHeaders(method);
 
             // check for deflator
-            Header h = method.getResponseHeader("content-encoding");
+            Header h = httpResponse.getFirstHeader("content-encoding");
             String encoding = (h == null) ? null : h.getValue();
             //if (encoding != null) LogStream.out.println("encoding= " + encoding);
 
