@@ -1,6 +1,5 @@
 package ucar.nc2.ncml;
 
-import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,13 +24,15 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * TestWrite NcML, read back and compare with original
+ * TestWrite NcML, read back and compare with original.
+ *
+ * This is identical to TestNcmlWriteAndCompareShared, except that we're using local datasets.
  *
  * @author caron
  * @since 11/2/13
  */
 @RunWith(Parameterized.class)
-public class TestNcmlWriteAndCompare {
+public class TestNcmlWriteAndCompareLocal {
 
   @Before
   public void setLibrary() {
@@ -46,47 +47,21 @@ public class TestNcmlWriteAndCompare {
 
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
-    String datadir = TestDir.cdmUnitTestDir;
-
     List<Object[]> result = new ArrayList<>(500);
 
-    //result.add(new Object[]{datadir + "formats/netcdf4/tst/test_enum_type.nc", false});
-    result.add(new Object[]{datadir + "conventions/atd-radar/rgg.20020411.000000.lel.ll.nc", false});
-    result.add(new Object[]{datadir + "conventions/atd-radar/SPOL_3Volumes.nc", false});
-    result.add(new Object[]{datadir + "conventions/awips/19981109_1200.nc", false});
-    result.add(new Object[]{datadir + "conventions/cf/ccsm2.nc", false}); //
-    result.add(new Object[]{datadir + "conventions/coards/cldc.mean.nc", false});
-    result.add(new Object[]{datadir + "conventions/csm/o3monthly.nc", false});
-    result.add(new Object[]{datadir + "conventions/gdv/OceanDJF.nc", false});
-    result.add(new Object[]{datadir + "conventions/gief/coamps.wind_uv.nc", false});
-    result.add(new Object[]{datadir + "conventions/mars/temp_air_01082000.nc", true});
-    result.add(new Object[]{datadir + "conventions/nuwg/eta.nc", false});
-    result.add(new Object[]{datadir + "conventions/nuwg/ocean.nc", true});
-    result.add(new Object[]{datadir + "conventions/wrf/wrfout_v2_Lambert.nc", false});
-
-    result.add(new Object[]{datadir +  "formats/grib2/eta2.wmo", false}); //
-    result.add(new Object[]{datadir +  "formats/grib2/ndfd.wmo", false}); //
-
-    result.add(new Object[]{datadir +  "formats/gini/n0r_20041013_1852-compress", false}); //
-    result.add(new Object[]{datadir +  "formats/gini/ntp_20041206_2154", true}); //
-    result.add(new Object[]{datadir +  "formats/dmsp/F14200307192230.n.OIS", false}); //
-
-    result.add(new Object[]{datadir +  "formats/nexrad/level2/6500KHGX20000610_000110", false});
-    result.add(new Object[]{datadir +  "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v", true});
-
     // try everything from these directories
-      try {
-        addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf4/", new NotFileFilter( new SuffixFileFilter(".cdl")), false);
-        addFromScan(result, TestDir.cdmLocalTestDataDir + "point/", new SuffixFileFilter(".ncml"), true);
-        addFromScan(result, TestDir.cdmLocalTestDataDir + "ncml/standalone/", new SuffixFileFilter(".ncml"), true);
+    try {
+      addFromScan(result, TestDir.cdmLocalTestDataDir + "point/", new SuffixFileFilter(".ncml"), true);
+      addFromScan(result, TestDir.cdmLocalTestDataDir + "ncml/standalone/", new SuffixFileFilter(".ncml"), true);
 
-      } catch (IOException e) {
-        e.printStackTrace();
-      }   // */
+    } catch (IOException e) {
+      e.printStackTrace();
+    }   // */
 
     return result;
   }
 
+  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   static void addFromScan(final List<Object[]> list, String dirName, FileFilter ff, final boolean compareData) throws IOException {
     TestDir.actOnAll(dirName, ff, new TestDir.Act() {
       public int doAct(String filename) throws IOException {
@@ -100,7 +75,7 @@ public class TestNcmlWriteAndCompare {
   boolean showFiles = true;
   boolean compareData = false;
 
-  public TestNcmlWriteAndCompare(String location, boolean compareData) {
+  public TestNcmlWriteAndCompareLocal(String location, boolean compareData) {
     this.location = StringUtil2.replace(location, '\\', "/");
     this.compareData = compareData;
   }
@@ -131,7 +106,7 @@ public class TestNcmlWriteAndCompare {
     if (openDataset)
       org = NetcdfDataset.openDataset(location, false, null);
     else
-      org  = NetcdfDataset.acquireFile(location, null);
+      org = NetcdfDataset.acquireFile(location, null);
 
     if (useRecords)
       org.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -146,7 +121,7 @@ public class TestNcmlWriteAndCompare {
     try {
       OutputStream out = new BufferedOutputStream(new FileOutputStream(ncmlOut, false));
       if (explicit)
-        writer.writeXMLexplicit( org, out, null);
+        writer.writeXMLexplicit(org, out, null);
       else
         writer.writeXML(org, out, null);
       out.close();
@@ -157,7 +132,7 @@ public class TestNcmlWriteAndCompare {
     }
 
     // read it back in
-    NetcdfFile copy ;
+    NetcdfFile copy;
     if (openDataset)
       copy = NetcdfDataset.openDataset(ncmlOut, false, null);
     else
@@ -213,8 +188,4 @@ public class TestNcmlWriteAndCompare {
       return v.getDataType() != DataType.STRING;
     }
   }
-
-
 }
-
-

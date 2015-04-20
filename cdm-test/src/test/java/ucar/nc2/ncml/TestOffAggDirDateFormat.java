@@ -33,18 +33,22 @@
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
-import ucar.nc2.*;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.unidata.test.util.TestDir;
-
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggDirDateFormat extends TestCase {
   private int ntimes = 8;
   public TestOffAggDirDateFormat( String name) {

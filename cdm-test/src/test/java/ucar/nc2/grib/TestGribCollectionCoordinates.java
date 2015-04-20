@@ -35,6 +35,7 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
@@ -48,6 +49,7 @@ import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -58,6 +60,7 @@ import java.io.IOException;
  * @author caron
  * @since 3/2/2015
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribCollectionCoordinates {
   private static CollectionUpdateType updateMode = CollectionUpdateType.always;
 

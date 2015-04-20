@@ -6,6 +6,7 @@ import static org.springframework.test.web.ModelAndViewAssert.assertAndReturnMod
 import static org.springframework.test.web.ModelAndViewAssert.assertViewName;
 
 import org.junit.Before;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -14,9 +15,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.ModelAndView;
 
 import thredds.mock.web.MockTdsContextLoader;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 @WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@Category(NeedsCdmUnitTest.class)
 public class AnyXmlControllerTest extends AbstractCatalogServiceTest {
 
   @Autowired

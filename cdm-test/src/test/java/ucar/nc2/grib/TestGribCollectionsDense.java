@@ -35,6 +35,7 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -45,6 +46,7 @@ import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -59,6 +61,7 @@ import java.util.Formatter;
  * @author John
  * @since 10/13/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribCollectionsDense {
 
   @BeforeClass

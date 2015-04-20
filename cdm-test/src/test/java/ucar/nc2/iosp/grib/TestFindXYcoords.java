@@ -2,6 +2,7 @@ package ucar.nc2.iosp.grib;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
@@ -11,6 +12,7 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.io.IOException;
 public class TestFindXYcoords {
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testCoordExtract() throws IOException {
     try (ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "formats/grib2/coordExtract/TestCoordExtract.grib2")) {
       System.out.printf("%s%n", dataset.getLocation());

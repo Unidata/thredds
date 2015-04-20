@@ -54,12 +54,14 @@ public class LatLonProjection extends ProjectionImpl {
    * center longitude
    */
   private double centerLon = 0.0;
+  private Earth earth = EarthEllipsoid.DEFAULT;
 
   @Override
   public ProjectionImpl constructCopy() {
-    ProjectionImpl result = new LatLonProjection(getName(), getDefaultMapArea());
+    LatLonProjection result = new LatLonProjection(getName(), getDefaultMapArea());
     result.setDefaultMapArea(defaultMapArea);
     result.setName(name);
+    result.earth = this.earth;
     return result;
   }
 
@@ -68,6 +70,13 @@ public class LatLonProjection extends ProjectionImpl {
    */
   public LatLonProjection() {
     this("LatLonProjection");
+    addParameters();
+  }
+
+  public LatLonProjection(Earth earth) {
+    this("LatLonProjection");
+    this.earth = earth;
+    addParameters();
   }
 
   /**
@@ -77,6 +86,7 @@ public class LatLonProjection extends ProjectionImpl {
    */
   public LatLonProjection(String name) {
     this(name, new ProjectionRect(-180, -90, 180, 90));
+    addParameters();
   }
 
   /**
@@ -88,7 +98,17 @@ public class LatLonProjection extends ProjectionImpl {
   public LatLonProjection(String name, ProjectionRect defaultMapArea) {
     super(name, true);
     this.defaultMapArea = defaultMapArea;
+    addParameters();
+  }
+
+  private void addParameters() {
     addParameter(CF.GRID_MAPPING_NAME, CF.LATITUDE_LONGITUDE);
+    if (earth.isSpherical())
+      addParameter(CF.EARTH_RADIUS, earth.getEquatorRadius());
+    else {
+      addParameter(CF.SEMI_MAJOR_AXIS, earth.getEquatorRadius());
+      addParameter(CF.SEMI_MINOR_AXIS, earth.getPoleRadius());
+    }
   }
 
   /**
@@ -212,9 +232,7 @@ public class LatLonProjection extends ProjectionImpl {
     float lat, lon;
     for (int i = 0; i < cnt; i++) {
       lat = fromLat[i];
-      lon = (float) (centerLon
-          + Math.IEEEremainder(fromLon[i] - centerLon,
-          360.0));
+      lon = (float) (centerLon + Math.IEEEremainder(fromLon[i] - centerLon, 360.0));
       toX[i] = lon;
       toY[i] = lat;
     }
@@ -265,8 +283,7 @@ public class LatLonProjection extends ProjectionImpl {
     double lat, lon;
     for (int i = 0; i < cnt; i++) {
       lat = fromLat[i];
-      lon = centerLon
-          + Math.IEEEremainder(fromLon[i] - centerLon, 360.0);
+      lon = centerLon + Math.IEEEremainder(fromLon[i] - centerLon, 360.0);
       toX[i] = lon;
       toY[i] = lat;
     }

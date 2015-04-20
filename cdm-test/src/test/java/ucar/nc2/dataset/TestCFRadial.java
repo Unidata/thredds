@@ -1,20 +1,22 @@
 package ucar.nc2.dataset;
 
-import java.io.IOException;
-import java.util.Formatter;
-
-import org.junit.Test;
 import org.junit.Assert;
-import ucar.nc2.VariableSimpleIF;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.time.CalendarDate;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * Created by rmay on 3/7/14.
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestCFRadial {
 
     private RadialDatasetSweep testData() throws IOException

@@ -32,18 +32,21 @@
  */
 package ucar.nc2.stream;
 
-import java.io.*;
-
-import ucar.nc2.*;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
-import ucar.ma2.InvalidRangeException;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * test FileWriting, then reading back and comparing to original.
  */
-
+@Category(NeedsCdmUnitTest.class)
 public class TestStreamWriter {
 
   @org.junit.Test

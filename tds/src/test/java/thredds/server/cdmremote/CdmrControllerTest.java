@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.jdom2.Document;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,6 +27,7 @@ import thredds.util.xml.NcmlParserUtil;
 import thredds.util.xml.XmlUtil;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -34,6 +36,7 @@ import java.util.Collection;
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
+@Category(NeedsCdmUnitTest.class)
 public class CdmrControllerTest {
 
   @Autowired

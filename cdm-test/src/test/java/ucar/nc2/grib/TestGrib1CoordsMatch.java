@@ -36,6 +36,7 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
@@ -54,6 +55,7 @@ import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -66,6 +68,7 @@ import java.util.Formatter;
  * @author caron
  * @since 11/5/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGrib1CoordsMatch {
   private static FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
 

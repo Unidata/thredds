@@ -23,9 +23,4 @@ dependencies {
 
     compile libraries["guava"]
     compile libraries["joda-time"]
-    testRuntime libraries["slf4j-jdk14"]
 }
-
-// Re-enable test task for this subproject.
-// It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
-test.setEnabled true

@@ -39,6 +39,7 @@
 package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.Array;
@@ -48,12 +49,12 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.GribIosp;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 
 /*
  * TestIntervalsTimeCoords tests the different type of Grib intervals.
@@ -76,6 +77,7 @@ import java.util.HashMap;
  *
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestIntervalsTimeCoords2D {
 
   @Parameterized.Parameters

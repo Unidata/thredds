@@ -37,6 +37,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.nc2.Attribute;
@@ -52,7 +53,6 @@ import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
@@ -61,6 +61,7 @@ import ucar.nc2.util.Misc;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -72,6 +73,7 @@ import java.util.Formatter;
  * @author caron
  * @since 11/7/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGrib2CoordsMatch {
 
   @BeforeClass
@@ -172,11 +174,12 @@ public class TestGrib2CoordsMatch {
   public void testDgexPofP() throws IOException {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx3");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    //assert count.nread == 868;
-    //assert count.nmiss == 0;
-    //assert count.nerrs == 0;
-  }
 
+    // 2015/03/11: These tests were commented out, causing this test to be a no-op. Why?
+    assert count.nread == 5384;
+    assert count.nmiss == 0;
+    assert count.nerrs == 0;
+  }
 
   @Test
   public void testCfsrSingleFile() throws IOException {
@@ -216,8 +219,8 @@ public class TestGrib2CoordsMatch {
     assert count.nerrs == 671;
   }
 
-  // @Test
-  // only works when we have the data - no "indexOnly" mode
+  @Test
+  @Ignore("only works when we have the data - no \"indexOnly\" mode")
   public void openFileProblem() throws IOException {
 
     long start = System.currentTimeMillis();

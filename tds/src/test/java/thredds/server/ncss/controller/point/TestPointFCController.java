@@ -4,6 +4,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.util.ContentType;
 import thredds.util.xml.XmlUtil;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -35,6 +38,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestPointFCController {
 
   @Autowired

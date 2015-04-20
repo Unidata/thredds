@@ -72,7 +72,6 @@ public class MockTdsServletContext extends MockServletContext {
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
-    System.out.println("Current dir:"+current);
 	}
 	
 	public MockTdsServletContext(ResourceLoader resourceLoader) {

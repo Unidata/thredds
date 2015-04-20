@@ -40,7 +40,6 @@ import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -88,13 +87,13 @@ public class DatasetHtmlWriter {
     }
 
     out.format("<h2>Dataset: %s</h2>%n<ul>", ds.getName());
-    if (ds.getDataFormatType() != null)
+    if (ds.getDataFormatName() != null)
       out.format(" <li><em>Data format: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getDataFormatName()));
 
     if ((ds.getDataSize() > 0))
       out.format(" <li><em>Data size: </em>%s</li>%n", Format.formatByteSize(ds.getDataSize()));
 
-    if (ds.getFeatureType() != null)
+    if (ds.getFeatureTypeName() != null)
       out.format(" <li><em>Feature type: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getFeatureTypeName()));
 
     if (ds.getCollectionType() != null)
@@ -109,8 +108,8 @@ public class DatasetHtmlWriter {
     if (ds.getId() != null)
       out.format(" <li><em>ID: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getId()));
 
-    if (ds.getResourceControl() != null)
-      out.format(" <li><em>RestrictAccess: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getResourceControl()));
+    if (ds.getRestrictAccess() != null)
+      out.format(" <li><em>RestrictAccess: </em>%s</li>%n", StringUtil2.quoteHtmlContent(ds.getRestrictAccess()));
 
     if (ds instanceof CatalogRef) {
       CatalogRef catref = (CatalogRef) ds;
@@ -178,7 +177,7 @@ public class DatasetHtmlWriter {
               fullUrlString = fullUrlString + "?req=form";
           }
         }
-        out.format(" <li> <b>%s:</b>%s</li>%n", s.getType().toString(), makeHref(fullUrlString, urlString));
+        out.format(" <li> <b>%s:</b>%s</li>%n", s.getServiceTypeName(), makeHref(fullUrlString, urlString));
       }
       out.format("</ol>%n");
     }

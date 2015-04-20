@@ -86,11 +86,11 @@ public class BufrWmoCodesPanel extends JPanel {
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    entryTable.addListSelectionListener(new ListSelectionListener() {
+    /* entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         entryTable.getSelectedBean();
       }
-    });
+    });  */
 
     Map<Short, CodeFlagTables> tables = CodeFlagTables.getTables();
     java.util.List<CodeTableBean> beans = new ArrayList<>(tables.size());

@@ -42,11 +42,11 @@ public class GribWmoTemplatesPanel extends JPanel {
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    entryTable.addListSelectionListener(new ListSelectionListener() {
+    /* entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         entryTable.getSelectedBean();
       }
-    });
+    }); */
 
     ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
     varPopup.addAction("Show table", new AbstractAction() {

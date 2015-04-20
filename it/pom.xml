@@ -121,7 +121,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cdm</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->

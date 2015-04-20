@@ -533,7 +533,7 @@ public abstract class Grib1Gds {
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      LatLonProjection proj = new LatLonProjection();
+      LatLonProjection proj = new LatLonProjection(getEarth());
       ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
       double startx = startP.getX();
       double starty = startP.getY();

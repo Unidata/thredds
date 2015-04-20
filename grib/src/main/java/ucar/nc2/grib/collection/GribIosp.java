@@ -248,6 +248,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
 
     } else if (isLatLon) {
+      // make horiz coordsys coordinate variable
+      Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, grid_mapping, DataType.INT, ""));
+      hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[]{0}));
+      for (Parameter p : hcs.proj.getProjectionParameters())
+        hcsV.addAttribute(new Attribute(p));
+
       horizDims = "lat lon";
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
@@ -385,7 +391,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           coords.format("%s ", s);
         }
       } else {
-        if (!hcs.isLatLon()) v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
+        v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
       v.addAttribute(new Attribute(CF.COORDINATES, coords.toString()));
 

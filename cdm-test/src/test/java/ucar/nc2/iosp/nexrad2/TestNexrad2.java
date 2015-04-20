@@ -33,18 +33,24 @@
 package ucar.nc2.iosp.nexrad2;
 
 import org.junit.Test;
-import ucar.nc2.*;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.ma2.*;
-
-import java.io.IOException;
-import java.io.File;
-
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-public class TestNexrad2 {
+import java.io.File;
+import java.io.IOException;
 
+@Category(NeedsCdmUnitTest.class)
+public class TestNexrad2 {
+  // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   @Test
   public void testRead() throws IOException {
     long start = System.currentTimeMillis();
@@ -145,8 +151,8 @@ public class TestNexrad2 {
     return ok;
   }
 
-
-  public void utestCoordSys() throws IOException {
+  @Test
+  public void testCoordSys() throws IOException {
     //NetcdfDataset ncd = NetcdfDataset.openDataset(
     //        "dods://localhost:8080/thredds/dodsC/testAll/Level2_KSOX_20051010_2322.ar2v", false, null);
     String filename = TestDir.cdmUnitTestDir + "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v";

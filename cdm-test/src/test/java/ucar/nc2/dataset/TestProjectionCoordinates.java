@@ -34,12 +34,14 @@
 package ucar.nc2.dataset;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -50,6 +52,7 @@ import java.io.IOException;
  * @author caron
  * @since 8/29/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestProjectionCoordinates {
 
   private static String testDir= TestDir.cdmUnitTestDir + "transforms/";

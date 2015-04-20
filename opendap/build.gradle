@@ -7,7 +7,6 @@ apply plugin: 'war'
 dependencies {
     compile project(':cdm')
     compile project(':httpservices')
-    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     providedCompile libraries["javax.servlet-api"]
     compile libraries["jdom2"]
@@ -17,5 +16,8 @@ dependencies {
     compile libraries["coverity-escapers"]
 
     compile libraries["slf4j-api"]
-    testRuntime libraries["slf4j-jdk14"]
 }
+
+// We have this statement in the root project, but it only applies to its immediate descendants.
+// To make sure ALL descendants are evaluated before the root project, we must put this here as well.
+evaluationDependsOnChildren()

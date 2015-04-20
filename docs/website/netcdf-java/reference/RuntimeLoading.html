@@ -33,17 +33,8 @@
 <h3>Register a CoordTransBuilder:</h3>
 <pre><strong> ucar.nc2.dataset.CoordTransBuilder.registerTransform</strong>( String transformName, String className);</pre>
 <p> The registered class must implement <strong></strong><strong><strong>ucar.nc2.dataset.CoordTransBuilderIF</strong></strong>. The Coordinate Transform
-  Variable must have the transform name as one of its parameters. </p>
-
-<h3>Register a TypedDatasetFactory: (4.1 and before)</h3>
-<pre><strong> ucar.nc2.dt.TypedDatasetFactory.registerFactory</strong>( DataType datatype, String className);</pre>
-<p> The registered class must implement <strong><strong>ucar.nc2.dt.</strong>TypedDatasetFactoryIF:</strong></p>
-<pre>
-  public boolean <strong>isMine</strong>( NetcdfDataset ncd);
-  public TypedDataset <strong>open</strong>( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer log);
-</pre>
-
-<h3>Register a FeatureDatasetFactory: (4.2 and after)</h3>
+  Variable must have the transform name as one of its parameters.</p>
+<h3>Register a FeatureDatasetFactory: </h3>
 <pre><strong> ucar.nc2.ft.FeatureDatasetFactoryManager.registerFactory</strong>( FeatureType featureType, String className);</pre>
 <p> The registered class must implement <strong><strong>ucar.nc2.ft.</strong>FeatureDatasetFactory</strong>, see javadoc for that interface.</p>
 
@@ -88,7 +79,7 @@
 <strong>1)</strong> &lt;<strong>ioServiceProvider</strong>  class="edu.univ.ny.stuff.FooFiles"/&gt;
 <strong>2)</strong> &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;
 <strong>3)</strong> &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type=&quot;vertical&quot; class="my.stuff.atmosSigmaLog"/&gt;
-<strong>4)</strong> &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;
+<strong>4)</strong> &lt;<strong>featureDatasetFactory </strong>featureType="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;
 <strong>5)</strong> &lt;<strong>gribParameterTable </strong>edition=&quot;1&quot; center="58" subcenter="-1" version="128"&gt;C:/grib/tables/ons288.xml&lt;<strong>/gribParameterTable</strong>&gt;
 <strong>6)</strong> &lt;<strong>gribParameterTableLookup </strong>edition=&quot;1&quot;&gt;C:/grib/tables/ncepLookup.txt&lt;<strong>/gribParameterTableLookup</strong>&gt;
 <strong>7)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/grib/tables/userlookup.lst"/&gt;
@@ -103,9 +94,7 @@
   <li>Loads a <strong>CoordTransBuilderIF</strong> with the given class name, which looks for the given <strong>transformName </strong>in the dataset. The type
     must be <em>vertical</em> or <em>projection</em>.
   </li>
-  <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station,
-    Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>.
-  </li>
+  <li>Loads a<strong> FeatureDatasetFactory</strong> with the given class name which open    <strong>FeatureDatasets</strong> of     the given featureType.</li>
   <li>Load a <a href="formats/GribTables.html">GRIB-1 parameter table</a> (as of version 4.3)</li>
   <li>Load a <a href="formats/GribTables.html">GRIB-1 parameter table lookup</a> (as of version 4.3)</li>
   <li>Load a <a href="formats/GribTables.html">GRIB-1 parameter lookup table</a> (versions &lt; 4.3, deprecated)</li>
@@ -165,7 +154,7 @@
 </blockquote>
 <hr WIDTH="100%">
 <address>
-  <img src="../nc.gif" width="64" height="64" alt=""> This document was last updated on June 2012
+  <img src="../nc.gif" width="64" height="64" alt=""> This document was last updated on March 2015
 </address>
 </body>
 </html>

@@ -2,8 +2,7 @@ package ucar.nc2.dt.grid;
 
 import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
@@ -12,10 +11,13 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test index to coordinate space mapping for curvilinear grids, e.g., lat(i,j), lon(i,j).
@@ -25,6 +27,7 @@ import java.util.Collections;
  * @author edavis
  * @since 4.1
  */
+@Category(NeedsCdmUnitTest.class)
 public class CurvilinearGridPointMappingTest
 {
   private String datasetLocation = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";

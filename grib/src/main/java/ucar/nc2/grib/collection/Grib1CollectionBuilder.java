@@ -107,6 +107,11 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
           continue;
         }
+        if (index == null) {
+          logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed");
+          continue;
+        }
+
         int n = index.getNRecords();
         totalRecords += n;
 
@@ -170,8 +175,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     if (intv == null) return false;
     int haveLength = intv[1] - intv[0];
 
-    // discard zero length intervals (default)
-    if (haveLength == 0 && (intvFilter == null || intvFilter.isZeroExcluded()))
+    // discard zero length intervals
+    if (haveLength == 0 && intvFilter != null && intvFilter.isZeroExcluded()) // default dont discard
       return true;
 
     if (intvFilter != null && intvFilter.hasFilter()) {

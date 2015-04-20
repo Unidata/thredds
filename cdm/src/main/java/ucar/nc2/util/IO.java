@@ -359,7 +359,10 @@ public class IO {
 
   static public void copyFileWithChannels(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
     try (FileChannel in = new FileInputStream(fileIn).getChannel()) {
-      in.transferTo(0, fileIn.length(), out);
+      long want =  fileIn.length();
+      long did = in.transferTo(0, fileIn.length(), out);
+      if (want != did)
+        throw new IOException("File transfer not complete on "+fileIn.getName()+", length= "+want+ " transfer= "+did);
     }
   }
 

@@ -36,14 +36,17 @@ package thredds.server.opendap;
 
 
 import junit.framework.*;
+import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.*;
 
 /** Test nc2 dods in the JUnit framework. */
+@Category(NeedsCdmUnitTest.class)
 public class TestOutstandingIssues extends TestCase {
 
   public void testByteAttribute() throws IOException {

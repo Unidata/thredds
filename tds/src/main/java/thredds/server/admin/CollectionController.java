@@ -34,6 +34,7 @@
 package thredds.server.admin;
 
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import javax.annotation.PostConstruct;
@@ -58,6 +59,7 @@ import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -151,11 +153,11 @@ public class CollectionController  {
     act = new DebugController.Action("showFmrcCache", "Show FMRC Cache") {
       public void doAction(DebugController.Event e) {
         e.pw.println("<p>cache location = "+monitor.getCacheLocation()+"<p>");
-        String statUrl = tdsContext.getContextPath() + PATH + "/"+STATISTICS;
+        String statUrl = tdsContext.getContextPath() + FMRC_PATH + "/"+STATISTICS;
         e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
         for (String name : monitor.getCachedCollections()) {
           String ename = StringUtil2.quoteHtmlContent(name);
-          String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ename;
+          String url = tdsContext.getContextPath() + FMRC_PATH + "?"+COLLECTION+"="+ename;
           e.pw.println("<p/> <a href='" + url + "'>" + name + "</a>");
         }
       }
@@ -295,13 +297,13 @@ public class CollectionController  {
 
   /////////////////////////////////////////////////////////////
   // old FmrcController - deprecated
-  private static final String FMRC_PATH = "/admin/fmrcCache";
+  private static final String FMRC_PATH = "/admin/showFmrc";
   private static final String STATISTICS = "cacheStatistics.txt";
   private static final String CMD = "cmd";
   private static final String FILE = "file";
   private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
 
-  @RequestMapping(value={"/fmrcCache", "/fmrcCache/*"})
+  @RequestMapping(value={"/showFmrc", "/showFmrc/*"})
   protected ModelAndView showFmrcCache(HttpServletRequest req, HttpServletResponse res) throws Exception {
     String path = TdsPathUtils.extractPath(req, "admin/");   // LOOK probably wrong
 
@@ -322,7 +324,8 @@ public class CollectionController  {
 
     // show the file
     if (fileName != null) {
-      String contents = monitor.getCachedFile(collectName, fileName);
+      String ufilename = java.net.URLDecoder.decode(fileName, CDM.UTF8);
+      String contents = monitor.getCachedFile(collectName, ufilename);
       if (null == contents) {
         res.setContentType(ContentType.html.getContentHeader());
         PrintWriter pw = res.getWriter();
@@ -351,8 +354,8 @@ public class CollectionController  {
 
       pw.println("<ol>");
       for (String filename : monitor.getFilesInCollection(collectName)) {
-        String efileName = Escape.html(filename);
-        pw.println("<li> <a href='" + url + "&"+FILE+"="+efileName + "'>" + efileName + "</a>");
+        String efileName = java.net.URLEncoder.encode(filename, CDM.UTF8);
+        pw.println("<li> <a href='" + url + "&"+FILE+"="+efileName + "'>" + filename + "</a>");
       }
      pw.println("</ol>");
     }
@@ -372,6 +375,15 @@ public class CollectionController  {
     }
 
     return null;
+  }
+
+  public static void main(String[] args) throws UnsupportedEncodingException {
+    String s = "B:/lead/fmrc/ECMWF_Global_2p5_20150301_0000.nc#fmrInv.xml";
+    String enc = java.net.URLEncoder.encode( s, CDM.UTF8 );
+    String unenc = java.net.URLDecoder.decode(s, CDM.UTF8);
+    System.out.printf("%s == %s == %s%n", s, enc, unenc);
+
+
   }
 
 }

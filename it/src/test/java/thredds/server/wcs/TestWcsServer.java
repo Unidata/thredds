@@ -32,12 +32,6 @@
  */
 package thredds.server.wcs;
 
-import java.io.IOException;
-import java.io.File;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.List;
-
 import com.eclipsesource.restfuse.Destination;
 import com.eclipsesource.restfuse.HttpJUnitRunner;
 import com.eclipsesource.restfuse.Method;
@@ -53,10 +47,15 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Rule;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import thredds.TestWithLocalServer;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.util.IO;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.List;
 
 import static com.eclipsesource.restfuse.Assert.assertOk;
 import static org.junit.Assert.assertEquals;
@@ -64,6 +63,7 @@ import static org.junit.Assert.assertEquals;
 /** Test WCS server */
 
 @RunWith(HttpJUnitRunner.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestWcsServer {
 
   @Rule

@@ -38,14 +38,17 @@
 
 package ucar.nc2.iosp.gempak;
 
-import java.io.IOException;
-import java.io.File;
-
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
+import java.io.IOException;
+
+@Category(NeedsCdmUnitTest.class)
 public class TestReadingGempak {
 
   @Test

@@ -33,15 +33,17 @@
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
-
-import java.io.IOException;
-
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.IOException;
+
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcNetcdf extends TestCase {
 
   public TestOffAggFmrcNetcdf( String name) {

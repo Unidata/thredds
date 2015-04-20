@@ -1,33 +1,34 @@
 /*
- * Copyright (c) 1998 - 2010. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.ft.fmrc;
@@ -57,10 +58,10 @@ public class FmrcInvLite implements java.io.Serializable {
   public double[] forecastOffset; // all forecast times in offset hours since base, for "constant forecast" datasets
   public double[] offsets; // all the offset values, for "constant offset" datasets
 
-  public List<String> locationList = new ArrayList<String>(); // dataset location, can be used in NetcdfDataset.acquireDataset()
-  public Map<String,Integer> locationMap = new HashMap<String,Integer>(); // quick lookup of dataset location in locationList
-  public List<Gridset> gridSets = new ArrayList<Gridset>(); // All Grids in Gridset have same time coordinate
-  public List<Gridset.GridInventory> invList = new ArrayList<Gridset.GridInventory>(); // the actual inventory
+  public List<String> locationList = new ArrayList<>(); // dataset location, can be used in NetcdfDataset.acquireDataset()
+  public Map<String,Integer> locationMap = new HashMap<>(); // quick lookup of dataset location in locationList
+  public List<Gridset> gridSets = new ArrayList<>(); // All Grids in Gridset have same time coordinate
+  public List<Gridset.GridInventory> invList = new ArrayList<>(); // the actual inventory
                                                                                        // share these, they are expensive!
 
   public FmrcInvLite(FmrcInv fmrcInv) {
@@ -98,7 +99,7 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     // calc the offsets
-    TreeSet<Double> tree = new TreeSet<Double>();
+    TreeSet<Double> tree = new TreeSet<>();
     for (Gridset gridset : gridSets) {
       for (int run = 0; run < nruns; run++) {
         double baseOffset = runOffset[run];
@@ -125,14 +126,14 @@ public class FmrcInvLite implements java.io.Serializable {
   }
 
   public List<CalendarDate> getRunDates() {
-    List<CalendarDate> result = new ArrayList<CalendarDate>(runOffset.length);
+    List<CalendarDate> result = new ArrayList<>(runOffset.length);
     for (double off : runOffset)
       result.add(FmrcInv.makeOffsetDate(base, off));
     return result;
   }
 
   public List<CalendarDate> getForecastDates() {
-    List<CalendarDate> result = new ArrayList<CalendarDate>(forecastOffset.length);
+    List<CalendarDate> result = new ArrayList<>(forecastOffset.length);
     for (double f : forecastOffset)
       result.add(FmrcInv.makeOffsetDate(base, f));
     return result;
@@ -238,13 +239,13 @@ public class FmrcInvLite implements java.io.Serializable {
   // group of Grids with the same time coordinate
   public class Gridset implements java.io.Serializable {
     String gridsetName;
-    List<Grid> grids = new ArrayList<Grid>();
+    List<Grid> grids = new ArrayList<>();
     int noffsets;
     double[] timeOffset;  // timeOffset(nruns,noffsets) in offset hours since base. this is the twoD time coordinate for this Gridset;
                           // Double.NaN for missing values; these are dense (a ragged array has missing all at end)
     double[] timeBounds;  // timeBounds(nruns,noffsets,2) in offset hours since base. null means not an interval time coordinate
 
-    Map<String, List<TimeInv>> timeCoordMap = new HashMap<String, List<TimeInv>>();
+    Map<String, List<TimeInv>> timeCoordMap = new HashMap<>();
 
     Gridset(FmrcInv.RunSeq runseq) {
       this.gridsetName = runseq.getName();
@@ -380,7 +381,7 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     private List<TimeInv> makeConstantForecast(double offset) {
-      List<TimeInv> result = new ArrayList<TimeInv>(noffsets);
+      List<TimeInv> result = new ArrayList<>(noffsets);
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) { // search for all offsets that match - presumably 0 or 1 per run
           double baseOffset = timeOffset[run * noffsets + time];
@@ -394,7 +395,7 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     private List<TimeInv> makeConstantOffset(double offset) {
-      List<TimeInv> result = new ArrayList<TimeInv>(nruns);
+      List<TimeInv> result = new ArrayList<>(nruns);
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) { // search for all offsets that match - presumably 0 or 1 per run
           double baseOffset = getTimeCoord(run, time);
@@ -465,7 +466,7 @@ public class FmrcInvLite implements java.io.Serializable {
             double invOffset = FmrcInv.getOffsetInHours(base, inv.tc.getRunDate()); // offset of this file
 
             for (int i = 0; i < inv.tc.getNCoords(); i++) {
-               int timeIdx = -1;
+               int timeIdx;
 
               if (timeBounds == null) {              
                 timeIdx = findIndex(runIdx, invOffset + inv.tc.getOffsetTimes()[i]);
@@ -578,9 +579,10 @@ public class FmrcInvLite implements java.io.Serializable {
 
     @Override
     public int compareTo(TimeInv o) {
-      int c1 = Double.compare(offset, o.offset);
-      if ((c1 == 0) && isInterval) return Double.compare(startIntv, o.startIntv);
-      return c1;
+      if (Misc.closeEnough(offset, o.offset)) return 0;
+      if (!isInterval) return Double.compare(offset, o.offset);
+      if (Misc.closeEnough(startIntv, o.startIntv)) return 0;
+      return Double.compare(startIntv, o.startIntv);
     }
   }
 

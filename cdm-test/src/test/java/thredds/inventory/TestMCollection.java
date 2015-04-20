@@ -33,11 +33,13 @@
 package thredds.inventory;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.DirectoryCollection;
 import thredds.inventory.partition.TimePartition;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -51,6 +53,7 @@ import java.util.Formatter;
  * @author caron
  * @since 12/24/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestMCollection {
   org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
 

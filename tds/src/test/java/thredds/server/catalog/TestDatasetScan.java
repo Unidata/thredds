@@ -34,6 +34,7 @@ package thredds.server.catalog;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
@@ -41,6 +42,7 @@ import thredds.client.catalog.writer.CatalogXmlWriter;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -55,6 +57,7 @@ import static org.junit.Assert.assertEquals;
  * @author caron
  * @since 1/21/2015
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestDatasetScan {
   static private final boolean showCats = true;
 

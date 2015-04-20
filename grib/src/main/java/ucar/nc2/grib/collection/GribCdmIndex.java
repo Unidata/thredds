@@ -665,7 +665,7 @@ public class GribCdmIndex implements IndexReader {
 
   /**
    * Open GribCollection from config.
-   * dataOnly
+   * CollectionUpdater calls InvDatasetFc.update() calls InvDatasetFcGrib.updateCollection()
    */
   static public GribCollectionImmutable openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
 

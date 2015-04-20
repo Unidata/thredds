@@ -33,16 +33,21 @@
 package ucar.nc2;
 
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-
-import ucar.ma2.*;
-import ucar.unidata.test.util.TestDir;
 
 /**
  * @author caron
  * @since Jan 25, 2008
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestStructureIterator extends TestCase {
 
   public TestStructureIterator(String name) {

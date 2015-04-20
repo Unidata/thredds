@@ -10,7 +10,6 @@ dependencies {
     testCompile project(":httpservices")
     testRuntime project(":opendap")
     testRuntime project(":visad")
-    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     testRuntime libraries["jaxen"]
     testCompile libraries["jdom2"]
@@ -26,6 +25,7 @@ dependencies {
     // we're overlaying tds (see below), so we're already getting the binding that it declares.
 }
 
+test.enabled = false  // We're doing integrationTest instead.
 
 apply plugin: 'org.akhikhl.gretty'
 
@@ -55,21 +55,33 @@ gretty {
     // However, it is actually still present as of 7.0.55
     secureRandom = true
 
-    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
+//    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
 //    def contentRoot = 'Q:/cdmUnitTest/it/content'
 
-    systemProperty 'tds.content.root.path', contentRoot
+//    systemProperty 'tds.content.root.path', contentRoot
 //    systemProperty 'tds.dir.cdmUnitTest', 'Q:/cdmUnitTest'
+
+    // Causes the org.akhikhl.gretty.ServerConfig.systemProperties field to be initialized.
+    // We don't actually care about the key-value-pair; we just want that field to be non-null to avoid an NPE.
+    // TODO: Reduce this bug to a minimum test case and submit to Gretty project.
+    systemProperty 'foo', 'bar'
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test) {
-    setEnabled true
+    // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
+    exclude 'thredds/tds/**'
 
-    include 'thredds/server/catalog/TestTdsLocal.class'
-    include 'thredds/TestEncoding.class'
-
-//    systemProperty 'unidata.testdata.path', 'Q:'
+    doLast {
+        // Remove the system properties that Gretty added in AppBeforeIntegrationTestTask.integrationTestTask().
+        // org.gradle.api.internal.changedetection.changes.DefaultTaskArtifactStateRepository.TaskArtifactStateImpl.afterTask()
+        // seems to indicate that input/output snapshots are taken AFTER a task is executed, whereas snapshot checking
+        // occurs BEFORE. So, in order for the UP-TO-DATE machinery to work properly, we must undo the changes to
+        // input that Gretty made during the execution phase.
+        // TODO: Can I find anything more authoritive vis-a-vis snapshot time? Ask at the Gradle forums?
+        // TODO: Open an issue--or even a pull request--for this problem on the Gretty Github.
+        systemProperties.keySet().removeAll { it.startsWith("gretty.") }
+    }
 }
 
 task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
@@ -84,18 +96,41 @@ task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
     }
 }
 
-// We want to modify the "appBeforeIntegrationTest" task, but like all Gretty tasks,
-// it won't be added to the project until after evaluation: http://goo.gl/qlFXTD
-// So, our modification must also occur after evaluation.
+import org.gradle.api.internal.changedetection.TaskArtifactStateRepository
+import org.gradle.api.internal.changedetection.TaskArtifactState
+
+// We want to modify the "appBeforeIntegrationTest" and "appAfterIntegrationTest" tasks, but like all Gretty tasks,
+// they won't be added to the project until after evaluation: http://goo.gl/qlFXTD
+// So, our modifications must also occur after evaluation.
 afterEvaluate {
+    // This task starts the embedded Tomcat server. It's expensive to do.
     appBeforeIntegrationTest {
-        onlyIf { tasks.integrationTest.enabled }
+        // We're trying hard to only execute appBeforeIntegrationTest if integrationTest will execute.
+        // We won't execute if integrationTest is disabled--that's simple.
+        // We also won't execute if integrationTest is considered UP-TO-DATE. That's much harder to determine, and we
+        // had to dig into internal Gradle APIs to find that info. Expect this to break in the future.
+        // There are still other cases where integrationTest execution could be skipped that we don't or can't check
+        // (e.g. one of its onlyIf()s returns false), but those situations are rare.
+        onlyIf {
+            Task task = tasks.integrationTest
+            if (!task.enabled) {
+                return false;
+            }
+
+            TaskArtifactState state = task.services.get(TaskArtifactStateRepository).getStateFor(task)
+            return !state.isUpToDate([])
+        }
 
         // "jacoco" extension is created automatically for all AppBeforeIntegrationTest tasks
         // and has type org.gradle.testing.jacoco.plugins.JacocoTaskExtension
         jacoco {
+            // appBeforeIntegrationTest.exec gets larger every run if we don't do this. That breaks UP-TO-DATE
+            // checking. LOOK: The Test tasks have "true" here, yet I don't notice the undesirable behavior. Why?
             append = false
-            destinationFile = new File(buildDir, 'jacoco/integrationTest.exec')
+
+            // Don't use the same name as our integration task's execution data.
+            // That data may be useless (is it?), but overwriting it during execution foils UP-TO-DATE checking.
+            // destinationFile = new File(buildDir, 'jacoco/integrationTest.exec')
         }
 
         doFirst {
@@ -105,7 +140,9 @@ afterEvaluate {
         }
     }
 
+    // This task stops the embedded Tomcat server.
     appAfterIntegrationTest {
-        onlyIf { tasks.integrationTest.enabled }
+        // Only run if appBeforeIntegrationTest did work.
+        onlyIf { tasks.appBeforeIntegrationTest.getDidWork() }
     }
 }

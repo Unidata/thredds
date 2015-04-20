@@ -1,15 +1,11 @@
 package thredds.server.ncss;
 
-import static com.eclipsesource.restfuse.Assert.assertOk;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.List;
-
+import com.eclipsesource.restfuse.Destination;
+import com.eclipsesource.restfuse.HttpJUnitRunner;
+import com.eclipsesource.restfuse.Method;
+import com.eclipsesource.restfuse.Response;
+import com.eclipsesource.restfuse.annotation.Context;
+import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -18,24 +14,27 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Rule;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
 import thredds.TestWithLocalServer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
-import com.eclipsesource.restfuse.Destination;
-import com.eclipsesource.restfuse.HttpJUnitRunner;
-import com.eclipsesource.restfuse.Method;
-import com.eclipsesource.restfuse.Response;
-import com.eclipsesource.restfuse.annotation.Context;
-import com.eclipsesource.restfuse.annotation.HttpTest;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.List;
+
+import static com.eclipsesource.restfuse.Assert.assertOk;
+import static org.junit.Assert.*;
 
 /*
   These tests fail on jenkins, but work locally
  */
 
 @RunWith(HttpJUnitRunner.class)
+@Category(NeedsCdmUnitTest.class)
 public class NcssIntegrationTest {
 
   @Rule

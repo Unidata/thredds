@@ -32,23 +32,25 @@
 
 package ucar.nc2.ncml;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCacheable;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Updating aggregation
@@ -56,7 +58,7 @@ import ucar.unidata.test.util.TestDir;
  * @author caron
  * @since Jul 24, 2009
  */
-
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggUpdating {
   String dir = TestDir.cdmUnitTestDir + "agg/updating";
   String location = dir + "agg/updating.ncml";

@@ -7,7 +7,7 @@ tasks.withType(Test) {
 }
 
 gradle.projectsEvaluated {
-    // Will apply to "jacocoTestReport", ":it:integrationTestReport", ":jacocoRootReport", etc.
+    // Will apply to "jacocoTestReport", ":it:integrationTestReport", ":rootJacocoReport", etc.
     tasks.withType(JacocoReport) {
         // Include all Test tasks from this project and any subprojects.
         dependsOn allprojects*.tasks*.withType(Test)

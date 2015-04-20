@@ -36,6 +36,8 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -46,12 +48,13 @@ import java.io.IOException;
  * @author caron
  * @since 11/3/13
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestNcMLWriteProblem {
 
   @Test
   public void problem() throws IOException {
     String location = TestDir.cdmUnitTestDir + "conventions/nuwg/ocean.nc";
-    TestNcmlWriteAndCompare test = new TestNcmlWriteAndCompare(location, true);
+    TestNcmlWriteAndCompareShared test = new TestNcmlWriteAndCompareShared(location, true);
     test.compareNcML(false, false, false);
   }
 }

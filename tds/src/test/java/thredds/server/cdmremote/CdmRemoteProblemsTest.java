@@ -2,6 +2,7 @@ package thredds.server.cdmremote;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.util.ContentType;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 /**
  * Single problems in cdmremote testing
@@ -25,7 +27,7 @@ import thredds.util.ContentType;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
-public class CdmRemoteProblems {
+public class CdmRemoteProblemsTest {
 
   @Autowired
  	private org.springframework.web.context.WebApplicationContext wac;
@@ -41,6 +43,7 @@ public class CdmRemoteProblems {
 
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
    public void cdmRemoteRequestCapabilitiesTest() throws Exception {
      RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
    				.param("req", "capabilities");

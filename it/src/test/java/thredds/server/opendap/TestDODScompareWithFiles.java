@@ -34,6 +34,7 @@ package thredds.server.opendap;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
@@ -43,6 +44,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -56,6 +58,7 @@ import java.util.List;
  */
 
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestDODScompareWithFiles {
   static boolean showCompare = false, showEach = false, compareData  = false;
   static String contentRoot = TestDir.cdmUnitTestDir;

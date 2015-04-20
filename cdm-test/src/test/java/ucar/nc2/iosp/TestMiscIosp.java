@@ -34,11 +34,13 @@
 package ucar.nc2.iosp;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -50,6 +52,7 @@ import java.util.Arrays;
  * @author caron
  * @since 7/29/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestMiscIosp {
 
   @Test

@@ -45,7 +45,9 @@ import java.util.Formatter;
  */
 @Immutable
 public class Earth implements Serializable {
-  private static final double earthRadius = 6371229.;  // canonical radius of the spherical earth in meters
+  public static final Earth DEFAULT = new Earth();
+
+  private static final double earthRadius = 6371229.;  // canonical radius of the spherical earth in meters "WGS 84"
 
   /**
    * Get canonical radius of spherical earth, in meters

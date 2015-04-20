@@ -32,17 +32,11 @@
  */
 package ucar.nc2.dataset;
 
-import static org.junit.Assert.assertArrayEquals;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -52,7 +46,14 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * 
@@ -66,6 +67,7 @@ import ucar.unidata.test.util.TestDir;
  *
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestVerticalTransformWithUnitsConversion {
 	
 	private String sameUnitsFile;

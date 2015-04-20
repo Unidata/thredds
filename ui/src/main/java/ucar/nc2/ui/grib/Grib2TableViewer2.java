@@ -97,11 +97,11 @@ public class Grib2TableViewer2 extends JPanel {
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    entryTable.addListSelectionListener(new ListSelectionListener() {
+    /* entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         entryTable.getSelectedBean();
       }
-    });
+    }); */
 
     AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in this table", false);
     dupButton.addActionListener(new ActionListener() {

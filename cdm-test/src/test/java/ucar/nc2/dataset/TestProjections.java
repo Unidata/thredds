@@ -34,6 +34,7 @@
 package ucar.nc2.dataset;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
@@ -45,6 +46,7 @@ import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.Parameter;
 
@@ -57,6 +59,7 @@ import java.util.*;
  * @author caron
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestProjections {
   private static String testDir= TestDir.cdmUnitTestDir + "transforms/";
   private static LatLonPointImpl testPoint = new LatLonPointImpl(0, 145.0);

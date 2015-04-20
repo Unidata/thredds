@@ -33,13 +33,16 @@
 package thredds.server.catalog;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 /**
  * Test catalog utilities
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestTdsLocal {
   public static boolean showValidationMessages = false;
 

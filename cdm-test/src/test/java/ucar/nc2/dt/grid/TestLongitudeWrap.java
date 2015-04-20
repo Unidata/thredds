@@ -33,10 +33,12 @@
 package ucar.nc2.dt.grid;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -47,6 +49,7 @@ import java.io.IOException;
  * @author caron
  * @since Apr 12, 2010
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestLongitudeWrap {
 
   @Test

@@ -33,10 +33,12 @@
 package ucar.nc2.dataset;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -47,6 +49,7 @@ import java.io.File;
  * @author caron
  * @since 11/6/13
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestDatasetWrap {
 
   @Test

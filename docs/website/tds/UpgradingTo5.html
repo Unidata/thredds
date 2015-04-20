@@ -17,7 +17,7 @@
 <h2>API Changes</h2>
 <h3>Catalogs</h3>
 <ul>
-  <li>All uses of thredds.catalog.* are deprecated. If you still need it, you must add old.jar to your path.</li>
+  <li>All uses of thredds.catalog.* are deprecated. If you still need it, you must add legacy.jar to your path.</li>
   <li>TDS and CDM now use thredds.server.catalog.* and thredds.client.catalog.*</li>
 </ul>
 <h3>Viewers</h3>
@@ -25,6 +25,10 @@
   <li>thredds.servlet.Viewer has InvDatasetImpl changed to Dataset</li>
   <li>thredds.servlet.ViewerLinkProvider has InvDatasetImpl changed to Dataset</li>
   <li>thredds.server.viewer.dataservice.ViewerService has InvDatasetImpl changed to Dataset</li>
+</ul>
+<h5>Feature Types</h5>
+<ul>
+  <li> <strong>ucar.nc2.dt.TypedDatasetFactory </strong>has been removed. Use <strong>ucar.nc2.ft.FeatureDatasetFactoryManager.</strong></li>
 </ul>
 <h2>Catalog Schema changes</h2>
 <h3>Client Catalogs</h3>
@@ -92,15 +96,8 @@
 </ul>
 <h3>API changes</h3>
 <ul>
-  <li>Writing CF gridded data: <strong>ucar.nc2.dt.grid.CFGridWriter</strong> is deprecated in favor of <strong>ucar.nc2.dt.grid.CFGridWriter2</strong>. The API is a bit different, and simpler. Please switch to it.</li>
-  <li>Writing Netcdf-4 files with chunking: The <strong>Nc4Chunking</strong>&nbsp;object changed from package ucar.nc2.jni to package ucar.nc2.write. It was substantially rewritten, and the set of standard strategies has changed.</li>
-  <li><strong>ucar.unidata.geoloc.ProjectionRect</strong> no longer extends <strong>java.awt.Rectangle2D</strong>. This is necessary to remove dependence of the core package on java.awt, which is not supported on Android. If you need to convert <strong>ProjectionRect</strong> into <strong>Rectangle2D</strong>, you can use:</li>
+  <li>    <strong>ucar.nc2.dt.TypedDatasetFactory </strong>has been removed. Use    <strong>ucar.nc2.ft.FeatureDatasetFactoryManager.</strong></li>
 </ul>
-<blockquote>
-<pre><p> Rectangle2D hr = new Rectangle2D.Double();
- hr.setRect(prect.getX(), prect.getY(), prect.getWidth(), prect.getHeight());</p>
-</pre>
-</blockquote>
 <h3>Internal changes</h3>
 <ul>
   <li><strong>HttpClient</strong> library upgraded to 4.2, previously was 3.</li>
@@ -116,7 +113,7 @@
 
 <address>
   <img src="thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
-  last updated Oct 2014. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated May 2015. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
   support</a>.
 </address>
 

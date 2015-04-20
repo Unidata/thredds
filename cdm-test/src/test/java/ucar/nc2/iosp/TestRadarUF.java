@@ -2,11 +2,13 @@ package ucar.nc2.iosp;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.Attribute;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.util.Collection;
  * Tests for the UF radar format
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestRadarUF {
 
     @Parameterized.Parameters(name="{0}")

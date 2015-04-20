@@ -218,18 +218,18 @@ public class BufrMessageViewer extends JPanel {
     });
 
     obsTable = new BeanTable(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
-    obsTable.addListSelectionListener(new ListSelectionListener() {
+    /* obsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         obsTable.getSelectedBean();
       }
-    });
+    }); */
 
     ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
-    ddsTable.addListSelectionListener(new ListSelectionListener() {
+    /* ddsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         ddsTable.getSelectedBean();
       }
-    });
+    });  */
 
    ////////////////////////////////////////////////////////////
 

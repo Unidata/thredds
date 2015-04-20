@@ -33,9 +33,11 @@
 package ucar.nc2.iosp.hdf4;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -48,6 +50,7 @@ import java.util.List;
  * @since Jan 1, 2008
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestH4readAndCount {
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 

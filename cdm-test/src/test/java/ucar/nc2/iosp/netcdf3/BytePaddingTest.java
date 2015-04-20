@@ -1,19 +1,23 @@
 package ucar.nc2.iosp.netcdf3;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.*;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 import java.io.File;
 import java.io.IOException;
+
+import static org.junit.Assert.*;
 
 /**
  * testing netcdf3 byte padding
@@ -521,6 +525,7 @@ public class BytePaddingTest
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void checkReadWithPaddingInVsize() throws IOException, InvalidRangeException
   {
     File dataFile = new File( testDir, "files/tst_small.nc");
@@ -533,6 +538,7 @@ public class BytePaddingTest
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void checkReadWithoutPaddingInVsize() throws IOException, InvalidRangeException
   {
     File dataFile = new File( testDir, "files/tst_small_withoutPaddingInVsize.nc");

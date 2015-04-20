@@ -32,9 +32,11 @@
 
 package ucar.nc2.dt.grid;
 
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
 import junit.framework.TestCase;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.Formatter;
@@ -45,9 +47,8 @@ import java.util.Formatter;
  * @author caron
  * @since Oct 16, 2009
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestStag3D extends TestCase {
-
-
   public void testSubset() throws Exception {
     ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "ft/grid/stag/bora_feb.nc");
 

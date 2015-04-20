@@ -12,7 +12,6 @@ dependencies {
     compile project(":opendap")
     compile project(":waterml")
     compile project(":httpservices")
-    testCompile project(path: ':cdm', configuration: 'testArtifacts')
 
     compile libraries["ehcache-core"]
     compile libraries["jdom2"]
@@ -32,10 +31,6 @@ dependencies {
     compile libraries["slf4j-api"]
     runtime libraries["slf4j-jdk14"]
 }
-
-// Re-enable test task for this subproject.
-// It (and all other subproject test tasks) were originally disabled in "$rootDir/gradle/testing.gradle".
-test.setEnabled true
 
 //////////////////////////////////////////////////////////
 

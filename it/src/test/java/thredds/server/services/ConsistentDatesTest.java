@@ -1,17 +1,11 @@
 package thredds.server.services;
 
-import static com.eclipsesource.restfuse.Assert.assertOk;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import com.eclipsesource.restfuse.Destination;
+import com.eclipsesource.restfuse.HttpJUnitRunner;
+import com.eclipsesource.restfuse.Method;
+import com.eclipsesource.restfuse.Response;
+import com.eclipsesource.restfuse.annotation.Context;
+import com.eclipsesource.restfuse.annotation.HttpTest;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -23,11 +17,10 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPath;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
 import thredds.TestWithLocalServer;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -39,19 +32,26 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
-import com.eclipsesource.restfuse.Destination;
-import com.eclipsesource.restfuse.HttpJUnitRunner;
-import com.eclipsesource.restfuse.Method;
-import com.eclipsesource.restfuse.Response;
-import com.eclipsesource.restfuse.annotation.Context;
-import com.eclipsesource.restfuse.annotation.HttpTest;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static com.eclipsesource.restfuse.Assert.assertOk;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Consistency of calendar dates across services: ncss, wms, wcs
  */
 
 @RunWith(HttpJUnitRunner.class)
+@Category(NeedsCdmUnitTest.class)
 public class ConsistentDatesTest {
   private static final boolean show = true;
 

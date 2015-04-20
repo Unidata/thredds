@@ -32,14 +32,16 @@
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
 /** Test netcdf dataset in the JUnit framework. */
-
+@Category(NeedsCdmUnitTest.class)
 public class TestNcMLStrides extends TestCase {
 
   public TestNcMLStrides(String name) {

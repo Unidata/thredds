@@ -3,6 +3,7 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
@@ -15,6 +16,7 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.util.Formatter;
  * @author caron
  * @since 11/14/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribIndexCreation {
   private static CollectionUpdateType updateMode = CollectionUpdateType.always;
 

@@ -78,6 +78,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Tdm {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( Tdm.class);
   private static final boolean debug = false;
+  private static final boolean debugOpenFiles = false;
 
   private Path contentDir;
   private Path contentThreddsDir;
@@ -125,6 +126,7 @@ public class Tdm {
 
   public void setNThreads(int n) {
     executor = Executors.newFixedThreadPool(n);
+    log.info(" TDM nthreads= {}", n);
   }
 
   public void setForceOnStartup(boolean forceOnStartup) {
@@ -342,13 +344,15 @@ public class Tdm {
           logger.warn("Listener InUse should have been set");
       }
 
-      List<String> openFiles = RandomAccessFile.getOpenFiles();
-      if (openFiles.size() > 0) {
-        System.out.printf("Open Files%n");
-        for (String filename : RandomAccessFile.getOpenFiles()) {
-          System.out.printf("  %s%n", filename);
+      if (debugOpenFiles) {
+        List<String> openFiles = RandomAccessFile.getOpenFiles();
+        if (openFiles.size() > 0) {
+          System.out.printf("Open Files%n");
+          for (String filename : RandomAccessFile.getOpenFiles()) {
+            System.out.printf("  %s%n", filename);
+          }
+          System.out.printf("End Open Files%n");
         }
-        System.out.printf("End Open Files%n");
       }
 
     }

@@ -33,18 +33,26 @@
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
-import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.ma2.*;
-import ucar.nc2.util.Misc;
-import ucar.unidata.test.util.TestDir;
-
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggDirectory extends TestCase {
 
   public void testNcmlDirect() throws IOException {

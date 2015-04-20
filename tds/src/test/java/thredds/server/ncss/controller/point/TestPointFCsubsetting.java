@@ -37,6 +37,7 @@ package thredds.server.ncss.controller.point;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -54,6 +55,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.util.ContentType;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +69,7 @@ import java.util.List;
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestPointFCsubsetting {
 
     @Autowired

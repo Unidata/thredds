@@ -1,11 +1,13 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.io.IOException;
  * @author caron
  * @since 3/30/12
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestJoinNewWithGroups {
 
   // test case from joleenf@ssec.wisc.edu 03/22/2012

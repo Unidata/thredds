@@ -33,11 +33,12 @@
 
 package ucar.nc2.iosp.hdf5;
 
-import junit.framework.TestCase;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
@@ -46,6 +47,7 @@ import java.io.IOException;
  *
  * @author caron
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestH5filter {
 
   @org.junit.Test

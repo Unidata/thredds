@@ -34,17 +34,19 @@ package ucar.nc2.dataset;
 
 import junit.framework.*;
 
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 /**
  * Test basic projection methods
  */
-
+@Category(NeedsCdmUnitTest.class)
 public class TestVertical extends TestCase {
 
   public TestVertical(String name) {

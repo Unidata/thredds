@@ -1,9 +1,11 @@
 package ucar.nc2.iosp.bufr;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.io.IOException;
 /**
  * Created by snake on 2/28/2015.
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestOpenInMemory {
 
   @Test

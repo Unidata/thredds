@@ -33,17 +33,21 @@
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.*;
+import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateUnit;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Date;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.DateUnit;
-import ucar.unidata.test.util.TestDir;
-
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcNonuniform extends TestCase {
 
   public TestOffAggFmrcNonuniform( String name) {

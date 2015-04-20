@@ -35,12 +35,14 @@ package ucar.nc2.iosp.hdf5;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DebugFlagsImpl;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -59,6 +61,7 @@ public class TestH5OddTypes {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testOpaque() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("samples/opaque.h5")) {
@@ -79,6 +82,7 @@ public class TestH5OddTypes {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testEnum() throws InvalidRangeException, IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/enum.h5")) {
       Variable v2 = ncfile.findVariable("enum");
@@ -110,6 +114,7 @@ public class TestH5OddTypes {
 
   // not supporting bitfield, poor documentation
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testBitfield() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("samples/bitfield.h5")) {
@@ -120,6 +125,7 @@ public class TestH5OddTypes {
 
   // attribute vlen String
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testVlenStrings() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5")) {
@@ -129,13 +135,16 @@ public class TestH5OddTypes {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
    public void testAttString() throws InvalidRangeException, IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("support/attstr.h5")) {
     }
   }
 
+  // FIXME: This is a crappy test; it doesn't fail when it can't read the file.
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testCompoundString() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     TestDir.readAll(TestH5.testDir + "support/cstr.h5");
@@ -143,6 +152,7 @@ public class TestH5OddTypes {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testCompoundEnum() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     try (NetcdfFile ncfile = TestH5.openH5("support/cenum.h5")) {
@@ -155,6 +165,7 @@ public class TestH5OddTypes {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void misc() throws IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
 

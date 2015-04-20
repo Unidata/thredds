@@ -34,6 +34,7 @@
 package ucar.nc2.grib;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -44,6 +45,7 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -58,6 +60,7 @@ import java.util.List;
  * @since 10/15/2014
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestGribCdmIndexUpdating {
 
   @Parameterized.Parameters

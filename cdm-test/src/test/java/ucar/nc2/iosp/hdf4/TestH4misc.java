@@ -34,11 +34,13 @@
 package ucar.nc2.iosp.hdf4;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -49,6 +51,7 @@ import java.io.IOException;
  * @author caron
  * @since 10/27/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestH4misc {
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 

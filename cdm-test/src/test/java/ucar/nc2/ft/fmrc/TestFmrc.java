@@ -34,7 +34,7 @@ package ucar.nc2.ft.fmrc;
 
 import org.junit.Assert;
 import org.junit.Test;
-
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -47,25 +47,29 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Formatter;
 /**
  * Test FMRC aggregation
  *
  * @author caron
  * @since Feb 25, 2010
  */
-
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestFmrc {
   private static String datadir = TestDir.cdmUnitTestDir + "ft/fmrc/";
-  private static boolean showDetails = false;
+  private static boolean showDetails = true;
 
   @Parameterized.Parameters
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
+            {TestDir.cdmUnitTestDir+"ft/fmrc/fp_precision/sediment_thickness_#yyMMddHHmm#.*\\.nc$", 2, 2, 4, 0, "thickness_of_sediment", 2, 72, 74, false},
+
             // String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes, String gridName, int nruns, int ntimes, int nbest) {
             {datadir + "toms/hiig_#yyyyMMdd#.nc", 25, 11, 13, 2, "u", 4, 25, 58, true},
             {TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 15, -1, 6, "Pressure_tropopause", 3, 9, 9, true},

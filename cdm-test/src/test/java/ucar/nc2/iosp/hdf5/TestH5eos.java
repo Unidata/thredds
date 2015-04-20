@@ -33,10 +33,12 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import org.junit.experimental.categories.Category;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
@@ -45,6 +47,7 @@ import java.io.IOException;
  *
  * @author caron
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestH5eos {
 
   @org.junit.Test

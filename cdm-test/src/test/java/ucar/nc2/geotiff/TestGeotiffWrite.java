@@ -34,10 +34,12 @@
 package ucar.nc2.geotiff;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -52,6 +54,7 @@ import java.util.List;
  * @since 7/31/2014
  */
   @RunWith(Parameterized.class)
+  @Category(NeedsCdmUnitTest.class)
   public class TestGeotiffWrite {
     static public String topdir = TestDir.cdmUnitTestDir ;
 
