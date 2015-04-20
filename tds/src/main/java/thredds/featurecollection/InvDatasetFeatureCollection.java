@@ -42,10 +42,11 @@ import thredds.core.AllowedServices;
 import thredds.core.StandardServices;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
+import thredds.server.catalog.FeatureCollectionRef;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.log.LoggerFactoryImpl;
 
@@ -71,7 +72,7 @@ import java.util.*;
 @ThreadSafe
 public abstract class InvDatasetFeatureCollection implements CollectionUpdateListener {
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
-  static protected final String LATEST_SERVICE = "latest";
+  static protected final String LATEST_SERVICE = ServiceType.Resolver.toString();
   static protected final String VARIABLES = "?metadata=variableMap";
   static protected final String FILES = "files";
   static protected final String Virtual_Services_Name = "VirtualServices"; // exclude HTTPServer
@@ -100,7 +101,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     loggerFactory = fac;
   }
 
-  static public InvDatasetFeatureCollection factory(Dataset parent, FeatureCollectionConfig config) {
+  static public InvDatasetFeatureCollection factory(FeatureCollectionRef parent, FeatureCollectionConfig config) {
     InvDatasetFeatureCollection result;
     if (config.type == FeatureCollectionType.FMRC)
       result = new InvDatasetFcFmrc(parent, config);
@@ -122,9 +123,9 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     // catalog metadata
     protected ThreddsMetadata.VariableGroup vars;
     protected ThreddsMetadata.GeospatialCoverage coverage;
-    protected CalendarDateRange dateRange;
+    protected DateRange dateRange;
 
-    protected DatasetBuilder top;        // top dataset LOOK why ??
+    //protected DatasetBuilder top;        // top dataset LOOK why ??
     protected long lastInvChange;        // last time dataset inventory was changed
     protected long lastProtoChange;      // last time proto dataset was changed
 
@@ -135,7 +136,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
         this.dateRange = from.dateRange;
         this.lastProtoChange = from.lastProtoChange;
 
-        this.top = from.top;
+        //this.top = from.top;
         this.lastInvChange = from.lastInvChange;
       }
     }
@@ -150,7 +151,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   protected AllowedServices allowedServices = new AllowedServices();
 
   // not changed after first call
-  protected Dataset parent;
+  protected FeatureCollectionRef parent;
   protected Service orgService, virtualService;
   protected org.slf4j.Logger logger;
 
@@ -168,7 +169,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   protected boolean first = true;
   protected final Object lock = new Object();
 
-  protected InvDatasetFeatureCollection(Dataset parent, FeatureCollectionConfig config) {
+  protected InvDatasetFeatureCollection(FeatureCollectionRef parent, FeatureCollectionConfig config) {
     this.parent = parent;
     this.name = config.name;
     this.configPath = config.path;
@@ -203,6 +204,8 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     CollectionUpdater.INSTANCE.scheduleTasks(config, this, logger);
   }
 
+  /////////////////////// CollectionUpdater
+  @Override
   public String getCollectionName() {
     return config.collectionName;
   }
@@ -216,6 +219,8 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
       logger.error("Error processing event", e);
     }
   }
+
+  ///////////////////////////////////////////////////
 
   public void showStatus(Formatter f) {
     try {
@@ -247,11 +252,11 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   protected void _showStatus(Formatter f, boolean summaryOnly, String type) throws IOException {
   }
 
-  protected String getId() {    // LOOK ?? mayne config.getId ??
+  /* protected String getId() {    // LOOK ?? maybe config.getId ??
     String result =  parent.getId();
     if (result == null) result = getPath();
     return result;
-  }
+  }  */
 
   protected String getPath() {
     return parent.getUrlPath();
@@ -262,8 +267,6 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   // localState is synched, may be directly changed
   abstract protected void updateCollection(State localState, CollectionUpdateType force);
-
-  abstract protected void makeDatasetTop(State localState) throws IOException;
 
   // for gridded data
   protected Service makeDefaultServices() {
@@ -320,7 +323,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
       if (first) {
         firstInit();
         updateCollection(state, config.updateConfig.updateType);
-        makeDatasetTop(state);
+        // makeDatasetTop(state);
         first = false;
       }
       localState = state.copy();
@@ -349,7 +352,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     }
 
     updateCollection(localState, force);
-    makeDatasetTop(localState);
+    // makeDatasetTop(localState);
     localState.lastInvChange = System.currentTimeMillis();
 
     // switch to live
@@ -419,6 +422,8 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
    */
   abstract public Catalog makeCatalog(String match, String orgPath, URI catURI) throws IOException;
 
+  abstract protected DatasetBuilder makeDatasetTop(URI catURI, State localState) throws IOException;
+
   /**
    * Make the containing catalog of this feature collection
    * "http://server:port/thredds/catalog/path/catalog.xml"
@@ -433,11 +438,12 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     Catalog parentCatalog = parent.getParentCatalog();
 
     CatalogBuilder topCatalog = new CatalogBuilder();
-    topCatalog.setName( makeFullName(parent));
+    topCatalog.setName(makeFullName(parent));
     topCatalog.setVersion(parentCatalog.getVersion());
     topCatalog.setBaseURI(catURI);
 
-    topCatalog.addDataset(localState.top);
+    DatasetBuilder top = makeDatasetTop(catURI, localState);
+    topCatalog.addDataset(top);
     // topCatalog.addService(StandardServices.latest.getService());  // in case its needed
     topCatalog.addService(virtualService);
     return topCatalog;
@@ -470,6 +476,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
       DatasetBuilder latest = new DatasetBuilder(top);
       latest.setName(getLatestFileName());
       latest.put(Dataset.UrlPath, LATEST_DATASET_CATALOG);
+      latest.put(Dataset.Id, LATEST_DATASET_CATALOG);
       latest.put(Dataset.ServiceName, LATEST_SERVICE);
       top.addDataset(latest);
     }

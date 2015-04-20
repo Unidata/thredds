@@ -39,6 +39,7 @@ import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.core.StandardServices;
 import thredds.inventory.*;
+import thredds.server.catalog.FeatureCollectionRef;
 import ucar.coord.CoordinateRuntime;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
@@ -49,6 +50,7 @@ import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.File;
@@ -111,7 +113,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  public InvDatasetFcGrib(Dataset parent, FeatureCollectionConfig config) {
+  public InvDatasetFcGrib(FeatureCollectionRef parent, FeatureCollectionConfig config) {
     super(parent, config);
 
     Formatter errlog = new Formatter();
@@ -184,7 +186,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (parent != null)
       result.transferMetadata(parent, true); // make all inherited metadata local
 
-    String tpath = getPath() + "/" + COLLECTION;
+    String tpath = config.path + "/" + COLLECTION;
     ThreddsMetadata tmi = result.getInheritableMetadata();  // LOOK should we be allowed to modify this ??
     tmi.set(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(tpath, VARIABLES), catURI));
     tmi.set(Dataset.ServiceName, Virtual_Services_Name);
@@ -192,7 +194,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     tmi.set(Dataset.Properties, Property.convertToProperties(fromGc.getGlobalAttributes()));
     tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
 
-    String pathStart = parentCollectionName == null ? getPath() : getPath() + "/" + parentCollectionName;
+    String pathStart = parentCollectionName == null ? config.path : config.path + "/" + parentCollectionName;
 
     for (GribCollectionImmutable.Dataset ds : fromGc.getDatasets()) {
       boolean isSingleGroup = ds.getGroupsSize() == 1;
@@ -267,6 +269,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         DatasetBuilder ds = new DatasetBuilder(result);
         ds.setName(getDatasetNameLatest(result.getName()));
         ds.put(Dataset.UrlPath, LATEST_DATASET_CATALOG);
+        ds.put(Dataset.Id, LATEST_DATASET_CATALOG);
         ds.put(Dataset.ServiceName, LATEST_SERVICE);
         result.addDataset(ds);
       }
@@ -301,24 +304,24 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         // remove the urlPath on the parent if multiple groups;
         // cannot get a dataset with multiple groups in it
-        parent.put(Dataset.UrlPath, null);
+        //parent.put(Dataset.UrlPath, null);
         parent.addDataset(ds);
       }
 
       ThreddsMetadata tmi = ds.getInheritableMetadata();
       tmi.set(Dataset.GeospatialCoverage, extractGeospatial(group));
-      tmi.set(Dataset.TimeCoverage, group.makeCalendarDateRange());
-      tmi.set(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(dpath, VARIABLES), catURI));
+      tmi.set(Dataset.TimeCoverage, new DateRange(group.makeCalendarDateRange()));
+      // tmi.set(Dataset.VariableMapLinkURI, new ThreddsMetadata.UriResolved(makeMetadataLink(dpath, VARIABLES), catURI));
     }
   }
 
   private DatasetBuilder makeDatasetFromPartition(DatasetBuilder parent, String parentCollectionName, PartitionCollectionImmutable.Partition partition, boolean isPofP) throws IOException {
     String dsName = makeCollectionShortName(partition.getName());
 
-    String startPath = parentCollectionName == null ? getPath() : getPath() + "/" + parentCollectionName;
+    String startPath = parentCollectionName == null ? config.path : config.path + "/" + parentCollectionName;
     String dpath = startPath + "/" + partition.getName();
     CatalogRefBuilder result = new CatalogRefBuilder(parent);
-    result.setName(dsName);
+    result.setTitle(dsName);
     result.setHref(buildCatalogServiceHref(dpath));  // LOOK could be plain if not PoP ??
     result.put(Dataset.Id, dpath);
     result.put(Dataset.UrlPath, dpath);
@@ -445,9 +448,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
 
   @Override
-  protected void makeDatasetTop(State state) throws IOException {
+  protected DatasetBuilder makeDatasetTop(URI catURI, State state) throws IOException {
     StateGrib localState = (StateGrib) state;
-    localState.top = makeDatasetFromCollection(null, true, null, null, localState.gribCollection);
+    return makeDatasetFromCollection(catURI, true, null, null, localState.gribCollection);
   }
 
   // path/latest.xml

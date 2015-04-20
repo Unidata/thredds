@@ -7,6 +7,7 @@ import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.inventory.CollectionUpdateType;
 import thredds.client.catalog.tools.ThreddsMetadataAcdd;
+import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.catalog.writer.ThreddsMetadataExtractor;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.FeatureType;
@@ -15,6 +16,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.point.collection.UpdateableCollection;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -35,7 +37,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   private final FeatureDatasetPoint fd;  // LOOK this stays open
   private final Set<FeatureCollectionConfig.PointDatasetType> wantDatasets;
 
-  InvDatasetFcPoint(Dataset parent, FeatureCollectionConfig config) {
+  InvDatasetFcPoint(FeatureCollectionRef parent, FeatureCollectionConfig config) {
     super(parent, config);
     makeCollection();
 
@@ -80,7 +82,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
     // time coverage = expect it may be changing
     if (fd.getCalendarDateRange() != null)
-      localState.dateRange = fd.getCalendarDateRange();
+      localState.dateRange = new DateRange(fd.getCalendarDateRange());
   }
 
   @Override
@@ -106,13 +108,10 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }
 
   @Override
-  protected void makeDatasetTop(State localState) {
+  protected DatasetBuilder makeDatasetTop(URI catURI, State localState) {
     DatasetBuilder top = new DatasetBuilder(null);
     top.transferMetadata(parent, true); // make all inherited metadata local
     top.setName(name);
-
-    String id = getId();
-    top.put(Dataset.Id, id);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();
     tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
@@ -127,7 +126,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       String myname = name + "_" + FC;
       myname = StringUtil2.replace(myname, ' ', "_");
       ds.put(Dataset.UrlPath, this.configPath + "/" + myname);
-      ds.put(Dataset.Id, id + "/" + myname);
+      ds.put(Dataset.Id, this.configPath + "/" + myname);
       ds.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Collection of Point Data"));
       top.addDataset(ds);
     }
@@ -159,7 +158,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     tmi.set(Dataset.VariableGroups, extractor.extractVariables(fd));
 
 
-    localState.top = top;
+    return top;
   }
 
 

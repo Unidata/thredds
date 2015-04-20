@@ -215,7 +215,9 @@ public class CatalogXmlWriter {
   }
 
   private void writeDatasetInfo(Dataset ds, Element dsElem, boolean doNestedDatasets, boolean showNcML) {
-    dsElem.setAttribute("name", ds.getName());
+    String name = ds.getName();
+    if (name == null) name = ""; // eg catrefs
+    dsElem.setAttribute("name", name);
 
     // other attributes, note the others get made into an element
     if (ds.getCollectionType() != null)
@@ -293,7 +295,7 @@ public class CatalogXmlWriter {
 
   public Element writeGeospatialCoverage(ThreddsMetadata.GeospatialCoverage gc) {
     Element elem = new Element("geospatialCoverage", Catalog.defNS);
-    if (gc.getZPositive().equals("down"))
+    if (gc.getZPositive() != null)
       elem.setAttribute("zpositive", gc.getZPositive());
 
     if (gc.getNorthSouthRange() != null)

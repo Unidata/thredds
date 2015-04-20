@@ -61,14 +61,4 @@ public class ConfigCatalog extends Catalog {
     return (List<DatasetRootConfig>) getLocalFieldAsList(Dataset.DatasetRoots);
   }
 
-  private List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
-    }
-    return new ArrayList(0);
-  }
 }

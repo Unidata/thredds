@@ -161,7 +161,12 @@ public class DatasetBuilder {
       flds.put(entry.getKey(), entry.getValue());
     }
 
-    // LOOK do tmi
+    // tmi needs to be transferred to mutable version
+    ThreddsMetadata tmiOld = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
+    if (tmiOld != null && tmiOld.isImmutable()) {
+      ThreddsMetadata tmiNew = new ThreddsMetadata(tmiOld);
+      flds.put(Dataset.ThreddsMetadataInheritable, tmiNew);
+    }
   }
 
   private void inheritMetadata( Map<String, Object> flds, DatasetNode from) {
