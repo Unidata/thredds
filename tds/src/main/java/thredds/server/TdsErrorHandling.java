@@ -2,6 +2,7 @@
 package thredds.server;
 
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,19 +11,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 
 /**
- * Describe
+ * Global Exception handling
  *
+ * @see "https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc"
  * @author caron
  * @since 4/15/2015
  */
+@Configuration
 @ControllerAdvice
-public class TdsErrorHandling {
+public class TdsErrorHandling implements HandlerExceptionResolver {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TdsErrorHandling.class);
 
+  // these catch exception from any Controller
   @ExceptionHandler(FileNotFoundException.class)
   public ResponseEntity<String> handle(FileNotFoundException ex) {
     HttpHeaders responseHeaders = new HttpHeaders();
@@ -62,6 +70,14 @@ public class TdsErrorHandling {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("Throwable exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  /////////////////////////////////////////////
+  /// this catches exception from everything else, eg views
+
+  @Override
+  public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    return null;
   }
 
 

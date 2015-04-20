@@ -33,6 +33,8 @@
 
 package ucar.nc2.units;
 
+import ucar.nc2.time.CalendarDateRange;
+
 import java.util.Date;
 import java.text.ParseException;
 
@@ -56,6 +58,10 @@ public class DateRange {
    */
   public DateRange() throws ParseException {
     this(null, new DateType(false, new Date()), new TimeDuration("1 day"), new TimeDuration("15 min"));
+  }
+
+  public DateRange(CalendarDateRange cdr) {
+    this(new DateType(cdr.getStart()), new DateType(cdr.getEnd()), null, null);
   }
 
   /**

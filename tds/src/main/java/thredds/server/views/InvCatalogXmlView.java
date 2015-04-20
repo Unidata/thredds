@@ -32,6 +32,8 @@
  */
 package thredds.server.views;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.view.AbstractView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,27 +52,32 @@ import thredds.util.ContentType;
  * @since 4.0
  */
 public class InvCatalogXmlView extends AbstractView {
+  static private final Logger logger = LoggerFactory.getLogger(InvCatalogXmlView.class);
 
   protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-    if (model == null || model.isEmpty())
-      throw new IllegalArgumentException("Model must not be null or empty.");
+    try {
+      if (model == null || model.isEmpty())
+        throw new IllegalArgumentException("Model must not be null or empty.");
 
-    if (!model.containsKey("catalog"))
-      throw new IllegalArgumentException("Model must contain 'catalog' key.");
+      if (!model.containsKey("catalog"))
+        throw new IllegalArgumentException("Model must contain 'catalog' key.");
 
-    Object o = model.get("catalog");
-    if (!(o instanceof Catalog))
-      throw new IllegalArgumentException("Model must contain a Catalog object.");
+      Object o = model.get("catalog");
+      if (!(o instanceof Catalog))
+        throw new IllegalArgumentException("Model must contain a Catalog object.");
 
-    Catalog cat = (Catalog) o;
-    res.setContentType(ContentType.xml.getContentHeader());
+      Catalog cat = (Catalog) o;
+      res.setContentType(ContentType.xml.getContentHeader());
 
-    if (!req.getMethod().equals("HEAD")) {
-      try (OutputStream os = res.getOutputStream()) {
-        CatalogXmlWriter catFactory = new CatalogXmlWriter();
-        catFactory.writeXML(cat, os);
+      if (!req.getMethod().equals("HEAD")) {
+        try (OutputStream os = res.getOutputStream()) {
+          CatalogXmlWriter catFactory = new CatalogXmlWriter();
+          catFactory.writeXML(cat, os);
+        }
       }
+    } catch (Exception e) {
+      logger.error("InvCatalogXmlView failed", e);
     }
   }
 }

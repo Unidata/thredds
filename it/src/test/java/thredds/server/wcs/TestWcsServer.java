@@ -46,6 +46,7 @@ import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -55,6 +56,7 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.eclipsesource.restfuse.Assert.assertOk;
@@ -99,10 +101,15 @@ public class TestWcsServer {
     }
     assertEquals(7, elements.size());
 
-    XPathExpression<Element> xpath2 =
-        XPathFactory.instance().compile("//wcs:CoverageOfferingBrief/wcs:name", Filters.element(), null, NS_WCS);
-    Element emt = xpath2.evaluateFirst(doc);
-    assertEquals("Relative_humidity_height_above_ground", emt.getTextTrim());
+    XPathExpression<Element> xpath2 = XPathFactory.instance().compile("//wcs:CoverageOfferingBrief/wcs:name", Filters.element(), null, NS_WCS);
+    List<String> names = new ArrayList<>();
+    for (Element elem : xpath2.evaluate(doc)) {
+      System.out.printf(" %s==%s%n", elem.getName(), elem.getValue());
+      names.add(elem.getValue());
+    }
+    Assert.assertEquals(7, names.size());
+    assert names.contains("Relative_humidity_height_above_ground");
+    assert names.contains("Pressure_reduced_to_MSL");
   }
 
   @HttpTest(method = Method.GET, path = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=sst")

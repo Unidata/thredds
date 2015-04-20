@@ -35,7 +35,7 @@ package thredds.client.catalog;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -76,7 +76,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String ServiceName = "ServiceName";
   public static final String Services = "Services";
   public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable";
-  public static final String TimeCoverage = "TimeCoverage";
+  public static final String TimeCoverage = "TimeCoverage";             // DateRange
   public static final String VariableGroups = "VariableGroups";
   // public static final String VariableMapLink = "VariableMapLink";    // String
   public static final String VariableMapLinkURI = "VariableMapLinkURI";    // ThreddsMetadata.UriResolved
@@ -316,18 +316,6 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   }
 
   ///////////////////////////////////////////
-
-  @Override
-  public List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
-    }
-    return new ArrayList(0);
-  }
 
   List getInheritedFieldAsList(String fldName) {
     List result = new ArrayList();

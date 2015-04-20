@@ -336,11 +336,6 @@ public class DatasetHtmlWriter {
       }
       out.format("</ul>%n");
     }
-    if (ds.getVariableMapLink() != null) {
-      out.format("<h3>Variables:</h3>%n");
-      ThreddsMetadata.UriResolved uri = ds.getVariableMapLink();
-      out.format("<ul><li>" + makeHref(uri.resolved.toASCIIString(), "VariableMap") + "</li></ul>%n");
-    }
 
     // LOOK what about VariableMapLink string ??
     if (ds.getVariableMapLink() != null) {

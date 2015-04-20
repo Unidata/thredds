@@ -177,7 +177,8 @@ public class CatalogBuilder {
   public void addService(Service s) {
     if (s == null) return;
     if (services == null) services = new ArrayList<>();
-    services.add(s);
+    if (!services.contains(s))
+      services.add(s);
   }
 
   public void addDataset(DatasetBuilder d) {

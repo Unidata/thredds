@@ -206,7 +206,9 @@ public class ConfigCatalogHtmlWriter {
     }
 
     for (Dataset ds : datasets) {
-      String name = StringUtil2.quoteHtmlContent(ds.getName());
+      String name = ds.getName();
+      if (name == null) name = ""; // eg catrefs
+      else name = StringUtil2.quoteHtmlContent(ds.getName());
 
       sb.append("<tr");
       if (shade) sb.append(" bgcolor='#eeeeee'");
