@@ -37,6 +37,7 @@ import org.junit.experimental.categories.Category;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindingResult;
 import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 /**
  * _more_
@@ -67,6 +68,11 @@ public class TestRemoteCatalogRequest extends TestCase
   public TestRemoteCatalogRequest( String name )
   {
     super( name );
+  }
+
+  @Override
+  public void setUp() {
+    ThreddsServer.LIVE.assumeIsAvailable();
   }
 
   public void testCommandDefaultValues()

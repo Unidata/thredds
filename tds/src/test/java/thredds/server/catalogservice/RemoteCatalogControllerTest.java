@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.mock.web.MockTdsContextLoader;
 import ucar.unidata.test.util.NeedsContentRoot;
 import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -58,7 +59,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 	@Test
 	@Category(NotTravis.class)
 	public void showCommandTest() throws Exception{
-
+		ThreddsServer.LIVE.assumeIsAvailable();
 		// Testing against some reliable remote TDS
 		catUriString = "http://thredds.ucar.edu/thredds/catalog.xml";
 		request.setRequestURI(catUriString);
@@ -89,7 +90,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 	@Test
 	@Category(NotTravis.class)
 	public void subsetCommandTest() throws Exception{
-
+		ThreddsServer.LIVE.assumeIsAvailable();
 		// SUBSET REQUEST PROVIDING A datasetId
 		// setting up the request with default values:
 		// command =null
@@ -117,7 +118,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 	@Test
 	@Category(NotTravis.class)
 	public void validateCommandTest() throws Exception {
-
+		ThreddsServer.LIVE.assumeIsAvailable();
 		// VALIDATE REQUEST 
 		// command =validate
 		// datasetId= null

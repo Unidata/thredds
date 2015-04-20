@@ -95,6 +95,7 @@ task testJar(type: Jar, dependsOn: testClasses,
         include 'ucar/unidata/test/util/CompareNetcdf.class'
         include 'ucar/unidata/test/util/TestDir*.class'
         include 'ucar/unidata/test/util/TestFileDirUtils.class'
+        include 'ucar/unidata/test/util/ThreddsServer.class'
 
         // All 3 of these are included in the same source file: ucar/unidata/test/Diff.java
         // Also, 2 of the class names aren't capitalized. Ugh.

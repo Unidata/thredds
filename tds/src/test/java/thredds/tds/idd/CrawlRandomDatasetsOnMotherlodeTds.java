@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.Test;
 import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -90,6 +91,7 @@ public class CrawlRandomDatasetsOnMotherlodeTds
     @Test
     public void crawlDataset()
     {
+        ThreddsServer.LIVE.assumeIsAvailable();
         CatalogDatasetTestUtils.assertDatasetIsAccessible( this.datasetUrl);
     }
 }

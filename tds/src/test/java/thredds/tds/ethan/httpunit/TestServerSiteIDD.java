@@ -37,6 +37,7 @@ import com.meterware.httpunit.WebConversation;
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.Properties;
 
@@ -63,8 +64,10 @@ public class TestServerSiteIDD extends TestCase
     super( name );
   }
 
+  @Override
   protected void setUp()
   {
+    ThreddsServer.LIVE.assumeIsAvailable();
     wc = new WebConversation();
 
     Properties env = System.getProperties();

@@ -36,25 +36,26 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import thredds.client.catalog.Catalog;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ThreddsMetadata;
-import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.writer.CatalogCrawler;
 import thredds.client.catalog.writer.DataFactory;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dataset.NetcdfDataset;
-
-import java.io.*;
-import java.util.*;
-
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.httpservices.HTTPSession;
+import ucar.unidata.test.util.ThreddsServer;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Formatter;
 
 /**
  * Run through the named catalogs, open a random dataset from each collection
@@ -88,6 +89,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
 
   @Before
   public void init() throws IOException {
+      ThreddsServer.TEST.assumeIsAvailable();
       DataFactory.setPreferCdm(true);
       HTTPSession.setGlobalUserAgent("TestMotherlodeDatasets");
   }

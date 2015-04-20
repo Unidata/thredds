@@ -33,7 +33,6 @@
 
 package ucar.nc2.ft.point;
 
-import org.junit.Assert;
 import ucar.ma2.StructureData;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
@@ -46,11 +45,14 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * currenty all cruft
@@ -104,11 +106,13 @@ public class TestGempakAll {
   }
 
   public void utestCdmRemote() throws IOException {
+    ThreddsServer.LIVE.assumeIsAvailable();
     TestPointDatasets.checkPointDataset("cdmremote:http://thredds.ucar.edu/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
     //checkPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
   }
 
   public void utestCdmRemoteCollection() throws Exception {
+    ThreddsServer.LIVE.assumeIsAvailable();
     //testDon3("cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak", false);
     while (true) {
       // testDon2("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal", false);

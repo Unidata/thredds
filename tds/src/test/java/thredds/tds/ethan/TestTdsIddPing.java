@@ -36,6 +36,7 @@ import junit.framework.*;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 /**
  * _more_
@@ -55,10 +56,11 @@ public class TestTdsIddPing extends TestCase
     super( name );
   }
 
+  @Override
   protected void setUp()
   {
+    ThreddsServer.LIVE.assumeIsAvailable();
     host = System.getProperty( "thredds.tds.test.server", host );
-
     targetTdsUrl = "http://" + host + "/thredds/";
   }
 

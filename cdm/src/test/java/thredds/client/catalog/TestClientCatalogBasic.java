@@ -35,6 +35,7 @@ package thredds.client.catalog;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,15 +68,19 @@ public class TestClientCatalogBasic {
   }
 
 
-  Catalog cat;
+  String catFrag;
 
   public TestClientCatalogBasic(String catFrag) throws IOException {
-    cat = TestClientCatalog.open(catFrag);
+    this.catFrag = catFrag;
   }
 
   @Test
-  public void testCatalog() {
-    for (Dataset ds : cat.getDatasets())
+  public void testCatalog() throws IOException {
+    if (catFrag.contains("thredds-test")) {
+      ThreddsServer.TEST.assumeIsAvailable();
+    }
+
+    for (Dataset ds : TestClientCatalog.open(catFrag).getDatasets())
       testDatasets(ds);
   }
 

@@ -10,20 +10,24 @@ subprojects {
         }
     }
 
+    Project subproject = delegate
+
     // Add an SLF4J binding to testRuntime, if necessary.
     afterEvaluate {
-        if (testRuntimeHasDepNamed("slf4j-api")) {
-            if (!testRuntimeHasDepNamed("slf4j-jdk14") && !testRuntimeHasDepNamed("log4j-slf4j-impl")) {
-                dependencies.testRuntime libraries["slf4j-jdk14"]  // Default binding.
+        if (testRuntimeHasDepNamed(subproject, "slf4j-api")) {
+            if (!testRuntimeHasDepNamed(subproject, "slf4j-jdk14") &&
+                    !testRuntimeHasDepNamed(subproject, "log4j-slf4j-impl")) {
+                logger.info "Using default binding (slf4j-jdk14) to log testing messages in '$subproject.path'."
+                dependencies.testRuntime libraries["slf4j-jdk14"]
             }
         }
     }
 }
 
-boolean testRuntimeHasDepNamed(String depName) {
+boolean testRuntimeHasDepNamed(Project project, String depName) {
     try {
         // Groovy truth: empty collections are coerced to false.
-        configurations.getByName('testRuntime').allDependencies.findAll { it.name == depName }
+        project.configurations.getByName('testRuntime').allDependencies.findAll { it.name == depName }
     } catch (UnknownConfigurationException e) {  // Project did not have a configuration named 'testRuntime'.
         logger.debug e.message
         false
@@ -70,7 +74,9 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
         useJUnit {
             if (isTravis) {
                 ignoreFailures false  // On Travis, abort the build if any tests fail.
-                excludeCategories 'ucar.unidata.test.util.NotTravis'
+
+                // Temporarily commented out to test JUnit Assume for server reachability.
+                // excludeCategories 'ucar.unidata.test.util.NotTravis'
             } else {
                 ignoreFailures true  // In every other environment, don't let test failures abort the build.
             }

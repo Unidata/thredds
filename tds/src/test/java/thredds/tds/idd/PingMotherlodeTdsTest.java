@@ -7,6 +7,7 @@ import org.junit.runners.Parameterized;
 import thredds.client.catalog.Catalog;
 import thredds.tds.ethan.TestAll;
 import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.Collection;
 
@@ -43,6 +44,7 @@ public class PingMotherlodeTdsTest
   @Test
   public void pingMotherlodeCatalogs()
   {
+    ThreddsServer.LIVE.assumeIsAvailable();
     StringBuilder msgLog = new StringBuilder();
 
     String url = this.tdsUrl + this.catUrl;

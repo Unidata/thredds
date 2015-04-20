@@ -34,6 +34,7 @@ package ucar.nc2.dt.grid;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,10 +106,12 @@ public class TestReadAndCountDods {
 
   @org.junit.Test
   public void readAndCount() throws Exception {
+    ThreddsServer.DEV.assumeIsAvailable();
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
   public void utestProblem() throws Exception {
+    ThreddsServer.DEV.assumeIsAvailable();
     TestReadandCount.doOne("thredds:resolve:http://thredds-dev.ucar.edu/thredds/",
             "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
   }

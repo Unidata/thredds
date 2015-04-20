@@ -1,10 +1,12 @@
 package thredds.tds.idd;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.*;
 
@@ -34,6 +36,10 @@ public class CompareGribVarNamesOnMotherlodeTds
     // return Arrays.asList( IddModelDatasetsUtils.getGfsModelIds());
   }
 
+  @Before
+  public void setUp() {
+    ThreddsServer.LIVE.assumeIsAvailable();
+  }
 
   /**
    * For the given model ID, get the fifth dataset in the "FMRC Run" catalog and compare it to the

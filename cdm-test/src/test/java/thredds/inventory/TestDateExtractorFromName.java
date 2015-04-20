@@ -16,8 +16,6 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class TestDateExtractorFromName {
-  static String base = "thredds:resolve:http://thredds.ucar.edu/thredds/";
-
   @Parameterized.Parameters
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
