@@ -69,14 +69,12 @@ import static com.eclipsesource.restfuse.Assert.assertOk;
 @RunWith(HttpJUnitRunner.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestTdsDodsServer {
-  private static URLEncoder encoder = new URLEncoder();
 
   @Rule
   public Destination destination = new Destination(TestWithLocalServer.server);
 
   @Context
   private Response response; // will be injected after every request
-
 
   @HttpTest(method = Method.GET, path = "/dodsC/scanCdmUnitTests/tds/ncep/NAM_CONUS_20km_selectsurface_20100913_0000.grib2.badascii?Visibility_surface[0:1:0][0:1:0][0:1:0]")
   public void checkBadRequest() {
@@ -122,8 +120,8 @@ public class TestTdsDodsServer {
   -4226.1084
    */
 
-   private void testSingleDataset() throws IOException {
-     Catalog cat = TestTdsLocal.open(null);
+  private void testSingleDataset() throws IOException {
+    Catalog cat = TestTdsLocal.open(null);
 
     Dataset ds = cat.findDatasetByID("testDataset2");
     assert (ds != null) : "cant find dataset 'testDataset'";
@@ -131,7 +129,7 @@ public class TestTdsDodsServer {
 
     DataFactory fac = new DataFactory();
 
-    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+    DataFactory.Result dataResult = fac.openFeatureDataset(ds, null);
 
     assert dataResult != null;
     assert !dataResult.fatalError;
@@ -162,7 +160,7 @@ public class TestTdsDodsServer {
     List vlist = ncd.getVariables();
     int n = vlist.size();
     assert n > 0;
-    Variable v = (Variable) vlist.get(n/2);
+    Variable v = (Variable) vlist.get(n / 2);
     System.out.printf("Read all data from %s%n", v.getName());
     Array data = v.read();
     assert data.getSize() == v.getSize();
@@ -178,9 +176,9 @@ public class TestTdsDodsServer {
       public int doAct(String filename) throws IOException {
         filename = StringUtil2.replace(filename, '\\', "/");
         filename = StringUtil2.remove(filename, dirName);
-        String dodsUrl = urlPrefix+filename;
-        String localPath = dirName+filename;
-        System.out.println("--Compare "+localPath+" to "+dodsUrl);
+        String dodsUrl = urlPrefix + filename;
+        String localPath = dirName + filename;
+        System.out.println("--Compare " + localPath + " to " + dodsUrl);
 
         NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
         NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);

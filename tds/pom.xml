@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -68,8 +69,8 @@
     </dependency>
 
     <dependency>
-        <groupId>com.coverity.security</groupId>
-        <artifactId>coverity-escapers</artifactId>
+      <groupId>com.coverity.security</groupId>
+      <artifactId>coverity-escapers</artifactId>
     </dependency>
 
     <!-- server stuff -->
@@ -160,6 +161,20 @@
       <artifactId>spring-webmvc</artifactId>
     </dependency>
 
+    <!-- spring security -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+    </dependency>
+
     <!-- need to update cas -->
     <!-- dependency>
       <groupId>org.jasig.cas</groupId>
@@ -212,9 +227,9 @@
 
     <!-- thymeleaf -->
     <dependency>
-    	<groupId>org.thymeleaf</groupId>
-    	<artifactId>thymeleaf-spring3</artifactId>
-    	<version>2.1.4.RELEASE</version>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring3</artifactId>
+      <version>2.1.4.RELEASE</version>
     </dependency>
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -274,15 +289,15 @@
 
     <!-- BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED -->
     <testResources>
-       <testResource>
-         <filtering>false</filtering>
-         <directory>${basedir}/src/test/resources</directory>
-       </testResource>
-       <testResource>
-         <filtering>false</filtering>
-         <directory>${basedir}/src/main/webapp</directory>
-       </testResource>
-     </testResources>
+      <testResource>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/main/webapp</directory>
+      </testResource>
+    </testResources>
 
     <plugins>
 
@@ -305,7 +320,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <attachClasses>true</attachClasses>
-           <archive>
+          <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>

@@ -42,6 +42,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
@@ -50,10 +51,10 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 import java.io.IOException;
 
 /**
- * @author john
+ * miscellaneous opendap tests
  */
 @Category(NeedsCdmUnitTest.class)
-public class TestSanity {
+public class TestOpendapMisc {
 
   @Test
   public void testStrings() throws IOException, InvalidRangeException {
@@ -139,5 +140,26 @@ public class TestSanity {
         }
       }
     }
+  }
+
+  @Test
+  public void testByteAttribute() throws IOException {
+    String filename = TestWithLocalServer.withPath("dodsC/scanCdmUnitTests/ft/stationProfile/PROFILER_wind_06min_20091030_2330.nc");
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename, true, null);
+    assert ncd != null;
+    VariableDS v = (VariableDS) ncd.findVariable("uvQualityCode");
+    assert v != null;
+    assert v.hasMissing();
+
+    int count = 0;
+    Array data = v.read();
+    IndexIterator ii = data.getIndexIterator();
+    while (ii.hasNext()) {
+      byte val = ii.getByteNext();
+      if (v.isMissing(val)) count++;
+      if (val == (byte)-1)
+        assert v.isMissing(val);
+    }
+    System.out.println("size = "+v.getSize()+" missing= "+count);
   }
 }

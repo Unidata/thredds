@@ -13,109 +13,6 @@
     <param-value>thredds</param-value>
   </context-param>
 
-  <!-- Turn on some more targeted debugging. -->
-  <filter>
-    <filter-name>RequestBracketingLogMessageFilter</filter-name>
-    <filter-class>thredds.servlet.filter.RequestBracketingLogMessageFilter</filter-class>
-  </filter>
-
-  <filter>
-    <filter-name>RequestPathFilter</filter-name>
-    <filter-class>thredds.servlet.filter.RequestPathFilter</filter-class>
-  </filter>
-
-  <filter>
-    <filter-name>RequestQueryFilter</filter-name>
-    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
-  </filter>
-
-  <filter>
-    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
-    <init-param>
-      <param-name>allowAngleBrackets</param-name>
-      <param-value>true</param-value>
-    </init-param>
-  </filter>
-
-  <filter>
-    <filter-name>CookieFilter</filter-name>
-    <filter-class>thredds.servlet.filter.CookieFilter</filter-class>
-  </filter>
-
-  <filter>
-    <filter-name>RequestCORSFilter</filter-name>
-    <!--filter-class>thredds.servlet.filter.RequestCORSFilter</filter-class-->
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    <init-param>
-	    <param-name>targetBeanName</param-name>
-	    <param-value>corsFilter</param-value>
-    </init-param>
-  </filter>
-
-  <filter-mapping>
-    <filter-name>RequestBracketingLogMessageFilter</filter-name>
-    <!-- servlet-name>metadata</servlet-name-->
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <!--
-  Filter:
-   - the request URL path
-   - on all requests.
-  -->
-  <filter-mapping>
-    <filter-name>RequestPathFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <!--
-  Filter:
-   - the request URL query string
-   - on all requests except OPeNDAP requests.
-  -->
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>root</servlet-name>
-  </filter-mapping>
-
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>RestrictedDataset</servlet-name>
-  </filter-mapping>
-
-  <filter-mapping>
-    <filter-name>RequestCORSFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <!--
-  Filter:
-   - the request URL query string
-   - on all OPeNDAP and DAP4 requests.
-  -->
-  <filter-mapping>
-    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <servlet-name>Opendap</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <servlet-name>dap4</servlet-name>
-  </filter-mapping>
-
-  
-  <!--
-  Filter opendap and dap4 cookies
-  -->
-  <filter-mapping>
-    <filter-name>CookieFilter</filter-name>
-    <servlet-name>Opendap</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>CookieFilter</filter-name>
-    <servlet-name>dap4</servlet-name>
-  </filter-mapping>
-
   <!--
      Spring listener to bootstrap Spring WebApplicationContext. Used to
      handle Spring bean configuration outside of SpringMVC configuration.
@@ -129,6 +26,26 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+
+  <!-- **************************************************************************************** -->
+
+  <filter>
+    <filter-name>springDelegatingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+  <!-- filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter -->
+
+  <filter-mapping>
+    <filter-name>springDelegatingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <!-- filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping -->
 
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 

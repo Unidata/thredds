@@ -38,7 +38,9 @@ import javax.servlet.http.*;
 import java.io.IOException;
 
 /**
- * This class will modify the session cookie path, if a session attribute named SESSION_PATH exists
+ * This class will modify the session cookie path, if a session attribute named SESSION_PATH exists.
+ * Appears to be part of an early (2009) attempt to use sessions in opendap to ensure that datasets dont change during a session.
+ * That functionality is turned off, so assume we dont need this.
  *
  * @author caron
  * @since Jun 23, 2009
