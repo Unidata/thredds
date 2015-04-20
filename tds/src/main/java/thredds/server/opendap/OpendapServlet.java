@@ -72,8 +72,8 @@ import ucar.nc2.util.EscapeStrings;
  * @author Nathan David Potter
  * @since Apr 27, 2009 (branched)
  */
-//@Controller
-//@RequestMapping("/dodsC")
+@Controller
+@RequestMapping("/dodsC")
 public class OpendapServlet extends AbstractServlet implements InitializingBean {
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 

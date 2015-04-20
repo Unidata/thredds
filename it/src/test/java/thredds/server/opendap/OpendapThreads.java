@@ -42,6 +42,11 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * hit opendap endpoint with many simultaneous requests at once
+ * not currently used
+ */
+
 public class OpendapThreads {
 
   //http://motherlode.ucar.edu:8081/thredds/ncstream/fmrc/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20090303_0000.grib2?showForm

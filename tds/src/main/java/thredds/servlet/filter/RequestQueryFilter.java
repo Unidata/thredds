@@ -64,18 +64,20 @@ import java.net.URLDecoder;
  * @see URLDecoder
  * @since 3.16.47
  */
-public class RequestQueryFilter
-        implements Filter {
+public class RequestQueryFilter implements Filter {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private boolean allowAngleBrackets = false;
 
-  public void init(FilterConfig filterConfig) throws ServletException {
-    String s = filterConfig.getInitParameter("allowAngleBrackets");
-    if (s != null && s.equalsIgnoreCase("true"))
-      allowAngleBrackets = true;
+  public void setAllowAngleBrackets(boolean allowAngleBrackets) throws ServletException {
+      this.allowAngleBrackets = allowAngleBrackets;
   }
 
   public void destroy() {
+  }
+
+  @Override
+  public void init(FilterConfig filterConfig) throws ServletException {
+    // do nothing
   }
 
   public void doFilter(ServletRequest servletRequest,

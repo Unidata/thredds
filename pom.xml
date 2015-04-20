@@ -2,8 +2,9 @@
 <!-- =======================================================================
 		Parent Maven Configuration File for UCAR NetCDF library
 	======================================================================= -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
   <!-- prerequisites> <maven>2.0.9</maven> </prerequisites -->
 
@@ -314,23 +315,33 @@
         <version>${org.springframework.version}</version>
       </dependency>
 
-      <!-- Spring security. These are currently only used in wmotables. -->
+      <!-- Spring security  -->
       <dependency>
-       <groupId>org.springframework.security</groupId>
-       <artifactId>spring-security-config</artifactId>
-       <version>${org.springframework.security.version}</version>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-core</artifactId>
+        <version>${org.springframework.security.version}</version>
       </dependency>
       <dependency>
-       <groupId>org.springframework.security</groupId>
-       <artifactId>spring-security-taglibs</artifactId>
-       <version>${org.springframework.security.version}</version>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-config</artifactId>
+        <version>${org.springframework.security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-web</artifactId>
+        <version>${org.springframework.security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-taglibs</artifactId>
+        <version>${org.springframework.security.version}</version>
       </dependency>
 
       <!-- see https://github.com/coverity/coverity-security-library -->
       <dependency>
-          <groupId>com.coverity.security</groupId>
-          <artifactId>coverity-escapers</artifactId>
-          <version>${coverity-escapers.version}</version>
+        <groupId>com.coverity.security</groupId>
+        <artifactId>coverity-escapers</artifactId>
+        <version>${coverity-escapers.version}</version>
       </dependency>
 
       <!-- These 2 are only used in ui. -->
@@ -345,7 +356,7 @@
         <version>${imgscalr-lib.version}</version>
       </dependency>
 
-      <!-- Depedencies for WaterML -->
+      <!-- Dependencies for WaterML -->
       <dependency>
         <groupId>org.apache.xmlbeans</groupId>
         <artifactId>xmlbeans</artifactId>
@@ -403,7 +414,7 @@
         <version>${org.n52.common.xml.version}</version>
       </dependency>
 
-      <!-- client -->
+      <!-- http client -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
@@ -439,10 +450,10 @@
         <version>${net.jcip.version}</version>
       </dependency>
       <dependency>
-         <groupId>org.jdom</groupId>
-         <artifactId>jdom2</artifactId>
-         <version>${org.jdom2.version}</version> 
-       </dependency>
+        <groupId>org.jdom</groupId>
+        <artifactId>jdom2</artifactId>
+        <version>${org.jdom2.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.sleepycat</groupId>
         <artifactId>je</artifactId>
@@ -450,9 +461,9 @@
       </dependency>
       <!-- Used only in netcdf4. -->
       <dependency>
-      	<groupId>net.java.dev.jna</groupId>
-      	<artifactId>jna</artifactId>
-      	<version>${jna.version}</version>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>${jna.version}</version>
       </dependency>
       <dependency>
         <groupId>joda-time</groupId>
@@ -581,9 +592,9 @@
 
       <!-- server -->
       <dependency>
-      	<groupId>javax.servlet</groupId>
-      	<artifactId>javax.servlet-api</artifactId>
-      	<version>${javax.servlet.version}</version>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${javax.servlet.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -925,7 +936,7 @@
     <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
     <build.timestamp>${maven.build.timestamp}</build.timestamp>
 
-	<!-- Dependency versions -->
+    <!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
     <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.6.1-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
     <geoapi.version>3.1-M04</geoapi.version>
@@ -960,7 +971,7 @@
     <org.quartz-scheduler.version>2.2.0</org.quartz-scheduler.version>
     <org.slf4j.version>1.7.7</org.slf4j.version>
     <org.springframework.version>4.1.6.RELEASE</org.springframework.version>
-    <org.springframework.security.version>3.2.5.RELEASE</org.springframework.security.version>
+    <org.springframework.security.version>4.0.0.RELEASE</org.springframework.security.version>
     <coverity-escapers.version>1.1.1</coverity-escapers.version>
     <httpunit.version>1.7</httpunit.version>
     <bounce.version>0.14</bounce.version>
