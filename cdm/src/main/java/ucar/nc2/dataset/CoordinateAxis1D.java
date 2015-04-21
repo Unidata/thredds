@@ -157,8 +157,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     int len = r.length();
 
     // deal with the midpoints, bounds
-    double[] new_mids = new double[len];
     if(isNumeric()){
+        double[] new_mids = new double[len];
 	    for (int idx = 0; idx < len; idx++) {
 	      int old_idx = r.element(idx);
 	      new_mids[idx] = coords[old_idx];
