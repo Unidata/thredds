@@ -102,4 +102,13 @@
   <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
   <!-- bean id="HtmlWriting" class="thredds.servlet.HtmlWriting" / -->
 
+
+  <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
+  <!-- bean id="RestrictedDataset" class="thredds.servlet.restrict.RestrictedAccessController" / -->
+  <bean id="Authorizer" class="thredds.servlet.restrict.TomcatAuthorizer">
+    <property name="useSSL" value="false" />
+    <property name="sslPort" value="8443" />
+  </bean>
+
+
 </beans>

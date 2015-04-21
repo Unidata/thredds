@@ -32,7 +32,6 @@
  */
 package thredds.servlet.restrict;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
@@ -47,9 +46,6 @@ import java.io.IOException;
 
 
 public class AuthorizerNoop implements Authorizer {
-  @Override
-  public void init(HttpServlet servlet) throws ServletException {
-  }
 
   @Override
   public void setRoleSource(RoleSource roleSource) {

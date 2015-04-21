@@ -123,7 +123,7 @@ public class CdmRemoteController implements LastModified {
 
     // LOOK heres where we want the Dataset, not the netcdfFile (!)
     try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
-      if (ncfile == null) return null;  // ??
+      if (ncfile == null) return null;  // failed resource control
 
       switch (req.toLowerCase()) {
         case "capabilities":

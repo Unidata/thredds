@@ -251,6 +251,9 @@ public class ConfigCatalogManager  {
         }
       }
 
+      if (dataset.getRestrictAccess() != null)
+        datasetManager.putResourceControl(dataset);
+
       if (dataset instanceof DatasetScan) {
         DatasetScan ds = (DatasetScan) dataset;
         Service service = ds.getServiceDefault();
