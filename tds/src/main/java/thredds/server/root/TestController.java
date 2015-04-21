@@ -58,7 +58,7 @@ public class TestController {
 		String path = req.getPathInfo();
 		if (path == null)
 			path = "";
-		String requestDetails = ServletUtil.showRequestDetail(null, req);
+		String requestDetails = ServletUtil.showRequestDetail(req);
 		System.out.printf("%s%n", requestDetails);
 		return requestDetails;
 	}

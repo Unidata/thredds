@@ -929,7 +929,7 @@ public class ServletUtil {
    * @param req     the request
    * @return string showing the details of the request.
    */
-  static public String showRequestDetail(HttpServlet servlet, HttpServletRequest req) {
+  static public String showRequestDetail(HttpServletRequest req) {
     StringBuilder sbuff = new StringBuilder();
 
     sbuff.append("Request Info\n");
@@ -953,10 +953,6 @@ public class ServletUtil {
 
     sbuff.append(" req.getPathTranslated:").append(req.getPathTranslated()).append("\n");
     String path = req.getPathTranslated();
-    if ((path != null) && (servlet != null)) {
-      ServletContext context = servlet.getServletContext();
-      sbuff.append(" getMimeType:").append(context.getMimeType(path)).append("\n");
-    }
     sbuff.append("\n");
     sbuff.append(" req.getScheme:").append(req.getScheme()).append("\n");
     sbuff.append(" req.getProtocol:").append(req.getProtocol()).append("\n");

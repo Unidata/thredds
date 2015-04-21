@@ -11,10 +11,12 @@ import thredds.core.TdsRequestedDataset;
 import thredds.server.config.ThreddsConfig;
 import ucar.nc2.constants.CDM;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletException;
 import java.io.*;
 
-@Controller
-@RequestMapping("/dap4")
+//@Controller
+//@RequestMapping("/dap4")
 public class Dap4Servlet extends DapServlet
 {
 
@@ -52,6 +54,11 @@ public class Dap4Servlet extends DapServlet
     public Dap4Servlet()
     {
         super();
+    }
+
+    @PostConstruct
+    public void init() throws ServletException {
+        super.init();
     }
 
     //////////////////////////////////////////////////////////

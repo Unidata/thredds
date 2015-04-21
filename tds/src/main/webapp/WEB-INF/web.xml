@@ -60,10 +60,14 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <servlet-mapping>
+    <servlet-name>root</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
 
   <!-- data services -->
-  <!-- NON-SPRING  controllers ands servlets -->
-  <!-- NetCDF/OPeNDAP server -->
+  <!-- NON-SPRING  controllers and servlets -->
+  <!-- NetCDF/OPeNDAP server
   <servlet>
     <display-name>OPeNDAP Server</display-name>
     <servlet-name>Opendap</servlet-name>
@@ -71,13 +75,12 @@
     <load-on-startup>2</load-on-startup>
   </servlet>
 
-  <!-- NetCDF/Dap4 server -->
   <servlet>
     <display-name>Dap4 Server</display-name>
     <servlet-name>dap4</servlet-name>
     <servlet-class>thredds.server.dap4.Dap4Servlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
+  </servlet>   -->
 
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
@@ -152,7 +155,7 @@
 
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
-  <!-- default servlet -->
+  <!-- default servlet
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>/</url-pattern>
@@ -164,9 +167,9 @@
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>*.gif</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping> -->
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>Opendap</servlet-name>
     <url-pattern>/dodsC/*</url-pattern>
   </servlet-mapping>
@@ -174,7 +177,7 @@
   <servlet-mapping>
     <servlet-name>dap4</servlet-name>
     <url-pattern>/dap4/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>RestrictedDataset</servlet-name>
