@@ -36,7 +36,6 @@ package thredds.servlet.restrict;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
@@ -53,11 +52,25 @@ public class TomcatAuthorizer implements Authorizer {
   private boolean useSSL = false;
   private String sslPort = "8443";
 
-  private boolean debugResourceControl = false;
+  public void setUseSSL(boolean useSSL) {
+    this.useSSL = useSSL;
+  }
+
+  public void setSslPort(String sslPort) {
+    this.sslPort = sslPort;
+  }
+
+  public void setRoleSource(RoleSource db) {
+    // not used
+  }
 
   public boolean authorize(HttpServletRequest req, HttpServletResponse res, String role) throws IOException {
-    if (req.isUserInRole(role))
+    if (log.isDebugEnabled()) log.debug("TomcatAuthorizer.authorize req=" + ServletUtil.getRequest(req));
+
+    if (req.isUserInRole(role)) {
+      if (log.isDebugEnabled()) log.debug("TomcatAuthorizer.authorize ok for role {}", role);
       return true;
+    }
     
     // redirect for authentication / authorization
     HttpSession session = req.getSession();
@@ -65,28 +78,13 @@ public class TomcatAuthorizer implements Authorizer {
     session.setAttribute("role", role);
 
     String urlr = useSSL ? "https://" + req.getServerName() + ":"+ sslPort + ServletUtil.getContextPath()+"/restrictedAccess/" + role :
-                           "http://" + req.getServerName() + ":"+ req.getServerPort() +ServletUtil.getContextPath()+"/restrictedAccess/" + role;
+                           "http://" + req.getServerName() + ":"+ req.getServerPort() + ServletUtil.getContextPath()+"/restrictedAccess/" + role;
 
-
-    if (debugResourceControl) System.out.println("redirect to = " + urlr);
+    if (log.isDebugEnabled()) log.debug("redirect to = {}", urlr);
     res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
     res.addHeader("Location", urlr);
     res.setHeader("Last-Modified", "");  // LOOK
     return false;
-  }
-
-  public TomcatAuthorizer() {}
-  public void init(HttpServlet servlet) throws ServletException {
-    String s = servlet.getInitParameter("useSSL");
-    if (null != s)
-      useSSL = Boolean.valueOf(s);
-    
-    s = servlet.getInitParameter("portSSL");
-    if (null != s)
-      sslPort = s;
-  }
-  public void setRoleSource(RoleSource db) {
-    // not used
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -103,7 +101,7 @@ public class TomcatAuthorizer implements Authorizer {
           String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";  // WTF ?? breaks simple authentication, eg on opendap
           //res.addHeader("Location", origURI+frag); // comment out for now 12/22/2010 - needed for CAS or CAMS or ESG ?
           res.addHeader("Location", origURI);
-          if (debugResourceControl) System.out.println("redirect to origRequest = "+origURI); // +frag);
+          if (log.isDebugEnabled()) log.debug("redirect to origRequest = " + origURI); // +frag);
           return;
 
         } else {

@@ -33,19 +33,11 @@
     <filter-name>springDelegatingFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
-  <!-- filter>
-    <filter-name>springSecurityFilterChain</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-  </filter -->
 
   <filter-mapping>
     <filter-name>springDelegatingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <!-- filter-mapping>
-    <filter-name>springSecurityFilterChain</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping -->
 
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
@@ -81,30 +73,6 @@
     <servlet-class>thredds.server.dap4.Dap4Servlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>   -->
-
-
-  <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
-  <servlet>
-    <servlet-name>RestrictedDataset</servlet-name>
-    <servlet-class>thredds.servlet.restrict.RestrictedDatasetServlet</servlet-class>
-
-    <init-param>
-      <param-name>Authorizer</param-name>
-      <param-value>thredds.servlet.restrict.TomcatAuthorizer</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>useSSL</param-name>
-      <param-value>false</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>portSSL</param-name>
-      <param-value>8443</param-value>
-    </init-param>
-
-    <load-on-startup>2</load-on-startup>
-  </servlet>
 
   <!-- Restricted Access (using CAS)
   <servlet>
@@ -179,10 +147,6 @@
     <url-pattern>/dap4/*</url-pattern>
   </servlet-mapping -->
 
-  <servlet-mapping>
-    <servlet-name>RestrictedDataset</servlet-name>
-    <url-pattern>/restrictedAccess/*</url-pattern>
-  </servlet-mapping>
 
   <welcome-file-list>
     <welcome-file>/</welcome-file>

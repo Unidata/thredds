@@ -47,13 +47,6 @@ import java.io.IOException;
 public interface Authorizer {
 
   /**
-   * Initialize with servlet parameters.
-   * @param servlet get init parameters from here.
-   * @throws ServletException if error
-   */
-  public void init(HttpServlet servlet) throws ServletException;
-
-  /**
    * Set the role source, if there is one. If not, assume no role authentication is needed.
    * use RoleSource.hasRole() to test for role.
    *

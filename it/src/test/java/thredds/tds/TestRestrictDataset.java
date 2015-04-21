@@ -30,13 +30,16 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds;
+package thredds.tds;
 
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import thredds.TestWithLocalServer;
+import ucar.httpservices.HTTPConstantProvider;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -58,20 +61,20 @@ public class TestRestrictDataset {
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
             {"/dodsC/testRestrictedDataset/testData2.nc.dds"},
- /*           {"/cdmremote/testRestrictedDataset/testData2.nc?req=form"},
+            {"/cdmremote/testRestrictedDataset/testData2.nc?req=form"},
             {"/fileServer/testRestrictedDataset/testData2.nc"},
-            {"/wms/testRestrictedDataset/testData2.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
+         //   {"/wms/testRestrictedDataset/testData2.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
 
              // restricted DatasetScan
             {"/dodsC/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc.html"},
             {"/cdmremote/testRestrictedScan/GFS_CONUS_80km_20120229_1200.grib1?req=form"},
             {"/fileServer/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc"},
-            {"/wms/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
+        //    {"/wms/testRestrictedScan/20131102/PROFILER_wind_06min_20131102_2354.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
 
             // restricted GRIB collections
             {"/dodsC/restrictCollection/GFS_CONUS_80km/TwoD.dds"},
             {"/ncss/restrictCollection/GFS_CONUS_80km/TwoD/dataset.html"},
-            {"/cdmremote/restrictCollection/GFS_CONUS_80km/TwoD?req=form"},    */
+            {"/cdmremote/restrictCollection/GFS_CONUS_80km/TwoD?req=form"},
     });
   }
 
@@ -81,9 +84,8 @@ public class TestRestrictDataset {
     this.path = path;
   }
 
-
   @Test
-  public void testRestriction() {
+  public void testFailNoAuth() {
     String endpoint = TestWithLocalServer.withPath(path);
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
@@ -93,7 +95,88 @@ public class TestRestrictDataset {
 
       Assert.assertEquals(401, statusCode);
 
+    } catch (ucar.httpservices.HTTPException e) {
+
+      System.out.printf("Should return 401 err=%s%n", e.getMessage());
+      assert false;
+
     } catch (Exception e) {
+
+      e.printStackTrace();
+      assert false;
+    }
+  }
+
+  @Test
+  public void testFailBadUser() {
+    String endpoint = TestWithLocalServer.withPath(path);
+    System.out.printf("testRestriction req = '%s'%n", endpoint);
+
+    try (HTTPSession session = new HTTPSession(endpoint)) {
+      session.setCredentialsProvider(new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
+
+      HTTPMethod method = HTTPFactory.Get(session);
+      int statusCode = method.execute();
+
+      Assert.assertEquals(401, statusCode);
+
+    } catch (ucar.httpservices.HTTPException e) {
+
+      System.out.printf("Should return 401 err=%s%n", e.getMessage());
+      assert false;
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+      assert false;
+    }
+  }
+
+  @Test
+  public void testFailBadPassword() {
+    String endpoint = TestWithLocalServer.withPath(path);
+    System.out.printf("testRestriction req = '%s'%n", endpoint);
+
+    try (HTTPSession session = new HTTPSession(endpoint)) {
+      session.setCredentialsProvider(new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
+
+      HTTPMethod method = HTTPFactory.Get(session);
+      int statusCode = method.execute();
+
+      Assert.assertEquals(401, statusCode);
+
+    } catch (ucar.httpservices.HTTPException e) {
+
+      System.out.printf("Should return 401 err=%s%n", e.getMessage());
+      assert false;
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+      assert false;
+    }
+  }
+
+  @Test
+  public void testSuccess() {
+    String endpoint = TestWithLocalServer.withPath(path);
+    System.out.printf("testRestriction req = '%s'%n", endpoint);
+
+    try (HTTPSession session = new HTTPSession(endpoint)) {
+      session.setCredentialsProvider(new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "secret666")));
+
+      HTTPMethod method = HTTPFactory.Get(session);
+      int statusCode = method.execute();
+
+      Assert.assertEquals(200, statusCode);
+
+    } catch (ucar.httpservices.HTTPException e) {
+
+      System.out.printf("Should return 401 err=%s%n", e.getMessage());
+      assert false;
+
+    } catch (Exception e) {
+
       e.printStackTrace();
       assert false;
     }
