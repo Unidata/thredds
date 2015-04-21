@@ -50,7 +50,6 @@ import opendap.dap.*;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
-import org.springframework.beans.factory.annotation.Autowired;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.EscapeStrings;
 
