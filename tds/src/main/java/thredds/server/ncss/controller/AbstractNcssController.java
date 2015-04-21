@@ -42,6 +42,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import thredds.server.ncss.exception.NcssException;
+import thredds.util.TdsPathUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -146,7 +147,7 @@ public class AbstractNcssController {
     };
 
     public static String getDatasetPath(HttpServletRequest req) {
-        return getDatasetPath(req.getServletPath());
+        return TdsPathUtils.extractPath(req, NcssController.servletPath, endings);
     }
 
     public static String getDatasetPath(String path) {

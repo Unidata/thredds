@@ -90,8 +90,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   ////////////////////////////////////////////////////////////////////
 
   // these are final
-  private final List<CollectionConfig> scanList = new ArrayList<CollectionConfig>(); // an MCollection is a collection of managed files
-  private final long olderThanInMsecs;
+  private final List<CollectionConfig> scanList = new ArrayList<>(); // an MCollection is a collection of managed files
+  private final long olderThanInMsecs;  // LOOK why not use LastModifiedLimit filter ?
   //protected String rootDir;
   protected FeatureCollectionConfig config;
 
@@ -110,9 +110,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.root = sp.getRootDir();
 
-    List<MFileFilter> filters = new ArrayList<MFileFilter>(2);
+    CompositeMFileFilter filters = new CompositeMFileFilter();
     if (null != sp.getFilter())
-      filters.add(new WildcardMatchOnName(sp.getFilter()));
+      filters.addIncludeFilter(new WildcardMatchOnName(sp.getFilter()));
     olderThanInMsecs = parseOlderThanFilter(olderThan);
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
@@ -127,9 +127,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     CollectionSpecParser sp = config.getCollectionSpecParser(errlog);
     this.root = sp.getRootDir();
 
-    List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
+    CompositeMFileFilter filters = new CompositeMFileFilter();
     if (null != sp.getFilter())
-      filters.add(new WildcardMatchOnName(sp.getFilter()));
+      filters.addIncludeFilter(new WildcardMatchOnName(sp.getFilter()));
     olderThanInMsecs = parseOlderThanFilter(config.olderThan);
 
     if (config.dateFormatMark != null)
@@ -195,9 +195,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     CollectionSpecParser sp = new CollectionSpecParser(spec, errlog);
     this.root = sp.getRootDir();
 
-    List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
+    CompositeMFileFilter filters = new CompositeMFileFilter();
     if (null != sp.getFilter())
-      filters.add(new WildcardMatchOnName(sp.getFilter()));
+      filters.addIncludeFilter(new WildcardMatchOnName(sp.getFilter()));
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
@@ -246,16 +246,16 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
    * @param auxInfo             attach this object to any MFile found by this scan
    */
   public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, Object auxInfo) {
-    List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
+    CompositeMFileFilter filters = new CompositeMFileFilter();
     if (null != regexpPatternString)
-      filters.add(new RegExpMatchOnName(regexpPatternString));
+      filters.addIncludeFilter(new RegExpMatchOnName(regexpPatternString));
     else if (suffix != null)
-      filters.add(new WildcardMatchOnPath("*" + suffix + "$"));
+      filters.addIncludeFilter(new WildcardMatchOnPath("*" + suffix + "$"));
 
     if (olderS != null) {
       try {
         TimeDuration tu = new TimeDuration(olderS);
-        filters.add(new LastModifiedLimit((long) (1000 * tu.getValueInSeconds())));
+        filters.addAndFilter(new LastModifiedLimit((long) (1000 * tu.getValueInSeconds())));
       } catch (Exception e) {
         logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderS);
       }
@@ -265,8 +265,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
 
-    MFileFilter filter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new CompositeMFileFilter(filters));
-    CollectionConfig mc = new CollectionConfig(dirName, dirName, wantSubdirs, filter, auxInfo);
+    CollectionConfig mc = new CollectionConfig(dirName, dirName, wantSubdirs, filters, auxInfo);
 
     // create name
     StringBuilder sb = new StringBuilder(dirName);
@@ -338,35 +337,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     return true;
   }
-
-  /**
-   * Do not use
-   * @throws IOException
-   *
-  public void scanDebug(Formatter f) throws IOException {
-    getController(); // make sure a controller is instantiated
-
-    // run through all scanners and collect MFile instances into the Map
-    for (CollectionConfig mc : scanList) {
-
-      // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
-      Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);  /// NCDC wants subdir /global/nomads/nexus/gfsanl..gfsanl_3_.*\.grb$
-      if (iter == null) {
-        logger.error(collectionName + ": Invalid collection= " + mc);
-        continue;
-      }
-
-      int count = 0;
-      while (iter.hasNext()) {
-        MFile mfile = iter.next();
-        mfile.setAuxInfo(mc.getAuxInfo());
-        map.put(mfile.getPath(), mfile);
-        count++;
-      }
-      logger.debug("{} : was scanned nfiles= {} ", collectionName, count);
-    }
-
-  } */
 
     ////////////////////////
   // experimental

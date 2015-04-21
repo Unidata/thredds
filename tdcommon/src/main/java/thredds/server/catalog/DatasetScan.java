@@ -109,10 +109,13 @@ public class DatasetScan extends CatalogRef {
     MFileFilter filter;
     if (cfilter.wildcardAttVal != null) {
       filter = new WildcardMatchOnName(cfilter.wildcardAttVal);   // always on name, not path
+
     } else if (cfilter.regExpAttVal != null) {
       filter = new RegExpMatchOnName(cfilter.regExpAttVal);
+
     } else if (cfilter.lastModLimitAttVal > 0) {
       filter = new LastModifiedLimit(cfilter.lastModLimitAttVal);
+
     } else {
       log.error("Unimplemented DatasetScan filter "+cfilter);
       return;

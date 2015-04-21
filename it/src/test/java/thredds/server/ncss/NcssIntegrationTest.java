@@ -29,10 +29,6 @@ import java.util.List;
 import static com.eclipsesource.restfuse.Assert.assertOk;
 import static org.junit.Assert.*;
 
-/*
-  These tests fail on jenkins, but work locally
- */
-
 @RunWith(HttpJUnitRunner.class)
 @Category(NeedsCdmUnitTest.class)
 public class NcssIntegrationTest {
