@@ -353,11 +353,10 @@ public final class FysatHeader {
         LatLonPointImpl endPnt = new LatLonPointImpl(geoSatelliteSecondHeader.latitudeOfSouth, geoSatelliteSecondHeader.longitudeOfEast);
         if (debug) System.out.println("start at geo coord :" + startPnt);
 
-        if (proj != 4) {
+        if (projection != null && proj != 4) {
           // we have to project in order to find the origin
           ProjectionPointImpl start = (ProjectionPointImpl) projection.latLonToProj(
-                  new LatLonPointImpl(geoSatelliteSecondHeader.latitudeOfSouth,
-                          geoSatelliteSecondHeader.longitudeOfWest));
+                  new LatLonPointImpl(geoSatelliteSecondHeader.latitudeOfSouth, geoSatelliteSecondHeader.longitudeOfWest));
           double startx = start.getX();
           double starty = start.getY();
 

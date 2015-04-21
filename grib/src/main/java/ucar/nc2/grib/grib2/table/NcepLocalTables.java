@@ -147,6 +147,7 @@ public class NcepLocalTables extends LocalTables {
     List<GribTables.Parameter> allParams = new ArrayList<>(3000);
     try {
       String[] fileNames = getResourceListing(grib2Table.getPath());
+      if (fileNames == null) return allParams;
       for (String fileName : fileNames) {
         File f = new File(fileName);
         if (f.isDirectory()) continue;
@@ -157,12 +158,12 @@ public class NcepLocalTables extends LocalTables {
           if (table != null)
             allParams.addAll(table.getParameters());
         } catch (Exception e) {
-          System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
+          logger.error("Error reading wmo tables", e);
         }
       }
       return allParams;
     } catch (URISyntaxException | IOException e) {
-      System.out.println(e);
+      logger.error("NcepLocalTables failed", e);
     }
     return null;
   }

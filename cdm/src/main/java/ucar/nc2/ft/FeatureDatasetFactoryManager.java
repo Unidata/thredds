@@ -227,6 +227,7 @@ public class FeatureDatasetFactoryManager {
       errlog.format("%s", result.errLog);
       if (!featureTypeOk(wantFeatureType, result.featureType)) {
         errlog.format("wanted %s but dataset is of type %s%n", wantFeatureType, result.featureType);
+        result.close();
         return null;
       }
       return result.featureDataset;
@@ -243,10 +244,10 @@ public class FeatureDatasetFactoryManager {
     }
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(location, task);
-    FeatureDataset result = wrap(wantFeatureType, ncd, task, errlog);
-    if (result == null)
+    FeatureDataset fd = wrap(wantFeatureType, ncd, task, errlog);
+    if (fd == null)
       ncd.close();
-    return result;
+    return fd;
   }
 
   /**

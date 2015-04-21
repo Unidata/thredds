@@ -49,7 +49,7 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Jul 18, 2007
  */
-public class    H4header {
+public class H4header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   static private final byte[] head = {0x0e, 0x03, 0x13, 0x01};
@@ -1363,6 +1363,7 @@ public class    H4header {
         if (debugChunkTable) System.out.println(" TagData getChunkedTable " + detail());
         TagVH chunkTableTag = (TagVH) tagMap.get(tagid(chunk_tbl_ref, chunk_tbl_tag));
         Structure s = (Structure) makeVariable(chunkTableTag);
+        if (s == null) throw new IllegalStateException("cant parse "+chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
         if (debugChunkDetail) System.out.println(NCdumpW.toString(sdata, "getChunkedTable", null));
 

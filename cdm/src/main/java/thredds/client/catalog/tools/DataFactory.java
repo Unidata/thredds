@@ -327,13 +327,14 @@ public class DataFactory {
    */
   public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
     Result result = new Result();
-    Dataset Dataset = openCatalogFromLocation(location, task, result);
-    if (result.fatalError || Dataset == null) {
+    Dataset dataset = openCatalogFromLocation(location, task, result);
+    if (result.fatalError || dataset == null) {
       if (log != null) log.format("%s", result.errLog);
+      result.close();
       return null;
     }
 
-    return openDataset(Dataset, acquire, task, result);
+    return openDataset(dataset, acquire, task, result);
   }
 
   /**

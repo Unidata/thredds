@@ -432,33 +432,4 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
 
   } // Dorade2Variable
 
-  private static void testRadialVariable(RadialDatasetSweep.RadialVariable rv) throws IOException {
-
-    //ucar.nc2.dt.radial.RadialCoordSys rcsys = rv.getRadialCoordSys();
-    //assert rcsys != null;
-
-    int nsweep = rv.getNumSweeps();
-    if (nsweep != 1) {
-
-    }
-    Sweep sw = rv.getSweep(0);
-    int nrays = sw.getRadialNumber();
-    sw.readData();
-    for (int i = 0; i < nrays; i++) {
-      sw.getGateNumber();
-
-      sw.readData(i);
-      sw.getAzimuth(i);
-      sw.getElevation(i);
-      sw.getTime(i);
-      sw.getRangeToFirstGate();
-      sw.getBeamWidth();
-      sw.getGateSize();
-
-      sw.getOrigin(i).getLatitude();
-      sw.getOrigin(i).getLongitude();
-      sw.getOrigin(i).getAltitude();
-    }
-  }
-
 } // Dorade2Dataset
