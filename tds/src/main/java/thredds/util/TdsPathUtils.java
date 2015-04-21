@@ -48,6 +48,7 @@ public class TdsPathUtils {
 
     // may be in pathInfo (Servlet) or servletPath (Controller)
     String dataPath = req.getPathInfo();
+    String reqPath = req.getServletPath();
     if (dataPath == null) {
       dataPath = req.getServletPath();
     }
@@ -75,4 +76,20 @@ public class TdsPathUtils {
 
     return dataPath;
   }
+
+  public static String extractPath(HttpServletRequest req, String removePrefix, String[] endings) {
+    String path = extractPath(req, removePrefix);
+    if (endings == null) return path;
+
+    for (String ending : endings) {
+      if (path.endsWith(ending)) {
+        int len = path.length() - ending.length();
+        path = path.substring(0, len);
+        break;
+      }
+    }
+
+    return path;
+  }
+
 }

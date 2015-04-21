@@ -40,6 +40,7 @@ import java.util.ArrayList;
 
 /**
  * Composite of MFileFilter
+ * Used by DatasetScan, FMRC, ?
  *
  * @author caron
  * @since Jul 8, 2009
@@ -48,14 +49,15 @@ import java.util.ArrayList;
 public class CompositeMFileFilter implements MFileFilter {
   private List<MFileFilter> includeFilters;
   private List<MFileFilter> excludeFilters;
+  private List<MFileFilter> andFilters;
 
   public CompositeMFileFilter() {
   }
 
-  public CompositeMFileFilter(List<MFileFilter> filters) {
+  /* public CompositeMFileFilter(List<MFileFilter> filters) {
     for (MFileFilter ff : filters)
       addIncludeFilter(ff);
-  }
+  } */
 
   public void addFilter(MFileFilter filter, boolean include) {
     if (include)
@@ -74,8 +76,13 @@ public class CompositeMFileFilter implements MFileFilter {
     excludeFilters.add(filter);
   }
 
+  public void addAndFilter(MFileFilter filter) {
+    if (andFilters == null) andFilters = new ArrayList<>();
+    andFilters.add(filter);
+  }
+
   public boolean accept(MFile mfile) {
-    return include(mfile) && !exclude(mfile);
+    return include(mfile) && !exclude(mfile) && andFilter(mfile);
   }
 
   // inclusion is an OR
@@ -96,6 +103,16 @@ public class CompositeMFileFilter implements MFileFilter {
         return true;
     }
     return false;
+  }
+
+  // all AND filters must be satisfied
+  private boolean andFilter(MFile mfile) {
+    if (andFilters == null) return true;
+    for (MFileFilter filter : andFilters) {
+      if (!filter.accept(mfile))
+        return false;
+    }
+    return true;
   }
 
 }

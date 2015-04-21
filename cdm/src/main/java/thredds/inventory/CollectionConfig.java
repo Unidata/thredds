@@ -58,14 +58,14 @@ public class CollectionConfig {
    * @param wantSubdirs if want subdirectories
    * @param filters optional list of MFileFilter (may be null) - applies only to non-directories, assumed include OR include ....
    * @param auxInfo optional info added to each MFile
-   */
+   *
   public CollectionConfig(String name, String dirName, boolean wantSubdirs, List<MFileFilter> filters, Object auxInfo) {
     this.name = name;
     this.dirName = dirName;
     this.wantSubdirs = wantSubdirs;
     ff = (filters == null || filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new CompositeMFileFilter(filters));
     this.auxInfo = auxInfo;
-  }
+  } */
 
   /**
    * Constructor
