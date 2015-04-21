@@ -342,6 +342,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       // do the times first
       Coordinate run = vindex.getCoordinate(Coordinate.Type.runtime);
       Coordinate time = vindex.getCoordinateTime();
+      if (time == null)
+        throw new IllegalStateException("No time coordinate = "+vindex);
+
       boolean isRunScaler = (run != null) && run.getSize() == 1;
 
       switch (gctype) {

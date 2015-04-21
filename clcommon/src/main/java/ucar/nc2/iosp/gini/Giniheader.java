@@ -527,9 +527,10 @@ class Giniheader {
 
         break;
 
-      default:
-        System.out.println("unimplemented projection");
-
+      default: {
+        System.out.println();
+        throw new IllegalStateException("unimplemented projection " + proj);
+      }
 
     }
 
