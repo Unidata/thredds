@@ -272,7 +272,7 @@ public class HTTPMethod implements AutoCloseable
         if(this.legalurl == null)
             throw new HTTPException("HTTPMethod: no url specified");
         if(!localsession && !sessionCompatible(this.legalurl))
-            throw new HTTPException("HTTPMethod: session incompatible url: " + this.legalurl);
+            //throw new HTTPException("HTTPMethod: session incompatible url: " + this.legalurl);
 
         if(this.request != null)
             this.request.releaseConnection();

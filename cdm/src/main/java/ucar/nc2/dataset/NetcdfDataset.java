@@ -33,10 +33,13 @@
 package ucar.nc2.dataset;
 
 import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.writer.DataFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.MyHTTPFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -853,17 +856,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     try {
       // For some reason, the head method is not using credentials
       // method = session.newMethodHead(location + ".dds");
-      method = HTTPFactory.Get(location + ".dds");
-
-      int status = method.execute();
+      //TODO: method = HTTPFactory.Get(location + ".dds");
+      HttpResponse httpResponse = MyHTTPFactory.GET(location + ".dds");
+      int status = httpResponse.getStatusLine().getStatusCode();
       if (status == 200) {
-        Header h = method.getResponseHeader("Content-Description");
+        Header h = httpResponse.getFirstHeader("Content-Description");
         if ((h != null) && (h.getValue() != null)) {
           String v = h.getValue();
           if (v.equalsIgnoreCase("dods-dds") || v.equalsIgnoreCase("dods_dds"))
             return ServiceType.OPENDAP;
           else
-            throw new IOException("OPeNDAP Server Error= " + method.getResponseAsString());
+            throw new IOException("OPeNDAP Server Error= " + httpResponse.getStatusLine().getReasonPhrase());
         }
       }
       if (status == 401)
@@ -873,7 +876,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-      if (method != null) method.close();
+      //if (method != null) method.close();
     }
   }
 
