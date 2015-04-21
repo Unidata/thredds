@@ -58,7 +58,7 @@ public class TestRestrictDataset {
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
             {"/dodsC/testRestrictedDataset/testData2.nc.dds"},
-            {"/cdmremote/testRestrictedDataset/testData2.nc?req=form"},
+ /*           {"/cdmremote/testRestrictedDataset/testData2.nc?req=form"},
             {"/fileServer/testRestrictedDataset/testData2.nc"},
             {"/wms/testRestrictedDataset/testData2.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
 
@@ -71,7 +71,7 @@ public class TestRestrictDataset {
             // restricted GRIB collections
             {"/dodsC/restrictCollection/GFS_CONUS_80km/TwoD.dds"},
             {"/ncss/restrictCollection/GFS_CONUS_80km/TwoD/dataset.html"},
-            {"/cdmremote/restrictCollection/GFS_CONUS_80km/TwoD?req=form"},
+            {"/cdmremote/restrictCollection/GFS_CONUS_80km/TwoD?req=form"},    */
     });
   }
 

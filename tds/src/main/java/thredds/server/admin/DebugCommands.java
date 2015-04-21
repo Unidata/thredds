@@ -293,7 +293,7 @@ public class DebugCommands {
 
     act = new Action("showRequest", "Show HTTP Request info") {
       public void doAction(Event e) {
-        e.pw.println(ServletUtil.showRequestDetail(null, e.req));
+        e.pw.println(ServletUtil.showRequestDetail(e.req));
       }
     };
     debugHandler.addAction(act);

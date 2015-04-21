@@ -37,6 +37,7 @@ import opendap.dap.*;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -48,12 +49,11 @@ import java.net.URI;
 
 import opendap.servlet.*;
 import opendap.servlet.AbstractServlet;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import thredds.core.TdsRequestedDataset;
-import thredds.server.admin.DebugCommands;
 import thredds.server.config.ThreddsConfig;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
@@ -74,8 +74,9 @@ import ucar.nc2.util.EscapeStrings;
  */
 @Controller
 @RequestMapping("/dodsC")
-public class OpendapServlet extends AbstractServlet implements InitializingBean {
+public class OpendapServlet extends AbstractServlet {
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
+  static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   //@Autowired
   //DebugCommands debugCommands;
@@ -92,26 +93,19 @@ public class OpendapServlet extends AbstractServlet implements InitializingBean 
 
   private boolean debugSession = false;
 
-
-  @Override
-  public void afterPropertiesSet() throws Exception {
-
-  }
-
+  @PostConstruct
   public void init() throws javax.servlet.ServletException {
-    super.init();
+    // super.init();
 
-    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
     logServerStartup.info(getClass().getName() + " initialization start");
 
-    this.ascLimit = ThreddsConfig.getInt("Opendap.ascLimit", ascLimit);
+    this.ascLimit = ThreddsConfig.getInt("Opendap.ascLimit", ascLimit);  // LOOK how the hell can OpendapServlet call something in the tds module ??
     this.binLimit = ThreddsConfig.getInt("Opendap.binLimit", binLimit);
 
     this.odapVersionString = ThreddsConfig.get("Opendap.serverVersion", odapVersionString);
     logServerStartup.info(getClass().getName() + " version= " + odapVersionString + " ascLimit = " + ascLimit + " binLimit = " + binLimit);
 
-    // debugging actions
-    // makeDebugActions();
+    setRootpath( ""); // LOOK !!
 
     logServerStartup.info(getClass().getName() + " initialization done");
   }
@@ -159,17 +153,15 @@ public class OpendapServlet extends AbstractServlet implements InitializingBean 
   /////////////////////////////////////////////////////////////////////////////
 
 
+  @RequestMapping(value="**", method= RequestMethod.GET)
   public void doGet(HttpServletRequest request, HttpServletResponse response) {
     log.debug("doGet(): User-Agent = " + request.getHeader("User-Agent"));
 
     String path = null;
-
     ReqState rs = getRequestState(request, response);
 
     try {
       path = request.getPathInfo();
-      log.debug("doGet path={}", path);
-      log.debug(ServletUtil.showRequestDetail(this, request));
 
       if (path == null) {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -184,29 +176,11 @@ public class OpendapServlet extends AbstractServlet implements InitializingBean 
         log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 
-      /* if (path.endsWith("latest.xml")) {   // LOOK: used ??
-        DataRootHandler.getInstance().processReqForLatestDataset(this, request, response);
-        return;
-      } */
-
       // Redirect all catalog requests at the root level.
       if (path.equals("/") || path.equals("/catalog.html") || path.equals("/catalog.xml")) {
         ServletUtil.sendPermanentRedirect(ServletUtil.getContextPath() + path, request, response);
         return;
       }
-
-      /*  Make sure catalog requests match a dataRoot before trying to handle.  LOOK: used?
-      if (path.endsWith("/") || path.endsWith("/catalog.html") || path.endsWith("/catalog.xml")) {
-        if (!DataRootHandler.getInstance().hasDataRootMatch(path)) {
-          response.sendError(HttpServletResponse.SC_NOT_FOUND);
-          return;
-        }
-
-        if (!DataRootHandler.getInstance().processReqForCatalog(request, response))
-          log.error("catalog request failed ");
-
-        return;
-      }  */
 
 
       if (rs != null) {
@@ -765,15 +739,15 @@ public class OpendapServlet extends AbstractServlet implements InitializingBean 
     String baseurl = request.getRequestURL().toString();
     baseurl = EscapeStrings.unescapeURL(baseurl);
 
-    // Assume query  was encoded
+    // Assume query was encoded
     String query = request.getQueryString();
     query = EscapeStrings.unescapeURLQuery(query);
 
-    log.debug(String.format("OpendapServlet: nominal url: %s?%s", baseurl, query));
+    if (log.isDebugEnabled()) log.debug(String.format("OpendapServlet: nominal url: %s?%s", baseurl, query));
 
     ReqState rs;
     try {
-      rs = new ReqState(request, response, this, getServerName(), baseurl, query);
+      rs = new ReqState(request, response, rootpath, getServerName(), baseurl, query);
     } catch (Exception bue) {
       rs = null;
     }

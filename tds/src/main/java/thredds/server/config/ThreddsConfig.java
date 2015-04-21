@@ -58,23 +58,10 @@ public final class ThreddsConfig {
     reader = new ThreddsConfigReader(filename, log);
 
     catalogRoots = new ArrayList<>();
-    //contentRootList = new ArrayList<String>();
-
     for (String location : reader.getRootList("catalogRoot"))  {
       catalogRoots.add( location );
       log.info( "ThreddsConfig: adding catalogRoot = " + location);
     }
-
-    /* for (String location : reader.getElementList("contentRoots", "contentRoot"))  {
-      contentRootList.add( location );
-      log.info( "ThreddsConfig: adding contentRoot [" + location + "]." );
-    } */
-
-    // viewer plug-in LOOK replace!!
-    //for (String className : reader.getRootList("Viewer"))  {
-    //  ViewServlet.registerViewer(className);
-    //}
-
   }
 
   static public List<String> getCatalogRoots() {
