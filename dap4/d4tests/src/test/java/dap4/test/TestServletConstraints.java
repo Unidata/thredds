@@ -167,7 +167,7 @@ public class TestServletConstraints extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
+        if(false) {
             chosentests = locate(5);
         } else {
             for(ConstraintTest tc : alltestcases) {
