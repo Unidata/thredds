@@ -26,7 +26,7 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml"}, loader = MockTdsContextLoader.class)
 public class CdmRemoteProblemsTest {
 
   @Autowired
@@ -45,6 +45,7 @@ public class CdmRemoteProblemsTest {
   @Test
   @Category(NeedsCdmUnitTest.class)
    public void cdmRemoteRequestCapabilitiesTest() throws Exception {
+     System.out.printf("Path = %s%n", path);
      RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
    				.param("req", "capabilities");
 

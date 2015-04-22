@@ -34,7 +34,7 @@ package ucar.nc2.thredds.server;
 
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.units.DateRange;
 
 import java.io.*;
@@ -79,7 +79,7 @@ public class TestIDVdatasets {
     out.println("******* read "+catName);
     Catalog cat;
     try {
-      cat = catFactory.buildFromLocation(catName);
+      cat = catFactory.buildFromLocation(catName, null);
       boolean isValid = catFactory.hasFatalError();
       out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
       out.println(" validation output=\n" + catFactory.getErrorMessage());

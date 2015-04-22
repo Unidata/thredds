@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>5.0.0</version>
   </parent>
 
 
@@ -35,10 +36,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>grib</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>httpservices</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -72,8 +69,19 @@
     </dependency>
 
     <dependency>
-        <groupId>com.coverity.security</groupId>
-        <artifactId>coverity-escapers</artifactId>
+      <groupId>com.coverity.security</groupId>
+      <artifactId>coverity-escapers</artifactId>
+    </dependency>
+
+    <!-- server stuff -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
     </dependency>
 
     <!-- Apache httpclient libraries -->
@@ -153,6 +161,20 @@
       <artifactId>spring-webmvc</artifactId>
     </dependency>
 
+    <!-- spring security -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+    </dependency>
+
     <!-- need to update cas -->
     <!-- dependency>
       <groupId>org.jasig.cas</groupId>
@@ -160,13 +182,13 @@
     </dependency -->
 
     <!-- THREDDS ISO -->
-    <dependency>
+    <!-- dependency>
       <groupId>EDS</groupId>
       <artifactId>threddsIso</artifactId>
-    </dependency>
+    </dependency -->
 
     <!-- wms -->
-    <dependency>
+    <!-- dependency>
       <groupId>uk.ac.rdg.resc</groupId>
       <artifactId>ncwms</artifactId>
     </dependency>
@@ -179,31 +201,35 @@
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
+    </dependency -->
+
+    <!-- dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency -->
+
+    <!-- ncss: Needed for XPath operations in NcssShowDatasetInfoImpl.addElement() -->
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-    </dependency>
-
-    <!-- JSR 303 with Hibernate Validator -->
+    <!-- JSR 303 with Hibernate Validator, which is dragging in jboss logging -->
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
-    <!-- Needed for XPath operations in NcssShowDatasetInfoImpl.addElement() -->
+    <!-- thymeleaf -->
     <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring3</artifactId>
+      <version>2.1.4.RELEASE</version>
     </dependency>
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -263,15 +289,15 @@
 
     <!-- BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED -->
     <testResources>
-       <testResource>
-         <filtering>false</filtering>
-         <directory>${basedir}/src/test/resources</directory>
-       </testResource>
-       <testResource>
-         <filtering>false</filtering>
-         <directory>${basedir}/src/main/webapp</directory>
-       </testResource>
-     </testResources>
+      <testResource>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/main/webapp</directory>
+      </testResource>
+    </testResources>
 
     <plugins>
 
@@ -294,7 +320,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <attachClasses>true</attachClasses>
-           <archive>
+          <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>

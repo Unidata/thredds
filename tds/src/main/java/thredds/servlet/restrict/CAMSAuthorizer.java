@@ -40,7 +40,6 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Enumeration;
 
 /**
  * CAMS authorizarion.
@@ -48,55 +47,53 @@ import java.util.Enumeration;
  * @author caron
  */
 public class CAMSAuthorizer extends TomcatAuthorizer {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
-    private boolean debugResourceControl = false;
+  public boolean authorize(HttpServletRequest req, HttpServletResponse res, String role) throws IOException {
+    if (hasCAMSrole(req, role))
+      return true;
 
-    public boolean authorize(HttpServletRequest req, HttpServletResponse res, String role) throws IOException {
-      if (hasCAMSrole(req, role))
-        return true;
+    return super.authorize(req, res, role);
+  }
 
-      return super.authorize(req, res, role);
-    }
+  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    HttpSession session = req.getSession();
+    if (session != null) {
+      String origURI = (String) session.getAttribute("origRequest");
+      String role = (String) session.getAttribute("role");
 
-      HttpSession session = req.getSession();
-      if (session != null) {
-        String origURI = (String) session.getAttribute("origRequest");
-        String role = (String) session.getAttribute("role");
+      if (req.isUserInRole(role)) {
 
-        if (req.isUserInRole(role)) {
+        // transfer CAS roles to this session
+        List<String> rolesArray = new ArrayList<>();
+        java.util.Enumeration<String> rolesEnum = req.getHeaders("CAMS-HTTP-ROLE");
+        while (rolesEnum.hasMoreElements())
+          rolesArray.add(rolesEnum.nextElement());
+        session.setAttribute("camsRoles", rolesArray);
 
-          // transfer CAS roles to this session
-          List<String> rolesArray = new ArrayList<>();
-          java.util.Enumeration<String> rolesEnum = req.getHeaders("CAMS-HTTP-ROLE");
-          while (rolesEnum.hasMoreElements())
-            rolesArray.add(rolesEnum.nextElement());
-          session.setAttribute("camsRoles", rolesArray);
+        if (origURI != null) {
+          if (log.isDebugEnabled()) log.debug("redirect to origRequest = " + origURI);
+          res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+          String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";
+          res.addHeader("Location", origURI + frag);
+          return;
 
-          if (origURI != null) {
-            if (debugResourceControl) System.out.println("redirect to origRequest = "+origURI);
-            res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
-            String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";
-            res.addHeader("Location", origURI+frag);
-            return;
-
-          } else {
-            res.setStatus(HttpServletResponse.SC_OK); // someone came directly to this page
-            return;
-          }
+        } else {
+          res.setStatus(HttpServletResponse.SC_OK); // someone came directly to this page
+          return;
         }
       }
-
-      res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to access this dataset.");
     }
 
-  private boolean hasCAMSrole( HttpServletRequest req, String role) {
+    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to access this dataset.");
+  }
+
+  private boolean hasCAMSrole(HttpServletRequest req, String role) {
     HttpSession session = req.getSession();
-     if (session != null) {
-       List<String> roles = (List<String>) session.getAttribute("camsRoles");
-       return (roles != null) && roles.contains( role);
+    if (session != null) {
+      List<String> roles = (List<String>) session.getAttribute("camsRoles");
+      return (roles != null) && roles.contains(role);
     }
     return false;
   }

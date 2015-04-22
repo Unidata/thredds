@@ -36,16 +36,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
-public class HtmlConfig
-{
-//  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( HtmlConfig.class );
+
+public class HtmlConfig {
 
   private String webappName;
   private String webappVersion;
@@ -78,14 +70,13 @@ public class HtmlConfig
 
   private boolean useRemoteCatalogService;
 
-  public HtmlConfig()
-  {}
+  public HtmlConfig() {
+  }
 
-  public void init( String webappName,
-                    String webappVersion,
-                    String webappVersionBuildDate,
-                    String webappContextPath )
-  {
+  public void init(String webappName,
+                   String webappVersion,
+                   String webappVersionBuildDate,
+                   String webappContextPath) {
     this.webappName = webappName;
     this.webappVersion = webappVersion;
     this.webappVersionBuildDate = webappVersionBuildDate;
@@ -110,7 +101,7 @@ public class HtmlConfig
 
   /**
    * Return the URL to the main web page for the webapp.
-   *
+   * <p/>
    * <p>Note: A relative URL is considered relative to the webapp context path.
    * That is, it is relative to "http://server:port/thredds/".
    *
@@ -120,13 +111,13 @@ public class HtmlConfig
     return webappUrl;
   }
 
-  public void setWebappUrl( String webappUrl) {
+  public void setWebappUrl(String webappUrl) {
     this.webappUrl = webappUrl;
   }
 
   /**
    * Return the URL to the webapp documentation page.
-   *
+   * <p/>
    * <p>Note: A relative URL is considered relative to the webapp context path.
    * That is, it is relative to "http://server:port/thredds/".
    *
@@ -136,13 +127,13 @@ public class HtmlConfig
     return webappDocsUrl;
   }
 
-  public void setWebappDocsUrl( String webappDocsUrl ) {
+  public void setWebappDocsUrl(String webappDocsUrl) {
     this.webappDocsUrl = webappDocsUrl;
   }
 
   /**
    * Return the Url to the logo file for the webapp.
-   *
+   * <p/>
    * <p>Note: A relative URL is considered relative to the webapp context path.
    * That is, it is relative to "http://server:port/thredds/".
    *
@@ -152,7 +143,7 @@ public class HtmlConfig
     return webappLogoUrl;
   }
 
-  public void setWebappLogoUrl( String webappLogoUrl ) {
+  public void setWebappLogoUrl(String webappLogoUrl) {
     this.webappLogoUrl = webappLogoUrl;
   }
 
@@ -165,13 +156,13 @@ public class HtmlConfig
     return webappLogoAlt;
   }
 
-  public void setWebappLogoAlt( String webappLogoAlt ) {
+  public void setWebappLogoAlt(String webappLogoAlt) {
     this.webappLogoAlt = webappLogoAlt;
   }
 
   /**
    * Return the URL to the CSS file used for all non-catalog HTML pages.
-   *
+   * <p/>
    * <p>Note: A relative URL is considered relative to the webapp context path.
    * That is, it is relative to "http://server:port/thredds/".
    *
@@ -181,13 +172,13 @@ public class HtmlConfig
     return pageCssUrl;
   }
 
-  public void setPageCssUrl( String pageCssUrl ) {
+  public void setPageCssUrl(String pageCssUrl) {
     this.pageCssUrl = pageCssUrl;
   }
 
   /**
    * Return the URL to the CSS file used for catalog HTML pages.
-   *
+   * <p/>
    * <p>Note: A relative URL is considered relative to the webapp context path.
    * That is, it is relative to "http://server:port/thredds/".
    *
@@ -197,10 +188,10 @@ public class HtmlConfig
     return catalogCssUrl;
   }
 
-  public void setCatalogCssUrl( String catalogCssUrl ) {
+  public void setCatalogCssUrl(String catalogCssUrl) {
     this.catalogCssUrl = catalogCssUrl;
   }
-  
+
   /**
    * Return the google tracking code for google analytics.
    *
@@ -210,14 +201,14 @@ public class HtmlConfig
     return googleTrackingCode;
   }
 
-  public void setGoogleTrackingCode( String googleTrackingCode ) {
+  public void setGoogleTrackingCode(String googleTrackingCode) {
     this.googleTrackingCode = googleTrackingCode;
   }
 
 
   /**
    * Return the URL to the icon document used for folders in HTML catalog views.
-   *
+   * <p/>
    * <p>Note: A relative URL is considered relative to the webapp context path.
    * That is, it is relative to "http://server:port/thredds/".
    *
@@ -227,7 +218,7 @@ public class HtmlConfig
     return folderIconUrl;
   }
 
-  public void setFolderIconUrl( String folderIconUrl ) {
+  public void setFolderIconUrl(String folderIconUrl) {
     this.folderIconUrl = folderIconUrl;
   }
 
@@ -235,13 +226,13 @@ public class HtmlConfig
     return folderIconAlt;
   }
 
-  public void setFolderIconAlt( String folderIconAlt ) {
+  public void setFolderIconAlt(String folderIconAlt) {
     this.folderIconAlt = folderIconAlt;
   }
 
   /**
    * Return the URL to the icon document used for datasets in HTML catalog views.
-   *
+   * <p/>
    * <p>Note: A relative URL is considered relative to the webapp context path.
    * That is, it is relative to "http://server:port/thredds/".
    *
@@ -251,7 +242,7 @@ public class HtmlConfig
     return datasetIconUrl;
   }
 
-  public void setDatasetIconUrl( String datasetIconUrl ) {
+  public void setDatasetIconUrl(String datasetIconUrl) {
     this.datasetIconUrl = datasetIconUrl;
   }
 
@@ -259,7 +250,7 @@ public class HtmlConfig
     return datasetIconAlt;
   }
 
-  public void setDatasetIconAlt( String datasetIconAlt ) {
+  public void setDatasetIconAlt(String datasetIconAlt) {
     this.datasetIconAlt = datasetIconAlt;
   }
 
@@ -272,7 +263,7 @@ public class HtmlConfig
     return installName;
   }
 
-  public void setInstallName( String installName ) {
+  public void setInstallName(String installName) {
     this.installName = installName;
   }
 
@@ -288,7 +279,7 @@ public class HtmlConfig
     return installUrl;
   }
 
-  public void setInstallUrl( String installUrl ) {
+  public void setInstallUrl(String installUrl) {
     this.installUrl = installUrl;
   }
 
@@ -304,7 +295,7 @@ public class HtmlConfig
     return installLogoUrl;
   }
 
-  public void setInstallLogoUrl( String installLogoUrl ) {
+  public void setInstallLogoUrl(String installLogoUrl) {
     this.installLogoUrl = installLogoUrl;
   }
 
@@ -317,7 +308,7 @@ public class HtmlConfig
     return installLogoAlt;
   }
 
-  public void setInstallLogoAlt( String installLogoAlt ) {
+  public void setInstallLogoAlt(String installLogoAlt) {
     this.installLogoAlt = installLogoAlt;
   }
 
@@ -330,7 +321,7 @@ public class HtmlConfig
     return hostInstName;
   }
 
-  public void setHostInstName( String hostInstName ) {
+  public void setHostInstName(String hostInstName) {
     this.hostInstName = hostInstName;
   }
 
@@ -346,7 +337,7 @@ public class HtmlConfig
     return hostInstUrl;
   }
 
-  public void setHostInstUrl( String hostInstUrl ) {
+  public void setHostInstUrl(String hostInstUrl) {
     this.hostInstUrl = hostInstUrl;
   }
 
@@ -362,7 +353,7 @@ public class HtmlConfig
     return hostInstLogoUrl;
   }
 
-  public void setHostInstLogoUrl( String hostInstLogoUrl ) {
+  public void setHostInstLogoUrl(String hostInstLogoUrl) {
     this.hostInstLogoUrl = hostInstLogoUrl;
   }
 
@@ -375,80 +366,80 @@ public class HtmlConfig
     return hostInstLogoAlt;
   }
 
-  public void setHostInstLogoAlt( String hostInstLogoAlt ) {
+  public void setHostInstLogoAlt(String hostInstLogoAlt) {
     this.hostInstLogoAlt = hostInstLogoAlt;
   }
 
-    /**
-     * Return the config option that sets the default of whether or not to use remoteCatalogService
-     * for html representation of catalogRef's in client catalogs.
-     * @return true: use remoteCatalogService, false: assume catalogRef's point to a TDS, so simply link
-     *         the html url of the remote catalog.
-     */
-  public Boolean getUseRemoteCatalogService() { return useRemoteCatalogService;}
+  /**
+   * Return the config option that sets the default of whether or not to use remoteCatalogService
+   * for html representation of catalogRef's in client catalogs.
+   *
+   * @return true: use remoteCatalogService, false: assume catalogRef's point to a TDS, so simply link
+   * the html url of the remote catalog.
+   */
+  public Boolean getUseRemoteCatalogService() {
+    return useRemoteCatalogService;
+  }
 
-  public void setUseRemoteCatalogService(Boolean remoteCatalogService) {this.useRemoteCatalogService = remoteCatalogService;}
+  public void setUseRemoteCatalogService(Boolean remoteCatalogService) {
+    this.useRemoteCatalogService = remoteCatalogService;
+  }
 
 
-   /**
+  /**
    * Return a URL ready to use in a generated HTML page from a URL that
    * is either absolute or relative to the webapp context path. That is,
    * if relative, it is relative to "http://server:port/thredds/".
-   *
+   * <p/>
    * <p>For simplicity, all relative URLs are converted to URLs that are
    * absolute paths. For instance, "catalog.xml" becomes "/thredds/catalog.xml".
    *
    * @param url the URL to prepare for use in HTML.
    * @return a URL ready to use in a generated HTML page.
    */
-  public String prepareUrlStringForHtml( String url )
-  {
-    if ( url == null )
+  public String prepareUrlStringForHtml(String url) {
+    if (url == null)
       return null;
     URI uri = null;
-    try
-    {
-      uri = new URI( url );
+    try {
+      uri = new URI(url);
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Given a bad URL [" + url + "].", e);
     }
-    catch ( URISyntaxException e )
-    {
-      throw new IllegalArgumentException( "Given a bad URL [" + url + "].", e );
-    }
-    if ( uri.isAbsolute() )
+    if (uri.isAbsolute())
       return uri.toString();
-    if ( url.startsWith( "/" ) )
+    if (url.startsWith("/"))
       return url;
     return this.getWebappContextPath() + "/" + url;
   }
 
-  public void addHtmlConfigInfoToModel( Map<String, Object> model )
-  {
-    model.put( "catalogCssUrl", this.getCatalogCssUrl());
-    model.put( "standardCssUrl", this.getPageCssUrl());
-    model.put( "googleTrackingCode", this.getGoogleTrackingCode());
-    model.put( "datasetIconAlt", this.getDatasetIconAlt());
-    model.put( "datasetIconUrl", this.getDatasetIconUrl());
-    model.put( "folderIconAlt", this.getFolderIconAlt());
-    model.put( "folderIconUrl", this.getFolderIconUrl());
+  public void addHtmlConfigInfoToModel(Map<String, Object> model) {
+    model.put("catalogCssUrl", this.getCatalogCssUrl());
+    model.put("standardCssUrl", this.getPageCssUrl());
+    model.put("googleTrackingCode", this.getGoogleTrackingCode());
+    model.put("datasetIconAlt", this.getDatasetIconAlt());
+    model.put("datasetIconUrl", this.getDatasetIconUrl());
+    model.put("folderIconAlt", this.getFolderIconAlt());
+    model.put("folderIconUrl", this.getFolderIconUrl());
 
-    model.put( "hostInstName", this.getHostInstName() );
-    model.put( "hostInstUrl", this.prepareUrlStringForHtml( this.getHostInstUrl() ) );
-    model.put( "hostInstLogoUrl", this.prepareUrlStringForHtml( this.getHostInstLogoUrl() ) );
-    model.put( "hostInstLogoAlt", this.getHostInstLogoAlt() );
+    model.put("hostInstName", this.getHostInstName());
+    model.put("hostInstUrl", this.prepareUrlStringForHtml(this.getHostInstUrl()));
+    model.put("hostInstLogoUrl", this.prepareUrlStringForHtml(this.getHostInstLogoUrl()));
+    model.put("hostInstLogoAlt", this.getHostInstLogoAlt());
 
-    model.put( "installationName", this.getInstallName() );
-    model.put( "installationUrl", this.prepareUrlStringForHtml( this.getInstallUrl() ) );
-    model.put( "installationLogoUrl", this.prepareUrlStringForHtml( this.getInstallLogoUrl() ) );
-    model.put( "installationLogoAlt", this.getInstallLogoAlt() );
+    model.put("installationName", this.getInstallName());
+    model.put("installationUrl", this.prepareUrlStringForHtml(this.getInstallUrl()));
+    model.put("installationLogoUrl", this.prepareUrlStringForHtml(this.getInstallLogoUrl()));
+    model.put("installationLogoAlt", this.getInstallLogoAlt());
 
-    model.put( "useRemoteCatalogService", this.getUseRemoteCatalogService());
+    model.put("useRemoteCatalogService", this.getUseRemoteCatalogService());
 
-    model.put( "webappName", this.getWebappName() );
-    model.put( "webappVersion", this.getWebappVersion() );
-    model.put( "webappVersionBuildDate", this.getWebappVersionBuildDate() );
-    model.put( "webappUrl", this.prepareUrlStringForHtml( this.getWebappUrl() ) );
-    model.put( "webappDocsUrl", this.prepareUrlStringForHtml( this.getWebappDocsUrl() ) );
-    model.put( "webappLogoUrl", this.prepareUrlStringForHtml( this.getWebappLogoUrl() ) );
-    model.put( "webappLogoAlt", this.getWebappLogoAlt() );
+    model.put("webappName", this.getWebappName());
+    model.put("webappVersion", this.getWebappVersion());
+    model.put("webappVersionBuildDate", this.getWebappVersionBuildDate());
+    model.put("webappUrl", this.prepareUrlStringForHtml(this.getWebappUrl()));
+    model.put("webappDocsUrl", this.prepareUrlStringForHtml(this.getWebappDocsUrl()));
+    model.put("webappLogoUrl", this.prepareUrlStringForHtml(this.getWebappLogoUrl()));
+    model.put("webappLogoAlt", this.getWebappLogoAlt());
   }
 }

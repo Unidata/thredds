@@ -1753,7 +1753,7 @@ public class DTSServlet extends AbstractServlet
         String query = request.getQueryString();
         query = EscapeStrings.unescapeURLQuery(query);
 
-        rs = new ReqState(request, response, this, getServerName(), baseurl, query);
+        rs = new ReqState(request, response, rootpath, getServerName(), baseurl, query);
 
         return rs;
     }

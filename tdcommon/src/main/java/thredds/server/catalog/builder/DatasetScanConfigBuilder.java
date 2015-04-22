@@ -36,8 +36,12 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
+import thredds.server.catalog.ConfigCatalog;
+import thredds.server.catalog.DataRootAlias;
 import thredds.server.catalog.DatasetScanConfig;
+import ucar.unidata.util.StringUtil2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -84,8 +88,25 @@ public class DatasetScanConfigBuilder {
     DatasetScanConfig result = new DatasetScanConfig();
 
     result.name = dsElem.getAttributeValue("name");
-    result.path = dsElem.getAttributeValue("path");
-    result.scanDir = dsElem.getAttributeValue("location");
+    result.path = StringUtil2.trim(dsElem.getAttributeValue("path"), '/');
+    if (result.path == null) {
+      errlog.format("ERROR: must specify path attribute.%n");
+      fatalError = true;
+    }
+
+    String scanDir = dsElem.getAttributeValue("location");
+    if (scanDir == null) {
+      errlog.format("ERROR: must specify directory root in location attribute.%n");
+      fatalError = true;
+    } else {
+      result.scanDir = DataRootAlias.translateAlias(scanDir);
+      File scanFile = new File(result.scanDir);
+      if (!scanFile.exists()) {
+        errlog.format("ERROR: directory %s does not exist%n", result.scanDir);
+        fatalError = true;
+      }
+    }
+
     result.restrictAccess = dsElem.getAttributeValue("restrictAccess");
 
        // look for ncml
@@ -174,7 +195,7 @@ public class DatasetScanConfigBuilder {
         if (curElem.getName().equals("exclude")) {
           includer = false;
         } else if (!curElem.getName().equals("include")) {
-          errlog.format("WARN: readDatasetScanFilter(): unhandled filter child <" + curElem.getName() + ">.");
+          errlog.format("WARN: readDatasetScanFilter(): unhandled filter child <%s>.%n", curElem.getName());
           continue;
         }
 
@@ -184,7 +205,7 @@ public class DatasetScanConfigBuilder {
           try {
             lastModLimitAttVal = Long.parseLong(lastModLimitAttValS);
           } catch (NumberFormatException e) {
-            errlog.format("WARN: readDatasetScanFilter(): lastModLimitInMillis not valid <" + curElem + ">.");
+            errlog.format("WARN: readDatasetScanFilter(): lastModLimitInMillis not valid <%s>.%n", curElem);
           }
         }
 
@@ -326,7 +347,7 @@ public class DatasetScanConfigBuilder {
           // Get latest name.
           String latestName = curChildElem.getAttributeValue("name");
           if (latestName == null) {
-            errlog.format("WARN: readDatasetScanAddProxies(): unnamed latestComplete, skipping.");
+            errlog.format("WARN: readDatasetScanAddProxies(): unnamed latestComplete, skipping.%n");
             continue;
           }
 
@@ -344,7 +365,7 @@ public class DatasetScanConfigBuilder {
           // Get the latest service name.
           String serviceName = curChildElem.getAttributeValue("serviceName");
           if (serviceName == null) {
-            errlog.format("WARN: readDatasetScanAddProxies(): no service name given in latestComplete.");
+            errlog.format("WARN: readDatasetScanAddProxies(): no service name given in latestComplete.%n");
             continue;
           }
 

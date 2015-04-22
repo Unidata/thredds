@@ -1,7 +1,3 @@
-apply from: "$rootDir/gradle/dependencies.gradle"
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/testing.gradle"
-apply from: "$rootDir/gradle/coverage.gradle"
 apply plugin: 'war'
 
 dependencies {
@@ -17,7 +13,3 @@ dependencies {
 
     compile libraries["slf4j-api"]
 }
-
-// We have this statement in the root project, but it only applies to its immediate descendants.
-// To make sure ALL descendants are evaluated before the root project, we must put this here as well.
-evaluationDependsOnChildren()

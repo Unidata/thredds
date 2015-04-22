@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>5.0.0</version>
   </parent>
 
   <artifactId>tdcommon</artifactId>
@@ -33,6 +33,25 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
+    </dependency>
+
+    <!-- DB -->
+     <dependency>
+        <groupId>org.mapdb</groupId>
+        <artifactId>mapdb</artifactId>
+        <version>1.0.7</version>
+     </dependency>
+
+     <dependency>
+       <groupId>net.openhft</groupId>
+       <artifactId>chronicle-map</artifactId>
+       <version>2.1.4</version>
+     </dependency>
+
+    <!-- Required for updating fc -->
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
     </dependency>
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->

@@ -33,7 +33,7 @@
 package thredds.client.catalog;
 
 import net.jcip.annotations.Immutable;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.stream.CdmRemote;
 
@@ -104,7 +104,7 @@ public class Access {                 // (5)
 
   /**
    * Construct the standard THREDDS access URI for this dataset access method,
-   * resolve if the URI is relative.
+   * resolved agaisnt the parent catalog if the URI is relative.
    *
    * @return the standard fully resolved THREDDS access URI for this dataset access method, or null if error.
    */

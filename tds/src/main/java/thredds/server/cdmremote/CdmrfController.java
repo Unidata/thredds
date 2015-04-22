@@ -33,6 +33,8 @@
 package thredds.server.cdmremote;
 
 import java.io.IOException;
+import java.util.Formatter;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,67 +49,71 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import thredds.core.TdsRequestedDataset;
 import thredds.server.cdmremote.params.CdmrfQueryBean;
-import thredds.server.cdmremote.service.FeatureDatasetPointService;
 import thredds.server.cdmremote.stream.CdmrfStreamFactory;
 import thredds.server.cdmremote.view.CdmrfTextViewFactory;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 
 /**
  * @author mhermida
- *
  */
 @Deprecated // use ncss
 @Controller
 @RequestMapping("/cdmrfeature")
 public class CdmrfController {
 
-	
-	private static final String CDMRF_BASE_SERVICE ="/cdmrfeature/";
-	
-	//private static final Logger log = org.slf4j.LoggerFactory.getLogger(CdmrfController.class);	
 
-	@Autowired
-	private TdsContext tdsContext;
-	
-	@Autowired
-	private FeatureDatasetPointService fdps;
-	
-	/*
-	 * Has to be set through a configuration option
-	 */
-	private boolean allow = true;
-	
-	@RequestMapping(value={"/**"}, params={"req!=data", "req!=dataForm","req!=header" }, method={RequestMethod.GET})
-	public ResponseEntity<String> metadataRequestHandler(HttpServletRequest req, HttpServletResponse res, @Valid CdmrfQueryBean query, BindingResult validationResult) throws IOException{
+  private static final String CDMRF_BASE_SERVICE = "/cdmrfeature/";
 
-		if (!allow) {
-			res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-			return null;
-		}
+  //private static final Logger log = org.slf4j.LoggerFactory.getLogger(CdmrfController.class);
 
-		if (validationResult.hasErrors()) {
-			//Validation errors...gotta handle!
-		}		
+  @Autowired
+  private TdsContext tdsContext;
 
 
-		// absolute path of the dataset endpoint
-		String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
-		String path = getPathForDataset(req);
-		
-		FeatureDatasetPoint fdp = fdps.findFeatureDatasetPointByPath(req, res, path);
-		String content = CdmrfTextViewFactory.getInstance().getFormViewForDataset(req, res, fdp, absPath, query);
-		HttpHeaders responseHeaders = new HttpHeaders();
+  /*
+   * Has to be set through a configuration option
+   */
+  private boolean allow = true;
 
-		responseHeaders.setContentLength(content == null ? 0 : content.length());
-		responseHeaders.setContentType( query.getMediaType() );
+  @RequestMapping(value = {"/**"}, params = {"req!=data", "req!=dataForm", "req!=header"}, method = {RequestMethod.GET})
+  public ResponseEntity<String> metadataRequestHandler(HttpServletRequest req, HttpServletResponse res, @Valid CdmrfQueryBean query, BindingResult validationResult) throws IOException {
 
-		return new ResponseEntity<>(content,responseHeaders, HttpStatus.OK );
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return null;
+    }
+
+    if (validationResult.hasErrors()) {
+      //Validation errors...gotta handle!
+    }
+
+
+    // absolute path of the dataset endpoint
+    String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
+    String path = getPathForDataset(req);
+
+    try (FeatureDatasetPoint fdp = findFeatureDatasetPointByPath(req, res, path)) {
+      String content = CdmrfTextViewFactory.getInstance().getFormViewForDataset(req, res, fdp, absPath, query);
+      HttpHeaders responseHeaders = new HttpHeaders();
+
+      responseHeaders.setContentLength(content == null ? 0 : content.length());
+      responseHeaders.setContentType(query.getMediaType());
+
+      return new ResponseEntity<>(content, responseHeaders, HttpStatus.OK);
+    }
 
 		/*try {
-	        CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
+          CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
 	        CdmRemoteQueryBean.ResponseType resType = query.getResponseType();
 	        switch (reqType) {
 	          case capabilities:
@@ -149,52 +155,109 @@ public class CdmrfController {
 
 	      return null; */
 
-	}
-	
-	@RequestMapping(value={"/**"}, params={"req=header"}, method={RequestMethod.GET})
-	public void headerRequestHandler(HttpServletRequest req, HttpServletResponse res, @Valid CdmrfQueryBean query, BindingResult validationResult) throws IOException{
-		
-		if (!allow) {
-			res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-			return;
-		}
+  }
 
-		if (validationResult.hasErrors()) {
-			//Validation errors...gotta handle!
-		}		
+  @RequestMapping(value = {"/**"}, params = {"req=header"}, method = {RequestMethod.GET})
+  public void headerRequestHandler(HttpServletRequest req, HttpServletResponse res, @Valid CdmrfQueryBean query, BindingResult validationResult) throws IOException {
 
-		// absolute path of the dataset endpoint
-		String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
-		String path = getPathForDataset(req);
-		
-		FeatureDatasetPoint fdp = fdps.findFeatureDatasetPointByPath(req, res, path);	
-		CdmrfStreamFactory.getInstance(tdsContext).headerStream(absPath, res, fdp, query);
-		
-	}
-	
-	@RequestMapping(value={"/**"}, params={"req=data"}, method={RequestMethod.GET})
-	public void dataRequestHandler(HttpServletRequest req, HttpServletResponse res, @Valid CdmrfQueryBean query, BindingResult validationResult) throws IOException{
-		
-		if (!allow) {
-			res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-			return;
-		}
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return;
+    }
 
-		if (validationResult.hasErrors()) {
-			//Validation errors...gotta handle!
-		}		
+    if (validationResult.hasErrors()) {
+      //Validation errors...gotta handle!
+    }
 
-		// absolute path of the dataset endpoint
-		String path = getPathForDataset(req);
-		
-		FeatureDatasetPoint fdp = fdps.findFeatureDatasetPointByPath(req, res, path);	
-		CdmrfStreamFactory.getInstance(tdsContext).dataStream(req, res, fdp, path, query);
-		
-	}	
-	
-	
-	private String getPathForDataset(HttpServletRequest req){
-		return req.getServletPath().substring(CDMRF_BASE_SERVICE.length(), req.getServletPath().length());
-	}
+    // absolute path of the dataset endpoint
+    String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
+    String path = getPathForDataset(req);
+
+    try (FeatureDatasetPoint fdp = findFeatureDatasetPointByPath(req, res, path)) {
+      CdmrfStreamFactory.getInstance(tdsContext).headerStream(absPath, res, fdp, query);
+    }
+
+  }
+
+  @RequestMapping(value = {"/**"}, params = {"req=data"}, method = {RequestMethod.GET})
+  public void dataRequestHandler(HttpServletRequest req, HttpServletResponse res, @Valid CdmrfQueryBean query, BindingResult validationResult) throws IOException {
+
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return;
+    }
+
+    if (validationResult.hasErrors()) {
+      //Validation errors...gotta handle!
+    }
+
+    // absolute path of the dataset endpoint
+    String path = getPathForDataset(req);
+
+    try (FeatureDatasetPoint fdp = findFeatureDatasetPointByPath(req, res, path)) {
+      CdmrfStreamFactory.getInstance(tdsContext).dataStream(req, res, fdp, path, query);
+    }
+
+  }
+
+
+  private String getPathForDataset(HttpServletRequest req) {
+    return req.getServletPath().substring(CDMRF_BASE_SERVICE.length(), req.getServletPath().length());
+  }
+
+  public FeatureDatasetPoint findFeatureDatasetPointByPath(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
+
+    // this looks for a featureCollection
+    FeatureDataset fc = TdsRequestedDataset.getFeatureDataset(req, res, path);
+
+    FeatureDatasetPoint fdp = null;
+    if (fc != null) {
+      fdp = (FeatureDatasetPoint) fc;
+
+    } else {
+      // tom kunicki 12/18/10
+      // allows a single NetcdfFile to be turned into a FeatureDataset
+      NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, path); // LOOK above call should do thie ??
+      if (ncfile == null) return null;  // restricted access
+
+      FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
+              FeatureType.ANY,                  // will check FeatureType below if needed...
+              NetcdfDataset.wrap(ncfile, null),
+              null,
+              new Formatter(System.err));       // better way to do this?
+      if (fd instanceof FeatureDatasetPoint)
+        fdp = (FeatureDatasetPoint) fd;
+    }
+
+    //---//
+    if (fdp == null) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point or station dataset");
+      return null;
+    }
+
+    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
+    if (list.size() == 0) {
+      // log.error(fdp.getLocation() + " does not have any PointFeatureCollections");
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, fdp.getLocation() + " does not have any PointFeatureCollections");
+      return null;
+    }
+
+    // check on feature type, using suffix convention LOOK
+    FeatureType ft = null;
+    if (path.endsWith("/station")) {
+      ft = FeatureType.STATION;
+      path = path.substring(0, path.lastIndexOf('/'));
+    } else if (path.endsWith("/point")) {
+      ft = FeatureType.POINT;
+      path = path.substring(0, path.lastIndexOf('/'));
+    }
+
+    if (ft != null && ft != fdp.getFeatureType()) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
+    }
+
+    return fdp;
+
+  }
 
 }

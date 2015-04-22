@@ -65,7 +65,7 @@ public class Catalog extends DatasetNode {
   static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
   //////////////////////////////////////////////////////////////////////////////////////////
-  private final URI baseURI;
+  private final URI baseURI;   // LOOK its possible we never want to use this. perhaps "location" instead ??
 
   public Catalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
     super(null, name, flds, datasets);

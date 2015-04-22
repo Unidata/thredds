@@ -280,18 +280,17 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
-  /*
-      <featureCollection name="Carlos Moraga ECMWF Data featureCollection" featureType="GRIB" path="grib/featureCollection">
-        <metadata inherited="true">
-            <dataFormat>GRIB-1</dataFormat>
-            <serviceName>all</serviceName>
-        </metadata>
-        <collection spec="Z:/testdata/support/CarlosMoraga/ECMWF_GNERA_d....\.#yyyyMMdd#"/>
-        <gribConfig>
-            <gdsName hash='1562665966' groupName='domain1'/>
-            <gdsName hash='-104750013' groupName='domain2'/>
-        </gribConfig>
-    </featureCollection>
-   */
+  // String name, String path, FeatureCollectionType fcType, String spec, String collectionName, String dateFormatMark, String olderThan, String timePartition, Element innerNcml
+  //@Ignore("B: not visible on spock")
+  @Test
+  public void testNam20() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("Nam10", "Nam10", FeatureCollectionType.GRIB1,
+            "B:/atm/nam20/.*gbx9", null, null, null, "file", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.testIndexOnly, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
 
 }

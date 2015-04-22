@@ -37,6 +37,7 @@ import opendap.dap.*;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +49,12 @@ import java.net.URI;
 
 import opendap.servlet.*;
 import opendap.servlet.AbstractServlet;
-import thredds.server.admin.DebugController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import thredds.core.TdsRequestedDataset;
+import thredds.server.config.ThreddsConfig;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;
@@ -66,8 +72,14 @@ import ucar.nc2.util.EscapeStrings;
  * @author Nathan David Potter
  * @since Apr 27, 2009 (branched)
  */
+@Controller
+@RequestMapping("/dodsC")
 public class OpendapServlet extends AbstractServlet {
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
+  static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
+
+  //@Autowired
+  //DebugCommands debugCommands;
 
   private boolean allowSessions = false;
   private boolean allowDeflate = false; // handled by Tomcat
@@ -81,20 +93,19 @@ public class OpendapServlet extends AbstractServlet {
 
   private boolean debugSession = false;
 
+  @PostConstruct
   public void init() throws javax.servlet.ServletException {
-    super.init();
+    // super.init();
 
-    org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
     logServerStartup.info(getClass().getName() + " initialization start");
 
-    this.ascLimit = ThreddsConfig.getInt("Opendap.ascLimit", ascLimit);
+    this.ascLimit = ThreddsConfig.getInt("Opendap.ascLimit", ascLimit);  // LOOK how the hell can OpendapServlet call something in the tds module ??
     this.binLimit = ThreddsConfig.getInt("Opendap.binLimit", binLimit);
 
     this.odapVersionString = ThreddsConfig.get("Opendap.serverVersion", odapVersionString);
     logServerStartup.info(getClass().getName() + " version= " + odapVersionString + " ascLimit = " + ascLimit + " binLimit = " + binLimit);
 
-    // debugging actions
-    makeDebugActions();
+    setRootpath( ""); // LOOK !!
 
     logServerStartup.info(getClass().getName() + " initialization done");
   }
@@ -136,29 +147,21 @@ public class OpendapServlet extends AbstractServlet {
 
     // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox behaviour?
 
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
-    if ((file != null) && file.exists())
-      return file.lastModified();
-
-    return -1;
+    return TdsRequestedDataset.getLastModified(path);
   }
 
   /////////////////////////////////////////////////////////////////////////////
 
 
+  @RequestMapping(value="**", method= RequestMethod.GET)
   public void doGet(HttpServletRequest request, HttpServletResponse response) {
     log.debug("doGet(): User-Agent = " + request.getHeader("User-Agent"));
 
     String path = null;
-
     ReqState rs = getRequestState(request, response);
 
     try {
       path = request.getPathInfo();
-      log.debug("doGet path={}", path);
-
-      if (thredds.servlet.Debug.isSet("showRequestDetail"))
-        log.debug(ServletUtil.showRequestDetail(this, request));
 
       if (path == null) {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -173,29 +176,11 @@ public class OpendapServlet extends AbstractServlet {
         log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 
-      /* if (path.endsWith("latest.xml")) {   // LOOK: used ??
-        DataRootHandler.getInstance().processReqForLatestDataset(this, request, response);
-        return;
-      } */
-
       // Redirect all catalog requests at the root level.
       if (path.equals("/") || path.equals("/catalog.html") || path.equals("/catalog.xml")) {
         ServletUtil.sendPermanentRedirect(ServletUtil.getContextPath() + path, request, response);
         return;
       }
-
-      /*  Make sure catalog requests match a dataRoot before trying to handle.  LOOK: used?
-      if (path.endsWith("/") || path.endsWith("/catalog.html") || path.endsWith("/catalog.xml")) {
-        if (!DataRootHandler.getInstance().hasDataRootMatch(path)) {
-          response.sendError(HttpServletResponse.SC_NOT_FOUND);
-          return;
-        }
-
-        if (!DataRootHandler.getInstance().processReqForCatalog(request, response))
-          log.error("catalog request failed ");
-
-        return;
-      }  */
 
 
       if (rs != null) {
@@ -307,7 +292,7 @@ public class OpendapServlet extends AbstractServlet {
       ce.parseConstraint(rs);
       checkSize(dds, true);
 
-      PrintWriter pw = new PrintWriter(response.getOutputStream());
+      PrintWriter pw = response.getWriter();
       dds.printConstrained(pw);
       pw.println("---------------------------------------------");
 
@@ -549,7 +534,7 @@ public class OpendapServlet extends AbstractServlet {
     response.setHeader("XDODS-Server", getServerVersion());
     response.setHeader("Content-Description", "dods-version");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream()));
+    PrintWriter pw = response.getWriter();
 
     pw.println("Server Version: " + getServerVersion());
     pw.flush();
@@ -562,7 +547,7 @@ public class OpendapServlet extends AbstractServlet {
     response.setHeader("XDODS-Server", getServerVersion());
     response.setHeader("Content-Description", "dods-help");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream()));
+    PrintWriter pw = response.getWriter();
     printHelpPage(pw);
     pw.flush();
   }
@@ -587,7 +572,7 @@ public class OpendapServlet extends AbstractServlet {
       ds = getDataset(rs);
       if (null == ds) return;
 
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(response.getOutputStream(),Util.UTF8));
+      PrintWriter pw = response.getWriter();
       response.setHeader("XDODS-Server", getServerVersion());
       response.setContentType("text/html");
       response.setHeader("Content-Description", "dods-description");
@@ -627,13 +612,13 @@ public class OpendapServlet extends AbstractServlet {
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
-  // debugging
+  /* debugging
   private void makeDebugActions() {
-    DebugController.Category debugHandler = DebugController.find("ncdodsServer");
-    DebugController.Action act;
+    DebugCommands.Category debugHandler = debugCommands.findCategory("OPeNDAP");
+    DebugCommands.Action act;
 
-    act = new DebugController.Action("help", "Show help page") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("help", "Show help page") {
+      public void doAction(DebugCommands.Event e) {
         try {
           doGetHELP(getRequestState(e.req, e.res));
         } catch (Exception ioe) {
@@ -643,14 +628,13 @@ public class OpendapServlet extends AbstractServlet {
     };
     debugHandler.addAction(act);
 
-    act = new DebugController.Action("version", "Show server version") {
-      public void doAction(DebugController.Event e) {
+    act = new DebugCommands.Action("version", "Show server version") {
+      public void doAction(DebugCommands.Event e) {
         e.pw.println("  version= " + getServerVersion());
       }
     };
     debugHandler.addAction(act);
-
-  }
+  }  */
 
   public String getServerName() {
     return this.getClass().getName();
@@ -755,15 +739,15 @@ public class OpendapServlet extends AbstractServlet {
     String baseurl = request.getRequestURL().toString();
     baseurl = EscapeStrings.unescapeURL(baseurl);
 
-    // Assume query  was encoded
+    // Assume query was encoded
     String query = request.getQueryString();
     query = EscapeStrings.unescapeURLQuery(query);
 
-    log.debug(String.format("OpendapServlet: nominal url: %s?%s", baseurl, query));
+    if (log.isDebugEnabled()) log.debug(String.format("OpendapServlet: nominal url: %s?%s", baseurl, query));
 
     ReqState rs;
     try {
-      rs = new ReqState(request, response, this, getServerName(), baseurl, query);
+      rs = new ReqState(request, response, rootpath, getServerName(), baseurl, query);
     } catch (Exception bue) {
       rs = null;
     }
@@ -930,7 +914,7 @@ public class OpendapServlet extends AbstractServlet {
       ncd.close();
     } */
 
-    NetcdfFile ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
+    NetcdfFile ncd = TdsRequestedDataset.getNetcdfFile(req, preq.getResponse(), reqPath);
     if (null == ncd) return null; // error message already sent
     //   throw new FileNotFoundException("Cant find "+ reqPath);
 
@@ -984,7 +968,7 @@ public class OpendapServlet extends AbstractServlet {
       response.setHeader("Content-Description", "dods-error");
       response.setContentType("text/plain");
 
-      PrintWriter pw = new PrintWriter(response.getOutputStream());
+      PrintWriter pw = response.getWriter();
       pw.println("Error {");
       pw.println("    code = " + errorCode + ";");
       pw.println("    message = \"" + errorMessage + "\";");

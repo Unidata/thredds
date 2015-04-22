@@ -7,7 +7,7 @@
     <!--logoAltText>Motherlode TDS</logoAltText-->
     <webapp>
         <name>THREDDS Data Server</name>
-        <version>4.5.4-SNAPSHOT</version>
+        <version>5.0.0</version>
         <versionBuildDate>20141021.1507</versionBuildDate>
     </webapp>
 

@@ -35,7 +35,7 @@ package thredds.client.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.client.catalog.builder.CatalogBuilder;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -68,7 +68,7 @@ public class TestClientCatalog {
     }
     System.out.printf("Open %s%n", urlString);
     CatalogBuilder builder = new CatalogBuilder();
-    Catalog cat = builder.buildFromLocation(urlString);
+    Catalog cat = builder.buildFromLocation(urlString, null);
     if (builder.hasFatalError()) {
       System.out.printf("ERRORS %s%n", builder.getErrorMessage());
       assert false;

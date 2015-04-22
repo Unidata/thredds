@@ -1,14 +1,9 @@
-apply from: "$rootDir/gradle/dependencies.gradle"
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/testing.gradle"
-apply from: "$rootDir/gradle/coverage.gradle"
 apply plugin: 'war'
 
 dependencies {
     compile project(":cdm")
     compile project(":clcommon")
     compile project(":grib")
-    compile project(":httpservices")
     compile project(":netcdf4")
     compile project(":opendap")
     compile project(":tdcommon")

@@ -36,7 +36,7 @@ import thredds.server.ncss.exception.*;
 import thredds.server.ncss.exception.UnsupportedOperationException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
@@ -51,7 +51,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
@@ -83,14 +82,15 @@ class GridResponder extends GridDatasetResponder {
 	 * 
 	 * Returns the resulting file
 	 */
-	File getResponseFile(HttpServletRequest request,
-			HttpServletResponse response, NcssParamsBean params,
+	File getResponseFile(HttpServletResponse response, NcssParamsBean params,
 			NetcdfFileWriter.Version version)
 			throws NcssException, InvalidRangeException, ParseException, IOException {
 
-		if (!checkRequestedVars(gds, params) && params.getVertCoord() != null ) // LOOK should catch validation error earlier
-			throw new UnsupportedOperationException("The variables requested: " + params.getVar() + " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
-			
+		if (!checkRequestedVars(gds, params) && params.getVertCoord() != null ) { // LOOK should catch validation error earlier
+      throw new UnsupportedOperationException("The variables requested: " + params.getVar() +
+              " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
+    }
+
 		File netcdfResult;
 		if (isSpatialSubset(params)) {
 			netcdfResult = writeLatLonSubset(params, version);

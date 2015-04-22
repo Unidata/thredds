@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Collection defined by a list of files, wit a [start, end) date range
+ * Collection defined by a list of files, with a [start, end) date range
  *
  * @author caron
  * @since 12/23/2014

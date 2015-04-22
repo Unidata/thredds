@@ -33,12 +33,12 @@
 
 package thredds.server.config;
 
-import thredds.servlet.ThreddsConfig;
-
 /**
  * Centralize the mapping of threddsConfig.xml configuration settings to the data objects used by
  * the various servlets. Supports earlier versions (some deprecated) of threddsConfig.xml config
- * settings. 
+ * settings.
+ *
+ * LOOK not used ??
  *
  * @author edavis
  * @since 4.1

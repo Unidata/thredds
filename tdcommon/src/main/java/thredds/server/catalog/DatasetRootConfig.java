@@ -35,7 +35,7 @@ package thredds.server.catalog;
 import net.jcip.annotations.Immutable;
 
 /**
- * Describe
+ * Encapsolates the datasetRoot element
  *
  * @author caron
  * @since 1/15/2015

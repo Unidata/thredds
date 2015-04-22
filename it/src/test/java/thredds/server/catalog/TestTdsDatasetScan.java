@@ -52,7 +52,7 @@ public class TestTdsDatasetScan {
     Dataset last = null;
     for (Dataset ds : cat.getDatasets()) {
       if (last != null)
-        assert ds.getName().compareTo( last.getName()) > 0 ;
+        assert ds.getName().compareTo(last.getName()) > 0;
       last = ds;
     }
   }
@@ -60,32 +60,34 @@ public class TestTdsDatasetScan {
   @Test
   public void testLatest() throws IOException {
     Catalog cat = TestTdsLocal.open("catalog/testGFSfmrc/files/latest.xml");
-     List<Dataset> dss = cat.getDatasets();
-     assert (dss.size() == 1);
+    List<Dataset> dss = cat.getDatasets();
+    assert (dss.size() == 1);
 
-     Dataset ds = dss.get(0);
-     assert ds.hasAccess();
-     assert ds.getDatasets().size() == 0;
+    Dataset ds = dss.get(0);
+    assert ds.hasAccess();
+    assert ds.getDatasets().size() == 0;
 
-     assert ds.getID() != null;
-     assert ds.getDataSize() > 0.0;
+    assert ds.getID() != null;
+    assert ds.getDataSize() > 0.0;
 
     List<thredds.client.catalog.ThreddsMetadata.Vocab> keywords = ds.getKeywords();
     Assert.assertEquals("Number of keywords", 2, keywords.size());
 
-    DateRange dr = ds.getTimeCoverage() ;
+    DateRange dr = ds.getTimeCoverage();
     Assert.assertNotNull("TimeCoverage", dr);
-   }
+  }
 
   @Test
   public void testHarvest() throws IOException {
     Catalog cat = TestTdsLocal.open("catalog/testEnhanced/catalog.xml");
     assert cat != null;
-    Dataset dscan = cat.findDatasetByID("testEnhanced");
-    assert dscan != null;
-    assert dscan.isHarvest();
+    List<Dataset> topList = cat.getDatasets();
+    assert topList.size() == 1;
+    Dataset top = topList.get(0);
+    assert top != null;
+    assert top.isHarvest();
 
-    List<Dataset> dss = dscan.getDatasets();
+    List<Dataset> dss = top.getDatasets();
     assert (dss.size() > 0);
     Dataset nested = dss.get(0);
     assert !nested.isHarvest();
@@ -100,9 +102,12 @@ public class TestTdsDatasetScan {
   public void testNestedDirs() throws IOException {
     Catalog cat = TestTdsLocal.open("catalog/station/profiler/wind/06min/catalog.xml");
 
-    Dataset top = cat.findDatasetByID("NWS/NPN/6min");
+    List<Dataset> topList = cat.getDatasets();
+    assert topList.size() == 1;
+    Dataset top = topList.get(0);
+    assert top != null;
     List<Dataset> children = top.getDatasets();
-    assert children.size() == 2 : children.size();
+    Assert.assertEquals(3, children.size()); // latest + 2
 
   }
 

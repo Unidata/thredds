@@ -34,73 +34,34 @@ package thredds.server.catalogservice;
 
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
-/**
- * Validates the contents of a {@link RemoteCatalogRequest} command object.
- *
- * More details in {@link RemoteCatalogServiceController}
- *
- * @author edavis
- * @since 4.0
- * @see RemoteCatalogServiceController
- * @see RemoteCatalogRequest
- */
-public class RemoteCatalogRequestValidator implements Validator
-{
-  public RemoteCatalogRequestValidator() {}
+public class RemoteCatalogRequestValidator implements Validator {
 
-  public boolean supports( Class clazz)
-  {
-    return RemoteCatalogRequest.class.equals( clazz );
+  public boolean supports(Class clazz) {
+    return RemoteCatalogRequest.class.equals(clazz);
   }
 
-  public void validate( Object obj, Errors e)
-  {
+  public void validate(Object obj, Errors errs) {
     RemoteCatalogRequest rcr = (RemoteCatalogRequest) obj;
 
-    // Validate "catalogUri"
-    URI catUri = rcr.getCatalogUri();
-    ValidationUtils.rejectIfEmpty( e, "catalogUri", "catalogUri.empty", "No catalog URI given." );
+    try {
+      URI catUri = new URI(rcr.getCatalog());
+      if (!catUri.isAbsolute())
+        errs.rejectValue("catalogUri", "catalogUri.notAbsolute", "The catalog parameter must be an absolute URI.");
+      if (catUri.getScheme() == null || !catUri.getScheme().equalsIgnoreCase("HTTP"))
+        errs.rejectValue("catalogUri", "catalogUri.notHttpUri", "The catalog parameter must be an HTTP URI.");
+      rcr.setCatalogUri(catUri);
 
-    if ( catUri != null )
-    {
-      if ( ! catUri.isAbsolute() )
-        e.rejectValue( "catalogUri", "catalogUri.notAbsolute",
-                       "The \"catalogUri\" field must be an absolute URI." );
-      if ( catUri.getScheme() != null
-           && ! catUri.getScheme().equalsIgnoreCase( "HTTP" ))
-        e.rejectValue( "catalogUri", "catalogUri.notHttpUri",
-                       "The \"catalogUri\" field must be an HTTP URI.");
+    } catch (URISyntaxException e) {
+      errs.rejectValue("catalog", "catalogUri.notAbsolute", "catalog parameter is not a valid URI");
     }
 
-    // Validate "command" - not empty
-    ValidationUtils.rejectIfEmpty( e, "command", "command.empty" );
-
-    // When command.equals( SHOW),
-    // - validate "htmlView" - not empty
-    if ( rcr.getCommand().equals( Command.SHOW ))
-    {
-      ValidationUtils.rejectIfEmpty( e, "htmlView", "htmlView.empty" );
-      if ( ! rcr.isHtmlView() )
-        e.rejectValue( "htmlView", "htmlView.falseForRemoteCatalogShow",
-                       "A remote catalog is already available as XML." );
-    }
-
-    // When command.equals( SUBSET),
-    // - validate "dataset" - not empty
-    // - validate "htmlView" - not empty
-    if ( rcr.getCommand().equals( Command.SUBSET ))
-    {
-      ValidationUtils.rejectIfEmpty( e, "dataset", "dataset.empty", "No dataset specified in SUBSET request." );
-      ValidationUtils.rejectIfEmpty( e, "htmlView", "htmlView.empty" );
-    }
-
-    // When command.equals( VALIDATE),
-    // - validate "verbose" - not empty
-    if ( rcr.getCommand().equals( Command.VALIDATE ) )
-      ValidationUtils.rejectIfEmpty( e, "verbose", "verbose.empty" );
+    if (rcr.getDataset() != null)
+      rcr.setCommand(RemoteCatalogRequest.Command.SUBSET);
+    else if (rcr.getCommand() == null)
+      rcr.setCommand(RemoteCatalogRequest.Command.SHOW);
   }
 }

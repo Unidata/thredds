@@ -36,8 +36,7 @@ package thredds.server.fileserver;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.LastModified;
-import thredds.servlet.DataRootHandler;
-import thredds.servlet.DatasetHandler;
+import thredds.core.TdsRequestedDataset;
 import thredds.servlet.ServletUtil;
 import thredds.util.TdsPathUtils;
 
@@ -73,7 +72,7 @@ public class FileServerController implements LastModified {
     String reqPath = TdsPathUtils.extractPath(req, "fileServer/");
     if (reqPath == null) return;
 
-    if (!DatasetHandler.resourceControlOk(req, res, reqPath)) {
+    if (!TdsRequestedDataset.resourceControlOk(req, res, reqPath)) {  // LOOK or process in TdsRequestedDataset.getFile ??
       return;
     }
 
@@ -84,7 +83,7 @@ public class FileServerController implements LastModified {
   private File getFile(String reqPath) {
     if (reqPath == null) return null;
 
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+    File file = TdsRequestedDataset.getFile(reqPath);
     if (file == null)
       return null;
     if (!file.exists())

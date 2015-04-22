@@ -33,7 +33,7 @@
 package thredds.client.catalog;
 
 import org.junit.Test;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 
 import java.io.IOException;
 import java.util.List;

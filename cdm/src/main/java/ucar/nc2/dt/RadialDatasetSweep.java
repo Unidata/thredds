@@ -44,7 +44,7 @@ import java.util.Date;
  *
  * @author yuan
  */
-public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset, ucar.nc2.ft.FeatureDataset {
+public interface RadialDatasetSweep extends ucar.nc2.ft.FeatureDataset {
   /**
    * @return radar id
    */

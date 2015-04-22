@@ -3,7 +3,7 @@ package thredds.tds;
 import junit.framework.TestCase;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TestTdsLocal;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;

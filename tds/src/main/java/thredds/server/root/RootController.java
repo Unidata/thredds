@@ -35,6 +35,7 @@ package thredds.server.root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.server.config.TdsContext;
@@ -45,6 +46,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -59,14 +61,25 @@ public class RootController implements LastModified {
   @Autowired
   private TdsContext tdsContext;
 
-
-  @RequestMapping(value = "/")
-  public String getRootPage() {
-    return "redirect:/catalog.html";
+  // this is to catch old style catalog requests that dont start with catalog
+  @RequestMapping({"**"})
+  public String wtf(HttpServletRequest req) throws FileNotFoundException {
+    System.out.printf("%s%n", req.getRequestURI());
+    throw new FileNotFoundException(req.getRequestURI());
   }
 
-  @RequestMapping(value = {"*.css", "*.gif", "*.jpg"})
-  public ModelAndView checkPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+  @RequestMapping(value = {"/", "/catalog.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
+  public String redirectRootCatalog() {
+    return "redirect:/catalog/catalog.html";
+  }
+
+  @RequestMapping(value = {"/catalog.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
+  public String redirectRootCatalogXml() {
+    return "redirect:/catalog/catalog.xml";
+  }
+
+  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png"}, method = RequestMethod.GET)
+  public ModelAndView serveFromPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
     String path = TdsPathUtils.extractPath(req, null);
     File file = tdsContext.getPublicDocFileSource().getFile(path);
     if (file == null) {

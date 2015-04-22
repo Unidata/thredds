@@ -32,13 +32,13 @@
  */
 package thredds.server.wcs.v1_0_0_Plus;
 
+import thredds.core.TdsRequestedDataset;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.DatasetHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import thredds.util.TdsPathUtils;
+import thredds.wcs.v1_0_0_1.WcsException;
 import ucar.nc2.dt.GridDataset;
 
 import java.util.List;
@@ -52,14 +52,11 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public class WcsRequestParser
-{
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( WcsRequestParser.class );
+public class WcsRequestParser {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WcsRequestParser.class);
 
-  public static thredds.wcs.v1_0_0_Plus.WcsRequest parseRequest( String version, URI serverURI, HttpServletRequest req, HttpServletResponse res )
-          throws thredds.wcs.v1_0_0_Plus.WcsException
-  {
+  public static thredds.wcs.v1_0_0_Plus.WcsRequest parseRequest(String version, URI serverURI, HttpServletRequest req, HttpServletResponse res)
+          throws IOException, WcsException {
     // These are handled in WcsServlet. Don't need to validate here.
 //    String serviceParam = ServletUtil.getParameterIgnoreCase( req, "Service" );
 //    String versionParam = ServletUtil.getParameterIgnoreCase( req, "Version" );
@@ -67,84 +64,79 @@ public class WcsRequestParser
 
     // General request info
     thredds.wcs.v1_0_0_Plus.WcsRequest.Operation operation;
-    String datasetPath = TdsPathUtils.extractPath(req, "wcs/");
-    GridDataset gridDataset = openDataset( req, res );
-    if ( gridDataset == null )
-    {
-      log.error( "parseRequest(): Failed to open dataset (???).");
-      throw new thredds.wcs.v1_0_0_Plus.WcsException( thredds.wcs.v1_0_0_Plus.WcsException.Code.CoverageNotDefined, "", "Failed to open dataset.");
-    }
-    thredds.wcs.v1_0_0_Plus.WcsDataset wcsDataset = new thredds.wcs.v1_0_0_Plus.WcsDataset( gridDataset, datasetPath);
+    GridDataset gridDataset = null;
+    TdsRequestedDataset trd = new TdsRequestedDataset(req, "/wcs");
+    try {
+      gridDataset = trd.openAsGridDataset(req, res);
+      if (gridDataset == null)
+        return null;
 
-    // Determine the request operation.
-    String requestParam = ServletUtil.getParameterIgnoreCase( req, "Request" );
-    try
-    {
-      operation = thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.valueOf( requestParam );
-    }
-    catch ( IllegalArgumentException e )
-    {
-      throw new thredds.wcs.v1_0_0_Plus.WcsException( thredds.wcs.v1_0_0_Plus.WcsException.Code.InvalidParameterValue, "Request", "Unsupported operation request <" + requestParam + ">." );
-    }
+      thredds.wcs.v1_0_0_Plus.WcsDataset wcsDataset = new thredds.wcs.v1_0_0_Plus.WcsDataset(gridDataset, trd.getPath());
 
-    // Handle "GetCapabilities" request.
-    if ( operation.equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.GetCapabilities ) )
-    {
-      String sectionParam = ServletUtil.getParameterIgnoreCase( req, "Section" );
-      String updateSequenceParam = ServletUtil.getParameterIgnoreCase( req, "UpdateSequence" );
-
-      if ( sectionParam == null)
-        sectionParam = "";
-      thredds.wcs.v1_0_0_Plus.GetCapabilities.Section section = null;
-      try
-      {
-        section = thredds.wcs.v1_0_0_Plus.GetCapabilities.Section.getSection( sectionParam);
-      }
-      catch ( IllegalArgumentException e )
-      {
-        throw new thredds.wcs.v1_0_0_Plus.WcsException( thredds.wcs.v1_0_0_Plus.WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested <" + sectionParam + ">." );
+      // Determine the request operation.
+      String requestParam = ServletUtil.getParameterIgnoreCase(req, "Request");
+      try {
+        operation = thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.valueOf(requestParam);
+      } catch (IllegalArgumentException e) {
+        throw new thredds.wcs.v1_0_0_Plus.WcsException(thredds.wcs.v1_0_0_Plus.WcsException.Code.InvalidParameterValue, "Request", "Unsupported operation request <" + requestParam + ">.");
       }
 
-      return new thredds.wcs.v1_0_0_Plus.GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
-    }
-    // Handle "DescribeCoverage" request.
-    else if ( operation.equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.DescribeCoverage ) )
-    {
-      String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
-      List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
+      // Handle "GetCapabilities" request.
+      if (operation.equals(thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.GetCapabilities)) {
+        String sectionParam = ServletUtil.getParameterIgnoreCase(req, "Section");
+        String updateSequenceParam = ServletUtil.getParameterIgnoreCase(req, "UpdateSequence");
 
-      return new thredds.wcs.v1_0_0_Plus.DescribeCoverage( operation, version, wcsDataset, coverageIdList);
-    }
-    // Handle "GetCoverage" request.
-    else if ( operation.equals( thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.GetCoverage ) )
-    {
-      String coverageId = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
-      String crs = ServletUtil.getParameterIgnoreCase( req, "CRS" );
-      String responseCRS = ServletUtil.getParameterIgnoreCase( req, "RESPONSE_CRS" );
-      String bbox = ServletUtil.getParameterIgnoreCase( req, "BBOX" );
-      String time = ServletUtil.getParameterIgnoreCase( req, "TIME" );
-      // ToDo The name of this parameter is dependent on the coverage (see WcsCoverage.getRangeSetAxisName()).
-      String rangeSubset = ServletUtil.getParameterIgnoreCase( req, "RangeSubset" );
-      String format = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
+        if (sectionParam == null)
+          sectionParam = "";
+        thredds.wcs.v1_0_0_Plus.GetCapabilities.Section section = null;
+        try {
+          section = thredds.wcs.v1_0_0_Plus.GetCapabilities.Section.getSection(sectionParam);
+        } catch (IllegalArgumentException e) {
+          throw new thredds.wcs.v1_0_0_Plus.WcsException(thredds.wcs.v1_0_0_Plus.WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested <" + sectionParam + ">.");
+        }
 
-      return new thredds.wcs.v1_0_0_Plus.GetCoverage( operation, version, wcsDataset, coverageId,
-                              crs, responseCRS, bbox, time, rangeSubset, format);
+        return new thredds.wcs.v1_0_0_Plus.GetCapabilities(operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
+      }
+      // Handle "DescribeCoverage" request.
+      else if (operation.equals(thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.DescribeCoverage)) {
+        String coverageIdListParam = ServletUtil.getParameterIgnoreCase(req, "Coverage");
+        List<String> coverageIdList = splitCommaSeperatedList(coverageIdListParam);
+
+        return new thredds.wcs.v1_0_0_Plus.DescribeCoverage(operation, version, wcsDataset, coverageIdList);
+      }
+      // Handle "GetCoverage" request.
+      else if (operation.equals(thredds.wcs.v1_0_0_Plus.WcsRequest.Operation.GetCoverage)) {
+        String coverageId = ServletUtil.getParameterIgnoreCase(req, "Coverage");
+        String crs = ServletUtil.getParameterIgnoreCase(req, "CRS");
+        String responseCRS = ServletUtil.getParameterIgnoreCase(req, "RESPONSE_CRS");
+        String bbox = ServletUtil.getParameterIgnoreCase(req, "BBOX");
+        String time = ServletUtil.getParameterIgnoreCase(req, "TIME");
+        // ToDo The name of this parameter is dependent on the coverage (see WcsCoverage.getRangeSetAxisName()).
+        String rangeSubset = ServletUtil.getParameterIgnoreCase(req, "RangeSubset");
+        String format = ServletUtil.getParameterIgnoreCase(req, "FORMAT");
+
+        return new thredds.wcs.v1_0_0_Plus.GetCoverage(operation, version, wcsDataset, coverageId,
+                crs, responseCRS, bbox, time, rangeSubset, format);
+      } else
+        throw new thredds.wcs.v1_0_0_Plus.WcsException(thredds.wcs.v1_0_0_Plus.WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">.");
+
+    } catch (Throwable e) {
+      if (gridDataset != null)
+        gridDataset.close();
+      throw new RuntimeException(e);
     }
-    else
-      throw new thredds.wcs.v1_0_0_Plus.WcsException( thredds.wcs.v1_0_0_Plus.WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">." );
   }
 
-  private static List<String> splitCommaSeperatedList( String identifiers )
-  {
+  private static List<String> splitCommaSeperatedList(String identifiers) {
     List<String> idList = new ArrayList<>();
-    String[] idArray = identifiers.split( ",");
+    String[] idArray = identifiers.split(",");
     for (String anIdArray : idArray) {
       idList.add(anIdArray.trim());
     }
     return idList;
   }
 
-  private static GridDataset openDataset( HttpServletRequest req, HttpServletResponse res )
+  /* private static GridDataset openDataset( HttpServletRequest req, HttpServletResponse res )
           throws thredds.wcs.v1_0_0_Plus.WcsException
   {
     String datasetURL = ServletUtil.getParameterIgnoreCase( req, "dataset" );
@@ -154,7 +146,7 @@ public class WcsRequestParser
     GridDataset dataset;
     try
     {
-      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : DatasetHandler.openGridDataset( req, res, datasetPath );
+      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : TdsRequestedDataset.openGridDataset(req, res, datasetPath);
     }
     catch ( IOException e )
     {
@@ -167,5 +159,5 @@ public class WcsRequestParser
       throw new thredds.wcs.v1_0_0_Plus.WcsException( "Unknown dataset, \"" + datasetPath + "\"." );
     }
     return dataset;
-  }
+  }  */
 }

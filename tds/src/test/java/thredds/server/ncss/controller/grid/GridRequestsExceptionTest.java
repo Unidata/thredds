@@ -59,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class GridRequestsExceptionTest {
 
@@ -76,6 +76,7 @@ public class GridRequestsExceptionTest {
 
   @Test
  	public void checkBadGridRequestWhenNoParams() throws Exception{
+    System.out.printf("path= %s%n", path);
     MvcResult result = this.mockMvc.perform(get(path).servletPath(path)) // note make it both the request an the servlet path (!)
             .andExpect(status().is(400))
             .andExpect(content().string(containsString("No variables requested")))
@@ -86,6 +87,7 @@ public class GridRequestsExceptionTest {
 	
   @Test
  	public void checkBadGridRequestWhenEmptyVarParams() throws Exception{
+    System.out.printf("path= %s%n", path);
     MvcResult result = this.mockMvc.perform(get(path).servletPath(path)
             .param("var", ""))
             .andExpect(status().is(400))
@@ -97,6 +99,7 @@ public class GridRequestsExceptionTest {
 
   @Test
  	public void testMultipleVerticalCoordinates() throws Exception{
+    System.out.printf("path= %s%n", path);
     MvcResult result = this.mockMvc.perform(get(path).servletPath(path)
             .param("var", "all")
             .param("vertCoord", "200.0"))
@@ -109,6 +112,7 @@ public class GridRequestsExceptionTest {
 
   @Test
  	public void testTimeDoesNotIntersect() throws Exception{
+    System.out.printf("path= %s%n", path);
     MvcResult result = this.mockMvc.perform(get(path).servletPath(path)
             .param("var", "Pressure_reduced_to_MSL_msl")
             .param("time", "2012-04-18T15:00:00Z"))

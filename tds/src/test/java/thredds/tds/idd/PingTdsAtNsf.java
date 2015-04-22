@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -63,8 +64,7 @@ public class PingTdsAtNsf
     }
 
     @Test
-    public void pingNsfThreddsTds()
-    {
+    public void pingNsfThreddsTds() throws IOException {
         String tdsUrl = "http://thredds.cise-nsf.gov:8080/thredds/";
 
         CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );

@@ -127,6 +127,7 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
    } */
 
     Group info = ds.findGroup("PRODUCT_METADATA/PRODUCT_DETAILS");
+    if (info == null) throw new IllegalStateException("AvhrrConvention must have PRODUCT_METADATA/PRODUCT_DETAILS group");
     String dateS = info.findAttribute("ACQUISITION_DATE").getStringValue();
     String timeS = info.findAttribute("ACQUISITION_TIME_IN_GMT").getStringValue();
 

@@ -11,7 +11,7 @@
     <HR size="1" noshade="noshade">
     <p><b>Status</b> 500 - Internal Server Error</p>
     <HR size="1" noshade="noshade">
-    <h3>THREDDS Data Server Version 4.6
+    <h3>THREDDS Data Server Version 5.0
       -- <a href='http://www.unidata.ucar.edu/software/thredds/v4.6/tds/TDS.html'>Documentation</a></h3>
   </body>
 </html>

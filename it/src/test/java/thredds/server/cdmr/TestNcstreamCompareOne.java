@@ -55,7 +55,7 @@ public class TestNcstreamCompareOne {
   @Test
    public void problem() throws IOException {
   // http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/grib2/SingleRecordNbits0.grib2?req=header
-     String problemFile = TestNcstreamCompareWithFiles.contentRoot + "/grib2/SingleRecordNbits0.grib2";
+     String problemFile = TestNcstreamCompareWithFiles.contentRoot + "/gempak/ndfd_20100913.gem";
      String name = StringUtil2.substitute(problemFile.substring(TestNcstreamCompareWithFiles.contentRoot.length()), "\\", "/");
      String remote = TestWithLocalServer.withPath(TestNcstreamCompareWithFiles.urlPath + name);
      TestNcstreamCompareWithFiles.compareDatasets(problemFile, remote);

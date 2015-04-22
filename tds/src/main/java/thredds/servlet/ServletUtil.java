@@ -34,6 +34,7 @@
 package thredds.servlet;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.*;
@@ -45,101 +46,45 @@ import javax.servlet.http.*;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
-import thredds.catalog.XMLEntityResolver;
 import thredds.util.RequestForwardUtils;
 import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
+/**
+ * LOOK try to get rid of all this
+ */
 public class ServletUtil {
-  public static final org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
-
-  public static final String CONTENT_TEXT = "text/plain; charset=utf-8";
-
-  // bogus status returns for our logging
-  public static final int STATUS_CLIENT_ABORT = 1000;
-  public static final int STATUS_FORWARDED = 1001;
-  public static final int STATUS_FORWARD_FAILURE = 1002;
-
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ServletUtil.class );
-  static private boolean isDebugInit = false;
+  public static final org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServletUtil.class);
 
   static private String contextPath = null;
   static private String rootPath = null;
   static private String contentPath = null;
+  static private thredds.servlet.HtmlWriting htmlu;
 
-  /**
-   *
-   * @param context the Servlet context.
-   * @deprecated Now handled in TdsContext.init().
-   */
-  static public void initContext(ServletContext context)
-{
-//    setContextPath(context);
-    if ( contextPath == null )
-    {
-      // Servlet 2.5 allows the following.
-      //contextPath = servletContext.getContextPath();
-      String tmpContextPath = context.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
-      if ( tmpContextPath == null )
-        tmpContextPath = "thredds";
-      contextPath = "/" + tmpContextPath;
-    }
-//    setRootPath(context);
-    if ( rootPath == null )
-    {
-      rootPath = context.getRealPath("/");
-      rootPath = rootPath.replace('\\', '/');
-    }
-
-//    setContentPath();
-    if ( contentPath == null )
-    {
-      String tmpContentPath = "../../content" + getContextPath() + "/";
-      File cf = new File(getRootPath(), tmpContentPath);
-      try {
-        contentPath = cf.getCanonicalPath() + "/";
-        contentPath = contentPath.replace('\\', '/');
-      } catch (IOException e) {
-        throw new RuntimeException(e.getMessage());
-      }
-    }
-
-//    initDebugging(context);
-    initDebugging( context );
+  // LOOK who sets this
+  static public void setHtmlWritingUtils(thredds.servlet.HtmlWriting _htmlu) {
+    htmlu = _htmlu;
   }
 
-  static public void setContextPath( String newContextPath )
-  {
+  static public void setContextPath(String newContextPath) {
     contextPath = newContextPath;
   }
 
-  static public void setRootPath( String newRootPath )
-  {
+  static public void setRootPath(String newRootPath) {
     rootPath = newRootPath;
   }
 
-  static public void setContentPath( String newContentPath)
-  {
+  static public void setContentPath(String newContentPath) {
     contentPath = newContentPath;
     if (!contentPath.endsWith("/"))
       contentPath = contentPath + "/";
   }
 
-  static public void initDebugging(ServletContext webapp) {
-    if (isDebugInit) return;
-    isDebugInit = true;
-
-    String debugOn = webapp.getInitParameter("DebugOn");
-    if (debugOn != null) {
-      StringTokenizer toker = new StringTokenizer(debugOn);
-      while (toker.hasMoreTokens())
-        Debug.set(toker.nextToken(), true);
-    }
-  }
-
   /**
    * Return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
+   *
    * @return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
    */
   public static String getRootPath() {
@@ -181,11 +126,11 @@ public class ServletUtil {
    * Return the file path dealing with leading and trailing path
    * seperators (which must be a slash ("/")) for the given directory
    * and file paths.
-   *
+   * <p/>
    * Note: Dealing with path strings is fragile.
    * ToDo: Switch from using path strings to java.io.Files.
    *
-   * @param dirPath the directory path.
+   * @param dirPath  the directory path.
    * @param filePath the file path.
    * @return a full file path with the given directory and file paths.
    */
@@ -228,12 +173,12 @@ public class ServletUtil {
    * @throws IOException if can't complete request due to IO problems.
    */
   public static void handleRequestForRawFile(String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
-      throws IOException {
+          throws IOException {
     // Don't allow ".." directories in path.
     if (path.contains("/../")
-        || path.equals("..")
-        || path.startsWith("../")
-        || path.endsWith("/..")) {
+            || path.equals("..")
+            || path.startsWith("../")
+            || path.endsWith("/..")) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain \"..\" directory.");
       return;
     }
@@ -248,7 +193,7 @@ public class ServletUtil {
     // Find a regular file
     File regFile = null;
     // Look in content directory for regular file.
-    File cFile = new File(ServletUtil.formFilename( getContentPath(), path));
+    File cFile = new File(ServletUtil.formFilename(getContentPath(), path));
     if (cFile.exists()) {
       if (cFile.isDirectory()) {
         if (!path.endsWith("/")) {
@@ -267,7 +212,7 @@ public class ServletUtil {
 
     if (regFile == null) {
       // Look in root directory.
-      File rFile = new File( ServletUtil.formFilename(getRootPath(), path));
+      File rFile = new File(ServletUtil.formFilename(getRootPath(), path));
       if (rFile.exists()) {
         if (rFile.isDirectory()) {
           if (!path.endsWith("/")) {
@@ -309,7 +254,7 @@ public class ServletUtil {
    * @throws IOException if can't complete request due to IO problems.
    */
   public static void handleRequestForContentFile(String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
-      throws IOException {
+          throws IOException {
     handleRequestForContentOrRootFile("/content/", path, servlet, req, res);
   }
 
@@ -332,7 +277,7 @@ public class ServletUtil {
    * @throws IOException if can't complete request due to IO problems.
    */
   public static void handleRequestForRootFile(String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
-      throws IOException {
+          throws IOException {
     handleRequestForContentOrRootFile("/root/", path, servlet, req, res);
   }
 
@@ -341,9 +286,9 @@ public class ServletUtil {
    * and handleRequestForRootFile().
    */
   private static void handleRequestForContentOrRootFile(String pathPrefix, String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
-      throws IOException {
+          throws IOException {
     if (!pathPrefix.equals("/content/")
-        && !pathPrefix.equals("/root/")) {
+            && !pathPrefix.equals("/root/")) {
       log.error("handleRequestForContentFile(): The path prefix <" + pathPrefix + "> must be \"/content/\" or \"/root/\".");
       throw new IllegalArgumentException("Path prefix must be \"/content/\" or \"/root/\".");
     }
@@ -355,9 +300,9 @@ public class ServletUtil {
 
     // Don't allow ".." directories in path.
     if (path.contains("/../")
-        || path.equals("..")
-        || path.startsWith("../")
-        || path.endsWith("/..")) {
+            || path.equals("..")
+            || path.startsWith("../")
+            || path.endsWith("/..")) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain \"..\" directory.");
       return;
     }
@@ -373,7 +318,7 @@ public class ServletUtil {
           return;
         }
 
-        HtmlWriter.getInstance().writeDirectory(res, file, path);
+        htmlu.writeDirectory(res, file, path);
         return;
       }
 
@@ -398,16 +343,15 @@ public class ServletUtil {
    * @throws IOException if can't write the response.
    */
   public static void sendPermanentRedirect(String targetPath, HttpServletRequest req, HttpServletResponse res)
-      throws IOException {
+          throws IOException {
 
     // Absolute URL needed so resolve the target path against the request URL.
     URI uri;
     try {
       uri = new URI(req.getRequestURL().toString());
-    }
-    catch (URISyntaxException e) {
+    } catch (URISyntaxException e) {
       log.error("sendPermanentRedirect(): Bad syntax on request URL <" + req.getRequestURL() + ">.", e);
-      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return;
     }
     String absolutePath = uri.resolve(targetPath).toString();
@@ -418,23 +362,23 @@ public class ServletUtil {
 
     String title = "Permanently Moved - 301";
     String body = new StringBuilder()
-        .append("<p>")
-        .append("The requested URL <").append(req.getRequestURL())
-        .append("> has been permanently moved (HTTP status code 301).")
-        .append(" Instead, please use the following URL: <a href=\"").append(absolutePath).append("\">").append(absolutePath).append("</a>.")
-        .append("</p>")
-        .toString();
+            .append("<p>")
+            .append("The requested URL <").append(req.getRequestURL())
+            .append("> has been permanently moved (HTTP status code 301).")
+            .append(" Instead, please use the following URL: <a href=\"").append(absolutePath).append("\">").append(absolutePath).append("</a>.")
+            .append("</p>")
+            .toString();
     String htmlResp = new StringBuilder()
-        .append(HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag())
-        .append("<head><title>")
-        .append(title)
-        .append("</title></head><body>")
-        .append("<h1>").append(title).append("</h1>")
-        .append(body)
-        .append("</body></html>")
-        .toString();
+            .append(htmlu.getHtmlDoctypeAndOpenTag())
+            .append("<head><title>")
+            .append(title)
+            .append("</title></head><body>")
+            .append("<h1>").append(title).append("</h1>")
+            .append(body)
+            .append("</body></html>")
+            .toString();
 
-    log.info( "sendPermanentRedirect(): redirect to " + absolutePath);
+    log.info("sendPermanentRedirect(): redirect to " + absolutePath);
 
     // Write the catalog out.
     res.setContentType(ContentType.html.getContentHeader());
@@ -504,7 +448,7 @@ public class ServletUtil {
    * @throws IOException on write error
    */
   public static void returnFile(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res, File file, String contentType)
-      throws IOException {
+          throws IOException {
 
     // No file, nothing to view
     if (file == null) {
@@ -551,9 +495,9 @@ public class ServletUtil {
   /**
    * Write a file to the response stream. Handles Range requests.
    *
-   * @param req request
-   * @param res response
-   * @param file must exist and not be a directory
+   * @param req         request
+   * @param res         response
+   * @param file        must exist and not be a directory
    * @param contentType must not be null
    * @throws IOException or error
    */
@@ -593,13 +537,9 @@ public class ServletUtil {
     if (contentLength > Integer.MAX_VALUE)
       res.addHeader("Content-Length", Long.toString(contentLength));  // allow content length > MAX_INT
     else
-      res.setContentLength( (int) contentLength);
+      res.setContentLength((int) contentLength);
 
     String filename = file.getPath();
-    boolean debugRequest = Debug.isSet("returnFile");
-    if (debugRequest) log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
-        " contentLength = " + contentLength);
-
     // indicate we allow Range Requests
     res.addHeader("Accept-Ranges", "bytes");
 
@@ -614,7 +554,7 @@ public class ServletUtil {
         res.addHeader("Content-Range", "bytes " + startPos + "-" + (endPos - 1) + "/" + fileSize);
         res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-        try (RandomAccessFile  craf = RandomAccessFile.acquire(filename)) {
+        try (RandomAccessFile craf = RandomAccessFile.acquire(filename)) {
           IO.copyRafB(craf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
           return;
         }
@@ -623,11 +563,10 @@ public class ServletUtil {
       // Return the file
       ServletOutputStream out = res.getOutputStream();
       // IO.copyFileB(file, out, 60 * 1000);
-      WritableByteChannel cOut = Channels.newChannel(out);
-      IO.copyFileWithChannels(file, cOut, 60 * 1000);
-      res.flushBuffer();
-      out.close();
-      if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
+      try (WritableByteChannel cOut = Channels.newChannel(out)) {
+        IO.copyFileWithChannels(file, cOut);
+        res.flushBuffer();
+      }
     }
 
     // @todo Split up this exception handling: those from file access vs those from dealing with response
@@ -635,20 +574,23 @@ public class ServletUtil {
     //       response: don't catch (let bubble up out of doGet() etc)
     catch (FileNotFoundException e) {
       log.error("returnFile(): FileNotFoundException= " + filename);
-      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
-    catch (java.net.SocketException e) {
+      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } catch (java.net.SocketException e) {
       log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
         log.debug("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
         return;
       }
 
+      if (e.getMessage().startsWith("File transfer not complete")) { // coming from FileTransfer.transferTo()
+        log.debug("returnFile() "+e.getMessage());
+        return;
+      }
+
       log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
-      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending file: " + e.getMessage());
+      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending file: " + e.getMessage());
     }
   }
 
@@ -656,18 +598,16 @@ public class ServletUtil {
    * Send given content string as the HTTP response.
    *
    * @param contents the string to return as the HTTP response.
-   * @param res the HttpServletResponse
+   * @param res      the HttpServletResponse
    * @throws IOException if an I/O error occurs while writing the response.
    */
   public static void returnString(String contents, HttpServletResponse res)
-      throws IOException
-  {
+          throws IOException {
 
     try {
       ServletOutputStream out = res.getOutputStream();
       IO.copy(new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset)), out);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       log.error(" IOException sending string: ", e);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending string: " + e.getMessage());
     }
@@ -685,14 +625,14 @@ public class ServletUtil {
 
   /**
    * Forward this request to the CatalogServices servlet ("/catalog.html").
-   * 
+   *
    * @param req request
    * @param res response
-   * @throws IOException on IO error
+   * @throws IOException      on IO error
    * @throws ServletException other error
    */
   public static void forwardToCatalogServices(HttpServletRequest req, HttpServletResponse res)
-      throws IOException, ServletException {
+          throws IOException, ServletException {
 
     String reqs = "catalog=" + getReletiveURL(req);
     String query = req.getQueryString();
@@ -701,16 +641,12 @@ public class ServletUtil {
     log.info("forwardToCatalogServices(): request string = \"/catalog.html?" + reqs + "\"");
 
     // dispatch to CatalogHtml servlet
-    RequestForwardUtils.forwardRequestRelativeToCurrentContext( "/catalog.html?" + reqs, req, res );
+    RequestForwardUtils.forwardRequestRelativeToCurrentContext("/catalog.html?" + reqs, req, res);
   }
 
 
   public static boolean saveFile(HttpServlet servlet, String contentPath, String path, HttpServletRequest req,
                                  HttpServletResponse res) {
-
-    // @todo Need to use logServerAccess() below here.
-    boolean debugRequest = Debug.isSet("SaveFile");
-    if (debugRequest) log.debug(" saveFile(): path= " + path);
 
     String filename = contentPath + path; // absolute path
     File want = new File(filename);
@@ -729,9 +665,8 @@ public class ServletUtil {
     }
 
     // save new file
-    try ( OutputStream out = new BufferedOutputStream(new FileOutputStream(filename))) {
+    try (OutputStream out = new BufferedOutputStream(new FileOutputStream(filename))) {
       IO.copy(req.getInputStream(), out);
-      if (debugRequest) log.debug("saveFile(): ok= " + filename);
       res.setStatus(HttpServletResponse.SC_CREATED);
       return true;
 
@@ -788,14 +723,9 @@ public class ServletUtil {
     try {
       String message = t.getMessage();
       if (message == null) message = "NULL message " + t.getClass().getName();
-      if (Debug.isSet("trustedMode")) { // security issue: only show stack if trusted
-        StringWriter sw = new StringWriter(10000);
-        t.printStackTrace(new PrintWriter(sw));
-        message = sw.toString();
-      }
       log.error("handleException", t);
       t.printStackTrace(); // debugging - log.error not showing stack trace !!   
-      if ( ! res.isCommitted() )
+      if (!res.isCommitted())
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, message);
 
     } catch (Throwable e) {
@@ -806,7 +736,7 @@ public class ServletUtil {
 
   static public void showServerInfo(PrintStream out) {
     out.println("Server Info");
-    out.println(" getDocumentBuilderFactoryVersion(): " + XMLEntityResolver.getDocumentBuilderFactoryVersion());
+    out.println(" getDocumentBuilderFactoryVersion(): " + getDocumentBuilderFactoryVersion());
     out.println();
 
     Properties sysp = System.getProperties();
@@ -820,6 +750,17 @@ public class ServletUtil {
       out.println("  " + name + " = " + value);
     }
     out.println();
+  }
+
+  // from XMLEntityResolver, not sure if its needed
+  static private String getDocumentBuilderFactoryVersion() {
+    try {
+      Class version = Class.forName("org.apache.xerces.impl.Version");
+      Method m = version.getMethod("getVersion", (Class[]) null);
+      return (String) m.invoke(null, (Object[]) null);
+    } catch (Exception e) {
+      return "Error= " + e.getMessage();
+    }
   }
 
   static public void showServletInfo(HttpServlet servlet, PrintStream out) {
@@ -858,7 +799,7 @@ public class ServletUtil {
     while (params.hasMoreElements()) {
       String name = (String) params.nextElement();
       out.println("  context.getAttribute(\"" + name + "\"): " +
-          context.getAttribute(name));
+              context.getAttribute(name));
     }
 
     out.println();
@@ -872,8 +813,8 @@ public class ServletUtil {
    */
   public static String getRequestParsed(HttpServletRequest req) {
     return req.getRequestURI() + " = " + req.getContextPath() + "(context), " +
-        req.getServletPath() + "(servletPath), " +
-        req.getPathInfo() + "(pathInfo), " + req.getQueryString() + "(query)";
+            req.getServletPath() + "(servletPath), " +
+            req.getPathInfo() + "(pathInfo), " + req.getQueryString() + "(query)";
   }
 
   /**
@@ -883,7 +824,7 @@ public class ServletUtil {
    * @return request server
    */
   public static String getRequestServer(HttpServletRequest req) {
-    return req.getScheme() + "://"+req.getServerName()+":"+ req.getServerPort();
+    return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
   }
 
   /**
@@ -899,6 +840,7 @@ public class ServletUtil {
 
   /**
    * The request base as a URI
+   *
    * @param req the HttpServletRequest
    * @return parsed request as a URI
    */
@@ -913,6 +855,7 @@ public class ServletUtil {
 
   /**
    * servletPath + pathInfo
+   *
    * @param req the HttpServletRequest
    * @return parsed request servletPath + pathInfo
    */
@@ -927,6 +870,7 @@ public class ServletUtil {
 
   /**
    * The entire request including query string
+   *
    * @param req the HttpServletRequest
    * @return entire parsed request
    */
@@ -940,7 +884,7 @@ public class ServletUtil {
    * only be used if the parameter is known to only have one value. If used
    * on a multi-valued parameter, the first value is returned.
    *
-   * @param req the HttpServletRequest
+   * @param req       the HttpServletRequest
    * @param paramName the name of the parameter to find.
    * @return the value of the given parameter for the given request.
    */
@@ -957,7 +901,7 @@ public class ServletUtil {
   /**
    * Return the values of the given parameter (ignoring case) for the given request.
    *
-   * @param req the HttpServletRequest
+   * @param req       the HttpServletRequest
    * @param paramName the name of the parameter to find.
    * @return the values of the given parameter for the given request.
    */
@@ -985,7 +929,7 @@ public class ServletUtil {
    * @param req     the request
    * @return string showing the details of the request.
    */
-  static public String showRequestDetail(HttpServlet servlet, HttpServletRequest req) {
+  static public String showRequestDetail(HttpServletRequest req) {
     StringBuilder sbuff = new StringBuilder();
 
     sbuff.append("Request Info\n");
@@ -1009,10 +953,6 @@ public class ServletUtil {
 
     sbuff.append(" req.getPathTranslated:").append(req.getPathTranslated()).append("\n");
     String path = req.getPathTranslated();
-    if ((path != null) && (servlet != null)) {
-      ServletContext context = servlet.getServletContext();
-      sbuff.append(" getMimeType:").append(context.getMimeType(path)).append("\n");
-    }
     sbuff.append("\n");
     sbuff.append(" req.getScheme:").append(req.getScheme()).append("\n");
     sbuff.append(" req.getProtocol:").append(req.getProtocol()).append("\n");
@@ -1094,7 +1034,7 @@ public class ServletUtil {
       count = count + 1;
     session.setAttribute("snoop.count", count);
 
-    out.println(HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
+    out.println(htmlu.getHtmlDoctypeAndOpenTag());
     out.println("<HEAD><TITLE>SessionSnoop</TITLE></HEAD>");
     out.println("<BODY><H1>Session Snoop</H1>");
 
@@ -1111,27 +1051,27 @@ public class ServletUtil {
 
     out.println("<H3>Here are some vital stats on your session:</H3>");
     out.println("Session id: " + session.getId() +
-        " <I>(keep it secret)</I><BR>");
+            " <I>(keep it secret)</I><BR>");
     out.println("New session: " + session.isNew() + "<BR>");
     out.println("Timeout: " + session.getMaxInactiveInterval());
     out.println("<I>(" + session.getMaxInactiveInterval() / 60 +
-        " minutes)</I><BR>");
+            " minutes)</I><BR>");
     out.println("Creation time: " + session.getCreationTime());
     out.println("<I>(" + new Date(session.getCreationTime()) + ")</I><BR>");
     out.println("Last access time: " + session.getLastAccessedTime());
     out.println("<I>(" + new Date(session.getLastAccessedTime()) +
-        ")</I><BR>");
+            ")</I><BR>");
 
     out.println("Requested session ID from cookie: " +
-        req.isRequestedSessionIdFromCookie() + "<BR>");
+            req.isRequestedSessionIdFromCookie() + "<BR>");
     out.println("Requested session ID from URL: " +
-        req.isRequestedSessionIdFromURL() + "<BR>");
+            req.isRequestedSessionIdFromURL() + "<BR>");
     out.println("Requested session ID valid: " +
-        req.isRequestedSessionIdValid() + "<BR>");
+            req.isRequestedSessionIdValid() + "<BR>");
 
     out.println("<H3>Test URL Rewriting</H3>");
     out.println("Click <A HREF=\"" +
-        res.encodeURL(req.getRequestURI()) + "\">here</A>");
+            res.encodeURL(req.getRequestURI()) + "\">here</A>");
     out.println("to test that session tracking works via URL");
     out.println("rewriting even when cookies aren't supported.");
 

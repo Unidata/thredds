@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import thredds.server.ncss.dataservice.FeatureDatasetService;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.ncss.dataservice.NcssShowFeatureDatasetInfo;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
@@ -66,8 +66,20 @@ class NcssDatasetInfoController extends AbstractNcssController {
   @Autowired
   private NcssShowFeatureDatasetInfo ncssShowDatasetInfo;
 
-  @Autowired
-  FeatureDatasetService datasetService;
+  //@Autowired
+  //FeatureDatasetService datasetService;
+
+  /* @RequestMapping("/ncss/grid/**")
+  public String forwardGrid(HttpServletRequest req) {
+    String reqString = req.getServletPath();
+    assert reqString.startsWith("/ncss/grid");
+    reqString = reqString.substring(10);
+    String forwardString = "forward:/ncss" + reqString;  // strip off '?/grid
+    if (null != req.getQueryString())
+      forwardString += "?"+req.getQueryString();
+
+     return forwardString;
+  } */
 
   @RequestMapping(
           value = {"/ncss/**/dataset.html", "/ncss/**/dataset.xml",
@@ -83,7 +95,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
     boolean showPointForm = path.endsWith("/pointDataset.html");
     String datasetPath = getDatasetPath(path);
 
-    try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
+    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
       if (fd == null)
         return; // restricted dataset
 
@@ -104,7 +116,7 @@ class NcssDatasetInfoController extends AbstractNcssController {
 
     String path = req.getServletPath();
     String datasetPath = getDatasetPath(path);
-    try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
+    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
 
       if (fd == null)
         throw new FileNotFoundException("Could not find Dataset "+datasetPath);

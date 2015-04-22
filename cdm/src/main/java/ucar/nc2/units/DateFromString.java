@@ -317,31 +317,5 @@ public class DateFromString {
     return getDateUsingCompleteDateFormat( dateStringFormatted.toString(), dateFormatString );
   }
 
-  public static void main(String args[]) throws ParseException {
-   /*  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
-   *  dateFormatString =                    #wrfout_d01_#yyyy-MM-dd_HHmm
-   *  would extract the date 2006-07-06T08:00
-   *
-   *  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
-   *  dateFormatString =          yyyyMM-ddHH#/wrfout_d01_#
-   *  would extract the date 2006-07-06T11:00
-   * </pre>
-   *
-   * @param dateString the String to be parsed
-   * @param dateFormatString the date format String
-   * @return the Date that was parsed.
-   */
-
-    DateFormatter formatter  = new DateFormatter();
-    Date result = getDateUsingDemarkatedMatch( "/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc", "#wrfout_d01_#yyyy-MM-dd_HHmm", '#' );
-    System.out.println(" 2006-07-06_080000 -> "+formatter.toDateTimeStringISO( result));
-
-    result = getDateUsingDemarkatedMatch( "C:\\data\\nomads\\gfs-hi\\gfs_3_20061129_0600", "#gfs_3_#yyyyMMdd_HH", '#' );
-    System.out.println(" 20061129_06 -> "+formatter.toDateTimeStringISO( result));
-
-    System.out.println(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06"));
-    System.out.println(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_0600"));
-
-  }
 
 }

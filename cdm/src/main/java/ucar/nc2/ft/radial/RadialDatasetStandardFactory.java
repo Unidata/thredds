@@ -33,40 +33,39 @@
 
 package ucar.nc2.ft.radial;
 
+import ucar.nc2.dt.radial.*;
 import ucar.nc2.ft.FeatureDatasetFactory;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.dt.TypedDatasetFactoryIF;
-import ucar.nc2.dt.TypedDataset;
 
-import java.util.Formatter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.io.IOException;
+import java.util.List;
 
 /**
- * Adapt existing Radial Datasets implementing TypedDatasetFactoryIF, for FeatureDatasetFactory.
+ * Adapt existing Radial Datasets implementing FeatureDatasetFactory.
  *
  * @author caron
  * @since Feb 17, 2009
  */
 public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
 
-  private static List<TypedDatasetFactoryIF> factories = new ArrayList<TypedDatasetFactoryIF>(10);
+  private static List<FeatureDatasetFactory> factories = new ArrayList<>(10);
 
   static {
-    registerFactory(ucar.nc2.dt.radial.Netcdf2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.Dorade2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.LevelII2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.Nids2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.UF2Dataset.class);
-    registerFactory(ucar.nc2.dt.radial.CFnetCDF2Dataset.class);
+    registerFactory(NsslRadialAdapter.class);
+    registerFactory(Dorade2RadialAdapter.class);
+    registerFactory(Nexrad2RadialAdapter.class);
+    registerFactory(NidsRadialAdapter.class);
+    registerFactory(UF2RadialAdapter.class);
+    registerFactory(CFRadialAdapter.class);
   }
 
   static void registerFactory(Class c) {
-    if (!(TypedDatasetFactoryIF.class.isAssignableFrom(c)))
+    if (!(FeatureDatasetFactory.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("Class " + c.getName() + " must implement TypedDatasetFactoryIF");
 
     // fail fast - get Instance
@@ -79,7 +78,7 @@ public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
       throw new IllegalArgumentException("FeatureDatasetFactoryManager Class " + c.getName() + " is not accessible");
     }
 
-    factories.add((TypedDatasetFactoryIF) instance);
+    factories.add((FeatureDatasetFactory) instance);
   }
 
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
@@ -87,45 +86,22 @@ public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
     if ((wantFeatureType != FeatureType.RADIAL) && (wantFeatureType != FeatureType.NONE) && (wantFeatureType != FeatureType.ANY))
       return null;
 
-    for (TypedDatasetFactoryIF fac : factories) {
-      if (fac.isMine(ds))
-        return fac;
+    for (FeatureDatasetFactory fac : factories) {
+      Object anal = fac.isMine(FeatureType.RADIAL, ds, errlog);
+      if (anal != null)
+        return anal;
     }
 
     return null;
-
-    /* boolean hasAzimuth = false;
-    boolean hasDistance = false;
-    boolean hasElev = false;
-    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      if (axis.getAxisType() == AxisType.RadialAzimuth)
-        hasAzimuth = true;
-      if (axis.getAxisType() == AxisType.RadialDistance)
-        hasDistance = true;
-      if (axis.getAxisType() == AxisType.RadialElevation)
-        hasElev = true;
-    }
-
-    // minimum we need
-    if (!(hasAzimuth && hasDistance && hasElev)) {
-      errlog.format("RadialDataset must have azimuth,elevation,distance coordinates");
-      return null;
-    }
-
-    //  ok
-    return new Object(); */
   }
 
 
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
-    TypedDatasetFactoryIF fac = (TypedDatasetFactoryIF) analysis;
-    StringBuilder sbuff = new StringBuilder();
-    TypedDataset result = fac.open(ncd, task, sbuff);
-    errlog.format("%s", sbuff);
-    return (FeatureDataset) result;
+    FeatureDatasetFactory fac = (FeatureDatasetFactory) analysis;
+    return fac.open(FeatureType.RADIAL, ncd, null, task, errlog);
   }
 
-  public FeatureType[] getFeatureType() {
+  public FeatureType[] getFeatureTypes() {
     return new FeatureType[]{FeatureType.RADIAL};
   }
 }

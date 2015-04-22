@@ -39,8 +39,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.builder.CatalogBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.net.ssl.HttpsURLConnection;
@@ -56,16 +56,19 @@ import java.security.cert.Certificate;
  * @author edavis
  * @since 15 July 2005 15:50:59 -0600
  */
-public class TestServerSite extends TestCase
-{
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestServerSite.class );
+public class TestServerSite extends TestCase {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestServerSite.class);
 
 
   private WebConversation wc;
 
-  /** The TDS site to test. */
+  /**
+   * The TDS site to test.
+   */
   private String host = "thredds.ucar.edu:";
-  /** The name of a user with tdsConfig role. */
+  /**
+   * The name of a user with tdsConfig role.
+   */
   private String tdsConfigUser;
   private String tdsConfigWord;
 
@@ -77,136 +80,123 @@ public class TestServerSite extends TestCase
 
   private int maxCrawlDepth = 2;
 
-  public TestServerSite( String name )
-  {
-    super( name );
+  public TestServerSite(String name) {
+    super(name);
   }
 
-  protected void setUp()
-  {
+  protected void setUp() {
     wc = new WebConversation();
 
     Properties env = System.getProperties();
-    host = env.getProperty( "thredds.tds.site", host);
-    tdsConfigUser = env.getProperty( "thredds.tds.config.user");
-    tdsConfigWord = env.getProperty( "thredds.tds.config.password");
+    host = env.getProperty("thredds.tds.site", host);
+    tdsConfigUser = env.getProperty("thredds.tds.config.user");
+    tdsConfigWord = env.getProperty("thredds.tds.config.password");
 
     targetUrlTomcat = "http://" + host + "/";
     targetUrl = "http://" + host + "/thredds/";
 
-    java.net.Authenticator.setDefault( new Authenticator()
-    {
-      public PasswordAuthentication getPasswordAuthentication()
-      {
-        return new PasswordAuthentication( tdsConfigUser, tdsConfigWord.toCharArray() );
+    java.net.Authenticator.setDefault(new Authenticator() {
+      public PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(tdsConfigUser, tdsConfigWord.toCharArray());
       }
-    } );
+    });
 
   }
 
-  /** Test that top Tomcat page is OK. */
-  public void testServerSiteTomcat()
-  {
+  /**
+   * Test that top Tomcat page is OK.
+   */
+  public void testServerSiteTomcat() {
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrlTomcat, curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrlTomcat, curLog);
+    assertTrue(curLog.toString(), resp != null);
 
-    assertTrue( curLog.toString(), checkResponseCodeOk( resp, curLog ) );
+    assertTrue(curLog.toString(), checkResponseCodeOk(resp, curLog));
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
   /**
    * Crawl /thredds/catalog.xml tree.
    */
-  public void testServerSiteTopCatalog()
-  {
+  public void testServerSiteTopCatalog() {
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "catalog.xml", curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrl + "catalog.xml", curLog);
+    assertTrue(curLog.toString(), resp != null);
 
-    if ( ! crawlCatalogTree( wc, resp, curLog, 0, maxCrawlDepth ) )
-    {
-      assertTrue( curLog.toString(), false );
+    if (!crawlCatalogTree(wc, resp, curLog, 0, maxCrawlDepth)) {
+      assertTrue(curLog.toString(), false);
       return;
     }
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  /** Crawl /thredds/catalog.html tree. */
-  public void testServerSiteTop()
-  {
+  /**
+   * Crawl /thredds/catalog.html tree.
+   */
+  public void testServerSiteTop() {
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrl, curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrl, curLog);
+    assertTrue(curLog.toString(), resp != null);
 
-    boolean success = checkResponseCodeOk( resp, curLog );
-    success &= crawlHtmlTree( wc, resp, curLog, 0, maxCrawlDepth );
-    assertTrue( curLog.toString(), success );
+    boolean success = checkResponseCodeOk(resp, curLog);
+    success &= crawlHtmlTree(wc, resp, curLog, 0, maxCrawlDepth);
+    assertTrue(curLog.toString(), success);
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  /** Crawl TDS Docs pages. */
-  public void testServerSiteDocsTop()
-  {
+  /**
+   * Crawl TDS Docs pages.
+   */
+  public void testServerSiteDocsTop() {
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "docs/", curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrl + "docs/", curLog);
+    assertTrue(curLog.toString(), resp != null);
 
-    boolean success = checkResponseCodeOk( resp, curLog );
-    success &= crawlHtmlTree( wc, resp, curLog, 0, maxCrawlDepth );
-    assertTrue( curLog.toString(), success );
+    boolean success = checkResponseCodeOk(resp, curLog);
+    success &= crawlHtmlTree(wc, resp, curLog, 0, maxCrawlDepth);
+    assertTrue(curLog.toString(), success);
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  public void testServerSiteValidateTopCatalog()
-  {
+  public void testServerSiteValidateTopCatalog() {
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "catalog?cmd=validate", curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrl + "catalog?cmd=validate", curLog);
+    assertTrue(curLog.toString(), resp != null);
 
-    boolean success = checkResponseCodeOk( resp, curLog );
+    boolean success = checkResponseCodeOk(resp, curLog);
 
-    assertTrue( curLog.toString(), success );
+    assertTrue(curLog.toString(), success);
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  public void testServerSiteSubset()
-  {
-    assertTrue( "Need to implement subset test", false );
+  public void testServerSiteSubset() {
+    assertTrue("Need to implement subset test", false);
   }
 
-  public void testServerSiteConvert0_6To1_0()
-  {
-    assertTrue( "Need to implement 0.6 to 1.0 conversion test", false );
+  public void testServerSiteConvert0_6To1_0() {
+    assertTrue("Need to implement 0.6 to 1.0 conversion test", false);
   }
 
-  public void testServerSiteDebug()
-  {
-    if ( tdsConfigUser == null || tdsConfigWord == null )
-    {
+  public void testServerSiteDebug() {
+    if (tdsConfigUser == null || tdsConfigWord == null) {
       String tmpMsg = "No \"tdsConfig\" authentication info provided - skipping this test.";
-      log.warn( tmpMsg );
-      assertTrue( tmpMsg, false);
+      log.warn(tmpMsg);
+      assertTrue(tmpMsg, false);
       return;
     }
 
@@ -217,609 +207,500 @@ public class TestServerSite extends TestCase
 
     String urlString = targetUrl + "debug";
     URL url = null;
-    try
-    {
-      url = new URL( urlString );
-    }
-    catch ( MalformedURLException e )
-    {
-      curLog.append( "\n" ).append( urlString ).append( " - malformed URL: " ).append( e.getMessage());
-      assertTrue( curLog.toString(), false );
+    try {
+      url = new URL(urlString);
+    } catch (MalformedURLException e) {
+      curLog.append("\n").append(urlString).append(" - malformed URL: ").append(e.getMessage());
+      assertTrue(curLog.toString(), false);
       return;
     }
     HttpURLConnection con = null;
-    try
-    {
+    try {
       con = (HttpURLConnection) url.openConnection();
-    }
-    catch ( IOException e )
-    {
-      curLog.append( "\n" ).append( urlString ).append( " - IOException opening connection: " ).append( e.getMessage() );
-      assertTrue( curLog.toString(), false );
+    } catch (IOException e) {
+      curLog.append("\n").append(urlString).append(" - IOException opening connection: ").append(e.getMessage());
+      assertTrue(curLog.toString(), false);
       return;
     }
-    con.setInstanceFollowRedirects( true );
+    con.setInstanceFollowRedirects(true);
     int respCode;
-    try
-    {
+    try {
       respCode = con.getResponseCode();
-    }
-    catch ( IOException e )
-    {
-      curLog.append( "\n" ).append( urlString ).append( " - IOException getting response code: " ).append( e.getMessage() );
-      assertTrue( curLog.toString(), false );
+    } catch (IOException e) {
+      curLog.append("\n").append(urlString).append(" - IOException getting response code: ").append(e.getMessage());
+      assertTrue(curLog.toString(), false);
       return;
     }
-    System.out.println( urlString + " - Response code = " + respCode );
-    String urlString2 = con.getHeaderField( "Location" );
-    System.out.println( "location header: " + urlString2 );
+    System.out.println(urlString + " - Response code = " + respCode);
+    String urlString2 = con.getHeaderField("Location");
+    System.out.println("location header: " + urlString2);
     URL url2;
-    try
-    {
-      url2 = new URL( urlString2 );
-    }
-    catch ( MalformedURLException e )
-    {
-      curLog.append( "\n" ).append( urlString2 ).append( " - malformed URL: " ).append( e.getMessage() );
-      assertTrue( curLog.toString(), false );
+    try {
+      url2 = new URL(urlString2);
+    } catch (MalformedURLException e) {
+      curLog.append("\n").append(urlString2).append(" - malformed URL: ").append(e.getMessage());
+      assertTrue(curLog.toString(), false);
       return;
     }
     HttpURLConnection con2 = null;
-    try
-    {
+    try {
       con2 = (HttpURLConnection) url2.openConnection();
-    }
-    catch ( IOException e )
-    {
-      curLog.append( "\n" ).append( urlString ).append( " - IOException opening connection: " ).append( e.getMessage() );
-      assertTrue( curLog.toString(), false );
+    } catch (IOException e) {
+      curLog.append("\n").append(urlString).append(" - IOException opening connection: ").append(e.getMessage());
+      assertTrue(curLog.toString(), false);
       return;
     }
-    System.out.println( "Check if HttpsURLConnection ..." );
-    if ( con2 instanceof HttpsURLConnection )
-    {
-      System.out.println( "... is HttpsURLConnection" );
+    System.out.println("Check if HttpsURLConnection ...");
+    if (con2 instanceof HttpsURLConnection) {
+      System.out.println("... is HttpsURLConnection");
       HttpsURLConnection scon = (HttpsURLConnection) con2;
       Certificate[] certs = new Certificate[0];
       certs = scon.getLocalCertificates();
-      for ( int i = 0; i < certs.length; i++ )
-      {
-        System.out.println( "Local Cert[" + i + "]: " + certs[i].toString() );
+      for (int i = 0; i < certs.length; i++) {
+        System.out.println("Local Cert[" + i + "]: " + certs[i].toString());
       }
-      try
-      {
+      try {
         certs = scon.getServerCertificates();
-      }
-      catch ( SSLPeerUnverifiedException e )
-      {
-        curLog.append( "\n" ).append( urlString ).append( " - SSLPeerUnverifiedException getting certificates: " ).append( e.getMessage() );
-        assertTrue( curLog.toString(), false );
+      } catch (SSLPeerUnverifiedException e) {
+        curLog.append("\n").append(urlString).append(" - SSLPeerUnverifiedException getting certificates: ").append(e.getMessage());
+        assertTrue(curLog.toString(), false);
         return;
       }
 
-      for ( int i = 0; i < certs.length; i++ )
-      {
-        System.out.println( "Server Cert[" + i + "]: " + certs[i].toString() );
+      for (int i = 0; i < certs.length; i++) {
+        System.out.println("Server Cert[" + i + "]: " + certs[i].toString());
       }
-    }
-    else
-      System.out.println( "... not HttpsURLConnection" );
+    } else
+      System.out.println("... not HttpsURLConnection");
 
     int respCode2;
-    try
-    {
+    try {
       respCode2 = con2.getResponseCode();
-    }
-    catch ( IOException e )
-    {
-      curLog.append( "\n" ).append( urlString2 ).append( " - IOException getting response code: " ).append( e.getMessage() );
-      assertTrue( curLog.toString(), false );
+    } catch (IOException e) {
+      curLog.append("\n").append(urlString2).append(" - IOException getting response code: ").append(e.getMessage());
+      assertTrue(curLog.toString(), false);
       return;
     }
-    System.out.println( urlString + " - Response code = " + respCode2 );
+    System.out.println(urlString + " - Response code = " + respCode2);
 
 
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrlTomcat + "dqcServlet/redirect-test/302" , curLog );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrlTomcat + "dqcServlet/redirect-test/302", curLog);
     //WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "debug", curLog );
-    assertTrue( curLog.toString(), resp != null );
+    assertTrue(curLog.toString(), resp != null);
     String respUrlString = resp.getURL().toString();
 
-    if ( ! checkResponseCodeOk( resp, curLog ) )
-    {
-      assertTrue( curLog.toString(), false );
+    if (!checkResponseCodeOk(resp, curLog)) {
+      assertTrue(curLog.toString(), false);
       return;
     }
-    if ( ! resp.isHTML() )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - response not HTML." );
-      assertTrue( curLog.toString(), false );
+    if (!resp.isHTML()) {
+      curLog.append("\n").append(respUrlString).append(" - response not HTML.");
+      assertTrue(curLog.toString(), false);
       return;
     }
 
-    boolean success = checkTitle( resp, "THREDDS Debug", curLog );
+    boolean success = checkTitle(resp, "THREDDS Debug", curLog);
 
-    success &= checkLinkExistence( resp, "Show Logs", curLog );
-    success &= checkLinkExistence( resp, "Show Build Version", curLog );
+    success &= checkLinkExistence(resp, "Show Logs", curLog);
+    success &= checkLinkExistence(resp, "Show Build Version", curLog);
     //success &= checkLinkExistence( resp, "Reinitialize", curLog );
 
-    assertTrue( curLog.toString(), success );
+    assertTrue(curLog.toString(), success);
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  public void testServerSiteRoot()
-  {
-    assertTrue( "Need to implement /thredds/root/ test", false );
+  public void testServerSiteRoot() {
+    assertTrue("Need to implement /thredds/root/ test", false);
   }
 
-  public void testServerSiteContent()
-  {
-    if ( tdsConfigUser == null || tdsConfigWord == null )
-    {
+  public void testServerSiteContent() {
+    if (tdsConfigUser == null || tdsConfigWord == null) {
       String tmpMsg = "No \"tdsConfig\" authentication info provided - skipping this test.";
-      log.warn( tmpMsg );
-      assertTrue( tmpMsg, false );
+      log.warn(tmpMsg);
+      assertTrue(tmpMsg, false);
       return;
     }
 
     // Test with tdsConfig authentication
-    wc.setAuthorization( tdsConfigUser, tdsConfigWord );
+    wc.setAuthorization(tdsConfigUser, tdsConfigWord);
 
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "content/", curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrl + "content/", curLog);
+    assertTrue(curLog.toString(), resp != null);
     String respUrlString = resp.getURL().toString();
 
-    if ( ! checkResponseCodeOk( resp, curLog ) )
-    {
-      assertTrue( curLog.toString(), false );
+    if (!checkResponseCodeOk(resp, curLog)) {
+      assertTrue(curLog.toString(), false);
       return;
     }
-    if ( ! resp.isHTML() )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - response not HTML." );
-      assertTrue( curLog.toString(), false );
+    if (!resp.isHTML()) {
+      curLog.append("\n").append(respUrlString).append(" - response not HTML.");
+      assertTrue(curLog.toString(), false);
       return;
     }
 
-    boolean success = checkTitle( resp, "Directory listing for /content/", curLog );
+    boolean success = checkTitle(resp, "Directory listing for /content/", curLog);
 
-    success &= checkLinkExistence( resp, "catalog.xml", curLog );
-    success &= checkLinkExistence( resp, "cataloggen/", curLog );
-    success &= checkLinkExistence( resp, "dodsC/", curLog );
-    success &= checkLinkExistence( resp, "dqcServlet/", curLog );
-    success &= checkLinkExistence( resp, "extraCatalogs.txt", curLog );
-    success &= checkLinkExistence( resp, "logs/", curLog );
-    success &= checkLinkExistence( resp, "root/", curLog );
-    success &= checkLinkExistence( resp, "wcs/", curLog );
-    success &= checkLinkExistence( resp, "junk/", curLog );
+    success &= checkLinkExistence(resp, "catalog.xml", curLog);
+    success &= checkLinkExistence(resp, "cataloggen/", curLog);
+    success &= checkLinkExistence(resp, "dodsC/", curLog);
+    success &= checkLinkExistence(resp, "dqcServlet/", curLog);
+    success &= checkLinkExistence(resp, "extraCatalogs.txt", curLog);
+    success &= checkLinkExistence(resp, "logs/", curLog);
+    success &= checkLinkExistence(resp, "root/", curLog);
+    success &= checkLinkExistence(resp, "wcs/", curLog);
+    success &= checkLinkExistence(resp, "junk/", curLog);
 
-    assertTrue( curLog.toString(), success );
+    assertTrue(curLog.toString(), success);
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  public void testServerSiteCatGen()
-  {
-    if ( tdsConfigUser == null || tdsConfigWord == null )
-    {
+  public void testServerSiteCatGen() {
+    if (tdsConfigUser == null || tdsConfigWord == null) {
       String tmpMsg = "No \"tdsConfig\" authentication info provided - skipping this test.";
-      log.warn( tmpMsg );
-      assertTrue( tmpMsg, false );
+      log.warn(tmpMsg);
+      assertTrue(tmpMsg, false);
       return;
     }
 
     // Test with tdsConfig authentication
-    wc.setAuthorization( tdsConfigUser, tdsConfigWord );
+    wc.setAuthorization(tdsConfigUser, tdsConfigWord);
 
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "cataloggen/admin/", curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrl + "cataloggen/admin/", curLog);
+    assertTrue(curLog.toString(), resp != null);
     String respUrlString = resp.getURL().toString();
 
-    if ( ! checkResponseCodeOk( resp, curLog ) )
-    {
-      assertTrue( curLog.toString(), false );
+    if (!checkResponseCodeOk(resp, curLog)) {
+      assertTrue(curLog.toString(), false);
       return;
     }
-    if ( ! resp.isHTML() )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - response not HTML." );
-      assertTrue( curLog.toString(), false );
+    if (!resp.isHTML()) {
+      curLog.append("\n").append(respUrlString).append(" - response not HTML.");
+      assertTrue(curLog.toString(), false);
       return;
     }
 
-    boolean success = checkTitle( resp, "Catalog Generator Servlet Config", curLog );
+    boolean success = checkTitle(resp, "Catalog Generator Servlet Config", curLog);
     WebTable[] tables;
-    try
-    {
+    try {
       tables = resp.getTables();
-    }
-    catch ( SAXException e )
-    {
-      curLog.append( "\n").append( respUrlString).append( " - failed to parse: " ).append( e.getMessage());
-      assertTrue( curLog.toString(),
-                  false);
+    } catch (SAXException e) {
+      curLog.append("\n").append(respUrlString).append(" - failed to parse: ").append(e.getMessage());
+      assertTrue(curLog.toString(),
+              false);
       return;
     }
 
-    success &= checkTableCellText( resp, tables[0], 0, 0, "Task Name", curLog );
-    success &= checkTableCellText( resp, tables[0], 0, 1, "Configuration Document", curLog );
+    success &= checkTableCellText(resp, tables[0], 0, 0, "Task Name", curLog);
+    success &= checkTableCellText(resp, tables[0], 0, 1, "Configuration Document", curLog);
 
     int columnCount = tables[0].getColumnCount();
-    if ( columnCount != catGenAdminColumnCount )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " # columns <" ).append( columnCount ).append( "> not as expected <" ).append( catGenAdminColumnCount ).append( ">" );
+    if (columnCount != catGenAdminColumnCount) {
+      curLog.append("\n").append(respUrlString).append(" # columns <").append(columnCount).append("> not as expected <").append(catGenAdminColumnCount).append(">");
       success = false;
       return;
     }
 
-    assertTrue( curLog.toString(), success );
+    assertTrue(curLog.toString(), success);
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  public void testServerSiteDqcServletHtml()
-  {
+  public void testServerSiteDqcServletHtml() {
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "dqc/", curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrl + "dqc/", curLog);
+    assertTrue(curLog.toString(), resp != null);
     String respUrlString = resp.getURL().toString();
 
-    if ( ! checkResponseCodeOk( resp, curLog ) )
-    {
-      assertTrue( curLog.toString(), false );
+    if (!checkResponseCodeOk(resp, curLog)) {
+      assertTrue(curLog.toString(), false);
       return;
     }
-    if ( ! resp.isHTML() )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - response not HTML." );
-      assertTrue( curLog.toString(), false );
+    if (!resp.isHTML()) {
+      curLog.append("\n").append(respUrlString).append(" - response not HTML.");
+      assertTrue(curLog.toString(), false);
       return;
     }
 
-    boolean success = checkTitle( resp, "DQC Servlet - Available Datasets", curLog );
+    boolean success = checkTitle(resp, "DQC Servlet - Available Datasets", curLog);
 
     WebTable[] tables;
-    try
-    {
+    try {
       tables = resp.getTables();
-    }
-    catch ( SAXException e )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - failed to parse: " ).append( e.getMessage() );
-      assertTrue( curLog.toString(),
-                  false );
+    } catch (SAXException e) {
+      curLog.append("\n").append(respUrlString).append(" - failed to parse: ").append(e.getMessage());
+      assertTrue(curLog.toString(),
+              false);
       return;
     }
 
-    success &= checkTableCellText( resp, tables[0], 0, 0, "Name", curLog );
-    success &= checkTableCellText( resp, tables[0], 0, 1, "Description", curLog );
-    success &= checkTableCellText( resp, tables[0], 0, 2, "DQC Document", curLog );
+    success &= checkTableCellText(resp, tables[0], 0, 0, "Name", curLog);
+    success &= checkTableCellText(resp, tables[0], 0, 1, "Description", curLog);
+    success &= checkTableCellText(resp, tables[0], 0, 2, "DQC Document", curLog);
 
     int columnCount = tables[0].getColumnCount();
-    if ( columnCount != dqcAdminColumnCount )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " # columns <" ).append( columnCount ).append( "> not as expected <" ).append( dqcAdminColumnCount ).append( ">" );
+    if (columnCount != dqcAdminColumnCount) {
+      curLog.append("\n").append(respUrlString).append(" # columns <").append(columnCount).append("> not as expected <").append(dqcAdminColumnCount).append(">");
       success = false;
     }
 
-    assertTrue( curLog.toString(), success );
+    assertTrue(curLog.toString(), success);
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  public void testServerSiteDqcServletXml()
-  {
+  public void testServerSiteDqcServletXml() {
     StringBuilder curLog = new StringBuilder();
-    WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "dqc/catalog.xml", curLog );
-    assertTrue( curLog.toString(), resp != null );
+    WebResponse resp = getResponseToAGetRequest(wc, targetUrl + "dqc/catalog.xml", curLog);
+    assertTrue(curLog.toString(), resp != null);
 
-    if ( ! checkInvCatalog( resp, curLog ) )
-    {
-      assertTrue( curLog.toString(), false );
+    if (!checkInvCatalog(resp, curLog)) {
+      assertTrue(curLog.toString(), false);
       return;
     }
 
-    if ( curLog.length() != 0 )
-    {
-      System.out.println( "Passed with log messages:\n" + curLog.toString() );
+    if (curLog.length() != 0) {
+      System.out.println("Passed with log messages:\n" + curLog.toString());
     }
   }
 
-  protected static boolean checkInvCatalog( WebResponse resp, StringBuilder curLog )
-  {
+  protected static boolean checkInvCatalog(WebResponse resp, StringBuilder curLog) {
     String respUrlString = resp.getURL().toString();
 
-    if ( ! checkResponseCodeOk( resp, curLog ) )
-    {
+    if (!checkResponseCodeOk(resp, curLog)) {
       return false;
     }
 
-    if ( ! resp.getContentType().equals( "text/xml" ) )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - not XML." );
+    if (!resp.getContentType().equals("text/xml")) {
+      curLog.append("\n").append(respUrlString).append(" - not XML.");
       return false;
     }
 
     // Get DOM for this response.
     Document catDoc;
-    try
-    {
+    try {
       catDoc = resp.getDOM();
-    }
-    catch ( SAXException e )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - parsing error: " ).append( e.getMessage() );
+    } catch (SAXException e) {
+      curLog.append("\n").append(respUrlString).append(" - parsing error: ").append(e.getMessage());
       return false;
     }
 
-    return checkInvCatalog( catDoc, respUrlString, curLog );
+    return checkInvCatalog(catDoc, respUrlString, curLog);
   }
 
-  protected static boolean checkInvCatalog( Document catDoc, String respUrlString, StringBuilder curLog )
-  {
-    // Get InvCatalogImp of this response.
-    InvCatalogImpl cat = null;
+  protected static boolean checkInvCatalog(Document catDoc, String respUrlString, StringBuilder curLog) {
+    CatalogBuilder catBuilder = null;
+    Catalog cat = null;
     org.jdom2.input.DOMBuilder builder = new org.jdom2.input.DOMBuilder();
-    try
-    {
-      cat = InvCatalogFactory.getDefaultFactory( false ).readXML( builder.build( catDoc), new URI( respUrlString ) );
-    }
-    catch ( URISyntaxException e )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - bad URI syntax: " ).append( e.getMessage() );
+    try {
+      org.jdom2.Document doc = builder.build(catDoc);
+      cat = catBuilder.buildFromJdom(doc.getRootElement(), new URI(respUrlString));
+    } catch (URISyntaxException e) {
+      curLog.append("\n").append(respUrlString).append(" - bad URI syntax: ").append(e.getMessage());
       return false;
+    } catch (IOException e) {
+      e.printStackTrace();
     }
 
     // Check validity of catalog.
-    if ( ! cat.check( curLog ) )
-    {
-      curLog.append( "\n").append( respUrlString ).append( " - not a valid catalog." );
+    if (!catBuilder.hasFatalError()) {
+      curLog.append("\n").append(respUrlString).append(" - not a valid catalog.");
       return false;
     }
     return true;
   }
 
-  protected static boolean crawlCatalogTree( WebConversation wc, WebResponse resp, StringBuilder curLog, int curCrawlDepth, int maxCrawlDepth )
-  {
-    if ( curCrawlDepth + 1 > maxCrawlDepth ) return true;
+  protected static boolean crawlCatalogTree(WebConversation wc, WebResponse resp, StringBuilder curLog, int curCrawlDepth, int maxCrawlDepth) {
+    if (curCrawlDepth + 1 > maxCrawlDepth) return true;
     curCrawlDepth++;
 
     String respUrlString = resp.getURL().toString();
 
     // Check that given response OK.
-    if ( ! checkResponseCodeOk( resp, curLog ) )
-    {
+    if (!checkResponseCodeOk(resp, curLog)) {
       return false;
     }
 
     // Check that response content type is XML.
-    if ( ! resp.getContentType().equals( "text/xml") )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - not XML." );
+    if (!resp.getContentType().equals("text/xml")) {
+      curLog.append("\n").append(respUrlString).append(" - not XML.");
       return false;
     }
 
     // Parse the response and get DOM.
     Document doc;
-    try
-    {
+    try {
       doc = resp.getDOM();
-    }
-    catch ( SAXException e )
-    {
-      curLog.append( "\n").append( respUrlString).append( " - could not parse:").append( e.getMessage() );
+    } catch (SAXException e) {
+      curLog.append("\n").append(respUrlString).append(" - could not parse:").append(e.getMessage());
       return false;
     }
 
     // Check that this is a valid catalog.
-    if ( ! checkInvCatalog( doc, respUrlString, curLog ) )
-    {
+    if (!checkInvCatalog(doc, respUrlString, curLog)) {
       return false;
     }
 
     boolean success = true;
-    NodeList catRefNodeList = doc.getElementsByTagName( "catalogRef");
+    NodeList catRefNodeList = doc.getElementsByTagName("catalogRef");
     Node curNode;
-    for ( int i = 0; i < catRefNodeList.getLength(); i++ )
-    {
-      curNode = catRefNodeList.item( i);
+    for (int i = 0; i < catRefNodeList.getLength(); i++) {
+      curNode = catRefNodeList.item(i);
 //      String curLink = curNode.getAttributes().getNamedItemNS( "http://www.w3.org/1999/xlink", "href").getNodeValue();
-      String curLink = curNode.getAttributes().getNamedItem( "xlink:href").getNodeValue();
-      try
-      {
-        curLink = new URL( resp.getURL(), curLink).toString();
-      }
-      catch ( MalformedURLException e )
-      {
-        curLog.append( "\n" ).append( curLink ).append( " - malformed URL:" ).append( e.getMessage() );
+      String curLink = curNode.getAttributes().getNamedItem("xlink:href").getNodeValue();
+      try {
+        curLink = new URL(resp.getURL(), curLink).toString();
+      } catch (MalformedURLException e) {
+        curLog.append("\n").append(curLink).append(" - malformed URL:").append(e.getMessage());
         success = false;
         continue;
       }
 
       // If the current link is under the current catalog URL,
       // continue crawling.
-      if ( curLink.startsWith( respUrlString ))
-      {
-        WebResponse curResp = getResponseToAGetRequest( wc, curLink, curLog );
-        if ( curResp == null )
-        {
+      if (curLink.startsWith(respUrlString)) {
+        WebResponse curResp = getResponseToAGetRequest(wc, curLink, curLog);
+        if (curResp == null) {
           success = false;
           continue;
         }
-        success &= crawlCatalogTree( wc, curResp, curLog, curCrawlDepth, maxCrawlDepth );
+        success &= crawlCatalogTree(wc, curResp, curLog, curCrawlDepth, maxCrawlDepth);
       }
     }
 
-    return( success );
+    return (success);
   }
 
-  protected static boolean crawlHtmlTree( WebConversation wc, WebResponse resp, StringBuilder curLog, int curCrawlDepth, int maxCrawlDepth )
-  {
-    if ( curCrawlDepth + 1 > maxCrawlDepth ) return true;
+  protected static boolean crawlHtmlTree(WebConversation wc, WebResponse resp, StringBuilder curLog, int curCrawlDepth, int maxCrawlDepth) {
+    if (curCrawlDepth + 1 > maxCrawlDepth) return true;
     curCrawlDepth++;
 
     String respUrlString = resp.getURL().toString();
-    if ( ! resp.isHTML() && ! resp.getContentType().equals( "text/xml" ) )
-    {
-      curLog.append( "\n").append( respUrlString).append( " - not HTML or XML." );
-      return( false );
+    if (!resp.isHTML() && !resp.getContentType().equals("text/xml")) {
+      curLog.append("\n").append(respUrlString).append(" - not HTML or XML.");
+      return (false);
     }
 
     // Get all links on this page.
     WebLink[] links;
-    try
-    {
+    try {
       links = resp.getLinks();
-    }
-    catch ( SAXException e )
-    {
-      curLog.append( "\n").append( respUrlString).append( " - parsing error : ").append( e.getMessage() );
-      return ( false );
+    } catch (SAXException e) {
+      curLog.append("\n").append(respUrlString).append(" - parsing error : ").append(e.getMessage());
+      return (false);
     }
 
     boolean success = true;
 
-    for ( int i = 0; i < links.length; i++ )
-    {
+    for (int i = 0; i < links.length; i++) {
       String curLinkUrlString;
       WebLink curLink = links[i];
-      try
-      {
-        curLinkUrlString =  curLink.getRequest().getURL().toString();
-      }
-      catch ( MalformedURLException e )
-      {
-        curLog.append( "\n").append( respUrlString).append( " - malformed current link URL <").append( curLink.getURLString()).append( ">: ").append( e.getMessage() );
+      try {
+        curLinkUrlString = curLink.getRequest().getURL().toString();
+      } catch (MalformedURLException e) {
+        curLog.append("\n").append(respUrlString).append(" - malformed current link URL <").append(curLink.getURLString()).append(">: ").append(e.getMessage());
         success = false;
         continue;
       }
 
-      if ( curLinkUrlString.startsWith( respUrlString))
-      {
-        WebResponse curResp = getResponseToAGetRequest( wc, curLinkUrlString, curLog);
-        if ( curResp == null )
-        {
+      if (curLinkUrlString.startsWith(respUrlString)) {
+        WebResponse curResp = getResponseToAGetRequest(wc, curLinkUrlString, curLog);
+        if (curResp == null) {
           success = false;
           continue;
         }
 
-        success &= checkResponseCodeOk( curResp, curLog );
-        if ( curResp.isHTML() )
-        {
-          success &= crawlHtmlTree( wc, curResp, curLog, curCrawlDepth, maxCrawlDepth );
+        success &= checkResponseCodeOk(curResp, curLog);
+        if (curResp.isHTML()) {
+          success &= crawlHtmlTree(wc, curResp, curLog, curCrawlDepth, maxCrawlDepth);
         }
       }
     }
-    return( success);
+    return (success);
   }
 
-  protected static boolean checkResponseCodeOk( WebResponse resp, StringBuilder log )
-  {
+  protected static boolean checkResponseCodeOk(WebResponse resp, StringBuilder log) {
     String respUrlString = resp.getURL().toString();
     int respCode = resp.getResponseCode();
-    if ( respCode != HttpServletResponse.SC_OK )
-    {
-      log.append( "\n").append( respUrlString).append( " - response code <").append( respCode).append( "> not as expected <OK - 200>");
+    if (respCode != HttpServletResponse.SC_OK) {
+      log.append("\n").append(respUrlString).append(" - response code <").append(respCode).append("> not as expected <OK - 200>");
       return false;
     }
     return true;
   }
 
-  protected static WebResponse getResponseToAGetRequest( WebConversation wc, String reqUrl, StringBuilder curLog )
-  {
-    WebRequest req = new GetMethodWebRequest( reqUrl );
+  protected static WebResponse getResponseToAGetRequest(WebConversation wc, String reqUrl, StringBuilder curLog) {
+    WebRequest req = new GetMethodWebRequest(reqUrl);
     WebResponse resp;
-    try
-    {
-      resp = wc.getResponse( req );
-    }
-    catch ( IOException e )
-    {
-      curLog.append( "\n").append( reqUrl).append( " - failed to get response: ").append( e.getMessage() );
+    try {
+      resp = wc.getResponse(req);
+    } catch (IOException e) {
+      curLog.append("\n").append(reqUrl).append(" - failed to get response: ").append(e.getMessage());
       return null;
-    }
-    catch ( SAXException e )
-    {
-      curLog.append( "\n").append( reqUrl).append( " - failed to parse response: ").append( e.getMessage() );
+    } catch (SAXException e) {
+      curLog.append("\n").append(reqUrl).append(" - failed to parse response: ").append(e.getMessage());
       return null;
-    }
-    catch ( com.meterware.httpunit.HttpException e )
-    {
-      curLog.append( "\n" ).append( reqUrl ).append( " - HTTP error: " ).append( e.getMessage() );
+    } catch (com.meterware.httpunit.HttpException e) {
+      curLog.append("\n").append(reqUrl).append(" - HTTP error: ").append(e.getMessage());
       return null;
     }
     return resp;
   }
 
-  protected static boolean checkTitle( WebResponse resp, String title, StringBuilder curLog )
-  {
+  protected static boolean checkTitle(WebResponse resp, String title, StringBuilder curLog) {
     String respUrlString = resp.getURL().toString();
     String pageTitle = null;
-    try
-    {
+    try {
       pageTitle = resp.getTitle();
-    }
-    catch ( SAXException e )
-    {
-      curLog.append( "\n" ).append( respUrlString )
-              .append( " - parse error reading page title: " )
-              .append( e.getMessage() );
+    } catch (SAXException e) {
+      curLog.append("\n").append(respUrlString)
+              .append(" - parse error reading page title: ")
+              .append(e.getMessage());
       return false;
     }
 
-    if ( ! pageTitle.equals( title ) )
-    {
-      curLog.append( "\n" ).append( respUrlString )
-              .append( " - title <" ).append( pageTitle )
-              .append( "> not as expected <" ).append( title )
-              .append( ">." );
+    if (!pageTitle.equals(title)) {
+      curLog.append("\n").append(respUrlString)
+              .append(" - title <").append(pageTitle)
+              .append("> not as expected <").append(title)
+              .append(">.");
       return false;
     }
     return true;
   }
 
-  protected static boolean checkLinkExistence( WebResponse resp, String linkText, StringBuilder curLog )
-  {
+  protected static boolean checkLinkExistence(WebResponse resp, String linkText, StringBuilder curLog) {
     String respUrlString = resp.getURL().toString();
     WebLink link = null;
-    try
-    {
-      link = resp.getLinkWith( linkText );
-    }
-    catch ( SAXException e )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - parse error checking for link <\"" ).append( linkText ).append( "\">: " ).append( e.getMessage() );
+    try {
+      link = resp.getLinkWith(linkText);
+    } catch (SAXException e) {
+      curLog.append("\n").append(respUrlString).append(" - parse error checking for link <\"").append(linkText).append("\">: ").append(e.getMessage());
       return false;
     }
-    if ( link == null )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - did not find link <\"" ).append( linkText ).append( "\">: " );
+    if (link == null) {
+      curLog.append("\n").append(respUrlString).append(" - did not find link <\"").append(linkText).append("\">: ");
       return false;
     }
     return true;
   }
 
-  protected boolean checkTableCellText( WebResponse resp, WebTable table, int headerRow, int headerCol, String headerText, StringBuilder curLog )
-  {
+  protected boolean checkTableCellText(WebResponse resp, WebTable table, int headerRow, int headerCol, String headerText, StringBuilder curLog) {
     String respUrlString = resp.getURL().toString();
-    String headerCellAsText = table.getCellAsText( headerRow, headerCol );
-    if ( ! headerCellAsText.equals( headerText ) )
-    {
-      curLog.append( "\n" ).append( respUrlString ).append( " - table header in column 0 <" ).append( headerCellAsText ).append( "> not as expected <" ).append( headerText ).append( ">." );
+    String headerCellAsText = table.getCellAsText(headerRow, headerCol);
+    if (!headerCellAsText.equals(headerText)) {
+      curLog.append("\n").append(respUrlString).append(" - table header in column 0 <").append(headerCellAsText).append("> not as expected <").append(headerText).append(">.");
       return false;
     }
     return true;

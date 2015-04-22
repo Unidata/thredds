@@ -71,7 +71,7 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class CoordinateSpaceSubsettingTest {
 		
@@ -79,14 +79,7 @@ public class CoordinateSpaceSubsettingTest {
 	private WebApplicationContext wac;
 
 	private MockMvc mockMvc;	
-	
-	private RequestBuilder requestBuilder;	
-	
-	private String pathInfo;
-	private int[][] expectedShapes;
-	private List<String> vars; 
-	private double[] projectionRectParams;
-	
+
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
 				
@@ -100,6 +93,17 @@ public class CoordinateSpaceSubsettingTest {
 			});	
 	
 	}
+
+	@Before
+	public void setUp() throws IOException{
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+
+	////////////////////////////////////////////////////////
+	private String pathInfo;
+	private int[][] expectedShapes;
+	private List<String> vars;
+	private double[] projectionRectParams;
 	
 	public CoordinateSpaceSubsettingTest(int[][] result, String pathInfo, List<String> vars, double[] projectionRectParams){
 		this.expectedShapes= result;
@@ -107,37 +111,32 @@ public class CoordinateSpaceSubsettingTest {
 		this.vars = vars;
 		this.projectionRectParams=projectionRectParams;
 	}
-	
-	@Before
-	public void setUp() throws IOException{		
-		
-		mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();		
+
+	@Test
+	public void shouldSubsetGrid() throws Exception{
+
 		Iterator<String> it = vars.iterator();
 		String varParamVal = it.next();
 		while(it.hasNext()){
 			String next = it.next();
 			varParamVal =varParamVal+","+next;
 		}
-		
-		requestBuilder = MockMvcRequestBuilders.get(pathInfo).servletPath(pathInfo)
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.get(pathInfo).servletPath(pathInfo)
 				.param("var",  varParamVal)
 				.param("minx", Double.valueOf(projectionRectParams[0]).toString())
 				.param("miny", Double.valueOf(projectionRectParams[1]).toString())
 				.param("maxx", Double.valueOf(projectionRectParams[2]).toString())
-				.param("maxy", Double.valueOf(projectionRectParams[3]).toString());		
-	}
-	
-	@Test
-	public void shouldSubsetGrid() throws Exception{
-				
+				.param("maxy", Double.valueOf(projectionRectParams[3]).toString());
+		System.out.printf("%s vars=%s%n", pathInfo, varParamVal);
+
 		MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();
 		assertEquals(200, mvc.getResponse().getStatus());
-		
-		
-		//Open the binary response in memory
+
+		// Open the binary response in memory
 		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", mvc.getResponse().getContentAsByteArray() );	
 		
-		ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));		
+		ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
 		assertTrue( gdsDataset.getCalendarDateRange().isPoint());		
 		//assertEquals(expectedValue, Integer.valueOf( gdsDataset.getDataVariables().size()));
 		
@@ -150,7 +149,6 @@ public class CoordinateSpaceSubsettingTest {
 		}
 		
 		assertArrayEquals(expectedShapes, shapes);
-		
 	}
 		
 }

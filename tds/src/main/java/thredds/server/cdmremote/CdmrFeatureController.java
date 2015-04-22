@@ -33,16 +33,15 @@
 
 package thredds.server.cdmremote;
 
-import org.springframework.web.servlet.mvc.AbstractCommandController;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 import org.jdom2.Document;
 import org.jdom2.transform.XSLTransformer;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
-import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,20 +64,17 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.Station;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * Controller for CdmrFeature service.
  * At the moment, only handles station time series
  *
- * @Deprecatred deprecated in favor of CdmrfController
- *
  * @author caron
+ * @Deprecated deprecated in favor of CdmrfController
  * @since May 28, 2009
- *  
  */
 @Deprecated
-public class CdmrFeatureController extends AbstractCommandController { // implements LastModified {
+public class CdmrFeatureController { // implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrFeatureController.class);
   private static boolean debug = false, showTime = false, showReq = false;
 
@@ -99,8 +95,8 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
   private TdsContext tdsContext;
 
   public CdmrFeatureController() {
-    setCommandClass(CdmRemoteQueryBean.class);
-    setCommandName("PointQueryBean");
+//    setCommandClass(CdmRemoteQueryBean.class);
+//    setCommandName("PointQueryBean");
   }
 
   public void setTdsContext(TdsContext tdsContext) {
@@ -123,10 +119,10 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       System.out.printf(" path=%s%n query=%s%n", req.getPathInfo(), req.getQueryString());
     }
 
-    CdmRemoteQueryBean query = null;
+    CdmrFeatureQueryBean query = null;
     try {
       // query validation - first pass
-      query = (CdmRemoteQueryBean) command;
+      query = (CdmrFeatureQueryBean) command;
       if (!query.validate()) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
         if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
@@ -137,59 +133,33 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     }
     if (debug) System.out.printf(" %s%n", query);
 
-    FeatureDatasetPoint fdp = null;
+    try (FeatureDatasetPoint fdp = findFeatureDatasetPointByPath(req, res, null)) {
+      if (fdp == null) return null;
 
-    // this looks for a featureCollection
-    InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res);
-    if (fc != null) {
-      fdp = (FeatureDatasetPoint) fc.getFeatureDataset();
-
-    } else {
-      // tom kunicki 12/18/10
-      // allows a single NetcdfFile to be turned into a FeatureDataset
-      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res);
-      if (ncfile != null) {
-        FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
-                FeatureType.ANY,                  // will check FeatureType below if needed...
-                NetcdfDataset.wrap(ncfile, null),
-                null,
-                new Formatter(System.err));       // better way to do this?
-        if (fd instanceof FeatureDatasetPoint) {
-          fdp = (FeatureDatasetPoint) fd;
-        }
+      List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
+      if (list.size() == 0) {
+        log.error(fdp.getLocation() + " does not have any PointFeatureCollections");
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, fdp.getLocation() + " does not have any PointFeatureCollections");
+        return null;
       }
-    }
 
-    if (fdp == null) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point or station dataset");
-      return null;
-    }
+      // check on feature type, using suffix convention LOOK
+      String path = req.getPathInfo();
+      FeatureType ft = null;
+      if (path.endsWith("/station")) {
+        ft = FeatureType.STATION;
+        path = path.substring(0, path.lastIndexOf('/'));
+      } else if (path.endsWith("/point")) {
+        ft = FeatureType.POINT;
+        path = path.substring(0, path.lastIndexOf('/'));
+      }
 
-    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
-    if (list.size() == 0) {
-      log.error(fdp.getLocation()+" does not have any PointFeatureCollections");
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, fdp.getLocation()+" does not have any PointFeatureCollections");
-      return null;
-    }
+      if (ft != null && ft != fdp.getFeatureType()) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
+      }
 
-    // check on feature type, using suffix convention LOOK
-    String path = req.getPathInfo();
-    FeatureType ft = null;
-    if (path.endsWith("/station")) {
-      ft = FeatureType.STATION;
-      path = path.substring(0, path.lastIndexOf('/'));
-    } else if (path.endsWith("/point")) {
-      ft = FeatureType.POINT;
-      path = path.substring(0, path.lastIndexOf('/'));
-    }
-
-    if (ft != null && ft != fdp.getFeatureType()) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
-    }
-
-    try {
-      CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
-      CdmRemoteQueryBean.ResponseType resType = query.getResponseType();
+      CdmrFeatureQueryBean.RequestType reqType = query.getRequestType();
+      CdmrFeatureQueryBean.ResponseType resType = query.getResponseType();
       switch (reqType) {
         case capabilities:
         case form:
@@ -203,7 +173,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
           return processData(req, res, fdp, path, query);
 
         case stations:
-          if (resType == CdmRemoteQueryBean.ResponseType.xml)
+          if (resType == CdmrFeatureQueryBean.ResponseType.xml)
             return processXml(req, res, fdp, absPath, query);
           else
             return processStations(res, fdp, query);
@@ -218,25 +188,72 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage());
       return null;
 
-    } finally {
-      if (showReq) System.out.printf(" done%n");
-      if (null != fdp)
-        try {
-          fdp.close();
-        } catch (IOException ioe) {
-          log.error("Failed to close = " + path);
-        }
     }
 
     return null;
   }
 
-  private String getContentType(CdmRemoteQueryBean query) {
-    CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
-    if (reqType == CdmRemoteQueryBean.RequestType.form)
+  public FeatureDatasetPoint findFeatureDatasetPointByPath(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
+
+    // this looks for a featureCollection
+    FeatureDataset fc = TdsRequestedDataset.getFeatureDataset(req, res, path);
+
+    FeatureDatasetPoint fdp = null;
+    if (fc != null) {
+      fdp = (FeatureDatasetPoint) fc;
+
+    } else {
+      // tom kunicki 12/18/10
+      // allows a single NetcdfFile to be turned into a FeatureDataset
+      NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, path); // LOOK above call should do thie ??
+      if (ncfile == null) return null;  // restricted access
+
+      FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
+              FeatureType.ANY,                  // will check FeatureType below if needed...
+              NetcdfDataset.wrap(ncfile, null),
+              null,
+              new Formatter(System.err));       // better way to do this?
+      if (fd instanceof FeatureDatasetPoint)
+        fdp = (FeatureDatasetPoint) fd;
+    }
+
+    //---//
+    if (fdp == null) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point or station dataset");
+      return null;
+    }
+
+    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
+    if (list.size() == 0) {
+      // log.error(fdp.getLocation() + " does not have any PointFeatureCollections");
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, fdp.getLocation() + " does not have any PointFeatureCollections");
+      return null;
+    }
+
+    // check on feature type, using suffix convention LOOK
+    FeatureType ft = null;
+    if (path.endsWith("/station")) {
+      ft = FeatureType.STATION;
+      path = path.substring(0, path.lastIndexOf('/'));
+    } else if (path.endsWith("/point")) {
+      ft = FeatureType.POINT;
+      path = path.substring(0, path.lastIndexOf('/'));
+    }
+
+    if (ft != null && ft != fdp.getFeatureType()) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
+    }
+
+    return fdp;
+
+  }
+
+  private String getContentType(CdmrFeatureQueryBean query) {
+    CdmrFeatureQueryBean.RequestType reqType = query.getRequestType();
+    if (reqType == CdmrFeatureQueryBean.RequestType.form)
       return "text/html; charset=iso-8859-1";
 
-    CdmRemoteQueryBean.ResponseType resType = query.getResponseType();
+    CdmrFeatureQueryBean.ResponseType resType = query.getResponseType();
     switch (resType) {
       case csv:
         return "text/plain";
@@ -250,8 +267,8 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     return "text/plain";
   }
 
-  private String getContentDescription(CdmRemoteQueryBean query) {
-    CdmRemoteQueryBean.ResponseType resType = query.getResponseType();
+  private String getContentDescription(CdmrFeatureQueryBean query) {
+    CdmrFeatureQueryBean.ResponseType resType = query.getResponseType();
     switch (resType) {
       case ncstream:
         return "ncstream";
@@ -260,7 +277,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     }
   }
 
-  private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
+  private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrFeatureQueryBean qb) throws IOException {
 
     switch (fdp.getFeatureType()) {
       case POINT:
@@ -272,7 +289,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     return null;
   }
 
-  private ModelAndView processPointData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
+  private ModelAndView processPointData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrFeatureQueryBean qb) throws IOException {
     /*long start = 0;
     if (showTime) {
       start = System.currentTimeMillis();
@@ -326,7 +343,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     return null;
   }
 
-  private ModelAndView processStationData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
+  private ModelAndView processStationData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmrFeatureQueryBean qb) throws IOException {
   /*  long start = 0;
     if (showTime) {
       start = System.currentTimeMillis();
@@ -377,10 +394,10 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       ucar.unidata.io.RandomAccessFile.setDebugAccess(false);  // LOOK !!
     }*/
 
-    return null; 
+    return null;
   }
 
-  private ModelAndView processStations(HttpServletResponse res, FeatureDatasetPoint fdp, CdmRemoteQueryBean query) throws IOException {
+  private ModelAndView processStations(HttpServletResponse res, FeatureDatasetPoint fdp, CdmrFeatureQueryBean query) throws IOException {
 
     OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
     res.setContentType(getContentType(query));
@@ -421,7 +438,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     return null;
   }
 
-  private ModelAndView processHeader(String absPath, HttpServletResponse res, FeatureDatasetPoint fdp, CdmRemoteQueryBean query) throws IOException {
+  private ModelAndView processHeader(String absPath, HttpServletResponse res, FeatureDatasetPoint fdp, CdmrFeatureQueryBean query) throws IOException {
 
     OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
     res.setContentType(getContentType(query));
@@ -440,28 +457,28 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     return null;
   }
 
-  private ModelAndView processXml(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String absPath, CdmRemoteQueryBean query) throws IOException {
+  private ModelAndView processXml(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String absPath, CdmrFeatureQueryBean query) throws IOException {
 
     //String path = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + datasetPath;
     FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fdp, absPath);
 
-    CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
+    CdmrFeatureQueryBean.RequestType reqType = query.getRequestType();
     String infoString;
 
     try {
 
-      if (reqType == CdmRemoteQueryBean.RequestType.capabilities) {
+      if (reqType == CdmrFeatureQueryBean.RequestType.capabilities) {
         Document doc = xmlWriter.getCapabilitiesDocument();
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(doc);
 
-      } else if (reqType == CdmRemoteQueryBean.RequestType.stations) {
+      } else if (reqType == CdmrFeatureQueryBean.RequestType.stations) {
         Document doc = xmlWriter.makeStationCollectionDocument(query.getLatLonRect(), query.getStnNames());
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(doc);
 
-      } else if (reqType == CdmRemoteQueryBean.RequestType.form) {
-        String xslt = fdp.getFeatureType() == FeatureType.STATION ?  "ncssSobs.xsl" : "fmrcPoint.xsl";
+      } else if (reqType == CdmrFeatureQueryBean.RequestType.form) {
+        String xslt = fdp.getFeatureType() == FeatureType.STATION ? "ncssSobs.xsl" : "fmrcPoint.xsl";
         InputStream is = getXSLT(xslt);
         Document doc = xmlWriter.getCapabilitiesDocument();
         XSLTransformer transformer = new XSLTransformer(is);
@@ -474,7 +491,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       }
 
     } catch (Exception e) {
-      log.error("SobsServlet internal error on "+fdp.getLocation(), e);
+      log.error("SobsServlet internal error on " + fdp.getLocation(), e);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
       return null;
     }

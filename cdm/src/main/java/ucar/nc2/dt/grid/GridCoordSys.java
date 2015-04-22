@@ -443,7 +443,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       } catch (IOException e) {
         if (sbuff != null) {
-          sbuff.format("Error reading runtime coord= %s err= %s%n", t.getFullName(), e.getMessage());
+          sbuff.format("Error reading runtime coord= %s err= %s%n", rtAxis.getFullName(), e.getMessage());
         }
       }
     }
@@ -1348,41 +1348,41 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   @Override
   public void show(Formatter f, boolean showCoords) {
-    f.format("Coordinate System (%s)%n%n", getName());
+    f.format("Coordinate System (%s)%n", getName());
 
     if (getRunTimeAxis() != null) {
-      f.format("rt=%s (%s)", runTimeAxis.getFullName(), runTimeAxis.getClass().getName());
+      f.format(" rt=%s (%s)", runTimeAxis.getNameAndDimensions(), runTimeAxis.getClass().getName());
       if (showCoords) showCoords(runTimeAxis, f);
       f.format("%n");
     }
     if (getEnsembleAxis() != null) {
-      f.format("ens=%s (%s)", ensembleAxis.getFullName(), ensembleAxis.getClass().getName());
+      f.format(" ens=%s (%s)", ensembleAxis.getNameAndDimensions(), ensembleAxis.getClass().getName());
       if (showCoords) showCoords(ensembleAxis, f);
       f.format("%n");
     }
     if (getTimeAxis() != null) {
-      f.format("t=%s (%s)", tAxis.getFullName(), tAxis.getClass().getName());
+      f.format(" t=%s (%s)", tAxis.getNameAndDimensions(), tAxis.getClass().getName());
       if (showCoords) showCoords(tAxis, f);
       f.format("%n");
     }
     if (getVerticalAxis() != null) {
-      f.format("z=%s (%s)", vertZaxis.getFullName(), vertZaxis.getClass().getName());
+      f.format(" z=%s (%s)", vertZaxis.getNameAndDimensions(), vertZaxis.getClass().getName());
       if (showCoords) showCoords(vertZaxis, f);
       f.format("%n");
     }
     if (getYHorizAxis() != null) {
-      f.format("y=%s (%s)", horizYaxis.getFullName(), horizYaxis.getClass().getName());
+      f.format(" y=%s (%s)", horizYaxis.getNameAndDimensions(), horizYaxis.getClass().getName());
       if (showCoords) showCoords(horizYaxis, f);
       f.format("%n");
     }
     if (getXHorizAxis() != null) {
-      f.format("x=%s (%s)", horizXaxis.getFullName(), horizXaxis.getClass().getName());
+      f.format(" x=%s (%s)", horizXaxis.getNameAndDimensions(), horizXaxis.getClass().getName());
       if (showCoords) showCoords(horizXaxis, f);
       f.format("%n");
     }
 
     if (proj != null)
-      f.format("  Projection: %s %s%n", proj.getName(), proj.paramsToString());
+      f.format(" Projection: %s %s%n", proj.getName(), proj.paramsToString());
   }
 
   private void showCoords(CoordinateAxis axis, Formatter f) {

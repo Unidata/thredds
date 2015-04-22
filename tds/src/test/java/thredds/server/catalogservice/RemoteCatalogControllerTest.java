@@ -1,150 +1,96 @@
 package thredds.server.catalogservice;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.ModelAndViewAssert.assertModelAttributeAvailable;
-import static org.springframework.test.web.ModelAndViewAssert.assertViewName;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.servlet.ModelAndView;
-
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import thredds.mock.web.MockTdsContextLoader;
+import ucar.unidata.test.util.NotTravis;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
+@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}, loader = MockTdsContextLoader.class)
 
-	//RemoteCatalogRequest parameters:
-	private static final String parameterNameCatalog = "catalog";
-	private static final String parameterNameCommand = "command";
-	private static final String parameterNameDatasetId = "dataset";
-	private static final String parameterNameVerbose = "verbose";
-	private static final String parameterNameHtmlView = "htmlView";
-
-	//RemoteCatalogRequest commands:
-	private static final String cmdShow = "show";
-	private static final String cmdSubset = "subset";
-	private static final String cmdValidate = "validate";
-
-	private String catUriString = null;
-	private String command = null;
-	private String datasetId = null;
-	private String htmlView = null;
-	private String verbose = null;
-
-	private MockHttpServletRequest request = new MockHttpServletRequest();
+public class RemoteCatalogControllerTest {
 
 	@Autowired
-	private RemoteCatalogServiceController remoteCatalogController;
+	private WebApplicationContext wac;
+	private MockMvc mockMvc;
 
 	@Before
-	public void setUp() {
+ 	public void setup(){
+ 		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+ 	}
 
-		request.setMethod("GET");
-		request.setContextPath("/thredds");
-		request.setServletPath("/remoteCatalogService");
-
-	}
+	String dataset="casestudies/ccs039/grids/netCDF/1998062912_eta.nc";
+	String catalog="http://thredds.ucar.edu/thredds/catalog/casestudies/ccs039/grids/netCDF/catalog.xml";
+	String path ="/remoteCatalogService";
+	String htmlContent = "text/html;charset=UTF-8";
 
 	@Test
+	@Category(NotTravis.class)     // LOOK WTF ???
 	public void showCommandTest() throws Exception{
 
-		// Testing against some reliable remote TDS
-		catUriString = "http://thredds.ucar.edu/thredds/catalog.xml";
-		request.setRequestURI(catUriString);
+		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
+						.param("command", "SHOW")
+						.param("catalog", catalog);
 
-		// REQUEST WITH DEFAULT VALUES
-		// setting up the request with default values:
-		// command =null
-		// datasetId=null
-		// htmlView= null
-		// verbose = null
-		request.setParameter(parameterNameCatalog, catUriString);
-		request.setParameter(parameterNameCommand, command);
-		request.setParameter(parameterNameDatasetId, datasetId);
-		request.setParameter(parameterNameHtmlView, htmlView);
-		request.setParameter(parameterNameVerbose, verbose);
-		
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		ModelAndView mv = remoteCatalogController.handleAll(request, response);
-		// Must be null
-		assertNull(mv);
-		//and we should have a nice response
-		assertTrue(response.getStatus() == 200 );
-		
+		MvcResult result = this.mockMvc.perform( rb )
+            .andExpect(MockMvcResultMatchers.status().is(200))
+            .andExpect(MockMvcResultMatchers.content().contentType(htmlContent))
+            .andReturn();
 
+		System.out.printf("showCommandTest status=%d%n", result.getResponse().getStatus());
+		System.out.printf("%s%n", result.getResponse().getContentAsString());
 	}
 
-	// http://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_80km/catalog.html?dataset=grib/NCEP/NAM/CONUS_80km/best
 	@Test
+	@Category(NotTravis.class)     // LOOK WTF ???
 	public void subsetCommandTest() throws Exception{
 
-		// SUBSET REQUEST PROVIDING A datasetId
-		// setting up the request with default values:
-		// command =null
-		// datasetId=FMRC/NCEP/SREF (in motherlode)
-		// htmlView= null
-		// verbose = null
-		// command null and a providing a datasetId becomes in a subset command  
-		catUriString = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_80km/catalog.xml";
-		request.setParameter(parameterNameCatalog, catUriString);
-		request.setParameter(parameterNameCommand, command);
-		request.setParameter(parameterNameDatasetId, "grib/NCEP/NAM/CONUS_80km/Best");
-		request.setParameter(parameterNameHtmlView, htmlView);
-		request.setParameter(parameterNameVerbose, verbose);
-		
-		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
+						.param("command", "SUBSET")
+						.param("catalog", catalog)
+						.param("dataset", dataset);
 
-		ModelAndView mv  = remoteCatalogController.handleAll(request, response);
-		// Must be null
-		assertNull(mv);
-		// and we should have a nice response		
-		assertTrue( response.getStatus() == 200 );
+		MvcResult result = this.mockMvc.perform( rb )
+            .andExpect(MockMvcResultMatchers.status().is(200))
+            .andExpect(MockMvcResultMatchers.content().contentType(htmlContent))
+            .andReturn();
+
+		System.out.printf("subsetCommandTest status=%d%n", result.getResponse().getStatus());
+		System.out.printf("%s%n", result.getResponse().getContentAsString());
 	}
-	
-	//@Ignore
+
 	@Test
-	public void validateCommandTest() throws Exception {
+	@Category(NotTravis.class)     // LOOK WTF ???
+	public void validateCommandTest() throws Exception{
 
-		// VALIDATE REQUEST 
-		// command =validate
-		// datasetId= null
-		// htmlView= null
-		// verbose = null 
-    catUriString = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_80km/catalog.xml";
-		request.setParameter(parameterNameCatalog, catUriString);
-		request.setParameter(parameterNameCommand, cmdValidate);
-		request.setParameter(parameterNameDatasetId, datasetId);
-		request.setParameter(parameterNameHtmlView, htmlView);
-		request.setParameter(parameterNameVerbose, verbose);		
-		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
+						.param("command", "VALIDATE")
+						.param("catalog", catalog)
+						.param("dataset", dataset);
 
-		ModelAndView mv = remoteCatalogController.handleAll(request,response);
-		
-		assertViewName(mv, "/thredds/server/catalogservice/validationMessage");		
-		assertModelAttributeAvailable(mv, "catalogUrl");
-		assertModelAttributeAvailable(mv, "message");
+		MvcResult result = this.mockMvc.perform( rb )
+            .andExpect(MockMvcResultMatchers.status().is(200))
+            .andExpect(MockMvcResultMatchers.content().contentType(htmlContent))
+            .andReturn();
+
+		System.out.printf("validateCommandTest status=%d%n", result.getResponse().getStatus());
+		System.out.printf("%s%n", result.getResponse().getContentAsString());
 	}
-	
-	@Test
-	public void validateFormTest() throws Exception {
-
-		request.setRequestURI("/thredds/remoteCatalogValidation.html");
-		request.setServletPath("/remoteCatalogValidation.html");
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		
-		ModelAndView mv = remoteCatalogController.handleAll(request, response);
-		assertViewName(mv, "/thredds/server/catalogservice/validationForm");
-		
-	}	
 
 }

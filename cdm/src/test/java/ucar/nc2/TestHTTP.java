@@ -35,7 +35,7 @@ package ucar.nc2;
 import org.junit.Test;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ServiceType;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.*;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -69,7 +69,7 @@ public class TestHTTP  {
   @Test
   public void testOpenDataFactory() throws IOException {
     Formatter log = new Formatter();
-    Dataset ds = new Dataset(url, null, DataFormatType.NETCDF.toString(), ServiceType.HTTPServer.toString());
+    Dataset ds = Dataset.makeStandalone(url, null, DataFormatType.NETCDF.toString(), ServiceType.HTTPServer.toString());
     DataFactory tdataFactory = new DataFactory();
     try (NetcdfDataset ncfile = tdataFactory.openDataset(ds, false, null, log)) {
       test(ncfile);

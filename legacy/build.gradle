@@ -1,0 +1,79 @@
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+
+dependencies {
+    compile project(":cdm")
+    runtime project(":bufr")
+    runtime project(":grib")
+    runtime project(":netcdf4")
+    runtime project(":opendap")
+    runtime project(":visad")
+
+    compile libraries["slf4j-api"]
+    runtime libraries["slf4j-jdk14"]
+}
+
+//////////////////////////////////////////////////////////
+
+ext {
+    legacyJar = 'legacy-' + version + '.jar'
+    webstartWorkingDir = "build/signed"
+    if (project.hasProperty("webdir")) {
+        webstartDir = webdir + "webstart"
+    }
+    destinationDir = 'build/libs/'
+}
+
+apply plugin: 'shadow'
+
+shadow {
+    outputFile = file("${destinationDir}/${legacyJar}")
+    outputFile = file("${legacyJar}")
+    stats = true
+
+    exclude 'AUTHORS'    // crap from other packages
+    exclude 'DATE'
+    exclude 'LICENCE'
+    exclude 'LICENSE'
+    exclude 'NOTICE'
+    exclude '*.txt'
+    exclude '*.xml'
+    exclude 'META-INF/DEPENDENCIES'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    exclude 'META-INF/*.txt'
+    exclude 'META-INF/*.xml'
+
+    exclude 'edu/wisc/**'
+    exclude 'nom/**'
+    exclude 'visad/**'
+
+    artifactSet {
+        exclude 'commons-logging:commons-logging:*'
+        exclude 'net.sf.ehcache:ehcache-core:*'
+    }
+
+}
+
+/* following properties should be in gradle.properties:
+   keystore=name of keystore file
+   keystoreAlias=idv
+   keystorePassword=password of keystore file
+   webdir:parent of conan content directory
+   ftpdir:ftp directory
+ */
+task releaseCdm(dependsOn: ['shadowJar']) << {
+    if (project.hasProperty("ftpdir")) {
+        // println "destinationDir= " + ${destinationDir}
+        println "copy " + legacyJar + " to " + ftpdir
+        copy { // does not give error message
+            // from ${destinationDir} + legacyJar
+            from legacyJar
+            into ftpdir
+        }
+    } else {
+        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
+    }
+}

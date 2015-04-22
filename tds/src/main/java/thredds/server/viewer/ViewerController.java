@@ -48,13 +48,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import thredds.server.viewer.dataservice.ViewerService;
 import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
 import ucar.unidata.util.StringUtil2;
 
 @Controller
-@RequestMapping("/view/*")
+@RequestMapping("/view")
 public class ViewerController {
   private static Logger log = LoggerFactory.getLogger(ViewerController.class);
 
@@ -95,7 +94,7 @@ public class ViewerController {
 
 
   @SuppressWarnings("unchecked")
-  private String fillTemplate(HttpServletRequest req, String template) {
+  public String fillTemplate(HttpServletRequest req, String template) {
 
     StringBuilder sbuff = new StringBuilder(template);
 

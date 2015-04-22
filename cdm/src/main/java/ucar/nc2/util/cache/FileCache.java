@@ -792,7 +792,8 @@ public class FileCache implements FileCacheIF {
       }
 
       public String toString() {
-        return isLocked + " " + countAccessed + " " + CalendarDateFormatter.toDateTimeStringISO(lastAccessed) + "   " + ncfile.getLocation();
+        String name = ncfile == null ? "ncfile is null" : ncfile.getLocation();
+        return isLocked + " " + countAccessed + " " + CalendarDateFormatter.toDateTimeStringISO(lastAccessed) + "   " + name;
       }
 
       public int compareTo(CacheFile o) {

@@ -2,21 +2,22 @@ package thredds.metadata;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.ThreddsMetadata;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.ThreddsMetadata;
+import thredds.client.catalog.builder.CatalogBuilder;
+import thredds.client.catalog.builder.DatasetBuilder;
+import thredds.client.catalog.tools.CatalogXmlWriter;
+import thredds.client.catalog.tools.ThreddsMetadataAcdd;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.thredds.MetadataExtractorAcdd;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -36,19 +37,23 @@ public class TestMetadataExtractor {
     String filename = TestDir.cdmUnitTestDir + "agg/pointFeatureCollection/netCDFbuoydata/BOD001_000_20050627_20051109.nc";
     NetcdfFile ncfile = NetcdfFile.open(filename);
 
-    InvCatalogImpl cat = new InvCatalogImpl("testAcdd", "1.0.5", new URI("file:baseURI"));
-    InvDatasetImpl ds = new InvDatasetImpl(null, "testAcdd");
-    ds.finish();
-    MetadataExtractorAcdd acdd = new MetadataExtractorAcdd(Attribute.makeMap(ncfile.getGlobalAttributes()), ds, ds.getLocalMetadataInheritable());
+    CatalogBuilder catb = new CatalogBuilder();
+    DatasetBuilder dsb = new DatasetBuilder(null);
+    dsb.setName("testAcdd");
+    dsb.put(Dataset.Id, "testAcdd");
+    ThreddsMetadataAcdd acdd = new ThreddsMetadataAcdd(Attribute.makeMap(ncfile.getGlobalAttributes()), dsb);
     acdd.extract();
     ncfile.close();
 
-    cat.addDataset(ds);
-    cat.finish();
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory(false);
-    System.out.printf("%s%n", fac.writeXML(cat));
+    catb.addDataset(dsb);
+    Catalog cat = catb.makeCatalog();
 
-    assertEquals(ds.getDataType(), FeatureType.STATION);
+    CatalogXmlWriter writer = new CatalogXmlWriter();
+    writer.writeXML(cat, System.out, false);
+
+    Dataset ds = cat.findDatasetByID("testAcdd");
+    assert ds != null;
+    assertEquals(FeatureType.STATION, ds.getFeatureType());
 
     assert ds.getDocumentation("title").startsWith("Seawater temperature data collected from Bodega Head");
     assert ds.getDocumentation("summary").startsWith("These seawater data are collected");

@@ -79,6 +79,7 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
 
   private class PartIterator implements Iterator<MCollection>, Iterable<MCollection> {
     Iterator<File> iter = partIndexFiles.iterator();
+    MCollection next = null;
 
     @Override
     public Iterator<MCollection> iterator() {
@@ -87,22 +88,30 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
 
     @Override
     public boolean hasNext() {
-      return iter.hasNext();
-    }
+      if (!iter.hasNext()) {
+        next = null;
+        return false;
+      }
 
-    @Override
-    public MCollection next() {
       File nextFile = iter.next();
-
       try {
         MCollection result = new CollectionSingleIndexFile( new MFileOS7(nextFile.getPath()), logger);
+        if (wasRemoved(result)) return hasNext();
+
         result.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-        return result;
+        next = result;
+        return true;
 
       } catch (IOException e) {
         logger.error("PartitionManagerFromList failed on "+nextFile.getPath(), e);
         throw new RuntimeException(e);
       }
+
+    }
+
+    @Override
+    public MCollection next() {
+      return next;
     }
 
     @Override
@@ -121,5 +130,18 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
   @Override
   public CloseableIterator<MFile> getFileIterator() throws IOException {
     return null;
+  }
+
+    /////////////////////////////////////////////////////////////
+  // partitions can be removed (!)
+  private List<String> removed;
+
+  public void removePartition( MCollection partition) {
+    if (removed == null) removed = new ArrayList<>();
+    removed.add(partition.getCollectionName());
+  }
+
+  private boolean wasRemoved(MCollection partition) {
+    return removed != null && (removed.contains(partition.getCollectionName()));
   }
 }

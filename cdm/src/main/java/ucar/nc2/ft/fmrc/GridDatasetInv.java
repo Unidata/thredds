@@ -155,7 +155,7 @@ public class GridDatasetInv {
   }
 
   public GridDatasetInv(ucar.nc2.dt.grid.GridDataset gds, CalendarDate runDate) {
-    this.location = gds.getLocationURI();
+    this.location = gds.getLocation();
     this.runDate = runDate;
 
     NetcdfFile ncfile = gds.getNetcdfFile();

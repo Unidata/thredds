@@ -5,12 +5,18 @@
 package thredds.server.dap4;
 
 import dap4.servlet.*;
-import thredds.servlet.DatasetHandler;
-import thredds.servlet.ThreddsConfig;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import thredds.core.TdsRequestedDataset;
+import thredds.server.config.ThreddsConfig;
 import ucar.nc2.constants.CDM;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletException;
 import java.io.*;
 
+//@Controller
+//@RequestMapping("/dap4")
 public class Dap4Servlet extends DapServlet
 {
 
@@ -50,6 +56,11 @@ public class Dap4Servlet extends DapServlet
         super();
     }
 
+    @PostConstruct
+    public void init() throws ServletException {
+        super.init();
+    }
+
     //////////////////////////////////////////////////////////
 
     @Override
@@ -83,8 +94,7 @@ public class Dap4Servlet extends DapServlet
         String datasetpath = drq.getDataset();
         if(datasetpath.startsWith("/"))
             datasetpath = datasetpath.substring(1);
-        datasetpath = DatasetHandler.getNetcdfFilePath(drq.getRequest(), datasetpath);
-        return datasetpath;
+        return TdsRequestedDataset.getLocationFromRequestPath(datasetpath);
     }
 
     @Override

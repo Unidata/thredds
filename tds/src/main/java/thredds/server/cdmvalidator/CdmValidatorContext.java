@@ -46,10 +46,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import thredds.util.filesource.*;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
-import thredds.server.config.TdsContext;
 import thredds.server.config.HtmlConfig;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.DiskCache;
@@ -109,9 +108,6 @@ public class CdmValidatorContext
   {
     if ( servletContext == null )
       throw new IllegalArgumentException( "ServletContext must not be null.");
-
-    // ToDo LOOK - Are we still using this.
-    ServletUtil.initDebugging( servletContext );
 
     // Set the webapp name.
     this.webappName = servletContext.getServletContextName();

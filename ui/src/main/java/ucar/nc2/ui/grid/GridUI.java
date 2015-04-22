@@ -34,7 +34,7 @@ package ucar.nc2.ui.grid;
 
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -384,7 +384,7 @@ public class GridUI extends JPanel {
 
         Dataset invDs;
         try {
-          invDs = new Dataset(filename, FeatureType.GRID.toString(), "", ServiceType.File.toString()); // LOOK WTF ??
+          invDs = Dataset.makeStandalone(filename, FeatureType.GRID.toString(), "", ServiceType.File.toString());
         } catch (Exception ue) {
           JOptionPane.showMessageDialog(GridUI.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
           ue.printStackTrace();

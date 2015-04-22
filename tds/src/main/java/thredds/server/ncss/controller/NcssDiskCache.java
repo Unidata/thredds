@@ -36,7 +36,7 @@ package thredds.server.ncss.controller;
 import java.io.File;
 
 import thredds.servlet.ServletUtil;
-import thredds.servlet.ThreddsConfig;
+import thredds.server.config.ThreddsConfig;
 import ucar.nc2.util.DiskCache2;
 
 public final class NcssDiskCache {

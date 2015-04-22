@@ -59,6 +59,14 @@ public final class GridPathParams {
             "/ncss/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd", //FeatureCollection --> Best
             "/ncss/testGFSfmrc/files/GFS_CONUS_80km_20120418_1200.nc", //FeatureCollection --> Files
             "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z" //FeatureCollection --> Runs
+
+           /* "/ncss/grid/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc",//single dataset
+            "/ncss/grid/testGridScan/GFS_CONUS_80km_20120227_0000.grib1", //datasetScan
+            "/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_fmrc.ncd", //FeatureCollection --> TwoD
+            "/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd", //FeatureCollection --> Best
+            "/ncss/grid/testGFSfmrc/files/GFS_CONUS_80km_20120418_1200.nc", //FeatureCollection --> Files
+            "/ncss/grid/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z" //FeatureCollection --> Runs   */
+
     );
 	}
 	

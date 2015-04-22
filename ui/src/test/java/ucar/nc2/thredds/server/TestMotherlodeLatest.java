@@ -32,6 +32,7 @@
  */
 package ucar.nc2.thredds.server;
 
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -43,10 +44,12 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.ma2.Section;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.NotTravis;
 
 import java.util.*;
 import java.io.IOException;
 
+@Category(NotTravis.class)
 public class TestMotherlodeLatest extends TimerTask {
   static private final String server1 = "http://thredds.ucar.edu/";
   //static private final String server1 = "http://thredds.cise-nsf.gov:8080/";
@@ -119,7 +122,7 @@ public class TestMotherlodeLatest extends TimerTask {
     assert result instanceof GridDataset;
 
     GridDataset dataset = (GridDataset) result;
-    System.out.printf(" %s dataset=%s%n", which, dataset.getLocationURI());
+    System.out.printf(" %s dataset=%s%n", which, dataset.getLocation());
 
     return dataset;
   }
@@ -164,7 +167,7 @@ public class TestMotherlodeLatest extends TimerTask {
             CompareNetcdf2 cn = new CompareNetcdf2( new Formatter(System.out), true, true, true);
             cn.compareData(grid1.getFullName(), data1, data2, true);
           } catch (Throwable t) {
-            System.out.printf("Failed on %s for %s (%d,%d,-1,-1)%n:%s%n", gds1.getLocationURI(), grid1.getFullName(), timeIdx, zIndex, t.getMessage());
+            System.out.printf("Failed on %s for %s (%d,%d,-1,-1)%n:%s%n", gds1.getLocation(), grid1.getFullName(), timeIdx, zIndex, t.getMessage());
           }
         }
         

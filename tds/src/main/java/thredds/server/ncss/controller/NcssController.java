@@ -37,9 +37,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import thredds.core.TdsRequestedDataset;
 import thredds.server.config.FormatsAvailabilityService;
 import thredds.server.config.TdsContext;
-import thredds.server.ncss.dataservice.FeatureDatasetService;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.exception.UnsupportedOperationException;
 import thredds.server.ncss.exception.UnsupportedResponseFormatException;
@@ -47,6 +47,7 @@ import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
+import thredds.servlet.ServletUtil;
 import thredds.util.Constants;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
@@ -78,11 +79,23 @@ import java.util.Set;
 public class NcssController extends AbstractNcssController {
   //static private final Logger log = LoggerFactory.getLogger(NcssController.class);
 
-  @Autowired
-  FeatureDatasetService datasetService;
+  //@Autowired
+  //FeatureDatasetService datasetService;
 
   @Autowired
   TdsContext tdsContext;
+
+  /* @RequestMapping("/ncss/grid/**")
+  public String forwardGrid(HttpServletRequest req) {
+    String reqString = req.getServletPath();
+    assert reqString.startsWith("/ncss/grid");
+    reqString = reqString.substring(10);
+    String forwardString = "forward:/ncss" + reqString;  // strip off '?/grid
+    if (null != req.getQueryString())
+      forwardString += "?"+req.getQueryString();
+
+     return forwardString;
+  }  */
 
   /**
    * Handles ncss data requests.
@@ -108,12 +121,8 @@ public class NcssController extends AbstractNcssController {
     }
 
     String datasetPath = getDatasetPath(req);
-    try (FeatureDataset fd = datasetService.findDatasetByPath(req, res, datasetPath)) {
-      if (fd == null) {
-        //handleValidationErrorMessage(res, HttpServletResponse.SC_NOT_FOUND,
-        //        "dataset path not found " + datasetPath);
-        return;
-      }
+    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
+      if (fd == null) return;
 
       Formatter errs = new Formatter();
       if (!params.intersectsTime(fd, errs)) {
@@ -124,7 +133,7 @@ public class NcssController extends AbstractNcssController {
       FeatureType ft = fd.getFeatureType();
       if (ft == FeatureType.GRID) {
         if (!params.hasLatLonPoint()) {
-          handleRequestGrid(req, res, params, datasetPath, (GridDataset) fd);
+          handleRequestGrid(res, params, datasetPath, (GridDataset) fd);
         } else {
           handleRequestGridAsPoint(res, params, datasetPath, fd);
         }
@@ -139,7 +148,7 @@ public class NcssController extends AbstractNcssController {
     }
   }
 
-  void handleRequestGrid(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params, String datasetPath,
+  void handleRequestGrid(HttpServletResponse res, NcssParamsBean params, String datasetPath,
                          GridDataset gridDataset) throws IOException, NcssException, ParseException, InvalidRangeException {
 
     //params.isValidGridRequest(); ???
@@ -159,7 +168,7 @@ public class NcssController extends AbstractNcssController {
     //File netcdfResult = null;
     //try {
     GridResponder gds = GridResponder.factory(gridDataset, datasetPath);
-    File netcdfResult = gds.getResponseFile(req, res, params, version);
+    File netcdfResult = gds.getResponseFile(res, params, version);
     //} catch (Exception e) {
     //  handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     //  return;

@@ -50,8 +50,6 @@ import opendap.dap.*;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.EscapeStrings;
 
@@ -104,7 +102,7 @@ import ucar.nc2.util.EscapeStrings;
  *            &lt;param-value&gt;/home/Datasets/ddx&lt;/param-value&gt;
  *        &lt;/init-param&gt;
  *    &lt;/servlet&gt;
- * <p/>
+ *
  * </pre>
  * <p/>
  * Obviously the actual values of these parameters will depend on your particular
@@ -130,30 +128,27 @@ import ucar.nc2.util.EscapeStrings;
 
 public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
-    //////////////////////////////////////////////////
-    // Statics
-    static final boolean debug = false;
+  //////////////////////////////////////////////////
+  // Statics
+  static final boolean debug = false;
 
-    // Define an overall logger for everyone to use
-    // Start with a default logger, but allow an application to change it later
-    static public org.slf4j.Logger log
-             = org.slf4j.LoggerFactory.getLogger(AbstractServlet.class);
+  // Define an overall logger for everyone to use
+  // Start with a default logger, but allow an application to change it later
+  static public org.slf4j.Logger log
+          = org.slf4j.LoggerFactory.getLogger(AbstractServlet.class);
 
-    static public void setLog(Class cl)
-    {
-        log = org.slf4j.LoggerFactory.getLogger(cl);
-    }
+  static public void setLog(Class cl) {
+    log = org.slf4j.LoggerFactory.getLogger(cl);
+  }
 
-    static public void printDODSException(opendap.dap.DAP2Exception de)
-    {
-        de.printStackTrace();
-    }
+  static public void printDODSException(opendap.dap.DAP2Exception de) {
+    de.printStackTrace();
+  }
 
-    static public void printThrowable(Throwable t)
-    {
-        AbstractServlet.log.error(t.getMessage());
-        t.printStackTrace();
-    }
+  static public void printThrowable(Throwable t) {
+    AbstractServlet.log.error(t.getMessage());
+    t.printStackTrace();
+  }
 
   /**
    * ************************************************************************
@@ -186,36 +181,42 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    */
   private int HitCounter = 0;
 
-    /**
-     * Keep a copy of the servlet config
-     */
-    private ServletConfig servletConfig = null;
+  /**
+   * Keep a copy of the servlet config
+   */
+  //private ServletConfig servletConfig = null;
 
-    /**
-     * Keep a copy of the servlet context
-     */
-    private ServletContext servletContext = null;
+  /**
+   * Keep a copy of the servlet context
+   */
+  //private ServletContext servletContext = null;
 
-    /**
-     * path to the root of the servlet in tomcat webapps directory
-     */
-    private String rootpath = null;
+  /**
+   * path to the root of the servlet in tomcat webapps directory
+   */
+  protected String rootpath = "";
 
-    //////////////////////////////////////////////////////////
-    // Constructor(s)
+  //////////////////////////////////////////////////////////
+  // Constructor(s)
 
-    public AbstractServlet()
-    {
-    }
+  public AbstractServlet() {
+  }
 
-    //////////////////////////////////////////////////////////
-    // Get/Set
+  protected void setRootpath(String rootPath) {
+    this.rootpath = rootPath;
+  }
 
-    /**
-     * Getter function for rootpath
-     * @return rootpath
-     */
-    public String getRootPath() {return rootpath;}
+  //////////////////////////////////////////////////////////
+  // Get/Set
+
+  /**
+   * Getter function for rootpath
+   *
+   * @return rootpath
+   *
+  public String getRootPath() {
+    return rootpath;
+  } */
 
   /**
    * This function must be implemented locally for each OPeNDAP server. It should
@@ -259,8 +260,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * impunity) from anywhere in the VM.
    */
 
-  public void init() throws ServletException
-  {
+  /* public void init() throws ServletException {
     super.init();
 
     // debuggering
@@ -275,7 +275,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     servletContext = servletConfig.getServletContext();
     rootpath = servletContext.getRealPath("/");
 
-  }
+  } */
 
   /**
    * ************************************************************************
@@ -288,7 +288,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     log.error("DODSServlet.parseExceptionHandler", pe);
 
     if (Debug.isSet("showException")) {
-     log.debug(pe.toString());
+      log.debug(pe.toString());
       pe.printStackTrace();
       printThrowable(pe);
     }
@@ -362,10 +362,10 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * Sends an error to the client.
    * LOOK: The problem is that if the message is already committed when the IOException occurs, the headers dont get set.
    *
-   * @param e        The exception that caused the problem.
+   * @param e  The exception that caused the problem.
    * @param rs The <code>ReqState</code> for the client.
    */
-  public void IOExceptionHandler(IOException e,  ReqState rs) {
+  public void IOExceptionHandler(IOException e, ReqState rs) {
     HttpServletResponse response = rs.getResponse();
     try {
       BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
@@ -410,7 +410,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * ************************************************************************
    * Sends an error to the client.
    *
-   * @param e        The exception that caused the problem.
+   * @param e  The exception that caused the problem.
    * @param rs The <code>ReqState</code> for the client.
    */
   public void anyExceptionHandler(Throwable e, ReqState rs) {
@@ -463,9 +463,9 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param serverMsg Error message <code>String</code> to display on the server console.
    */
   public void sendDODSError(HttpServletRequest request,
-          HttpServletResponse response,
-          String clientMsg,
-          String serverMsg)
+                            HttpServletResponse response,
+                            String clientMsg,
+                            String serverMsg)
           throws IOException, ServletException {
 
     response.setContentType("text/plain");
@@ -495,15 +495,15 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * <p/>
    * <p>Once the DAS has been parsed it is sent to the requesting client.
    *
-   * @param rs       The ReqState of this client request. Contains all kinds of
-   *                 important stuff.
+   * @param rs The ReqState of this client request. Contains all kinds of
+   *           important stuff.
    * @see ReqState
    */
   public void doGetDAS(ReqState rs)
           throws Exception {
 
     if (Debug.isSet("showResponse")) {
-     log.debug("doGetDAS for dataset: " + rs.getDataSet());
+      log.debug("doGetDAS for dataset: " + rs.getDataSet());
     }
 
     GuardedDataset ds = null;
@@ -523,7 +523,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       myDAS.print(Out);
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if (Debug.isSet("showResponse")) {
-       //log.debug("DAS=\n");
+        //log.debug("DAS=\n");
         //myDAS.print(LogStream.out);
       }
     } catch (DAP2Exception de) {
@@ -549,15 +549,15 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * <p>Once the DDS has been parsed and constrained it is sent to the
    * requesting client.
    *
-   * @param rs       The ReqState of this client request. Contains all kinds of
-   *                 important stuff.
+   * @param rs The ReqState of this client request. Contains all kinds of
+   *           important stuff.
    * @see ReqState
    */
   public void doGetDDS(ReqState rs)
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-     log.debug("doGetDDS for dataset: " + rs.getDataSet());
+      log.debug("doGetDDS for dataset: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -587,7 +587,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
         ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out,Util.UTF8));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out, Util.UTF8));
         myDDS.printConstrained(pw);
         pw.flush();
       }
@@ -595,10 +595,10 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if (Debug.isSet("showResponse")) {
         if (rs.getConstraintExpression().equals("")) { // No Constraint Expression?
-         log.debug("Unconstrained DDS=\n");
+          log.debug("Unconstrained DDS=\n");
           //myDDS.print();
         } else {
-         log.debug("Constrained DDS=\n");
+          log.debug("Constrained DDS=\n");
           //myDDS.printConstrained();
         }
       }
@@ -628,15 +628,15 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * <p>Once the DDS has been parsed and constrained it is sent to the
    * requesting client.
    *
-   * @param rs       The ReqState of this client request. Contains all kinds of
-   *                 important stuff.
+   * @param rs The ReqState of this client request. Contains all kinds of
+   *           important stuff.
    * @see ReqState
    */
   public void doGetDDX(ReqState rs)
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-     log.debug("doGetDDX for dataset: " + rs.getDataSet());
+      log.debug("doGetDDX for dataset: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -666,7 +666,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
         ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out,Util.UTF8));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out, Util.UTF8));
         myDDS.printConstrainedXML(pw);
         pw.flush();
       }
@@ -674,10 +674,10 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if (Debug.isSet("showResponse")) {
         if (rs.getConstraintExpression().equals("")) { // No Constraint Expression?
-         log.debug("Unconstrained DDX=\n");
+          log.debug("Unconstrained DDX=\n");
           myDDS.printXML(System.out);
         } else {
-         log.debug("Constrained DDX=\n");
+          log.debug("Constrained DDX=\n");
           myDDS.printConstrainedXML(System.out);
         }
       }
@@ -707,8 +707,8 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * localized server factory etc.), compared to the constraint expression,
    * and then sent to the client.
    *
-   * @param rs       The ReqState of this client request. Contains all kinds of
-   *                 important stuff.
+   * @param rs The ReqState of this client request. Contains all kinds of
+   *           important stuff.
    * @opendap.ddx.experimental
    * @see ReqState
    */
@@ -717,7 +717,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
 
     if (Debug.isSet("showResponse")) {
-     log.debug("doGetBLOB For: " + rs.getDataSet());
+      log.debug("doGetBLOB For: " + rs.getDataSet());
     }
     GuardedDataset ds = null;
     try {
@@ -747,7 +747,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       // Instantiate the CEEvaluator and parse the constraint expression
       CEEvaluator ce = new CEEvaluator(myDDS);
-      ce.parseConstraint(rs.getConstraintExpression(),rs.getRequestURL().toString());
+      ce.parseConstraint(rs.getConstraintExpression(), rs.getRequestURL().toString());
 
       // Send the binary data back to the client
       DataOutputStream sink = new DataOutputStream(bOut);
@@ -785,8 +785,8 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * localized server factory etc.), compared to the constraint expression,
    * and then sent to the client.
    *
-   * @param rs       The ReqState of this client request. Contains all kinds of
-   *                 important stuff.
+   * @param rs The ReqState of this client request. Contains all kinds of
+   *           important stuff.
    * @throws IOException
    * @throws ServletException
    * @see ReqState
@@ -796,7 +796,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
 
     if (Debug.isSet("showResponse")) {
-     log.debug("doGetDAP2Data For: " + rs.getDataSet());
+      log.debug("doGetDAP2Data For: " + rs.getDataSet());
     }
     GuardedDataset ds = null;
     try {
@@ -834,7 +834,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       // myDDS.printConstrained(LogStream.out);
 
       // Send the constrained DDS back to the client
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut,Util.UTF8));
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut, Util.UTF8));
       myDDS.printConstrained(pw);
 
       // Send the Data delimiter back to the client
@@ -882,7 +882,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * The bulk of this code resides in the class opendap.servlet.GetDirHandler and
    * documentation may be found there.
    *
-   * @param rs  The client's <code> ReqState</code>
+   * @param rs The client's <code> ReqState</code>
    * @see opendap.servlet.GetDirHandler
    */
   public void doGetDIR(ReqState rs)
@@ -916,13 +916,13 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * <p>Returns a plain text document with server version and OPeNDAP core
    * version #'s
    *
-   * @param rs  The client's <code> ReqState</code>
+   * @param rs The client's <code> ReqState</code>
    */
   public void doGetVER(ReqState rs)
           throws Exception {
 
     if (Debug.isSet("showResponse")) {
-     log.debug("Sending Version Tag.");
+      log.debug("Sending Version Tag.");
     }
     rs.getResponse().setContentType("text/plain");
     rs.getResponse().setHeader("XDODS-Server", getServerVersion());
@@ -930,7 +930,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     // Commented because of a bug in the OPeNDAP C++ stuff...
     //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
 
     pw.println("Server Version: " + getServerVersion());
     pw.flush();
@@ -947,13 +947,13 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * <p/>
    * <p> Returns an html page of help info for the server
    *
-   * @param rs  The client's <code> ReqState </code>
+   * @param rs The client's <code> ReqState </code>
    */
   public void doGetHELP(ReqState rs)
           throws Exception {
 
     if (Debug.isSet("showResponse")) {
-     log.debug("Sending Help Page.");
+      log.debug("Sending Help Page.");
     }
     rs.getResponse().setContentType("text/html");
     rs.getResponse().setHeader("XDODS-Server", getServerVersion());
@@ -961,7 +961,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     // Commented because of a bug in the OPeNDAP C++ stuff...
     //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
     printHelpPage(pw);
     pw.flush();
 
@@ -976,13 +976,13 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * Sends an html document to the client explaining that they have used a
    * poorly formed URL and then the help page...
    *
-   * @param rs  The client's <code> ReqState </code>
+   * @param rs The client's <code> ReqState </code>
    */
   public void badURL(ReqState rs)
           throws Exception {
 
     if (Debug.isSet("showResponse")) {
-     log.debug("Sending Bad URL Page.");
+      log.debug("Sending Bad URL Page.");
     }
 
     //log.info("DODSServlet.badURL " + rs.getRequest().getRequestURI());
@@ -993,7 +993,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     // Commented because of a bug in the OPeNDAP C++ stuff...
     //rs.getResponse().setHeader("Content-Encoding", "plain");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
 
     printBadURLPage(pw);
     printHelpPage(pw);
@@ -1015,11 +1015,11 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * <p/>
    * Modified 2/8/07 jcaron to not make a DConnect2 call to itself
    *
-   * @param rs       the decoded Request State
+   * @param rs the decoded Request State
    */
   public void doGetASC(ReqState rs) throws Exception {
     if (Debug.isSet("showResponse")) {
-     log.debug("doGetASC For: " + rs.getDataSet());
+      log.debug("doGetASC For: " + rs.getDataSet());
     }
 
     GuardedDataset ds = null;
@@ -1032,7 +1032,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       rs.getResponse().setHeader("Content-Description", "dods-ascii");
 
       if (debug)
-       log.debug("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
+        log.debug("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
 
       ServerDDS dds = ds.getDDS();
       //dds = url.getData(ce, null, new asciiFactory());  previous way
@@ -1043,15 +1043,13 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       // i think this makes the dds constrained
       ce.parseConstraint(rs);
 
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
       dds.printConstrained(pw);
       pw.println("---------------------------------------------");
 
 
-
-
       AsciiWriter writer = new AsciiWriter(); // could be static
-      writer.toASCII(pw,dds,ds);
+      writer.toASCII(pw, dds, ds);
 
 
       // the way that getDAP2Data works
@@ -1082,14 +1080,14 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * The bulk of this code resides in the class opendap.servlet.GetInfoHandler and
    * documentation may be found there.
    *
-   * @param rs  The client's <code> ReqState </code>
+   * @param rs The client's <code> ReqState </code>
    * @see GetInfoHandler
    */
   public void doGetINFO(ReqState rs)
           throws Exception {
 
     if (Debug.isSet("showResponse")) {
-     log.debug("doGetINFO For: " + rs.getDataSet());
+      log.debug("doGetINFO For: " + rs.getDataSet());
     }
 
     GuardedDataset ds = null;
@@ -1097,7 +1095,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       ds = getDataset(rs);
       if (null == ds) return;
 
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
+      PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
       rs.getResponse().setHeader("XDODS-Server", getServerVersion());
       rs.getResponse().setContentType("text/html");
       rs.getResponse().setHeader("Content-Description", "dods-description");
@@ -1131,7 +1129,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * opendap.servlet.GetHTMLInterfaceHandler and
    * documentation may be found there.
    *
-   * @param rs  The client's <code> ReqState</code>
+   * @param rs The client's <code> ReqState</code>
    * @see GetHTMLInterfaceHandler
    */
   public void doGetHTML(ReqState rs)
@@ -1175,7 +1173,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * ************************************************************************
    * Default handler for OPeNDAP catalog.xml requests.
    *
-   * @param rs  The client's <code> ReqState </code>
+   * @param rs The client's <code> ReqState </code>
    * @see GetHTMLInterfaceHandler
    */
   public void doGetCatalog(ReqState rs)
@@ -1186,7 +1184,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     rs.getResponse().setContentType("text/xml");
     rs.getResponse().setHeader("Content-Description", "dods-catalog");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
     printCatalog(rs, pw);
     pw.flush();
     rs.getResponse().setStatus(HttpServletResponse.SC_OK);
@@ -1205,7 +1203,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * ************************************************************************
    * Default handler for debug requests;
    *
-   * @param rs  The client's <code> ReqState </code>  object.
+   * @param rs The client's <code> ReqState </code>  object.
    */
   public void doDebug(ReqState rs) throws IOException {
 
@@ -1214,7 +1212,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     rs.getResponse().setContentType("text/html");
     rs.getResponse().setHeader("Content-Description", "dods_debug");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
     pw.println("<title>Debugging</title>");
     pw.println("<body><pre>");
 
@@ -1276,7 +1274,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * Default handler for OPeNDAP status requests; not publically available,
    * used only for debugging
    *
-   * @param rs  The client's <code> ReqState </code>
+   * @param rs The client's <code> ReqState </code>
    * @see GetHTMLInterfaceHandler
    */
   public void doGetSystemProps(ReqState rs)
@@ -1328,7 +1326,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * Default handler for OPeNDAP status requests; not publically available,
    * used only for debugging
    *
-   * @param rs  The client's <code> ReqState</code>
+   * @param rs The client's <code> ReqState</code>
    * @see GetHTMLInterfaceHandler
    */
   public void doGetStatus(ReqState rs)
@@ -1339,7 +1337,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     rs.getResponse().setContentType("text/html");
     rs.getResponse().setHeader("Content-Description", "dods-status");
 
-    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(),Util.UTF8));
+    PrintWriter pw = new PrintWriter(new OutputStreamWriter(rs.getResponse().getOutputStream(), Util.UTF8));
     pw.println("<title>Server Status</title>");
     pw.println("<body><ul>");
     printStatus(pw);
@@ -1360,7 +1358,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       for (int i = 0; i < n; i++) {
         ReqState rs = (ReqState) prArr.get(i);
         RequestDebug reqD = (RequestDebug) rs.getUserObject();
-        if(!reqD.done) {
+        if (!reqD.done) {
           preqs.append("<pre>-----------------------\n");
           preqs.append("Request[");
           preqs.append(reqD.reqno);
@@ -1470,7 +1468,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     ps.println("Servlet Context:");
     ps.println("");
 
-    i = 0;
+    /* i = 0;
     e = servletContext.getAttributeNames();
     ps.println("    Attribute Names:");
     while (e.hasMoreElements()) {
@@ -1484,7 +1482,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     ps.println("    ServletContext.getMajorVersion(): " + servletContext.getMajorVersion());
 //        ps.println("ServletContext.getMimeType():     " + sc.getMimeType());
     ps.println("    ServletContext.getMinorVersion(): " + servletContext.getMinorVersion());
-//        ps.println("ServletContext.getRealPath(): " + sc.getRealPath());
+//        ps.println("ServletContext.getRealPath(): " + sc.getRealPath()); */
 
 
     ps.println(".............................");
@@ -1552,8 +1550,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @see opendap.servlet.ReqState
    */
   public void doGet(HttpServletRequest request,
-          HttpServletResponse response)
-  {
+                    HttpServletResponse response) {
 
     // setHeader("Last-Modified", (new Date()).toString() );
 
@@ -1564,11 +1561,11 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       rs = getRequestState(request, response);
       if (rs != null) {
-          if (Debug.isSet("probeRequest")) {
-              probeRequest(new PrintWriter(new OutputStreamWriter(System.out,Util.UTF8),true), rs);
-          }
+        if (Debug.isSet("probeRequest")) {
+          probeRequest(new PrintWriter(new OutputStreamWriter(System.out, Util.UTF8), true), rs);
+        }
 
-          String ds = rs.getDataSet();
+        String ds = rs.getDataSet();
         String suff = rs.getRequestSuffix();
         isDebug = ((ds != null) && ds.equals("debug") && (suff != null) && suff.equals(""));
       }
@@ -1585,11 +1582,11 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           }
 
           if (Debug.isSet("showRequest")) {
-           log.debug("-------------------------------------------");
-           log.debug("Server: " + getServerName() + "   Request #" + reqno);
-           log.debug("Client: " + rs.getRequest().getRemoteHost());
-           log.debug(rs.toString());
-           log.debug("Request dataset: '" + rs.getDataSet() + "' suffix: '" + rs.getRequestSuffix() +
+            log.debug("-------------------------------------------");
+            log.debug("Server: " + getServerName() + "   Request #" + reqno);
+            log.debug("Client: " + rs.getRequest().getRemoteHost());
+            log.debug(rs.toString());
+            log.debug("Request dataset: '" + rs.getDataSet() + "' suffix: '" + rs.getRequestSuffix() +
                     "' CE: '" + rs.getConstraintExpression() + "'");
           }
         }
@@ -1662,39 +1659,25 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param request
    * @return the request state
    */
-  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response)
-  {
-      ReqState rs = null;
-      // The url and query strings will come to us in encoded form
-      // (see HTTPmethod.newMethod())
-      String baseurl = request.getRequestURL().toString();
-      baseurl = EscapeStrings.unescapeURL(baseurl);
+  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
+    ReqState rs = null;
+    // The url and query strings will come to us in encoded form
+    // (see HTTPmethod.newMethod())
+    String baseurl = request.getRequestURL().toString();
+    baseurl = EscapeStrings.unescapeURL(baseurl);
 
-      String query = request.getQueryString();
-      query = EscapeStrings.unescapeURLQuery(query);
+    String query = request.getQueryString();
+    query = EscapeStrings.unescapeURLQuery(query);
 
-      try {
-        rs = new ReqState(request, response, this, getServerName(), baseurl, query);
-      } catch (Exception bue) {
-        rs = null;
-      }
+    try {
+      rs = new ReqState(request, response, rootpath, getServerName(), baseurl, query);
+    } catch (Exception bue) {
+      rs = null;
+    }
 
-      return rs;
+    return rs;
   }
   //**************************************************************************
-
-  void showMemUsed(String from) {
-    long totalMemory = Runtime.getRuntime().totalMemory();
-    long freeMemory = Runtime.getRuntime().freeMemory();
-    //long maxMemory = Runtime.getRuntime ().maxMemory ();
-    long usedMemory = (totalMemory - freeMemory);
-
-   log.debug("****showMemUsed " + from);
-   log.debug(" totalMemory " + totalMemory);
-   log.debug(" freeMemory " + freeMemory);
-    //LogStream.out.println(" maxMemory "+maxMemory);
-   log.debug(" usedMemory " + usedMemory);
-  }
 
 
   /**

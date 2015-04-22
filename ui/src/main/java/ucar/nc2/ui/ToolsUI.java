@@ -34,7 +34,7 @@
 package ucar.nc2.ui;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.catalog.ThreddsUI;
@@ -133,7 +133,7 @@ public class ToolsUI extends JPanel {
   private BufrCdmIndexPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
-  private CdmIndex2Panel cdmIndex2Panel;
+  private CdmIndexPanel cdmIndex2Panel;
   private ReportOpPanel cdmIndexReportPanel;
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
@@ -470,7 +470,7 @@ public class ToolsUI extends JPanel {
 
         break;
       case "CdmIndex3":
-        cdmIndex2Panel = new CdmIndex2Panel((PreferencesExt) mainPrefs.node("cdmIdx3"));
+        cdmIndex2Panel = new CdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
         c = cdmIndex2Panel;
 
         break;
@@ -2061,6 +2061,17 @@ public class ToolsUI extends JPanel {
       coordSysTable = new CoordSysTable(prefs, buttPanel);
       add(coordSysTable, BorderLayout.CENTER);
 
+      AbstractButton summaryButton = BAMutil.makeButtcon("Information", "Summary Info", false);
+      summaryButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          coordSysTable.summaryInfo(f);
+          detailTA.setText(f.toString());
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(summaryButton);
+
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -2081,6 +2092,7 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(infoButton);
+
 
       JButton dsButton = new JButton("Object dump");
       dsButton.addActionListener(new ActionListener() {
@@ -3105,16 +3117,16 @@ public class ToolsUI extends JPanel {
   } */
 
     /////////////////////////////////////////////////////////////////////
-  private class CdmIndex2Panel extends OpPanel {
-    ucar.nc2.ui.CdmIndex2Panel indexPanel;
+  private class CdmIndexPanel extends OpPanel {
+    CdmIndex3Panel indexPanel;
 
     void closeOpenFiles() throws IOException {
       indexPanel.clear();
     }
 
-      CdmIndex2Panel(PreferencesExt p) {
+      CdmIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-        indexPanel = new ucar.nc2.ui.CdmIndex2Panel(prefs, buttPanel);
+        indexPanel = new CdmIndex3Panel(prefs, buttPanel);
         indexPanel.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib2Collection")) {
@@ -4963,7 +4975,7 @@ public class ToolsUI extends JPanel {
         e.printStackTrace();
         return;
       }
-      setSelectedItem(gds.getLocationURI());
+      setSelectedItem(gds.getLocation());
     }
 
     void save() {
@@ -5123,12 +5135,11 @@ public class ToolsUI extends JPanel {
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           RadialDatasetSweep radialDataset = dsTable.getRadialDataset();
-          String info;
-          if ((radialDataset != null) && ((info = radialDataset.getDetailInfo()) != null)) {
-            detailTA.setText(info);
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
+          Formatter info = new Formatter();
+          radialDataset.getDetailInfo(info);
+          detailTA.setText(info.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
         }
       });
       buttPanel.add(infoButton);
@@ -5181,7 +5192,7 @@ public class ToolsUI extends JPanel {
 
       this.ds = newds;
       dsTable.setDataset(newds);
-      setSelectedItem(newds.getLocationURI());
+      setSelectedItem(newds.getLocation());
     }
 
     void closeOpenFiles() throws IOException {
@@ -6210,7 +6221,7 @@ public class ToolsUI extends JPanel {
 
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
-      if (is == null) return "4.6";
+      if (is == null) return "5.0";
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
@@ -6329,7 +6340,7 @@ public class ToolsUI extends JPanel {
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (4.6) Tools");
+    frame = new JFrame("NetCDF (5.0) Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));

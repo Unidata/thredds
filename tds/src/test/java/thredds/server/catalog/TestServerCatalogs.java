@@ -35,7 +35,7 @@ package thredds.server.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.client.catalog.*;
-import thredds.client.catalog.writer.CatalogXmlWriter;
+import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import ucar.unidata.test.util.TestDir;
 
@@ -59,7 +59,7 @@ public class TestServerCatalogs {
     if (url == null) return null;
 
     ConfigCatalogBuilder builder = new ConfigCatalogBuilder();
-    Catalog cat = builder.buildFromLocation("file:" + url.getPath());
+    Catalog cat = builder.buildFromLocation("file:" + url.getPath(), null);
     if (builder.hasFatalError()) {
       System.out.printf("%s%n", builder.getErrorMessage());
       assert false;
@@ -77,7 +77,7 @@ public class TestServerCatalogs {
   static public ConfigCatalog open(String urlString) throws IOException {
     System.out.printf("Open %s%n", urlString);
     ConfigCatalogBuilder builder = new ConfigCatalogBuilder();
-    Catalog cat = builder.buildFromLocation(urlString);
+    Catalog cat = builder.buildFromLocation(urlString, null);
     if (builder.hasFatalError()) {
       System.out.printf("%s%n", builder.getErrorMessage());
       assert false;
@@ -211,7 +211,7 @@ public class TestServerCatalogs {
     assert (url != null);
 
     ConfigCatalogBuilder catFactory = new ConfigCatalogBuilder();
-    Catalog cat = catFactory.buildFromLocation("file:" + url.getPath());
+    Catalog cat = catFactory.buildFromLocation("file:" + url.getPath(), null);
     CatalogXmlWriter writer = new CatalogXmlWriter();
     System.out.printf("%s%n", writer.writeXML(cat));
 

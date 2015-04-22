@@ -1,46 +1,96 @@
-apply from: "$rootDir/gradle/dependencies.gradle"
-apply plugin: "java"
+subprojects {
+    apply from: "$rootDir/gradle/dependencies.gradle"
 
-dependencies {
-    testCompile libraries["junit"]
+    dependencies {
+        testCompile libraries["junit"]
 
-    if (name != "cdm") {
-        // Applying this to "cdm" creates a circular dependency.
-        testCompile project(path: ':cdm', configuration: 'testArtifacts')
-    }
-}
-
-tasks.withType(Test) {
-    useJUnit {
-        String testdataDirPath = getTestdataDirPath()
-        if (!testdataDirPath) {
-            logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
-            // FIXME: This is spammy.
-            // Also, calling (or not calling) this method does not affect a Test task's up-to-date status.
-            excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
-        } else if (!new File(testdataDirPath).isDirectory()) {
-            logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
-            excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+        if (name != "cdm") {
+            // Applying this to "cdm" creates a circular dependency.
+            testCompile project(path: ':cdm', configuration: 'testArtifacts')
         }
     }
 
-    if (!System.env['TRAVIS']) {
-        ignoreFailures true
+    // Add an SLF4J binding to testRuntime, if necessary.
+    afterEvaluate {
+        if (testRuntimeHasDepNamed("slf4j-api")) {
+            if (!testRuntimeHasDepNamed("slf4j-jdk14") && !testRuntimeHasDepNamed("log4j-slf4j-impl")) {
+                dependencies.testRuntime libraries["slf4j-jdk14"]  // Default binding.
+            }
+        }
     }
-}
 
-// Add an SLF4J binding to testRuntime, if necessary.
-afterEvaluate {
-    if (testRuntimeHasDepNamed("slf4j-api")) {
-        if (!testRuntimeHasDepNamed("slf4j-jdk14") && !testRuntimeHasDepNamed("log4j-slf4j-impl")) {
-            dependencies.testRuntime libraries["slf4j-jdk14"]  // Default binding.
+    tasks.withType(Test) {
+        // Eventually create a JUnit category for tests that need this.
+        String propKey = 'tds.content.root.path'
+        def propVal = System.properties[propKey]  // Defined in gradle.properties or command line.
+
+        if (propVal) {
+            systemProperty propKey, propVal  // Propagate to Gradle Test Executor.
+        } else {
+            logger.warn "\"$propKey\" not defined! Some tests will fail."
+        }
+
+        if (!System.env['TRAVIS']) {
+            ignoreFailures true  // Don't fail the build on test failure unless we're running on Travis.
         }
     }
 }
 
 boolean testRuntimeHasDepNamed(String depName) {
-    // Groovy truth: empty collections are coerced to false.
-    configurations.testRuntime.allDependencies.findAll { it.name == depName }
+    try {
+        // Groovy truth: empty collections are coerced to false.
+        configurations.getByName('testRuntime').allDependencies.findAll { it.name == depName }
+    } catch (UnknownConfigurationException e) {  // Project did not have a configuration named 'testRuntime'.
+        logger.debug e.message
+        false
+    }
+}
+
+// Process test exclusions.
+gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+    Collection<Task> testTasks = taskGraph.allTasks.findAll { it instanceof Test }
+    if (!testTasks) {
+        return  // We're not running any tests.
+    }
+
+    // These appear to be the only environment variables that Jenkins defines: http://goo.gl/iCh08k
+    // Is there a better way to detect Jenkins?
+    boolean isJenkins = System.env['JENKINS_URL']  // We only care if prop is defined, not its actual value.
+
+    if (isJenkins) {
+        // Never exclude any tests when running on Jenkins.
+        // We're explicitly checking for this so that we don't accidentally exclude tests due to a mis-configuration
+        // of one of the properties below. In that scenario, we want tests to fail so that we know to fix our config.
+        return
+    }
+
+    boolean isTravis = System.env['TRAVIS']
+
+    if (isTravis) {
+        logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
+    }
+
+    boolean isCdmUnitTestDirAvailable = true
+    String testdataDirPath = getTestdataDirPath()
+
+    if (!testdataDirPath) {
+        logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
+        isCdmUnitTestDirAvailable = false
+    } else if (!new File(testdataDirPath).isDirectory()) {
+        logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
+        isCdmUnitTestDirAvailable = false
+    }
+
+    testTasks*.configure {
+        useJUnit {
+            if (isTravis) {
+                excludeCategories 'ucar.unidata.test.util.NotTravis'
+            }
+            if (!isCdmUnitTestDirAvailable) {
+                excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+            }
+        }
+    }
 }
 
 // Copied from ucar.nc2.util.Misc with minor modification.
@@ -70,3 +120,32 @@ String getTestdataDirPath() {
 
     return testdataDirPath;
 }
+
+///////////////////////////////////////////////// Root /////////////////////////////////////////////////
+
+task testAll(group: 'Build') {
+    description = 'Runs all subproject Test tasks'
+    dependsOn subprojects*.tasks*.withType(Test)
+}
+
+task rootTestReport(type: TestReport, group: 'Reports') {
+    description = 'Generates an aggregate test report'
+    destinationDir = file("$buildDir/reports/allTests")
+
+    Collection<Task> subprojectTestTasks = subprojects*.tasks*.withType(Test).flatten()
+
+    // All Test tasks will be finalized by this task. As a result, this task needn't be invoked directly.
+    subprojectTestTasks*.finalizedBy it
+
+    // We could also do "reportOn subprojectTestTasks" here, but that would cause this task to be dependent on all
+    // subproject Tests. So, we couldn't do something like ":grib:test" and expect only GRIB tests to run because:
+    //     ":grib:test" --finalizedBy--> ":rootTestReport" --dependsOn--> "all_subproject_Tests"
+    // In other words, all subproject tests would get run, no matter what.
+    // Passing File arguments to reportOn() instead doesn't create that dependency.
+    reportOn subprojectTestTasks*.binResultsDir
+
+    // Wait until all Test tasks have run. This creates a task *ordering*, not a dependency.
+    mustRunAfter subprojectTestTasks
+}
+
+apply plugin: "base"  // Gives us the "clean" task for removing rootTestReport's output.

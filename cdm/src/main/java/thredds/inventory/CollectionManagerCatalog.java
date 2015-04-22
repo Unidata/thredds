@@ -35,12 +35,10 @@ package thredds.inventory;
 
 import net.jcip.annotations.ThreadSafe;
 import thredds.client.catalog.Access;
-import thredds.client.catalog.Catalog;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.builder.CatalogBuilder;
-import thredds.client.catalog.writer.CatalogCrawler;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.CatalogCrawler;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.units.DateType;
 
 import java.io.IOException;

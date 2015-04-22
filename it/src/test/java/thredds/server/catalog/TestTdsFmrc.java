@@ -3,8 +3,9 @@ package thredds.server.catalog;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
+import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.writer.DataFactory;
+import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.FeatureType;
@@ -26,10 +27,9 @@ import java.io.IOException;
 @Category(NeedsCdmUnitTest.class)
 public class TestTdsFmrc {
 
-  String catalog = "/catalog/testNAMfmrc/catalog.xml";
-
   @Test
-  public void testFmrc() throws IOException {
+  public void testFmrcBest() throws IOException {
+    String catalog = "/catalog/testNAMfmrc/catalog.xml";
     Catalog cat = TestTdsLocal.open(catalog);
 
     Dataset ds = cat.findDatasetByID("testNAMfmrc/NAM_FMRC_best.ncd");
@@ -37,42 +37,59 @@ public class TestTdsFmrc {
     assert ds.getFeatureType() == FeatureType.GRID;
 
     DataFactory fac = new DataFactory();
-    DataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
+    try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
 
-    assert dataResult != null;
-    assert !dataResult.fatalError;
-    assert dataResult.featureDataset != null;
+      assert dataResult != null;
+      assert !dataResult.fatalError;
+      assert dataResult.featureDataset != null;
 
-    GridDataset gds = (GridDataset) dataResult.featureDataset;
-    GridDatatype grid = gds.findGridDatatype("Total_cloud_cover");
-    assert grid != null;
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    assert gcs != null;
-    assert null == gcs.getVerticalAxis();
+      GridDataset gds = (GridDataset) dataResult.featureDataset;
+      GridDatatype grid = gds.findGridDatatype("Total_cloud_cover");
+      assert grid != null;
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      assert gcs != null;
+      assert null == gcs.getVerticalAxis();
 
-    CoordinateAxis1D time = gcs.getTimeAxis1D();
-    assert time != null;
-    assert time.getSize() == 8;
-    double[] want = new double[] {3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0};
-    CompareNetcdf2 cn = new CompareNetcdf2();
-    assert cn.compareData("time", time.read(), Array.factory(want), false);
+      CoordinateAxis1D time = gcs.getTimeAxis1D();
+      assert time != null;
+      assert time.getSize() == 8;
+      double[] want = new double[]{3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0};
+      CompareNetcdf2 cn = new CompareNetcdf2();
+      assert cn.compareData("time", time.read(), Array.factory(want), false);
 
-    Attribute att = gds.findGlobalAttributeIgnoreCase("ncmlAdded");
-    assert att != null;
-    assert att.isString();
-    assert att.getStringValue().equals("goodStuff");
+      Attribute att = gds.findGlobalAttributeIgnoreCase("ncmlAdded");
+      assert att != null;
+      assert att.isString();
+      assert att.getStringValue().equals("goodStuff");
 
-    grid = gds.findGridDatatype("Visibility");
-    att = grid.findAttributeIgnoreCase("ncmlAdded");
-    assert att != null;
-    assert att.isString();
-    assert att.getStringValue().equals("reallyGoodStuff");
+      grid = gds.findGridDatatype("Visibility");
+      att = grid.findAttributeIgnoreCase("ncmlAdded");
+      assert att != null;
+      assert att.isString();
+      assert att.getStringValue().equals("reallyGoodStuff");
 
-    att = grid.findAttributeIgnoreCase("ncmlInnerAdded");
-    assert att != null;
-    assert att.isString();
-    assert att.getStringValue().equals("innerTruth");
-
-    gds.close();
+      att = grid.findAttributeIgnoreCase("ncmlInnerAdded");
+      assert att != null;
+      assert att.isString();
+      assert att.getStringValue().equals("innerTruth");
+    }
   }
+
+  @Test
+  public void testFmrcCatRefs() throws IOException {
+    String catalog = "/catalog/testNAMfmrc/catalog.xml";
+    Catalog cat = TestTdsLocal.open(catalog);
+    Dataset top = cat.getDatasets().get(0);
+
+    for (Dataset ds : top.getDatasets()) {
+      if (ds instanceof CatalogRef) {
+        CatalogRef catref = (CatalogRef) ds;
+        String name =  catref.getName();
+        assert name != null : "name is null";
+        assert name.length() > 0 : "name is empty";
+      }
+    }
+  }
+
+
 }

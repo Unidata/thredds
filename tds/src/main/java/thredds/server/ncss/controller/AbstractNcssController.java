@@ -32,7 +32,6 @@
  */
 package thredds.server.ncss.controller;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -42,8 +41,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import thredds.server.ncss.exception.NcssException;
+import thredds.util.TdsPathUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -101,6 +100,15 @@ public class AbstractNcssController {
 
     ////////////////////////////////////////////////////////
     // Exception handlers
+    @ExceptionHandler(NcssException.class)
+    public ResponseEntity<String> handle(NcssException e) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        return new ResponseEntity<>(e.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+  /*
 
     @ResponseStatus(value=HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NcssException.class)
@@ -124,7 +132,7 @@ public class AbstractNcssController {
     @ExceptionHandler(Throwable.class)
     public void handle(Throwable t) {
       logger.error("Uncaught exception", t);
-    }
+    }   */
 
     public static String getNCSSServletPath() {
         return servletPath;
@@ -139,7 +147,7 @@ public class AbstractNcssController {
     };
 
     public static String getDatasetPath(HttpServletRequest req) {
-        return getDatasetPath(req.getServletPath());
+        return TdsPathUtils.extractPath(req, NcssController.servletPath, endings);
     }
 
     public static String getDatasetPath(String path) {

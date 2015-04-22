@@ -29,7 +29,8 @@ public abstract class NcMonitoringPointType {
         }
 
         // sam:sampledFeature
-        monitoringPoint.setNilSampledFeature();
+        monitoringPoint.addNewSampledFeature();
+        monitoringPoint.setNilSampledFeatureArray(0);  // Set the "sam:sampledFeature" we just added to nil.
 
         // sams:shape
         NcShapeType.initShape(monitoringPoint.addNewShape(), stationFeat);

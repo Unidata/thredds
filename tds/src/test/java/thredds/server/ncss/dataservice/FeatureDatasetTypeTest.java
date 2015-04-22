@@ -47,8 +47,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import thredds.core.DataRootManager;
+import thredds.core.TdsRequestedDataset;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.servlet.DataRootHandler;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -59,18 +60,18 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class FeatureDatasetTypeTest {
 
-	@Autowired
-	FeatureDatasetService featureDatasetService;
+  @Autowired
+  DataRootManager matcher;
 	
 	@Test
 	public void getFDForSingleFileGridDataset() throws IOException{
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc");
+		FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, "cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc");
     assertNotNull(fd);
 		assertEquals(FeatureType.GRID, fd.getFeatureType());
 	}
@@ -79,7 +80,7 @@ public class FeatureDatasetTypeTest {
 	public void getFDForSingleFileStationDataset() throws IOException{
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc");
+		FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, "cdmUnitTest/ncss/point_features/metar/Surface_METAR_20130826_0000.nc");
 		assertNotNull(fd);
 		assertEquals(FeatureType.STATION, fd.getFeatureType());
 	}
@@ -89,7 +90,7 @@ public class FeatureDatasetTypeTest {
 	public void getFDForDatasetScanGridDataset() throws IOException{
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testGridScan/GFS_CONUS_80km_20120227_0000.grib1");
+		FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, "testGridScan/GFS_CONUS_80km_20120227_0000.grib1");
     assertNotNull(fd);
 		assertEquals(FeatureType.GRID, fd.getFeatureType());
 	}
@@ -100,12 +101,12 @@ public class FeatureDatasetTypeTest {
 		MockHttpServletResponse res = new MockHttpServletResponse();
 
     String reqPath =  "testStationScan/Surface_METAR_20130826_0000.nc";
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, reqPath);
+		FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, reqPath);
     if (fd == null) {
-      DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+      DataRootManager.DataRootMatch match = matcher.findDataRootMatch(reqPath);
       if (match == null) {
         Formatter f = new Formatter();
-        DataRootHandler.getInstance().showRoots(f);
+        matcher.showRoots(f);
         System.out.printf("DataRoots%n%s%n", f);
       }
 
@@ -119,7 +120,7 @@ public class FeatureDatasetTypeTest {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
 
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testGFSfmrc/GFS_CONUS_80km_nc_best.ncd");
+		FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, "testGFSfmrc/GFS_CONUS_80km_nc_best.ncd");
     assertNotNull(fd);
 		assertEquals(FeatureType.GRID, fd.getFeatureType());
 	}
@@ -129,7 +130,7 @@ public class FeatureDatasetTypeTest {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		
-		FeatureDataset fd = featureDatasetService.findDatasetByPath(req, res, "testStationFeatureCollection/Metar_Station_Data_fc.cdmr");
+		FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, "testStationFeatureCollection/Metar_Station_Data_fc.cdmr");
     assertNotNull(fd);
 		assertEquals(FeatureType.STATION, fd.getFeatureType());
 	}

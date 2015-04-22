@@ -30,7 +30,7 @@ import java.util.Collection;
 
 //@RunWith(SpringJUnit4ParameterizedClassRunner.class)
 //@WebAppConfiguration
-//@ContextConfiguration(locations = {"/WEB-INF/applicationContext-tdsConfig.xml"}, loader = MockTdsContextLoader.class)
+//@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml"}, loader = MockTdsContextLoader.class)
 public class TestRadarServerUrls {
 
   //@Autowired
@@ -47,27 +47,27 @@ public class TestRadarServerUrls {
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
 
-            {"/radarServer/nexrad/level2/IDD/dataset.xml", null},
-            {"/radarServer/nexrad/level2/IDD/stations.xml", null},
-            {"/radarServer/nexrad/level2/IDD?stn=KDGX&time_start=2014-06-05T12:47:17&time_end=2014-06-05T16:07:17", null},
-            //{"/radarServer/nexrad/level2/IDD", "stn=KDGX&time=present"},
+            {"/radarServer2/nexrad/level2/IDD/dataset.xml", null},
+            {"/radarServer2/nexrad/level2/IDD/stations.xml", null},
+            {"/radarServer2/nexrad/level2/IDD?stn=KDGX&time_start=2014-06-05T12:47:17&time_end=2014-06-05T16:07:17", null},
+            //{"/radarServer2/nexrad/level2/IDD", "stn=KDGX&time=present"},
 
-            {"/radarServer/nexrad/level3/IDD/catalog.xml", null},
-            {"/radarServer/nexrad/level3/IDD/dataset.xml", null},
-            {"/radarServer/nexrad/level3/IDD/stations.xml", null},
-            //{"/radarServer/nexrad/level3/IDD","stn=UDX&var=N0R&time=present"},
+            {"/radarServer2/nexrad/level3/IDD/catalog.xml", null},
+            {"/radarServer2/nexrad/level3/IDD/dataset.xml", null},
+            {"/radarServer2/nexrad/level3/IDD/stations.xml", null},
+            //{"/radarServer2/nexrad/level3/IDD","stn=UDX&var=N0R&time=present"},
 
-            {"/radarServer/nexrad/level3/IDD/N0R/catalog.xml", null},
-            {"/radarServer/nexrad/level3/IDD/N0R/UDX/catalog.xml", null},
-            {"/radarServer/nexrad/level3/IDD/N0R/UDX/20131114/catalog.xml", null},
-            {"/radarServer/nexrad/level3/IDD/dataset.xml", null},
-            {"/radarServer/nexrad/level3/IDD/stations.xml", null},
-            //{"/radarServer/nexrad/level3/IDD", "north=50.00&south=20.00&west=-127&east=-66&time=present&var=KPAH"},
+            {"/radarServer2/nexrad/level3/IDD/N0R/catalog.xml", null},
+            {"/radarServer2/nexrad/level3/IDD/N0R/UDX/catalog.xml", null},
+            {"/radarServer2/nexrad/level3/IDD/N0R/UDX/20131114/catalog.xml", null},
+            {"/radarServer2/nexrad/level3/IDD/dataset.xml", null},
+            {"/radarServer2/nexrad/level3/IDD/stations.xml", null},
+            //{"/radarServer2/nexrad/level3/IDD", "north=50.00&south=20.00&west=-127&east=-66&time=present&var=KPAH"},
 
-         /*   {"/radarServer/terminal/level3/IDD/dataset.xml", null},
-            {"/radarServer/terminal/level3/IDD/stations.xml", null},
-            {"/radarServer/terminal/level3/IDD", "stn=ORD&var=NTP&time=present"},
-            {"/radarServer/terminal/level3/IDD", "stn=OKC&time=present&var=NTP"}, */
+         /*   {"/radarServer2/terminal/level3/IDD/dataset.xml", null},
+            {"/radarServer2/terminal/level3/IDD/stations.xml", null},
+            {"/radarServer2/terminal/level3/IDD", "stn=ORD&var=NTP&time=present"},
+            {"/radarServer2/terminal/level3/IDD", "stn=OKC&time=present&var=NTP"}, */
 
     });
   }

@@ -1,5 +1,6 @@
 package thredds.servlet;
 
+import thredds.core.DataRootManager;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -11,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * DatasetSource test
+ * DatasetSource test  LOOK this doesnt work
  *
  * @author caron
  * @since 2/17/11
@@ -32,7 +33,7 @@ public class DatasetSourceExample implements thredds.servlet.DatasetSource {
   public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
     String path = TdsPathUtils.extractPath(req, prefix);
 
-    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(path);
+    DataRootManager.DataRootMatch match = DataRootManager.getInstance().findDataRootMatch(path);
     if (match == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return null;

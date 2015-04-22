@@ -1,36 +1,34 @@
 /*
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
- *  * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
- *  *
- *  *  Portions of this software were developed by the Unidata Program at the
- *  *  University Corporation for Atmospheric Research.
- *  *
- *  *  Access and use of this software shall impose the following obligations
- *  *  and understandings on the user. The user is granted the right, without
- *  *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  *  this software, and any derivative works thereof, and its supporting
- *  *  documentation for any purpose whatsoever, provided that this entire
- *  *  notice appears in all copies of the software, derivative works and
- *  *  supporting documentation.  Further, UCAR requests that the user credit
- *  *  UCAR/Unidata in any publications that result from the use of this
- *  *  software or in any product that includes this software. The names UCAR
- *  *  and/or Unidata, however, may not be used in any advertising or publicity
- *  *  to endorse or promote any products or commercial entity unless specific
- *  *  written permission is obtained from UCAR/Unidata. The user also
- *  *  understands that UCAR/Unidata is not obligated to provide the user with
- *  *  any support, consulting, training or assistance of any kind with regard
- *  *  to the use, operation and performance of this software nor to provide
- *  *  the user with any updates, revisions, new versions or "bug fixes."
- *  *
- *  *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *   Portions of this software were developed by the Unidata Program at the
+ *   University Corporation for Atmospheric Research.
  *
+ *   Access and use of this software shall impose the following obligations
+ *   and understandings on the user. The user is granted the right, without
+ *   any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *   this software, and any derivative works thereof, and its supporting
+ *   documentation for any purpose whatsoever, provided that this entire
+ *   notice appears in all copies of the software, derivative works and
+ *   supporting documentation.  Further, UCAR requests that the user credit
+ *   UCAR/Unidata in any publications that result from the use of this
+ *   software or in any product that includes this software. The names UCAR
+ *   and/or Unidata, however, may not be used in any advertising or publicity
+ *   to endorse or promote any products or commercial entity unless specific
+ *   written permission is obtained from UCAR/Unidata. The user also
+ *   understands that UCAR/Unidata is not obligated to provide the user with
+ *   any support, consulting, training or assistance of any kind with regard
+ *   to the use, operation and performance of this software nor to provide
+ *   the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 package ucar.nc2.grib.collection;
@@ -45,12 +43,7 @@ import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.*;
-import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
@@ -59,14 +52,11 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
-import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -83,6 +73,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class GribCdmIndex implements IndexReader {
   static public enum GribCollectionType {GRIB1, GRIB2, Partition1, Partition2, none}
+
   static private final Logger classLogger = LoggerFactory.getLogger(GribCdmIndex.class);
 
 
@@ -114,10 +105,10 @@ public class GribCdmIndex implements IndexReader {
       // FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject
       result = GribCdmIndex.gribCollectionCache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
 
-    }  else {
+    } else {
       // String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage
       result = factory.open(location, buffer_size, cancelTask, spiObject);
-     }
+    }
 
     return (GribCollectionImmutable) result;
   }
@@ -189,16 +180,16 @@ public class GribCdmIndex implements IndexReader {
     return GribCollectionType.none;
   }
 
-    // open GribCollection from an existing index file. return null on failure
+  // open GribCollection from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, Logger logger) {
     return openCdmIndex(indexFilename, config, true, logger);
   }
 
-    // open GribCollectionImmutable from an existing index file. return null on failure
+  // open GribCollectionImmutable from an existing index file. return null on failure
   static public GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean useCache, Logger logger) {
     File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
     if (indexFileInCache == null)
-        return null;
+      return null;
     String indexFilenameInCache = indexFileInCache.getPath();
     String name = makeNameFromIndexFilename(indexFilename);
     GribCollectionImmutable result = null;
@@ -224,7 +215,7 @@ public class GribCdmIndex implements IndexReader {
       }
 
     } catch (Throwable t) {
-      logger.warn("GribCdmIndex.openCdmIndex failed on "+indexFilenameInCache, t);
+      logger.warn("GribCdmIndex.openCdmIndex failed on " + indexFilenameInCache, t);
       RandomAccessFile.eject(indexFilenameInCache);
       if (!indexFileInCache.delete())
         logger.warn("failed to delete {}", indexFileInCache.getPath());
@@ -270,7 +261,7 @@ public class GribCdmIndex implements IndexReader {
       }
 
     } catch (Throwable t) {
-        logger.warn("GribCdmIndex.openMutableGCFromIndex failed on " + indexFilenameInCache, t);
+      logger.warn("GribCdmIndex.openMutableGCFromIndex failed on " + indexFilenameInCache, t);
     }
 
     if (result == null) {
@@ -288,7 +279,7 @@ public class GribCdmIndex implements IndexReader {
 
   // used (only) by GribCollectionBuilder
   static public boolean updateGribCollectionFromPCollection(boolean isGrib1, PartitionManager dcm, CollectionUpdateType updateType,
-                                                                 Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                                            Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // LOOK would isIndexFile() be better ?
       // then just open the existing index file
@@ -304,7 +295,8 @@ public class GribCdmIndex implements IndexReader {
   // used by Tdm (indirectly by InvDatasetFcGrib)
 
   /**
-   * update all the different Grib Collection variants collection as needed
+   * update Grib Collection if needed
+   *
    * @return true if the collection was updated
    * @throws IOException
    */
@@ -351,6 +343,7 @@ public class GribCdmIndex implements IndexReader {
     return changed;
   }
 
+  // return true if changed, exception on failure
   static private boolean updateGribCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, FeatureCollectionConfig.PartitionType ptype,
                                               Logger logger, Formatter errlog) throws IOException {
 
@@ -368,8 +361,9 @@ public class GribCdmIndex implements IndexReader {
     return changed;
   }
 
+  // return true if changed, exception on failure
   static private boolean updatePartition(boolean isGrib1, PartitionManager dcm, CollectionUpdateType updateType,
-                                              Logger logger, Formatter errlog) throws IOException {
+                                         Logger logger, Formatter errlog) throws IOException {
     boolean changed;
     if (isGrib1) {
       Grib1PartitionBuilder builder = new Grib1PartitionBuilder(dcm.getCollectionName(), new File(dcm.getRoot()), dcm, logger);
@@ -392,15 +386,32 @@ public class GribCdmIndex implements IndexReader {
     Formatter errlog = new Formatter();
 
     for (MCollection part : tp.makePartitions(updateType)) {
-      updateGribCollection(isGrib1, part, updateType, FeatureCollectionConfig.PartitionType.timePeriod, logger, errlog);
+      try {
+        updateGribCollection(isGrib1, part, updateType, FeatureCollectionConfig.PartitionType.timePeriod, logger, errlog);
+
+      } catch (Throwable t) {
+        logger.warn("Error making partition " + part.getRoot(), t);
+        tp.removePartition(part); // keep on truckin; can happen if directory is empty
+      }
     }   // loop over component grib collections
 
-    boolean changed = updatePartition(isGrib1, tp, updateType, logger, errlog);
 
-    long took = System.currentTimeMillis() - start;
-    errlog.format(" INFO updateTimePartition %s took %d msecs%n", tp.getRoot(), took);
-    if (debug) System.out.printf("GribCdmIndex.updateTimePartition complete (%s) on %s errlog=%s%n", changed, tp.getRoot(), errlog);
-    return changed;
+    try {
+      boolean changed = updatePartition(isGrib1, tp, updateType, logger, errlog);
+
+      long took = System.currentTimeMillis() - start;
+      errlog.format(" INFO updateTimePartition %s took %d msecs%n", tp.getRoot(), took);
+      if (debug) System.out.printf("GribCdmIndex.updateTimePartition complete (%s) on %s errlog=%s%n", changed, tp.getRoot(), errlog);
+      return changed;
+
+    } catch (IllegalStateException t) {
+      logger.warn("Error making partition {} '{}'", tp.getRoot(), t.getMessage());
+      return false;
+
+    } catch (Throwable t) {
+      logger.error("Error making partition " + tp.getRoot(), t);
+      return false;
+    }
   }
 
   static private boolean isUpdateNeeded(String idxFilenameOrg, CollectionUpdateType updateType, GribCollectionType wantType, Logger logger) {
@@ -451,23 +462,35 @@ public class GribCdmIndex implements IndexReader {
             Path partPath = Paths.get(part.getRoot());
             updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // LOOK why not using part ??
           }
+        } catch (IllegalStateException t) {
+          logger.warn("Error making partition {} '{}'", part.getRoot(), t.getMessage());
+          dpart.removePartition(part); // keep on truckin; can happen if directory is empty
+
         } catch (Throwable t) {
-          logger.warn("Error making partition " + part.getRoot(), t);
-          throw t;
-          // continue; // keep on truckin; can happen if directory is empty
+          logger.error("Error making partition " + part.getRoot(), t);
+          dpart.removePartition(part);
         }
       }   // loop over partitions
     }
 
+    try {
+      // update the partition
+      Formatter errlog = new Formatter();
+      boolean changed = updatePartition(isGrib1, dpart, updateType, logger, errlog);
 
-    // update the partition
-    Formatter errlog = new Formatter();
-    boolean changed = updatePartition(isGrib1, dpart, updateType, logger, errlog);
+      long took = System.currentTimeMillis() - start;
+      errlog.format(" INFO updateDirectoryCollectionRecurse %s took %d msecs%n", dpart.getRoot(), took);
+      if (debug) System.out.printf("GribCdmIndex.updateDirectoryCollectionRecurse complete (%s) on %s errlog=%s%n", changed, dpart.getRoot(), errlog);
+      return changed;
 
-    long took = System.currentTimeMillis() - start;
-    errlog.format(" INFO updateDirectoryCollectionRecurse %s took %d msecs%n", dpart.getRoot(), took);
-    if (debug) System.out.printf("GribCdmIndex.updateDirectoryCollectionRecurse complete (%s) on %s errlog=%s%n", changed, dpart.getRoot(), errlog);
-    return changed;
+    } catch (IllegalStateException t) {
+      logger.warn("Error making partition {} '{}'", dpart.getRoot(), t.getMessage());
+      return false;
+
+    } catch (Throwable t) {
+      logger.error("Error making partition " + dpart.getRoot(), t);
+      return false;
+    }
   }
 
   /**
@@ -475,6 +498,7 @@ public class GribCdmIndex implements IndexReader {
    *
    * @param config  FeatureCollectionConfig
    * @param dirPath directory path
+   * @return true if collection was rewritten, exception on failure
    * @throws IOException
    */
   static private boolean updateLeafCollection(boolean isGrib1, FeatureCollectionConfig config,
@@ -506,9 +530,9 @@ public class GribCdmIndex implements IndexReader {
    * File Partition: each File is a collection of Grib records, and the collection of all files in the directory is a PartitionCollection.
    * Rewrite the PartitionCollection and optionally its children
    *
-   * @param config              FeatureCollectionConfig
-   * @param updateType          always, test, nocheck, never
-   * @return true if partition was rewritten
+   * @param config     FeatureCollectionConfig
+   * @param updateType always, test, nocheck, never
+   * @return true if partition was rewritten, exception on failure
    * @throws IOException
    */
   static private boolean updateFilePartition(final boolean isGrib1, final FeatureCollectionConfig config,
@@ -524,7 +548,8 @@ public class GribCdmIndex implements IndexReader {
         partition.setStreamFilter(new StreamFilter(specp.getFilter(), specp.getFilterOnName()));
 
       if (debug) System.out.printf("GribCdmIndex.updateFilePartition %s %s%n", partition.getCollectionName(), updateType);
-      if (!isUpdateNeeded(partition.getIndexFilename(), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger)) return false;
+      if (!isUpdateNeeded(partition.getIndexFilename(), updateType, (isGrib1 ? GribCollectionType.Partition1 : GribCollectionType.Partition2), logger))
+        return false;
 
       final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
 
@@ -532,15 +557,20 @@ public class GribCdmIndex implements IndexReader {
       if (updateType != CollectionUpdateType.testIndexOnly) {   // skip children on testIndexOnly
         partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
           public void consume(MFile mfile) {
-            MCollection dcm = new CollectionSingleFile(mfile, logger);
-            dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+            MCollection part = new CollectionSingleFile(mfile, logger);
+            part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
             try {
-              boolean changed = updateGribCollection(isGrib1, dcm, updateType, FeatureCollectionConfig.PartitionType.file, logger, errlog);
+              boolean changed = updateGribCollection(isGrib1, part, updateType, FeatureCollectionConfig.PartitionType.file, logger, errlog);
               if (changed) anyChange.set(true);
 
-            } catch (IOException e) {
-              logger.error("Error updating ");
+            } catch (IllegalStateException t) {
+              logger.warn("Error making partition {} '{}'", part.getRoot(), t.getMessage());
+              partition.removePartition(part); // keep on truckin; can happen if directory is empty
+
+            } catch (Throwable t) {
+              logger.error("Error making partition " + part.getRoot(), t);
+              partition.removePartition(part);
             }
           }
         });
@@ -548,12 +578,22 @@ public class GribCdmIndex implements IndexReader {
 
       // LOOK what if theres only one file?
 
-      // redo partition index if needed, will detect if children have changed
-      boolean recreated = updatePartition(isGrib1, partition, updateType, logger, errlog);
+      try {
+        // redo partition index if needed, will detect if children have changed
+        boolean recreated = updatePartition(isGrib1, partition, updateType, logger, errlog);
 
-      long took = System.currentTimeMillis() - start;
-      if (recreated) logger.info("RewriteFilePartition {} took {} msecs", partition.getCollectionName(), took);
-      return recreated;
+        long took = System.currentTimeMillis() - start;
+        if (recreated) logger.info("RewriteFilePartition {} took {} msecs", partition.getCollectionName(), took);
+        return recreated;
+
+      } catch (IllegalStateException t) {
+        logger.warn("Error making partition {} '{}'", partition.getRoot(), t.getMessage());
+        return false;
+
+      } catch (Throwable t) {
+        logger.error("Error making partition " + partition.getRoot(), t);
+        return false;
+      }
     }
   }
 
@@ -573,9 +613,9 @@ public class GribCdmIndex implements IndexReader {
      } else {
        return Grib2CollectionBuilder.makeIndex(dpart, errlog, logger);
      }  */
-   }
+  }
 
-    // move index to be a directory partition
+  // move index to be a directory partition
   static public boolean moveCdmIndex(String indexFilename, Logger logger) throws IOException {
     return false;
     /* RandomAccessFile raf = new RandomAccessFile(indexFilename, "r");
@@ -660,7 +700,7 @@ public class GribCdmIndex implements IndexReader {
     return true;
   }  */
 
-    ///////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////
   // used by InvDatasetFcGrib
 
   /**
@@ -680,11 +720,11 @@ public class GribCdmIndex implements IndexReader {
   // Used by IOSPs
 
   public static GribCollectionImmutable openGribCollectionFromRaf(RandomAccessFile raf,
-         FeatureCollectionConfig config, CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
+                                                                  FeatureCollectionConfig config, CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
 
     GribCollectionImmutable result;
 
-      // check if its a plain ole GRIB1/2 data file
+    // check if its a plain ole GRIB1/2 data file
     boolean isGrib1 = false;
     boolean isGrib2 = Grib2RecordScanner.isValidFile(raf);
     if (!isGrib2) isGrib1 = Grib1RecordScanner.isValidFile(raf);
@@ -700,22 +740,22 @@ public class GribCdmIndex implements IndexReader {
     }
 
     return result;
-}
+  }
 
 
   /**
    * Open a grib collection from a single grib1 or grib2 file.
    * Create the gbx9 and ncx2 files if needed.
    *
-   * @param isGrib1 true if grib1
-   * @param dataRaf the data file already open
-   * @param config  special configuration
-   * @param updateType   force writing index
+   * @param isGrib1    true if grib1
+   * @param dataRaf    the data file already open
+   * @param config     special configuration
+   * @param updateType force writing index
    * @return the resulting GribCollection
    * @throws IOException on io error
    */
   private static GribCollectionImmutable openGribCollectionFromDataFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig config,
-            CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                                                        CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     String filename = dataRaf.getLocation();
     File dataFile = new File(filename);
@@ -724,11 +764,11 @@ public class GribCdmIndex implements IndexReader {
     return openGribCollectionFromDataFile(isGrib1, mfile, updateType, config, errlog, logger);
   }
 
-   // for InvDatasetFeatureCollection.getNetcdfDataset() and getGridDataset()
+  // for InvDatasetFeatureCollection.getNetcdfDataset() and getGridDataset()
 
   // from a single file, read in the index, create if it doesnt exist; return null on failure
   static public GribCollectionImmutable openGribCollectionFromDataFile(boolean isGrib1, MFile mfile, CollectionUpdateType updateType,
-                   FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+                                                                       FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     MCollection dcm = new CollectionSingleFile(mfile, logger);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
@@ -741,7 +781,7 @@ public class GribCdmIndex implements IndexReader {
     }
 
     // the index file should now exist, open it
-    GribCollectionImmutable result = openCdmIndex( dcm.getIndexFilename(), config, true, logger);
+    GribCollectionImmutable result = openCdmIndex(dcm.getIndexFilename(), config, true, logger);
     if (result != null) return result;
 
     // if open fails, force recreate the index
@@ -755,12 +795,12 @@ public class GribCdmIndex implements IndexReader {
    * PartionCollection.partition.getGribCollection().
    *
    * @param indexRaf the ncx2 file already open
-   * @param config  special configuration
+   * @param config   special configuration
    * @return the resulting GribCollection, or null on failure
    * @throws IOException on io error
    */
   public static GribCollectionImmutable openGribCollectionFromIndexFile(RandomAccessFile indexRaf, FeatureCollectionConfig config,
-                                                               org.slf4j.Logger logger) throws IOException {
+                                                                        org.slf4j.Logger logger) throws IOException {
 
     GribCollectionType type = getType(indexRaf);
 
@@ -770,13 +810,13 @@ public class GribCdmIndex implements IndexReader {
     String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName(); // remove ".ncx2"
 
     switch (type) {
-      case Partition1 :
-         return Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, logger);
-      case GRIB1 :
+      case Partition1:
+        return Grib1PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, logger);
+      case GRIB1:
         return Grib1CollectionBuilderFromIndex.readFromIndex(name, indexRaf, config, logger);
-      case Partition2 :
-         return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, logger);
-      case GRIB2 :
+      case Partition2:
+        return Grib2PartitionBuilderFromIndex.createTimePartitionFromIndex(name, indexRaf, config, logger);
+      case GRIB2:
         return Grib2CollectionBuilderFromIndex.readFromIndex(name, indexRaf, config, logger);
     }
 
@@ -830,17 +870,17 @@ public class GribCdmIndex implements IndexReader {
   public boolean readMFiles(Path indexFile, List<MFile> result) throws IOException {
     if (debug) System.out.printf("GribCdmIndex.readMFiles %s%n", indexFile);
     try (RandomAccessFile raf = RandomAccessFile.acquire(indexFile.toString())) {
-        // GribCollectionType type = getType(raf);
-        // if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
-        if (openIndex(raf, logger)) {
-          File protoDir = new File(gribCollectionIndex.getTopDir());
-          int n = gribCollectionIndex.getMfilesCount();
-          for (int i = 0; i < n; i++) {
-            GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
-            result.add(new GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getLength(), mfilep.getIndex()));
-          }
+      // GribCollectionType type = getType(raf);
+      // if (type == GribCollectionType.GRIB1 || type == GribCollectionType.GRIB2) {
+      if (openIndex(raf, logger)) {
+        File protoDir = new File(gribCollectionIndex.getTopDir());
+        int n = gribCollectionIndex.getMfilesCount();
+        for (int i = 0; i < n; i++) {
+          GribCollectionProto.MFile mfilep = gribCollectionIndex.getMfiles(i);
+          result.add(new GcMFile(protoDir, mfilep.getFilename(), mfilep.getLastModified(), mfilep.getLength(), mfilep.getIndex()));
         }
-        return true;
+      }
+      return true;
       //}
     }
     //return false;
@@ -884,7 +924,7 @@ public class GribCdmIndex implements IndexReader {
 
   public static void main2(String[] args) throws IOException {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    PartitionManager partition = new PartitionManagerFromIndexDirectory("NCDC-gfs4_all", new FeatureCollectionConfig(), new File("B:/ncdc/gfs4_all/"),  logger);
+    PartitionManager partition = new PartitionManagerFromIndexDirectory("NCDC-gfs4_all", new FeatureCollectionConfig(), new File("B:/ncdc/gfs4_all/"), logger);
     Grib1PartitionBuilder builder = new Grib1PartitionBuilder("NCDC-gfs4_all", new File(partition.getRoot()), partition, logger);
     builder.createPartitionedIndex(CollectionUpdateType.nocheck, new Formatter());
   }
@@ -925,7 +965,7 @@ public class GribCdmIndex implements IndexReader {
     System.out.printf("changed = %s%n", changed);
   }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static class CommandLine {
     @Parameter(names = {"-fc", "--featureCollection"}, description = "Input XML file containing <featureCollection> root element", required = true)

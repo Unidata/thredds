@@ -13,165 +13,6 @@
     <param-value>thredds</param-value>
   </context-param>
 
-  <!-- Turn on some more targeted debugging. -->
-  <filter>
-    <filter-name>RequestBracketingLogMessageFilter</filter-name>
-    <filter-class>thredds.server.RequestBracketingLogMessageFilter</filter-class>
-  </filter>
-
-  <filter>
-    <filter-name>RequestPathFilter</filter-name>
-    <filter-class>thredds.servlet.filter.RequestPathFilter</filter-class>
-  </filter>
-
-  <filter>
-    <filter-name>RequestQueryFilter</filter-name>
-    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
-  </filter>
-
-  <filter>
-    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
-    <init-param>
-      <param-name>allowAngleBrackets</param-name>
-      <param-value>true</param-value>
-    </init-param>
-  </filter>
-
-  <!-- filter>
-    <filter-name>CatalogServiceFilter</filter-name>
-    <filter-class>thredds.servlet.filter.CatalogServiceFilter</filter-class>
-  </filter -->
-
-  <filter>
-    <filter-name>CookieFilter</filter-name>
-    <filter-class>thredds.servlet.filter.CookieFilter</filter-class>
-  </filter>
-
-  <filter>
-    <filter-name>RequestCORSFilter</filter-name>
-    <!--filter-class>thredds.servlet.filter.RequestCORSFilter</filter-class-->
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    <init-param>
-	    <param-name>targetBeanName</param-name>
-	    <param-value>corsFilter</param-value>
-    </init-param>
-  </filter>
-
-  <filter-mapping>
-    <filter-name>RequestBracketingLogMessageFilter</filter-name>
-    <!-- servlet-name>metadata</servlet-name-->
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <!--
-  Filter:
-   - the request URL path
-   - on all requests.
-  -->
-  <filter-mapping>
-    <filter-name>RequestPathFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <!--
-  Filter:
-   - the request URL query string
-   - on all requests except OPeNDAP requests.
-  -->
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>root</servlet-name>
-  </filter-mapping>
-   
-  <!-- filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>catalogService</servlet-name>
-  </filter-mapping -->
-    
-  <!--filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>FileServer</servlet-name>
-  </filter-mapping-->
-  <!-- filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>radarServer</servlet-name>
-  </filter-mapping-->
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>RestrictedDataset</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestCORSFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <!-- filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>wcs</servlet-name>
-  </filter-mapping -->
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>wms</servlet-name>
-  </filter-mapping>
-  
-  <!-- filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>DLwriter</servlet-name>
-  </filter-mapping -->
-
-  <!--
-  Filter:
-   - the request URL query string
-   - on all OPeNDAP and DAP4 requests.
-  -->
-  <filter-mapping>
-    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <servlet-name>Opendap</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <servlet-name>dap4</servlet-name>
-  </filter-mapping>
-
-  <!--
-  Filter all requests that contain parameters used by CatalogServices
-  -->
-  <!-- filter-mapping>
-    <filter-name>CatalogServiceFilter</filter-name>
-    <servlet-name>catalogService</servlet-name>
-  </filter-mapping -->
-  
-  <!--
-  Filter opendap and dap4 cookies
-  -->
-  <filter-mapping>
-    <filter-name>CookieFilter</filter-name>
-    <servlet-name>Opendap</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>CookieFilter</filter-name>
-    <servlet-name>dap4</servlet-name>
-  </filter-mapping>
-
-  <!--
-     Location of the Log4J config file (relative to the webapp root), for initialization.
-
-  <context-param>
-    <param-name>log4jConfigLocation</param-name>
-    <param-value>/WEB-INF/log4j.xml</param-value>
-  </context-param>
-   -->
-  <!--
-     Don't expose the webapp root directory as the "webapp.root" system property.
-     Multiple TDS will clash over this unless we change the name of the system property by defining it with a context-param named "webAppRootKey".
-     It isn't needed because we determine the logging directory ourselves.
-
-  <context-param>
-    <param-name>log4jExposeWebAppRoot</param-name>
-    <param-value>false</param-value>
-  </context-param>
-   -->
-
   <!--
      Spring listener to bootstrap Spring WebApplicationContext. Used to
      handle Spring bean configuration outside of SpringMVC configuration.
@@ -179,120 +20,59 @@
   -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
+    <param-value>/WEB-INF/applicationContext.xml</param-value>
   </context-param>
 
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <listener>
-    <listener-class>thredds.server.opendap.OpendapSessionAttributeListener</listener-class>
-  </listener>
+  <!-- **************************************************************************************** -->
 
+  <filter>
+    <filter-name>springDelegatingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
 
-
-  <!-- Some possible ways to deal with error handling. -->
-  <!--
-  <error-page>
-    <exception-type>java.lang.NullPointerException</exception-type>
-    <location>/null.html</location>
-  </error-page>
-  -->
-  <!-- The following goes into affect when 'res.sendError(100)' is called. -->
-  <!--
-  <error-page>
-    <error-code>100</error-code>
-    <location>/myPage.html</location>
-  </error-page>
-  -->
+  <filter-mapping>
+    <filter-name>springDelegatingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
-  <!-- root servlet -->
+  <!-- spring servlet -->
   <servlet>
     <servlet-name>root</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
       <param-name>contextConfigLocation</param-name>
-      <param-value>/WEB-INF/servlet-context.xml</param-value>
+      <param-value>/WEB-INF/spring-servlet.xml</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.)
-  <servlet>
-    <servlet-name>catalogService</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet -->
+  <servlet-mapping>
+    <servlet-name>root</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
 
   <!-- data services -->
-  <!-- NON-SPRING  controllers ands servlets -->
-  <!-- NetCDF/OPeNDAP server -->
+  <!-- NON-SPRING  controllers and servlets -->
+  <!-- NetCDF/OPeNDAP server
   <servlet>
     <display-name>OPeNDAP Server</display-name>
     <servlet-name>Opendap</servlet-name>
     <servlet-class>thredds.server.opendap.OpendapServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
-  <!-- NetCDF/Dap4 server -->
+
   <servlet>
     <display-name>Dap4 Server</display-name>
     <servlet-name>dap4</servlet-name>
     <servlet-class>thredds.server.dap4.Dap4Servlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
-
-  <!-- HTTP File server -->
-  <!-- servlet>
-    <servlet-name>FileServer</servlet-name>
-    <servlet-class>thredds.servlet.FileServerServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet -->
-
-  <!-- Radar Server -->
-  <!-- servlet>
-    <servlet-name>radarServer</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet -->
-
-  <!-- OGC Web Coverage server -->
-  <!-- servlet>
-    <servlet-name>wcs</servlet-name>
-    <servlet-class>thredds.server.wcs.WCSServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet -->
-
-  <servlet>
-    <servlet-name>wms</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
-
-  <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
-  <servlet>
-    <servlet-name>RestrictedDataset</servlet-name>
-    <servlet-class>thredds.servlet.restrict.RestrictedDatasetServlet</servlet-class>
-
-    <init-param>
-      <param-name>Authorizer</param-name>
-      <param-value>thredds.servlet.restrict.TomcatAuthorizer</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>useSSL</param-name>
-      <param-value>false</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>portSSL</param-name>
-      <param-value>8443</param-value>
-    </init-param>
-
-    <load-on-startup>2</load-on-startup>
-  </servlet>
+  </servlet>   -->
 
   <!-- Restricted Access (using CAS)
   <servlet>
@@ -343,7 +123,7 @@
 
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
-  <!-- default servlet -->
+  <!-- default servlet
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>/</url-pattern>
@@ -355,40 +135,9 @@
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>*.gif</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping> -->
 
   <!-- servlet-mapping>
-    <servlet-name>catalogService</servlet-name>
-    <url-pattern>*.xml</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>catalogService</servlet-name>
-    <url-pattern>*.html</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>catalogService</servlet-name>
-    <url-pattern>/catalog/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>catalogService</servlet-name>
-    <url-pattern>/remoteCatalogService</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>  For backwards compatibility
-    <servlet-name>catalogService</servlet-name>
-    <url-pattern>/catalogServices</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>catalogService</servlet-name>
-    <url-pattern>/remoteCatalogValidation.html</url-pattern>
-  </servlet-mapping -->
-
-  <!-- data services -->
-  <!--servlet-mapping>
-    <servlet-name>radarServer</servlet-name>
-    <url-pattern>/radarServer/*</url-pattern>
-  </servlet-mapping -->
-
-  <servlet-mapping>
     <servlet-name>Opendap</servlet-name>
     <url-pattern>/dodsC/*</url-pattern>
   </servlet-mapping>
@@ -396,38 +145,8 @@
   <servlet-mapping>
     <servlet-name>dap4</servlet-name>
     <url-pattern>/dap4/*</url-pattern>
-  </servlet-mapping>
-
-  <!-- servlet-mapping>
-    <servlet-name>FileServer</servlet-name>
-    <url-pattern>/fileServer/*</url-pattern>
   </servlet-mapping -->
 
-  <servlet-mapping>
-    <servlet-name>RestrictedDataset</servlet-name>
-    <url-pattern>/restrictedAccess/*</url-pattern>
-  </servlet-mapping>
-
-  <!-- servlet-mapping>
-    <servlet-name>wcs</servlet-name>
-    <url-pattern>/wcs/*</url-pattern>
-  </servlet-mapping -->
-
-  <servlet-mapping>
-    <servlet-name>wms</servlet-name>
-    <url-pattern>/wms/*</url-pattern>
-  </servlet-mapping>
-
-  <!-- catalog services -->
-  <!--servlet-mapping>
-    <servlet-name>DLwriter</servlet-name>
-    <url-pattern>/DLwriter</url-pattern>
-  </servlet-mapping -->
-
-  <!-- servlet-mapping>
-     <servlet-name>View</servlet-name>
-     <url-pattern>/view/*</url-pattern>
-   </servlet-mapping-->
 
   <welcome-file-list>
     <welcome-file>/</welcome-file>
@@ -437,6 +156,7 @@
     <error-code>404</error-code>
     <location>/WEB-INF/jsp/errorpages/404.jsp</location>
   </error-page>
+
   <error-page>
     <error-code>500</error-code>
     <location>/WEB-INF/jsp/errorpages/500.jsp</location>

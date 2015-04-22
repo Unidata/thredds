@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -5,25 +6,17 @@
 </head>
 <body>
 
-<div class="container">
-  <div class="container">
-    <h1>Spring MVC RequestMaps</h1>
-    <c:forEach items="${handlerMethods}" var="entry">
-      <div>
-        <hr>
-        <p><strong>${entry.value}</strong></p>
-      </div>
-      <div class="span-3 colborder">
-        <p>
-          <span class="alt">Patterns:</span><br>
-          <c:if test="${not empty entry.key.patternsCondition.patterns}">
-            ${entry.key.patternsCondition.patterns}
-          </c:if>
-        </p>
-      </div>
-    </c:forEach>
-  </div>
-</div>
+  <h1>Spring MVC RequestMaps</h1>
+  <pre>
+  <c:forEach items="${handlerMethods}" var="entry">
+    ${entry.key.patternsCondition.patterns}: ${entry.value.method.declaringClass.name}.${entry.value.method.name}()</c:forEach>
+  </pre>
+
+  <c:forEach items="${handlerMethods}" var="entry">
+      <p><strong>${entry.value.method.declaringClass.name}.${entry.value.method.name}()</strong>: ${entry.key.patternsCondition.patterns}</p>
+  </c:forEach>
+  <hr/>
+
 
 </body>
 </html>

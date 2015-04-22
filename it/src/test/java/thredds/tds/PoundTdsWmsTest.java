@@ -2,7 +2,9 @@ package thredds.tds;
 
 import org.apache.http.client.HttpClient;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.util.IO;
+import ucar.unidata.test.util.NotTravis;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +31,7 @@ public class PoundTdsWmsTest
   }
 
   @Test
+  @Category(NotTravis.class)
   public void hitMl8081TdsWms() throws IOException
   {
     String curUrl;
@@ -57,6 +60,7 @@ public class PoundTdsWmsTest
   }
 
   @Test
+  @Category(NotTravis.class)
   public void hitMl8081TdsWms_MultiThreaded()
           throws IOException,
                  InterruptedException,

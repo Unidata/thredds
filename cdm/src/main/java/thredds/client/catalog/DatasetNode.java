@@ -52,7 +52,7 @@ public class DatasetNode {
   protected DatasetNode(DatasetNode parent, String name, Map<String, Object> flds, List<DatasetBuilder> datasetBuilders) {
     this.parent = parent;
     this.name = name;
-    this.flds = flds; // LOOK Collections.unmodifiableMap(flds);
+    this.flds = Collections.unmodifiableMap(flds);
 
     if (datasetBuilders != null && datasetBuilders.size() > 0) {
       List<Dataset> datasets = new ArrayList<>(datasetBuilders.size());
@@ -62,7 +62,7 @@ public class DatasetNode {
     }
   }
 
-    // do not use after building
+    // read only
   public Map<String, Object> getFlds() {
     return flds;
   }
@@ -101,7 +101,21 @@ public class DatasetNode {
 
   public Dataset getParentDataset() {
     if (parent == null) return null;
-    return  (parent instanceof Dataset) ? (Dataset) parent : null;
+    return (parent instanceof Dataset) ? (Dataset) parent : null;
  }
+
+  //////////////////////////////////////////////
+  // Utilities
+
+  public List getLocalFieldAsList(String fldName) {
+    Object value = flds.get(fldName);
+    if (value != null) {
+      if (value instanceof List) return (List) value;
+      List result = new ArrayList(1);
+      result.add(value);
+      return result;
+    }
+    return new ArrayList(0);
+  }
 
 }

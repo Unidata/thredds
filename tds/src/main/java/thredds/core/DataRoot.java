@@ -33,52 +33,58 @@
 
 package thredds.core;
 
+import net.jcip.annotations.Immutable;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.server.catalog.ConfigCatalog;
 import thredds.server.catalog.DatasetScan;
-import thredds.server.catalog.FeatureCollection;
+import thredds.server.catalog.FeatureCollectionRef;
 
 /**
-* A DataRoot matches URLs to file directories
+ * A DataRoot matches URLs to the objects that can serve them.
+ * A PathMatcher manages a hash table of path -> DataRoot
+ *
+ * Possible design:
+ *   catKey : which catalog defined this?   not present at the moment
+ *   directory : if its a simple DataRoot
+ *   fc        : prob is this drags in entire configCat
+ *   dscan     : ditto
 *
 * @author caron
 * @since 1/23/2015
 */
+@Immutable
 public class DataRoot {
-  private String path;          // match this path
-  private String dirLocation;   // to this directory
-  private DatasetScan scan;     // the DatasetScan that created this (may be null)
-  private FeatureCollection featCollection; // the FeatureCollection that created this (may be null)
-  private boolean cache = true;
+  private final String path;          // match this path
+  private final String dirLocation;   // to this directory
+  private final DatasetScan scan;     // the DatasetScan that created this (may be null)
+  private final FeatureCollectionRef featCollection; // the FeatureCollection that created this (may be null)
 
-  DataRoot(FeatureCollection featCollection) {
-    setPath(featCollection.getPath());
-    this.featCollection = featCollection;
+  DataRoot(FeatureCollectionRef featCollection) {
+    this.path = featCollection.getPath();
     this.dirLocation = featCollection.getTopDirectoryLocation();
+    this.scan = null;
+    this.featCollection = featCollection;
     show();
   }
 
   DataRoot(DatasetScan scan) {
-    setPath( scan.getPath());
-    this.scan = scan;
+    this.path = scan.getPath();
     this.dirLocation = scan.getScanLocation();
+    this.scan = scan;
+    this.featCollection = null;
     show();
   }
 
   DataRoot(String path, String dirLocation) {
-    setPath(path);
+    this.path = path;
     this.dirLocation = dirLocation;
     this.scan = null;
+    this.featCollection = null;
     show();
   }
 
-  private void setPath(String path) {
-    // if (path.endsWith("/")) path = path + "/";
-    this.path = path;
-  }
-
-
   private void show() {
-    if (DataRootHandler.debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
+    if (DataRootManager.debug) System.out.printf(" DataRoot %s==%s%n", path, dirLocation);
   }
 
   public String getPath() {
@@ -93,12 +99,8 @@ public class DataRoot {
     return scan;
   }
 
-  public FeatureCollection getFeatureCollection() {
+  public FeatureCollectionRef getFeatureCollection() {
     return featCollection;
-  }
-
-  public boolean isCache() {
-    return cache;
   }
 
   // used by PathMatcher
@@ -127,21 +129,24 @@ public class DataRoot {
 
   ////////////////
 
-  public String getFileLocationFromRequestPath(String path) {
+  public String getFileLocationFromRequestPath(String reqPath) {
 
-    if (scan != null)
-      return getFileLocationFromRequestPath(path, scan.getPath(), scan.getScanLocation());
+    if (scan != null) {
+      // LOOK should check to see if its been filtered out by scan
+      return getFileLocationFromRequestPath(reqPath, scan.getPath(), scan.getScanLocation());
 
-    if (featCollection != null)
-      return getFileLocationFromRequestPath(path, featCollection.getPath(), featCollection.getTopDirectoryLocation());
-    //   return null; // if featCollection exists, bail out and deal with it in caller LOOK why ?
+    } else if (featCollection != null) {
+       // LOOK should check to see if its allowed in fc
+      return getFileLocationFromRequestPath(reqPath, featCollection.getPath(), featCollection.getTopDirectoryLocation());
 
-    // must be a datasetRoot
-    return getFileLocationFromRequestPath(path, getPath(), getDirLocation());
+    } else {  // must be a datasetRoot
+       // LOOK should check to see if it exists ??
+      return getFileLocationFromRequestPath(reqPath, getPath(), getDirLocation());
+    }
 
   }
 
-  public static String getFileLocationFromRequestPath(String reqPath, String rootPath, String rootLocation) {
+  private String getFileLocationFromRequestPath(String reqPath, String rootPath, String rootLocation) {
     if (reqPath == null) return null;
      if (reqPath.length() == 0) return null;
 
@@ -156,13 +161,10 @@ public class DataRoot {
      if (locationReletive.startsWith("/"))
        locationReletive = locationReletive.substring(1);
 
-     if (!locationReletive.endsWith("/"))
-       locationReletive = locationReletive + "/";
-
-        // translate any properties
-    String scanDir = ConfigCatalog.translateAlias(rootLocation); // LOOK we may have already done this
+     if (!rootLocation.endsWith("/"))
+       rootLocation = rootLocation + "/";
 
     // put it together
-    return (locationReletive.length() > 1) ? scanDir + "/" + locationReletive : scanDir;
+    return (locationReletive.length() > 1) ? rootLocation + locationReletive : rootLocation;
   }
 }

@@ -34,6 +34,7 @@ package ucar.nc2.ft.fmrc;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.NCdumpW;
@@ -44,6 +45,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.Formatter;
@@ -54,6 +56,7 @@ import java.util.Formatter;
  * @author caron
  * @since 3/17/2015
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestFmrcMisc {
   @Test
   public void testConventionsAttribute() throws Exception {

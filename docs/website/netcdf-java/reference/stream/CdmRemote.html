@@ -10,7 +10,7 @@
 <body>
 <h1>CDM Remote Web Service (Experimental)</h1>
 
-<p>CDM Remote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using
+<p>CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using
   <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
   two levels of services: </p>
 <ol>
@@ -31,7 +31,7 @@
 <pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>capabilities</strong> | <strong>header</strong> | <strong>data</strong>)
   <strong>var</strong>=vars
 where:
-  vars := varspec | varspec[',' varspec]
+  vars := varspec | varspec[';' varspec]
   varspec := varname[subsetSpec]
   varname := escaped variable name
   subsetSpec := '(' fortran-90 arraySpec ')'
@@ -73,7 +73,7 @@ where:
     <td>header ncstream message, contains the structural metadata</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=data&amp;var=Temp(0:99:10,0:127,:),lat,lon</strong></td>
+    <td>http://server:8080/thredds/cdmremote/data.nc?<strong>req=data&amp;var=Temp(0:99:10,0:127,:);lat;lon</strong></td>
     <td>data ncstream message</td>
   </tr>
 </table>
@@ -92,6 +92,11 @@ where:
   <li>upon opening, <strong>req=header</strong> is called and the NetcdfFile objects are read from the response</li>
   <li>when data is requested, and the data is not already stored (immediate mode). then <strong>req=data</strong> is called</li>
 </ul>
+<h3>Capabilities</h3>
+<pre>
+&lt;cdmRemoteCapabilities location=&quot;http://localhost:8080/thredds/cdmremote/testAll/testdata/2004050300_eta_211.nc&quot;&gt;<br />  &lt;featureDataset url=&quot;http://localhost:8080/thredds/cdmremote/testAll/testdata/2004050300_eta_211.nc&quot; /&gt;<br />&lt;/cdmRemoteCapabilities&gt;
+</pre>
+<hr />
 <p></p>
 
 <h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol (Point Feature API) </h2>
@@ -439,7 +444,7 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
 <hr width="100%"/>
 <address>
   <img src="../../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
-  updated July 2011
+  updated April 2015
 </address>
 <p>&nbsp;</p>
 </body>

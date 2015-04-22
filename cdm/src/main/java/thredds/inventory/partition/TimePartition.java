@@ -76,8 +76,8 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
         String name = collectionName + "-"+ cdf.toString(startDate);
         curr = new CollectionListRange(name, root, startDate, endDate, this.logger);
         curr.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, this.config);
-        result.add(curr);
-        //System.out.printf("---%s%n", curr);
+        if (!wasRemoved( curr))
+          result.add(curr);   // skip if in removed list
       }
       //System.out.printf("%s%n", mfile);
       curr.addFile(mfile);
@@ -85,5 +85,18 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
 
     return result;
   }
+
+  /////////////////////////////////////////////////////////////
+  private List<String> removed;
+
+  public void removePartition( MCollection partition) {
+    if (removed == null) removed = new ArrayList<>();
+    removed.add(partition.getCollectionName());
+  }
+
+  private boolean wasRemoved(MCollection partition) {
+    return removed != null && (removed.contains(partition.getCollectionName()));
+  }
+
 
 }

@@ -40,6 +40,7 @@ import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
@@ -84,14 +85,21 @@ public abstract class CollectionAbstract implements MCollection {
   static public MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog) throws IOException {
     if (collectionSpec.startsWith(CATALOG))
       return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan, errlog);
+
     else if (collectionSpec.startsWith(DIR))
       return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), true, olderThan, null);
-    else if (collectionSpec.startsWith(FILE))
-      return new CollectionSingleFile(MFileOS7.getExistingFile(collectionSpec.substring(FILE.length())), null);
-    else if (collectionSpec.startsWith(LIST))
+
+    else if (collectionSpec.startsWith(FILE)) {
+      MFile file = MFileOS7.getExistingFile(collectionSpec.substring(FILE.length()));
+      if (file == null) throw new FileNotFoundException(collectionSpec.substring(FILE.length()));
+      return new CollectionSingleFile(file, null);
+
+    }else if (collectionSpec.startsWith(LIST))
       return new CollectionList(collectionName, collectionSpec.substring(LIST.length()), null);
+
     else if (collectionSpec.startsWith(GLOB))
       return new CollectionGlob(collectionName, collectionSpec.substring(GLOB.length()), null);
+
     else
       return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }
@@ -258,9 +266,10 @@ public abstract class CollectionAbstract implements MCollection {
   protected List<MFile> makeFileListSorted() throws IOException {
     List<MFile> list = new ArrayList<>(100);
     try (CloseableIterator<MFile> iter = getFileIterator()) {
-      while (iter.hasNext()) {
+      if (iter == null) return list;
+
+      while (iter.hasNext())
         list.add(iter.next());
-      }
     }
     if (hasDateExtractor()) {
       Collections.sort(list, new DateSorter());  // sort by date

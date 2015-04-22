@@ -34,7 +34,6 @@
 package thredds.servlet;
 
 import com.coverity.security.Escape;
-import thredds.catalog.*;
 
 import java.io.*;
 import java.net.*;
@@ -42,8 +41,9 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.util.ContentType;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
 /**
@@ -62,11 +62,6 @@ public class AnnotateServlet extends AbstractServlet {
       throws ServletException, IOException {
 
     try {
-      if (Debug.isSet("showRequest"))
-        log.debug("**CatalogAnnotate req=" + ServletUtil.getRequest(req));
-      if (Debug.isSet("showRequestDetail"))
-        log.debug(ServletUtil.showRequestDetail(this, req));
-
       // see if it has a catalog parameter
       String catURL = req.getParameter("catalog");
       boolean isDefaultCatalog = (catURL == null) || (catURL.length() == 0);
@@ -76,9 +71,6 @@ public class AnnotateServlet extends AbstractServlet {
         URI catURI = reqURI.resolve("catalog.xml");
         catURL = catURI.toString();
       }
-      if (Debug.isSet("showCatalog"))
-        log.debug("CatalogServices: catalog = " + catURL);
-
       String datasetID;
       // see if it has a dataset parameter
       datasetID = req.getParameter("dataset");
@@ -86,14 +78,11 @@ public class AnnotateServlet extends AbstractServlet {
         log.error("CatalogAnnotate: must have dataset query parameter" + ServletUtil.getRequest(req));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have dataset query parameter");
         return;
-      } else {
-        if (Debug.isSet("showCatalog"))
-          log.debug("CatalogAnnotate: dataset = " + datasetID);
       }
 
       res.setStatus(HttpServletResponse.SC_OK);
       res.setContentType(ContentType.html.getContentHeader());
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(res.getOutputStream(), CDM.utf8Charset));
+      PrintWriter pw = res.getWriter();
 
       pw.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n");
       pw.println("        \"http://www.w3.org/TR/html4/loose.dtd\">\n");
@@ -126,11 +115,6 @@ public class AnnotateServlet extends AbstractServlet {
       throws ServletException, IOException {
 
     try {
-      if (Debug.isSet("showRequest"))
-        log.debug("**CatalogAnnotate post=" + ServletUtil.getRequest(req));
-      if (Debug.isSet("showRequestDetail"))
-        log.debug(ServletUtil.showRequestDetail(this, req));
-
       // see if it has a catalog parameter
       String catURL = req.getParameter("catalog");
       boolean isDefaultCatalog = (catURL == null) || (catURL.length() == 0);
@@ -140,8 +124,6 @@ public class AnnotateServlet extends AbstractServlet {
         URI catURI = reqURI.resolve("catalog.xml");
         catURL = catURI.toString();
       }
-      if (Debug.isSet("showCatalog"))
-        log.debug("CatalogServices: catalog = " + catURL);
 
       String datasetID;
       // see if it has a dataset parameter
@@ -150,22 +132,19 @@ public class AnnotateServlet extends AbstractServlet {
         log.error("CatalogAnnotate: must have dataset query parameter" + ServletUtil.getRequest(req));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have dataset query parameter");
         return;
-      } else {
-        if (Debug.isSet("showCatalog"))
-          log.debug("CatalogAnnotate: dataset = " + datasetID);
       }
 
-      // parse the catalog
-      InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-      InvCatalogImpl catalog;
+      // parse the catalog LOOK not used
+      CatalogBuilder builder = new CatalogBuilder();
+      Catalog catalog;
       try {
-        catalog = catFactory.readXML(catURL);
+        catalog = builder.buildFromLocation(catURL, null);
       } catch (Exception e) {
         ServletUtil.handleException(e, res);
         return;
       }
 
-      PrintStream  pw = new PrintStream (res.getOutputStream(), false, CDM.UTF8);
+      PrintWriter pw = res.getWriter();
 
       String jnlpString = req.getParameter("jnlp");
       File dir = new File(contentPath);

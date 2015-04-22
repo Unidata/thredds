@@ -58,7 +58,12 @@
   <li>Upon startup, if <strong>-tds</strong> was used, but <strong>-cred</strong> was not, you will be prompted for the password for the <strong>tdm</strong> user password. This allows you to start up the TDM without putting the password into a startup script. Note that user <strong>tdm</strong> should be given only the role of <strong>tdsTrigger</strong>, which only gives rights to trigger collection reloading (see <a href="#trigger">below</a>).</li>
   <li>The TDM will write index files into the data directories or index directories. The index files will have extensions <strong>gbx9</strong> and <strong>ncx2</strong>.</li>
   <li>For each featureCollection, a log file is created in the TDM  working directory, with name <strong>fc.&lt;collectionName&gt;.log</strong>. Monitor these logs to look for problems with the indexing.</li>
+  <li>If you start the TDS in a shell, its best to put in the background so it can run independent of the shell:
+    <pre>^Z  (this is Control-Z)
+bg</pre>
+</li>
 </ol>
+<p>&nbsp;</p>
 <h2>Sending triggers to the TDS<a name="trigger" id="trigger"></a></h2>
 <blockquote>
   <p>The TDM scans the files in the feature Collection, and when it detects that the collection has changed, rewrites the index files. If enabled, it will send a trigger message to the TDS, and the TDS will reload that  dataset. To enable this, you must configure the TDS with the <strong>tdsTrigger</strong> role, and add the user <strong>tdm</strong> with that role. Typically you do that by editing the <strong>${tomcat}/conf/tomcat-user.xml </strong>file, eg:</p>

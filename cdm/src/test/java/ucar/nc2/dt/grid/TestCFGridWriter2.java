@@ -78,7 +78,7 @@ public class TestCFGridWriter2 {
 
     assert outFile.exists();
     try ( GridDataset result = ucar.nc2.dt.grid.GridDataset.open(outFile.getAbsolutePath())) {
-      System.out.printf("result = %s%n", result.getLocationURI());
+      System.out.printf("result = %s%n", result.getLocation());
     }
   }
 

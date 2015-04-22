@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>thredds-parent</artifactId>
+    <version>5.0.0</version>
+  </parent>
+
+  <!-- ===========================================================
+     Module Description
+ =========================================================== -->
+  <artifactId>legacy</artifactId>
+  <name>legacyJar Module</name>
+  <description>Package that generates a jar file of legacy classes for backwards compatibility</description>
+  <url>http://www.unidata.ucar.edu/software/tds/</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cdm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>opendap</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cdm</artifactId>
+      <type>test-jar</type>
+    </dependency>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Logging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-legacy</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>edu.ucar:ui</exclude>
+                  <exclude>aopalliance:aopalliance</exclude>
+                  <exclude>com.jgoodies:forms</exclude>
+                  <exclude>commons-logging:commons-logging</exclude>
+                  <exclude>jfree:*</exclude>
+                  <exclude>org.springframework:*</exclude>
+                  <exclude>org.bounce:*</exclude>
+                  <exclude>c3p0:c3p0</exclude>
+                </excludes>
+              </artifactSet>
+              <filters>
+                <!-- filter>
+                  <artifact>edu.ucar:visadCdm</artifact>
+                  <excludes>
+                    <exclude>visad/**</exclude>
+                    <exclude>edu/wisc/**</exclude>
+                  </excludes>
+                </filter-->
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <excludes>DATE</excludes>
+                    <excludes>JDOM*</excludes>
+                    <excludes>*.html</excludes>
+                    <excludes>META-INF/*.txt</excludes>
+                    <excludes>META-INF/*.xml</excludes>
+                    <excludes>nom/**</excludes>
+                    <excludes>edu/wisc/**</excludes>
+                    <excludes>visad/**</excludes>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

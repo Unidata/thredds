@@ -12,7 +12,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.mock.web.TdsContentRootPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"},loader=MockTdsContextLoader.class)
+@ContextConfiguration(locations={"/WEB-INF/applicationContext.xml"},loader=MockTdsContextLoader.class)
 public class TdsContextTest {
 
 	@Autowired

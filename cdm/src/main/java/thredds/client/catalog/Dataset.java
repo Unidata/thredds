@@ -35,7 +35,7 @@ package thredds.client.catalog;
 import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -76,12 +76,15 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String ServiceName = "ServiceName";
   public static final String Services = "Services";
   public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable";
-  public static final String TimeCoverage = "TimeCoverage";
+  public static final String TimeCoverage = "TimeCoverage";             // DateRange
   public static final String VariableGroups = "VariableGroups";
-  public static final String VariableMapLink = "VariableMapLink";
+  // public static final String VariableMapLink = "VariableMapLink";    // String
+  public static final String VariableMapLinkURI = "VariableMapLinkURI";    // ThreddsMetadata.UriResolved
   public static final String Version = "Version";
   public static final String UrlPath = "UrlPath";
   public static final String UseRemoteCatalogService = "UseRemoteCatalogService";
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public Dataset(DatasetNode parent, String name, Map<String, Object> flds, List<AccessBuilder> accessBuilders, List<DatasetBuilder> datasetBuilders) {
     super(parent, name, flds, datasetBuilders);
@@ -104,12 +107,13 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
    * @param dataFormatS : data format
    * @param serviceType    : ServiceType
    */
-  public Dataset(String urlPath, String featureType, String dataFormatS, String serviceType) {
-    super(null, urlPath, new HashMap<String, Object>(), null);
-    flds.put(FeatureType, featureType);
+  static public Dataset makeStandalone(String urlPath, String featureType, String dataFormatS, String serviceType) {
+    DatasetBuilder builder = new DatasetBuilder(null);
+    builder.put(FeatureType, featureType);
     Service service = new Service("anon", "", serviceType, null, null, null, null);
-    Access access = new Access(this, urlPath, service, dataFormatS, 0);
-    flds.put(Access, access);
+    AccessBuilder access = new AccessBuilder(builder, urlPath, service, dataFormatS, 0);
+    builder.addAccess(access);
+    return builder.makeDataset(null);
   }
 
   /////////////////////////////////////////////////////
@@ -210,7 +214,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (String) flds.get(Id);
   }
   public String getID() {
-    return (String) flds.get(Id);
+    return getId();
   }
   public String getUrlPath() {
     return (String) flds.get(UrlPath);
@@ -308,22 +312,10 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   }
 
   public ThreddsMetadata.UriResolved getVariableMapLink() {
-    return (ThreddsMetadata.UriResolved) getInheritedField(VariableMapLink);
+    return (ThreddsMetadata.UriResolved) getInheritedField(VariableMapLinkURI);
   }
 
   ///////////////////////////////////////////
-
-  @Override
-  public List getLocalFieldAsList(String fldName) {
-    Object value = flds.get(fldName);
-    if (value != null) {
-      if (value instanceof List) return (List) value;
-      List result = new ArrayList(1);
-      result.add(value);
-      return result;
-    }
-    return new ArrayList(0);
-  }
 
   List getInheritedFieldAsList(String fldName) {
     List result = new ArrayList();

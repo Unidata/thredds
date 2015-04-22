@@ -32,37 +32,72 @@
  */
 package thredds.server.catalogservice;
 
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 
 /**
  * Command object for catalog service requests on remote catalogs.
- *
- * More details in {@link RemoteCatalogServiceController}
- *
- * @author edavis
- * @since 4.0
- * @see RemoteCatalogServiceController
+ * Uses JSR-303 Validation
  */
-public class RemoteCatalogRequest
-{
+public class RemoteCatalogRequest {
+  public enum Command { SHOW, SUBSET, VALIDATE }
+
   private URI catalogUri;
-  private Command command;
+
+  @NotNull
+  private String catalog;
   private String dataset;
+
+  // these are automatically converted
+  private Command command;
   private boolean verbose;
-  private boolean htmlView;
+  private boolean htmlView = true;
 
-  public URI getCatalogUri() { return catalogUri; }
-  public void setCatalogUri( URI catalogUri ) { this.catalogUri = catalogUri; }
+  public URI getCatalogUri() {
+    return catalogUri;
+  }
 
-  public Command getCommand() { return command; }
-  public void setCommand( Command command ) { this.command = command; }
+  public void setCatalogUri(URI catalogUri) {
+    this.catalogUri = catalogUri;
+  }
 
-  public String getDataset() { return dataset; }
-  public void setDataset( String dataset ) { this.dataset = dataset; }
+  public String getCatalog() {
+    return catalog;
+  }
 
-  public boolean isVerbose() { return verbose; }
-  public void setVerbose( boolean verbose ) { this.verbose = verbose; }
+  public void setCatalog(String catalog) {
+    this.catalog = catalog;
+  }
 
-  public boolean isHtmlView() { return htmlView; }
-  public void setHtmlView( boolean htmlView ) { this.htmlView = htmlView; }
+  public Command getCommand() {
+    return command;
+  }
+
+  public void setCommand(Command command) {
+    this.command = command;
+  }
+
+  public String getDataset() {
+    return dataset;
+  }
+
+  public void setDataset(String dataset) {
+    this.dataset = dataset;
+  }
+
+  public boolean isVerbose() {
+    return verbose;
+  }
+
+  public void setVerbose(boolean verbose) {
+    this.verbose = verbose;
+  }
+
+  public boolean isHtmlView() {
+    return htmlView;
+  }
+
+  public void setHtmlView(boolean htmlView) {
+    this.htmlView = htmlView;
+  }
 }

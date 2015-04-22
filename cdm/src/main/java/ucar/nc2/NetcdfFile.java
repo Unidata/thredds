@@ -1284,6 +1284,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     return f.toString();
   }
 
+  /**
+   * CDL representation of Netcdf header info, non strict
+   */
+  public String toNcML(String url) throws IOException {
+    Formatter out = new Formatter();
+    NCdumpW.writeNcML(this, out, NCdumpW.WantValues.none, url);
+    return out.toString();
+  }
+
   ///////////////////////////////////////////////////////////////////
   // old stuff for backwards compatilibilty, esp with NCdumpW
 

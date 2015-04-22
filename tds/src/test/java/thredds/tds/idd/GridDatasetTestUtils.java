@@ -4,12 +4,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.ma2.Section;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
 public class GridDatasetTestUtils
 {
   public static boolean equalityOfGridDatasetsByGridNameAndShape( GridDataset gridDs1,
@@ -62,8 +56,8 @@ public class GridDatasetTestUtils
     }
     if ( ! same )
     {
-      String msg = "Differences between:\n[" + baseGridDs.getLocationURI() + "]\n["
-                   + testGridDs.getLocationURI() + "]";
+      String msg = "Differences between:\n[" + baseGridDs.getLocation() + "]\n["
+                   + testGridDs.getLocation() + "]";
       localDiffLog.insert( 0, msg );
     }
 

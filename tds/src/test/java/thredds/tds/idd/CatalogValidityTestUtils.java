@@ -32,97 +32,100 @@
 
 package thredds.tds.idd;
 
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogRef;
-import thredds.catalog.util.CatalogUtils;
+import thredds.client.catalog.*;
+import thredds.client.catalog.builder.CatalogBuilder;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
-public class CatalogValidityTestUtils
-{
-    private CatalogValidityTestUtils() { }
+public class CatalogValidityTestUtils {
+  private CatalogValidityTestUtils() {
+  }
 
-    public static InvCatalogImpl assertCatalogIsAccessibleAndValid( String catalogUrl )
-    {
-        assertNotNull( "Null catalog URL not allowed.", catalogUrl );
+  public static Catalog assertCatalogIsAccessibleAndValid(String catalogUrl) throws IOException {
+    assertNotNull("Null catalog URL not allowed.", catalogUrl);
 
-        InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
-        InvCatalogImpl catalog = catFactory.readXML( catalogUrl );
+    CatalogBuilder builder = new CatalogBuilder();
+    Catalog cat = builder.buildFromLocation(catalogUrl, null);
+    assert !builder.hasFatalError();
+    assertCatalogIsValid(cat, catalogUrl);
 
-        assertCatalogIsValid( catalog, catalogUrl );
+    return cat;
+  }
 
-        return catalog;
+  public static Catalog assertCatalogIsAccessibleValidAndNotExpired(String catalogUrl) throws IOException {
+    Catalog catalog = assertCatalogIsAccessibleAndValid(catalogUrl);
+
+    String msg = getMessageIfCatalogIsExpired(catalog, catalogUrl);
+    assertNull(msg, msg);
+
+    return catalog;
+  }
+
+  public static boolean checkIfCatalogTreeIsAccessibleValidAndNotExpired(String catalogUrl,
+                                                                         StringBuilder log,
+                                                                         boolean onlyRelativeUrls) throws IOException {
+    Catalog catalog = assertCatalogIsAccessibleValidAndNotExpired(catalogUrl);
+
+    boolean ok = true;
+    List<CatalogRef> catRefList = findAllCatRefsInDatasetTree(catalog.getDatasets(), log, onlyRelativeUrls);
+
+    for (CatalogRef catRef : catRefList)
+      ok &= checkIfCatalogTreeIsAccessibleValidAndNotExpired(catRef.getURI().toString(), log, onlyRelativeUrls);
+
+    return ok;
+  }
+
+
+  private static void assertCatalogIsValid(Catalog catalog, String catalogUrl) {
+    assertNotNull("Null catalog URL not allowed.", catalogUrl);
+    assertNotNull("Null catalog [" + catalogUrl + "].", catalog);
+  }
+
+  private static String getMessageIfCatalogIsExpired(Catalog catalog, String catalogUrl) {
+    CalendarDate expiresDateType = catalog.getExpires();
+    if (expiresDateType != null) {
+      if (expiresDateType.getMillis() < System.currentTimeMillis()) {
+        return "Expired catalog [" + catalogUrl + "]: " + expiresDateType + ".";
+      }
     }
+    return null;
+  }
 
-    public static InvCatalogImpl assertCatalogIsAccessibleValidAndNotExpired( String catalogUrl )
-    {
-        InvCatalogImpl catalog = assertCatalogIsAccessibleAndValid( catalogUrl );
-
-        String msg = getMessageIfCatalogIsExpired( catalog, catalogUrl );
-        assertNull( msg, msg );
-
-        return catalog;
-    }
-
-    public static boolean checkIfCatalogTreeIsAccessibleValidAndNotExpired( String catalogUrl,
-                                                                            StringBuilder log,
-                                                                            boolean onlyRelativeUrls )
-    {
-        InvCatalogImpl catalog = assertCatalogIsAccessibleValidAndNotExpired( catalogUrl );
-
-        boolean ok = true;
-        List<InvCatalogRef> catRefList = CatalogUtils.findAllCatRefsInDatasetTree( catalog.getDatasets(), log, onlyRelativeUrls );
-
-        for ( InvCatalogRef catRef : catRefList )
-            ok &= checkIfCatalogTreeIsAccessibleValidAndNotExpired( catRef.getURI().toString(), log, onlyRelativeUrls );
-
-        return ok;
-    }
-
-
-    private static void assertCatalogIsValid( InvCatalogImpl catalog, String catalogUrl )
-    {
-        assertNotNull( "Null catalog URL not allowed.", catalogUrl );
-        assertNotNull( "Null catalog [" + catalogUrl + "].", catalog );
-
-        StringBuilder validationMsg = new StringBuilder();
-        boolean isValid = checkIfCatalogIsValid( catalog, catalogUrl, validationMsg );
-
-        assertTrue( "Invalid catalog [" + catalogUrl + "]:" + validationMsg,
-                    isValid );
-    }
-
-    private static boolean checkIfCatalogIsValid( InvCatalogImpl catalog, String catalogUrl, StringBuilder message )
-    {
-        if ( catalog == null )
-        {
-            message.append( "Catalog [" ).append( catalogUrl ).append( "] may not be null." );
-            return false;
+  public static List<CatalogRef> findAllCatRefsInDatasetTree(List<Dataset> datasets, StringBuilder log, boolean onlyRelativeUrls) {
+    List<CatalogRef> catRefList = new ArrayList<>();
+    for (Dataset curDs : datasets) {
+      if (curDs instanceof CatalogRef) {
+        CatalogRef catRef = (CatalogRef) curDs;
+        String name = catRef.getName();
+        String href = catRef.getXlinkHref();
+        URI uri;
+        try {
+          uri = new URI(href);
+        } catch (URISyntaxException e) {
+          log.append(log.length() > 0 ? "\n" : "")
+                  .append("***WARN - CatalogRef [").append(name)
+                  .append("] with bad HREF [").append(href).append("] ");
+          continue;
         }
+        if (onlyRelativeUrls && uri.isAbsolute())
+          continue;
 
-        return catalog.check( message, false );
-    }
+        catRefList.add(catRef);
+        continue;
+      }
 
-    private static String getMessageIfCatalogIsExpired( InvCatalogImpl catalog, String catalogUrl )
-    {
-        DateType expiresDateType = catalog.getExpires();
-        if ( expiresDateType != null )
-        {
-            if ( expiresDateType.getDate().getTime() < System.currentTimeMillis() )
-            {
-                return "Expired catalog [" + catalogUrl + "]: " + expiresDateType.toDateTimeStringISO() + ".";
-            }
-        }
-        return null;
+      if (curDs.hasNestedDatasets())
+        catRefList.addAll(findAllCatRefsInDatasetTree(curDs.getDatasets(), log, onlyRelativeUrls));
     }
+    return catRefList;
+  }
+
 }

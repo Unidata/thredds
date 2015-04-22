@@ -225,10 +225,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     return ncd.getLocation();
   }
 
-  public String getLocationURI() {
-    return ncd.getLocation();
-  }
-
   /**
    * @deprecated use getCalendarDateRange
    */

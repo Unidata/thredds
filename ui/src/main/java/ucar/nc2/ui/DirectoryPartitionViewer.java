@@ -2,8 +2,8 @@ package ucar.nc2.ui;
 
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
-import thredds.catalog.parser.jdom.FeatureCollectionReader;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfigBuilder;
 import thredds.inventory.*;
 import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryBuilder;
@@ -56,7 +56,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
   private FeatureCollectionConfig config;
   private String collectionName;
-  private CdmIndex2Panel cdmIndexTables;
+  private CdmIndex3Panel cdmIndexTables;
   private PartitionsTable partitionsTable;
 
   private JPanel tablePanel;
@@ -76,7 +76,7 @@ public class DirectoryPartitionViewer extends JPanel {
     partitionTreeBrowser = new PartitionTreeBrowser();
     partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
 
-    cdmIndexTables = new CdmIndex2Panel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
+    cdmIndexTables = new CdmIndex3Panel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
     cdmIndexTables.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
         firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
@@ -252,9 +252,10 @@ public class DirectoryPartitionViewer extends JPanel {
     }
 
     Formatter errlog = new Formatter();
-    config = FeatureCollectionReader.readFeatureCollection(doc.getRootElement());
-    CollectionSpecParser specp = config.getCollectionSpecParser(errlog);
-    partitionTreeBrowser.setRoot(Paths.get(specp.getRootDir()));
+    FeatureCollectionConfigBuilder builder = new FeatureCollectionConfigBuilder(errlog);
+    config = builder.readConfig(doc.getRootElement());
+    CollectionSpecParser spec = new CollectionSpecParser(config.spec, errlog);
+    partitionTreeBrowser.setRoot(Paths.get(spec.getRootDir()));
   }
 
   // ncx2 index

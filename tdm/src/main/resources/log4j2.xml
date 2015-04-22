@@ -70,12 +70,8 @@
       <appender-ref ref="fileLogger"/>
     </logger>
 
-    <logger name="thredds.inventory.CollectionUpdater" level="info" additivity="false">
+    <logger name="thredds.featurecollection.CollectionUpdater" level="info" additivity="false">
       <!-- appender-ref ref="consoleLogger"/ -->
-      <appender-ref ref="fileLogger"/>
-    </logger>
-
-    <logger name="httpclient" level="warn" additivity="false">
       <appender-ref ref="fileLogger"/>
     </logger>
 

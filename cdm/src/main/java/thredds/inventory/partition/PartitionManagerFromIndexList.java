@@ -114,4 +114,18 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
   public CloseableIterator<MFile> getFileIterator() throws IOException {
     return null;
   }
+
+  /////////////////////////////////////////////////////////////
+  // partitions can be removed (!)
+
+  public void removePartition( MCollection partition) {
+    for (MFile mfile : partIndexFiles) {
+      if (mfile.getName().equalsIgnoreCase(partition.getCollectionName())) {
+        List<MFile> part = new ArrayList<>(partIndexFiles);
+        part.remove(mfile);
+        partIndexFiles = part;
+        return;
+      }
+    }
+  }
 }

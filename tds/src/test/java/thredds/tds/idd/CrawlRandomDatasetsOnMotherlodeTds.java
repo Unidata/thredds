@@ -41,12 +41,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * _more_
- *
- * @author edavis
- * @since 4.0
- */
 @RunWith(Parameterized.class)
 public class CrawlRandomDatasetsOnMotherlodeTds
 {

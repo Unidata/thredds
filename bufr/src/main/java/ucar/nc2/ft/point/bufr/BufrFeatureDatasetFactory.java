@@ -79,7 +79,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   }
 
   @Override
-  public FeatureType[] getFeatureType() {
+  public FeatureType[] getFeatureTypes() {
     return new FeatureType[]{FeatureType.ANY_POINT};
   }
 

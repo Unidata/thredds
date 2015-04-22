@@ -33,9 +33,10 @@
 package thredds.server.wcs;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.server.config.TdsContext;
+import thredds.server.config.ThreddsConfig;
 import thredds.util.Version;
 import thredds.servlet.*;
 import thredds.server.wcs.v1_0_0_1.WcsHandler;
@@ -53,7 +54,7 @@ import ucar.nc2.util.DiskCache2;
 /**
  * Servlet handles serving data via WCS 1.0.
  */
-@Component
+@Controller
 @RequestMapping("/wcs")
 public class WCSController {
   private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");

@@ -1,6 +1,7 @@
 package thredds.servlet;
 
 import org.junit.Test;
+import thredds.core.PathMatcher;
 
 /**
  * Test PathMatcher

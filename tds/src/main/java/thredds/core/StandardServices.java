@@ -44,25 +44,26 @@ import thredds.client.catalog.ServiceType;
  */
 public enum StandardServices {
   
-  cdmRemote( ServiceType.CdmRemote),
-  cdmrFeature( ServiceType.CdmrFeature),
-  dap4( ServiceType.DAP4),
-  fileServer( ServiceType.HTTPServer),
-  latest( ServiceType.Resolver),
-  ncss( ServiceType.NetcdfSubset),
-  opendap( ServiceType.OPENDAP),
-  wms( ServiceType.WMS),
-  wcs( ServiceType.WCS),
+  cdmRemote(    ServiceType.CdmRemote, "/thredds/cdmremote/"),         // LOOK has thredds in the base (!)
+  cdmrFeature(  ServiceType.CdmrFeature, "/thredds/cdmrfeature/"),
+  dap4(         ServiceType.DAP4, "/thredds/dap4/"),
+  fileServer(   ServiceType.HTTPServer, "/thredds/fileServer/"),
+  latest(       ServiceType.Resolver, ""),
+  ncss(         ServiceType.NetcdfSubset, "/thredds/ncss/"),
+  opendap(      ServiceType.OPENDAP, "/thredds/dodsC/"),
+  wms(          ServiceType.WMS, "/thredds/wms/"),
+  wcs(          ServiceType.WCS, "/thredds/wcs/"),
 
   //NGDC addition 5/10/2011
-  ncml( ServiceType.NCML),
-  uddc( ServiceType.UDDC),
-  iso( ServiceType.ISO);
+  iso(          ServiceType.ISO, "/thredds/iso/"),
+  ncml(         ServiceType.NCML, "/thredds/ncml/"),
+  uddc(         ServiceType.UDDC, "/thredds/uddc/"),
+  ;
 
   private final Service service;
-  private StandardServices(ServiceType type) {
+  StandardServices(ServiceType type, String base) {
     // (String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties
-    this.service = new Service(type.toString(), "/thredds/cdmremote/", type.toString(), null, null, null, null);
+    this.service = new Service(type.toString(), base, type.toString(), null, null, null, null);
   }
 
   public Service getService() {
