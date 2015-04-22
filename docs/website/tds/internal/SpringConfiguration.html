@@ -6,7 +6,13 @@
 </head>
 <body>
 <h2>Spring Configuration - 5.0</h2>
-<p><em>April 18, 2015</em></p>
+<p><em>April 22, 2015</em></p>
+<h2>Notes</h2>
+<ol>
+  <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
+  <li>Layout of resources: webapp/** is visible if user knows the URL, but webapp/WEB-INF/** is only acessible from controllers.</li>
+  <li>Difference between mapping spring dispatcher servlet to &quot;/&quot; and to &quot;/*&quot;: 1) allow tomcat default servlet to handle jsps 2) spring takes over everything</li>
+</ol>
 <h2>Spring DI  </h2>
 <h3>Core Beans</h3>
 <ul>
@@ -55,9 +61,19 @@
 <h3>Startup</h3>
 <h4>Notes</h4>
 <ul>
-  <li>dont do any heavy processing in the bean initialization phase, just get the beans wired in</li>
-  <li>so bean constructors must not depend on anything else</li>
-  <li>Do serious initialization in TdsInit, by listening for <em>ContextRefreshedEvent</em>
+  <li>http://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring
+    <ul>
+      <li>The <strong>applicationContext.xml</strong> defines the beans for the &quot;root webapp context&quot;, i.e. the context associated with the webapp.</li>
+      <li>The <strong>spring-servlet.xml</strong> defines the beans for one servlet's app context. There can be many of these in a webapp, one per Spring servlet. We only have one.</li>
+      <li>Beans in spring-servlet.xml can reference beans in applicationContext.xml, but not vice versa.</li>
+      <li>All Spring MVC controllers must go in the spring-servlet.xml context.</li>
+      <li>In most simple cases, the applicationContext.xml context is unnecessary. It is generally used to contain beans that are shared between all servlets in a webapp. If you only have one servlet, then there's not really much point, unless you have a specific use for it. </li>
+      <li>We use <strong>applicationContext.xml</strong> to define generral TDS beans, and <strong>spring-servlet.xml</strong> to devine mvc (controllers, etc).</li>
+    </ul>
+  </li>
+  <li>Dont do any heavy processing in the bean initialization phase, just get the beans wired in</li>
+  <li>So bean constructors must not depend on anything else, or assume the order of wiring.</li>
+  <li>Do serious initialization from TdsInit, by listening for <em>ContextRefreshedEvent</em>
     <ul>
       <li>http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc</li>
     </ul>
@@ -144,8 +160,8 @@
       <tr>
         <th width="226">Controller Class</th>
         <th width="152">prefix</th>
-        <th width="479">URLs</th>
-        <th width="220">Notes</th>
+        <th width="391">URLs</th>
+        <th width="358">Notes</th>
       </tr>
       <tr>
         <td>RootController</td>
@@ -196,9 +212,9 @@
       </tr>
       <tr>
         <td>CatalogServiceController</td>
-        <td>/catalog</td>
+        <td><strong>/catalog</strong></td>
         <td>/{path}/catalogName.[xml|html]</td>
-        <td>URL changed</td>
+        <td>needs <strong>catalog</strong> prefix now</td>
       </tr>
       <tr>
         <td>CdmRemoteController</td>
@@ -222,7 +238,7 @@
         <td>OpendapServlet</td>
         <td>/dodsC</td>
         <td>/{path}?{dap2 query}</td>
-        <td>TODO</td>
+        <td>TODO: break into client/server, seperate DTS</td>
       </tr>
       <tr>
         <td>FileServerController</td>
@@ -232,12 +248,11 @@
       </tr>   
            <tr>
         <td>ServerInfoController</td>
-        <td>/info</td>
-        <td><strong>/info/serverInfo.html<br/>
-        /info/serverInfo.xml<br/>
-        /info/serverVersion.txt
-        </strong></td>
-        <td>URL changed</td>
+        <td><strong>/info</strong></td>
+        <td>/serverInfo.html<br/>
+        /serverInfo.xml<br/>
+        /serverVersion.txt        </td>
+        <td>needs <strong>info</strong> prefix now</td>
       </tr>
            <tr>
         <td>MetadataController</td>
@@ -249,7 +264,7 @@
         <td>NcssController</td>
         <td>/ncss<br /></td>
         <td>/{path}?{ncss query}</td>
-        <td>/ncss/grid</td>
+        <td>/ncss/grid ?</td>
       </tr>
       <tr>
         <td>NcssDatasetInfoController</td>
@@ -283,10 +298,10 @@
         <td>&nbsp;</td>
       </tr>
       <tr>
-        <td>RestrictedDatasetServlet</td>
-        <td>/restrictedDataset</td>
+        <td>RestrictedAccessController</td>
+        <td>/restrictedAccess</td>
         <td>&nbsp;</td>
-        <td>TODO</td>
+        <td>&nbsp;</td>
       </tr>
            <tr>
         <td>ViewerController</td>

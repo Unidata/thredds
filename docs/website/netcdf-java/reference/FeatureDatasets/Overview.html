@@ -11,7 +11,7 @@
 <h1>Scientific Feature Types</h1>
 
 <p>A <strong>FeatureDataset</strong> is a container for FeatureType objects. It is a generalization of a NetcdfDataset, and the common case is that it wraps a
-  NetcdfDataset. The metadata in a <strong>FeatureDataset</strong> is intended to be <em>search metadata</em>, useful for quickly finding datasets of interest in a large caalog of data.</p>
+  NetcdfDataset. The metadata in a <strong>FeatureDataset</strong> is intended to be <em>search metadata</em>, useful for quickly finding datasets of interest in a large catalog of data.</p>
 <pre>  public interface <strong>ucar.nc2.ft.FeatureDataset </strong>{<br/>    ucar.nc2.constants.FeatureType <strong>getFeatureType</strong>();
 <br/>    String <strong>getTitle</strong>();<br/>    String <strong>getDescription</strong>();<br/>    String <strong>getLocationURI</strong>();
 <br/>    CalendarDateRange <strong>getCalendarDateRange</strong>();<br/>    ucar.unidata.geoloc.LatLonRect <strong>getBoundingBox</strong>();
