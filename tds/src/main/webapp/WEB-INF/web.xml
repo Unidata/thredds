@@ -7,7 +7,7 @@
   <description>THREDDS Data Server</description>
 
   <!-- Provide the context path at init time (otherwise, not available till a request is made). -->
-  <!-- Servlet 2.5 spec provides ServletContext.getContextPath(). But we aren't requiring Servlet 2.5 yet. -->
+  <!-- LOOK remove this -->
   <context-param>
     <param-name>ContextPath</param-name>
     <param-value>thredds</param-value>
@@ -43,7 +43,7 @@
 
   <!-- spring servlet -->
   <servlet>
-    <servlet-name>root</servlet-name>
+    <servlet-name>spring</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
       <param-name>contextConfigLocation</param-name>
@@ -53,8 +53,8 @@
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>root</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <servlet-name>spring</servlet-name>
+    <url-pattern>/</url-pattern>
   </servlet-mapping>
 
   <!-- data services -->

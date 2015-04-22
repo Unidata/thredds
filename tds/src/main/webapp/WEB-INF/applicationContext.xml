@@ -11,17 +11,19 @@
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
-  
-  <!-- Application root Context: defines shared resources visible to all other web components -->
-  
+
   <!-- Enables the Spring MVC @Controller programming model  -->
   <mvc:annotation-driven />
-  
-  <!-- enabling component-scan in Spring for annotated wirings --> 
+
+  <!-- Application root Context: defines shared resources visible to all other web components -->
+  <!-- enabling component-scan in Spring for annotated wirings -->
+  <!-- <context:annotation-config /> can be omitted if <context:component-scan> is specified -->
   <context:component-scan base-package="thredds"/>
 
-  <!-- servlet filters -->
+  <!-- enable @PostConstruct, @PreDestroy annotation -->
+  <!-- bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/ -->
 
+  <!-- servlet filters -->
   <bean id="springDelegatingFilter" class="org.springframework.security.web.FilterChainProxy">
     <constructor-arg>
       <list>

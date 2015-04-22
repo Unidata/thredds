@@ -61,12 +61,12 @@ public class RootController implements LastModified {
   @Autowired
   private TdsContext tdsContext;
 
-  // this is to catch old style catalog requests that dont start with catalog
-  @RequestMapping({"**"})
+  // this is to catch old style catalog requests that dont start with catalog LOOK this breaks jsps
+  /* @RequestMapping({"**"})
   public String wtf(HttpServletRequest req) throws FileNotFoundException {
     System.out.printf("%s%n", req.getRequestURI());
     throw new FileNotFoundException(req.getRequestURI());
-  }
+  }  */
 
   @RequestMapping(value = {"/", "/catalog.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   public String redirectRootCatalog() {
@@ -78,12 +78,12 @@ public class RootController implements LastModified {
     return "redirect:/catalog/catalog.xml";
   }
 
-  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png, *.jsp"}, method = RequestMethod.GET)
   public ModelAndView serveFromPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
     String path = TdsPathUtils.extractPath(req, null);
     File file = tdsContext.getPublicDocFileSource().getFile(path);
     if (file == null) {
-      RequestForwardUtils.forwardRequest(path, tdsContext.getDefaultRequestDispatcher(), req, res);
+      RequestForwardUtils.forwardRequest(path, tdsContext.getDefaultRequestDispatcher(), req, res);   // tomcat default servlet, not spring
       return null;
     }
     return new ModelAndView("threddsFileView", "file", file);
