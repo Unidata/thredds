@@ -89,6 +89,7 @@ import java.util.*;
 @Component("tdsContext")
 public final class TdsContext implements ServletContextAware, InitializingBean, DisposableBean {
   private final Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
+  private final Logger logCatalogInit = LoggerFactory.getLogger(TdsContext.class.getName() + ".catalogInit");
 
   private String webappName;
   private String contextPath;
@@ -478,13 +479,22 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     tdsConfigMapper.setCorsConfig(this.corsConfig);
     tdsConfigMapper.setTdsUpdateConfig(this.tdsUpdateConfig);
     tdsConfigMapper.init(this);
-    
+    // log current server version in catalogInit, where it is
+    //  most likely to be seen by the user
+    String message = "You are currently running TDS version " + this.getVersionInfo();
+    logCatalogInit.info(message);
     // check and log the latest stable and development version information
-    // only if it is OK according to the threddsConfig file.
+    //  only if it is OK according to the threddsConfig file.
     if (this.tdsUpdateConfig.isLogVersionInfo()) {
-      Map<String, String> latestVersionInfo = getLatestVersionInfo(); 
-      for (Map.Entry entry : latestVersionInfo.entrySet()) {
-        logServerStartup.info("TdsContext latest " + entry.getKey() + " version = " + entry.getValue());
+      Map<String, String> latestVersionInfo = getLatestVersionInfo();
+      if (!latestVersionInfo.isEmpty()) {
+        logCatalogInit.info("Latest Available TDS Version Info:");
+        for (Map.Entry entry : latestVersionInfo.entrySet()) {
+          message = "latest " + entry.getKey() + " version = " + entry.getValue();
+          logServerStartup.info("TdsContext: " + message);
+          logCatalogInit.info("    " + message);
+        }
+        logCatalogInit.info("");
       }
     }
   }
