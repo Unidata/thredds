@@ -41,9 +41,9 @@
     </property>
   </bean>
 
-   <!--<util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">-->
-     <!--<entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>-->
-   <!--</util:map>-->
+   <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
+     <entry key="cdmUnitTest" value="${unidata.testdata.path}/cdmUnitTest/"/>
+   </util:map>
 
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
 
