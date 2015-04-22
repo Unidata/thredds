@@ -380,7 +380,7 @@ public class DataFactory {
       // ready to open it through netcdf API
       NetcdfDataset ds;
 
-// try to open
+      // try to open
       try {
         ds = openDataset(access, acquire, task, result);
 
@@ -400,7 +400,7 @@ public class DataFactory {
       return ds;
     } // loop over accesses
 
-    if (saveException != null) throw saveException;
+    // if (saveException != null) throw saveException;
     return null;
   }
 
@@ -520,8 +520,10 @@ public class DataFactory {
        access = findAccessByServiceType(accessList, ServiceType.DAP4);
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.File); // should mean that it can be opened through netcdf API
+    if (access == null)
+      access = findAccessByServiceType(accessList, ServiceType.HTTPServer); // should mean that it can be opened through netcdf API
 
-    // look for HTTP with format we can read
+    /* look for HTTP with format we can read
     if (access == null) {
       Access tryAccess = findAccessByServiceType(accessList, ServiceType.HTTPServer);
 
@@ -536,7 +538,7 @@ public class DataFactory {
           access = tryAccess;
         }
       }
-    }
+    } */
 
     // ADDE
     if (access == null)
@@ -676,7 +678,8 @@ public class DataFactory {
 
   private Access findAccessByDataFormatType(List<Access> accessList, DataFormatType type) {
     for (Access a : accessList) {
-      if (type.toString().equalsIgnoreCase(a.getDataFormatType().toString()))
+      DataFormatType has = a.getDataFormatType();
+      if (has != null && type.toString().equalsIgnoreCase(has.toString()))
         return a;
     }
     return null;

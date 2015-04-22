@@ -510,6 +510,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         }
         int ndups = proto.hasNdups() ? proto.getNdups() : -1;
         this.sa = new SparseArray<>(size, track, records, ndups);
+
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        logger.error(" file={} recordsLen={} recordPos={}", indexFilename, recordsLen, recordsPos);
+        throw e;
       }
     }
 
@@ -544,7 +548,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public Coordinate getCoordinate(int index) {
       if (index >= coordIndex.size())
-        System.out.println("HEY GribCollectionImmutable");
+        System.out.println("HEY GribCollectionImmutable index out of range");
       int grpIndex = coordIndex.get(index);
       return group.coords.get(grpIndex);
     }

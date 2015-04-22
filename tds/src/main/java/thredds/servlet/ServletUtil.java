@@ -622,11 +622,11 @@ public class ServletUtil {
 
       // Return the file
       ServletOutputStream out = res.getOutputStream();
-      // IO.copyFileB(file, out, 60 * 1000);
-      WritableByteChannel cOut = Channels.newChannel(out);
-      IO.copyFileWithChannels(file, cOut, 60 * 1000);
-      res.flushBuffer();
-      out.close();
+      IO.copyFileB(file, out, 60 * 1000);
+      /* try (WritableByteChannel cOut = Channels.newChannel(out)) {
+        IO.copyFileWithChannels(file, cOut);
+        res.flushBuffer();
+      } */
       if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
     }
 
@@ -644,6 +644,11 @@ public class ServletUtil {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
         log.debug("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
+        return;
+      }
+
+      if (e.getMessage().startsWith("File transfer not complete")) { // coming from FileTransfer.transferTo()
+        log.debug("returnFile() "+e.getMessage());
         return;
       }
 

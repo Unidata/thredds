@@ -927,7 +927,7 @@
 
 	<!-- Dependency versions -->
     <visad.version>2.0-20130124</visad.version>
-    <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.6.0</uk.ac.rdg.resc.ncwms.version>
+    <uk.ac.rdg.resc.ncwms.version>1.2.tds.4.6.1-SNAPSHOT</uk.ac.rdg.resc.ncwms.version>
     <geoapi.version>3.1-M04</geoapi.version>
     <eds.threddsIso.version>2.2.5</eds.threddsIso.version>
     <com.google.guava.version>18.0</com.google.guava.version>
@@ -936,9 +936,9 @@
     <com.sleepycat.version>4.0.92</com.sleepycat.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
     <org.apache.commons.commons-lang3>3.3.2</org.apache.commons.commons-lang3>
-    <httpclient.version>4.2.6</httpclient.version>
-    <httpcore.version>4.2.5</httpcore.version>
-    <httpmime.version>4.2.6</httpmime.version>
+    <httpclient.version>4.3.6</httpclient.version>
+    <httpcore.version>4.3.3</httpcore.version>
+    <httpmime.version>4.3.6</httpmime.version>
     <commons-io.version>2.4</commons-io.version>
     <commons-compress.version>1.8.1</commons-compress.version>
     <javax.servlet.version>3.1.0</javax.servlet.version>
@@ -959,15 +959,15 @@
     <org.jdom2.version>2.0.4</org.jdom2.version>
     <org.quartz-scheduler.version>2.2.0</org.quartz-scheduler.version>
     <org.slf4j.version>1.7.7</org.slf4j.version>
-    <org.springframework.version>3.2.12.RELEASE</org.springframework.version>
+    <org.springframework.version>4.1.6.RELEASE</org.springframework.version>
     <org.springframework.security.version>3.2.5.RELEASE</org.springframework.security.version>
     <coverity-escapers.version>1.1.1</coverity-escapers.version>
     <httpunit.version>1.7</httpunit.version>
     <bounce.version>0.14</bounce.version>
     <imgscalr-lib.version>4.2</imgscalr-lib.version>
     <xmlbeans.version>2.6.0</xmlbeans.version>
-    <org.n52.xmlbeans.version>1.12</org.n52.xmlbeans.version>
-    <org.n52.common.xml.version>1.1.5</org.n52.common.xml.version>
+    <org.n52.xmlbeans.version>2.0.0-alpha.3.3</org.n52.xmlbeans.version>
+    <org.n52.common.xml.version>2.1.0</org.n52.common.xml.version>
     <oro.version>2.0.8</oro.version>
     <jna.version>4.1.0</jna.version>
     <edu.ucar.jj2000.version>5.2</edu.ucar.jj2000.version>

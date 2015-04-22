@@ -45,7 +45,7 @@ import java.io.IOException;
  */
 public class TestMotherlodePing {
 
-  public static String server = "http://thredds-test.ucar.edu/thredds";
+  public static String server = "http://thredds-test.unidata.ucar.edu/thredds";
 
   static void ping(String url) {
     try {

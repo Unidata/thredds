@@ -32,32 +32,35 @@
  */
 package thredds.tds.ethan;
 
-import junit.framework.*;
-
-import java.io.*;
-import java.util.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.writer.CatalogCrawler;
 import thredds.client.catalog.writer.DataFactory;
+import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.Attribute;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.test.util.NotTravis;
+
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * _more_
@@ -65,6 +68,7 @@ import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
  * @author edavis
  * @since Feb 15, 2007 10:10:08 PM
  */
+@Category(NotTravis.class)
 public class TestAll extends TestCase
 {
   public static Test suite()

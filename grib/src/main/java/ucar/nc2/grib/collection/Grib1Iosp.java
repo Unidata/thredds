@@ -327,10 +327,15 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    if (raf instanceof HTTPRandomAccessFile) return false;
-    GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
-    if (type == GribCdmIndex.GribCollectionType.GRIB1) return true;
-    if (type == GribCdmIndex.GribCollectionType.Partition1) return true;
+    if (raf instanceof HTTPRandomAccessFile) { // only do remote if memory resident
+      if (raf.length() > raf.getBufferSize())
+        return false;
+
+    } else {                                  // wont accept remote index
+      GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
+      if (type == GribCdmIndex.GribCollectionType.GRIB1) return true;
+      if (type == GribCdmIndex.GribCollectionType.Partition1) return true;
+    }
 
     // check for GRIB1 data file
     return Grib1RecordScanner.isValidFile(raf);

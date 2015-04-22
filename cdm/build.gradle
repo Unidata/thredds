@@ -1,8 +1,3 @@
-apply from: "$rootDir/gradle/dependencies.gradle"
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/testing.gradle"
-apply from: "$rootDir/gradle/coverage.gradle"
-
 dependencies {
     compile project(':udunits')
     compile project(':httpservices')
@@ -95,6 +90,11 @@ task testJar(type: Jar, dependsOn: testClasses,
     from sourceSets.test.output.getAsFileTree().matching {
         include 'ucar/nc2/TestLocal.class'
         include 'ucar/nc2/util/UnitTestCommon.class'
+        include 'ucar/unidata/test/ma2/TestMa2Utils.class'
+        include 'ucar/unidata/test/ma2/TestStructureArray.class'
+        include 'ucar/unidata/test/util/CompareNetcdf.class'
+        include 'ucar/unidata/test/util/TestDir*.class'
+        include 'ucar/unidata/test/util/TestFileDirUtils.class'
 
         // All 3 of these are included in the same source file: ucar/unidata/test/Diff.java
         // Also, 2 of the class names aren't capitalized. Ugh.
@@ -102,12 +102,9 @@ task testJar(type: Jar, dependsOn: testClasses,
         include 'ucar/unidata/test/fileInfo.class'
         include 'ucar/unidata/test/node.class'
 
-        include 'ucar/unidata/test/ma2/TestMa2Utils.class'
-        include 'ucar/unidata/test/ma2/TestStructureArray.class'
-        include 'ucar/unidata/test/util/CompareNetcdf.class'
+        // JUnit categories
         include 'ucar/unidata/test/util/NeedsCdmUnitTest.class'
-        include 'ucar/unidata/test/util/TestDir*.class'
-        include 'ucar/unidata/test/util/TestFileDirUtils.class'
+        include 'ucar/unidata/test/util/NotTravis.class'
     }
     classifier = 'test'
 }

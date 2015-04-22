@@ -45,8 +45,8 @@ public class RadarDataInventory {
         collectionDir = datasetRoot;
         structure = new DirectoryStructure(collectionDir);
         dirty = true;
-        maxCrawlItems = 10;
-        maxCrawlDepth = 2;
+        maxCrawlItems = 5;
+        maxCrawlDepth = 3;
         stations = new StationList();
         nearestWindow = CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
     }
@@ -62,6 +62,10 @@ public class RadarDataInventory {
 
     public String getName() {
         return name;
+    }
+
+    CalendarDate getLastUpdate() {
+        return this.lastUpdate;
     }
 
     // TODO: Can we pull this from data?
@@ -93,7 +97,9 @@ public class RadarDataInventory {
         return stations;
     }
 
-    public List<String> getVariableList() { return listItems(DirType.Variable); }
+    public List<String> getVariableList() {
+        return listItems(DirType.Variable);
+    }
 
     public void setNearestWindow(CalendarPeriod pd) {
         nearestWindow = pd;
@@ -219,7 +225,7 @@ public class RadarDataInventory {
         fileTimeFmt = fmt;
     }
 
-    private void findItems(Path start, int level) throws IOException {
+    private void findItems(Path start, int level) {
         // Add each entry from this level to the appropriate item box
         // and recurse
         if (level >= structure.order.size() || level >= maxCrawlDepth)
@@ -236,18 +242,23 @@ public class RadarDataInventory {
         }
 
         int crawled = 0;
-        for (Path p : Files.newDirectoryStream(start)) {
-            if (p.toFile().isDirectory()) {
-//                System.out.println(p.toString());
-                String item = p.getFileName().toString();
-                values.add(item);
-                if (entry.type == DirType.Station)
-                    updateStations(item, p);
-                if (crawled < maxCrawlItems) {
-                    findItems(p, level + 1);
-                    ++crawled;
+        try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(start)) {
+            for (Path p : dirStream) {
+                if (p.toFile().isDirectory()) {
+                    String item = p.getFileName().toString();
+                    values.add(item);
+                    // Try to grab station info from some file
+                    // TODO: Fix or remove
+//                    if (entry.type == DirType.Station)
+//                        updateStations(item, p);
+                    if (crawled < maxCrawlItems) {
+                        findItems(p, level + 1);
+                        ++crawled;
+                    }
                 }
             }
+        } catch (IOException e) {
+            System.out.println("findItems(): Error reading directory: " + start.toString());
         }
     }
 
@@ -284,18 +295,14 @@ public class RadarDataInventory {
     }
 
     private void update() {
-        try {
-            if (dirty || timeToUpdate()) {
-                findItems(structure.base, 0);
-                dirty = false;
-                lastUpdate = CalendarDate.present();
-            }
-        } catch (IOException e) {
-            System.out.println("Error updating data inventory.");
+        if (dirty || timeToUpdate()) {
+            findItems(structure.base, 0);
+            dirty = false;
+            lastUpdate = CalendarDate.present();
         }
     }
 
-    private boolean timeToUpdate() {
+    boolean timeToUpdate() {
         // See if it's been more than enough time since the last update
         CalendarDate now = CalendarDate.present();
         return now.getDifferenceInMsecs(lastUpdate) > updateIntervalMsec;
@@ -304,10 +311,11 @@ public class RadarDataInventory {
     public List<String> listItems(DirType type) {
         update();
         Set<String> vals = items.get(type);
-        if (vals == null)
+        if (vals == null) {
             return new ArrayList<>();
-        else
-            return new ArrayList<>(items.get(type));
+        } else {
+            return new ArrayList<>(vals);
+        }
     }
 
     public Query newQuery() {
@@ -377,7 +385,7 @@ public class RadarDataInventory {
             return range == null || range.includes(d);
         }
 
-        public List<QueryResultItem> results() throws IOException {
+        public List<QueryResultItem> results() {
             List<Path> results = new ArrayList<>();
             DirectoryStructure.DirectoryMatcher matcher = structure.matcher();
             results.add(structure.base);
@@ -390,8 +398,12 @@ public class RadarDataInventory {
                     // Add date format to matcher string
                     case Date:
                         for (Path p : results)
-                            for (Path sub : Files.newDirectoryStream(p))
-                                newResults.add(sub);
+                            try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
+                                for (Path sub : dirStream)
+                                    newResults.add(sub);
+                            } catch (IOException e) {
+                                System.out.println("results(): Error reading dir: " + p.toString());
+                            }
                         matcher.push(DirType.Date, entry.fmt);
                         break;
 
@@ -442,14 +454,18 @@ public class RadarDataInventory {
             // Now get the contents of the remaining directories
             List<QueryResultItem> filteredFiles = new ArrayList<>();
             for(Path p : filteredResults) {
-                for (Path f : Files.newDirectoryStream(p)) {
-                    Date d = DateFromString.getDateUsingDemarkatedMatch(
-                            f.toString(), fileTimeFmt, '#');
-                    if (d != null) {
-                        CalendarDate cd = CalendarDate.of(d);
-                        if (checkDate(range, cd))
-                            filteredFiles.add(new QueryResultItem(f, cd));
+                try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
+                    for (Path f: dirStream) {
+                        Date d = DateFromString.getDateUsingDemarkatedMatch(
+                                f.toString(), fileTimeFmt, '#');
+                        if (d != null) {
+                            CalendarDate cd = CalendarDate.of(d);
+                            if (checkDate(range, cd))
+                                filteredFiles.add(new QueryResultItem(f, cd));
+                        }
                     }
+                } catch (IOException e) {
+                    System.out.println("results(): Error getting files for: " + p.toString());
                 }
             }
 

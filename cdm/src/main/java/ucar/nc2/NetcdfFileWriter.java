@@ -556,6 +556,7 @@ public class NetcdfFileWriter {
     long size = v.getSize() * v.getElementSize();
     if (version == Version.netcdf3 && size > N3iosp.MAX_VARSIZE)
       throw new IllegalArgumentException("Variable size in bytes " + size + " may not exceed " + N3iosp.MAX_VARSIZE);
+      //System.out.printf("Variable size in bytes " + size + " may not exceed " + N3iosp.MAX_VARSIZE);
 
     ncfile.addVariable(g, v);
     return v;

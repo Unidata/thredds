@@ -349,7 +349,7 @@ Calendar.tableMouseUp = function(ev) {
 	var mon = Calendar.findMonth(target);
 	var date = null;
 	if (mon) {
-		date = new Date(cal.date.getTime());
+		date = new Date(cal.date);
 		if (mon.month != date.getMonth()) {
 			date.setMonth(mon.month);
 			cal.setDate(date);
@@ -359,7 +359,7 @@ Calendar.tableMouseUp = function(ev) {
 	} else {
 		var year = Calendar.findYear(target);
 		if (year) {
-			date = new Date(cal.date.getTime());
+			date = new Date(cal.date);
 			if (year.year != date.getFullYear()) {
 				date.setFullYear(year.year);
 				cal.setDate(date);
@@ -589,9 +589,8 @@ Calendar.cellClick = function(el, ev) {
 				cal.currentDateEl = el;
 			}
 		}
-		cal.date.setDateOnly(el.caldate.getTime());
-		//date = cal.date;
-		date = new Date( cal.date.getTime());
+		cal.date.setDateOnly(el.caldate);
+		date = cal.date;
 		var other_month = !(cal.dateClicked = !el.otherMonth);
 		if (!other_month && !cal.currentDateEl)
 			cal._toggleMultipleDate(new Date(date));
@@ -606,7 +605,7 @@ Calendar.cellClick = function(el, ev) {
 			cal.callCloseHandler();
 			return;
 		}
-		date = new Date(cal.date.getTime());
+		date = new Date(cal.date);
 		if (el.navtype == 0)
 			date.setDateOnly(new Date()); // TODAY
 		// unless "today" was clicked, we assume no date was clicked so
@@ -1008,12 +1007,12 @@ Calendar._keyEvent = function(ev) {
 				ne = cal.ar_days[y][x];
 			};setVars();
 			function prevMonth() {
-				var date = new Date(cal.date.getTime());
+				var date = new Date(cal.date);
 				date.setDate(date.getDate() - step);
 				cal.setDate(date);
 			};
 			function nextMonth() {
-				var date = new Date(cal.date.getTime());
+				var date = new Date(cal.date);
 				date.setDate(date.getDate() + step);
 				cal.setDate(date);
 			};
@@ -1094,7 +1093,7 @@ Calendar.prototype._init = function (firstDayOfWeek, date) {
 		date.setFullYear(year);
 	}
 	this.firstDayOfWeek = firstDayOfWeek;
-	this.date = new Date(date.getTime());	
+	this.date = new Date(date.getTime());
 	var month = date.getMonth();
 	var mday = date.getDate();
 	var no_days = date.getMonthDays();
@@ -1165,8 +1164,7 @@ Calendar.prototype._init = function (firstDayOfWeek, date) {
 				}
 			}
 			if (!cell.disabled) {
-				//cell.caldate = new Date(date);
-				cell.caldate = new Date(date.getTime());				
+				cell.caldate = new Date(date);
 				cell.ttip = "_";
 				if (!this.multiple && current_month
 				    && iday == mday && this.hiliteToday) {

@@ -41,7 +41,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.coord.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
@@ -75,9 +74,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   // do not use
   static public boolean debugRead = false;
   static public int debugIndexOnlyCount = 0;  // count number of data accesses
-  static boolean debugIndexOnly = false;  // we are running with only ncx2 index files, no data
   static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
-  static boolean debugGbxIndexOnly = false;  // we are running with only ncx2 and gbx8 index files, no data
+  static boolean debugIndexOnly = false;      // we are running with only ncx index files, no data
+  static public boolean debugGbxIndexOnly = false;  // we are running with only ncx and gbx index files, no data
 
   static private final boolean debug = false, debugTime = false, debugName = false;
 
@@ -337,28 +336,61 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } */
 
     for (GribCollectionImmutable.VariableIndex vindex : group.variList) {
-      Formatter dims = new Formatter();
-      Formatter coords = new Formatter();
+      Formatter dimNames = new Formatter();
+      Formatter coordinateAtt = new Formatter();
 
-      for (Coordinate coord : vindex.getCoordinates()) {
-        // dont use reftime dimension if scalar or MRSTC
-        String dimName = ((coord.getType() == Coordinate.Type.runtime) && ((coord.getSize() == 1) || is1Dtime)) ? "" : coord.getName();
-        String coordName = (coord.getType() == Coordinate.Type.vert) ? coord.getName().toLowerCase() : coord.getName();
+      // do the times first
+      Coordinate run = vindex.getCoordinate(Coordinate.Type.runtime);
+      Coordinate time = vindex.getCoordinateTime();
+      boolean isRunScaler = (run != null) && run.getSize() == 1;
 
-        if (coord instanceof CoordinateTimeAbstract) {
-          CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) coord;
-          if (coordTime.getTime2runtime() != null)
-            coords.format("ref%s ", coordName);  // auxilary runtime coordinate for Best
-        }
+      switch (gctype) {
+        case GC:
+        case SRC:     // GC: Single Runtime Collection                          [ntimes]           (run, 2D)  scalar runtime
+          assert isRunScaler;
+          dimNames.format("%s ", time.getName());
+          coordinateAtt.format("%s %s ", run.getName(), time.getName());
+          break;
 
-        dims.format("%s ", dimName);
-        coords.format("%s ", coordName);
+        case MRSTC:             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
+        case TP:                // PC: Multiple Runtime Single Time Partition   [nruns, 1]         (run, 2D)  ignore the run, its generated from the 2D in
+          dimNames.format("%s ", time.getName());
+          coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
+          break;
+
+        case MRC:               // GC: Multiple Runtime Collection              [nruns, ntimes]    (run, 2D) use Both
+        case TwoD:              // PC: TwoD time partition                      [nruns, ntimes]
+          assert run != null : "GRIB MRC or TWOD does not have run coordinate";
+          if (isRunScaler)
+            dimNames.format("%s ", time.getName());
+          else
+            dimNames.format("%s %s ", run.getName(), time.getName());
+          coordinateAtt.format("%s %s ", run.getName(), time.getName());
+          break;
+
+        case Best:              // PC: Best time partition                      [ntimes]          (time)   reftime is generated in makeTimeAuxReference()
+        case BestComplete:      // PC: Best complete time partition             [ntimes]
+          dimNames.format("%s ", time.getName());
+          coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
+          break;
+
+        default:
+          throw new IllegalStateException("Uknown GribCollection TYpe = "+gctype);
       }
-      dims.format("%s", horizDims);
-      coords.format("%s", horizDims);
+
+      // do other (vert, ens) coordinates
+      for (Coordinate coord : vindex.getCoordinates()) {
+        if (coord instanceof CoordinateTimeAbstract || coord instanceof CoordinateRuntime) continue;
+        String name = coord.getName().toLowerCase();
+        dimNames.format("%s ", name);
+        coordinateAtt.format("%s ", name);
+      }
+      // do horiz coordinates
+      dimNames.format("%s", horizDims);
+      coordinateAtt.format("%s", horizDims);
 
       String vname = makeVariableName(vindex);
-      Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dims.toString());
+      Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dimNames.toString());
       ncfile.addVariable(g, v);
       if (debugName) System.out.printf("added %s%n", vname);
 
@@ -388,12 +420,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           v.addAttribute(new Attribute(CDM.UNITS, units));
 
         } else {
-          coords.format("%s ", s);
+          coordinateAtt.format("%s ", s);
         }
       } else {
         v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
-      v.addAttribute(new Attribute(CF.COORDINATES, coords.toString()));
+      v.addAttribute(new Attribute(CF.COORDINATES, coordinateAtt.toString()));
 
       // statistical interval type
       if (vindex.getIntvType() >= 0) {
@@ -1125,6 +1157,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Section sectionWanted = section.subSection(0, sectionLen - 2); // all but x, y
     Section.Iterator iterWanted = sectionWanted.getIterator(v.getShape());  // iterator over wanted indices in vindexP
     int[] indexWanted = new int[sectionLen - 2];                              // place to put the iterator result
+    int[] useIndex = indexWanted;
 
     // collect all the records that need to be read
     DataReaderPartitioned dataReader = new DataReaderPartitioned();
@@ -1137,11 +1170,11 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         int[] indexReallyWanted = new int[indexWanted.length+1];
         indexReallyWanted[0] = indexWanted[0];
         indexReallyWanted[1] = 0;
-        System.arraycopy(indexWanted, 0, indexReallyWanted, 2, indexWanted.length-1);
-        indexWanted = indexReallyWanted;
+        System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length-1);
+        useIndex = indexReallyWanted;
       }
 
-      PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(indexWanted);
+      PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(useIndex);
       if (record == null) {
         if (debug || debugRead) System.out.printf("readDataFromPartition missing data%n");
         // vindexP.getDataRecord(indexWanted); // debug

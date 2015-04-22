@@ -108,8 +108,8 @@ public class DefaultDateRangeTest {
 		System.out.printf("range=%s%n", range);
 		System.out.printf(" duration: expected=%d actual=%d%n", durationInSeconds, range.getDurationInSecs());
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );
-		//long duration =Math.abs( durationInSeconds - range.getDurationInSecs() );		
-		assertTrue(Math.abs( durationInSeconds - range.getDurationInSecs() ) < 20 );
+		//long duration =Math.abs( durationInSeconds - range.getDurationInSecs() );
+		assertTrue(Math.abs( durationInSeconds - range.getDurationInSecs() ) < 30 );
 		
 	}
 }

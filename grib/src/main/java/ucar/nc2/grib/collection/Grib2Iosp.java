@@ -352,13 +352,18 @@ public class Grib2Iosp extends GribIosp {
 
   private Grib2Customizer cust;
 
-  // accept grib2 or ncx2 files
+  // accept grib2 or ncx files
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    if (raf instanceof HTTPRandomAccessFile) return false;
-    GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
-    if (type == GribCdmIndex.GribCollectionType.GRIB2) return true;
-    if (type == GribCdmIndex.GribCollectionType.Partition2) return true;
+    if (raf instanceof HTTPRandomAccessFile) { // only do remote if memory resident
+      if (raf.length() > raf.getBufferSize())
+        return false;
+
+    } else {                                  // wont accept remote index
+      GribCdmIndex.GribCollectionType type = GribCdmIndex.getType(raf);
+      if (type == GribCdmIndex.GribCollectionType.GRIB2) return true;
+      if (type == GribCdmIndex.GribCollectionType.Partition2) return true;
+    }
 
     // check for GRIB2 data file
     return Grib2RecordScanner.isValidFile(raf);

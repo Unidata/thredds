@@ -153,11 +153,8 @@ message Data {<br/>  required string varName = 1; // full escaped name. change t
     int sounding_no;
     float temp_vl(*);
   } fun_soundings(Sounding=3);
-
 }
 </pre>
-<p>&nbsp;</p>
-
 <h2>Notes and Questions</h2>
 
 <p>Should have a way to efficiently encode sparse data. Look at Bigtable/hBase.</p>

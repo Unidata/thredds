@@ -59,14 +59,28 @@ public class FilePartition extends DirectoryCollection implements PartitionManag
 
     List<MCollection> result = new ArrayList<>(100);
     try (CloseableIterator<MFile> iter = getFileIterator()) {
-       while (iter.hasNext()) {
-         MCollection part = new CollectionSingleFile(iter.next(), logger);
-         result.add( part);
-         lastModified = Math.max(lastModified, part.getLastModified());
-       }
-     }
+      while (iter.hasNext()) {
+        MCollection part = new CollectionSingleFile(iter.next(), logger);
+        if (!wasRemoved(part))
+          result.add(part);
+        lastModified = Math.max(lastModified, part.getLastModified());
+      }
+    }
 
     return result;
+  }
+
+  /////////////////////////////////////////////////////////////
+  // partitions can be removed (!)
+  private List<String> removed;
+
+  public void removePartition(MCollection partition) {
+    if (removed == null) removed = new ArrayList<>();
+    removed.add(partition.getCollectionName());
+  }
+
+  private boolean wasRemoved(MCollection partition) {
+    return removed != null && (removed.contains(partition.getCollectionName()));
   }
 
 }

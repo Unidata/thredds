@@ -47,4 +47,6 @@ public interface PartitionManager extends MCollection {
 
   public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException;
 
+  public void removePartition( MCollection partition);
+
 }

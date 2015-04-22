@@ -32,10 +32,15 @@
 
 package ucar.nc2.util.net;
 
-import ucar.httpservices.*;
-
 import org.junit.Test;
-import ucar.nc2.util.*;
+import org.junit.experimental.categories.Category;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
+import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.util.Misc;
+import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.test.util.NotTravis;
 
 import java.net.URI;
 import java.util.List;
@@ -95,6 +100,7 @@ public class TestMisc extends UnitTestCommon
 
 
     @Test
+    @Category(NotTravis.class)
     public void
     testUTF8Stream()
         throws Exception

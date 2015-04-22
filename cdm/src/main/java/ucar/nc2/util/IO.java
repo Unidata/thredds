@@ -357,12 +357,16 @@ public class IO {
     }
   }
 
-  static public void copyFileWithChannels(File fileIn, WritableByteChannel out, int bufferSize) throws IOException {
+  static public void copyFileWithChannels(File fileIn, WritableByteChannel out) throws IOException {
     try (FileChannel in = new FileInputStream(fileIn).getChannel()) {
       long want =  fileIn.length();
-      long did = in.transferTo(0, fileIn.length(), out);
-      if (want != did)
-        throw new IOException("File transfer not complete on "+fileIn.getName()+", length= "+want+ " transfer= "+did);
+      long pos = 0;
+      while (true) {
+        long did = in.transferTo(pos, want, out);
+        if (did == want) break;
+        pos += did;
+        want -= did;
+      }
     }
   }
 

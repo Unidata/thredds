@@ -19,7 +19,6 @@ import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.annotation.ExpectedException;
 import org.springframework.test.annotation.ProfileValueUtils;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.annotation.Timed;
@@ -195,7 +194,7 @@ public class SpringJUnit4ParameterizedClassRunner extends Suite {
 		 * @see #getDefaultContextLoaderClassName(Class)
 		 */
 		protected TestContextManager createTestContextManager(Class<?> clazz) {
-			return new TestContextManager(clazz, getDefaultContextLoaderClassName(clazz));
+			return new TestContextManager(clazz);
 		}
 
 		/**
@@ -418,11 +417,11 @@ public class SpringJUnit4ParameterizedClassRunner extends Suite {
 		 * except that the <em>expected exception</em> is retrieved using
 		 * {@link #getExpectedException(FrameworkMethod)}.
 		 */
-		@Override
-		protected Statement possiblyExpectingExceptions(FrameworkMethod frameworkMethod, Object testInstance, Statement next) {
-			Class<? extends Throwable> expectedException = getExpectedException(frameworkMethod);
-			return expectedException != null ? new ExpectException(next, expectedException) : next;
-		}
+//		@Override
+//		protected Statement possiblyExpectingExceptions(FrameworkMethod frameworkMethod, Object testInstance, Statement next) {
+//			Class<? extends Throwable> expectedException = getExpectedException(frameworkMethod);
+//			return expectedException != null ? new ExpectException(next, expectedException) : next;
+//		}
 
 		/**
 		 * Get the <code>exception</code> that the supplied {@link FrameworkMethod
@@ -436,26 +435,26 @@ public class SpringJUnit4ParameterizedClassRunner extends Suite {
 		 * @return the expected exception, or <code>null</code> if none was
 		 * specified
 		 */
-		protected Class<? extends Throwable> getExpectedException(FrameworkMethod frameworkMethod) {
-			Test testAnnotation = frameworkMethod.getAnnotation(Test.class);
-			Class<? extends Throwable> junitExpectedException = testAnnotation != null
-					&& testAnnotation.expected() != Test.None.class ? testAnnotation.expected() : null;
-
-			ExpectedException expectedExAnn = frameworkMethod.getAnnotation(ExpectedException.class);
-			Class<? extends Throwable> springExpectedException = (expectedExAnn != null ? expectedExAnn.value() : null);
-
-			if (springExpectedException != null && junitExpectedException != null) {
-				String msg = "Test method [" + frameworkMethod.getMethod()
-						+ "] has been configured with Spring's @ExpectedException(" + springExpectedException.getName()
-						+ ".class) and JUnit's @Test(expected=" + junitExpectedException.getName()
-						+ ".class) annotations. "
-						+ "Only one declaration of an 'expected exception' is permitted per test method.";
-				logger.error(msg);
-				throw new IllegalStateException(msg);
-			}
-
-			return springExpectedException != null ? springExpectedException : junitExpectedException;
-		}
+//		protected Class<? extends Throwable> getExpectedException(FrameworkMethod frameworkMethod) {
+//			Test testAnnotation = frameworkMethod.getAnnotation(Test.class);
+//			Class<? extends Throwable> junitExpectedException = testAnnotation != null
+//					&& testAnnotation.expected() != Test.None.class ? testAnnotation.expected() : null;
+//
+//			ExpectedException expectedExAnn = frameworkMethod.getAnnotation(ExpectedException.class);
+//			Class<? extends Throwable> springExpectedException = (expectedExAnn != null ? expectedExAnn.value() : null);
+//
+//			if (springExpectedException != null && junitExpectedException != null) {
+//				String msg = "Test method [" + frameworkMethod.getMethod()
+//						+ "] has been configured with Spring's @ExpectedException(" + springExpectedException.getName()
+//						+ ".class) and JUnit's @Test(expected=" + junitExpectedException.getName()
+//						+ ".class) annotations. "
+//						+ "Only one declaration of an 'expected exception' is permitted per test method.";
+//				logger.error(msg);
+//				throw new IllegalStateException(msg);
+//			}
+//
+//			return springExpectedException != null ? springExpectedException : junitExpectedException;
+//		}
 
 		/**
 		 * Supports both Spring's {@link Timed &#064;Timed} and JUnit's

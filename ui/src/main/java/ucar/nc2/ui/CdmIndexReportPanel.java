@@ -112,13 +112,11 @@ public class CdmIndexReportPanel extends ReportPanel {
 
   protected void doDupAndMissing(Formatter f, MCollection dcm, boolean eachFile, boolean extra) throws IOException {
     Accum total = new Accum();
-
-      try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
-        while (iter.hasNext()) {
-          doDupAndMissingEach(f, iter.next(), eachFile, extra, total);
-        }
+    try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
+      while (iter != null && iter.hasNext()) {
+        doDupAndMissingEach(f, iter.next(), eachFile, extra, total);
       }
-
+    }
     f.format("total %s%n", total);
   }
 
@@ -174,8 +172,8 @@ public class CdmIndexReportPanel extends ReportPanel {
 
       Set<String> filenames = new HashSet<>();
       try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
-        while (iter.hasNext()) {
-              doMisplacedFieldsEach(f, iter.next(), filenames, extra);
+        while (iter != null && iter.hasNext()) {
+          doMisplacedFieldsEach(f, iter.next(), filenames, extra);
         }
       }
 

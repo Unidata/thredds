@@ -136,41 +136,43 @@ public class CFGridWriter2 {
                               NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
-    LatLonRect resultBB = null;
 
-    List<Variable> varList = new ArrayList<>();
+    List<Variable> varList = new ArrayList<>();         // could make these Sets
     List<String> varNameList = new ArrayList<>();
     List<CoordinateAxis> axisList = new ArrayList<>();
 
-    if (gridList == null) {
+    if (gridList == null) {   // want all of them
       gridList = new ArrayList<>();
       for (GridDatatype grid : gds.getGrids())
         gridList.add(grid.getName());
     }
 
-    // add each desired Grid to the new file
+    LatLonRect resultBB = null;
     long total_size = 0;
+
+    // add each desired Grid to the new file   LOOK Might be better to group by coordSys
     for (String gridName : gridList) {
       if (varNameList.contains(gridName))  // already contains
         continue;
-      GridDatatype grid = gds.findGridDatatype(gridName);
-      if (grid == null) {
-        System.out.printf("cant find %s%n", gridName);
+      GridDatatype gridOrg = gds.findGridDatatype(gridName);
+      if (gridOrg == null) {
+        log.debug("writeOrTestSize cant find grid %s - skipping%n", gridName);
         continue;
       }
 
-      GridCoordSystem gcsOrg = grid.getCoordinateSystem();
-      boolean isGlobal = gcsOrg.isGlobalLon();
+      GridCoordSystem gcsOrg = gridOrg.getCoordinateSystem();
+      // boolean isGlobal = gcsOrg.isGlobalLon();
       varNameList.add(gridName);
 
       // make subset as needed
       Range timeRange = makeTimeRange(dateRange, gcsOrg.getTimeAxis1D(), stride_time);
-      Range zRangeUse = makeVerticalRange(zRange, gcsOrg.getVerticalAxis());             // no stride
+      Range zRangeUse = makeVerticalRange(zRange, gcsOrg.getVerticalAxis());             // LOOK no vert stride
 
+      GridDatatype gridWant;
       List<Range> yxRanges = new ArrayList<>(2);
       if (projRect != null) {
         makeHorizRange(gcsOrg, projRect, horizStride, yxRanges);
-        grid = grid.makeSubset(null, null, timeRange, zRangeUse, yxRanges.get(0), yxRanges.get(1));
+        gridWant = gridOrg.makeSubset(null, null, timeRange, zRangeUse, yxRanges.get(0), yxRanges.get(1));
 
       } else {
 
@@ -178,39 +180,40 @@ public class CFGridWriter2 {
           yxRanges.add(null);
           yxRanges.add(null);
         } else {
-          yxRanges = grid.getCoordinateSystem().getRangesFromLatLonRect(llbb);
+          yxRanges = gcsOrg.getRangesFromLatLonRect(llbb);
         }
 
         if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
-          grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
-        }
+          gridWant = gridOrg.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
+        } else
+          gridWant = gridOrg;
       }
 
-      LatLonRect gridBB = grid.getCoordinateSystem().getLatLonBoundingBox();
+      GridCoordSystem gcsWant = gridWant.getCoordinateSystem();
+      LatLonRect gridBB = gcsWant.getLatLonBoundingBox();
       if (resultBB == null)
         resultBB = gridBB;
       else
         resultBB.extend(gridBB);
 
-      Variable gridV = grid.getVariable();
+      Variable gridV = gridWant.getVariable(); // LOOK  WTF ??
       varList.add(gridV);
       total_size += gridV.getSize() * gridV.getElementSize();
 
       // add coordinate axes
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      addCoordinateAxis(gcs, varNameList, varList, axisList);
+      addCoordinateAxis(gcsWant, varNameList, varList, axisList);
 
       // add coordinate transform variables
-      addCoordinateTransform(gcs, ncd, varNameList, varList);
+      addCoordinateTransform(gcsWant, ncd, varNameList, varList);
 
       //Add Variables from the formula_terms
-      total_size += processTransformationVars(varList, varNameList, ncd, gds, grid, timeRange, zRangeUse, yxRanges.get(0), yxRanges.get(1), horizStride, horizStride);
+      total_size += processTransformationVars(varList, varNameList, ncd, gds, gridWant, timeRange, zRangeUse, yxRanges.get(0), yxRanges.get(1), horizStride, horizStride);
 
       // optional lat/lon
       if (addLatLon) {
-        Projection proj = gcs.getProjection();
+        Projection proj = gcsWant.getProjection();
         if ((null != proj) && !(proj instanceof LatLonProjection)) {
-          total_size += addLatLon2D(ncd, varList, proj, gcs.getXHorizAxis(), gcs.getYHorizAxis());
+          total_size += addLatLon2D(ncd, varList, proj, gcsWant.getXHorizAxis(), gcsWant.getYHorizAxis());
           addLatLon = false; // ??
         }
       }
@@ -330,7 +333,7 @@ public class CFGridWriter2 {
       GridDatatype grid = gds.findGridDatatype(gridName);
       Variable newV = writer.findVariable(gridName);
       if (newV == null) {
-        log.warn("NetcdfCFWriter cant find " + gridName + " in gds " + gds.getLocationURI());
+        log.debug("NetcdfCFWriter cant find " + gridName + " in gds " + gds.getLocationURI());
         continue;
       }
 
@@ -494,7 +497,7 @@ public class CFGridWriter2 {
     for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
       if (!varNameList.contains(axis.getFullName())) {
         varNameList.add(axis.getFullName());
-        varList.add(axis);
+        varList.add(axis);                    // LOOK axis hasnt been subset yet !!
         axisList.add(axis);
         //if (timeAxis != null && timeAxis.isInterval()) {
         // LOOK gotta add the bounds  !!!

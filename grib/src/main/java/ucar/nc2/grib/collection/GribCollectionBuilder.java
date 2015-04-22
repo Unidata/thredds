@@ -73,7 +73,6 @@ abstract class GribCollectionBuilder {
 
   protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException;
 
-  // indexFile not in cache
   protected abstract boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
 
   public GribCollectionBuilder(boolean isGrib1, String name, MCollection dcm, org.slf4j.Logger logger) {
@@ -103,7 +102,7 @@ abstract class GribCollectionBuilder {
 
     CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
-      while (iter.hasNext()) {
+      while (iter != null && iter.hasNext()) {
         MFile memberOfCollection = iter.next();
         if (cc.hasChangedSince(memberOfCollection, collectionLastModified)) return true;   // checks both data and gbx9 file
         newFileSet.add(memberOfCollection.getPath());
@@ -131,6 +130,7 @@ abstract class GribCollectionBuilder {
     return false;
   }
 
+   // throw exception if failure
   public boolean createIndex(FeatureCollectionConfig.PartitionType ptype, Formatter errlog) throws IOException {
     switch (ptype) {
       case none: return createSingleRuntimeCollections(errlog);
@@ -141,6 +141,7 @@ abstract class GribCollectionBuilder {
     throw new IllegalArgumentException("unknown FeatureCollectionConfig.PartitionType ="+ptype);
   }
 
+   // throw exception if failure
   private boolean createMultipleRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
     this.type =  GribCollectionImmutable.Type.MRC;
@@ -149,12 +150,10 @@ abstract class GribCollectionBuilder {
     List<? extends Group> groups = makeGroups(files, false, errlog);
     List<MFile> allFiles = Collections.unmodifiableList(files);
     if (allFiles.size() == 0) {
-      logger.warn("No files in this collection =" + name + " topdir=" + dcm.getRoot());
-      return false;
+      throw new IllegalStateException("No files in this collection =" + name + " topdir=" + dcm.getRoot());
     }
     if (groups.size() == 0) {
-      logger.warn("No records in this collection =" + name + " topdir=" + dcm.getRoot());
-      return false;
+      throw new IllegalStateException("No records in this collection =" + name + " topdir=" + dcm.getRoot());
     }
 
     // create the master runtimes, classify the result
@@ -175,7 +174,7 @@ abstract class GribCollectionBuilder {
     Collections.sort(sortedList);
 
     if (sortedList.size() == 0)
-      throw new IllegalArgumentException("No records in this collection ="+name);
+      throw new IllegalArgumentException("No runtimes in this collection ="+name);
     else if (sortedList.size() == 1)
       this.type = GribCollectionImmutable.Type.SRC;
     else if (allTimesAreOne)
@@ -190,9 +189,11 @@ abstract class GribCollectionBuilder {
     return ok;
   }
 
-   private boolean createSingleRuntimeCollections(Formatter errlog) throws IOException {
+  // return true if success
+  private boolean createSingleRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
     this.type =  GribCollectionImmutable.Type.SRC;
+    boolean ok = true;
 
     List<MFile> files = new ArrayList<>();
     List<? extends Group> groups = makeGroups(files, true, errlog);
@@ -225,18 +226,16 @@ abstract class GribCollectionBuilder {
       CoordinateRuntime masterRuntimes = new CoordinateRuntime(runtimes, null);
 
       // for each Group write an index file
-      boolean ok = writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles);
+      ok &= writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles);
       logger.info("GribCollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
     }
-
-    boolean ok = true;
 
     // if theres more than one runtime, create a partition collection to collect all the runtimes together
     if (multipleRuntimes) {
       Collections.sort(partitions); // ??
       PartitionManager part = new PartitionManagerFromIndexList(dcm, partitions, logger);
       part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG));
-      ok = GribCdmIndex.updateGribCollectionFromPCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);
+      ok &= GribCdmIndex.updateGribCollectionFromPCollection(isGrib1, part, CollectionUpdateType.always, errlog, logger);
     }
 
     long took = System.currentTimeMillis() - start;

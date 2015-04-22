@@ -47,6 +47,7 @@ import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
+import thredds.servlet.ServletUtil;
 import thredds.util.Constants;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
@@ -83,6 +84,18 @@ public class NcssController extends AbstractNcssController {
 
   @Autowired
   TdsContext tdsContext;
+
+  /* @RequestMapping("/ncss/grid/**")
+  public String forwardGrid(HttpServletRequest req) {
+    String reqString = req.getServletPath();
+    assert reqString.startsWith("/ncss/grid");
+    reqString = reqString.substring(10);
+    String forwardString = "forward:/ncss" + reqString;  // strip off '?/grid
+    if (null != req.getQueryString())
+      forwardString += "?"+req.getQueryString();
+
+     return forwardString;
+  }  */
 
   /**
    * Handles ncss data requests.
@@ -124,7 +137,7 @@ public class NcssController extends AbstractNcssController {
       FeatureType ft = fd.getFeatureType();
       if (ft == FeatureType.GRID) {
         if (!params.hasLatLonPoint()) {
-          handleRequestGrid(req, res, params, datasetPath, (GridDataset) fd);
+          handleRequestGrid(res, params, datasetPath, (GridDataset) fd);
         } else {
           handleRequestGridAsPoint(res, params, datasetPath, fd);
         }
@@ -139,7 +152,7 @@ public class NcssController extends AbstractNcssController {
     }
   }
 
-  void handleRequestGrid(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params, String datasetPath,
+  void handleRequestGrid(HttpServletResponse res, NcssParamsBean params, String datasetPath,
                          GridDataset gridDataset) throws IOException, NcssException, ParseException, InvalidRangeException {
 
     //params.isValidGridRequest(); ???
@@ -159,7 +172,7 @@ public class NcssController extends AbstractNcssController {
     //File netcdfResult = null;
     //try {
     GridResponder gds = GridResponder.factory(gridDataset, datasetPath);
-    File netcdfResult = gds.getResponseFile(req, res, params, version);
+    File netcdfResult = gds.getResponseFile(res, params, version);
     //} catch (Exception e) {
     //  handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     //  return;

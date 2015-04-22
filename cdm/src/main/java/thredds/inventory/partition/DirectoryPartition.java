@@ -87,7 +87,8 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     for (DirectoryBuilder child : builder.getChildren()) {
       try {
         MCollection dc = DirectoryBuilder.factory(config, child.getDir(), false, indexReader, logger);  // DirectoryPartitions or DirectoryCollections
-        result.add(dc);
+        if (!wasRemoved( dc))
+          result.add(dc);
         lastModified = Math.max(lastModified, dc.getLastModified());
       } catch (IOException ioe) {
         logger.warn("DirectoryBuilder on "+child.getDir()+" failed: skipping", ioe);
@@ -133,6 +134,19 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
   @Override
   public void close() {
     // noop
+  }
+
+  /////////////////////////////////////////////////////////////
+  // partitions can be removed (!)
+  private List<String> removed;
+
+  public void removePartition( MCollection partition) {
+    if (removed == null) removed = new ArrayList<>();
+    removed.add(partition.getCollectionName());
+  }
+
+  private boolean wasRemoved(MCollection partition) {
+    return removed != null && (removed.contains(partition.getCollectionName()));
   }
 
 }

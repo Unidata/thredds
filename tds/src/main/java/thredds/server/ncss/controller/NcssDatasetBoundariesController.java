@@ -59,13 +59,25 @@ import ucar.nc2.ft.FeatureDataset;
  */
 @Controller
 @Scope("request")
-@RequestMapping(value = "/ncss/**/datasetBoundaries.xml")
+// @RequestMapping(value = "/ncss/**/datasetBoundaries.xml")
 public class NcssDatasetBoundariesController extends AbstractNcssController {
 
   @Autowired
   FeatureDatasetService datasetService;
 
-  @RequestMapping(value = {"datasetBoundaries"})
+  /* @RequestMapping("/ncss/grid/**")
+  public String forwardGrid(HttpServletRequest req) {
+    String reqString = req.getServletPath();
+    assert reqString.startsWith("/ncss/grid");
+    reqString = reqString.substring(10);
+    String forwardString = "forward:/ncss" + reqString;  // strip off '?/grid
+    if (null != req.getQueryString())
+      forwardString += "?"+req.getQueryString();
+
+     return forwardString;
+  }   */
+
+  @RequestMapping("/ncss/**/datasetBoundaries.xml")
   void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException {
 
     //Checking request format...

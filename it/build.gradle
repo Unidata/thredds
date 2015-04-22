@@ -1,8 +1,3 @@
-apply from: "$rootDir/gradle/dependencies.gradle"
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/testing.gradle"
-apply from: "$rootDir/gradle/coverage.gradle"
-
 dependencies {
     testCompile project(":cdm")
     testRuntime project(":clcommon")
@@ -54,12 +49,6 @@ gretty {
     // Also, a comment in the bug report mentions that this issue has been fixed as of Tomcat 7.0.53.
     // However, it is actually still present as of 7.0.55
     secureRandom = true
-
-//    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
-//    def contentRoot = 'Q:/cdmUnitTest/it/content'
-
-//    systemProperty 'tds.content.root.path', contentRoot
-//    systemProperty 'tds.dir.cdmUnitTest', 'Q:/cdmUnitTest'
 
     // Causes the org.akhikhl.gretty.ServerConfig.systemProperties field to be initialized.
     // We don't actually care about the key-value-pair; we just want that field to be non-null to avoid an NPE.

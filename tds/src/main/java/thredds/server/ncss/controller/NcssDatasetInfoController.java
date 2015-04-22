@@ -69,6 +69,18 @@ class NcssDatasetInfoController extends AbstractNcssController {
   @Autowired
   FeatureDatasetService datasetService;
 
+  /* @RequestMapping("/ncss/grid/**")
+  public String forwardGrid(HttpServletRequest req) {
+    String reqString = req.getServletPath();
+    assert reqString.startsWith("/ncss/grid");
+    reqString = reqString.substring(10);
+    String forwardString = "forward:/ncss" + reqString;  // strip off '?/grid
+    if (null != req.getQueryString())
+      forwardString += "?"+req.getQueryString();
+
+     return forwardString;
+  } */
+
   @RequestMapping(
           value = {"/ncss/**/dataset.html", "/ncss/**/dataset.xml",
                   "/ncss/**/pointDataset.html", "/ncss/**/pointDataset.xml"},

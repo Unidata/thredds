@@ -90,7 +90,7 @@ public class AllVariablesSubsettingTest {
 		//NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getContentAsByteArray() );
 		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", mvc.getResponse().getContentAsByteArray() );
 		
-		ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));		
+		ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
 		assertTrue( gdsDataset.getCalendarDateRange().isPoint());
 		assertEquals(7, gdsDataset.getDataVariables().size());
 		

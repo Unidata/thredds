@@ -248,6 +248,7 @@ public class Tdm {
         System.out.printf(" %s%n", makeTriggerUrl(name));
 
       executor.shutdown();
+      CollectionUpdater.INSTANCE.shutdown();
       return;
     }
 

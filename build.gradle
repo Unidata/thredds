@@ -5,8 +5,7 @@ allprojects {
 
 // Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
 // exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.
-// Thus, as long as we declare all plugins here, no child needs its own buildscript block. See
-// http://forums.gradle.org/gradle/topics/how_do_i_include_buildscript_block_from_external_gradle_script#reply_9303244
+// Thus, as long as we declare all plugins here, no child needs its own buildscript block. See http://goo.gl/2y3KhZ.
 buildscript {
     apply from: "$rootDir/gradle/dependencies.gradle"
 
@@ -20,103 +19,12 @@ buildscript {
     }
 }
 
-// In order to refer to subprojects' Test tasks below, those subprojects must be evaluated first.
-// FIXME: This is kludgy. Use configuration injection (allprojects{}, subprojects{}) instead.
-evaluationDependsOnChildren()
-
-task testAll(group: 'Build') {
-    description = 'Runs all subproject Test tasks'
-    dependsOn subprojects*.tasks*.withType(Test)
-}
-
-task rootTestReport(type: TestReport, group: 'Reports') {
-    description = 'Generates an aggregate test report'
-    destinationDir = file("$buildDir/reports/allTests")
-
-    Collection<Task> subprojectTestTasks = subprojects*.tasks*.withType(Test).flatten()
-
-    // All Test tasks will be finalized by this task. As a result, this task needn't be invoked directly.
-    subprojectTestTasks*.finalizedBy it
-
-    // We could also do "reportOn subprojectTestTasks" here, but that would cause this task to be dependent on all
-    // subproject Tests. So, we couldn't do something like ":grib:test" and expect only GRIB tests to run because:
-    //     ":grib:test" --finalizedBy--> ":rootTestReport" --dependsOn--> "all_subproject_Tests"
-    // In other words, all subproject tests would get run, no matter what.
-    // Passing File arguments to reportOn() instead doesn't create that dependency.
-    reportOn subprojectTestTasks*.binResultsDir
-
-    // Wait until all Test tasks have run. This creates a task *ordering*, not a dependency.
-    mustRunAfter subprojectTestTasks
-}
-
+apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/testing.gradle"
 apply from: "$rootDir/gradle/coverage.gradle"
 
-task rootJacocoReport(type: JacocoReport, group: 'Reports') {
-    description = 'Generates an aggregate coverage report from all subprojects'
 
-    // By default, JacocoReport will be skipped if ANY of its executionData are non-existent: http://goo.gl/pHuwyg
-    // This is a problem: we don't know which data we have until execution time. So, we're temporarily assigning an
-    // empty collection (leaving it null causes an exception), and assigning the real values later.
-    executionData = files()
-
-    // Causes rootJacocoReport to always be executed. This is necessary because JacocoReport uses executionData as one
-    // of its Inputs, and by assigning an empty collection above, the normal UP-TO-DATE machinery has been subverted.
-    // As a result, rootJacocoReport can't properly determine when subprojects have generated new coverage data
-    // (it thinks its executionData Inputs are always UP-TO-DATE). We'll try to detect those changes manually below.
-    outputs.upToDateWhen { false }  // Evaluated at configuration time (onlyIf{} is evaluated at execution time)
-
-    doFirst {
-        Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
-        Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
-        Collection<File> exeData = tasksExtendedByJacoco*.jacoco*.destinationFile
-
-        // Add all subproject executionData that actually exist.
-        executionData = files(exeData.findAll { it.exists() })
-
-        // Skip task if NO executionData exists. This is how JacocoReport ought to work in the first place.
-        if (executionData.isEmpty()) {
-            throw new StopExecutionException("SKIPPING $name: no execution data found.")
-        }
-
-        boolean allOutputsExist = outputs.files.every { it.exists() }
-        boolean anyJacocoTaskDidWork = tasksExtendedByJacoco.any { it.didWork }
-
-        // Skip task if all outputs exist (previously generated) and no Jacoco tasks did any work (meaning that the
-        // Inputs didn't change). This manual UP-TO-DATE checking is certainly inferior to Gradle's built-in machinery
-        // (this doesn't detect modifications to outputs, for example), but it's good enough given the circumstances.
-        // The long-term solution may be to reimplement JacocoReport with the troublesome elements removed.
-        if (allOutputsExist && !anyJacocoTaskDidWork) {
-            throw new StopExecutionException("SKIPPING $name: outputs already exist and no Jacoco tasks did work.")
-        }
-    }
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
 }
-
-apply plugin: "com.github.kt3k.coveralls"
-import org.kt3k.gradle.plugin.coveralls.CoverallsTask
-
-task coverallsReport(type: CoverallsTask, group: 'Reports', dependsOn: rootJacocoReport) {
-    description = 'Uploads the aggregate coverage report to Coveralls'
-
-    // This task logs the entire coveralls.io JSON payload (~27 MB) to the INFO log level. We don't want to see it.
-    logging.level = LogLevel.LIFECYCLE
-
-    // tasks.rootJacocoReport.sourceDirectories won't be ready until the very end of the evaluation phase. So, to avoid
-    // grabbing "unfinished" properties, we'll just configure this task at execution time. That's okay for this task
-    // because it doesn't declare any Inputs or Outputs and therefore can never be considered UP-TO-DATE.
-    doFirst {
-        // We want to add the COVERALLS_REPO_TOKEN entry, but coveralls.env is an UnmodifiableMap.
-        // So, create a copy of env, add our entry, then replace the old map with it.
-        // FIXME: In production, COVERALLS_REPO_TOKEN should be an environment variable.
-        Map<String, String> envCopy = new HashMap<>(env)
-        envCopy["COVERALLS_REPO_TOKEN"] = "viswgi0kF5EOgHJXEb58OrOZzToIbi0oJ"
-        env = envCopy
-
-        // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
-        coveralls {
-            jacocoReportPath = tasks.rootJacocoReport.reports.xml.destination
-            sourceDirs = tasks.rootJacocoReport.sourceDirectories.files.collect { it.getPath() }
-        }
-    }
-}
-
-apply plugin: "base"  // Gives us the "clean" task for removing buildDir.
