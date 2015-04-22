@@ -179,12 +179,12 @@ public class HTTPCachingProvider implements CredentialsProvider
         }
     }
 
-    public void setCredentials(AuthScope scope, Credentials creds)
+    synchronized public void setCredentials(AuthScope scope, Credentials creds)
     {
         cacheCredentials(HTTPAuthStore.ANY_PRINCIPAL, this.authscope, creds);
     }
 
-    public void clear()
+    synchronized public void clear()
     {
     }
 
