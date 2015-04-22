@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -33,6 +34,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
@@ -90,7 +92,13 @@ public class GridAsPointWriterTest {
 	
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
-		
+    if (supportedFormat == SupportedFormat.NETCDF4) {
+      // Ignore this class's tests if NetCDF-4 isn't present.
+      // We're using @Before because it shows these tests as being ignored.
+      // @BeforeClass shows them as *non-existent*, which is not what we want.
+      Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    }
+
     String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
 		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
     assert gridDataset != null;

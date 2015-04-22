@@ -2,8 +2,8 @@ package ucar.nc2.jni.netcdf;
 
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -37,9 +37,10 @@ public class TestNc4JniReadCompare {
 
   @Before
   public void setLibrary() {
-    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");
-    //Nc4Iosp.setLibraryAndPath("C:/cdev/lib", "netcdf");
-    System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
+    // Ignore this class's tests if NetCDF-4 isn't present.
+    // We're using @Before because it shows these tests as being ignored.
+    // @BeforeClass shows them as *non-existent*, which is not what we want.
+    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
   }
 
   @Parameterized.Parameters

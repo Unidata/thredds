@@ -67,6 +67,13 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
 
     testTasks*.configure {
         useJUnit {
+            // Propagate to Gradle Test Executor.
+            String jnaKey = 'jna.library.path'
+            String jnaVal = System.getProperty(jnaKey)
+            if (jnaVal) {
+                systemProperty jnaKey, jnaVal
+            }
+
             if (isTravis) {
                 ignoreFailures false  // On Travis, abort the build if any tests fail.
 
