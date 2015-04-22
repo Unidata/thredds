@@ -225,12 +225,12 @@
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
-    <!-- thymeleaf -->
+    <!-- thymeleaf
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring3</artifactId>
       <version>2.1.4.RELEASE</version>
-    </dependency>
+    </dependency -->
 
     <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <dependency>

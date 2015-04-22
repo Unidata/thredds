@@ -54,9 +54,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import thredds.core.TdsRequestedDataset;
+import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
+import thredds.util.TdsPathUtils;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
@@ -78,8 +80,8 @@ public class OpendapServlet extends AbstractServlet {
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
   static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  //@Autowired
-  //DebugCommands debugCommands;
+  @Autowired
+  TdsContext tdsContext;
 
   private boolean allowSessions = false;
   private boolean allowDeflate = false; // handled by Tomcat
@@ -105,7 +107,7 @@ public class OpendapServlet extends AbstractServlet {
     this.odapVersionString = ThreddsConfig.get("Opendap.serverVersion", odapVersionString);
     logServerStartup.info(getClass().getName() + " version= " + odapVersionString + " ascLimit = " + ascLimit + " binLimit = " + binLimit);
 
-    setRootpath( ""); // LOOK !!
+    setRootpath( tdsContext.getRootDirectory().getPath());
 
     logServerStartup.info(getClass().getName() + " initialization done");
   }
@@ -157,33 +159,19 @@ public class OpendapServlet extends AbstractServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) {
     log.debug("doGet(): User-Agent = " + request.getHeader("User-Agent"));
 
-    String path = null;
     ReqState rs = getRequestState(request, response);
 
     try {
-      path = request.getPathInfo();
-
-      if (path == null) {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        return;
-      }
-
       if (baseURI == null) { // first time, set baseURI
         URI reqURI = ServletUtil.getRequestURI(request);
+        assert reqURI != null;
         // Build base URI from request (rather than hard-coding "/thredds/dodsC/").
         String baseUriString = request.getContextPath() + request.getServletPath() + "/";
         baseURI = reqURI.resolve(baseUriString);
         log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 
-      // Redirect all catalog requests at the root level.
-      if (path.equals("/") || path.equals("/catalog.html") || path.equals("/catalog.xml")) {
-        ServletUtil.sendPermanentRedirect(ServletUtil.getContextPath() + path, request, response);
-        return;
-      }
 
-
-      if (rs != null) {
         String dataSet = rs.getDataSet();
         String requestSuffix = rs.getRequestSuffix();
 
@@ -218,10 +206,6 @@ public class OpendapServlet extends AbstractServlet {
           return;
         }
 
-      } else {
-        sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Unrecognized request");
-        return;
-      }
 
       // plain ol' 404
     } catch (FileNotFoundException e) {
@@ -261,12 +245,12 @@ public class OpendapServlet extends AbstractServlet {
         return;
       }
 
-      log.error("path= " + path, e);
+      log.error("request= " + rs, e);
       sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 
       // everything else
     } catch (Throwable t) {
-      log.error("path2= " + path, t);
+      log.error("request= " + rs, t);
       t.printStackTrace();     // LOOK, logger not showing stack trace
       sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage());
     }
@@ -745,9 +729,11 @@ public class OpendapServlet extends AbstractServlet {
 
     if (log.isDebugEnabled()) log.debug(String.format("OpendapServlet: nominal url: %s?%s", baseurl, query));
 
+    String dataPath = TdsPathUtils.extractPath(request, "/dodsC");
+
     ReqState rs;
     try {
-      rs = new ReqState(request, response, rootpath, getServerName(), baseurl, query);
+      rs = new ReqState(request, response, dataPath, baseurl, query);
     } catch (Exception bue) {
       rs = null;
     }

@@ -325,6 +325,15 @@ public class DebugCommands {
       }
     };
     debugHandler.addAction(act);
+
+
+    act = new Action("showSpringControllers", "Show Spring Controllers info") {
+      public void doAction(Event e) {
+        e.pw.println(ServletUtil.showSecurity(e.req, "admin"));
+      }
+    };
+    debugHandler.addAction(act);
+
   }  
 
 }

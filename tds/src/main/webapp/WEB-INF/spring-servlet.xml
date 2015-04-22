@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--suppress SpringSecurityFiltersConfiguredInspection -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
@@ -9,8 +10,6 @@
               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
               http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
-
-  <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 
   <!-- Resource mapping -->
   <mvc:resources mapping="/**" location="/"/>
@@ -28,25 +27,21 @@
     <property name="suffix" value=".jsp"/>
   </bean>
 
-  <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-    <property name="prefix" value="/WEB-INF/view/" />
-    <property name="suffix" value=".html" />
-    <property name="templateMode" value="HTML5" />
-    <property name="cacheable" value="false" />
-   </bean>
+  <!-- bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+    <property name="prefix" value="/WEB-INF/view/"/>
+    <property name="suffix" value=".html"/>
+    <property name="templateMode" value="HTML5"/>
+    <property name="cacheable" value="false"/>
+  </bean>
 
-   <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
-    <property name="templateResolver" ref="templateResolver" />
-   </bean>
+  <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
+    <property name="templateResolver" ref="templateResolver"/>
+  </bean>
 
-   <bean class="org.thymeleaf.spring3.view.ThymeleafViewResolver">
-    <property name="templateEngine" ref="templateEngine" />
-    <property name="order" value="1" />
-    <property name="viewNames" value="thymeleaf/*" />
-   </bean>
-
-  <!-- enable @PostConstruct, @PreDestroy annotation -->
-  <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
-
+  <bean class="org.thymeleaf.spring3.view.ThymeleafViewResolver">
+    <property name="templateEngine" ref="templateEngine"/>
+    <property name="order" value="1"/>
+    <property name="viewNames" value="thymeleaf/*"/>
+  </bean -->
 
 </beans>

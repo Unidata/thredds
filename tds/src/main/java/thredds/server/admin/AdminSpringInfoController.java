@@ -55,7 +55,7 @@ public class AdminSpringInfoController {
   @Autowired
   private RequestMappingHandlerMapping handlerMapping;
 
-  @RequestMapping(value = "/showControllers", method = RequestMethod.GET)
+  @RequestMapping(value = "/**", method = RequestMethod.GET)
   public ModelAndView show() {
     return new ModelAndView("springRequestMap", "handlerMethods", this.handlerMapping.getHandlerMethods());
   }
