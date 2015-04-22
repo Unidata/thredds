@@ -104,7 +104,7 @@ public class HTTPCachingProvider implements CredentialsProvider
     //////////////////////////////////////////////////
     // Credentials Provider Interface
 
-    public Credentials
+    synchronized public Credentials
     getCredentials(AuthScope scope)
     {
         // Is this still true in httpclient 4.2.x?
@@ -113,7 +113,7 @@ public class HTTPCachingProvider implements CredentialsProvider
         // calling the credentials provider.  We fix by checking for
         // retry in same way as HttpMethodDirector.processWWWAuthChallenge.
         // After MAX_RETRIES, we force retries to stop.
-        //todo: AuthState authstate = method.getMethod().getHostAuthState();
+        // do: AuthState authstate = method.getMethod().getHostAuthState();
         //if(retryCount == 0 && authstate.isAuthAttempted() && authscheme.isComplete()) {
         //    return null; // Stop the retry.
         //}
@@ -129,7 +129,7 @@ public class HTTPCachingProvider implements CredentialsProvider
         // Verify that the scope argument "subsumes"
         // this.authscope
         if(!HTTPAuthScope.subsumes(scope, this.authscope))
-            throw new IllegalStateException("HTTPCachingProvider: scope :: authscope mismatch");
+            throw new InvalidCredentialsException("HTTPCachingProvider: scope :: authscope mismatch");
 */
         // See if the credentials have been cached.
         Credentials credentials = checkCache(principal, authscope);
@@ -144,43 +144,47 @@ public class HTTPCachingProvider implements CredentialsProvider
             System.err.println("Credentials not cached");
 
         String scheme = scope.getScheme();
+        try {
+            if(scheme == null)
+                throw new InvalidCredentialsException("HTTPCachingProvider: unsupported scheme: " + scope.getScheme());
 
-        if(scheme == null)
-            throw new IllegalStateException("HTTPCachingProvider: unsupported scheme: " + scope.getScheme());
+            // search for matching authstore entries
+            List<HTTPAuthStore.Entry> matches = this.store.search(this.principal, this.authscope);
+            if(matches.size() == 0)
+                throw new InvalidCredentialsException("HTTPCachingProvider: no match for:" + this.authscope);
 
-        // search for matching authstore entries
-        List<HTTPAuthStore.Entry> matches = this.store.search(this.principal, this.authscope);
-        if(matches.size() == 0)
-            throw new IllegalStateException("HTTPCachingProvider: no match for:" + this.authscope);
+            // Choose the most restrictive
+            HTTPAuthStore.Entry entry = matches.get(0);
+            CredentialsProvider provider = entry.provider;
 
-        // Choose the most restrictive
-        HTTPAuthStore.Entry entry = matches.get(0);
-        CredentialsProvider provider = entry.provider;
+            if(provider == null)
+                throw new InvalidCredentialsException("HTTPCachingProvider: no credentials provider provided");
 
-        if(provider == null)
-            throw new IllegalStateException("HTTPCachingProvider: no credentials provider provided");
+            // Invoke the (real) credentials provider
+            // using the incoming parameters
+            credentials = provider.getCredentials(scope);
+            if(credentials == null)
+                throw new InvalidCredentialsException("HTTPCachingProvider: cannot obtain credentials");
 
-        // Invoke the (real) credentials provider
-        // using the incoming parameters
-        credentials = provider.getCredentials(scope);
-        if(credentials == null)
-            throw new IllegalStateException("HTTPCachingProvider: cannot obtain credentials");
+            // Insert into the credentials cache
+            cacheCredentials(entry.principal, this.authscope, credentials);
 
-        // Insert into the credentials cache
-        cacheCredentials(entry.principal, this.authscope, credentials);
+            if(TESTING)
+                System.err.println("Caching credentials: " + credentials);
 
-        if(TESTING)
-            System.err.println("Caching credentials: " + credentials);
-
-        return credentials;
+            return credentials;
+        } catch (InvalidCredentialsException ice) {
+            HTTPSession.log.error(ice.getMessage());
+            return null;
+        }
     }
 
-    public void setCredentials(AuthScope scope, Credentials creds)
+    synchronized public void setCredentials(AuthScope scope, Credentials creds)
     {
         cacheCredentials(HTTPAuthStore.ANY_PRINCIPAL, this.authscope, creds);
     }
 
-    public void clear()
+    synchronized public void clear()
     {
     }
 
@@ -233,8 +237,8 @@ public class HTTPCachingProvider implements CredentialsProvider
         Triple p = null;
         Credentials old = null;
 
-        for(Triple t: HTTPCachingProvider.cache) {
-            if(t.scope.equals(scope))  {
+        for(Triple t : HTTPCachingProvider.cache) {
+            if(t.scope.equals(scope)) {
                 p = t;
                 break;
             }
@@ -279,7 +283,7 @@ public class HTTPCachingProvider implements CredentialsProvider
             if(testlist == null) testlist = new ArrayList<Triple>();
         }
         // walk backward because we are removing entries
-        for(int i = HTTPCachingProvider.cache.size() - 1;i >= 0;i--) {
+        for(int i = HTTPCachingProvider.cache.size() - 1; i >= 0; i--) {
             Triple p = HTTPCachingProvider.cache.get(i);
             if(HTTPAuthScope.equivalent(scope, p.scope)) {
                 if(TESTING) {
