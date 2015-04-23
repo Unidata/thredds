@@ -72,7 +72,7 @@ import java.util.*;
  * @author caron
  * @since 7/25/12
  */
-public class NetcdfFileWriter {
+public class NetcdfFileWriter implements AutoCloseable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
   static private Set<DataType> validN3types = EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT,
           DataType.DOUBLE, DataType.FLOAT);
