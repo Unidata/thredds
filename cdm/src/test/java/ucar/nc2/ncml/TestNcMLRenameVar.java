@@ -39,6 +39,7 @@ import ucar.nc2.*;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.TestNcML;
 
+import java.io.File;
 import java.io.IOException;
 
 /** Test netcdf dataset in the JUnit framework. */

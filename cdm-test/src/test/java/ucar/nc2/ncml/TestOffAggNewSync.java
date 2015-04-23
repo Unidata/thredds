@@ -54,7 +54,7 @@ public class TestOffAggNewSync {
             "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
             "  <aggregation  dimName='time' type='joinExisting' recheckEvery='1 sec' >\n" +
             "    <variableAgg name='IR_WV'/>\n" +
-            "    <scan location='"+dataDir+"' regExp='SUPER-NATIONAL.*\\.gini' dateFormatMark='SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm'/>\n" +
+            "    <scan location='"+dataDir+"' regExp='SUPER-NATIONAL_8km_WV.*\\.gini' dateFormatMark='SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm'/>\n" +
             "  </aggregation>\n" +
             "</netcdf>";
 
