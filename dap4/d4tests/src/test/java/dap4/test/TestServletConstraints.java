@@ -153,7 +153,9 @@ public class TestServletConstraints extends DapTestCommon
     public TestServletConstraints(String name, String[] argv)
     {
         super(name);
-        ConstraintTest.setRoots(getResourceDir() + "/" + TESTINPUTDIR, getResourceDir() + BASELINEDIR, getResourceDir() + GENERATEDIR);
+        ConstraintTest.setRoots(canonjoin(getResourceDir(),TESTINPUTDIR),
+                canonjoin(getResourceDir(),BASELINEDIR),
+                canonjoin(getResourceDir(),GENERATEDIR));
         defineAllTestcases();
         chooseTestcases();
     }
