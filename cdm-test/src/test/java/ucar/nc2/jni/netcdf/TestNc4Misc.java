@@ -288,5 +288,34 @@ public class TestNc4Misc {
 
     } // for
 
-  } // main
+  }
+
+  @Test
+  public void testAttributeChange() {
+    String ncFile = "E:/work/sean/input.nc4";
+    // old and new name of variable
+    String oldVarName = "Pressure_reduced_to_MSL_msl";
+    String newVarName = "Pressure_MSL";
+    // name and value of attribute to change
+    String attrToChange = "long_name";
+    String newAttrValue = "Long name changed!";
+
+    try {
+        NetcdfFileWriter ncWriter = NetcdfFileWriter.openExisting(ncFile);
+        ncWriter.setRedefineMode(true);
+        // rename the variable
+        ncWriter.renameVariable(oldVarName, newVarName);
+        // get the variable whoes attribute you wish to change
+        Variable var = ncWriter.findVariable(newVarName);
+        // create the new attribute (overwrite if it already exists)
+        // and add the attribute to the variable
+        Attribute newAttr = new Attribute(attrToChange, newAttrValue);
+        ncWriter.addVariableAttribute(var, newAttr);
+        ncWriter.setRedefineMode(false);
+        // write the above changes to the file
+        ncWriter.close();
+    } catch (IOException e) {
+        System.err.println("Caught IOException: " +  e.getMessage());
+    }
+  }
 }

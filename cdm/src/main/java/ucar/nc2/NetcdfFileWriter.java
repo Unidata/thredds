@@ -876,11 +876,11 @@ public class NetcdfFileWriter {
 
     FileWriter2 fileWriter2 = new FileWriter2(this);
 
-    for (Variable v : ncfile.getVariables()) {
+    for (Variable v : ncfile.getVariables()) {  // LOOK This doesnt work when varname has changed
       Variable oldVar = oldFile.findVariable(v.getFullNameEscaped());
       if (oldVar != null) {
         fileWriter2.copyAll(oldVar, v);
-    }
+      }
     }
 
     // delete old
