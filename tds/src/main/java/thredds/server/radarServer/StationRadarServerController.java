@@ -76,7 +76,7 @@ public class StationRadarServerController extends AbstractController {
     return "/radarServer/";
   }
 
-  @RequestMapping(value = {"/radarServer/**/stations.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
+//  @RequestMapping(value = {"/radarServer/**/stations.xml"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
     DatasetRepository.init(tdsContext);
 

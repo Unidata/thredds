@@ -134,7 +134,7 @@ public class QueryRadarServerController extends AbstractController {
    * @throws Exception
    */
   //@RequestMapping(value = {"/radarServer/**/*?*"}, method = RequestMethod.GET)
-  @RequestMapping(value = "/radarServer/**/*", method = {RequestMethod.GET, RequestMethod.HEAD})
+//  @RequestMapping(value = "/radarServer/**/*", method = {RequestMethod.GET, RequestMethod.HEAD})
   protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
     DatasetRepository.init(tdsContext);
 
