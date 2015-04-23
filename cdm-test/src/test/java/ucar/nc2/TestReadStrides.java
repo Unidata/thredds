@@ -209,12 +209,12 @@ public class TestReadStrides extends TestCase {
   }
 
   public void testReadStridesAll() throws IOException, InvalidRangeException {
-    testReadStrides("ncml/nc/time0.nc");
-    testReadStrides("gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
+    testReadStrides(TestDir.cdmLocalTestDataDir+"ncml/nc/time0.nc");
+    testReadStrides(TestDir.cdmUnitTestDir+"formats/gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
   }
 
   private void testReadStrides(String filename) throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestDir.openFileLocal(filename);
+    NetcdfFile ncfile = TestDir.open(filename);
 
     List vars = ncfile.getVariables();
     for (int i = 0; i < vars.size(); i++) {

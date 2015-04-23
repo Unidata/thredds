@@ -40,9 +40,6 @@ import ucar.nc2.dt.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -57,10 +54,10 @@ public class TestRadialDatasetNew {
     @Parameterized.Parameters(name="{0}")
     public static Collection params() {
         Object[][] data = new Object[][] {
-                {"nids/N0R_20041119_2147",
+                {"formats/nexrad/level3/N0R_20041119_2147",
                         CalendarDate.of(null, 2004, 11, 19, 21, 47, 44),
                         CalendarDate.of(null, 2004, 11, 19, 21, 47, 44)},
-                {"dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1",
+                {"formats/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1",
                         CalendarDate.of(null, 2002, 5, 11, 1, 58, 15).add(573, CalendarPeriod.Field.Millisec),
                         CalendarDate.of(null, 2002, 5, 11, 1, 59, 5).add(687, CalendarPeriod.Field.Millisec)}
         };
@@ -78,7 +75,7 @@ public class TestRadialDatasetNew {
 
     @Test
     public void testDates() throws IOException {
-        String fullpath = TestDir.cdmLocalTestDataDir + filename;
+        String fullpath = TestDir.cdmUnitTestDir + filename;
         RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(
                 FeatureType.RADIAL, fullpath, null, new StringBuilder());
 
