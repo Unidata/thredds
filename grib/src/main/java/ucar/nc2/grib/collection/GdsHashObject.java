@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -30,34 +30,40 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
-package thredds.server.admin;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+package ucar.nc2.grib.collection;
 
 /**
- * Show spring request maps
+ * Tricky business to do approximate equality with GribGds, but allow overriding
  *
  * @author caron
- * @since 10/23/13
- * @see "http://www.java-allandsundry.com/2012/03/endpoint-documentation-controller-for.html"
+ * @since 4/14/2015
  */
-@Controller
-@RequestMapping(value ="/admin/spring", method= RequestMethod.GET)
-public class AdminSpringInfoController {
+public class GdsHashObject {
+  Object org;
+  int hashOverride = 0;
 
-  @Autowired
-  private RequestMappingHandlerMapping handlerMapping;
-
-  @RequestMapping(value = "/**", method = RequestMethod.GET)
-  public ModelAndView show() {
-    return new ModelAndView("springRequestMap", "handlerMethods", this.handlerMapping.getHandlerMethods());
+  public GdsHashObject(Object org, int hashOverride) {
+    this.org = org;
+    if (hashOverride != org.hashCode())
+      this.hashOverride = hashOverride;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    GdsHashObject that = (GdsHashObject) o;
+
+    if ((this.hashOverride != 0) || (that.hashOverride != 0))  // must be symmetric
+      return this.hashCode() == that.hashCode();
+
+    return org.equals(that.org);
+  }
+
+  @Override
+  public int hashCode() {
+    if (this.hashOverride != 0) return this.hashOverride;
+    return org.hashCode();
+  }
 }

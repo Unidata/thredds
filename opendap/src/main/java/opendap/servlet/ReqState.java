@@ -41,6 +41,7 @@
 package opendap.servlet;
 
 import ucar.httpservices.HTTPSession;
+import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,7 +54,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 
 public class ReqState {
-
+  private static final String defaultSchemaName = "opendap-0.0.0.xsd";
+  private static final String testdatasetspath = "/WEB-INF/resources/testdatasets";
 
   /**
    * ************************************************************************
@@ -107,16 +109,12 @@ public class ReqState {
    * @serial
    */
   //Coverity[FB.SS_SHOULD_BE_STATIC]
-  private final String defaultSchemaName = "opendap-0.0.0.xsd";
   private String defaultSchemaLocation;
-
-  // path from root to dds etc dirs
-  private String testdatasetspath = "/WEB-INF/resources/testdatasets";
 
   private String dataSetName;
   private String requestSuffix;
   private String CE;   // encoded
-  private Object obj = null;
+  private Object obj;
   private String serverClassName;
   private String requestURL;   // encoded
 
@@ -126,7 +124,27 @@ public class ReqState {
   //private ServletContext myServletContext;
   private String rootpath;
 
-  public ReqState(HttpServletRequest myRequest, HttpServletResponse response, String rootPath,
+    // this is used by OpendapServlet
+  public ReqState(HttpServletRequest myRequest, HttpServletResponse response, String dataPath, String encodedurl, String encodedquery) {
+    this.myHttpRequest = myRequest;
+    this.response = response;
+    this.dataSetName = dataPath;
+    this.requestURL = encodedurl;
+    this.CE = encodedquery != null ? encodedquery : "";
+
+    int pos = dataPath.lastIndexOf(".");
+    if (pos > 0) {
+      int len = dataPath.length();
+      this.requestSuffix = dataPath.substring(pos+1, len);
+      this.dataSetName = dataPath.substring(0, pos);
+    } else {
+      this.requestSuffix = "";
+      this.dataSetName = dataPath;
+    }
+  }
+
+  // this is used by DTS
+  public ReqState(HttpServletRequest myRequest, HttpServletResponse response, String rootPath2,
                   String serverClassName, String encodedurl, String encodedquery) {
     //this.myServletConfig = sv.getServletConfig();
     //this.myServletContext = sv.getServletContext();
@@ -134,11 +152,10 @@ public class ReqState {
     //if (this.rootpath == null) {
    //   this.rootpath = "";
     //}
-    AbstractServlet.log.debug("RootPath: " + this.rootpath);
 
     this.myHttpRequest = myRequest;
     this.response = response;
-    this.rootpath = rootPath;
+    this.rootpath = StringUtil2.replace(rootPath2, "\\", "/");
     this.serverClassName = serverClassName;
     this.CE = encodedquery;
 
@@ -159,12 +176,7 @@ public class ReqState {
     else {
       int index = url.lastIndexOf(myHttpRequest.getServletPath());
       if (index < 0) index = url.length(); //Use whole thing
-      defaultSchemaLocation = url.substring(0, index) +
-              "/schema/" +
-              defaultSchemaName;
-
-      //System.out.println("Default Schema Location: "+defaultSchemaLocation);
-      //System.out.println("Schema Location: "+getSchemaLocation());
+      defaultSchemaLocation = url.substring(0, index) + "/schema/" + defaultSchemaName;
     }
 
     requestURL = (encodedurl);

@@ -81,6 +81,7 @@ public class AdminDebugController {
     pw.println("<br><a href='dir/content/logs/'>Show TDS Logs</a>");
     pw.println("<br><a href='dir/content/tdm/'>Show TDM Logs</a>");
     pw.println("<br><a href='dir/logs/'>Show Tomcat Logs</a>");
+    pw.println("<br><a href='spring/showControllers'>Show Spring Controllers</a>");
     pw.println("<h2>Debug Actions</h2>");
     pw.println("<pre>");
 

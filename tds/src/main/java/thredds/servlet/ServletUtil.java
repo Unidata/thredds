@@ -562,11 +562,11 @@ public class ServletUtil {
 
       // Return the file
       ServletOutputStream out = res.getOutputStream();
-      // IO.copyFileB(file, out, 60 * 1000);
-      try (WritableByteChannel cOut = Channels.newChannel(out)) {
+      IO.copyFileB(file, out, 60 * 1000);
+      /* try (WritableByteChannel cOut = Channels.newChannel(out)) {
         IO.copyFileWithChannels(file, cOut);
         res.flushBuffer();
-      }
+      } */
     }
 
     // @todo Split up this exception handling: those from file access vs those from dealing with response

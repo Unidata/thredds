@@ -24,6 +24,7 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
+import thredds.server.admin.DebugCommands;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
@@ -58,6 +59,9 @@ public class RadarServerController {
     @Autowired
     TdsContext tdsContext;
 
+    @Autowired
+    DebugCommands debugCommands;
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public String handleException(Exception exc) {
@@ -75,10 +79,48 @@ public class RadarServerController {
     public RadarServerController() {
     }
 
+    void setupDebug() {
+        DebugCommands.Category debugHandler = debugCommands.findCategory("RadarServer");
+        DebugCommands.Action act = new DebugCommands.Action("showDatasets", "Show Datasets") {
+            public void doAction(DebugCommands.Event e) {
+                try {
+                    for (Map.Entry<String, RadarDataInventory> ent : data.entrySet()) {
+                        e.pw.println(ent.getKey());
+
+                        RadarDataInventory di = ent.getValue();
+                        if (di == null) {
+                            e.pw.println("Dataset is null");
+                            continue;
+                        }
+                        e.pw.printf("Collection Dir: %s%n", di.getCollectionDir().toString());
+                        e.pw.printf("Last Update: %s%n", di.getLastUpdate());
+                        e.pw.println("Dates:");
+                        for (String item : di.listItems(RadarDataInventory.DirType.Date)) {
+                            e.pw.println("\t" + item);
+                        }
+                        e.pw.println("Stations:");
+                        for (String item : di.listItems(RadarDataInventory.DirType.Station)) {
+                            e.pw.println("\t" + item);
+                        }
+                        e.pw.println("Vars:");
+                        for (String item : di.listItems(RadarDataInventory.DirType.Variable)) {
+                            e.pw.println("\t" + item);
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace(e.pw);
+                }
+            }
+        };
+        debugHandler.addAction(act);
+    }
+
     @PostConstruct
     public void init() {
         enabled = ThreddsConfig.getBoolean("RadarServer.allow", false);
         if (!enabled) return;
+
+        setupDebug();
 
         data = new TreeMap<>();
         vars = new TreeMap<>();
@@ -338,12 +380,12 @@ public class RadarServerController {
             try {
                 stations = getStations(di.getStationList(), lon, lat, north,
                         south, east, west);
-                addQueryElement(queryString, "longitude", lon.toString());
-                addQueryElement(queryString, "latitude", lat.toString());
-                addQueryElement(queryString, "north", north.toString());
-                addQueryElement(queryString, "south", south.toString());
-                addQueryElement(queryString, "east", east.toString());
-                addQueryElement(queryString, "west", west.toString());
+                addQueryElement(queryString, "longitude", lon);
+                addQueryElement(queryString, "latitude", lat);
+                addQueryElement(queryString, "north", north);
+                addQueryElement(queryString, "south", south);
+                addQueryElement(queryString, "east", east);
+                addQueryElement(queryString, "west", west);
             } catch (UnsupportedOperationException e) {
                 throw new UnsupportedOperationException("Either a list of " +
                         "stations, a lat/lon point, or a box defined by " +
@@ -369,6 +411,12 @@ public class RadarServerController {
                                  String[] values) {
         if (values != null) {
             addQueryElement(sb, name, StringUtils.join(values, ','));
+        }
+    }
+
+    private void addQueryElement(StringBuilder sb, String name, Double value) {
+        if (value != null) {
+            addQueryElement(sb, name, value.toString());
         }
     }
 
@@ -466,8 +514,9 @@ public class RadarServerController {
                 return true;
             }
         } else if (timeEnd != null && duration != null) {
-            query.addDateRange(new CalendarDateRange(timeEnd,
-                    (long) -duration.getValueInSeconds()));
+            query.addDateRange(new CalendarDateRange(
+                    timeEnd.add((long) -duration.getValueInSeconds(), CalendarPeriod.Field.Second),
+                    (long) duration.getValueInSeconds()));
             return true;
         }
 
