@@ -30,7 +30,10 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.ma2;
+package ucar.unidata.test.util;
+
+import ucar.ma2.*;
+import ucar.unidata.test.util.UtilsMa2Test;
 
 import java.util.List;
 import java.io.IOException;

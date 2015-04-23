@@ -1,6 +1,7 @@
-package ucar.ma2;
+package ucar.unidata.test.util;
 
 import org.junit.Test;
+import ucar.ma2.Array;
 
 /**
  * ma2 testing utilities

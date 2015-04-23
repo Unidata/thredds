@@ -35,7 +35,7 @@ package ucar.nc2.dods;
 import opendap.test.TestSources;
 import org.junit.Test;
 import ucar.ma2.*;
-import ucar.ma2.UtilsTestStructureArray;
+import ucar.unidata.test.util.UtilsTestStructureArray;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 
