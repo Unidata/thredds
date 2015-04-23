@@ -163,7 +163,9 @@ public class TestServlet extends DapTestCommon
         super(name);
         if(prop_ascii)
             Generator.setASCII(true);
-        ServletTest.setRoots(getResourceDir() + "/" + TESTINPUTDIR, getResourceDir() + BASELINEDIR, getResourceDir() + GENERATEDIR);
+        ServletTest.setRoots(canonjoin(getResourceDir(),TESTINPUTDIR),
+                             canonjoin(getResourceDir(),BASELINEDIR),
+                             canonjoin(getResourceDir(),GENERATEDIR));
         defineAllTestcases();
         chooseTestcases();
     }
