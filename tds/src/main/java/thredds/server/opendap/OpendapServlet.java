@@ -107,7 +107,8 @@ public class OpendapServlet extends AbstractServlet {
     this.odapVersionString = ThreddsConfig.get("Opendap.serverVersion", odapVersionString);
     logServerStartup.info(getClass().getName() + " version= " + odapVersionString + " ascLimit = " + ascLimit + " binLimit = " + binLimit);
 
-    setRootpath( tdsContext.getRootDirectory().getPath());
+    if (tdsContext != null) // LOOK not set in mock testing enviro ?
+      setRootpath( tdsContext.getRootDirectory().getPath());
 
     logServerStartup.info(getClass().getName() + " initialization done");
   }
