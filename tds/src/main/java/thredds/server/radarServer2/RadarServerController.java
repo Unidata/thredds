@@ -24,6 +24,7 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
+import thredds.server.admin.DebugCommands;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 import ucar.nc2.time.CalendarDate;
@@ -58,6 +59,9 @@ public class RadarServerController {
     @Autowired
     TdsContext tdsContext;
 
+    @Autowired
+    DebugCommands debugCommands;
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public String handleException(Exception exc) {
@@ -76,9 +80,9 @@ public class RadarServerController {
     }
 
     void setupDebug() {
-        DebugController.Category debugHandler = DebugController.find("RadarServer");
-        DebugController.Action act = new DebugController.Action("showDatasets", "Show Datasets") {
-            public void doAction(DebugController.Event e) {
+        DebugCommands.Category debugHandler = debugCommands.findCategory("RadarServer");
+        DebugCommands.Action act = new DebugCommands.Action("showDatasets", "Show Datasets") {
+            public void doAction(DebugCommands.Event e) {
                 try {
                     for (Map.Entry<String, RadarDataInventory> ent : data.entrySet()) {
                         e.pw.println(ent.getKey());
