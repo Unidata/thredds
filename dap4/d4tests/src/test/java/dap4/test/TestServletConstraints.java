@@ -99,12 +99,9 @@ public class TestServletConstraints extends DapTestCommon
             this.xfail = xfail;
             this.extensions = extensions.split(",");
             this.template = template;
-            this.testinputpath
-                    = this.inputroot + "/" + dataset + "." + id;
-            this.baselinepath
-                    = this.baselineroot + "/" + dataset + "." + id;
-            this.generatepath
-                    = this.generateroot + "/" + dataset + "." + id;
+            this.testinputpath = canonjoin(this.inputroot,dataset) + "." + id;
+            this.baselinepath = canonjoin(this.baselineroot,dataset) + "." + id;
+            this.generatepath = canonjoin(this.generateroot,dataset) + "." + id;
             alltests[id] = this;
         }
 

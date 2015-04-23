@@ -90,13 +90,11 @@ public class TestServlet extends DapTestCommon
             this.template = template;
             this.xfail = xfail;
             this.checksumming = checksumming;
-            this.testinputpath
-                = this.inputroot + "/" + dataset;
-            this.baselinepath
-                = this.baselineroot + "/" + dataset;
-            this.generatepath
-                = this.generateroot + "/" + dataset;
+            this.testinputpath = canonjoin(this.inputroot,dataset);
+            this.baselinepath = canonjoin(this.baselineroot,dataset);
+            this.generatepath = canonjoin(this.generateroot,dataset);
         }
+
 
         String makeurl(RequestMode ext)
         {
