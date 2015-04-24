@@ -176,7 +176,7 @@ public class TestServlet extends DapTestCommon
     protected void
     chooseTestcases()
     {
-        if(false) {
+        if(true) {
             chosentests = locate("test_fill.nc");
             prop_visual = true;
         } else {

@@ -146,7 +146,9 @@ public class XURI
             for(NameValuePair pair : params) {
                 String name = Escape.urlDecode(pair.getName());
                 name = name.toLowerCase(); // for consistent lookup
-                String value = Escape.urlDecode(pair.getValue());
+                String value = pair.getValue();
+                if(value == null) value = "";
+                value = Escape.urlDecode(value);
                 this.fields.put(name, value);
                 this.query += name + "=" + value;
             }
