@@ -1,3 +1,6 @@
+description = "The NetCDF-Java Library is a Java interface to NetCDF files, as well as to many other types of " +
+        "scientific data formats."
+
 dependencies {
     compile project(':udunits')
     compile project(':httpservices')

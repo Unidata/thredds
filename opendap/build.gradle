@@ -1,3 +1,9 @@
+description = "Open-source Project for a Network Data Access Protocol, modified for NetCDF purpose. This artifact is " +
+        "a derivative work from the official OPeNDAP library (http://opendap.org), modified by UCAR. The packages " +
+        "were renamed from \"dods.*\" to \"opendap.*\" and the groupID from \"org.opendap\" to \"edu.ucar\"."
+
+ext.url = "http://opendap.org/"
+
 apply plugin: 'war'
 
 dependencies {

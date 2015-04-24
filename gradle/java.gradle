@@ -22,13 +22,14 @@ subprojects {
     }
 
     // FIXME: Extend these to all Jar subtypes (e.g. War)?
-    // Could I then add additional attributes in subproject build scripts?
+    // Subprojects can define new values which will replace these attributes.
     jar {
         manifest {
-            attributes 'Implementation-Title': project.name,
+            attributes'Implementation-Title': ext.title,
                     'Implementation-Version': project.version,
                     'Implementation-Vendor-Id': project.group,
-                    'Implementation-Vendor': 'UCAR/Unidata',
+                    'Implementation-Vendor': ext.vendor,
+                    'Implementation-URL' : ext.url,
                     // Commented out to avoid unnecessary re-compilation and re-jarring: http://goo.gl/kbVWXR
                     // I think I can fix this by writing a builtOn.txt file in compileJava,
                     // and then reading in its value here.

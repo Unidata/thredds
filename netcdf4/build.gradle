@@ -1,3 +1,5 @@
+description = "An IOSP for NetCDF-4 that loads the C library to read and write files."
+
 dependencies {
     compile project(':cdm')
     compile libraries["jna"]

@@ -1,7 +1,24 @@
 allprojects {
+    // Matches Maven's "project.groupId". Used in MANIFEST.MF for "Implementation-Vendor-Id".
     group = "edu.ucar"
+    // Matches Maven's "project.version". Used in MANIFEST.MF for "Implementation-Version".
     version = '4.6.1-SNAPSHOT'
+    // Eventually, we'll stop appending "SNAPSHOT" to our versions and just use this.
+    status = 'development'
 }
+
+description = "The Unidata THREDDS project includes the netCDF-Java library (aka CDM) " +
+        "and the THREDDS Data Server (TDS)."
+
+// These will be inherited by subprojects: http://goo.gl/5mvqf7
+
+// Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
+ext.title = "Parent THREDDS and CDM modules"
+// Matches Maven's "project.organization.name". Used in MANIFEST.MF for "Implementation-Vendor".
+ext.vendor = "UCAR/Unidata"
+// Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
+ext.url = "http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"
+
 
 // Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
 // exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.

@@ -1,3 +1,5 @@
+description = "Decoder for the GRIB format."
+
 dependencies {
     compile project(':cdm')
     compile libraries["protobuf-java"]

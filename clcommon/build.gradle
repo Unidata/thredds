@@ -1,3 +1,5 @@
+description = "A collection of utilities needed client-side, including java.awt dependencies and assorted IOSPs."
+
 dependencies {
     compile project(':cdm')
     compile libraries["jdom2"]

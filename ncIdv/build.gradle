@@ -1,3 +1,5 @@
+description = "Package that generates a jar file for use in the IDV"
+
 dependencies {
     compile project(":cdm")
     runtime project(":bufr")
