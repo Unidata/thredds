@@ -55,6 +55,7 @@ import java.util.List;
  */
 public class AbstractNcssController {
     protected static final String servletPath = "/ncss/";
+    protected static final String servletPathGrid = "/ncss/grid/";
 
     protected static final String servletCachePath = "/cache/ncss";
 
@@ -176,10 +177,12 @@ public class AbstractNcssController {
     }
 
     public static String getDatasetPath(String path) {
-        // strip off /ncss/
-        if (path.startsWith(NcssController.servletPath)) {
-            path = path.substring(NcssController.servletPath.length());
-        }
+      if (path.startsWith(NcssController.servletPathGrid)) {               // strip off /ncss/grid/
+          path = path.substring(NcssController.servletPathGrid.length());
+
+      }  else if (path.startsWith(NcssController.servletPath)) {               // strip off /ncss/
+          path = path.substring(NcssController.servletPath.length());
+      }
 
         // strip off endings
         for (String ending : endings) {

@@ -144,8 +144,8 @@ public class TestGribCollectionsBig {
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     assert count.nerrs == 0;
-    assert count.nmiss == 0;       // 6032888/7034124  vs 973046/13925312 LOOK   6035386/7038851
-    assert count.nread == 1041102;
+    assert count.nmiss == 492158;       // 6032888/7034124  vs 973046/13925312 LOOK   6035386/7038851
+    assert count.nread == 7038851;
   }
 
 }
