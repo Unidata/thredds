@@ -155,6 +155,7 @@ public class NetcdfFileWriter implements AutoCloseable {
   private boolean fill;
   private int extraHeader;
   private long preallocateSize;
+  private Map<String,String> varRenameMap = new HashMap<>();
 
   /**
    * Open an existing or create a new Netcdf file
@@ -700,7 +701,11 @@ public class NetcdfFileWriter implements AutoCloseable {
   public Variable renameVariable(String oldName, String newName) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
     Variable v = ncfile.findVariable(oldName);
-    if (null != v) v.setName(newName);
+    if (null != v) {
+      String fullOldNameEscaped = v.getFullNameEscaped();
+      v.setName(newName);
+      varRenameMap.put(v.getFullNameEscaped(), fullOldNameEscaped);
+    }
     return v;
   }
 
@@ -876,10 +881,23 @@ public class NetcdfFileWriter implements AutoCloseable {
 
     FileWriter2 fileWriter2 = new FileWriter2(this);
 
-    for (Variable v : ncfile.getVariables()) {  // LOOK This doesnt work when varname has changed
-      Variable oldVar = oldFile.findVariable(v.getFullNameEscaped());
+    for (Variable v : ncfile.getVariables()) {
+      String oldVarName = v.getFullName();
+      Variable oldVar = oldFile.findVariable(oldVarName);
       if (oldVar != null) {
         fileWriter2.copyAll(oldVar, v);
+      } else if (varRenameMap.containsKey(oldVarName)) {
+        // var name has changed in ncfile - use the varRenameMap to find
+        //  the correct variable name to requst from oldFile
+        String realOldVarName = varRenameMap.get(oldVarName);
+        oldVar = oldFile.findVariable(realOldVarName);
+        if (oldVar != null) {
+          fileWriter2.copyAll(oldVar, v);
+        }
+      } else {
+        String message = "Cannot find variable " + oldVarName + " to copy to new file.";
+        log.warn(message);
+        System.out.println(message);
       }
     }
 
@@ -1013,5 +1031,4 @@ public class NetcdfFileWriter implements AutoCloseable {
       spiw = null;
     }
   }
-
 }
