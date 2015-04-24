@@ -1,5 +1,8 @@
 description = "Reading BUFR files with the NetCDF-java library."
 
+// Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
+ext.title = "BUFR IOSP"
+
 dependencies {
     compile project(":cdm")
     compile libraries["jdom2"]
@@ -10,9 +13,3 @@ dependencies {
 }
 
 apply plugin: 'java'
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'BUFR IOSP'
-    }
-}
