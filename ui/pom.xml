@@ -14,8 +14,8 @@
   <!-- groupId>edu.ucar</groupId-->
   <artifactId>ui</artifactId>
   <packaging>jar</packaging>
-  <name>UI Module</name>
-  <description>Package that allows to run the netCDFToolsUI directly from it</description>
+  <name>ToolsUI</name>
+  <description>Provides a graphical interface to much of the functionality in the CDM library.</description>
   <url>http://www.unidata.ucar.edu/software/tds/</url>
 
   <dependencies>

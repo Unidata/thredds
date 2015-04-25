@@ -1,7 +1,7 @@
 This folder contains shared libraries for NetCDF-4 and its dependencies, built on Ubuntu 12.04.5 LTS.
 As of 2015/04/16, that is the OS running on Travis's VMs.
 
-Library versions (I don't know what the versions in the file names refer to):
+Library versions:
 NetCDF: 4.3.3.1
 HDF5: 1.8.13
 zlib: 1.2.8

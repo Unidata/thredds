@@ -1,4 +1,5 @@
 description = "Package that generates a jar file for use in the IDV"
+ext.title = "ncIdv Module"
 
 dependencies {
     compile project(":cdm")

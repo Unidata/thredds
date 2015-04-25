@@ -1,4 +1,6 @@
 description = "An IOSP for NetCDF-4 that loads the C library to read and write files."
+ext.title = "NetCDF-4 IOSP"
+ext.url = "https://www.unidata.ucar.edu/software/netcdf/"
 
 dependencies {
     compile project(':cdm')

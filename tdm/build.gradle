@@ -1,3 +1,5 @@
+ext.title = "THREDDS Data Manager (TDM)"
+
 dependencies {
     compile project(':httpservices')
     compile project(':cdm')

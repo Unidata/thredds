@@ -1,4 +1,5 @@
 description = "A collection of utilities needed client-side, including java.awt dependencies and assorted IOSPs."
+ext.title = "Client-side common library"
 
 dependencies {
     compile project(':cdm')

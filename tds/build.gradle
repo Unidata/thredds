@@ -1,3 +1,8 @@
+description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
+        "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
+ext.title = "THREDDS Data Server (TDS)"
+ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
+
 apply plugin: 'war'
 
 dependencies {
@@ -56,10 +61,11 @@ war {
     archiveName = 'thredds.war'
 
     manifest {
-        attributes 'Implementation-Version': project.version,
-                'Implementation-Title': 'THREDDS Data Server (TDS)',
-                'Implementation-Vendor': 'UCAR/Unidata',
-                'Implementation-Vendor-Id': project.version,
+        attributes 'Implementation-Title': "${-> project.title}",
+                'Implementation-Version': "${-> project.version}",
+                'Implementation-Vendor-Id': "${-> project.group}",
+                'Implementation-Vendor': "${-> project.vendor}",
+                'Implementation-URL': "${-> project.url}",
                 // Commented out to avoid unnecessary re-compilation and re-jarring: http://goo.gl/kbVWXR
                 // I think I can fix this by writing a builtOn.txt file in compileJava,
                 // and then reading in its value here.

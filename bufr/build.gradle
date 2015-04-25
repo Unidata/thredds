@@ -1,6 +1,4 @@
 description = "Reading BUFR files with the NetCDF-java library."
-
-// Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
 ext.title = "BUFR IOSP"
 
 dependencies {

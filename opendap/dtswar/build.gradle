@@ -1,3 +1,6 @@
+description = "DAP server to serve up DAP test cases."
+ext.title = "DAP Test Server (DTS) webapp"
+
 apply plugin: 'war'
 
 dependencies {

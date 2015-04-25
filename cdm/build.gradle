@@ -1,5 +1,6 @@
 description = "The NetCDF-Java Library is a Java interface to NetCDF files, as well as to many other types of " +
         "scientific data formats."
+ext.title = "CDM core library"
 
 dependencies {
     compile project(':udunits')

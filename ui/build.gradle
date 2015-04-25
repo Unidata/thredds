@@ -1,3 +1,6 @@
+description = "Provides a graphical interface to much of the functionality in the CDM library."
+ext.title = "ToolsUI"
+
 dependencies {
     compile project(":cdm")
     compile project(":clcommon")

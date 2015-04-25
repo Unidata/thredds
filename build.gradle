@@ -12,6 +12,10 @@ description = "The Unidata THREDDS project includes the netCDF-Java library (aka
         "and the THREDDS Data Server (TDS)."
 
 // These will be inherited by subprojects: http://goo.gl/5mvqf7
+// After declaration, they should NOT be referred to using the "ext" namespace, instead preferring e.g.
+// "project.title" or simply "title": http://stackoverflow.com/questions/14530901
+// That way, the property will be robustly resolved, as described here: http://goo.gl/UBq0en
+// Otherwise, only the one specific ExtraPropertiesExtension will be searched.
 
 // Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
 ext.title = "Parent THREDDS and CDM modules"
