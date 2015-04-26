@@ -106,27 +106,28 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     try {
       fmrc.update();
 
-      boolean checkInv = fmrc.checkInvState(localState.lastInvChange);
-      boolean checkProto = fmrc.checkProtoState(localState.lastProtoChange);
+      //boolean checkInv = localState.lastInvChange == 0 || fmrc.checkInvState(localState.lastInvChange);
+      //boolean checkProto = localState.lastProtoChange == 0 || fmrc.checkProtoState(localState.lastProtoChange);
 
-      if (checkProto) {
+      //if (checkProto) {
         // add Variables, GeospatialCoverage, TimeCoverage
-        GridDataset gds = fmrc.getDataset2D(null);
+        GridDataset gds = fmrc.getDataset2D(null);                                   // LOOK is there a resource leak ??
         if (null != gds) {
             localState.vars = MetadataExtractor.extractVariables(this, gds);
             localState.coverage = MetadataExtractor.extractGeospatial(gds);
             localState.dateRange = MetadataExtractor.extractCalendarDateRange(gds);
           }
         localState.lastProtoChange = System.currentTimeMillis();
-      }
+      //}
 
-      if (checkInv) {
+     // if (checkInv) {
         makeDatasetTop(localState);
         localState.lastInvChange = System.currentTimeMillis();
-      }
+      //}
 
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      logger.error("FMRC updateCollection", e);
+      e.printStackTrace();
     }
 
   }
@@ -343,9 +344,9 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     if (parent != null)
       top.transferMetadata(parent, true); // make all inherited metadata local
 
-    String id = getID();
+    /* String id = getID();
     if (id == null) id = getPath();
-    top.setID(id);
+    top.setID(id); */
 
     /* called anytime something changes. may need to do it only once ??
 
