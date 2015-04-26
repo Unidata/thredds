@@ -224,12 +224,7 @@ abstract class GribPartitionBuilder  {
     boolean allAre1D = true;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
       try (GribCollectionMutable gc = tpp.makeGribCollection()) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
-        if (gc == null) {                                                       // note its not recursive, maybe leave open, or cache
-          tpp.setBad(true);                                                     // actually we keep a pointer to the partition's group in the GroupPartitions
-          logger.warn("Bad partition - skip "+tpp.getName()+" in "+result.showLocation());
-          continue;
-        }
-
+                                // note its not recursive, maybe leave open, or cache; actually we keep a pointer to the partition's group in the GroupPartitions
         CoordinateRuntime partRuntime = gc.masterRuntime;
         runtimeAllBuilder.addAll(partRuntime);  // make a complete set of runtime Coordinates
         masterRuntimes.add(partRuntime);        // make master runtimes
