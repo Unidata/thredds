@@ -243,7 +243,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         boolean onlyOneFile = isFilePartition && fromGc.getFiles().size() == 1;
         if (onlyOneFile) {
           parentCatalog.addService(orgService);
-          tmi.setServiceName(this.orgService.getName());
+          tmi.set(Dataset.ServiceName, this.orgService.getName());
         }
         result.put(Dataset.UrlPath, pathStart);
 
@@ -261,9 +261,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         makeDatasetsFromGroups(catURI, result, groups, isSingleGroup);
 
         if (!onlyOneFile && config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
-          //String filesPath = pathStart + "/" + FILES;
-          //InvCatalogRef filesRef = new InvCatalogRef(this, FILES, getCatalogHref(filesPath));
-          //filesRef.finish();
           addFileDatasets(parentCatalog, result, fromGc); // , config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
         }
       }
@@ -345,7 +342,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }  */
 
   // this catalog lists the individual files comprising the collection.
-  protected void addFileDatasets(CatalogBuilder parentCatalog, DatasetBuilder parent, GribCollectionImmutable fromGc, boolean addLatest) throws IOException {
+  protected void addFileDatasets(CatalogBuilder parentCatalog, DatasetBuilder parent, GribCollectionImmutable fromGc) throws IOException {
 
     DatasetBuilder filesParent = new DatasetBuilder(parent);
     filesParent.setName("Raw Files");
