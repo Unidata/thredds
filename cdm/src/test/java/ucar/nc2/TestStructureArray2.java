@@ -34,7 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
-import ucar.unidata.test.ma2.TestStructureArray;
+import ucar.unidata.test.util.UtilsTestStructureArray;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
@@ -42,11 +42,11 @@ import java.io.*;
 /** Test reading record data */
 
 public class TestStructureArray2 extends TestCase {
-  TestStructureArray test;
+  UtilsTestStructureArray test;
 
   public TestStructureArray2( String name) {
     super(name);
-    test = new ucar.unidata.test.ma2.TestStructureArray();
+    test = new UtilsTestStructureArray();
   }
 
   public void testBB() throws IOException, InvalidRangeException {

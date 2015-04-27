@@ -157,19 +157,12 @@ The XML Schema for the <em>collection</em> element:
     characters of the filename to create a date. A DateExtractor can also be defined in the <a href="CollectionSpecification.html">collection specification</a>
     string, but in that case the date must be contained just in the file name, as opposed to the complete file path which includes all of the parent directory
     names. <em>Use this OR a date extractor in the specification string, but not both.</em></li>
-  <li><strong>timePartition</strong> (optional): [ <em>directory</em> | <em>file</em> | <em>none</em>] : This defines the time intervals from which the collection is partitioned. This is used for very large datasets, and it has far reaching effects on how your data is processed and presented.
-  The values may be:
-    <ol>
-    <li><strong>none:</strong> all files are scanned in, then divided into partitions based on the time period (if needed) and a collection level index is built.</li>
-    <li><strong>directory:</strong> each directory is a partition<strong>. default</strong></li>
-    <li><strong>file: </strong>each file is a partition.</li>
-  </ol>
-  </li>
+  <li><strong>timePartition</strong> (optional): Currently only used by GRIB collections, see <a href="Partitions.html">here</a> for more info.</li>
 </ol>
 <h3>Date Extractor<a name="dateExtractor" id="dateExtractor"></a></h3>
 
-<p>Feature Collections sometimes need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a
-  date extractor in the specification string or include a dateFormatMark attribute, if a lexical sort  by filename will not give a correct date sort.</p>
+<p>Feature Collections sometimes (Point, FMRC (ususally), and time partitioned GRIB) need to know how to sort the collection of files, and in those cases you need to have a date in the filename, and to specify a
+  date extractor in the specification string or include a dateFormatMark attribute.</p>
 
 <p>1. If the date is in the filename only, you can use the <a href="CollectionSpecification.html">collection specification</a> string, aka a <strong><em>spec</em></strong>:</p>
 <blockquote>
@@ -451,7 +444,7 @@ The XML Schema definition for the <em>protoDataset</em> element:
 <p></p>
 <hr width="100%"/>
 <address>
-  <img src="../../thread.png" width="76" height="67"/> This document was last updated October 2014
+  <img src="../../thread.png" width="76" height="67"/> This document was last updated April 2015
 </address>
 </body>
 </html>

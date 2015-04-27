@@ -33,7 +33,7 @@
 package ucar.ma2;
 
 import org.junit.Test;
-import ucar.unidata.test.ma2.TestStructureArray;
+import ucar.unidata.test.util.UtilsTestStructureArray;
 
 import java.io.IOException;
 
@@ -94,7 +94,7 @@ public class TestStructureArrayMA {
 
     ArrayStructureMA as = new ArrayStructureMA(members, new int[]{4});
     //System.out.println( NCdumpW.printArray(as, "", null));
-    new TestStructureArray().testArrayStructure(as);
+    new UtilsTestStructureArray().testArrayStructure(as);
 
     // get f2 out of the 3nd "s"
     StructureMembers.Member f2 = as.getStructureMembers().findMember("f2");

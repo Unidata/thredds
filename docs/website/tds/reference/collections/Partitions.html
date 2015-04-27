@@ -11,7 +11,7 @@
 <hr />
 <p>All of the GRIB records in all of the files that you specify constitute a <em>GRIB collection.</em> The CDM creates one or more <em>CDM datasets</em> from this collection. There is always an overall <em>collection dataset</em>, and for large collections you may want to also present smaller subsets, for example yearly subsets of a multiyear model run. To do so, GRIB collections can be divided up into <em>time partitions</em>, based on the reference time of the GRIB records. </p>
 <p>You may also want to partition your collection due to memory constraints or in order to speed up indexing. To build an index, all of the metadata of each GRIB record is read into memory. This is approximately 400-500 bytes / record. Another estimate is the sum of all the GRIB index file sizes (gbx9 files) in the collection. (This memory is only required when building the index, and after the indexes are built, the memory usage is proportional to the size of the CDM index files (ncx3 files)). So if you have 1 million records in your collection, you may need ~500 MB of main memory for the indexing. The time it takes to index also increases with the number of GRIB records (probably somewhat more than linearly). When your collection is changing, partitioned collections will only have to update the partitions that change. So all of these are reasons you may want to use time partitioning.</p>
-<p>See here for options on how to get your collections indexed.</p>
+<p>See <a href="TDM.html">here</a> for options on how to get your collections indexed.</p>
 <p>A time partition is the partitioning of the GRIB records into disjoint sets, based on the reference time of the GRIB records. (For model runs the reference time is usually the model run time). The way the partition is done is controlled by the <strong>timePartition</strong> attribute on the &lt;<strong>collection</strong>&gt; element inside the &lt;<strong>featureCollection</strong>&gt;, eg:</p>
 <pre>  &lt;featureCollection name=&quot;NCEP GFS model&quot; featureType=&quot;GRIB1&quot; path=&quot;test/all&quot;&gt;<br />    &lt;metadata inherited=&quot;true&quot;&gt;<br />      &lt;serviceName&gt;all&lt;/serviceName&gt;<br />      &lt;dataFormat&gt;GRIB-1&lt;/<u></u>dataFormat&gt;<br />    &lt;/metadata&gt;<br />    &lt;collection name=&quot;gfs&quot; spec=&quot;/data/GFS/**/.*\<u></u>.grb$&quot; <strong>timePartition=&quot;directory&quot;</strong>/&gt;<br />  &lt;/featureCollection&gt;</pre>
 <p>For each partition, a CDM index file is created, and a CDM collection dataset can be acccessed by the user.</p>
@@ -20,7 +20,7 @@
   <li><strong>none:</strong> all files are scanned in, and a collection level index is built, plus a collection for each unique reference time.</li>
   <li><strong>directory:</strong> each directory is a partition<strong>. </strong>Nested directories create nested partitions (eg year/month/day).</li>
   <li><strong>file: </strong>each file is a partition. </li>
-  <li>time unit: the files are divided into partitions based on the given time unit. The reference time must be encoded in the filenames.</li>
+  <li>time unit: the files are divided into partitions based on the given time unit. The reference time must be encoded in the filenames. Thi is the only time you need to use a <strong>dateFormatMark</strong>.</li>
 </ol>
 <blockquote>
   <h3>Directory Partition</h3>
@@ -44,7 +44,7 @@
 <p>&nbsp;</p>
 <hr width="100%"/>
 <address>
-<img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Mar 2015
+<img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated April 2015
 </address>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

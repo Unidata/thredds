@@ -47,11 +47,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 @Controller
-@RequestMapping("/radarServer2")
+@RequestMapping("/radarServer")
 public class RadarServerController {
     Map<String, RadarDataInventory> data;
     static final String appName = "/thredds/";
-    static final String entryPoint = "radarServer2/";
+    static final String entryPoint = "radarServer/";
     static final String URLbase = appName + entryPoint;
     static Map<String, List<RadarServerConfig.RadarConfigEntry.VarInfo>> vars;
     boolean enabled = false;

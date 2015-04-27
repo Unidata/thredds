@@ -34,7 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
-import ucar.unidata.test.ma2.TestMa2Utils;
+import ucar.unidata.test.util.UtilsMa2Test;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
@@ -80,7 +80,7 @@ public class TestReadSlice extends TestCase {
     Array Asection2 = A.slice( 0, 12);
     assert (Asection2.getRank() == 1);
 
-    TestMa2Utils.testEquals(Asection, Asection2);
+    UtilsMa2Test.testEquals(Asection, Asection2);
 
     ncfile.close();
     System.out.println( "*** testReadSlice1 done");
@@ -123,7 +123,7 @@ public class TestReadSlice extends TestCase {
     Array Asection2 = A.slice( 1, 55);
     assert (Asection2.getRank() == 1);
 
-    TestMa2Utils.testEquals(Asection, Asection2);
+    UtilsMa2Test.testEquals(Asection, Asection2);
 
     ncfile.close();
     System.out.println( "*** testReadSlice2 done");
@@ -171,7 +171,7 @@ public class TestReadSlice extends TestCase {
     data = data.slice( 0, 12);
     assert (data.getRank() == 0);
 
-    TestMa2Utils.testEquals(Asection, data);
+    UtilsMa2Test.testEquals(Asection, data);
 
     ncfile.close();
     System.out.println( "*** testReadSliceCompose done");

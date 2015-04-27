@@ -66,6 +66,7 @@ public class Misc
 
 
   /* http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+    http://floating-point-gui.de/errors/comparison/
   bool AlmostEqualRelative(float A, float B, float maxRelDiff)
   {
       // Calculate the difference.

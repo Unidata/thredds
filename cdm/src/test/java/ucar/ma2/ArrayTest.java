@@ -1,6 +1,5 @@
 package ucar.ma2;
 
-import org.junit.Before;
 import org.junit.Test;
 import ucar.nc2.util.Misc;
 

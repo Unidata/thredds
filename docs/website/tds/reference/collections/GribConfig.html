@@ -158,11 +158,12 @@
 </h3>
 <blockquote>
   <h4><a name="datasetTypes" id="datasetTypes"></a>datasetTypes: Define which
-    datasets are available in the TDS catalog</h4>
+    datasets are available in the TDS catalog. By default, all are enabled.</h4>
   <ol>
     <li><strong>TwoD: </strong>the full dataset with two time coordinates: runtime and forecast time</li>
     <li><strong>Best</strong>: the &quot;best timeseries&quot; of the collection dataset, one time coordinate (forecasst time)</li>
     <li><strong>Latest</strong>: add latest resolver dataset to  catalog </li>
+    <li><strong>Files</strong>: show component files, allow them to be downloaded via HTTP. (For File partitions which have a single file in each partition, this functionality is enabled by including an HTTPServer in the services.)</li>
   </ol>
   <pre>
 &lt;gribConfig datasetTypes=&quot;TwoD Best Latest&quot; /&gt;</pre>
@@ -186,7 +187,7 @@
   <h4><a name="filesSort" id="filesSort"></a>filesSort: Sort the dataset listings under the Files dataset</h4>
   <blockquote>
     <p>Sort the files lexigraphically, either increasing or decreasing (default GRIB Feature Collection behavior is the same as <em>increasing =
-    True</em>). The <em><strong>Files</strong></em> datasetTypes option must be enabled.</p>
+    True</em>). </p>
   </blockquote>
   <pre>
 &lt;gribConfig&gt;
@@ -285,7 +286,6 @@
     &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
       &lt;xsd:enumeration value=&quot;TwoD&quot;/&gt;
       &lt;xsd:enumeration value=&quot;Best&quot;/&gt;
-      &lt;xsd:enumeration value=&quot;<strong>Analysis</strong>&quot;/&gt;
       &lt;xsd:enumeration value=&quot;Files&quot;/&gt;
       &lt;xsd:enumeration value=&quot;Latest&quot;/&gt;
    &lt;/xsd:restriction&gt;
@@ -306,17 +306,16 @@
     <ol>
       <li><strong>TwoD:</strong> the full dataset with two time dimensions, reference time and forecast time.</li>
       <li><strong>Best</strong>: the &quot;best timeseries&quot; of the collection dataset</li>
-      <li><strong>Analysis</strong>: the dataset with only offset = 0 records in it. Not available yet.</li>
       <li><strong>Files</strong>:
         each physical file
-        is exposed as a seperate dataset. </li>
+        is exposed as a  dataset that can be downloaded.</li>
       <li><strong>Latest</strong>: add latest resolver dataset to Files catalog (<strong>Files</strong> must also be selected)</li>
     </ol>
   </ol>
 </blockquote>
 <hr />
 <address>
-<img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated Mar 2015
+<img src="../../thread.png" alt="" width="76" height="67"/> This document was last updated April 2015
 </address>
 <p>&nbsp;</p>
 </body>

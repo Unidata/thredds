@@ -34,14 +34,11 @@ package ucar.ma2;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ucar.nc2.NCdumpW;
-import ucar.nc2.util.Indent;
-import ucar.unidata.test.ma2.TestStructureArray;
+import ucar.unidata.test.util.UtilsTestStructureArray;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Formatter;
 
 public class TestStructureArrayBB {
 
@@ -116,7 +113,7 @@ public class TestStructureArrayBB {
 
 //    System.out.println( NCdumpW.toString(bb, "test arrayBB", null));
 
-    new TestStructureArray().testArrayStructure(bb);
+    new UtilsTestStructureArray().testArrayStructure(bb);
 
     int sreclen = 1010;
     int n1reclen = 100;

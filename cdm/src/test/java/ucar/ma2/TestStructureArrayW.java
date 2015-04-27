@@ -33,7 +33,7 @@
 package ucar.ma2;
 
 import junit.framework.TestCase;
-import ucar.unidata.test.ma2.TestStructureArray;
+import ucar.unidata.test.util.UtilsTestStructureArray;
 
 import java.io.IOException;
 
@@ -111,7 +111,7 @@ public class TestStructureArrayW extends TestCase {
 
     ArrayStructureW as = new ArrayStructureW(members, new int[]{4}, sdata);
     //System.out.println( NCdumpW.printArray(as, "", null));
-    new TestStructureArray().testArrayStructure(as);
+    new UtilsTestStructureArray().testArrayStructure(as);
 
     // get f2 out of the 2nd "s"
     short[] f2data = as.getJavaArrayShort(1, f2);

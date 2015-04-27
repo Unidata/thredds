@@ -238,6 +238,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       } else { // not a partition
 
+        // must be a file partition with only one file
+        boolean isFilePartition = config.ptype == FeatureCollectionConfig.PartitionType.file;
+        boolean onlyOneFile = isFilePartition && fromGc.getFiles().size() == 1;
+        if (onlyOneFile) {
+          parentCatalog.addService(orgService);
+          tmi.setServiceName(this.orgService.getName());
+        }
         result.put(Dataset.UrlPath, pathStart);
 
         if (ds.getType() == GribCollectionImmutable.Type.SRC) {
@@ -253,12 +260,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         makeDatasetsFromGroups(catURI, result, groups, isSingleGroup);
 
-        if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
-          String filesPath = pathStart + "/" + FILES;
-          CatalogRefBuilder filesRef = new CatalogRefBuilder(result); // LOOK this isnt used
-          filesRef.setName(FILES);
-          filesRef.setHref(getCatalogHref(filesPath));
-          addFileDatasets(parentCatalog, result, fromGc, config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
+        if (!onlyOneFile && config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
+          //String filesPath = pathStart + "/" + FILES;
+          //InvCatalogRef filesRef = new InvCatalogRef(this, FILES, getCatalogHref(filesPath));
+          //filesRef.finish();
+          addFileDatasets(parentCatalog, result, fromGc); // , config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
         }
       }
 
