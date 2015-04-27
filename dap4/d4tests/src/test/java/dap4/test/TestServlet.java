@@ -90,13 +90,11 @@ public class TestServlet extends DapTestCommon
             this.template = template;
             this.xfail = xfail;
             this.checksumming = checksumming;
-            this.testinputpath
-                = this.inputroot + "/" + dataset;
-            this.baselinepath
-                = this.baselineroot + "/" + dataset;
-            this.generatepath
-                = this.generateroot + "/" + dataset;
+            this.testinputpath = canonjoin(this.inputroot,dataset);
+            this.baselinepath = canonjoin(this.baselineroot,dataset);
+            this.generatepath = canonjoin(this.generateroot,dataset);
         }
+
 
         String makeurl(RequestMode ext)
         {
@@ -165,7 +163,9 @@ public class TestServlet extends DapTestCommon
         super(name);
         if(prop_ascii)
             Generator.setASCII(true);
-        ServletTest.setRoots(getResourceDir() + "/" + TESTINPUTDIR, getResourceDir() + BASELINEDIR, getResourceDir() + GENERATEDIR);
+        ServletTest.setRoots(canonjoin(getResourceDir(),TESTINPUTDIR),
+                             canonjoin(getResourceDir(),BASELINEDIR),
+                             canonjoin(getResourceDir(),GENERATEDIR));
         defineAllTestcases();
         chooseTestcases();
     }
@@ -176,7 +176,7 @@ public class TestServlet extends DapTestCommon
     protected void
     chooseTestcases()
     {
-        if(false) {
+        if(true) {
             chosentests = locate("test_fill.nc");
             prop_visual = true;
         } else {
