@@ -95,10 +95,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   @Value("${tds.version}")
   private String webappVersion;
 
-  //@Value("${tds.version.brief}")
-  //private String webappVersionBrief;
-
-
   @Value("${tds.version.builddate}")
   private String webappVersionBuildDate;
 
@@ -164,10 +160,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   private RequestDispatcher defaultRequestDispatcher;
   private RequestDispatcher jspRequestDispatcher;
 
-
-  private TdsContext() {
-  }
-
   @Override
   public void setServletContext(ServletContext servletContext) {
     this.servletContext = servletContext;
@@ -187,7 +179,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   }
 
   public void afterPropertiesSet() {
-    // ToDo Instead of stdout, use servletContext.log( "...") [NOTE: it writes to localhost.*.log rather than catalina.out].
     if (servletContext == null)
       throw new IllegalArgumentException("ServletContext must not be null.");
 
@@ -195,13 +186,15 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     this.webappName = servletContext.getServletContextName();
 
     // Set the context path.
-    // Servlet 2.5 allows the following.
-    //contextPath = servletContext.getContextPath();
-    String tmpContextPath = servletContext.getInitParameter("ContextPath");  // cannot be overridden in the ThreddsConfig file
+    // Servlet 2.5 allows the following:
+    contextPath = servletContext.getContextPath();
+    /* String tmpContextPath = servletContext.getInitParameter("ContextPath");  // cannot be overridden in the ThreddsConfig file
     if (tmpContextPath == null) tmpContextPath = "thredds";
-    contextPath = "/" + tmpContextPath;
+    contextPath = "/" + tmpContextPath;  */
     // ToDo LOOK - Get rid of need for setting contextPath in ServletUtil.
     ServletUtil.setContextPath(contextPath);
+    // ToDo LOOK Find a better way once thredds.catalog2 is used.
+    InvDatasetFeatureCollection.setContextName(contextPath);
 
     // Set the root directory and source.
     String rootPath = servletContext.getRealPath("/");
@@ -353,28 +346,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     }
     this.publicContentDirSource = new BasicDescendantFileSource(this.publicContentDirectory);
 
-    /* this.iddContentDirectory = new File(this.rootDirectory, this.iddContentPath);
-    this.iddContentPublicDirSource = new BasicDescendantFileSource(this.iddContentDirectory);
-
-    this.motherlodeContentDirectory = new File(this.rootDirectory, this.motherlodeContentPath);
-    this.motherlodeContentPublicDirSource = new BasicDescendantFileSource(this.motherlodeContentDirectory);
-
-
-    for (String curContentRoot : ThreddsConfig.getContentRootList()) {
-      if (curContentRoot.equalsIgnoreCase("idd"))
-        chain.add(this.iddContentPublicDirSource);
-      else if (curContentRoot.equalsIgnoreCase("motherlode"))
-        chain.add(this.motherlodeContentPublicDirSource);
-      else {
-        try {
-          chain.add(new BasicDescendantFileSource(StringUtils.cleanPath(curContentRoot)));
-        } catch (IllegalArgumentException e) {
-          String msg = "Couldn't add content root [" + curContentRoot + "]: " + e.getMessage();
-          logServerStartup.warn("TdsContext.init(): " + msg, e);
-        }
-      }
-    }  */
-
     List<DescendantFileSource> chain = new ArrayList<>();
     DescendantFileSource contentMinusPublicSource =
             new BasicWithExclusionsDescendantFileSource(this.contentDirectory, Collections.singletonList("public"));
@@ -382,22 +353,17 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     this.configSource = new ChainedFileSource(chain);
     this.publicDocSource = this.publicContentDirSource;
 
-    // ToDo LOOK Find a better way once thredds.catalog2 is used.
-    //InvDatasetScan.setContext(contextPath);
-    //InvDatasetScan.setCatalogServletName("/catalog");
-    InvDatasetFeatureCollection.setContext(contextPath);
-    // GridServlet.setContextPath( contextPath ); // Won't need when switch GridServlet to use Swing MVC and TdsContext
-
     jspRequestDispatcher = servletContext.getNamedDispatcher("jsp");
     defaultRequestDispatcher = servletContext.getNamedDispatcher("default");
 
-    TdsConfigMapper tdsConfigMapper = new TdsConfigMapper();
+    /* TdsConfigMapper tdsConfigMapper = new TdsConfigMapper();
     tdsConfigMapper.setTdsServerInfo(this.serverInfo);
     tdsConfigMapper.setHtmlConfig(this.htmlConfig);
     tdsConfigMapper.setWmsConfig(this.wmsConfig);
     tdsConfigMapper.setCorsConfig(this.corsConfig);
     tdsConfigMapper.setTdsUpdateConfig(this.tdsUpdateConfig);
-    tdsConfigMapper.init(this);
+    tdsConfigMapper.init(this); */
+
     // log current server version in catalogInit, where it is
     //  most likely to be seen by the user
     String message = "You are currently running TDS version " + this.getVersionInfo();
@@ -533,15 +499,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   }
 
   /**
-   * Return the context path under which this web app is running (e.g., "/thredds").
-   *
-   * @return the context path.
-   */
-  public String getWebinfPath() {
-    return webinfPath;
-  }
-
-  /**
    * Return the full version string (<major>.<minor>.<bug>.<build>)
    * for this web application.
    *
@@ -591,17 +548,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     return contentDirectory;
   }
 
-  /**
-   * Return File for the initial content directory. I.e., the directory
-   * that contains default content for the content directory, copied
-   * there when TDS is first installed.
-   *
-   * @return a File to the initial content directory.
-   */
-  public File getStartupContentDirectory() {
-    return startupContentDirectory;
-  }
-
   public FileSource getConfigFileSource() {
     return this.configSource;
   }
@@ -614,28 +560,14 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     return this.defaultRequestDispatcher;
   }
 
-  public RequestDispatcher getJspRequestDispatcher() {
-    return this.jspRequestDispatcher;
-  }
-
-  public ServletContext getServletContext() {
-    return this.servletContext;
-  }
-
   public String getContentRootPath() {
     return this.contentRootPath;
-  }
-
-  public String getContentRootPathAbsolute() {
-    File abs = new File(this.contentRootPath);
-    return abs.getAbsolutePath();
   }
 
 
   public String getTdsConfigFileName() {
     return this.tdsConfigFileName;
   }
-
 
   public TdsServerInfo getServerInfo() {
     return serverInfo;
@@ -649,14 +581,51 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     return wmsConfig;
   }
 
+  /////////////////////////////////////////////////////////////////////////
+  // can get rid of ??
+
   public void setWmsConfig(WmsConfig wmsConfig) {
     this.wmsConfig = wmsConfig;
   }
 
+  public String getContentRootPathAbsolute() {
+    File abs = new File(this.contentRootPath);
+    return abs.getAbsolutePath();
+  }
+
   public CorsConfig getCorsConfig() { return corsConfig; }
 
+  public RequestDispatcher getJspRequestDispatcher() {
+    return this.jspRequestDispatcher;
+  }
+
+  public ServletContext getServletContext() {
+    return this.servletContext;
+  }
+
+
+  /**
+   * Return File for the initial content directory. I.e., the directory
+   * that contains default content for the content directory, copied
+   * there when TDS is first installed.
+   *
+   * @return a File to the initial content directory.
+   */
+  public File getStartupContentDirectory() {
+    return startupContentDirectory;
+  }
 
   public TdsUpdateConfig getTdsUpdateConfig() { return tdsUpdateConfig; }
+
+
+  /**
+   * Return the context path under which this web app is running (e.g., "/thredds").
+   *
+   * @return the context path.
+   */
+  public String getWebinfPath() {
+    return webinfPath;
+  }
 
   /////////////////////////////////////////////////////
 

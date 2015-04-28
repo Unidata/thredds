@@ -30,7 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.servlet;
+package thredds.server.admin;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +56,7 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
- *
+ * LOOK maybe can get rid of
  * @author edavis
  */
 

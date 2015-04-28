@@ -39,6 +39,10 @@ import thredds.server.ncss.format.SupportedFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Used by Ncss. switch to AllowedServices
+ */
+
 @Service
 public final class FormatsAvailabilityService {
 

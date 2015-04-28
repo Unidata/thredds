@@ -103,7 +103,7 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
   }
 
   public void init() {
-    startupLog.info("TdsInit getContentRootPathAbsolute= "+tdsContext.getContentRootPath());
+    startupLog.info("TdsInit getContentRootPathAbsolute= " + tdsContext.getContentRootPath());
 
     // prefer cdmRemote when available
     DataFactory.setPreferCdm(true);
@@ -113,10 +113,10 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     // Global config
     boolean useBytesForDataSize = ThreddsConfig.getBoolean("catalogWriting.useBytesForDataSize", false);
     CatalogXmlWriter.useBytesForDataSize(useBytesForDataSize);
-    startupLog.info("TdsInit: catalogWriting.useBytesForDataSize= "+useBytesForDataSize);
+    startupLog.info("TdsInit: catalogWriting.useBytesForDataSize= " + useBytesForDataSize);
 
-     // datasetSource plug-in
-    for (String className : ThreddsConfig.getRootList("datasetSource"))  {
+    // datasetSource plug-in
+    for (String className : ThreddsConfig.getRootList("datasetSource")) {
       datasetManager.registerDatasetSource(className);
     }
 
@@ -137,7 +137,7 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
         </RollingFileAppender>
       </FeatureCollection>
      */
-    startupLog.info("TdsInit: set LoggerFactorySpecial with logging directory "+System.getProperty("tds.log.dir"));
+    startupLog.info("TdsInit: set LoggerFactorySpecial with logging directory " + System.getProperty("tds.log.dir"));
     long maxFileSize = ThreddsConfig.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
     int maxBackupIndex = ThreddsConfig.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 10);
     String level = ThreddsConfig.get("FeatureCollection.RollingFileAppender.Level", "INFO");
@@ -151,24 +151,24 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     */
     String libraryPath = ThreddsConfig.get("Netcdf4Clibrary.libraryPath", null);
     String libraryName = ThreddsConfig.get("Netcdf4Clibrary.libraryName", null);
-    if (libraryPath != null || libraryName != null){
+    if (libraryPath != null || libraryName != null) {
       Nc4Iosp.setLibraryAndPath(libraryPath, libraryName);
     }
 
     //Netcdf4 library could be set as a environment variable or as a jvm parameter
-      if (Nc4Iosp.isClibraryPresent()) {
-          FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
+    if (Nc4Iosp.isClibraryPresent()) {
+      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
 //      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4EXT, true);
 
-          if (libraryName == null) libraryName = "netcdf";
-          startupLog.info("netcdf4 c library loaded from jna_path='" + System.getProperty("jna.library.path") + "' " +
-                  "libname=" + libraryName + "");
-      }
+      if (libraryName == null) libraryName = "netcdf";
+      startupLog.info("netcdf4 c library loaded from jna_path='" + System.getProperty("jna.library.path") + "' " +
+              "libname=" + libraryName + "");
+    }
 
     // how to choose the typical dataset ?
     String typicalDataset = ThreddsConfig.get("Aggregation.typicalDataset", "penultimate");
     Aggregation.setTypicalDatasetMode(typicalDataset);
-    startupLog.info("TdsInit: Aggregation.setTypicalDatasetMode= "+typicalDataset);
+    startupLog.info("TdsInit: Aggregation.setTypicalDatasetMode= " + typicalDataset);
 
     ////////////////////////////////////////////////////////////////
     // Disk Caching
@@ -176,13 +176,13 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     int scourSecs, maxAgeSecs;
 
     // Nj22 disk cache
-    dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "/cache/cdm/" ).getPath());
+    dir = ThreddsConfig.get("DiskCache.dir", new File(tdsContext.getContentDirectory(), "/cache/cdm/").getPath());
     boolean alwaysUse = ThreddsConfig.getBoolean("DiskCache.alwaysUse", false);
     scourSecs = ThreddsConfig.getSeconds("DiskCache.scour", 60 * 60); // default once an hour
     long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);  // default 1 Gbyte
     DiskCache.setRootDirectory(dir);
     DiskCache.setCachePolicy(alwaysUse);
-    startupLog.info("TdsInit:  CdmCache= "+dir+" scour = "+scourSecs+" maxSize = "+maxSize);
+    startupLog.info("TdsInit:  CdmCache= " + dir + " scour = " + scourSecs + " maxSize = " + maxSize);
     if (scourSecs > 0) {
       Calendar c = Calendar.getInstance(); // contains current startup time
       c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time
@@ -191,15 +191,15 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     }
 
     // persist joinExisting aggregations. default every 24 hours, delete stuff older than 90 days
-    dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/agg/").getPath());
+    dir = ThreddsConfig.get("AggregationCache.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/agg/").getPath());
     scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
     maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     Aggregation.setPersistenceCache(aggCache);
-    startupLog.info("TdsInit:  AggregationCache= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
+    startupLog.info("TdsInit:  AggregationCache= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
-    String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
+    String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
     Boolean gribIndexAlwaysUse = ThreddsConfig.getBoolean("GribIndex.alwaysUse", false);
     Boolean gribIndexNeverUse = ThreddsConfig.getBoolean("GribIndex.neverUse", false);
     String gribIndexPolicy = ThreddsConfig.get("GribIndex.policy", null);
@@ -210,16 +210,16 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);
     GribIndexCache.setDiskCache2(gribCache);
-    startupLog.info("TdsInit: GribIndex="+gribCache);
+    startupLog.info("TdsInit: GribIndex=" + gribCache);
 
     // LOOK is this used ??
     // 4.3.16
-    dir = ThreddsConfig.get("CdmRemote.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
+    dir = ThreddsConfig.get("CdmRemote.dir", new File(tdsContext.getContentDirectory().getPath(), "/cache/cdmr/").getPath());
     scourSecs = ThreddsConfig.getSeconds("CdmRemote.scour", 30 * 60);
     maxAgeSecs = ThreddsConfig.getSeconds("CdmRemote.maxAge", 60 * 60);
     cdmrCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     //CdmrFeatureController.setDiskCache(cdmrCache);
-    startupLog.info("TdsInit:  CdmRemote= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
+    startupLog.info("TdsInit:  CdmRemote= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs);
 
 
     // turn back on for 4.6 needed for FMRC
@@ -237,15 +237,15 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
       maxSizeBytes = ThreddsConfig.getBytes("FeatureCollection.maxSize", 0);
 
     int jvmPercent = ThreddsConfig.getInt("FeatureCollectionCache.jvmPercent", -1);
-    if( -1 == jvmPercent)
+    if (-1 == jvmPercent)
       jvmPercent = ThreddsConfig.getInt("FeatureCollection.jvmPercent", 2);
 
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
       thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());  // LOOK
-      startupLog.info("TdsInit: CollectionManagerAbstract.setMetadataStore= "+fcCache);
+      startupLog.info("TdsInit: CollectionManagerAbstract.setMetadataStore= " + fcCache);
     } catch (Exception e) {
-      startupLog.error("TdsInit: Failed to open CollectionManagerAbstract.setMetadataStore= "+fcCache, e);
+      startupLog.error("TdsInit: Failed to open CollectionManagerAbstract.setMetadataStore= " + fcCache, e);
     }
 
     /*
@@ -277,8 +277,8 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     max = ThreddsConfig.getInt("RandomAccessFile.maxFiles", 500);
     secs = ThreddsConfig.getSeconds("RandomAccessFile.scour", 11 * 60);
     if (max > 0) {
-      RandomAccessFile.setGlobalFileCache( new FileCache("RandomAccessFile", min, max, -1, secs));
-      startupLog.info("TdsInit: RandomAccessFile.initPartitionCache= ["+min+","+max+"] scour = "+secs);
+      RandomAccessFile.setGlobalFileCache(new FileCache("RandomAccessFile", min, max, -1, secs));
+      startupLog.info("TdsInit: RandomAccessFile.initPartitionCache= [" + min + "," + max + "] scour = " + secs);
     }
 
     // NetcdfFileCache : default is allow 100 - 150 open files, cleanup every 12 minutes
@@ -287,7 +287,7 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 12 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
-      startupLog.info("NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
+      startupLog.info("NetcdfDataset.initNetcdfFileCache= [" + min + "," + max + "] scour = " + secs);
     }
 
     // GribCollection partitions: default is allow 100 - 150 objects, cleanup every 13 minutes
@@ -296,7 +296,7 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     secs = ThreddsConfig.getSeconds("TimePartition.scour", 13 * 60);
     if (max > 0) {
       GribCdmIndex.initDefaultCollectionCache(min, max, secs);
-      startupLog.info("TdsInit: GribCdmIndex.initDefaultCollectionCache= ["+min+","+max+"] scour = "+secs);
+      startupLog.info("TdsInit: GribCdmIndex.initDefaultCollectionCache= [" + min + "," + max + "] scour = " + secs);
     }
 
     //RandomAccessFile.enableDefaultGlobalFileCache();

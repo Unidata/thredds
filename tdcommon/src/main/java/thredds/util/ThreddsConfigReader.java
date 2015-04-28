@@ -50,6 +50,7 @@ import java.util.StringTokenizer;
 
 /**
  * read threddsConfig.xml, make elements available
+ * used by Tds & Tdm
  *
  * @author caron
  * @since 5/15/13

@@ -35,14 +35,13 @@ package thredds.servlet;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
@@ -61,12 +60,12 @@ public class ServletUtil {
   static private String contextPath = null;
   static private String rootPath = null;
   static private String contentPath = null;
-  static private thredds.servlet.HtmlWriting htmlu;
+  //static private thredds.servlet.HtmlWriting htmlu;
 
-  // LOOK who sets this
-  static public void setHtmlWritingUtils(thredds.servlet.HtmlWriting _htmlu) {
+  // look who sets this
+  /* static public void setHtmlWritingUtils(thredds.servlet.HtmlWriting _htmlu) {
     htmlu = _htmlu;
-  }
+  } */
 
   static public void setContextPath(String newContextPath) {
     contextPath = newContextPath;
@@ -117,10 +116,10 @@ public class ServletUtil {
    * is first installed.
    *
    * @return the default/initial content path for the given servlet.
-   */
+   *
   public static String getInitialContentPath() {
     return getRootPath() + "/WEB-INF/altContent/startup/";
-  }
+  } */
 
   /**
    * Return the file path dealing with leading and trailing path
@@ -144,7 +143,7 @@ public class ServletUtil {
     return dirPath.endsWith("/") ? dirPath + filePath : dirPath + "/" + filePath;
   }
 
-  /**
+  /*
    * Handle a request for a raw/static file (i.e., not a catalog or dataset request).
    * <p/>
    * Look in the content (user) directory then the root (distribution) directory
@@ -171,7 +170,7 @@ public class ServletUtil {
    * @param req     the HttpServletRequest
    * @param res     the HttpServletResponse
    * @throws IOException if can't complete request due to IO problems.
-   */
+   *
   public static void handleRequestForRawFile(String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
           throws IOException {
     // Don't allow ".." directories in path.
@@ -233,7 +232,7 @@ public class ServletUtil {
     }
 
     ServletUtil.returnFile(servlet, req, res, regFile, null);
-  }
+  } */
 
   /**
    * Handle an explicit request for a content directory file (path must start
@@ -252,11 +251,11 @@ public class ServletUtil {
    * @param req     the HttpServletRequest
    * @param res     the HttpServletResponse
    * @throws IOException if can't complete request due to IO problems.
-   */
+   *
   public static void handleRequestForContentFile(String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
           throws IOException {
     handleRequestForContentOrRootFile("/content/", path, servlet, req, res);
-  }
+  } */
 
   /**
    * Handle an explicit request for a root directory file (path must start
@@ -275,16 +274,16 @@ public class ServletUtil {
    * @param req     the HttpServletRequest
    * @param res     the HttpServletResponse
    * @throws IOException if can't complete request due to IO problems.
-   */
+   *
   public static void handleRequestForRootFile(String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
           throws IOException {
     handleRequestForContentOrRootFile("/root/", path, servlet, req, res);
-  }
+  }  */
 
   /**
    * Convenience routine used by handleRequestForContentFile()
    * and handleRequestForRootFile().
-   */
+   *
   private static void handleRequestForContentOrRootFile(String pathPrefix, String path, HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
           throws IOException {
     if (!pathPrefix.equals("/content/")
@@ -328,9 +327,9 @@ public class ServletUtil {
       // Requested file not found.
       res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
     }
-  }
+  } */
 
-  /**
+  /*
    * Send a permanent redirect (HTTP status 301 "Moved Permanently") response
    * with the given target path.
    * <p/>
@@ -341,7 +340,7 @@ public class ServletUtil {
    * @param req        the HttpServletRequest
    * @param res        the HttpServletResponse
    * @throws IOException if can't write the response.
-   */
+   *
   public static void sendPermanentRedirect(String targetPath, HttpServletRequest req, HttpServletResponse res)
           throws IOException {
 
@@ -369,7 +368,7 @@ public class ServletUtil {
             .append("</p>")
             .toString();
     String htmlResp = new StringBuilder()
-            .append(htmlu.getHtmlDoctypeAndOpenTag())
+            .append(ConfigCatalogHtmlWriter.getHtmlDoctypeAndOpenTag())
             .append("<head><title>")
             .append(title)
             .append("</title></head><body>")
@@ -385,7 +384,7 @@ public class ServletUtil {
     PrintWriter out = res.getWriter();
     out.print(htmlResp);
     out.flush();
-  }
+  } */
 
   /**
    * Write a file to the response stream.
@@ -644,7 +643,7 @@ public class ServletUtil {
     RequestForwardUtils.forwardRequestRelativeToCurrentContext("/catalog.html?" + reqs, req, res);
   }
 
-
+  /*
   public static boolean saveFile(HttpServlet servlet, String contentPath, String path, HttpServletRequest req,
                                  HttpServletResponse res) {
 
@@ -675,9 +674,9 @@ public class ServletUtil {
       return false;
     }
 
-  }
+  } */
 
-  private static int getBackupVersion(String dirName, String fileName) {
+  /* private static int getBackupVersion(String dirName, String fileName) {
     int maxN = 0;
     File dir = new File(dirName);
     if (!dir.exists())
@@ -710,15 +709,15 @@ public class ServletUtil {
       return contentFile.createNewFile();
     }
     return false;
-  }
+  } */
 
-  /**
+  /*
    * ************************************************************************
    * Sends an error to the client.
    *
    * @param t   The exception that caused the problem.
    * @param res The <code>HttpServletResponse</code> for the client.
-   */
+   *
   static public void handleException(Throwable t, HttpServletResponse res) {
     try {
       String message = t.getMessage();
@@ -732,7 +731,7 @@ public class ServletUtil {
       log.error("handleException() had problem reporting Exception", e);
       t.printStackTrace();
     }
-  }
+  }  */
 
   static public void showServerInfo(PrintStream out) {
     out.println("Server Info");
@@ -763,7 +762,7 @@ public class ServletUtil {
     }
   }
 
-  static public void showServletInfo(HttpServlet servlet, PrintStream out) {
+  /* static public void showServletInfo(HttpServlet servlet, PrintStream out) {
     out.println("Servlet Info");
     out.println(" getServletName(): " + servlet.getServletName());
     out.println(" getRootPath(): " + getRootPath());
@@ -810,12 +809,12 @@ public class ServletUtil {
    *
    * @param req the HttpServletRequest
    * @return parsed request
-   */
+   *
   public static String getRequestParsed(HttpServletRequest req) {
     return req.getRequestURI() + " = " + req.getContextPath() + "(context), " +
             req.getServletPath() + "(servletPath), " +
             req.getPathInfo() + "(pathInfo), " + req.getQueryString() + "(query)";
-  }
+  } */
 
   /**
    * This is the server part, eg http://motherlode:8080
@@ -904,7 +903,7 @@ public class ServletUtil {
    * @param req       the HttpServletRequest
    * @param paramName the name of the parameter to find.
    * @return the values of the given parameter for the given request.
-   */
+   *
   public static String[] getParameterValuesIgnoreCase(HttpServletRequest req, String paramName) {
     Enumeration e = req.getParameterNames();
     while (e.hasMoreElements()) {
@@ -920,12 +919,11 @@ public class ServletUtil {
     filename = filename.replace('\\', '/');
     filename = StringUtil2.replace(filename, ' ', "+");
     return "file:" + filename;
-  }
+  } */
 
   /**
    * Show details about the request
    *
-   * @param servlet used to get teh servlet context, may be null
    * @param req     the request
    * @return string showing the details of the request.
    */
@@ -952,7 +950,6 @@ public class ServletUtil {
     sbuff.append("\n");
 
     sbuff.append(" req.getPathTranslated:").append(req.getPathTranslated()).append("\n");
-    String path = req.getPathTranslated();
     sbuff.append("\n");
     sbuff.append(" req.getScheme:").append(req.getScheme()).append("\n");
     sbuff.append(" req.getProtocol:").append(req.getProtocol()).append("\n");
@@ -1034,7 +1031,7 @@ public class ServletUtil {
       count = count + 1;
     session.setAttribute("snoop.count", count);
 
-    out.println(htmlu.getHtmlDoctypeAndOpenTag());
+    out.println(ConfigCatalogHtmlWriter.getHtmlDoctypeAndOpenTag());
     out.println("<HEAD><TITLE>SessionSnoop</TITLE></HEAD>");
     out.println("<BODY><H1>Session Snoop</H1>");
 
@@ -1079,7 +1076,7 @@ public class ServletUtil {
   }
 
 
-  static public void showSession(HttpServletRequest req, PrintStream out) {
+  /* static public void showSession(HttpServletRequest req, PrintStream out) {
 
     // res.setContentType("text/html");
 
@@ -1102,7 +1099,7 @@ public class ServletUtil {
       out.println(" " + name + ": " + session.getAttribute(name) + "<BR>");
     }
 
-  }
+  } */
 
   static public String showSecurity(HttpServletRequest req, String role) {
     StringBuilder sbuff = new StringBuilder();
@@ -1137,7 +1134,7 @@ public class ServletUtil {
         }
     } */
 
-  static private String getServerInfoName(String serverInfo) {
+  /* static private String getServerInfoName(String serverInfo) {
     int slash = serverInfo.indexOf('/');
     if (slash == -1) return serverInfo;
     else return serverInfo.substring(0, slash);
@@ -1150,7 +1147,7 @@ public class ServletUtil {
     int space = serverInfo.indexOf(' ', slash);
     if (space == -1) space = serverInfo.length();
     return serverInfo.substring(slash + 1, space);
-  }
+  } */
 
   static public void showThreads(PrintStream pw) {
     Thread current = Thread.currentThread();

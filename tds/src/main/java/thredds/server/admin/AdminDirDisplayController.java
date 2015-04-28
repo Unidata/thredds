@@ -44,7 +44,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
-import thredds.util.RequestForwardUtils;
 import thredds.util.TdsPathUtils;
 
 /**
@@ -65,7 +64,7 @@ public class AdminDirDisplayController {
   private TdsContext tdsContext;
   
   @Autowired
-  thredds.servlet.HtmlWriting htmlu;
+  HtmlWriting htmlu;
   
   @RequestMapping("**")
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {

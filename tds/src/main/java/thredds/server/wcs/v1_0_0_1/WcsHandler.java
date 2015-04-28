@@ -35,7 +35,7 @@ package thredds.server.wcs.v1_0_0_1;
 import thredds.servlet.ServletUtil;
 import thredds.server.wcs.VersionHandler;
 import thredds.util.ContentType;
-import thredds.util.Version;
+import thredds.server.wcs.Version;
 import thredds.wcs.Request;
 
 import javax.servlet.http.HttpServlet;

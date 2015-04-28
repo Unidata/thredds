@@ -38,7 +38,7 @@ package thredds.server.config;
  * the various servlets. Supports earlier versions (some deprecated) of threddsConfig.xml config
  * settings.
  *
- * LOOK not used ??
+ * LOOK not actually used ?(see TdsContext) ?
  *
  * @author edavis
  * @since 4.1

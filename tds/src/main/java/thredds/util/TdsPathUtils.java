@@ -37,9 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Utilities for extracting path information from request.
  * Handles servlet and spring controller cases
- *
- * @author edavis
- * @since 4.0
  */
 public class TdsPathUtils {
 

@@ -61,7 +61,7 @@ public class AdminDebugController {
   DebugCommands debugCommands;
 
   @Autowired
-  thredds.servlet.HtmlWriting htmlu;
+  HtmlWriting htmlu;
 
   @RequestMapping( method = RequestMethod.GET)
   protected void showDebugPage(HttpServletRequest request, HttpServletResponse response) throws IOException {

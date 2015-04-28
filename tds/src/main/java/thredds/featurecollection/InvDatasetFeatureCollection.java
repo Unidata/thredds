@@ -80,13 +80,13 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   static protected final String Download_Services_Name = StandardServices.fileServer.name();
 
   static private String catalogServletName = "/catalog";            // LOOK
-  static protected String context = "/thredds";                     // LOOK
+  static protected String contextName = "/thredds";                     // LOOK
 
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
   static private org.slf4j.Logger initLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class.getName() + ".catalogInit");
 
-  static public void setContext(String c) {
-    context = c;
+  static public void setContextName(String c) {
+    contextName = c;
   }
 
   static public void setCatalogServletName(String catServletName) {
@@ -94,7 +94,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   }
 
   static protected String buildCatalogServiceHref(String path) {
-    return context + (catalogServletName == null ? "" : catalogServletName) + "/" + path + "/catalog.xml";
+    return contextName + (catalogServletName == null ? "" : catalogServletName) + "/" + path + "/catalog.xml";
   }
 
   static public void setLoggerFactory(LoggerFactory fac) {
@@ -513,7 +513,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   }
 
   protected String makeMetadataLink(String datasetName, String metadata) {
-    return context + "/metadata/" + datasetName + metadata;
+    return contextName + "/metadata/" + datasetName + metadata;
   }
 
   // called by DataRootHandler.makeDynamicCatalog()

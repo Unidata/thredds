@@ -37,7 +37,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
-import thredds.util.Version;
 import thredds.servlet.*;
 import thredds.server.wcs.v1_0_0_1.WcsHandler;
 
