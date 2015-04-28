@@ -32,6 +32,8 @@
  */
 package thredds.util.filesource;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -141,5 +143,12 @@ public class BasicDescendantFileSource implements DescendantFileSource {
     if (filePath == null)
       return null;
     return getRelativePath(new File(filePath));
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("rootDirectoryPath", rootDirectoryPath)
+            .toString();
   }
 }

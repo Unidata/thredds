@@ -71,7 +71,7 @@ public class ServerInfoController {
     model.put("serverInfo", this.tdsContext.getServerInfo());
     model.put("webappName", this.tdsContext.getWebappDisplayName());
     model.put("webappVersion", this.tdsContext.getWebappVersion());
-    model.put("webappVersionBuildDate", this.tdsContext.getTdsVersionBuilddate());
+    model.put("webappVersionBuildDate", this.tdsContext.getTdsVersionBuildDate());
     return model;
   }
 }

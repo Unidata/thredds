@@ -109,7 +109,7 @@ public class ConfigCatalogManager  {
 
   private void initCatalog(String path, Set<String> pathHash, Set<String> idHash) throws IOException {
     path = StringUtils.cleanPath(path);
-    File f = this.tdsContext.getConfigFileSource().getFile(path);
+    File f = this.tdsContext.getCatalogRootDirSource().getFile(path);
     if (f == null) {
       logCatalogInit.error(ERROR + "initCatalog(): Catalog [" + path + "] does not exist in config directory.");
       return;

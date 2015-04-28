@@ -86,7 +86,7 @@ public class ConfigCatalogCache implements InitializingBean {
 
   @Override
   public void afterPropertiesSet() {
-    this.rootPath = tdsContext.getContentRootPath() +"thredds/";
+    this.rootPath = tdsContext.getContentRootPathProperty() +"thredds/";
     this.cache = CacheBuilder.newBuilder()
             .maximumSize(1000)
             .recordStats()

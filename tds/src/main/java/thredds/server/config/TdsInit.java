@@ -35,10 +35,8 @@ package thredds.server.config;
 
 import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.tools.CatalogXmlWriter;
@@ -103,7 +101,7 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
   }
 
   public void init() {
-    startupLog.info("TdsInit getContentRootPathAbsolute= " + tdsContext.getContentRootPath());
+    startupLog.info("TdsInit getContentRootPathAbsolute= " + tdsContext.getContentRootPathProperty());
 
     // prefer cdmRemote when available
     DataFactory.setPreferCdm(true);

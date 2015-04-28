@@ -86,7 +86,7 @@ public class AdminDirDisplayController {
       file = new File(tdsContext.getContentDirectory(), path.substring(8));
       // If not found, check in content/thredds and altContent (but not content/thredds/public).
       if ( ! file.exists() )
-        file = tdsContext.getConfigFileSource().getFile( path.substring(8));
+        file = tdsContext.getCatalogRootDirSource().getFile( path.substring(8));
 
     } else if (path.startsWith("logs/")) {
       file = new File(tdsContext.getTomcatLogDirectory(), path.substring(5));

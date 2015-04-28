@@ -263,7 +263,7 @@ class TdsConfigMapper {
 
   private void setupHtmlConfig(TdsContext tdsContext) {
     this.htmlConfig.init(tdsContext.getWebappDisplayName(), tdsContext.getWebappVersion(),
-            tdsContext.getTdsVersionBuilddate(), tdsContext.getContextPath());
+            tdsContext.getTdsVersionBuildDate(), tdsContext.getContextPath());
 
     this.htmlConfig.setInstallName(this.tdsServerInfo.getName());
     this.htmlConfig.setInstallLogoUrl(this.tdsServerInfo.getLogoUrl());

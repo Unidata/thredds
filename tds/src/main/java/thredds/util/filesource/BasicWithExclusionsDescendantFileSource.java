@@ -32,6 +32,7 @@
  */
 package thredds.util.filesource;
 
+import com.google.common.base.MoreObjects;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -148,5 +149,13 @@ public class BasicWithExclusionsDescendantFileSource implements DescendantFileSo
 
   private File getCleanAbsoluteFile(File file) {
     return new File(StringUtils.cleanPath(file.getAbsolutePath()).trim());
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("root", root)
+            .add("exclusions", exclusions)
+            .toString();
   }
 }

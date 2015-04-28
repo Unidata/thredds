@@ -32,6 +32,9 @@
  */
 package thredds.util.filesource;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 import java.io.File;
 import java.util.List;
 
@@ -77,4 +80,10 @@ public class ChainedFileSource implements FileSource {
     return null;
   }
 
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+            .add("chain", chain)
+            .toString();
+  }
 }

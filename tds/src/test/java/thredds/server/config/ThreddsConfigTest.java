@@ -26,7 +26,7 @@ public class ThreddsConfigTest {
 		
 		//It uses maven path for resources and default threddsConfig
 		//threddsConfigPath ="C:/dev/github/thredds3/tds/src/test/content/thredds/threddsConfig.xml";
-		threddsConfigPath= tdsContext.getContentRootPath() +  "/thredds/threddsConfig.xml";
+		threddsConfigPath= tdsContext.getContentRootPathProperty() +  "/thredds/threddsConfig.xml";
 		ThreddsConfig.init(threddsConfigPath);
 	}
 	

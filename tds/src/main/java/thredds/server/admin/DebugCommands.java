@@ -311,7 +311,6 @@ public class DebugCommands {
     act = new Action("showTdsContext", "Show TDS Context") {
       public void doAction(Event e) {
         e.pw.println(tdsContext.toString());
-        e.pw.println(tdsContext.toString2());
       }
     };
     debugHandler.addAction(act);
@@ -330,14 +329,12 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-
     act = new Action("showSpringControllers", "Show Spring Controllers info") {
       public void doAction(Event e) {
         e.pw.println(ServletUtil.showSecurity(e.req, "admin"));
       }
     };
     debugHandler.addAction(act);
-
   }  
 
 }

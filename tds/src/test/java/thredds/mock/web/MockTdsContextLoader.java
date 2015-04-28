@@ -92,7 +92,7 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 	 */
 	private void checkContentRootPath(XmlWebApplicationContext webApplicationContext, TdsContext tdsContext){
 		if(tdsContentRootPath != null )
-			tdsContext.setContentRootPath(tdsContentRootPath.path());
+			tdsContext.setContentRootPathProperty(tdsContentRootPath.path());
 	}
 	
 	/**
