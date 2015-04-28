@@ -32,6 +32,38 @@ dependencies {
 
 //////////////////////////////////////////////////////////
 
+apply plugin: 'shadow'
+
+jar {
+    manifest {
+        // We need to add security attributes for WebStart:
+        // https://docs.oracle.com/javase/tutorial/deployment/jar/secman.html
+        // This may be the only manifest that needs such attributes.
+        // Also need Class-Path and INDEX.LIST.
+        attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
+
+                // These are security-related attributes, necessary for Web Start:
+                // https://docs.oracle.com/javase/8/docs/technotes/guides/deploy/manifest.html#JSDPG896
+                // netcdfUI.jar is the first jar in the JNLP, so I think it's the only one that needs these. Must test.
+                'Application-Name': project.title,
+                'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
+                'Permissions': 'all-permissions',
+                'Trusted-Only': 'true',
+
+                'Class-Path': configurations.runtime.collect { it.name }.join(' ')
+    }
+
+    // TODO: Should this be its own task, maybe "indexJar"?
+    // Alternately, should I add configurations.runtime as an @Input to jar?
+    doLast {
+        ant.jar(update: true, index: true, indexMetaInf: true, destfile: archivePath) {
+            indexjars {
+                path(path: configurations.runtime.collect { it.path }.join(':'))
+            }
+        }
+    }
+}
+
 ext {
     toolsUIjar = 'toolsUI-' + version + '.jar'
     webstartWorkingDir = "build/signed"
@@ -41,8 +73,6 @@ ext {
 
     jarsContainingDuplicateEntries = ['xmlbeans-2.6.0.jar']
 }
-
-apply plugin: 'shadow'
 
 import com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer
 import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
@@ -72,26 +102,6 @@ shadow {
         // ToolsUI won't be run in a web container.
         // Dragged in by opendap.
         exclude 'javax.servlet:javax.servlet-api:*'
-    }
-
-    jar {
-        manifest {
-            // We need to add security attributes for WebStart:
-            // https://docs.oracle.com/javase/tutorial/deployment/jar/secman.html
-            // This may be the only manifest that needs such attributes.
-            // Also need Class-Path and INDEX.LIST.
-            attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
-
-            // These are security-related attributes, necessary for Web Start:
-            // https://docs.oracle.com/javase/8/docs/technotes/guides/deploy/manifest.html#JSDPG896
-            // netcdfUI.jar is the first jar in the JNLP, so I think it's the only one that needs these. Must test.
-            'Application-Name': project.title,
-            'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
-            'Permissions': 'all-permissions',
-            'Trusted-Only': 'true',
-
-            'Class-Path': configurations.runtime.collect { it.name }.join(' ')
-        }
     }
 
     transformer(ManifestResourceTransformer) {
