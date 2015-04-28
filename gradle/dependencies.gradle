@@ -224,4 +224,25 @@ subprojects {
         // It doesn't matter though; we always want to see the logging messages.
         exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
+
+    // In a multi-project build, when subproject Foo dependes on subproject Bar (e.g. "compile project(':Bar')"),
+    // Foo is receiving the dependencies in Bar's "default" configuration (see http://goo.gl/6qZRwU). When the "war"
+    // plugin is applied, it adds the "providedCompile" and "providedRuntime" configurations to a project, which
+    // "default" then extends. As a result, Foo can end up getting Bar's provided dependencies. We don't want that.
+    //
+    // A concrete example is ui, which depends on opendap. opendap has a "providedCompile" dependency on
+    // "javax.servlet-api". opendap's "default" config extends "providedCompile", which means it includes the
+    // "javax.servlet-api" as well. Finally, when ui does "compile project(':opendap')", everything in opendap's
+    // "default" config--including "javax.servlet-api"--gets added to ui's "compile" config. Not what we want.
+    //
+    // To fix this, we're going to remove each subproject's provided dependencies from its "default" configuration.
+    // The result should look something like this diagram: http://goo.gl/MyHJGO. Also, see the accompanying blog
+    // post: http://www.sinking.in/blog/provided-scope-in-gradle/
+    afterEvaluate {
+        if (pluginManager.hasPlugin("war")) {  // Project will have "providedCompile" and "providedRuntime" configs.
+            (configurations.providedCompile.dependencies + configurations.providedRuntime.dependencies).each {
+                configurations.default.exclude module: it.name
+            }
+        }
+    }
 }

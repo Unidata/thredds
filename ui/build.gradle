@@ -98,12 +98,6 @@ shadow {
     exclude 'META-INF/*.txt'
     exclude 'META-INF/*.xml'
 
-    artifactSet {
-        // ToolsUI won't be run in a web container.
-        // Dragged in by opendap.
-        exclude 'javax.servlet:javax.servlet-api:*'
-    }
-
     transformer(ManifestResourceTransformer) {
         mainClass = 'ucar.nc2.ui.ToolsUI'
     }
