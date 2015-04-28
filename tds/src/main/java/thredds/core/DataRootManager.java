@@ -111,7 +111,7 @@ public class DataRootManager implements InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    FileSource fileSource = tdsContext.getPublicDocFileSource();
+    FileSource fileSource = tdsContext.getPublicContentDirSource(); // content -> {tomcat}/content/thredds/public
     if (fileSource != null) {
       File file = fileSource.getFile("");
       if (file != null)

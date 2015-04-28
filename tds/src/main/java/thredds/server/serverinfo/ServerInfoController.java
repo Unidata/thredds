@@ -69,9 +69,9 @@ public class ServerInfoController {
   private Map<String, Object> getServerInfoModel() {
     Map<String, Object> model = new HashMap<>();
     model.put("serverInfo", this.tdsContext.getServerInfo());
-    model.put("webappName", this.tdsContext.getWebappName());
+    model.put("webappName", this.tdsContext.getWebappDisplayName());
     model.put("webappVersion", this.tdsContext.getWebappVersion());
-    model.put("webappVersionBuildDate", this.tdsContext.getWebappVersionBuildDate());
+    model.put("webappVersionBuildDate", this.tdsContext.getTdsVersionBuilddate());
     return model;
   }
 }

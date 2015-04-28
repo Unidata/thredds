@@ -48,7 +48,6 @@ import ucar.nc2.util.IO;
 import thredds.util.RequestForwardUtils;
 import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * LOOK try to get rid of all this

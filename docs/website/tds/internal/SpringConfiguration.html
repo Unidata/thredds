@@ -68,15 +68,17 @@
       <li>Beans in spring-servlet.xml can reference beans in applicationContext.xml, but not vice versa.</li>
       <li>All Spring MVC controllers must go in the spring-servlet.xml context.</li>
       <li>In most simple cases, the applicationContext.xml context is unnecessary. It is generally used to contain beans that are shared between all servlets in a webapp. If you only have one servlet, then there's not really much point, unless you have a specific use for it. </li>
-      <li>We use <strong>applicationContext.xml</strong> to define generral TDS beans, and <strong>spring-servlet.xml</strong> to devine mvc (controllers, etc).</li>
+      <li>We use <strong>applicationContext.xml</strong> to define general TDS beans, and <strong>spring-servlet.xml</strong> to define MVC (controllers, etc).</li>
     </ul>
   </li>
   <li>Dont do any heavy processing in the bean initialization phase, just get the beans wired in</li>
   <li>So bean constructors must not depend on anything else, or assume the order of wiring.</li>
-  <li>Do serious initialization from TdsInit, by listening for <em>ContextRefreshedEvent</em>
-    <ul>
-      <li>http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc</li>
-    </ul>
+  <li>see http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc</li>
+  <li>Do  initialization from: 
+    <ol>
+      <li><strong>TdsContext.afterPropertiesSet(). </strong>This has the ServletContext already set. </li>
+      <li><strong>TdsInit</strong>, by listening for <em>ContextRefreshedEvent. </em>Can assume all beans are now wired.</li>
+    </ol>
   </li>
 </ul>
 <h4>Sequence</h4>

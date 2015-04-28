@@ -79,8 +79,8 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   static protected final String Default_Services_Name = "DefaultServices";
   static protected final String Download_Services_Name = StandardServices.fileServer.name();
 
-  static private String catalogServletName = "/catalog";            // LOOK
-  static protected String contextName = "/thredds";                     // LOOK
+  static final private String catalogServletName = "/catalog";      // LOOK is this really needed?
+  static protected String contextName = "/thredds";                 // LOOK is this really needed?
 
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
   static private org.slf4j.Logger initLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class.getName() + ".catalogInit");
@@ -89,12 +89,8 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     contextName = c;
   }
 
-  static public void setCatalogServletName(String catServletName) {
-    catalogServletName = catServletName;
-  }
-
   static protected String buildCatalogServiceHref(String path) {
-    return contextName + (catalogServletName == null ? "" : catalogServletName) + "/" + path + "/catalog.xml";
+    return contextName + catalogServletName + "/" + path + "/catalog.xml";
   }
 
   static public void setLoggerFactory(LoggerFactory fac) {

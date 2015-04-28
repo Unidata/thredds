@@ -33,8 +33,10 @@
 
 package thredds.server.admin;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -59,7 +61,8 @@ import ucar.unidata.io.RandomAccessFile;
 @Component
 public class DebugCommands {
 
-  //////////////////////////////////////////////////////////////////////////////////////////
+  @Autowired
+  TdsContext tdsContext;
 
   private List<Category> dhList = new ArrayList<>();
 
@@ -305,12 +308,13 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    /* act = new DebugHandler.Action("showServletInfo", "Show Servlet info") {
-      public void doAction(DebugHandler.Event e) {
-        ServletUtil.showServletInfo(ThreddsDefaultServlet.this, e.pw);
+    act = new Action("showTdsContext", "Show TDS Context") {
+      public void doAction(Event e) {
+        e.pw.println(tdsContext.toString());
+        e.pw.println(tdsContext.toString2());
       }
     };
-    debugHandler.addAction(act);  */
+    debugHandler.addAction(act);
 
     act = new Action("showSession", "Show HTTP Session info") {
       public void doAction(Event e) {

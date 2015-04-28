@@ -81,7 +81,7 @@ public class RootController implements LastModified {
   @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png, *.jsp"}, method = RequestMethod.GET)
   public ModelAndView serveFromPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
     String path = TdsPathUtils.extractPath(req, null);
-    File file = tdsContext.getPublicDocFileSource().getFile(path);
+    File file = tdsContext.getPublicContentDirSource().getFile(path);
     if (file == null) {
       RequestForwardUtils.forwardRequest(path, tdsContext.getDefaultRequestDispatcher(), req, res);   // tomcat default servlet, not spring
       return null;
@@ -91,7 +91,7 @@ public class RootController implements LastModified {
 
   public long getLastModified(HttpServletRequest req) {
     String path = TdsPathUtils.extractPath(req, null);
-    File file = tdsContext.getPublicDocFileSource().getFile(path);
+    File file = tdsContext.getPublicContentDirSource().getFile(path);
     if (file == null)
       return -1;
     long lastModTime = file.lastModified();

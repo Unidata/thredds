@@ -181,7 +181,7 @@ public class HtmlWriting {
             .append("       alt='").append(this.htmlConfig.getHostInstLogoAlt()).append("'\n")
             .append("       align='left' valign='top'\n")
             .append("       hspace='10' vspace='2'>\n")
-            .append("  <h3><strong>").append(this.tdsContext.getWebappName()).append("</strong></h3>\n")
+            .append("  <h3><strong>").append(this.tdsContext.getWebappDisplayName()).append("</strong></h3>\n")
             .append("</td></tr></table>\n")
             .toString();
   }
@@ -269,7 +269,7 @@ public class HtmlWriting {
               .append("'> ");
     stringBuilder
             .append("<a href='").append(webappUrl).append("'>")
-            .append(this.tdsContext.getWebappName())
+            .append(this.tdsContext.getWebappDisplayName())
             .append("</a>");
   }
 
@@ -335,7 +335,7 @@ public class HtmlWriting {
       sb.append("<br>\n");
     }
 
-    sb.append( this.tdsContext.getWebappName() )
+    sb.append( this.tdsContext.getWebappDisplayName() )
             .append( " [Version " ).append( this.tdsContext.getVersionInfo() );
     sb.append( "] <a href='" )
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
@@ -347,7 +347,7 @@ public class HtmlWriting {
   private void appendWebappFooter( StringBuilder sb )
   {
     sb.append( "<h3>" )
-            .append( this.tdsContext.getWebappName() )
+            .append( this.tdsContext.getWebappDisplayName() )
             .append( " [Version " ).append( this.tdsContext.getVersionInfo() );
     sb.append( "] <a href='" )
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
