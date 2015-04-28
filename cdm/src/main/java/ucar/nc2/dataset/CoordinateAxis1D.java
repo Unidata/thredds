@@ -112,8 +112,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
     this.isInterval = org.isInterval();
     this.isRegular = org.isRegular();
 
-    this.coords = org.getCoordValues();
-    this.edge = org.getCoordEdges();
+    if(isNumeric()){
+    	this.coords = org.getCoordValues();
+    	this.edge = org.getCoordEdges();
+    }
+    
     this.names = org.names;
 
     if (isInterval) {
