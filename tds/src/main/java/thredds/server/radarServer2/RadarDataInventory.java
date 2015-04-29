@@ -105,7 +105,7 @@ public class RadarDataInventory {
         nearestWindow = pd;
     }
 
-    public class DirectoryStructure {
+    public static class DirectoryStructure {
         private class DirEntry {
             public DirType type;
             public String fmt;
@@ -140,9 +140,9 @@ public class RadarDataInventory {
                 stack.push(new Item(matcher, inString));
                 String newSegment;
                 if (inString)
-                    newSegment = structure.sep;
+                    newSegment = sep;
                 else
-                    newSegment = "'" + structure.sep;
+                    newSegment = "'" + sep;
 
                 if (type == DirType.Date) {
                     newSegment += "'";
@@ -266,11 +266,18 @@ public class RadarDataInventory {
         @Override
         public FileVisitResult visitFile(Path file,
                                          BasicFileAttributes attrs) {
-            try {
-                RadialDatasetSweep rds = (RadialDatasetSweep)
-                        FeatureDatasetFactoryManager.open(FeatureType.RADIAL,
-                                file.toString(), null, new Formatter());
+            try (RadialDatasetSweep rds = (RadialDatasetSweep)
+                    FeatureDatasetFactoryManager.open(FeatureType.RADIAL,
+                            file.toString(), null, new Formatter())){
+                if (rds == null) {
+                    return FileVisitResult.CONTINUE;
+                }
+
                 EarthLocation loc = rds.getCommonOrigin();
+                if (loc == null) {
+                    return FileVisitResult.CONTINUE;
+                }
+
                 StationList.Station added = stations.addStation(
                         rds.getRadarID(), loc.getLatLon());
                 added.setElevation(loc.getAltitude());
@@ -376,7 +383,7 @@ public class RadarDataInventory {
                 Date newDate = fmt.parse(fmt.format(d.toDate()));
                 return CalendarDate.of(newDate);
             } catch (ParseException e) {
-                return null;
+                return d; // Better than just returning null
             }
         }
 

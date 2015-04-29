@@ -33,7 +33,6 @@ public class RadarServerConfig {
                 conf.name = dataset.getAttributeValue("name");
                 conf.urlPath = dataset.getAttributeValue("path");
                 conf.diskPath = dataset.getAttributeValue("location");
-                conf.dataType = meta.getChild("dataType", catNS).getValue();
                 conf.dataFormat = meta.getChild("dataFormat", catNS).getValue();
                 conf.stationFile = meta.getChild("stationFile", catNS).getAttributeValue("path");
                 conf.doc = meta.getChild("documentation", catNS).getValue();
@@ -57,7 +56,7 @@ public class RadarServerConfig {
     }
 
     static public class RadarConfigEntry {
-        public String name, urlPath, diskPath, dataType, dataFormat, stationFile, doc;
+        public String name, urlPath, diskPath, dataFormat, stationFile, doc;
         public List<VarInfo> vars;
 
         static public class VarInfo {
