@@ -39,7 +39,6 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.core.AllowedServices;
-import thredds.core.StandardServices;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
 import thredds.server.catalog.FeatureCollectionRef;
@@ -77,7 +76,7 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   static protected final String FILES = "files";
   static protected final String Virtual_Services_Name = "VirtualServices"; // exclude HTTPServer
   static protected final String Default_Services_Name = "DefaultServices";
-  static protected final String Download_Services_Name = StandardServices.fileServer.name();
+  static protected final String Download_Services_Name = ServiceType.HTTPServer.toString();
 
   static final private String catalogServletName = "/catalog";      // LOOK is this really needed?
   static protected String contextName = "/thredds";                 // LOOK is this really needed?
@@ -264,19 +263,11 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   // localState is synched, may be directly changed
   abstract protected void updateCollection(State localState, CollectionUpdateType force);
 
-  // for gridded data
+  // for gridded data (GRID, FMRC), override in point
   protected Service makeDefaultServices() {
     List<Service> nested = new ArrayList<>();
-    allowedServices.addIfAllowed(ServiceType.OPENDAP, nested);
-    allowedServices.addIfAllowed(ServiceType.HTTPServer, nested);  // ??
-    allowedServices.addIfAllowed(ServiceType.CdmRemote, nested);
-    allowedServices.addIfAllowed(ServiceType.NetcdfSubset, nested);
-    allowedServices.addIfAllowed(ServiceType.WMS, nested);
-    allowedServices.addIfAllowed(ServiceType.WCS, nested);
-    allowedServices.addIfAllowed(ServiceType.NCML, nested);
-    allowedServices.addIfAllowed(ServiceType.ISO, nested);
-    allowedServices.addIfAllowed(ServiceType.UDDC, nested);
-
+    for (Service s : allowedServices.getGridServices())
+      nested.add(s);
     return new Service(Default_Services_Name, "", ServiceType.Compound.toString(), null, null, nested, null);
   }
 
@@ -396,9 +387,8 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   protected Service makeDownloadService() {
-     return StandardServices.fileServer.getService();
+     return allowedServices.getStandardService(ServiceType.HTTPServer);
    }
-
 
   protected String makeFullName(DatasetNode ds) {
     if (ds.getParent() == null) return ds.getName();

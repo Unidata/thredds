@@ -102,8 +102,6 @@
   <bean id="pathMatcher" class="thredds.core.DataRootPathMatcher" />
   <bean id="ConfigCatalogManager" class="thredds.core.ConfigCatalogManager" />
   <bean id="ConfigCatalogCache" class="thredds.core.ConfigCatalogCache" />
-  <!-- bean id="HtmlWriting" class="thredds.servlet.HtmlWriting" / -->
-
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <!-- bean id="RestrictedDataset" class="thredds.servlet.restrict.RestrictedAccessController" / -->
@@ -112,5 +110,7 @@
     <property name="sslPort" value="8443" />
   </bean>
 
+  <!-- replace threddsConfig.xml (experimental) -->
+  <import resource="tdsGlobalConfig.xml"/>
 
 </beans>

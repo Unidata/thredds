@@ -6,7 +6,7 @@
 </head>
 <body>
 <h2>Spring Configuration - 5.0</h2>
-<p><em>April 22, 2015</em></p>
+<p><em>April 28, 2015</em></p>
 <h2>Notes</h2>
 <ol>
   <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
@@ -18,7 +18,7 @@
 <ul>
   <li>    TdsContext
     <ul>
-      <li>calls        ThreddsConfig.init(), creates TdsConfigMapper      </li>
+      <li>calls        ThreddsConfig.init(), creates TdsConfigMapper to populate config objects  </li>
     </ul>
   </li>
   <li>DataRootManager
@@ -109,8 +109,6 @@
   <li>TdsConfigMapper seems to be ethan's replacement ?? seems not used</li>
   <li>none of it using autowire</li>
 </ul>
-<p><br>
-</p>
 <h2>Spring MVC</h2>
 <p>http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html</p>
 <p>Lots of ways, we want to standardize on one or a few idioms.</p>

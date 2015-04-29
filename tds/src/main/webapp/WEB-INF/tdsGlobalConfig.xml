@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd ">
+
+  <bean id="allowedServices" class="thredds.core.AllowedServices">
+    <property name="allow">
+      <map>
+        <entry key="CdmRemote" value="true"/>
+        <entry key="CdmrFeature" value="true"/>
+        <entry key="dap4" value="true"/>
+        <entry key="HTTPServer" value="true"/>
+        <entry key="Resolver" value="true"/>
+        <entry key="NetcdfSubset" value="true"/>
+        <entry key="opendap" value="true"/>
+        <entry key="wcs" value="true"/>
+
+        <entry key="wms" value="true"/>
+        <entry key="iso" value="true"/>
+        <entry key="ncml" value="true"/>
+        <entry key="uddc" value="true"/>
+      </map>
+    </property>
+
+    <property name="gridServices">
+      <list>
+        <value>opendap</value>
+        <value>CdmRemote</value>
+        <value>dap4</value>
+        <value>NetcdfSubset</value>
+        <value>wms</value>
+        <value>wcs</value>
+        <value>iso</value>
+        <value>ncml</value>
+        <value>uddc</value>
+      </list>
+    </property>
+
+
+  </bean>
+
+
+</beans>

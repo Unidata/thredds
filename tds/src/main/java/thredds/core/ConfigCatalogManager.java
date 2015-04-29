@@ -137,9 +137,9 @@ public class ConfigCatalogManager  {
       addRoot(p, true);
     }
 
-    List<String> disallowedServices = allowedServices.getDisallowedServices(cat);
+    List<String> disallowedServices = allowedServices.getDisallowedServices(cat.getServices());
     if (!disallowedServices.isEmpty()) {
-      logCatalogInit.error(ERROR + "initCatalog(): declared services: " + disallowedServices.toString() + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
+      logCatalogInit.error(ERROR + "initCatalog(): declared services: " + Arrays.toString(disallowedServices.toArray()) + " in catalog: " + f.getPath() + " are disallowed in threddsConfig file");
     }
 
     // get the directory path, reletive to the contentPath

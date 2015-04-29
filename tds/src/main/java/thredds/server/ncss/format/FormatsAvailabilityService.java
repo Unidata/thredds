@@ -31,48 +31,38 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.config;
+package thredds.server.ncss.format;
 
 import org.springframework.stereotype.Service;
-import thredds.server.ncss.format.SupportedFormat;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Used by Ncss. switch to AllowedServices
- */
-
 @Service
 public final class FormatsAvailabilityService {
 
-    private static Map<SupportedFormat, Boolean> formatsAvailability = new HashMap<>();
+  private static Map<SupportedFormat, Boolean> formatsAvailability = new HashMap<>();
 
-    static {
-        //Default availabiliy
-        formatsAvailability.put(SupportedFormat.XML_FILE, true);
-        formatsAvailability.put(SupportedFormat.XML_STREAM, true);
-        formatsAvailability.put(SupportedFormat.CSV_FILE, true);
-        formatsAvailability.put(SupportedFormat.CSV_STREAM, true);
-        formatsAvailability.put(SupportedFormat.NETCDF3, true);
-        formatsAvailability.put(SupportedFormat.NETCDF4, false);
-//        formatsAvailability.put(SupportedFormat.NETCDF4EXT, false);
-        formatsAvailability.put(SupportedFormat.WKT, true);
-        formatsAvailability.put(SupportedFormat.JSON, true);
-        formatsAvailability.put(SupportedFormat.WATERML2, true);
-    }
+  static {
+    //Default availabiliy
+    formatsAvailability.put(SupportedFormat.XML_FILE, true);
+    formatsAvailability.put(SupportedFormat.XML_STREAM, true);
+    formatsAvailability.put(SupportedFormat.CSV_FILE, true);
+    formatsAvailability.put(SupportedFormat.CSV_STREAM, true);
+    formatsAvailability.put(SupportedFormat.NETCDF3, true);
+    formatsAvailability.put(SupportedFormat.NETCDF4, false);              // must be turned on
+    formatsAvailability.put(SupportedFormat.NETCDF4EXT, false);     // extended model
+    formatsAvailability.put(SupportedFormat.WKT, true);
+    formatsAvailability.put(SupportedFormat.JSON, true);
+    formatsAvailability.put(SupportedFormat.WATERML2, true);
+  }
 
-    private FormatsAvailabilityService() {
+  static public boolean isFormatAvailable(SupportedFormat format) {
+    Boolean available = formatsAvailability.get(format);
+    return (available == null) ? false : available;
+  }
 
-    }
-
-    public static boolean isFormatAvailable(SupportedFormat format) {
-        Boolean available = formatsAvailability.get(format);
-        return (available == null) ? false : available;
-    }
-
-    static void setFormatAvailability(SupportedFormat format, boolean available) {
-
-        formatsAvailability.put(format, available);
-    }
+  static public void setFormatAvailability(SupportedFormat format, boolean available) {
+    formatsAvailability.put(format, available);
+  }
 }

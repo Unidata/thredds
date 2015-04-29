@@ -63,12 +63,11 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     return fd;
   }
 
-  // for gridded data
+  // for point data
   protected Service makeDefaultServices() {
     List<Service> nested = new ArrayList<>();
-    // allowedServices.addIfAllowed(ServiceType.CdmrFeature, nested);
-    allowedServices.addIfAllowed(ServiceType.NetcdfSubset, nested);
-
+    if (allowedServices.isAllowed(ServiceType.NetcdfSubset))
+      nested.add(allowedServices.getStandardService(ServiceType.NetcdfSubset));
     return new Service(Default_Services_Name, "", ServiceType.Compound.toString(), null, null, nested, null);
   }
 

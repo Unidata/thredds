@@ -33,49 +33,131 @@
 
 package thredds.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
+import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
 
 import java.util.*;
 
 /**
- * These are the services that the TDS can do.
- * May be allowed/disallowed in ThreddsConfig.
- * ThreddsConfig is read at the time the object is instantiated.
+ * These are the services that the TDS can do.*
  *
  * @author caron
  * @since 1/23/2015
  */
-//@Component
-//@DependsOn("TdsContext")  // which initializes ThreddsConfig
+@Component
 public class AllowedServices {
+  static private final Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
 
-  private Map<ServiceType, AllowedService> allowed = new HashMap<>();
+  // These are the services that the TDS can do.*
+  private enum StandardService {
+    cdmRemote(ServiceType.CdmRemote, "/cdmremote/"),
+    cdmrFeature(ServiceType.CdmrFeature, "/cdmrfeature/"),
+    dap4(ServiceType.DAP4, "/dap4/"),
+    fileServer(ServiceType.HTTPServer, "/fileServer/"),
+    latest(ServiceType.Resolver, ""),
+    ncss(ServiceType.NetcdfSubset, "/ncss/"),
+    opendap(ServiceType.OPENDAP, "/dodsC/"),
+    wms(ServiceType.WMS, "/wms/"),
+    wcs(ServiceType.WCS, "/wcs/"),
+
+    iso(ServiceType.ISO, "/iso/"),
+    ncml(ServiceType.NCML, "/ncml/"),
+    uddc(ServiceType.UDDC, "/uddc/");
+
+    static public StandardService getStandardServiceIgnoreCase(String typeS) {
+      for (StandardService s : values()) {
+        if (s.toString().equalsIgnoreCase(typeS)) return s;
+      }
+      return null;
+    }
+
+    final ServiceType type;
+    final String base;
+
+    StandardService(ServiceType type, String base) {
+      this.type = type;
+      this.base = base;
+    }
+  }
 
   private static class AllowedService {
-    StandardServices ss;
+    StandardService ss;
     boolean allowed;
 
-    private AllowedService(StandardServices ss, boolean allowed) {
+    private AllowedService(StandardService ss, boolean allowed) {
       this.ss = ss;
       this.allowed = allowed;
     }
   }
 
-  public AllowedServices() {
-    allowed.put(ServiceType.CdmRemote, new AllowedService(StandardServices.cdmRemote, true));
-    allowed.put(ServiceType.DAP4, new AllowedService(StandardServices.dap4, true));
-    allowed.put(ServiceType.OPENDAP, new AllowedService(StandardServices.opendap, true));
-    allowed.put(ServiceType.Resolver, new AllowedService(StandardServices.latest, true));
+  //////////////////////////////////////////////////////
 
-    allowed.put(ServiceType.NetcdfSubset, new AllowedService(StandardServices.ncss, ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true)));
-    allowed.put(ServiceType.WMS, new AllowedService(StandardServices.wms, ThreddsConfig.getBoolean("WMS.allow", true)));
-    allowed.put(ServiceType.WCS, new AllowedService(StandardServices.wcs, ThreddsConfig.getBoolean("WCS.allow", true)));
-    allowed.put(ServiceType.ISO, new AllowedService(StandardServices.iso, ThreddsConfig.getBoolean("NCISO.isoAllow", true)));
-    allowed.put(ServiceType.UDDC, new AllowedService(StandardServices.uddc, ThreddsConfig.getBoolean("NCISO.uddcAllow", true)));
-    allowed.put(ServiceType.NCML, new AllowedService(StandardServices.ncml, ThreddsConfig.getBoolean("NCISO.ncmlAllow", true)));
+  @Autowired
+  private TdsContext tdsContext;
+
+  private Map<ServiceType, AllowedService> allowed = new HashMap<>();
+  private List<Service> allowedGrid = new ArrayList<>();
+
+  public void setAllow(Map<String, Boolean> map) {
+    for (Map.Entry<String, Boolean> s : map.entrySet()) {
+      StandardService service = StandardService.getStandardServiceIgnoreCase(s.getKey());
+      if (service == null)
+        logServerStartup.error("No service named " + s.getKey());
+      else
+        allowed.put(service.type, new AllowedService(service, s.getValue()));
+    }
+  }
+
+  public void setGridServices(List<String> list) {
+    for (String s : list) {
+      StandardService service = StandardService.getStandardServiceIgnoreCase(s);
+      if (service == null)
+        logServerStartup.error("No service named " + s);
+      else {
+        AllowedService as = allowed.get(service.type);
+        if (as.allowed)
+          allowedGrid.add( getService(as.ss));
+      }
+    }
+  }
+
+  private Service getService(StandardService ss) {
+    // (String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties
+    return new Service(ss.type.toString(), tdsContext.getContextPath() + ss.base, ss.type.toString(), null, null, null, null);
+  }
+
+  public List<Service> getGridServices() {
+    return allowedGrid;
+  }
+
+  /**
+   * Checks is a list of  services are allowed.
+   *
+   * @param services check this list of services
+   * @return A list of disallowed services, may be empty not null
+   */
+  public List<String> getDisallowedServices(List<Service> services) {
+    List<String> disallowedServices = new ArrayList<>();
+    for (Service s : services)
+      checkService(s, disallowedServices);
+    return disallowedServices;
+  }
+
+  private void checkService(Service service, List<String> disallowedServices) {
+    if (service.getType() == ServiceType.Compound) {
+      for (Service nested : service.getNestedServices())
+        checkService(nested, disallowedServices);
+
+    } else {
+      if (!isAllowed(service.getType()))
+        disallowedServices.add(service.getName());
+    }
   }
 
   public boolean isAllowed(ServiceType type) {
@@ -85,14 +167,14 @@ public class AllowedServices {
 
   public Service getStandardService(ServiceType type) {
     AllowedService s = allowed.get(type);
-    return s == null ? null : s.ss.getService();
+    return s == null ? null : getService(s.ss);
   }
 
-  public void addIfAllowed(ServiceType type, List<Service> result) {
+  /* public void addIfAllowed(ServiceType type, List<Service> result) {
     AllowedService s = allowed.get(type);
     if (s == null)
       return ;
-    if (s.allowed) result.add( s.ss.getService());
+    if (s.allowed) result.add( s.ss.service);
   }
 
   /**
@@ -101,7 +183,7 @@ public class AllowedServices {
    *
    * @param catalog check this catalog
    * @return A list with the declared services in the catalog that are not allowed at server level
-   */
+   *
   public List<String> getDisallowedServices(Catalog catalog) {
     List<String> disallowedServices = new ArrayList<>();
     for (Service s : catalog.getServices())
@@ -118,6 +200,6 @@ public class AllowedServices {
       if (!isAllowed(service.getType()))
         disallowedServices.add(service.getName());
     }
-  }
+  } */
 
 }

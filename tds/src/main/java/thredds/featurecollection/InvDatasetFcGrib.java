@@ -37,7 +37,6 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import thredds.core.StandardServices;
 import thredds.inventory.*;
 import thredds.server.catalog.FeatureCollectionRef;
 import ucar.coord.CoordinateRuntime;
@@ -373,8 +372,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   protected CatalogBuilder makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
     CatalogBuilder result = super.makeCatalogTop(catURI, localState);
 
-    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
-      result.addService(StandardServices.latest.getService());
+    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest) && allowedServices.isAllowed(ServiceType.Resolver))
+      result.addService( allowedServices.getStandardService(ServiceType.Resolver));
 
     return result;
   }

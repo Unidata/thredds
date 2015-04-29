@@ -19,6 +19,7 @@ import ucar.util.prefs.ui.BeanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.*;
 
@@ -39,11 +40,11 @@ public class GribIndexPanel extends JPanel {
   public GribIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        gc.showIndex(f);
+        showIndex(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
@@ -52,7 +53,7 @@ public class GribIndexPanel extends JPanel {
     buttPanel.add(infoButton);
 
 
-    AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
+    /* AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
     filesButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
@@ -75,7 +76,7 @@ public class GribIndexPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         RecordBean bean = (RecordBean) recordTable.getSelectedBean();
         if (bean != null) {
-          Formatter f= new Formatter();
+          Formatter f = new Formatter();
           bean.show(f);
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
@@ -132,8 +133,7 @@ public class GribIndexPanel extends JPanel {
 
     try (RandomAccessFile raf = new RandomAccessFile(indexFile, "r")) {
       raf.seek(0);
-      String magic = raf.readString(Grib2Index.MAGIC_START
-              .getBytes(CDM.utf8Charset).length);
+      String magic = raf.readString(Grib2Index.MAGIC_START.getBytes(CDM.utf8Charset).length);
       if (magic.equals(Grib2Index.MAGIC_START)) {
         readIndex2(indexFile);
       } else if (magic.equals(Grib1Index.MAGIC_START)) {
@@ -145,23 +145,37 @@ public class GribIndexPanel extends JPanel {
   }
 
   public void readIndex1(String filename) throws IOException {
-    Grib1Index g1idx =  new Grib1Index();
+    Grib1Index g1idx = new Grib1Index();
     g1idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 
     java.util.List<RecordBean> records = new ArrayList<>();
-     for (Grib1Record gr : g1idx.getRecords())
-       records.add(new RecordBean(gr));
-     recordTable.setBeans(records);
+    for (Grib1Record gr : g1idx.getRecords())
+      records.add(new RecordBean(gr));
+    recordTable.setBeans(records);
+    gc = g1idx;
   }
 
   public void readIndex2(String filename) throws IOException {
-    Grib2Index g2idx =  new Grib2Index();
+    Grib2Index g2idx = new Grib2Index();
     g2idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 
     java.util.List<RecordBean> records = new ArrayList<>();
-     for (Grib2Record gr : g2idx.getRecords())
-       records.add(new RecordBean(gr));
-     recordTable.setBeans(records);
+    for (Grib2Record gr : g2idx.getRecords())
+      records.add(new RecordBean(gr));
+    recordTable.setBeans(records);
+    gc = g2idx;
+  }
+
+  private void showIndex(Formatter f) {
+    if (gc == null) return;
+    if (gc instanceof Grib1Index) {
+      Grib1Index index1 = (Grib1Index) gc;
+      f.format("GRIB1 = %s%n", index1);
+    } else if (gc instanceof Grib2Index) {
+      Grib2Index index2 = (Grib2Index) gc;
+      f.format("GRIB2 = %s%n", index2);
+    }
+
   }
 
 
@@ -200,7 +214,8 @@ public class GribIndexPanel extends JPanel {
     }
 
     private void show(Formatter f) {
-      if (gr2 == null) show(gr1, f); else show(gr2, f);
+      if (gr2 == null) show(gr1, f);
+      else show(gr2, f);
     }
 
     private void show(Grib1Record gr1, Formatter f) {

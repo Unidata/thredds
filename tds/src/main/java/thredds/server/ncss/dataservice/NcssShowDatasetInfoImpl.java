@@ -44,7 +44,7 @@ import org.jdom2.xpath.XPath;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.support.ServletContextResource;
-import thredds.server.config.FormatsAvailabilityService;
+import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;

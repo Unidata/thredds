@@ -45,6 +45,7 @@ import thredds.core.ConfigCatalogManager;
 import thredds.core.DatasetManager;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.featurecollection.CollectionUpdater;
+import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.util.LoggerFactorySpecial;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -64,7 +65,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * A Singleton class to initialize the CDM/TDS
+ * A Singleton class to initialize and shutdown the CDM/TDS
  * Formerly CdmInit
  *
  * @author caron
@@ -156,7 +157,7 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     //Netcdf4 library could be set as a environment variable or as a jvm parameter
     if (Nc4Iosp.isClibraryPresent()) {
       FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
-//      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4EXT, true);
+      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4EXT, true);
 
       if (libraryName == null) libraryName = "netcdf";
       startupLog.info("netcdf4 c library loaded from jna_path='" + System.getProperty("jna.library.path") + "' " +
