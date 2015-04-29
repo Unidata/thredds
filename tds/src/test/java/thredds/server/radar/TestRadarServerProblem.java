@@ -34,7 +34,7 @@ public class TestRadarServerProblem {
   private org.springframework.web.context.WebApplicationContext wac;
 
   private MockMvc mockMvc;
-  private String path = "/radarServer2/nexrad/level3/IDD/stations.xml";
+  private String path = "/radarServer/nexrad/level3/IDD/stations.xml";
 
   @Before
   public void setup() {

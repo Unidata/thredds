@@ -2,6 +2,7 @@ package thredds.server.ncss.controller.point;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -82,17 +83,19 @@ public class TestPointFCController {
 
     Document doc = XmlUtil.getStringResponseAsDoc(result.getResponse());
 
-    int hasVars = XmlUtil.evaluateXPath(doc, "//variable").size();
-    System.out.printf("nvars = %s%n", hasVars);
-    assertEquals(this.nvars, hasVars);
+    List<Element> vars  = XmlUtil.evaluateXPath(doc, "//variable");
+    assert vars != null;
+    int nVars = vars.size();
+    System.out.printf("nvars = %s%n", nVars);
+    Assert.assertEquals(this.nvars, nVars);
 
     List<Element> elems = XmlUtil.evaluateXPath(doc, "capabilities/featureDataset");
+    assert elems != null;
     assert elems.size() == 1;
     Element fdx = elems.get(0);
-    assertEquals(fdx.getAttributeValue("type"), this.type);
-    assert fdx.getAttributeValue("url").equals("/thredds"+path) : "/thredds"+path;
-
-   }
+    Assert.assertEquals(fdx.getAttributeValue("type"), this.type);
+    Assert.assertEquals(fdx.getAttributeValue("url"), path);
+  }
 
   @Test
   public void getDatasetHtml() throws Exception {
