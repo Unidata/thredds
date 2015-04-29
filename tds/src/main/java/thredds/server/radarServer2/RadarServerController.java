@@ -27,6 +27,7 @@ import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.server.admin.DebugController;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ThreddsConfig;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -283,9 +284,9 @@ public class RadarServerController {
 
         byte[] xmlBytes;
         if (makeIDVCatalog) {
-            String xml = os.toString();
+            String xml = os.toString(CDM.UTF8);
             xml = idvDatasetCatalog(xml);
-            xmlBytes = xml.getBytes();
+            xmlBytes = xml.getBytes(CDM.utf8Charset);
         } else {
             xmlBytes = os.toByteArray();
         }
@@ -328,7 +329,7 @@ public class RadarServerController {
 
     HttpEntity<byte[]> simpleString(String str)
     {
-        byte[] bytes = str.getBytes();
+        byte[] bytes = str.getBytes(CDM.utf8Charset);
         HttpHeaders header = new HttpHeaders();
         header.setContentType(new MediaType("application", "text"));
         header.setContentLength(bytes.length);
@@ -549,6 +550,10 @@ public class RadarServerController {
         if (lat != null && lon != null) {
             // Pull nearest station
             StationList.Station nearest = stations.getNearest(lon, lat);
+            if (nearest == null) {
+                throw new UnsupportedOperationException("No stations " +
+                        "available to search for nearest.");
+            }
             return new String[]{nearest.getStid()};
         } else if(north != null && south != null && east != null &&
                 west != null) {
