@@ -349,7 +349,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     tmi.set(Dataset.ServiceName, Download_Services_Name);
     parent.addDataset(filesParent);
     if (parentCatalog != null)
-      parentCatalog.addService(makeDownloadService());
+      parentCatalog.addService( makeDownloadService());
 
     List<MFile> mfiles = new ArrayList<>(fromGc.getFiles());
     Collections.sort(mfiles);
@@ -372,8 +372,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   protected CatalogBuilder makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
     CatalogBuilder result = super.makeCatalogTop(catURI, localState);
 
-    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest) && allowedServices.isAllowed(ServiceType.Resolver))
-      result.addService( allowedServices.getStandardService(ServiceType.Resolver));
+    if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest))
+      result.addService( makeLatestService());
 
     return result;
   }

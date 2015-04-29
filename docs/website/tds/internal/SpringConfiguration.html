@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Untitled Document</title>
+<title>Spring Configuration</title>
 </head>
 <body>
 <h2>Spring Configuration - 5.0</h2>
-<p><em>April 28, 2015</em></p>
+<p><em>April 29, 2015</em></p>
 <h2>Notes</h2>
 <ol>
   <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
@@ -135,7 +135,7 @@
 </ul>
 <h3>Error handling</h3>
 <ul>
-  <li>Errors are handled by throwing an exception which is picked up by an ExceptionHandler, eg <strong>TdsErrorHandling</strong></li>
+  <li>Errors are handled by throwing an exception which is picked up by an ExceptionHandler, eg <strong>thredds.server.TdsErrorHandling</strong></li>
   <li>let exceptions propagate out of the controllers - do not catch unless necessary</li>
   <li> essentially a way to switch return types</li>
   <li>see https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc</li>

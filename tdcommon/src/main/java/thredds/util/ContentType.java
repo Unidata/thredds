@@ -45,8 +45,8 @@ public enum ContentType {
   html("text/html", "UTF-8"),
   jnlp("application/x-java-jnlp-file", null),
   json("application/json", null),
+  ncstream("application/octet-stream", null),
   netcdf("application/x-netcdf", null),
-  netcdf4("application/x-netcdf4", null),
   ogc_exception("application/vnd.ogc.se_xml", "UTF-8"),
   text("text/plain", "UTF-8"),
   xml("application/xml", "UTF-8");
@@ -54,10 +54,27 @@ public enum ContentType {
 
   public final static String HEADER = "Content-Type";
 
+  public static ContentType findContentTypeFromFilename(String filename) {
+    if (filename.endsWith(".csv"))
+      return ContentType.csv;
+    else if (filename.endsWith(".html"))
+      return ContentType.html;
+    else if (filename.endsWith(".xml"))
+      return ContentType.xml;
+    else if (filename.endsWith(".txt") || filename.endsWith(".log") || filename.endsWith(".out"))
+      return ContentType.text;
+    else if (filename.endsWith(".nc"))
+      return ContentType.netcdf;
+    else if (filename.indexOf(".log.") > 0)
+      return ContentType.text;
+
+    return  null;
+  }
+
   private final String name;
   private final String charset;
 
-  private ContentType(String name, String charset) {
+  ContentType(String name, String charset) {
     this.name = name;
     this.charset = charset;
   }

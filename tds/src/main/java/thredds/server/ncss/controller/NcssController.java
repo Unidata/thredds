@@ -221,8 +221,7 @@ public class NcssController extends AbstractNcssController {
     SupportedFormat format = supportedOp.getSupportedFormat(params.getAccept());
     DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
 
-    NcssResponder pds = DsgSubsetWriterFactory.newInstance(
-            (FeatureDatasetPoint) fd, params, diskCache, res.getOutputStream(), format);
+    NcssResponder pds = DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, params, diskCache, res.getOutputStream(), format);
     setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
     pds.respond(res, fd, datasetPath, params, format);
   }

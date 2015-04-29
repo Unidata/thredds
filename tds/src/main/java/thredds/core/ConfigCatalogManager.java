@@ -75,7 +75,8 @@ public class ConfigCatalogManager  {
   @Autowired
   private ConfigCatalogCache ccc;
 
-  private AllowedServices allowedServices = new AllowedServices();
+  @Autowired
+  private AllowedServices allowedServices;
 
   private List<String> rootCatalogKeys;    // needed ??
 

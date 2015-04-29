@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Global Exception handling
@@ -36,6 +37,20 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("FileNotFoundException: " + ex.getMessage(), responseHeaders, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(IOException.class)
+  public ResponseEntity<String> handle(IOException ex) {
+    String eName = ex.getClass().getName(); // dont want compile time dependency on ClientAbortException
+    if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
+      logger.debug("ClientAbortException while sending file: {}", ex.getMessage());
+      return null;
+    }
+
+    logger.error("IOException sending file ", ex);
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity<>("IOException sending File " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler(UnsupportedOperationException.class)
@@ -62,7 +77,6 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     // see https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc
     if (AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class) != null)
       throw ex;
-
 
     ex.printStackTrace();
     logger.error("uncaught exception", ex);

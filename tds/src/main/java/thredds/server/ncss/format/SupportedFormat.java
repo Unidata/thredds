@@ -51,9 +51,9 @@ public enum SupportedFormat {
   XML_STREAM("xml", true, ContentType.xml.toString(), "xml"),
   XML_FILE("xml_file", false, ContentType.xml.toString(), "xml_file"),
 
-  NETCDF3("netcdf", false, ContentType.netcdf.toString(), "netcdf"),
-  NETCDF4("netcdf4", false, ContentType.netcdf4.toString(), "netcdf4"),
-  NETCDF4EXT("netcdf4ext", false, ContentType.netcdf4.toString(), "netcdf4ext"),
+  NETCDF3("netcdf3", false, ContentType.netcdf.toString(), "netcdf", "netcdf3"),
+  NETCDF4("netcdf4-classic", false, "netcdf4-classic"),
+  NETCDF4EXT("netcdf4", false, "netcdf4"),
 
   JSON("json", false, ContentType.json.toString(), "json", "geojson"),
   WKT("wkt", false, ContentType.text.toString(), "wkt"),

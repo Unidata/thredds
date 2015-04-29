@@ -70,6 +70,8 @@ import java.util.*;
  */
 @ThreadSafe
 public abstract class InvDatasetFeatureCollection implements CollectionUpdateListener {
+  static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
+
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
   static protected final String LATEST_SERVICE = ServiceType.Resolver.toString();
   static protected final String VARIABLES = "?metadata=variableMap";
@@ -80,12 +82,14 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   static final private String catalogServletName = "/catalog";      // LOOK is this really needed?
   static protected String contextName = "/thredds";                 // LOOK is this really needed?
+  static protected AllowedServices allowedServices;
 
-  static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
-  static private org.slf4j.Logger initLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class.getName() + ".catalogInit");
-
+  // cant use spring wiring because InvDatasetFeatureCollection not a spring component because depends on catalog config
   static public void setContextName(String c) {
     contextName = c;
+  }
+  static public void setAllowedServices(AllowedServices _allowedServices) {
+    allowedServices = _allowedServices;
   }
 
   static protected String buildCatalogServiceHref(String path) {
@@ -111,6 +115,8 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
     result.finishConstruction(); // stuff that shouldnt be done in a constructor
     return result;
   }
+
+
 
   /////////////////////////////////////////////////////////////////////////////
   // heres how we manage state changes in a thread-safe way
@@ -142,8 +148,6 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
-  protected AllowedServices allowedServices = new AllowedServices();
 
   // not changed after first call
   protected FeatureCollectionRef parent;
@@ -388,6 +392,10 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
 
   protected Service makeDownloadService() {
      return allowedServices.getStandardService(ServiceType.HTTPServer);
+   }
+
+  protected Service makeLatestService() {
+     return allowedServices.getStandardService(ServiceType.Resolver);
    }
 
   protected String makeFullName(DatasetNode ds) {

@@ -480,7 +480,7 @@ public class ServletUtil {
       else if (filename.endsWith(".nc"))
         contentType = ContentType.netcdf.getContentHeader();
       else if (filename.endsWith(".nc4"))
-        contentType = ContentType.netcdf4.getContentHeader();
+        contentType = ContentType.netcdf.getContentHeader();
       else if (servlet != null)
         contentType = servlet.getServletContext().getMimeType(filename);
 

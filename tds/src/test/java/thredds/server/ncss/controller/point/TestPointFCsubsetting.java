@@ -110,7 +110,7 @@ public class TestPointFCsubsetting {
                 .getResponseContentType();
 
         RequestBuilder rb = MockMvcRequestBuilders.get(dataset + req + format.getFormatName()).servletPath(dataset);
-        System.out.printf("Format=%s%n", format.getFormatName());
+        System.out.printf("%nURL='%s'%n", dataset + req + format.getFormatName());
         MvcResult result = this.mockMvc.perform(rb)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(expectFormat))

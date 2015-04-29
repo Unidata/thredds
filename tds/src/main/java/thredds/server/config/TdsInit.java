@@ -41,6 +41,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.client.catalog.tools.DataFactory;
+import thredds.core.AllowedServices;
 import thredds.core.ConfigCatalogManager;
 import thredds.core.DatasetManager;
 import thredds.featurecollection.InvDatasetFeatureCollection;
@@ -88,6 +89,10 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
 
   @Autowired
   private ConfigCatalogManager configCatalogManager;
+
+
+  @Autowired
+  private AllowedServices allowedServices;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -142,6 +147,8 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     String level = ThreddsConfig.get("FeatureCollection.RollingFileAppender.Level", "INFO");
     LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
     InvDatasetFeatureCollection.setLoggerFactory(fac);
+
+    InvDatasetFeatureCollection.setAllowedServices(allowedServices);
 
     /* <Netcdf4Clibrary>
        <libraryPath>C:/cdev/lib/</libraryPath>

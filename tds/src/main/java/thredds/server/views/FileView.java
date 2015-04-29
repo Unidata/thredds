@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import thredds.util.ContentType;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -83,9 +84,7 @@ public class FileView extends AbstractView {
 
     // Check that file exists and is not a directory.
     if (!file.isFile()) {
-      // ToDo Send error or throw exception to be handled by Spring exception handling stuff.
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST);
-      return;
+      throw new IllegalArgumentException();
     }
 
     // Check if content type is specified.
@@ -104,32 +103,27 @@ public class FileView extends AbstractView {
         characterEncoding = (String) o;
     }
 
-    // Set the type of the file LOOK at thredds.util.ContentType
+    // Set the type of the file
     String filename = file.getPath();
     if (null == contentType) {
-      if (filename.endsWith(".html"))
-        contentType = "text/html; charset=utf-8";
-      else if (filename.endsWith(".xml"))
-        contentType = "application/xml; charset=utf-8";
-      else if (filename.endsWith(".txt") || filename.endsWith(".log") || filename.endsWith(".out"))
-        contentType = "text/plain; charset=utf-8";
-      else if (filename.indexOf(".log.") > 0)
-        contentType = "text/plain; charset=utf-8";
-      else if (filename.endsWith(".nc"))
-        contentType = "application/x-netcdf";
-      else
-        contentType = this.getServletContext().getMimeType(filename);
+      ContentType type = ContentType.findContentTypeFromFilename(filename);
 
-      if (contentType == null)
-        contentType = "application/octet-stream";
+      if (type == null) {
+        contentType = this.getServletContext().getMimeType(filename);  // let servlet have a shot at it
+        if (null == contentType)
+          type = ContentType.binary;                                   // nope use default
+      }
+
+      if (null == contentType)
+        contentType = type.toString();
     }
 
-    // ToDo Do I need/want to do this?
+    /* Do I need/want to do this?
     if (characterEncoding == null) {
       if ((!contentType.contains("charset=")) && (contentType.startsWith("text/") || contentType.startsWith("application/xml"))) {
         characterEncoding = "utf-8";
       }
-    }
+    } */
 
     // Set content type and character encoding as given/determined.
     res.setContentType(contentType);
@@ -165,11 +159,6 @@ public class FileView extends AbstractView {
     }
     res.setContentLength((int) contentLength);
 
-    /* boolean debugRequest = Debug.isSet("returnFile");
-    if (debugRequest)
-      log.debug("renderMergedOutputModel(): filename = " + filename +
-              " contentType = " + contentType + " contentLength = " + contentLength); */
-
     // indicate we allow Range Requests
     if (!isRangeRequest)
       res.addHeader("Accept-Ranges", "bytes");
@@ -178,44 +167,21 @@ public class FileView extends AbstractView {
       return;
     }
 
-    try {
-      if (isRangeRequest) {
-        // set before content is sent
-        res.addHeader("Content-Range", "bytes " + startPos + "-" + (endPos - 1) + "/" + fileSize);
-        res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+    if (isRangeRequest) {
+      // set before content is sent
+      res.addHeader("Content-Range", "bytes " + startPos + "-" + (endPos - 1) + "/" + fileSize);
+      res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-        try (RandomAccessFile craf = RandomAccessFile.acquire(filename)) {
-          IO.copyRafB(craf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
-          return;
-        }
-      }
-
-      // Return the file
-      ServletOutputStream out = res.getOutputStream();
-      IO.copyFileB(file, out, 60000);
-      res.flushBuffer();
-      out.close();
-    }
-
-    // @todo Split up this exception handling: those from file access vs those from dealing with response
-    //       File access: catch and res.sendError()
-    //       response: don't catch (let bubble up out of doGet() etc)
-    catch (FileNotFoundException e) {
-      log.error("returnFile(): FileNotFoundException= " + filename);
-      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
-
-    } catch (java.net.SocketException e) {
-      log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
-
-    } catch (IOException e) {
-      String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
-      if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
-        log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
+      try (RandomAccessFile craf = RandomAccessFile.acquire(filename)) {
+        IO.copyRafB(craf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
         return;
       }
-
-      log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Problem sending file");
     }
+
+    // Return the file : let exceptions propagate and be caught
+    ServletOutputStream out = res.getOutputStream();
+    IO.copyFileB(file, out, 60000);
+    res.flushBuffer();
+    out.close();
   }
 }

@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Formatter;
 
+import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -251,20 +252,20 @@ public class CdmrFeatureController { // implements LastModified {
   private String getContentType(CdmrFeatureQueryBean query) {
     CdmrFeatureQueryBean.RequestType reqType = query.getRequestType();
     if (reqType == CdmrFeatureQueryBean.RequestType.form)
-      return "text/html; charset=iso-8859-1";
+      return ContentType.html.toString(); // "text/html; charset=iso-8859-1";
 
     CdmrFeatureQueryBean.ResponseType resType = query.getResponseType();
     switch (resType) {
       case csv:
-        return "text/plain";
+        return ContentType.csv.toString();
       case netcdf:
-        return "application/x-netcdf";
+        return ContentType.netcdf.toString();
       case ncstream:
-        return "application/octet-stream";
+        return ContentType.ncstream.toString();
       case xml:
-        return "application/xml";
+        return ContentType.xml.toString();
     }
-    return "text/plain";
+    return ContentType.text.toString();
   }
 
   private String getContentDescription(CdmrFeatureQueryBean query) {

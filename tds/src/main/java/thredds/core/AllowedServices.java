@@ -36,16 +36,14 @@ package thredds.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.server.config.TdsContext;
-import thredds.server.config.ThreddsConfig;
 
 import java.util.*;
 
 /**
- * These are the services that the TDS can do.*
+ * These are the services that the TDS can do.
  *
  * @author caron
  * @since 1/23/2015
@@ -59,9 +57,9 @@ public class AllowedServices {
     cdmRemote(ServiceType.CdmRemote, "/cdmremote/"),
     cdmrFeature(ServiceType.CdmrFeature, "/cdmrfeature/"),
     dap4(ServiceType.DAP4, "/dap4/"),
-    fileServer(ServiceType.HTTPServer, "/fileServer/"),
-    latest(ServiceType.Resolver, ""),
-    ncss(ServiceType.NetcdfSubset, "/ncss/"),
+    httpServer(ServiceType.HTTPServer, "/fileServer/"),
+    resolver(ServiceType.Resolver, ""),
+    netcdfSubset(ServiceType.NetcdfSubset, "/ncss/"),
     opendap(ServiceType.OPENDAP, "/dodsC/"),
     wms(ServiceType.WMS, "/wms/"),
     wcs(ServiceType.WCS, "/wcs/"),
@@ -71,9 +69,8 @@ public class AllowedServices {
     uddc(ServiceType.UDDC, "/uddc/");
 
     static public StandardService getStandardServiceIgnoreCase(String typeS) {
-      for (StandardService s : values()) {
+      for (StandardService s : values())
         if (s.toString().equalsIgnoreCase(typeS)) return s;
-      }
       return null;
     }
 
@@ -128,8 +125,9 @@ public class AllowedServices {
   }
 
   private Service getService(StandardService ss) {
+    String path = ss.base.startsWith("/") ? tdsContext.getContextPath() + ss.base : ss.base;
     // (String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties
-    return new Service(ss.type.toString(), tdsContext.getContextPath() + ss.base, ss.type.toString(), null, null, null, null);
+    return new Service(ss.type.toString(), path, ss.type.toString(), null, null, null, null);
   }
 
   public List<Service> getGridServices() {
@@ -165,41 +163,11 @@ public class AllowedServices {
     return s == null || s.allowed;
   }
 
+  // may return null
   public Service getStandardService(ServiceType type) {
     AllowedService s = allowed.get(type);
-    return s == null ? null : getService(s.ss);
+    if (s == null) return null;
+    return !s.allowed? null : getService(s.ss);
   }
-
-  /* public void addIfAllowed(ServiceType type, List<Service> result) {
-    AllowedService s = allowed.get(type);
-    if (s == null)
-      return ;
-    if (s.allowed) result.add( s.ss.service);
-  }
-
-  /**
-   * TChecks that the services declared in the catalog
-   * are allowed at server level in the threddsConfig file
-   *
-   * @param catalog check this catalog
-   * @return A list with the declared services in the catalog that are not allowed at server level
-   *
-  public List<String> getDisallowedServices(Catalog catalog) {
-    List<String> disallowedServices = new ArrayList<>();
-    for (Service s : catalog.getServices())
-      checkService(s, disallowedServices);
-    return disallowedServices;
-  }
-
-  private void checkService(Service service, List<String> disallowedServices) {
-    if (service.getType() == ServiceType.Compound) {
-      for (Service nested : service.getNestedServices())
-        checkService(nested, disallowedServices);
-
-    } else {
-      if (!isAllowed(service.getType()))
-        disallowedServices.add(service.getName());
-    }
-  } */
 
 }

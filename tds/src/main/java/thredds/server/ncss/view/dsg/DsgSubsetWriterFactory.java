@@ -58,8 +58,8 @@ public abstract class DsgSubsetWriterFactory {
                 return new PointSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf3);
             case NETCDF4:
                 return new PointSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4_classic);
-//            case NETCDF4EXT:
-//                return new PointSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4);
+            case NETCDF4EXT:
+                return new PointSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4);
             case WATERML2:
                 throw new UnsupportedResponseFormatException(String.format(
                         "%s format not supported for %s feature type.", format, fdPoint.getFeatureType()));
@@ -82,8 +82,8 @@ public abstract class DsgSubsetWriterFactory {
                 return new StationSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf3);
             case NETCDF4:
                 return new StationSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4_classic);
-//            case NETCDF4EXT:
-//                return new StationSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4);
+            case NETCDF4EXT:
+                return new StationSubsetWriterNetcdf(fdPoint, ncssParams, diskCache, out, Version.netcdf4);
             case WATERML2:
                 return new StationSubsetWriterWaterML(fdPoint, ncssParams, out);
             default:
