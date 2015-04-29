@@ -476,10 +476,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         f.format("%s", p);
       }
 
-      synchronized (lock) {
+      //synchronized (lock) {
         localState.latest = latest;
         localState.latestPath = f.toString();
-      }
+      //}
     }
 
     return makeCatalogFromCollection(localState.latest, localState.latestPath, catURI);

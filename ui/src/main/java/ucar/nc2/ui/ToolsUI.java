@@ -1342,13 +1342,18 @@ public class ToolsUI extends JPanel {
       return;
     }
 
+    DataFactory.Result threddsData = null;
     try {
-      DataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
+      threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
       jumptoThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
+      if (threddsData != null) {
+        try {threddsData.close(); }
+        catch (IOException ioe2) { }
+      }
     }
 
   }
@@ -5817,9 +5822,9 @@ public class ToolsUI extends JPanel {
         System.out.printf("close failed %n");
       }
 
-      //StringBuilder log = new StringBuilder();
+      DataFactory.Result result = null;
       try {
-        DataFactory.Result result = threddsDataFactory.openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
+        result = threddsDataFactory.openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
         if (result.fatalError) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + result.errLog.toString());
           return false;
@@ -5836,6 +5841,10 @@ public class ToolsUI extends JPanel {
         detailWindow.show();
 
         JOptionPane.showMessageDialog(this, e.getMessage());
+        if (result != null) {
+          try {result.close(); }
+          catch (IOException ioe2) { }
+        }
         return false;
       }
     }

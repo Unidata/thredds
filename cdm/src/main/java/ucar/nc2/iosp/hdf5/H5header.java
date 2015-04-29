@@ -2011,7 +2011,7 @@ public class H5header {
       else if (size == 8)
         return DataType.LONG;
       else if (warnings) {
-        if (debugOut != null && (debugOut != null)) debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
+        if (debugOut != null) debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
         log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
         return null;
       }

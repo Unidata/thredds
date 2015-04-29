@@ -290,15 +290,15 @@ public class ReqState {
    * @return The name of the cache directory(ending in '/').
    */
   private String getCachedString(String realpath, String which, String dfalt) {
-    String cacheDir = null; // getInitParameter(which);
-    if (cacheDir == null)
-      cacheDir = dfalt;
-    else {
-      cacheDir = HTTPSession.canonicalpath(cacheDir);
+    //String cacheDir = null; // getInitParameter(which);
+   // if (cacheDir == null)
+    //  cacheDir = dfalt;
+    //else {
+    String  cacheDir = HTTPSession.canonicalpath(dfalt);
       if (cacheDir.startsWith("/"))
         cacheDir = cacheDir.substring(1);
       cacheDir = realpath + "/" + cacheDir;
-    }
+    //}
     if (!cacheDir.endsWith("/")) cacheDir += "/";
     return (cacheDir);
   }

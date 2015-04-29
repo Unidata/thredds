@@ -116,7 +116,7 @@ public class TestChronicle {
 
       System.out.printf("DatasetExt.total_count %d%n", DatasetExt.total_count);
       System.out.printf("DatasetExt.total_nbytes %d%n", DatasetExt.total_nbytes);
-      float avg = DatasetExt.total_nbytes / DatasetExt.total_count;
+      float avg = DatasetExt.total_count == 0 ? 0 : ((float)DatasetExt.total_nbytes) / DatasetExt.total_count;
       System.out.printf("DatasetExt.avg_nbytes %5.0f%n", avg);
 
       float avg_time = ((float)took) / DatasetExt.total_count;
