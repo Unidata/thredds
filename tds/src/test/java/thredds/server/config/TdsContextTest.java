@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.mock.web.TdsContentRootPath;
 
+import java.util.Map;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext.xml"},loader=MockTdsContextLoader.class)
 public class TdsContextTest {
@@ -27,6 +29,21 @@ public class TdsContextTest {
 		assertNotNull( tdsContext.getHtmlConfig() );
 		assertNotNull( tdsContext.getWmsConfig() );
 		
+	}
+
+	@Test
+	public void testVersionRetrieval() {
+		String stableKey = "stable";
+		String devKey = "development";
+		Map<String, String> latestVersionInfo = tdsContext.getLatestVersionInfo();
+		// is not empty
+		assert(!latestVersionInfo.isEmpty());
+		// contains the stable key and the stable version is not empty
+		assert(latestVersionInfo.containsKey(stableKey));
+		assert(!latestVersionInfo.get(stableKey).isEmpty());
+		// contains the dev key and the dev version is not empty
+		assert(latestVersionInfo.containsKey(devKey));
+		assert(!latestVersionInfo.get(devKey).isEmpty());
 	}
 
 }
