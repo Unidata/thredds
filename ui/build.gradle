@@ -36,25 +36,22 @@ apply plugin: 'shadow'
 
 jar {
     manifest {
-        // We need to add security attributes for WebStart:
-        // https://docs.oracle.com/javase/tutorial/deployment/jar/secman.html
-        // This may be the only manifest that needs such attributes.
-        // Also need Class-Path and INDEX.LIST.
         attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
-
-                // These are security-related attributes, necessary for Web Start:
-                // https://docs.oracle.com/javase/8/docs/technotes/guides/deploy/manifest.html#JSDPG896
-                // netcdfUI.jar is the first jar in the JNLP, so I think it's the only one that needs these. Must test.
+                // These are security attributes, necessary for Web Start: http://goo.gl/Ob6Wid
+                // netcdfUI.jar is the first jar in the JNLP, so I think its manifest is the only one that needs these.
                 'Application-Name': project.title,
                 'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
                 'Permissions': 'all-permissions',
                 'Trusted-Only': 'true',
 
+                // MANIFEST.MF is an @Input to the Jar task, so when it changes, Jar will be considered out-of-date.
+                // Here, we're writing an attribute to MANIFEST.MF. When its value changes, MANIFEST.MF will change,
+                // and Jar will be considered out-of-date.
+                // So, indirectly, we've made the "runtime" configuration an @Input to the Jar task.
                 'Class-Path': configurations.runtime.collect { it.name }.join(' ')
     }
 
-    // TODO: Should this be its own task, maybe "indexJar"?
-    // Alternately, should I add configurations.runtime as an @Input to jar?
+    // Add INDEX.LIST to the existing jar. Gradle doesn't have an easy way to create INDEX.LIST, so we're using Ant.
     doLast {
         ant.jar(update: true, index: true, indexMetaInf: true, destfile: archivePath) {
             indexjars {
