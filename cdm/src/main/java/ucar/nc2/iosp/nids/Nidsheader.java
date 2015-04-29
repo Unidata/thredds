@@ -389,7 +389,6 @@ class Nidsheader{
     hedsiz = 18;
     Pinfo pinfo = read_proddesc( bos, hedsiz );
 
-    bos.position();
     hedsiz += 102;
 
 
