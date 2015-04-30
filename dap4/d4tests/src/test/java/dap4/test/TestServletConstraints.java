@@ -309,10 +309,10 @@ public class TestServletConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Ignore
     public void testServletConstraints()
             throws Exception
     {
-	    org.junit.Assume.assumeTrue(false);
         boolean pass = true;
         for(ConstraintTest testcase : chosentests) {
             if(!doOneTest(testcase))

@@ -665,10 +665,10 @@ public class TestServlet extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Ignore
     public void testServlet()
         throws Exception
     {
-	    org.junit.Assume.assumeTrue(false);
         DapCache.flush();
         for(ServletTest testcase : chosentests) {
             assertTrue(doOneTest(testcase));
