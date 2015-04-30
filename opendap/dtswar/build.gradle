@@ -7,7 +7,7 @@ dependencies {
     compile project(':cdm')
     compile project(':opendap')
 
-    providedCompile libraries["javax.servlet-api"]
+    provided libraries["javax.servlet-api"]
     runtime libraries["jstl"]
 
     compile libraries["slf4j-api"]
@@ -15,3 +15,5 @@ dependencies {
     runtime libraries["log4j-core"]
     runtime libraries["log4j-web"]
 }
+
+war.archiveName = "dts.war"

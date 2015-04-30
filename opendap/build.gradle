@@ -5,13 +5,11 @@ ext.title = "OPeNDAP"
 ext.vendor = "OPeNDAP"
 ext.url = "http://opendap.org/"
 
-apply plugin: 'war'
-
 dependencies {
     compile project(':cdm')
     compile project(':httpservices')
 
-    providedCompile libraries["javax.servlet-api"]
+    provided libraries["javax.servlet-api"]
     compile libraries["jdom2"]
     compile libraries["httpclient"]
     compile libraries["httpcore"]

@@ -2,6 +2,7 @@ import java.text.SimpleDateFormat
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'provided-base'  // Gives us the "provided" configuration.
 
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
@@ -23,8 +24,7 @@ subprojects {
         options.compilerArgs = ['-Xlint:-options']
     }
 
-    // FIXME: Extend these to all Jar subtypes (e.g. War)?
-    jar {
+    tasks.withType(Jar) {   // Applies to Jar, War, and Ear tasks.
         manifest {
             // Subprojects have not yet been configured, but they may want to reassign these attributes.
             // So, we're going to delay evaluation by using lazy GStrings: http://goo.gl/zwWnPh
