@@ -53,6 +53,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.util.Constants;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -78,39 +79,39 @@ public class GridDatasetControllerTest {
 	}
   @Test
  	public void fileNotFound() throws Exception {
- 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/cdmUnitTest/ncss/GFS/CONUS_80km/baddie.nc")
- 				.servletPath("/ncss/cdmUnitTest/ncss/GFS/CONUS_80km/baddie.nc")
+ 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/grid/cdmUnitTest/ncss/GFS/CONUS_80km/baddie.nc")
+ 				.servletPath("/ncss/grid/cdmUnitTest/ncss/GFS/CONUS_80km/baddie.nc")
  				.param("accept", "netcdf" )
  				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground")
  				.param("latitude", "40.019")
  				.param("longitude", "-105.293");
 
- 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().is(404));
+ 		this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().is(404));
   }
 
   @Test
  	public void getGridAsPointSubset() throws Exception{
- 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
- 				.servletPath("/ncss/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
+ 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
+ 				.servletPath("/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
  				.param("accept", "netcdf" )
  				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground")
  				.param("latitude", "40.019")
  				.param("longitude", "-105.293");
 
  		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
- 			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getResponseContentType() )).andReturn() ;
+ 			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getMimeType() )).andReturn() ;
 
  	}
 
   @Test
  	public void getGridSubsetOnGridDataset() throws Exception{
- 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
- 				.servletPath("/ncss/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
+ 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
+ 				.servletPath("/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
  				.param("accept", SupportedFormat.NETCDF3.getFormatName())
  				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground");
 
      MvcResult result =  this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
- 			.andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF3.getResponseContentType()))
+ 			.andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF3.getMimeType()))
        .andExpect(MockMvcResultMatchers.header().string(Constants.Content_Disposition, new FilenameMatcher(".nc")))
        .andReturn();
 
@@ -122,13 +123,13 @@ public class GridDatasetControllerTest {
 
   @Test
  	public void getGridSubsetOnGridDatasetNc4() throws Exception{
- 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
- 				.servletPath("/ncss/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
+ 		RequestBuilder rb = MockMvcRequestBuilders.get("/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
+ 				.servletPath("/ncss/grid/testGFSfmrc/GFS_CONUS_80km_nc_best.ncd")
  				.param("accept", SupportedFormat.NETCDF4.getFormatName())
  				.param("var", "Relative_humidity_height_above_ground", "Temperature_height_above_ground");
 
      MvcResult result =  this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
- 			.andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF4.getResponseContentType()))
+ 			.andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF4.getMimeType()))
       .andExpect(MockMvcResultMatchers.header().string(Constants.Content_Disposition, new FilenameMatcher(".nc4")))
       .andReturn();
 

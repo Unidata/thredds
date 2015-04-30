@@ -55,8 +55,8 @@ public class TestPointFCController {
   @SpringJUnit4ParameterizedClassRunner.Parameters
  	public static Collection<Object[]> getTestParameters(){
  		return Arrays.asList(new Object[][]{
-            {"/ncss/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr", 54, "point"},
-            {"/ncss/testSurfaceSynopticFeatureCollection/Surface_Synoptic_Point_Data_fc.cdmr", 41, "point"},
+            {"/ncss/point/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr", 54, "point"},
+            {"/ncss/point/testSurfaceSynopticFeatureCollection/Surface_Synoptic_Point_Data_fc.cdmr", 41, "point"},
     });
  	}
 

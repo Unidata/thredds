@@ -70,8 +70,8 @@ public class DatasetInfoTest {
   private WebApplicationContext wac;
 
   private MockMvc mockMvc;
-  private String xmlpath = "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/dataset.xml";
-  private String htmlpath = "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/dataset.html";
+  private String xmlpath = "/ncss/grid/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/dataset.xml";
+  private String htmlpath = "/ncss/grid/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/dataset.html";
 
   @Before
   public void setup() {

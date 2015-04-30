@@ -22,7 +22,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import thredds.mock.params.GridAsPointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncss.controller.AbstractNcssController;
+import thredds.server.ncss.controller.NcssController;
+import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.server.ncss.dataservice.DatasetHandlerAdapter;
@@ -40,6 +41,8 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class GridAsPointDataTest {
 
+  @Autowired
+   NcssDiskCache ncssDiskCache;
 
   @Autowired
   private WebApplicationContext wac;
@@ -94,7 +97,7 @@ public class GridAsPointDataTest {
     }
 
     //Values for time subsetting
-    String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
+    String datasetPath = NcssController.getDatasetPath(this.pathInfo);
     GridDataset gds = DatasetHandlerAdapter.openGridDataset(datasetPath);
     GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gds, vars);
     List<CalendarDate> dates = gridAsPointDataset.getDates();

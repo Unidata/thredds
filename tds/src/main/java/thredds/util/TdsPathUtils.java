@@ -45,7 +45,6 @@ public class TdsPathUtils {
 
     // may be in pathInfo (Servlet) or servletPath (Controller)
     String dataPath = req.getPathInfo();
-    String reqPath = req.getServletPath();
     if (dataPath == null) {
       dataPath = req.getServletPath();
     }

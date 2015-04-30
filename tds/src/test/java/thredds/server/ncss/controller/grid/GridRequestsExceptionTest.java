@@ -67,7 +67,7 @@ public class GridRequestsExceptionTest {
  	private WebApplicationContext wac;
 
  	private MockMvc mockMvc;
-	private String path="/ncss/gribCollection/GFS_CONUS_80km/best";
+	private String path="/ncss/grid/gribCollection/GFS_CONUS_80km/best";
 
   @Before
  	public void setUp() throws IOException{

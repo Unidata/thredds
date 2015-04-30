@@ -12,7 +12,8 @@ import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.core.DataRootManager;
-import thredds.server.ncss.controller.AbstractNcssController;
+import thredds.server.ncss.controller.NcssController;
+import thredds.server.ncss.controller.NcssDiskCache;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.util.List;
@@ -21,6 +22,10 @@ import java.util.List;
 @ContextConfiguration(locations={"/WEB-INF/applicationContext.xml"}, loader=MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class DataRootHandlerTest {
+
+
+	@Autowired
+	NcssDiskCache ncssDiskCache;
 
   @Autowired
   DataRootManager matcher;
@@ -38,7 +43,7 @@ public class DataRootHandlerTest {
   @Test
   public void testAllRoots() {
     System.out.printf("pathInfo=%s%n", pathInfo);
-    String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
+    String datasetPath = NcssController.getDatasetPath(this.pathInfo);
     DataRootManager.DataRootMatch match = matcher.findDataRootMatch(datasetPath);
 		assertNotNull(match);
  	}

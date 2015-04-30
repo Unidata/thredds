@@ -65,17 +65,19 @@ import java.util.Random;
 class GridResponder extends GridDatasetResponder {
   static private final short ESTIMATED_C0MPRESION_RATE = 5;  // Compression rate used to estimate the filesize of netcdf4 compressed files
 
-  public static GridResponder factory(GridDataset gds, String requestPathInfo) {
-    return new GridResponder(gds, requestPathInfo);
+  public static GridResponder factory(GridDataset gds, String requestPathInfo, NcssDiskCache ncssDiskCache) {
+    return new GridResponder(gds, requestPathInfo, ncssDiskCache);
  	}
 
   ///////////////////////////////////////////////////////////////////////////////
 	private GridDataset gds;
 	private String requestPathInfo;
+	private NcssDiskCache ncssDiskCache;
 
-  private GridResponder(GridDataset gds, String requestPathInfo) {
+  private GridResponder(GridDataset gds, String requestPathInfo, NcssDiskCache ncssDiskCache) {
 		this.gds = gds;
 		this.requestPathInfo = requestPathInfo;
+		this.ncssDiskCache  = ncssDiskCache;
 	}
 
 	/**
@@ -234,7 +236,7 @@ class GridResponder extends GridDatasetResponder {
 
  		String filename = NcssRequestUtils.getFileNameForResponse(requestPathInfo, version);
  		String pathname = Integer.toString(randomInt) + "/" + filename;
- 		File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
+ 		File ncFile = ncssDiskCache.getDiskCache().getCacheFile(pathname);
     if(ncFile == null)
       throw new IllegalStateException("NCSS misconfigured cache = ");
  		String cacheFilename = ncFile.getPath();

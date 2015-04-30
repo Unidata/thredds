@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
+import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.DateUnitException;
 import thredds.server.ncss.exception.UnsupportedOperationException;
 import thredds.server.ncss.format.SupportedFormat;
@@ -65,14 +66,14 @@ import ucar.unidata.geoloc.LatLonPoint;
 public final class PointDataStream {
   static private Logger log = LoggerFactory.getLogger(PointDataStream.class);
 
-  public static PointDataStream factory(SupportedFormat supportedFormat, OutputStream outputStream, DiskCache2 diskCache){
- 		return new PointDataStream(supportedFormat, outputStream, diskCache);
+  public static PointDataStream factory(SupportedFormat supportedFormat, OutputStream outputStream, NcssDiskCache ncssDiskCache){
+ 		return new PointDataStream(supportedFormat, outputStream, ncssDiskCache);
  	}
 
 	private final PointDataWriter pointDataWriter;
 
-	private PointDataStream(SupportedFormat supportedFormat, OutputStream outputStream, DiskCache2 diskCache) {
-		this.pointDataWriter = PointDataWriterFactory.factory(supportedFormat, outputStream, diskCache);
+	private PointDataStream(SupportedFormat supportedFormat, OutputStream outputStream, NcssDiskCache ncssDiskCache) {
+		this.pointDataWriter = PointDataWriterFactory.factory(supportedFormat, outputStream, ncssDiskCache);
 	}
 
 	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws DateUnitException, UnsupportedOperationException, InvalidRangeException {

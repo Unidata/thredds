@@ -39,14 +39,14 @@ package thredds.client.catalog;
  * @since 1/7/2015
  */
 public enum ServiceType {
-  ADDE,           //
+  ADDE,           //  not used
   Catalog,       //
   CdmRemote,     //
   CdmrFeature,   //
   Compound,      //
   DAP4,          //
   DODS,          // deprecated
-  File,         //
+  File,         //  deprecated
   FTP,          //
   GRIDFTP,     //
   H5Service,    //
@@ -61,7 +61,7 @@ public enum ServiceType {
   Resolver,      //
   THREDDS,       //
   UDDC,         //
-  WebForm,      //
+  WebForm,      //    ??
   WCS,          //
   WFS,          //
   WMS,          //

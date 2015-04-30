@@ -39,6 +39,7 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.core.AllowedServices;
+import thredds.core.StandardService;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
 import thredds.server.catalog.FeatureCollectionRef;
@@ -391,11 +392,11 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   protected Service makeDownloadService() {
-     return allowedServices.getStandardService(ServiceType.HTTPServer);
+     return allowedServices.getStandardService(StandardService.httpServer);
    }
 
   protected Service makeLatestService() {
-     return allowedServices.getStandardService(ServiceType.Resolver);
+     return allowedServices.getStandardService(StandardService.resolver);
    }
 
   protected String makeFullName(DatasetNode ds) {

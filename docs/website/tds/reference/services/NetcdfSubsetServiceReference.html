@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>NetCDF Subset Service</title>
-    <link rel="stylesheet" href="../tds.css" type="text/css"/>
+    <link rel="stylesheet" href="../../tds.css" type="text/css"/>
 
     <!-- Table styles from /thredds/docs/website/tds/tutorial/tutorial2.css -->
     <style type="text/css">
@@ -44,10 +44,6 @@
 
 <body>
 <h1>NetCDF Subset Service Reference</h1>
-
-<h3>Please note that the interface described here is still a
-    prototype, and subject to change.</h3>
-
 <h3>
     <strong>Contents:</strong>
 </h3>
@@ -82,7 +78,7 @@
 </p>
 
 <p>
-    As of version 4.4.0 of TDS, NCSS supports spatial and temporal subsetting on collections of grids, stations and
+    NCSS supports spatial and temporal subsetting on collections of grids, stations and
     points. A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which
     describes the dataset in enough detail to enable a programmatic client to form valid data requests.
 </p>
@@ -93,7 +89,7 @@
     <a href="http://www.opengeospatial.org/standards/waterml">WaterML2</a> depending on the request and the dataset.
 </p>
 
-<p>NCSS uses HTTP GET with key-value pairs (KVP) which may appearin any order. The service interface follows
+<p>NCSS uses HTTP GET with key-value pairs (KVP) which may appear in any order. The service interface follows
     <a href="http://en.wikipedia.org/wiki/Representational_state_transfer">REST design</a>, as well as
     <a href="https://developers.google.com/kml/">Google/KML</a> and
     <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable.</p>
@@ -102,13 +98,13 @@
   <pre>http://{host}/{context}/{service}/{dataset}[/dataset.xml | /dataset.html | {?query}]
 
 where
-  {host}     	        = server name, eg thredds.ucar.edu
-  {context} 	        = "thredds" (usually)
-  {service} 	        = "ncss" (always)
-  {dataset} 	        = logical path for the dataset, obtained from the catalog
+  {host}     	          = server name, eg thredds.ucar.edu
+  {context} 	          = "thredds" (usually)
+  {service} 	          = "ncss/grid" or &quot;ncss/point&quot;
+  {dataset} 	          = logical path for the dataset, obtained from the catalog
   dataset.xml           = to get the dataset description in xml
   dataset.html          = to get the human-readable web form
-  datasetBoundaries.xml = to get a human-readable description of the bounding boxes
+  datasetBoundaries.xml = to get a description of the bounding boxes
   {?query}              = the KVPs to describe the subset that you want (see below for valid combinations)
 </pre>
 
@@ -116,12 +112,12 @@ Examples:
 <ul>
     <li>
         <a href="http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best/dataset.html">
-            http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best/dataset.html
+            http://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Pacific_40km/best/dataset.html
         </a>
     </li>
     <li>
         <a href="http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground">
-            http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground
+            http://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground
         </a>
     </li>
 </ul>
@@ -756,7 +752,7 @@ This finds the station nearest to (lat=40.2, lon=61.8) and returns its temperatu
 <hr WIDTH="100%">
 
 <address>
-    <img src="../images/thread.png" width="110" height="108">This document was last updated October 2014.
+    <img src="../../images/thread.png" width="91" height="79">This document was last updated May 2015
 </address>
 
 </body>

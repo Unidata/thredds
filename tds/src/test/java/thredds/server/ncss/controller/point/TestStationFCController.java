@@ -74,7 +74,7 @@ public class TestStationFCController {
   @Autowired
   private WebApplicationContext wac;
 
-  private String dataset = "/ncss/testStationFeatureCollection/Metar_Station_Data_fc.cdmr";
+  private String dataset = "/ncss/point/testStationFeatureCollection/Metar_Station_Data_fc.cdmr";
   private MockMvc mockMvc;
 
   @Before
@@ -94,7 +94,7 @@ public class TestStationFCController {
 
     try {
       this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().isOk())
-              .andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF4.getResponseContentType()));
+              .andExpect(MockMvcResultMatchers.content().contentType(SupportedFormat.NETCDF4.getMimeType()));
     } finally {
       long took = System.currentTimeMillis() - start;
       System.out.printf("that took %d msecs%n", took);

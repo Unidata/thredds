@@ -66,19 +66,19 @@ import java.util.Map;
  */
 public class GridAsPointResponder extends GridDatasetResponder implements NcssResponder {
 
-  public static GridAsPointResponder factory(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
- 		return new GridAsPointResponder(diskCache, format, out);
+  public static GridAsPointResponder factory(NcssDiskCache ncssDiskCache, SupportedFormat format, OutputStream out){
+ 		return new GridAsPointResponder(ncssDiskCache, format, out);
  	}
 	
-	private DiskCache2 diskCache = null; 
+	private NcssDiskCache ncssDiskCache = null;
 	private SupportedFormat format;
 	
   private final PointDataWriter writer;
 
-	private GridAsPointResponder(DiskCache2 diskCache, SupportedFormat format, OutputStream out){
-		this.diskCache = diskCache;
+	private GridAsPointResponder(NcssDiskCache ncssDiskCache, SupportedFormat format, OutputStream out){
+		this.ncssDiskCache = ncssDiskCache;
 		this.format = format;
-    writer = PointDataWriterFactory.factory(format, out, diskCache);
+    writer = PointDataWriterFactory.factory(format, out, ncssDiskCache);
 	}
 
 	/* (non-Javadoc)

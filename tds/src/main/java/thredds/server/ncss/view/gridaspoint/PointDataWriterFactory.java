@@ -33,6 +33,7 @@
 
 package thredds.server.ncss.view.gridaspoint;
 
+import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.format.SupportedFormat;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.util.DiskCache2;
@@ -47,18 +48,18 @@ import java.io.OutputStream;
  */
 public class PointDataWriterFactory {
 
-  static public PointDataWriter factory(SupportedFormat wantFormat, OutputStream outputStream, DiskCache2 diskCache) {
+  static public PointDataWriter factory(SupportedFormat wantFormat, OutputStream outputStream, NcssDiskCache ncssDiskCache) {
 
  		if( wantFormat ==  SupportedFormat.XML_FILE || wantFormat ==  SupportedFormat.XML_STREAM){
  		  return XMLPointDataWriter.factory(outputStream);
  		}
 
     if( wantFormat ==  SupportedFormat.NETCDF3){
-      return NetCDFPointDataWriter.factory(NetcdfFileWriter.Version.netcdf3, outputStream, diskCache);
+      return NetCDFPointDataWriter.factory(NetcdfFileWriter.Version.netcdf3, outputStream, ncssDiskCache);
  		}
 
     if( wantFormat ==  SupportedFormat.NETCDF4){
-      return NetCDFPointDataWriter.factory(NetcdfFileWriter.Version.netcdf4, outputStream, diskCache);
+      return NetCDFPointDataWriter.factory(NetcdfFileWriter.Version.netcdf4, outputStream, ncssDiskCache);
  		}
 
     if( wantFormat ==  SupportedFormat.CSV_FILE ||  wantFormat ==  SupportedFormat.CSV_STREAM){

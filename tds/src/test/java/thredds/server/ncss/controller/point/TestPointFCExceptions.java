@@ -68,7 +68,7 @@ public class TestPointFCExceptions {
   @Autowired
   private WebApplicationContext wac;
 
-  private String dataset = "/ncss/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr";
+  private String dataset = "/ncss/point/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr";
 
   private MockMvc mockMvc;
 

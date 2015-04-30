@@ -53,8 +53,7 @@ public enum SupportedOperation {
   DATASET_BOUNDARIES_REQUEST("Dataset grid boundaries request", WKT, JSON),
   GRID_REQUEST("Grid data request", NETCDF3, NETCDF4, NETCDF4EXT),
   POINT_REQUEST("Point data request", XML_STREAM, XML_FILE, CSV_STREAM, CSV_FILE, NETCDF3, NETCDF4, NETCDF4EXT),
-  STATION_REQUEST("Station data request",
-          XML_STREAM, XML_FILE, CSV_STREAM, CSV_FILE, NETCDF3, NETCDF4, NETCDF4EXT, WATERML2);
+  STATION_REQUEST("Station data request", XML_STREAM, XML_FILE, CSV_STREAM, CSV_FILE, NETCDF3, NETCDF4, NETCDF4EXT, WATERML2);
 
   private final String operationName;
   private final List<SupportedFormat> supportedFormats;
@@ -87,24 +86,6 @@ public enum SupportedOperation {
         return f;
       }
     }
-
-		/*
-    List<SupportedFormat> supportedFormats = operation.getSupportedFormats();
-
-		int len = supportedFormats.size();
-		int cont =0;
-		boolean found=false;
-
-		while (!found && cont < len) {
-			//if( supportedFormats.get(cont).getAliases().contains(format) && supportedFormats.get(cont).isAvailable()
-			  )  found = true;
-			if( supportedFormats.get(cont).getAliases().contains(format) &&  FormatsAvailabilityService
-			.isFormatAvailable(supportedFormats.get(cont))) found = true;
-			cont++;
-		} 
- 	
-		if( found ) return supportedFormats.get(cont-1);
-		*/
 
     throw new UnsupportedResponseFormatException("Format " + want + " is not supported for " + getName());
   }

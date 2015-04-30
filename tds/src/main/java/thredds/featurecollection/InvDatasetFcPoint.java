@@ -5,6 +5,7 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
+import thredds.core.StandardService;
 import thredds.inventory.CollectionUpdateType;
 import thredds.client.catalog.tools.ThreddsMetadataAcdd;
 import thredds.server.catalog.FeatureCollectionRef;
@@ -66,8 +67,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   // for point data
   protected Service makeDefaultServices() {
     List<Service> nested = new ArrayList<>();
-    if (allowedServices.isAllowed(ServiceType.NetcdfSubset))
-      nested.add(allowedServices.getStandardService(ServiceType.NetcdfSubset));
+    if (allowedServices.isAllowed(StandardService.netcdfSubsetPoint))
+      nested.add(allowedServices.getStandardService(StandardService.netcdfSubsetPoint));
     return new Service(Default_Services_Name, "", ServiceType.Compound.toString(), null, null, nested, null);
   }
 

@@ -45,31 +45,35 @@ import java.util.List;
 
 public enum SupportedFormat {
 
-  CSV_STREAM("csv", true, ContentType.csv.toString(), "csv", "text/csv"),
-  CSV_FILE("csv_file", false, ContentType.csv.toString(), "csv_file"),
+  CSV_STREAM("csv", true, false, ContentType.csv.toString(), "text/csv"),
+  CSV_FILE("csv_file", false, false, ContentType.csv.toString(), "csv_file"),
 
-  XML_STREAM("xml", true, ContentType.xml.toString(), "xml"),
-  XML_FILE("xml_file", false, ContentType.xml.toString(), "xml_file"),
+  XML_STREAM("xml", true, false, ContentType.xml.toString(), "xml"),
+  XML_FILE("xml_file", false, false, ContentType.xml.toString(), "xml_file"),
 
-  NETCDF3("netcdf3", false, ContentType.netcdf.toString(), "netcdf", "netcdf3"),
-  NETCDF4("netcdf4-classic", false, "netcdf4-classic"),
-  NETCDF4EXT("netcdf4", false, "netcdf4"),
+  NETCDF3("netcdf3", false, true, ContentType.netcdf.toString(), "netcdf", "netcdf3"),
+  NETCDF4("netcdf4-classic", false, true, ContentType.netcdf.toString(), "netcdf4-classic"),
+  NETCDF4EXT("netcdf4", false, true, ContentType.netcdf.toString(), "netcdf4"),
 
-  JSON("json", false, ContentType.json.toString(), "json", "geojson"),
-  WKT("wkt", false, ContentType.text.toString(), "wkt"),
+  JSON("json", false, false, ContentType.json.toString(), "json", "geojson"),
+  WKT("wkt", false, false, ContentType.text.toString(), "wkt"),
 
-  WATERML2("waterml2", true, ContentType.xml.toString(), "waterml2");
+  WATERML2("waterml2", true, false, ContentType.xml.toString(), "waterml2");
 
   /*
    * First alias is used as content-type in the http headers
    */
   private final List<String> aliases;
   private final String formatName;
+  private final String mimeType;
   private final boolean isStream;
+  private final boolean isBinary;
 
-  SupportedFormat(String formatName, boolean isStream, String... aliases) {
+  SupportedFormat(String formatName, boolean isStream, boolean isBinary, String mimeType, String... aliases) {
     this.formatName = formatName;
     this.isStream = isStream;
+    this.isBinary = isBinary;
+    this.mimeType = mimeType;
     List<String> aliasesList = new ArrayList<>();
     Collections.addAll(aliasesList, aliases);
     this.aliases = Collections.unmodifiableList(aliasesList);
@@ -79,6 +83,9 @@ public enum SupportedFormat {
     return formatName;
   }
 
+  public String getMimeType() {
+    return mimeType;
+  }
 
   public List<String> getAliases() {
     return aliases;
@@ -90,20 +97,15 @@ public enum SupportedFormat {
     return false;
   }
 
-  //The first item in the aliases is the content type for the responses
-  public String getResponseContentType() {
-    return aliases.get(0);
-  }
-
   public boolean isStream() {
     return isStream;
   }
 
   public boolean isBinary() {
-    return formatName.equals("netcdf") || formatName.equals("netcdf4");
+    return isBinary;
   }
 
   public boolean isText() {
-    return !isBinary();
+    return !isBinary;
   }
 }

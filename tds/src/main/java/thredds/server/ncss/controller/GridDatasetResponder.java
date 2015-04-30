@@ -91,9 +91,9 @@ public abstract class GridDatasetResponder {
  		return dates;
  	}
 
- 	public static String buildCacheUrl(String fileName){
+ 	/* public static String buildCacheUrl(String fileName){
  		 return NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getNCSSServletPath() + "/" + fileName;
- 	}
+ 	} */
 
 //	private GridDataset gds;
 //	private long maxFileDownloadSize;

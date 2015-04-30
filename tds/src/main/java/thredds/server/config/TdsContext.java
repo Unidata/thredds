@@ -184,7 +184,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     this.rootDirectory = new File(rootPath);
     BasicDescendantFileSource rootDirSource = new BasicDescendantFileSource(this.rootDirectory);
     this.rootDirectory = rootDirSource.getRootDirectory();
-    //this.webinfPath = this.rootDirectory + "/WEB-INF";
     ServletUtil.setRootPath(rootDirSource.getRootDirectoryPath());
 
     // Set the startup (initial install) content directory and source.

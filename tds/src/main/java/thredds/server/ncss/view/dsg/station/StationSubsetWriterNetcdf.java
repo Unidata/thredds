@@ -1,7 +1,7 @@
 package thredds.server.ncss.view.dsg.station;
 
 import org.springframework.http.HttpHeaders;
-import thredds.server.ncss.controller.NcssController;
+import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
@@ -17,7 +17,6 @@ import ucar.nc2.ft.point.StationPointFeature;
 import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.Station;
 
@@ -36,15 +35,17 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
 
     private final File netcdfResult;
     private final WriterCFStationCollection cfWriter;
+    private final NcssDiskCache ncssDiskCache;
 
-    public StationSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams,
-            DiskCache2 diskCache, OutputStream out, NetcdfFileWriter.Version version) throws NcssException, IOException {
+    public StationSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, NcssDiskCache ncssDiskCache,
+                                     OutputStream out, NetcdfFileWriter.Version version) throws NcssException, IOException {
         super(fdPoint, ncssParams);
 
+        this.ncssDiskCache = ncssDiskCache;
         this.out = out;
         this.version = version;
 
-        this.netcdfResult = diskCache.createUniqueFile("ncssTemp", ".nc");
+        this.netcdfResult = ncssDiskCache.getDiskCache().createUniqueFile("ncssTemp", ".nc");
         List<Attribute> attribs = new ArrayList<>();
         attribs.add(new Attribute(CDM.TITLE, "Extracted data from TDS Feature Collection " + fdPoint.getLocation()));
 
@@ -78,8 +79,7 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         String fileName = NcssRequestUtils.getFileNameForResponse(datasetPath, version);
-        String url = NcssRequestUtils.getTdsContext().getContextPath() +
-                NcssController.getServletCachePath() + "/" + fileName;
+        String url = ncssDiskCache.getServletCachePath() + fileName;
 
         if (version == NetcdfFileWriter.Version.netcdf3) {
             httpHeaders.set(ContentType.HEADER, ContentType.netcdf.getContentHeader());

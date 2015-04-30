@@ -66,7 +66,7 @@ public class DatasetBoundariesTest {
 	private WebApplicationContext wac;
 	
 	private MockMvc mockMvc;
-  private String path = "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries.xml";
+  private String path = "/ncss/grid/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z/datasetBoundaries.xml";
 
 	@Before
 	public void setup(){
@@ -86,7 +86,7 @@ public class DatasetBoundariesTest {
 		
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path);
 		this.mockMvc.perform(rb)
-            .andExpect(MockMvcResultMatchers.header().string(ContentType.HEADER, SupportedFormat.WKT.getResponseContentType() ) );
+            .andExpect(MockMvcResultMatchers.header().string(ContentType.HEADER, SupportedFormat.WKT.getMimeType() ) );
 	}
 	
 	@Test
@@ -96,7 +96,7 @@ public class DatasetBoundariesTest {
             .param("accept", "json");
 		
 		this.mockMvc.perform(rb)
-            .andExpect(MockMvcResultMatchers.header().string(ContentType.HEADER, SupportedFormat.JSON.getResponseContentType() ) );
+            .andExpect(MockMvcResultMatchers.header().string(ContentType.HEADER, SupportedFormat.JSON.getMimeType() ) );
 	}
 
 }

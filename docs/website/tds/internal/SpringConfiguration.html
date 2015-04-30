@@ -112,13 +112,13 @@
 <h2>Spring MVC</h2>
 <p>http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html</p>
 <p>Lots of ways, we want to standardize on one or a few idioms.</p>
-<h3>Handle completely</h3>
+<h3>Need to write Binary stream</h3>
 <ul>
-  <li>see CdmRemoteController</li>
   <li>return  ResponseEntity&lt;String&gt;</li>
   <li>errors: handle these in the controller</li>
+  <li>see CdmRemoteController</li>
 </ul>
-<h3>ModelView</h3>
+<h3>Return Html, XML</h3>
 <ul>
   <li>use a view technology</li>
   <li>return a ModelView</li>

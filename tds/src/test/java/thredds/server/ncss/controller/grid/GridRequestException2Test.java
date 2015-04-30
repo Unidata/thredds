@@ -45,7 +45,9 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.controller.NcssController;
+import thredds.server.ncss.controller.NcssGridController;
 import thredds.server.ncss.exception.RequestTooLargeException;
+import thredds.server.ncss.params.NcssGridParamsBean;
 import thredds.server.ncss.params.NcssParamsBean;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
@@ -63,13 +65,13 @@ import java.util.List;
 public class GridRequestException2Test {
 
 	@Autowired
-	private NcssController featureDatasetController;
+	private NcssGridController featureDatasetController;
 
 	private MockHttpServletResponse response ;
 	private MockHttpServletRequest request;
 
   //   <featureCollection featureType="GRIB" name="GFS_CONUS_80km" path="gribCollection/GFS_CONUS_80km">
-	private String pathInfo="/ncss/gribCollection/GFS_CONUS_80km/best";
+	private String pathInfo="/ncss/grid/gribCollection/GFS_CONUS_80km/best";
 
 	@Before
 	public void setUp() throws IOException{
@@ -84,9 +86,8 @@ public class GridRequestException2Test {
 	@Test(expected=RequestTooLargeException.class)
 	public void testRequestTooLargeException() throws Exception{
 
-    NcssParamsBean params;
 		BindingResult validationResult;
-		params = new NcssParamsBean();
+		NcssGridParamsBean params = new NcssGridParamsBean();
 		params.setTemporal("all");
 		List<String> vars = new ArrayList<>();
 		vars.add("u-component_of_wind_isobaric");

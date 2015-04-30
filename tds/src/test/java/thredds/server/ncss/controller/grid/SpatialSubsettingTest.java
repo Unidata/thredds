@@ -58,7 +58,7 @@ import org.springframework.web.context.WebApplicationContext;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncss.controller.AbstractNcssController;
+import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.dataservice.DatasetHandlerAdapter;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
@@ -133,7 +133,7 @@ public class SpatialSubsettingTest {
 				.param("north",String.valueOf( latlonRectParams[3]))
 				.param("accept", accept);
 
-    String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
+    String datasetPath = NcssController.getDatasetPath(this.pathInfo);
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(datasetPath);
     assert (gds != null);
 		

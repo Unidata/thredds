@@ -74,7 +74,7 @@ public class TestPointFCsubsetting {
 
     @Autowired
     private WebApplicationContext wac;
-    private String dataset = "/ncss/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr";
+    private String dataset = "/ncss/point/testBuoyFeatureCollection/Surface_Buoy_Point_Data_fc.cdmr";
     private String req = "?req=point&var=ICE&var=PRECIP_amt&var=PRECIP_amt24&var=T&north=40&west=-170&east=-100&south" +
             "=-40&time_start=2013-08-04T00:00:00Z&time_end=2013-08-05T00:00:00Z&accept=";
     private MockMvc mockMvc;
@@ -107,7 +107,7 @@ public class TestPointFCsubsetting {
         // problem is that browser wont display text/csv in line, so use tesxt/plain; see thredds.server.ncss.view
         // .dsg.PointWriter.WriterCSV
         String expectFormat = (format == SupportedFormat.CSV_STREAM) ? ContentType.text.getContentHeader() : format
-                .getResponseContentType();
+                .getMimeType();
 
         RequestBuilder rb = MockMvcRequestBuilders.get(dataset + req + format.getFormatName()).servletPath(dataset);
         System.out.printf("%nURL='%s'%n", dataset + req + format.getFormatName());

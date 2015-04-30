@@ -17,15 +17,14 @@ public final class GridAsPointDataParameters {
 	private static List<LatLonPoint> point;
 	
 	//Index for the vertical level. verticalLevel < 0 means all levels.
-	//We must now beforehand the size of the vertical level use index within the Axis range
+	//We must know beforehand the size of the vertical level use index within the Axis range
 	private static List<Double> verticalLevels;
 
 	private GridAsPointDataParameters(){}
 		
 	static{
 		
-
-			vars = new ArrayList<List<String>>();			
+			vars = new ArrayList<>();
 			//Variables with no vertical level
 			vars.add(Arrays.asList("Pressure", "Pressure_reduced_to_MSL"));
 			//vars.add(Arrays.asList(new String[]{"Pressure"}));
@@ -43,11 +42,11 @@ public final class GridAsPointDataParameters {
 			pathInfo = new ArrayList<String>();									
 			//dataset must contain the corresponding variables array
 			pathInfo =Arrays.asList(
-              "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
-              "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
+              "/ncss/grid/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
+              "/ncss/grid/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
               //"testGFSfmrc/files/GFS_CONUS_80km_20120418_1200.nc",
-              "/ncss/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
-              "/ncss/testGFSfmrc/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4");
+              "/ncss/grid/testGFSfmrc/runs/GFS_CONUS_80km_RUN_2012-04-18T12:00:00.000Z",
+              "/ncss/grid/testGFSfmrc/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4");
 			
 			Map<String,List<String>> noVertLevels = new HashMap<String,List<String> >();
 			noVertLevels.put("no_vert_levels", vars.get(0) );

@@ -15,11 +15,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.GridAsPointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncss.controller.AbstractNcssController;
+import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.OutOfBoundariesException;
 import thredds.server.ncss.format.SupportedFormat;
@@ -43,6 +44,9 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class GridAsPointWriterTest {
+
+	@Autowired
+	NcssDiskCache ncssDiskCache;
 	
 	private PointDataWriter pointDataWriter;
 	private SupportedFormat supportedFormat;
@@ -91,15 +95,14 @@ public class GridAsPointWriterTest {
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
 		
-    String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
+    String datasetPath = NcssController.getDatasetPath(this.pathInfo);
 		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
     assert gridDataset != null;
 
 		List<String> keys = new ArrayList<String>( vars.keySet());		
-		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
+		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)));
 		
-		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
-    pointDataWriter = PointDataWriterFactory.factory(supportedFormat, new ByteArrayOutputStream(), diskCache);
+    pointDataWriter = PointDataWriterFactory.factory(supportedFormat, new ByteArrayOutputStream(), ncssDiskCache);
 
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
 		Random rand = new Random();

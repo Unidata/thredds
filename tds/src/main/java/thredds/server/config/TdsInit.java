@@ -148,6 +148,7 @@ public class TdsInit implements DisposableBean, ApplicationListener<ContextRefre
     LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
     InvDatasetFeatureCollection.setLoggerFactory(fac);
 
+    allowedServices.finish(); // finish when we know everything is wired
     InvDatasetFeatureCollection.setAllowedServices(allowedServices);
 
     /* <Netcdf4Clibrary>
