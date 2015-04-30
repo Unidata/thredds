@@ -92,6 +92,8 @@ public enum SupportedFormat {
   }
 
   public boolean isAlias(String want) {
+    if (want.equalsIgnoreCase(formatName)) return true;
+    if (want.equalsIgnoreCase(mimeType)) return true;
     for (String have : aliases)
       if (have.equalsIgnoreCase(want)) return true;
     return false;

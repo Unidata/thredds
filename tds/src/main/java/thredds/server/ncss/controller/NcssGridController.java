@@ -138,7 +138,7 @@ public class NcssGridController extends NcssController {
     pds.respond(res, fd, datasetPath, params, format);
   }
 
-  @RequestMapping(value = {"**/dataset.html", "**/dataset.xml"})
+  @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
   void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
     if (!req.getParameterMap().isEmpty())
       throw new IllegalArgumentException("Invalid info request.");

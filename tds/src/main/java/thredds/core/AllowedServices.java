@@ -92,7 +92,7 @@ public class AllowedServices {
       if (service == null)
         logServerStartup.error("No service named " + s);
       else {
-        AllowedService as = allowed.get(service.type);
+        AllowedService as = allowed.get(service);
         if (as != null && as.allowed)
           allowedGrid.add( makeService(as.ss));
       }

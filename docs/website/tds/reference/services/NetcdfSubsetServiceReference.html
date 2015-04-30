@@ -95,17 +95,19 @@
     <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable.</p>
 
 <h3>REST URLs</h3>
-  <pre>http://{host}/{context}/{service}/{dataset}[/dataset.xml | /dataset.html | {?query}]
+  <pre>http://{host}/{context}/{service}/{dataset}[/{description} | ?{query}]
 
 where
-  {host}     	          = server name, eg thredds.ucar.edu
-  {context} 	          = "thredds" (usually)
-  {service} 	          = "ncss/grid" or &quot;ncss/point&quot;
-  {dataset} 	          = logical path for the dataset, obtained from the catalog
-  dataset.xml           = to get the dataset description in xml
-  dataset.html          = to get the human-readable web form
-  datasetBoundaries.xml = to get a description of the bounding boxes
-  {?query}              = the KVPs to describe the subset that you want (see below for valid combinations)
+  {host}     	            = server name, eg thredds.ucar.edu
+  {context} 	            = "thredds" (usually)
+  {service} 	            = "ncss/grid" or &quot;ncss/point&quot;, depending if the dataset has feature type GRID or one of the Point types.
+  {dataset} 	            = logical path for the dataset, obtained from the catalog
+  {description}           = dataset.[xml|html] |  pointDataset.[xml|html] | datasetBoundaries.xml | stations.xml
+  dataset.[xml|html]      = the dataset description in xml or as a web form (may be point or grid)
+  pointDataset.[xml|html] = the grid-as-point or the point dataset description in xml or as a web form
+  datasetBoundaries.xml   = the description of the bounding boxes for grid datasets
+  station.xml             = the list of valid stations for a station dataset
+  {query}                 = the KVPs to describe the subset that you want (see below for valid combinations)
 </pre>
 
 Examples:
@@ -135,7 +137,7 @@ Examples:
     coordinates. Grid data points next to each other in index space are next to each other in coordinate space. </p>
 <ul>
     <li>Example <a href="http://thredds.ucar.edu/thredds/ncss/grib/NCEP/DGEX/CONUS_12km/best/dataset.xml"><strong>gridDataset</strong></a>
-        document (<a href="files/gridsDataset.xml">offline</a> example)
+        document (<a href="../files/gridsDataset.xml">offline</a> example)
     </li>
 </ul>
 <h3>Station Dataset</h3>
@@ -144,7 +146,7 @@ Examples:
 <ul>
     <li>Example <a
             href="http://thredds-test.unidata.ucar.edu/thredds/ncss/pointData/cf_doc_dsg/example/H.2.2.1.nc/dataset.xml"><strong>Station
-        Dataset</strong></a> document (<a href="files/stationsDataset.xml">offline</a> example)
+        Dataset</strong></a> document (<a href="../files/stationsDataset.xml">offline</a> example)
     </li>
     <li>Station datasets also support <a
             href="http://thredds-test.unidata.ucar.edu/thredds/ncss/pointData/cf_doc_dsg/example/H.2.2.1.nc/station.xml">
@@ -158,7 +160,7 @@ Examples:
 <ul>
     <li>Example <a
             href="http://thredds-test.unidata.ucar.edu/thredds/ncss/pointData/cf_doc_dsg/example/H.1.1.nc/dataset.xml"><strong>Point
-        Dataset</strong></a> document (<a href="files/pointDataset.xml">offline</a> example)
+        Dataset</strong></a> document (<a href="../files/pointDataset.xml">offline</a> example)
     </li>
 </ul>
 <p>&nbsp;</p>

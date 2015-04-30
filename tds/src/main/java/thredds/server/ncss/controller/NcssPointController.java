@@ -97,14 +97,12 @@ public class NcssPointController extends NcssController {
     }
 
     SupportedFormat format = supportedOp.getSupportedFormat(params.getAccept());
-    DiskCache2 diskCache = ncssDiskCache.getDiskCache();
-
     NcssResponder pds = DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, params, ncssDiskCache, res.getOutputStream(), format);
     setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
     pds.respond(res, fd, datasetPath, params, format);
   }
 
-  @RequestMapping(value = {"**/pointDataset.html", "**/pointDataset.xml"})
+  @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
    void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
      if (!req.getParameterMap().isEmpty())
        throw new IllegalArgumentException("Invalid info request.");
@@ -134,7 +132,6 @@ public class NcssPointController extends NcssController {
    @RequestMapping(value = {"**/station.xml"})
    void getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {
 
-     String path = req.getServletPath();
      String datasetPath = getDatasetPath(req);
      try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
 
