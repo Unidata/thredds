@@ -106,7 +106,7 @@ public class RadarDataInventory {
     }
 
     public static class DirectoryStructure {
-        private class DirEntry {
+        private static class DirEntry {
             public DirType type;
             public String fmt;
             public DirEntry(DirType type, String fmt) {
