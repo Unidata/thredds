@@ -16,39 +16,31 @@ dependencies {
     runtime libraries["log4j-core"]
 }
 
-apply plugin: 'shadow'
-import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+jar.manifest.attributes 'Main-Class': 'thredds.tdm.Tdm'
 
-shadow {
-    outputFile = file("${destinationDir}/tdms-${version}.jar")
-    stats = true
+apply plugin: 'com.github.johnrengelman.shadow'
 
-    exclude 'com/sleepycat/**'
-    exclude 'net/sf/**'
-    exclude 'org/quartz/**'
+shadowJar {
+    archiveName = "tdm-4.6.jar"
+
+    append('META-INF/spring.handlers')
+    append('META-INF/spring.schemas')
+
+    // Filter out crap from various other packages.
+    exclude 'AUTHORS'
+    exclude 'DATE'
+    exclude 'LICENCE'
+    exclude 'LICENSE'
+    exclude 'NOTICE'
+    exclude '*.txt'
+    exclude '*.xml'
+    exclude 'META-INF/DEPENDENCIES'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/NOTICE'
     exclude 'META-INF/*.DSA'
     exclude 'META-INF/*.RSA'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/LICENSE'
     exclude 'META-INF/*.txt'
     exclude 'META-INF/*.xml'
-
-    artifactSet {
-        exclude 'commons-logging:commons-logging:*'
-    }
-
-    jar {
-        manifest {
-            attributes 'Main-Class': 'thredds.tdm.TdmRunner'
-        }
-    }
-
-    transformer(AppendingTransformer) {
-        resource = 'META-INF/spring.handlers'
-    }
-    transformer(AppendingTransformer) {
-        resource = 'META-INF/spring.schemas'
-    }
 }
 
 task showClasspath << {

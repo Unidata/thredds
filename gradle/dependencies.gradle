@@ -30,11 +30,11 @@ ext {
 
 libraries["gretty"] = "org.akhikhl.gretty:gretty:1.2.0"
 
-libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:0.8"
+libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.1"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
-libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.+"
+libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.1"
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 

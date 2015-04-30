@@ -72,6 +72,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <finalName>ncIdv-${project.version}-all</finalName>
               <artifactSet>
                 <excludes>
                   <exclude>edu.ucar:ui</exclude>
@@ -85,24 +86,29 @@
                 </excludes>
               </artifactSet>
               <filters>
-                <!-- filter>
-                  <artifact>edu.ucar:visadCdm</artifact>
-                  <excludes>
-                    <exclude>visad/**</exclude>
-                    <exclude>edu/wisc/**</exclude>
-                  </excludes>
-                </filter-->
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
-                    <excludes>DATE</excludes>
-                    <excludes>JDOM*</excludes>
-                    <excludes>*.html</excludes>
-                    <excludes>META-INF/*.txt</excludes>
-                    <excludes>META-INF/*.xml</excludes>
+                    <!-- Filter out crap from "visad" -->
                     <excludes>nom/**</excludes>
                     <excludes>edu/wisc/**</excludes>
                     <excludes>visad/**</excludes>
+
+                    <!-- Filter out crap from various other packages. -->
+                    <excludes>AUTHORS</excludes>
+                    <excludes>DATE</excludes>
+                    <excludes>LICENCE</excludes>
+                    <excludes>LICENSE</excludes>
+                    <excludes>NOTICE</excludes>
+                    <excludes>*.txt</excludes>
+                    <excludes>*.xml</excludes>
+                    <excludes>META-INF/DEPENDENCIES</excludes>
+                    <excludes>META-INF/LICENSE</excludes>
+                    <excludes>META-INF/NOTICE</excludes>
+                    <excludes>META-INF/*.DSA</excludes>
+                    <excludes>META-INF/*.RSA</excludes>
+                    <excludes>META-INF/*.txt</excludes>
+                    <excludes>META-INF/*.xml</excludes>
                   </excludes>
                 </filter>
               </filters>

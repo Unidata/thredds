@@ -57,6 +57,13 @@ subprojects {
             options.addStringOption('Xdoclint:none', '-quiet')
         }
     }
+
+    afterEvaluate {
+        // For projects using the shadow plugin, create the fat jar after creating the normal jar.
+        if (pluginManager.hasPlugin("com.github.johnrengelman.shadow")) {
+            tasks.jar.finalizedBy tasks.shadowJar
+        }
+    }
 }
 
 task foo << {

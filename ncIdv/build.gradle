@@ -24,14 +24,20 @@ ext {
     destinationDir = 'build/libs/'
 }
 
-apply plugin: 'shadow'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-shadow {
-    outputFile = file("${destinationDir}/${ncIdvJar}")
-    outputFile = file("${ncIdvJar}")
-    stats = true
+shadowJar {
+    dependencies {
+        exclude(dependency('c3p0:c3p0'))  // Transitive dependency dragged in by libraries["quartz"]
+    }
 
-    exclude 'AUTHORS'    // crap from other packages
+    // Filter out crap from libraries["visad"]
+    exclude 'edu/wisc/**'
+    exclude 'nom/**'
+    exclude 'visad/**'
+
+    // Filter out crap from various other packages.
+    exclude 'AUTHORS'
     exclude 'DATE'
     exclude 'LICENCE'
     exclude 'LICENSE'
@@ -45,16 +51,6 @@ shadow {
     exclude 'META-INF/*.RSA'
     exclude 'META-INF/*.txt'
     exclude 'META-INF/*.xml'
-
-    exclude 'edu/wisc/**'
-    exclude 'nom/**'
-    exclude 'visad/**'
-
-    artifactSet {
-        exclude 'commons-logging:commons-logging:*'
-        exclude 'net.sf.ehcache:ehcache-core:*'
-    }
-
 }
 
 /* following properties should be in gradle.properties:
@@ -64,6 +60,7 @@ shadow {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
+// TODO: Use the Sync task for this.
 task releaseCdm(dependsOn: ['shadowJar']) << {
     if (project.hasProperty("ftpdir")) {
         // println "destinationDir= " + ${destinationDir}

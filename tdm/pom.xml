@@ -112,15 +112,6 @@
                 </excludes>
               </artifactSet>
 
-              <!-- filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>log4j.xml</exclude>
-                  </excludes>
-                </filter>
-              </filters -->
-
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>thredds.tdm.Tdm</mainClass>
@@ -133,15 +124,33 @@
                 </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
               </transformers>
+
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <!-- Filter out crap from various other packages. -->
+                    <excludes>AUTHORS</excludes>
+                    <excludes>DATE</excludes>
+                    <excludes>LICENCE</excludes>
+                    <excludes>LICENSE</excludes>
+                    <excludes>NOTICE</excludes>
+                    <excludes>*.txt</excludes>
+                    <excludes>*.xml</excludes>
+                    <excludes>META-INF/DEPENDENCIES</excludes>
+                    <excludes>META-INF/LICENSE</excludes>
+                    <excludes>META-INF/NOTICE</excludes>
+                    <excludes>META-INF/*.DSA</excludes>
+                    <excludes>META-INF/*.RSA</excludes>
+                    <excludes>META-INF/*.txt</excludes>
+                    <excludes>META-INF/*.xml</excludes>
+                  </excludes>
+                </filter>
+              </filters>
             </configuration>
           </execution>
-
         </executions>
-
       </plugin>
-
     </plugins>
-
   </build>
-
 </project>

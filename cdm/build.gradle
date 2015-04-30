@@ -43,6 +43,7 @@ javadoc {
     }
 }
 
+// TODO: Use the Sync task for this.
 task releaseDocs(dependsOn: javadoc) << {
     def releaseDir = webdir + "javadoc"
 

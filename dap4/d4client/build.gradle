@@ -7,3 +7,9 @@ dependencies {
     compile libraries["slf4j-api"]
     runtime libraries["slf4j-jdk14"]
 }
+
+jar.manifest.attributes 'Main-Class': 'dap4.dap4.Dap4Print'
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar.archiveName = "dap4-${version}.jar"

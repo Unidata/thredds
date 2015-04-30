@@ -32,7 +32,7 @@ dependencies {
 
 //////////////////////////////////////////////////////////
 
-apply plugin: 'shadow'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 jar {
     manifest {
@@ -71,41 +71,37 @@ ext {
     jarsContainingDuplicateEntries = ['xmlbeans-2.6.0.jar']
 }
 
-import com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-
-shadow {
-    outputFile = file("${destinationDir}/${toolsUIjar}")
-    stats = true
-
-    exclude 'AUTHORS'    // crap from other packages
-    exclude 'DATE'
-    exclude 'LICENCE'
-    exclude 'LICENSE'
-    exclude 'NOTICE'
-    exclude '*.txt'
-    exclude '*.xml'
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/*.SF'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.txt'
-    exclude 'META-INF/*.xml'
-
-    transformer(ManifestResourceTransformer) {
-        mainClass = 'ucar.nc2.ui.ToolsUI'
-    }
-    transformer(AppendingTransformer) {
-        resource = 'META-INF/spring.handlers'
-    }
-    transformer(AppendingTransformer) {
-        resource = 'META-INF/spring.schemas'
-    }
-    transformer(ServiceFileTransformer) {}
-}
+//shadow {
+//    outputFile = file("${destinationDir}/${toolsUIjar}")
+//    stats = true
+//
+//    exclude 'AUTHORS'    // crap from other packages
+//    exclude 'DATE'
+//    exclude 'LICENCE'
+//    exclude 'LICENSE'
+//    exclude 'NOTICE'
+//    exclude '*.txt'
+//    exclude '*.xml'
+//    exclude 'META-INF/DEPENDENCIES'
+//    exclude 'META-INF/LICENSE'
+//    exclude 'META-INF/NOTICE'
+//    exclude 'META-INF/*.SF'
+//    exclude 'META-INF/*.DSA'
+//    exclude 'META-INF/*.RSA'
+//    exclude 'META-INF/*.txt'
+//    exclude 'META-INF/*.xml'
+//
+//    transformer(ManifestResourceTransformer) {
+//        mainClass = 'ucar.nc2.ui.ToolsUI'     // Do I need this, given that I've set 'Main-Class' in jar?
+//    }
+//    transformer(AppendingTransformer) {
+//        resource = 'META-INF/spring.handlers'
+//    }
+//    transformer(AppendingTransformer) {
+//        resource = 'META-INF/spring.schemas'
+//    }
+//    transformer(ServiceFileTransformer) {}
+//}
 
 // It's possible to test web start files locally before deploying them.
 // 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,
@@ -118,6 +114,7 @@ shadow {
 // Edit Site List... and add the entry "file:/".
 // 6. Change to webdir and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
 // but I couldn't get that working (and there was no error feedback).
+// TODO: Use the Sync task for this.
 task releaseWebstart(dependsOn: jar) << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
@@ -176,6 +173,7 @@ task releaseWebstart(dependsOn: jar) << {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
+// TODO: Use the Sync task for this.
 task releaseCdm(dependsOn: shadowJar) << {
     if (project.hasProperty("ftpdir")) {
         println "copy " + toolsUIjar + " to " + ftpdir
@@ -235,10 +233,10 @@ task showDependencies << {
     }
 }
 
-import org.codehaus.groovy.runtime.NioGroovyMethods
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
+import org.codehaus.groovy.runtime.NioGroovyMethods
 
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate
