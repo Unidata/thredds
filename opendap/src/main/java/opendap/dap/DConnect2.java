@@ -248,14 +248,11 @@ public class DConnect2
      */
     private void openConnection(String urlString, Command command) throws IOException, DAP2Exception
     {
-        HTTPMethod method = null;
+        HTTPCloseableMethod method = null;
         InputStream is = null;
 
-        HTTPSession _session = null;
-
         try {
-            _session = HTTPFactory.newSession(urlString);
-            method = HTTPFactory.Get(_session);
+            method = HTTPFactory.GET(urlString);
 
             if(acceptCompress)
                 method.setRequestHeader("Accept-Encoding", "deflate,gzip");
@@ -265,9 +262,6 @@ public class DConnect2
                 method.setRequestHeader("X-Accept-Session", "true");
 
             int statusCode = method.execute();
-
-            // debug
-            // if (debugHeaders) ucar.httpservices.HttpClientManager.showHttpRequestInfo(f, method);
 
             if(statusCode == HttpStatus.SC_NOT_FOUND) {
                 throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);
@@ -281,10 +275,8 @@ public class DConnect2
                 throw new DAP2Exception("Method failed:" + method.getStatusText() + " on URL= " + urlString);
             }
 
-            // Get the response body.
             is = method.getResponseAsStream();
 
-            // check if its an error
             Header header = method.getResponseHeader("Content-Description");
             if(header != null && (header.getValue().equals("dods-error")
                 || header.getValue().equals("dods_error"))) {
@@ -295,15 +287,11 @@ public class DConnect2
                 throw ds;
             }
 
-            ver = new ServerVersion(method);
-
+            //TODO: ver = new ServerVersion(method);
             checkHeaders(method);
 
-            // check for deflator
             Header h = method.getResponseHeader("content-encoding");
             String encoding = (h == null) ? null : h.getValue();
-            //if (encoding != null) LogStream.out.println("encoding= " + encoding);
-
             if(encoding != null && encoding.equals("deflate")) {
                 is = new BufferedInputStream(new InflaterInputStream(is), 1000);
 
@@ -319,8 +307,7 @@ public class DConnect2
             throw new DAP2Exception(e);
 
         } finally {
-            // Release the connection.
-            if(_session != null) _session.close();
+        	method.close();
         }
     }
 
@@ -445,7 +432,7 @@ public class DConnect2
         return lastExtended;
     }
 
-    private void checkHeaders(HTTPMethod method)
+    private void checkHeaders(HTTPCloseableMethod method)
     {
         if(debugHeaders) {
             DAPNode.log.debug("\nOpenConnection Headers for " + method.getPath());
