@@ -241,7 +241,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
         switch (subtype) {
           case 1:
           case 2:
-            offset = h5.makeIntFromBytes(heapId, 1, (heapid.length-1));
+            offset = h5.makeIntFromBytes(heapId, 1, (heapId.length-1));
             break;
         }
       } else if (type == 2) {
