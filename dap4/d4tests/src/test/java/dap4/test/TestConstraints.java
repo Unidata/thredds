@@ -1,6 +1,7 @@
 package dap4.test;
 
 import dap4.test.util.DapTestCommon;
+import org.junit.Ignore;
 import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -156,6 +157,7 @@ public class TestConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test method
 
+    @Ignore
     public void testConstraints()
             throws Exception
     {
