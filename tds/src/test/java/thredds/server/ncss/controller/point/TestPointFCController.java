@@ -75,11 +75,11 @@ public class TestPointFCController {
     RequestBuilder rb = MockMvcRequestBuilders.get(xmlpath).servletPath(xmlpath);
     MvcResult result = this.mockMvc.perform(rb)
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
-            .andReturn();
+                .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
+                .andReturn();
 
-    String ress = result.getResponse().getContentAsString();
-    System.out.printf("%s%n", ress);
+        String ress = result.getResponse().getContentAsString();
+        System.out.printf("%s%n", ress);
 
     Document doc = XmlUtil.getStringResponseAsDoc(result.getResponse());
 
