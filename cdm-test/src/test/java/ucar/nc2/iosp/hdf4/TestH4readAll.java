@@ -64,7 +64,7 @@ public class TestH4readAll {
     H4header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
  	public static Collection<Object[]> getTestParameters() throws IOException {
     Collection<Object[]> filenames = new ArrayList<>();
     TestDir.actOnAllParameterized(testDir , new H4FileFilter(), filenames);

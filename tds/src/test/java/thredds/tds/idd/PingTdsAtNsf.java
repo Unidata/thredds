@@ -55,7 +55,7 @@ public class PingTdsAtNsf
         this.catalogUrl = catalogUrl;
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name="{0}")
     public static Collection<Object[]> getCatalogUrls()
     {
         Collection<Object[]> catUrls = StandardCatalogUtils.getIddMainCatalogUrlArrayCollection();

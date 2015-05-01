@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
 @Category(NeedsCdmUnitTest.class)
 public class TestRadarServer {
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static java.util.Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
             // {"/radar/radarCollections.xml"},

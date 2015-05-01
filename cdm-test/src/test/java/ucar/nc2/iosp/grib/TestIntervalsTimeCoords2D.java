@@ -80,7 +80,7 @@ import java.util.Collection;
 @Category(NeedsCdmUnitTest.class)
 public class TestIntervalsTimeCoords2D {
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters() throws IOException {
     Collection<Object[]> params = new ArrayList<>();
     params.add(new Object[]{TestDir.cdmUnitTestDir + "tds/ncep/GFS_Puerto_Rico_191km_20100515_0000.grib1", "VAR_7-0-2-61_L1_I12_Hour_S4", bounds0, 2}); // Total_precipitation_surface_12_Hour_Accumulation

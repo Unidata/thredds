@@ -20,7 +20,7 @@ public class TestSigmet {
 
     String filename;
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name="{0}")
     public static List<Object[]> getTestParameters() throws IOException{
         final List<Object[]> files = new ArrayList<>(10);
         TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/sigmet/",

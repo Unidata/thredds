@@ -59,7 +59,7 @@ public class TestGeotiffRead {
 
   // Even if this class is being excluded due to the NeedsCdmUnitTest annotation, JUnit still calls this method.
   // So, it mustn't throw an exception. Instead, when cdmUnitTest/ isn't available, it'll return an empty list.
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

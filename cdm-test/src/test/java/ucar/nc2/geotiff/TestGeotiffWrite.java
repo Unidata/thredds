@@ -58,7 +58,7 @@ import java.util.List;
   public class TestGeotiffWrite {
     static public String topdir = TestDir.cdmUnitTestDir ;
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name="{0}")
     public static List<Object[]> getTestParameters() {
       List<Object[]> result = new ArrayList<>();
 

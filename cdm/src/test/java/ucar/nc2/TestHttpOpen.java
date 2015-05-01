@@ -52,7 +52,7 @@ import java.util.*;
 @RunWith(Parameterized.class)
 public class TestHttpOpen {
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static Collection testUrls() {
       Object[][] data = new Object[][]{
               {"http://"+ TestDir.threddsTestServer+"/thredds/fileServer/testdata/2004050412_eta_211.nc"},

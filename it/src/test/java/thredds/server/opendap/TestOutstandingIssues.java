@@ -1,5 +1,7 @@
+// $Id: $
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -30,38 +32,40 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.tds.idd;
+package thredds.server.opendap;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Collection;
+import junit.framework.*;
+import org.junit.experimental.categories.Category;
+import thredds.TestWithLocalServer;
+import ucar.ma2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
-@RunWith(Parameterized.class)
-public class PingTdsOnMotherlode8080
-{
-    private String catalogUrl;
+import java.io.*;
 
-    public PingTdsOnMotherlode8080( String catalogUrl )
-    {
-        super();
-        this.catalogUrl = catalogUrl;
+/** Test nc2 dods in the JUnit framework. */
+@Category(NeedsCdmUnitTest.class)
+public class TestOutstandingIssues extends TestCase {
+
+  public void testByteAttribute() throws IOException {
+    String filename = TestWithLocalServer.withPath("dodsC/scanCdmUnitTests/ft/stationProfile/PROFILER_wind_06min_20091030_2330.nc");
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename, true, null);
+    assert ncd != null;
+    VariableDS v = (VariableDS) ncd.findVariable("uvQualityCode");
+    assert v != null;
+    assert v.hasMissing();
+
+    int count = 0;
+    Array data = v.read();
+    IndexIterator ii = data.getIndexIterator();
+    while (ii.hasNext()) {
+      byte val = ii.getByteNext();
+      if (v.isMissing(val)) count++;
+      if (val == (byte)-1)
+        assert v.isMissing(val);
     }
-
-    @Parameterized.Parameters(name="{0}")
-    public static Collection<Object[]> getCatalogUrls()
-    {
-        Collection<Object[]> catUrls = StandardCatalogUtils.getIddMainCatalogUrlArrayCollection();
-        catUrls.addAll( StandardCatalogUtils.getMlodeMainCatalogUrlArrayCollection() );
-        return catUrls;
-    }
-
-    @Test
-    public void ping() throws IOException {
-        String tdsUrl = "http://thredds.ucar.edu/thredds/";
-
-        CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );
-    }
+    System.out.println("size = "+v.getSize()+" missing= "+count);
+  }
 }

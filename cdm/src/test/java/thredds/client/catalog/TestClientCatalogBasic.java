@@ -49,7 +49,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestClientCatalogBasic {
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

@@ -29,7 +29,7 @@ import java.util.List;
 public class TestCFPointWriter {
   static public String CFpointObs_topdir = TestDir.cdmLocalTestDataDir + "point/";
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

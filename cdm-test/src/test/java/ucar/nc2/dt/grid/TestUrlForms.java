@@ -55,7 +55,7 @@ public class TestUrlForms {
 
   private static String testfile = TestDir.cdmUnitTestDir + "conventions/avhrr/amsr-avhrr-v2.20040729.nc";
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

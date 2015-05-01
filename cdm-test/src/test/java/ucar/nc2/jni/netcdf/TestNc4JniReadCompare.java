@@ -39,7 +39,7 @@ public class TestNc4JniReadCompare {
     System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
 
     List<Object[]> result = new ArrayList<Object[]>(500);

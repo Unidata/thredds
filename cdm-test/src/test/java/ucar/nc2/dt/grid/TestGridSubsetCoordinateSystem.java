@@ -66,7 +66,7 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestGridSubsetCoordinateSystem {
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

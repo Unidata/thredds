@@ -25,7 +25,7 @@ public class CompareGribVarNamesOnMotherlodeTds
     this.modelId = modelId;
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getModelIds()
   {
     return Arrays.asList( IddModelDatasetsUtils.getModelIds());

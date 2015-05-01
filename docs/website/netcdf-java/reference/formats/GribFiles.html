@@ -50,15 +50,16 @@
   Generally it is 300-1000 times smaller than the original file. Once written, it typically never has to be rewritten. If the GRIB file changes, the CDM should detect
   that and rewrite the index file. If there is any doubt about that, delete the index file and let it get recreated. </p>
 
-<p>For each GRIB collection, a <em>GRIB collection index </em>file is written with suffix <strong>.ncx3. </strong>This file contains all the metadata and the
+<p>For each GRIB collection, a <em>CDM collection index </em>file is written with suffix <strong>.ncx3. </strong>This file contains all the metadata and the
   coordinates for the collection. It is usually fairly small (a few dozen KBytes to a few MBytes for a large collection), and once created, makes accessing the
-  GRIB collection very fast. In general it will be updated if needed, but one can always delete it and let it be recreated.</p>
+  GRIB collection very fast. In general it will be updated if needed, but one can always delete it and let it be recreated. </p>
 
 <p>If one opens a single GRIB file in the CDM, a <strong>gbx9</strong> and <strong>ncx3</strong> file will be created for that file. If one opens a collection of
   multiple GRIB files, a <strong>gbx9</strong> file is created for each file, and one <strong>ncx3</strong> file is created for the entire collection. </p>
 
 <p>Both kinds of index files are binary, private formats for the CDM, whose format may change as needed. Your application should not depend in any way on the
   details of these formats. </p>
+<p><strong>Moving GRIB files. </strong>When  GRIB index files (<strong>gbx9</strong>) are created, they store the name of the GRIB data file. However, this is not used except for debugging. So you can move the data files and the GBX files as needed. The CDM index files (<strong>ncx3</strong>) also store the names of the GRIB data files, and (usually) needs the GRIB files to exist there. So if you move, best to delete the ncx3 files and recreate.</p>
 
 <h2>GRIB Tables</h2>
 
@@ -231,7 +232,7 @@ float[] data = gr2.readData(raf, drs.getStartingPosition());</pre>
 <hr width="100%"/>
 <address>
   <img src="../../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
-  updated Mar 2015
+  updated April 2015
 </address>
 </body>
 </html>

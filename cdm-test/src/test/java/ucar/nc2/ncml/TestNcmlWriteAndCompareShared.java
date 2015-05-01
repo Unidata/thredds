@@ -49,7 +49,7 @@ public class TestNcmlWriteAndCompareShared {
     writeDir.mkdirs();
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters (name="{0}")
   public static List<Object[]> getTestParameters() {
     String datadir = TestDir.cdmUnitTestDir;
 

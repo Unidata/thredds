@@ -64,7 +64,7 @@ import java.util.Collection;
 @Category(NeedsCdmUnitTest.class)
 public class TestEncoding {
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters(){
  		return Arrays.asList(new Object[][]{
             {"/wcs/scanCdmUnitTests/tds/ncep/GFS_Global_2p5deg_20100602_1200.grib2", "service=WCS&version=1.0.0&request=GetCapabilities"},

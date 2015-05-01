@@ -45,7 +45,7 @@ public class TestNcmlWriteAndCompareLocal {
     writeDir.mkdirs();
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
 

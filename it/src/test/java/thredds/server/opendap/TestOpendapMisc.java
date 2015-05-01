@@ -57,17 +57,22 @@ import java.io.IOException;
 public class TestOpendapMisc {
 
   @Test
+  public void testAliasSubst() throws IOException {
+    String url = TestWithLocalServer.withPath("/dodsC/ExampleNcML/Modified.nc");
+    try (NetcdfDataset dodsfile = NetcdfDataset.openDataset(url)) {
+      System.out.printf("OK %s%n", dodsfile.getLocation());
+    }
+  }
+
+  @Test
   public void testStrings() throws IOException, InvalidRangeException {
     String url = TestWithLocalServer.withPath("/dodsC/scanLocal/testWrite.nc");
-    NetcdfDataset dodsfile = null;
-    try {
-
-      dodsfile = NetcdfDataset.openDataset(url);
-
-      Variable v = null;
+    try (NetcdfDataset dodsfile = NetcdfDataset.openDataset(url)) {
+      Variable v;
 
       // string
-      assert (null != (v = dodsfile.findVariable("svar")));
+      v = dodsfile.findVariable("svar");
+      assert (null != v);
       assert v.getFullName().equals("svar");
       assert v.getRank() == 1;
       assert v.getSize() == 80;
@@ -84,7 +89,8 @@ public class TestOpendapMisc {
       assert a.getElementType() == DataType.CHAR.getPrimitiveClassType();
 
       // string array
-      assert (null != (v = dodsfile.findVariable("names")));
+      v = dodsfile.findVariable("names");
+      assert (null != v);
       assert v.getFullName().equals("names");
       assert v.getRank() == 2;
       assert v.getSize() == 3 * 80;
@@ -100,8 +106,6 @@ public class TestOpendapMisc {
       assert a.getSize() == 2 * 10 : a.getSize();
       assert a.getElementType() == DataType.CHAR.getPrimitiveClassType();
 
-    } finally {
-      if (dodsfile != null) dodsfile.close();
     }
   }
 

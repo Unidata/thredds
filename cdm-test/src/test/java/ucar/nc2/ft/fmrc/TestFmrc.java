@@ -65,7 +65,7 @@ public class TestFmrc {
   private static String datadir = TestDir.cdmUnitTestDir + "ft/fmrc/";
   private static boolean showDetails = true;
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
             {TestDir.cdmUnitTestDir+"ft/fmrc/fp_precision/sediment_thickness_#yyMMddHHmm#.*\\.nc$", 2, 2, 4, 0, "thickness_of_sediment", 2, 72, 74, false},
