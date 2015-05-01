@@ -20,7 +20,7 @@ import java.util.Map;
 public class XmlView extends AbstractView {
 
   protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
-    res.setContentType(ContentType.xml.getContentHeader());
+    res.setContentType(getContentType());
 
     Document doc = (Document) model.get("Document");
 

@@ -63,178 +63,167 @@ import ucar.nc2.units.TimeDuration;
 
 /**
  * @author mhermida
- * 
  */
 public abstract class GridDatasetResponder {
 
-  public static CalendarDateRange getRequestedDateRange(NcssParamsBean params, Calendar cal) throws ParseException{
+  public static CalendarDateRange getRequestedDateRange(NcssParamsBean params, Calendar cal) throws ParseException {
+    if (params.getTime() != null) {
+      CalendarDate date;
+      if (params.getTime().equalsIgnoreCase("present")) {
+        date = CalendarDate.present();
+      } else {
+        date = CalendarDateFormatter.isoStringToCalendarDate(cal, params.getTime());
+      }
+      return CalendarDateRange.of(date, date);
+    }
 
-	  //CHECK --> must use Calendar!!!!
-	  
- 		if(params.getTime()!=null){
- 			CalendarDate date;
- 			if( params.getTime().equalsIgnoreCase("present") ){
- 				date =CalendarDate.of(new Date());
- 			}else{
+    //We should have valid params here...
+    DateRange dr = new DateRange(new DateType(params.getTime_start(), null, null, cal), new DateType(params.getTime_end(), null, null, cal), new TimeDuration(params.getTime_duration()), null);
+    return CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate());
+  }
 
- 				//date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );
- 				date =  CalendarDateFormatter.isoStringToCalendarDate(cal, params.getTime());
- 			}
- 			return CalendarDateRange.of(date,date);
- 		}
- 		//We should have valid params here...
- 		CalendarDateRange dates;
- 		
- 		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null, cal), new DateType(params.getTime_end(), null, null, cal), new TimeDuration(params.getTime_duration()), null ); 		 	    
- 		dates = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()  );
+  /**
+   * Returns true if all the variables have the same vertical axes.
+   * Throws exception if some of the variables in the request is not contained on the dataset
+   */
+  protected boolean checkRequestedVars(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException {
+    //Check vars
+    if (params.getVar() == null || params.getVar().isEmpty())
+      return false; // err from VarParamsValidator
 
- 		return dates;
- 	}
+    //if var = all--> all variables requested
+    if (params.getVar().get(0).equals("all")) {
+      params.setVar(NcssRequestUtils.getAllVarsAsList(gds));
+    }
 
-	/**
-	 * 
-	 * Returns true if all the variables have the same vertical axes.
-	 * Throws exception if some of the variables in the request is not contained on the dataset
-	 */
-	protected boolean checkRequestedVars(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException{
-		//Check vars
-    if (params.getVar() == null || params.getVar().isEmpty()) return false; // err from VarParamsValidator
+    //Check not only all vars are contained in the grid, also they have the same vertical coords
+    Iterator<String> it = params.getVar().iterator();
+    String varName = it.next();
+    //GridDatatype grid = gds.findGridByShortName(varName);
+    GridDatatype grid = gds.findGridDatatype(varName);
+    if (grid == null)
+      throw new VariableNotContainedInDatasetException("Variable: " + varName + " is not contained in the requested dataset");
 
-		//if var = all--> all variables requested
-		if (params.getVar().get(0).equals("all")){
-			params.setVar(NcssRequestUtils.getAllVarsAsList(gds));					
-		}		
+    CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
+    CoordinateAxis1D newVertAxis;
+    boolean sameVertCoord = true;
 
-		//Check not only all vars are contained in the grid, also they have the same vertical coords
-		Iterator<String> it = params.getVar().iterator();
-		String varName = it.next();
-		//GridDatatype grid = gds.findGridByShortName(varName);
-		GridDatatype grid = gds.findGridDatatype(varName);
-		if(grid == null) 
-			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
+    while (sameVertCoord && it.hasNext()) {
+      varName = it.next();
+      //grid = gds.findGridByShortName(varName);
+      grid = gds.findGridDatatype(varName);
+      if (grid == null)
+        throw new VariableNotContainedInDatasetException("Variable: " + varName + " is not contained in the requested dataset");
 
-		CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
-		CoordinateAxis1D newVertAxis;
-		boolean sameVertCoord = true;
+      newVertAxis = grid.getCoordinateSystem().getVerticalAxis();
 
-		while(sameVertCoord && it.hasNext()){
-			varName = it.next();
-			//grid = gds.findGridByShortName(varName);
-			grid = gds.findGridDatatype(varName);
-			if(grid == null) 
-				throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
+      if (vertAxis != null) {
+        if (vertAxis.equals(newVertAxis)) {
+          vertAxis = newVertAxis;
+        } else {
+          sameVertCoord = false;
+        }
+      } else {
+        if (newVertAxis != null) sameVertCoord = false;
+      }
+    }
 
-			newVertAxis = grid.getCoordinateSystem().getVerticalAxis();
+    return sameVertCoord;
+  }
 
-			if( vertAxis != null ){
-				if( vertAxis.equals(newVertAxis)){
-					vertAxis = newVertAxis;
-				}else{
-					sameVertCoord = false;
-				}
-			}else{
-				if(newVertAxis != null) sameVertCoord = false;
-			}	
-		}
+  protected Map<String, List<String>> groupVarsByVertLevels(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException {
+    String no_vert_levels = "no_vert_level";
+    List<String> vars = params.getVar();
+    Map<String, List<String>> varsGroupsByLevels = new HashMap<>();
 
-		return sameVertCoord;
-	}
-						
-	protected Map<String, List<String>> groupVarsByVertLevels(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException{
-		String no_vert_levels ="no_vert_level";
-		List<String> vars = params.getVar();
-		Map<String, List<String>> varsGroupsByLevels = new HashMap<>();
+    for (String var : vars) {
+      GridDatatype grid = gds.findGridDatatype(var);
 
-		for(String var :vars ){
-			GridDatatype grid =gds.findGridDatatype(var);
+      //Variables should have been checked before...
+      if (grid == null) {
+        throw new VariableNotContainedInDatasetException("Variable: " + var + " is not contained in the requested dataset");
+      }
 
-			//Variables should have been checked before...  
-			if(grid == null ){
-				throw new VariableNotContainedInDatasetException("Variable: "+var+" is not contained in the requested dataset");
-			}			
+      CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();
 
-			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();
+      String axisKey;
+      if (axis == null) {
+        axisKey = no_vert_levels;
+      } else {
+        axisKey = axis.getShortName();
+      }
 
-			String axisKey;
-			if(axis == null){
-				axisKey = no_vert_levels;
-			}else{
-				axisKey = axis.getShortName();
-			}
+      if (varsGroupsByLevels.containsKey(axisKey)) {
+        varsGroupsByLevels.get(axisKey).add(var);
+      } else {
+        List<String> varListForVerlLevel = new ArrayList<>();
+        varListForVerlLevel.add(var);
+        varsGroupsByLevels.put(axisKey, varListForVerlLevel);
+      }
+    }
 
-			if( varsGroupsByLevels.containsKey(axisKey) ){
-				varsGroupsByLevels.get(axisKey).add(var);
-			}else{
-				List<String> varListForVerlLevel = new ArrayList<>();
-				varListForVerlLevel.add(var);
-				varsGroupsByLevels.put(axisKey, varListForVerlLevel);
-			} 			 			 
-		}
+    return varsGroupsByLevels;
+  }
 
-		return varsGroupsByLevels;
-	}
-	
-	protected List<CalendarDate> getRequestedDates(GridDataset gds, NcssParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException{
-		
-		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds, params.getVar());
-		List<CalendarDate> dates = gap.getDates();	
-		
-		if(dates.isEmpty() ) return dates;
-		
-		//Get the calendar
-		Calendar cal = dates.get(0).getCalendar();
-		
-		long time_window = 0;
-		if( params.getTime_window() != null ){
-			TimeDuration dTW = new TimeDuration(params.getTime_window());
-			time_window = (long)dTW.getValueInSeconds()*1000;
-		}		
-				
-		//Check param temporal=all (ignore any other value) --> returns all dates
-		if(params.isAllTimes() ){
-			return dates;			
-		}else{ //Check if some time param was provided, if not closest time to current
-			if(params.getTime()==null && params.getTime_start()==null && params.getTime_end()==null && params.getTime_duration()==null ){
-				//Closest to present
-				List<CalendarDate> closestToPresent = new ArrayList<>();
-				
-				DateTime dt = new DateTime(new Date(), DateTimeZone.UTC) ;				
-				CalendarDate now = CalendarDate.of(cal, dt.getMillis() );
-				
-				CalendarDate start = dates.get(0);
-				CalendarDate end  = dates.get(dates.size()-1);
-				if( now.isBefore(start) ){ 
-					//now = start;
-					if( time_window <= 0 || Math.abs(now.getDifferenceInMsecs(start)) < time_window ){
-						closestToPresent.add(start);					
-						return closestToPresent;
-					}else{
-						throw new TimeOutOfWindowException("There is no time within the provided time window");
-					}	
-				}
-				if( now.isAfter(end) ){
-					//now = end;
-					if( time_window <=0 || Math.abs(now.getDifferenceInMsecs(end)) < time_window ){
-						closestToPresent.add(end);
-						return closestToPresent;
-					}else{
-						throw new TimeOutOfWindowException("There is no time within the provided time window");
-					}	
-				}
-								
-				return  NcssRequestUtils.wantedDates(gap, CalendarDateRange.of(now,now), time_window);				
-				
-				}
-			}
-		//We should have a time or a timeRange...
-		if(params.getTime_window()!=null && params.getTime()!=null){
-			DateRange dr = new DateRange( new DateType(params.getTime(), null, null, cal ), null, new TimeDuration(params.getTime_window()), null );			
-			//time_window = CalendarDateRange.of(dr).getDurationInSecs()*1000;			
-			time_window = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()).getDurationInSecs()*1000; 
-									
-		}
-		CalendarDateRange dateRange = getRequestedDateRange(params, cal);		
-		return NcssRequestUtils.wantedDates(gap, dateRange, time_window );	
-	}	
+  protected List<CalendarDate> getRequestedDates(GridDataset gds, NcssParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException {
+
+    GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds, params.getVar());
+    List<CalendarDate> dates = gap.getDates();
+
+    if (dates.isEmpty()) return dates;
+
+    //Get the calendar
+    Calendar cal = dates.get(0).getCalendar();
+
+    long time_window = 0;
+    if (params.getTime_window() != null) {
+      TimeDuration dTW = new TimeDuration(params.getTime_window());
+      time_window = (long) dTW.getValueInSeconds() * 1000;
+    }
+
+    //Check param temporal=all (ignore any other value) --> returns all dates
+    if (params.isAllTimes()) {
+      return dates;
+    } else { //Check if some time param was provided, if not closest time to current
+      if (params.getTime() == null && params.getTime_start() == null && params.getTime_end() == null && params.getTime_duration() == null) {
+        //Closest to present
+        List<CalendarDate> closestToPresent = new ArrayList<>();
+        DateTime dt = new DateTime(new Date(), DateTimeZone.UTC);
+        CalendarDate now = CalendarDate.of(cal, dt.getMillis());
+
+        CalendarDate start = dates.get(0);
+        CalendarDate end = dates.get(dates.size() - 1);
+        if (now.isBefore(start)) {
+          //now = start;
+          if (time_window <= 0 || Math.abs(now.getDifferenceInMsecs(start)) < time_window) {
+            closestToPresent.add(start);
+            return closestToPresent;
+          } else {
+            throw new TimeOutOfWindowException("There is no time within the provided time window");
+          }
+        }
+        if (now.isAfter(end)) {
+          //now = end;
+          if (time_window <= 0 || Math.abs(now.getDifferenceInMsecs(end)) < time_window) {
+            closestToPresent.add(end);
+            return closestToPresent;
+          } else {
+            throw new TimeOutOfWindowException("There is no time within the provided time window");
+          }
+        }
+
+        return NcssRequestUtils.wantedDates(gap, CalendarDateRange.of(now, now), time_window);
+      }
+    }
+
+    //We should have a time or a timeRange...
+    if (params.getTime_window() != null && params.getTime() != null) {
+      DateRange dr = new DateRange(new DateType(params.getTime(), null, null, cal), null, new TimeDuration(params.getTime_window()), null);
+      time_window = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()).getDurationInSecs() * 1000;
+    }
+
+    CalendarDateRange dateRange = getRequestedDateRange(params, cal);
+    return NcssRequestUtils.wantedDates(gap, dateRange, time_window);
+  }
 
 }

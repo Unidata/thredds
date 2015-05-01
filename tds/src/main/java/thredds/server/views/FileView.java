@@ -39,8 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletOutputStream;
 import java.util.Map;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import thredds.util.ContentType;
 import ucar.nc2.util.IO;
@@ -69,7 +67,6 @@ import ucar.unidata.io.RandomAccessFile;
  * @since 4.0
  */
 public class FileView extends AbstractView {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileView.class);
 
   protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
     if (model == null || model.isEmpty())

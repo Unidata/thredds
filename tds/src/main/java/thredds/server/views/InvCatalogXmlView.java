@@ -55,6 +55,7 @@ public class InvCatalogXmlView extends AbstractView {
   static private final Logger logger = LoggerFactory.getLogger(InvCatalogXmlView.class);
 
   protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
+    res.setContentType(getContentType());
 
     try {
       if (model == null || model.isEmpty())

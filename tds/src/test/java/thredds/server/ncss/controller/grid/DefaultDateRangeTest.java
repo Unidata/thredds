@@ -51,10 +51,6 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 
-/**
- * @author marcos
- *
- */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 public class DefaultDateRangeTest {
@@ -94,22 +90,14 @@ public class DefaultDateRangeTest {
 		requestParams.setTime_duration(time_duration);
     System.out.printf("range=[%s - %s]%n", time_start, time_end);
 	}
-	
-//	@Before
-//	public void setUp(){
-//		
-//		gridDataController = new GridDataController();
-//	} 
-	
+
 	@Test
 	public void shouldGetPresent() throws ParseException{
-		
 		CalendarDateRange range= GridDatasetResponder.getRequestedDateRange(requestParams, Calendar.getDefault());
 		System.out.printf("range=%s%n", range);
 		System.out.printf(" duration: expected=%d actual=%d%n", durationInSeconds, range.getDurationInSecs());
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );
 		//long duration =Math.abs( durationInSeconds - range.getDurationInSecs() );
 		assertTrue(Math.abs( durationInSeconds - range.getDurationInSecs() ) < 100 );
-		
 	}
 }

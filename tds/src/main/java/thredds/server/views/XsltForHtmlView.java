@@ -6,12 +6,10 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.transform.JDOMResult;
 import org.jdom2.transform.JDOMSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
-import thredds.server.config.TdsContext;
 import thredds.util.ContentType;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +30,7 @@ import java.util.Map;
 public class XsltForHtmlView extends AbstractView {
 
   protected void renderMergedOutputModel(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
-    res.setContentType(ContentType.xml.getContentHeader());
+    res.setContentType(getContentType());
 
     Document doc = (Document) model.get("Document");
     String transform = (String) model.get("Transform");
