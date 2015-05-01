@@ -12,6 +12,7 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level
  */
+@Ignore
 public class TestConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;

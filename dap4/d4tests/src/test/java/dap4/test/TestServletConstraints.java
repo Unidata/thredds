@@ -20,6 +20,7 @@ import java.util.*;
  * constraint processing.
  */
 
+@Ignore
 public class TestServletConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
