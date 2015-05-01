@@ -97,7 +97,7 @@ class GridResponder extends GridDatasetResponder {
 		if (isSpatialSubset(params)) {
 			netcdfResult = writeLatLonSubset(params, version);
 		} else {
-			netcdfResult = writeCoordinatesSubset(params, response, version);
+			netcdfResult = writeCoordinatesSubset(params, version);
 		}
 
 		return netcdfResult;
@@ -168,7 +168,7 @@ class GridResponder extends GridDatasetResponder {
             params.getTimeStride(), params.isAddLatLon(), version);
 	}
 
-	private File writeCoordinatesSubset(NcssParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version)
+	private File writeCoordinatesSubset(NcssParamsBean params, NetcdfFileWriter.Version version)
 			throws OutOfBoundariesException, ParseException,
 			InvalidRangeException, RequestTooLargeException, IOException,
 			InvalidBBOXException, TimeOutOfWindowException {

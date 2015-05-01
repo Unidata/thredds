@@ -47,7 +47,7 @@ import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
- * LOOK: wants to replace ServletUtil.returnFile()
+ * LOOK: wants to replace ServletUtil.returnFile() ?
  * Associated with threddsFileView in tds/src/main/webapp/WEB-INF/view.xml
  *
  * Render the response to a request for a local file including byte range requests.

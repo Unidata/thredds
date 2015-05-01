@@ -38,9 +38,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.client.catalog.Catalog;
@@ -55,9 +57,6 @@ import ucar.unidata.util.StringUtil2;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Formatter;
 import java.util.List;
 
@@ -69,24 +68,16 @@ import java.util.List;
 @Controller
 @RequestMapping("/metadata")
 public class MetadataController {
-  private static Logger log = LoggerFactory.getLogger(MetadataController.class);
 
   @RequestMapping(value = "**")
-  public void getMetadata(@Valid MetadataRequestParameterBean params, BindingResult result, HttpServletResponse res, HttpServletRequest req) throws IOException {
+  public ResponseEntity<String> getMetadata(@Valid MetadataRequestParameterBean params, BindingResult result, HttpServletResponse res, HttpServletRequest req) throws Exception {
 
-    if (result.hasErrors()) {
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST);
-      return;
-    }
-
-    //String path = ServletUtil.getRequestPath(req);
-    //path = path.substring(10);
-    //String info = ServletUtil.showRequestDetail(null, req);
-    //System.out.printf("%s%n", info);
+    if (result.hasErrors())
+      throw new BindException(result);
 
     try (GridDataset gridDataset = TdsRequestedDataset.getGridDataset(req, res, null)) {
       if (gridDataset == null)
-        return;
+        return null;
 
       NetcdfFile ncfile = gridDataset.getNetcdfFile();   // LOOK maybe gridDataset.getFileTypeId ??
       String fileType = ncfile.getFileTypeId();
@@ -103,24 +94,16 @@ public class MetadataController {
         strResponse = writeHTML(vars);
         res.setContentType(ContentType.html.getContentHeader());
       }
-      res.setContentLength(strResponse.length());
 
-      PrintWriter pw = res.getWriter();
-      pw.write(strResponse);
-      pw.flush();
-      res.flushBuffer();
-
-    } catch (FileNotFoundException e) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-
-    } catch (Throwable t) {
-      log.error("Error", t);
-      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      HttpHeaders responseHeaders = new HttpHeaders();
+      responseHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
+      //responseHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(datasetPath, ".xml"));
+      return new ResponseEntity<>(strResponse, responseHeaders, HttpStatus.OK);
     }
 
   }
 
-  public String writeHTML(ThreddsMetadata.VariableGroup vars) {
+  private String writeHTML(ThreddsMetadata.VariableGroup vars) {
     Formatter f = new Formatter();
     f.format("<h3>Variables:</h3>%n<ul>%n");
 

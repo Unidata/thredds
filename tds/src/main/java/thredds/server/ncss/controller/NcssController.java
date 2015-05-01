@@ -94,7 +94,7 @@ public abstract class NcssController {
    *
    * @ RequestMapping("**")
    * public void handleRequest(HttpServletRequest req, HttpServletResponse res,
-   * @Valid NcssParamsBean params,
+   * @ Valid NcssParamsBean params,
    * BindingResult validationResult) throws Exception {
    * <p/>
    * // System.out.printf("%s%n", ServletUtil.showRequestDetail(null, req));

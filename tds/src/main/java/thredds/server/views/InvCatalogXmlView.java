@@ -68,7 +68,6 @@ public class InvCatalogXmlView extends AbstractView {
         throw new IllegalArgumentException("Model must contain a Catalog object.");
 
       Catalog cat = (Catalog) o;
-      res.setContentType(ContentType.xml.getContentHeader());
 
       if (!req.getMethod().equals("HEAD")) {
         try (OutputStream os = res.getOutputStream()) {
@@ -79,5 +78,9 @@ public class InvCatalogXmlView extends AbstractView {
     } catch (Exception e) {
       logger.error("InvCatalogXmlView failed", e);
     }
+  }
+
+  public String getContentType() {
+    return ContentType.xml.getContentHeader();
   }
 }

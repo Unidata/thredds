@@ -8,6 +8,7 @@ import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.ncss.exception.UnsupportedOperationException;
@@ -21,7 +22,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
-import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -103,7 +103,7 @@ public class NcssPointController extends NcssController {
   }
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
-   void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
+  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
      if (!req.getParameterMap().isEmpty())
        throw new IllegalArgumentException("Invalid info request.");
 
@@ -115,17 +115,9 @@ public class NcssPointController extends NcssController {
 
      try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
        if (fd == null)
-         return; // restricted dataset
+         return null; // restricted dataset
 
-       String strResponse = ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
-       res.setContentLength(strResponse.length());
-
-       if (wantXML)
-         res.setContentType(ContentType.xml.getContentHeader());
-       else
-         res.setContentType(ContentType.html.getContentHeader());
-
-       writeResponse(strResponse, res);
+       return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
      }
    }
 

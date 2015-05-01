@@ -8,6 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -18,12 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Global Exception handling
  *
- * @see "https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc"
  * @author caron
+ * @see "https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc"
  * @since 4/15/2015
  */
 @Configuration
@@ -65,6 +70,20 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("IllegalArgumentException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(BindException.class)
+  public ResponseEntity<String> handle(BindException ex) {
+    BindingResult validationResult = ex.getBindingResult();
+    List<ObjectError> errors = validationResult.getAllErrors();
+    Formatter f = new Formatter();
+    f.format("Validation errors: ");
+    for (ObjectError err : errors) {
+      f.format(" %s%n", err.getDefaultMessage());
+    }
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity<>(f.toString(), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
   // LOOK this could be a problem

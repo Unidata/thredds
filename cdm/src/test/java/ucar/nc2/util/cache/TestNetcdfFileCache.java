@@ -65,7 +65,6 @@ public class TestNetcdfFileCache {
     }
   }
 
-
   int count = 0;
 
   void loadFilesIntoCache(File dir, FileCache cache) {

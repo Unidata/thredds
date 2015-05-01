@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.ncss.exception.*;
@@ -22,7 +23,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -101,14 +101,8 @@ public class NcssGridController extends NcssController {
       }
     }
 
-    //File netcdfResult = null;
-    //try {
     GridResponder gds = GridResponder.factory(gridDataset, datasetPath, ncssDiskCache);
     File netcdfResult = gds.getResponseFile(res, params, version);
-    //} catch (Exception e) {
-    //  handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-    //  return;
-    //}
 
     // filename download attachment
     String suffix = (version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc";
@@ -139,7 +133,7 @@ public class NcssGridController extends NcssController {
   }
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
-  void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
+  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
     if (!req.getParameterMap().isEmpty())
       throw new IllegalArgumentException("Invalid info request.");
 
@@ -151,17 +145,9 @@ public class NcssGridController extends NcssController {
 
     try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
       if (fd == null)
-        return; // restricted dataset
+        return null; // restricted dataset
 
-      String strResponse = ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
-      res.setContentLength(strResponse.length());
-
-      if (wantXML)
-        res.setContentType(ContentType.xml.getContentHeader());
-      else
-        res.setContentType(ContentType.html.getContentHeader());
-
-      writeResponse(strResponse, res);
+      return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
     }
   }
 

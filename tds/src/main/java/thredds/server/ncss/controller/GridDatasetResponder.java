@@ -72,7 +72,7 @@ public abstract class GridDatasetResponder {
 	  //CHECK --> must use Calendar!!!!
 	  
  		if(params.getTime()!=null){
- 			CalendarDate date=null;
+ 			CalendarDate date;
  			if( params.getTime().equalsIgnoreCase("present") ){
  				date =CalendarDate.of(new Date());
  			}else{
@@ -83,21 +83,13 @@ public abstract class GridDatasetResponder {
  			return CalendarDateRange.of(date,date);
  		}
  		//We should have valid params here...
- 		CalendarDateRange dates=null;
+ 		CalendarDateRange dates;
  		
  		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null, cal), new DateType(params.getTime_end(), null, null, cal), new TimeDuration(params.getTime_duration()), null ); 		 	    
  		dates = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate()  );
 
  		return dates;
  	}
-
- 	/* public static String buildCacheUrl(String fileName){
- 		 return NcssRequestUtils.getTdsContext().getContextPath() + NcssController.getNCSSServletPath() + "/" + fileName;
- 	} */
-
-//	private GridDataset gds;
-//	private long maxFileDownloadSize;
-//	static private final short ESTIMATED_C0MPRESION_RATE = 5;
 
 	/**
 	 * 
@@ -122,7 +114,7 @@ public abstract class GridDatasetResponder {
 			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
 
 		CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
-		CoordinateAxis1D newVertAxis = null;
+		CoordinateAxis1D newVertAxis;
 		boolean sameVertCoord = true;
 
 		while(sameVertCoord && it.hasNext()){
@@ -163,7 +155,7 @@ public abstract class GridDatasetResponder {
 
 			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();
 
-			String axisKey = null;
+			String axisKey;
 			if(axis == null){
 				axisKey = no_vert_levels;
 			}else{

@@ -38,6 +38,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -103,13 +104,12 @@ public class CdmRemoteController implements LastModified {
     binder.setValidator(new CdmRemoteQueryBeanValidator());
   }
 
-  // everything but header, data
+  // everything but header, data, which is binary data
   @RequestMapping(value = "/**", method = RequestMethod.GET)
   public ResponseEntity<String> handleCapabilitiesRequest(HttpServletRequest request, HttpServletResponse response, @RequestParam String req) throws IOException {
 
-    if (!allow) {
+    if (!allow)
       return new ResponseEntity<>("Service not supported", null, HttpStatus.FORBIDDEN);
-    }
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);

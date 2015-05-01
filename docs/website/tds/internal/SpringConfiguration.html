@@ -3,10 +3,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Spring Configuration</title>
+    <link rel="stylesheet" href="../tds.css" type="text/css"/>
 </head>
 <body>
 <h2>Spring Configuration - 5.0</h2>
-<p><em>April 29, 2015</em></p>
+<p><em>May 1,, 2015</em></p>
 <h2>Notes</h2>
 <ol>
   <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
@@ -109,40 +110,63 @@
   <li>TdsConfigMapper seems to be ethan's replacement ?? seems not used</li>
   <li>none of it using autowire</li>
 </ul>
-<h2>Spring MVC</h2>
-<p>http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html</p>
-<p>Lots of ways, we want to standardize on one or a few idioms.</p>
-<h3>Need to write Binary stream</h3>
+<h3>spring-servlet.xml</h3>
 <ul>
-  <li>return  ResponseEntity&lt;String&gt;</li>
-  <li>errors: handle these in the controller</li>
-  <li>see CdmRemoteController</li>
+  <li>    We need a view resolver to find our views, which we have in view.xml. Must come before the jspResolver</li>
+  <li>XmlViewResolver just means it reads from an XML file (views.xml) nothing to do with views of XML files. </li>
+  <li>In order to read in spring-servlett.xml, the mock framework in tds module needs  
+    <pre>locations&#32;=&#32;{&quot;/WEB-INF/applicationContext.xml&quot;,&#32;&quot;/WEB-INF/spring-servlet.xml&quot;}</pre>
+  </li>
 </ul>
-<h3>Return Html, XML</h3>
+<p>&nbsp;</p>
+<h2>Spring MVC</h2>
+<p><a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html">http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html</a></p>
+<p>Lots of ways, we want to standardize on one or a few idioms.</p>
+<h3>Need to write Binary data</h3>
 <ul>
-  <li>use a view technology</li>
-  <li>return a ModelView</li>
-  <li>errors: throw exception, grab in an exception handler; essentially a way to switch return types</li>
-  <li>see LocalCatalogServiceController</li>
+  <li>return void </li>
+  <li>write directly to <strong>HttpServletResponse</strong>    output stream
+  </li>
+  <li>see <strong>CdmRemoteController.handleRequest()</strong> </li>
+</ul>
+<h3>Return HTML, XML as String</h3>
+<ul>
+  <li>return a <strong>ResponseEntity&lt;String&gt;</strong> allows  to set headers, return value</li>
+  <li>see <strong>CdmRemoteController.handleCapabilitiesRequest(), MetadataController</strong>  </li>
+</ul>
+<h3>Use JSP</h3>
+<ul>
+  <li>return a <strong>ModelAndView</strong>. view name is a jsp file, model is used by the jsp</li>
+  <li>see <strong>ServerInfoController</strong></li>
+</ul>
+<h3>Return Custom View</h3>
+<ul>
+  <li>use a view class that extends <strong>AbstractView</strong> </li>
+  <li>return a <strong>ModelView</strong></li>
+  <li>see <strong>CatalogServiceController</strong>, which uses <strong>InvCatalogXmlView</strong> </li>
+  <li>configured in  WEB-INF/view.xml</li>
 </ul>
 <h3>Validation</h3>
 <ul>
   <li>@Valid JSP 303, with hibernate implementation</li>
-  <li>org.springframework.validation.Validator</li>
+  <li><strong>org.springframework.validation.Validator</strong></li>
+  <li>dont need DataBinder </li>
   <li>must put initBinder() into Controller  </li>
-  <li>see RemoteCatalogServiceController</li>
-  <li>dont need DataBinder  </li>
+  <li>see <strong>RemoteCatalogServiceController</strong></li>
+  <li>error handling:
+    <pre>if&#32;(validationResult.hasErrors())<br />&#32;&#32;throw&#32;new&#32;BindException(validationResult);</pre>
+  </li>
 </ul>
 <h3>Error handling</h3>
 <ul>
   <li>Errors are handled by throwing an exception which is picked up by an ExceptionHandler, eg <strong>thredds.server.TdsErrorHandling</strong></li>
   <li>let exceptions propagate out of the controllers - do not catch unless necessary</li>
   <li> essentially a way to switch return types</li>
-  <li>see https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc</li>
+  <li>see <a href="https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc">https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc</a></li>
 </ul>
 <hr />
 <h2>Servlets and Controllers mappings summary</h2>
-<p>http://stackoverflow.com/questions/12569308/spring-difference-of-and-with-regards-to-paths</p>
+<p><a href="http://stackoverflow.com/questions/12569308/spring-difference-of-and-with-regards-to-paths">http://stackoverflow.com/questions/12569308/spring-difference-of-and-with-regards-to-paths</a></p>
 <h3>User Visible Changes from 4.6</h3>
 <ul>
   <li>all catalogs (except root) must start with /catalog
@@ -162,6 +186,7 @@
         <th width="152">prefix</th>
         <th width="391">URLs</th>
         <th width="358">Notes</th>
+        <th width="358">MVC</th>
       </tr>
       <tr>
         <td>RootController</td>
@@ -169,6 +194,7 @@
         <td>&quot;/&quot;, &quot;/catalog.html&quot; -&gt;<strong>redirect:/catalog/catalog.html</strong><br />
         &quot;/catalog.xml&quot; -&gt; <strong>redirect:/catalog/catalog.xml</strong><br />
         &quot;*.css&quot;,&#32;&quot;*.gif&quot;,&#32;&quot;*.jpg&quot;,&#32;&quot;*.png&quot; -&gt; look in <em>content/public</em></td>
+        <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
        <tr>
@@ -178,12 +204,14 @@
           /trigger<br />
          /showFmrc</td>
         <td><p>trigger requires <em>tdsTrigger</em> role (used by TDM)</p></td>
+        <td>&nbsp;</td>
        </tr>
       
       <tr>
         <td>AdminDebugController</td>
         <td>/admin/debug</td>
         <td>?cmd</td>
+        <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
        <tr>
@@ -194,6 +222,7 @@
          /logs/{path} -&gt; tomcat logs<br />
          /dataDir/{path}</td>
         <td>view=<em>threddsFileView</em></td>
+        <td>&nbsp;</td>
       </tr>
            <tr>
         <td>AdminLogController</td>
@@ -203,11 +232,13 @@
             /dataroots.txt</p>
         </td>
         <td><p>requires          <em>tdsMonitor</em> role (used by TdsMonitor)</p></td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
         <td>AdminSpringInfoController</td>
         <td>/admin/spring</td>
         <td>/showControllers</td>
+        <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
       <tr>
@@ -215,35 +246,42 @@
         <td><strong>/catalog</strong></td>
         <td>/{path}/catalogName.[xml|html]</td>
         <td>needs <strong>catalog</strong> prefix now</td>
+        <td><p>ModelAndView <strong>-&gt; InvCatalogXmlView</strong> (xml)</p>
+        <p>void (write HTML directly to output)</p></td>
       </tr>
       <tr>
         <td>CdmRemoteController</td>
         <td>/cdmremote</td>
         <td>/{path}?{cdmr query} (<a href="../../netcdf-java/reference/stream/CdmRemote.html">ref</a>)</td>
         <td>&nbsp;</td>
+        <td>ResponseEntity&lt;String&gt;, void</td>
       </tr>
       <tr>
         <td>CdmrfController</td>
         <td>/cdmrfeature</td>
         <td>/{path}?{cdmrf query}</td>
         <td>keep?</td>
+        <td>&nbsp;</td>
       </tr>
      <tr>
         <td>Dap4Servlet</td>
         <td>/dap4</td>
         <td>/{path}?{dap4 query}</td>
         <td>TODO</td>
+        <td>&nbsp;</td>
       </tr>
      <tr>
         <td>OpendapServlet</td>
         <td>/dodsC</td>
         <td>/{path}?{dap2 query}</td>
         <td>TODO: break into client/server, seperate DTS</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
         <td>FileServerController</td>
           <td>/fileServer</td>
       <td>/{path}</td>
+      <td>&nbsp;</td>
       <td>&nbsp;</td>
       </tr>   
            <tr>
@@ -253,42 +291,50 @@
         /serverInfo.xml<br/>
         /serverVersion.txt        </td>
         <td>needs <strong>info</strong> prefix now</td>
+        <td>ModelAndView (jsp) <em>thredds/server/serverinfo/serverInfo_html</em></td>
       </tr>
            <tr>
         <td>MetadataController</td>
         <td>/metadata</td>
         <td>/{path}?accept</td>
         <td>metadata=vars</td>
+        <td>ResponseEntity&lt;String&gt;</td>
       </tr>
       <tr>
         <td>NcssController</td>
         <td>/ncss<br /></td>
         <td>/{path}?{ncss query}</td>
         <td>/ncss/grid ?</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
-        <td>NcssDatasetInfoController</td>
-        <td>getDatasetDescription</td>
-        <td>/ncss/**/dataset.html <br />
-          /ncss/**/dataset.xml </td>
-        <td>remove?</td>
+        <td>NcssShowFeatureDatasetInfo</td>
+        <td>/ncss</td>
+        <td>**/dataset.html <br />
+          **/dataset.xml </td>
+        <td>&nbsp;</td>
+        <td><p>ModelAndView          (XSLT) for HTML</p>
+        <p>ModelAndView -&gt; XmlView for XML</p></td>
       </tr>
       <tr>
         <td>NcssDatasetInfoController</td>
         <td>getStations</td>
         <td>/ncss/**/station.xml</td>
         <td>remove?</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
         <td>NcssDatasetBoundariesController</td>
         <td>getDatasetBoundaries</td>
         <td>/ncss/**/datasetBoundaries.xml</td>
         <td>remove?</td>
+        <td>&nbsp;</td>
       </tr>
         <tr>
         <td>RadarServerController</td>
         <td>/radarServer2</td>
         <td>/{path}?{radar query}</td>
+        <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
        <tr>
@@ -296,10 +342,12 @@
         <td>/remoteCatalogService</td>
         <td>          ?command,dataset</td>
         <td>&nbsp;</td>
+        <td>same as CatalogServiceController</td>
       </tr>
       <tr>
         <td>RestrictedAccessController</td>
         <td>/restrictedAccess</td>
+        <td>&nbsp;</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
@@ -308,12 +356,14 @@
         <td>/view</td>
         <td>/{viewer}.jnlp</td>
         <td>&nbsp;</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
         <td>WCSController</td>
         <td>/wcs</td>
         <td>/{path}?{wcs query}</td>
         <td>Needs to be cleaned up</td>
+        <td>&nbsp;</td>
       </tr>
    </tbody>
   </table>

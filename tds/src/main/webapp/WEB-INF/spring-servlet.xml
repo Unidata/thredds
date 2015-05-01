@@ -15,14 +15,15 @@
   <mvc:resources mapping="/**" location="/"/>
 
   <!-- View resolvers common to most tds controllers and servlets -->
-  <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
     <property name="cache" value="true"/>
     <property name="order" value="1"/>
     <property name="location" value="/WEB-INF/view.xml"/>
   </bean>
 
-  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+  <bean id="jspResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
     <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="order" value="2"/>
     <property name="prefix" value="/WEB-INF/jsp/"/>
     <property name="suffix" value=".jsp"/>
   </bean>

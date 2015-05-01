@@ -76,12 +76,6 @@ public final class NcssDiskCache {
     ServletUtil.logServerStartup.info(getClass().getName() + "Ncss.Cache= " + cachePath + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs);
   }
 
-  // for unit tests until i can figure out how wire correctly
-  public NcssDiskCache(String cachePath) {
-    this.cachePath = cachePath;
-    this.diskCache = new DiskCache2(cachePath, false, 0, 0);
-  }
-
   public DiskCache2 getDiskCache() {
     return this.diskCache;
   }
@@ -89,6 +83,12 @@ public final class NcssDiskCache {
   public String getServletCachePath() {
     String contextPath = (tdsContext == null) ? "" : tdsContext.getContextPath();  // for unit tests until i can figure out how to get a mock TdsContext
     return contextPath + cachePath + "/";
+  }
+
+    // for unit tests until i can figure out how wire correctly
+  public NcssDiskCache(String cachePath) {
+    this.cachePath = cachePath;
+    this.diskCache = new DiskCache2(cachePath, false, 0, 0);
   }
 
 

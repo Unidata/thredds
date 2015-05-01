@@ -35,6 +35,7 @@ package thredds.server.catalogservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -88,6 +89,9 @@ public class RemoteCatalogServiceController {
 
     if (!allowRemote)
       throw new UnsupportedOperationException("Catalog services not supported for remote catalogs.");
+
+    if (validationResult.hasErrors())
+      throw new BindException(validationResult);
 
     // Determine path and catalogPath
     URI uri = params.getCatalogUri();

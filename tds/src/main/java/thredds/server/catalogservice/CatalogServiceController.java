@@ -54,6 +54,7 @@ import thredds.core.DataRootManager;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -106,7 +107,7 @@ public class CatalogServiceController {
     if (params.dataset != null) {
       Dataset dataset = catalog.findDatasetByID(params.dataset);
       if (dataset == null)
-        throw new DatasetNotFound("Did not find dataset [" + params.dataset + "] in catalog [" + baseUriString + "].");
+        throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + baseUriString + "].");
 
       if (isHtml) {
         int i = writer.showDataset(baseUriString, dataset, request, response, true);
@@ -143,7 +144,7 @@ public class CatalogServiceController {
     return null;
   }  */
 
-  // Exception handlers
+  /* Exception handlers
   @ExceptionHandler(URISyntaxException.class)
   public ResponseEntity<String> handle(URISyntaxException ex) {
     log.error("LocalCatalogService: ", ex);
@@ -151,13 +152,5 @@ public class CatalogServiceController {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("Catalog Service exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
-  }
-
-  @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such Dataset")
-  private class DatasetNotFound extends RuntimeException {
-    DatasetNotFound(String msg) {
-      super(msg);
-    }
-  }
-
+  }  */
 }

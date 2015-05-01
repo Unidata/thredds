@@ -48,7 +48,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
@@ -69,10 +68,10 @@ public class GridAsPointResponder extends GridDatasetResponder implements NcssRe
   public static GridAsPointResponder factory(NcssDiskCache ncssDiskCache, SupportedFormat format, OutputStream out){
  		return new GridAsPointResponder(ncssDiskCache, format, out);
  	}
-	
+
 	private NcssDiskCache ncssDiskCache = null;
 	private SupportedFormat format;
-	
+
   private final PointDataWriter writer;
 
 	private GridAsPointResponder(NcssDiskCache ncssDiskCache, SupportedFormat format, OutputStream out){

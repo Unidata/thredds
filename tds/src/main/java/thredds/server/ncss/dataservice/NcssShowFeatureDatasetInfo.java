@@ -33,13 +33,135 @@
 
 package thredds.server.ncss.dataservice;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.transform.JDOMResult;
+import org.jdom2.transform.JDOMSource;
+import org.jdom2.xpath.XPath;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.context.support.ServletContextResource;
+import org.springframework.web.servlet.ModelAndView;
+import thredds.server.config.TdsContext;
+import thredds.server.ncss.format.FormatsAvailabilityService;
+import thredds.server.ncss.format.SupportedFormat;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridDatasetInfo;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 
+import javax.servlet.ServletContext;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface NcssShowFeatureDatasetInfo {
-	public String showForm( FeatureDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint )
-            throws IOException, TransformerException, JDOMException;
+@Service
+public class NcssShowFeatureDatasetInfo {
+
+  @Autowired
+  TdsContext tdsContext;
+
+  public ModelAndView showForm(FeatureDataset fd, String datasetUrlPath, boolean wantXml, boolean isPoint)
+          throws IOException, TransformerException, JDOMException {
+
+    FeatureType ft = fd.getFeatureType();
+    switch (ft) {
+      case GRID:
+        return showGridForm((GridDataset) fd, datasetUrlPath, wantXml, isPoint);
+
+      case STATION:
+        return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncssSobs");
+
+      case POINT:
+        return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncssPobs");
+
+      default:
+        throw new IllegalStateException("Unsupported feature type "+ft);
+    }
+
+  }
+
+  private ModelAndView showPointForm(FeatureDatasetPoint fp, String datasetUrlPath, boolean wantXml, String xslt)
+          throws IOException, TransformerException, JDOMException {
+
+    FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fp, datasetUrlPath);
+    Document doc = xmlWriter.getCapabilitiesDocument();
+
+    if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4)) {
+      String xPathForGridElement = "capabilities/AcceptList";
+      addElement(doc, xPathForGridElement,
+              new Element("accept").addContent("netcdf4").setAttribute("displayName", SupportedFormat.NETCDF4.getFormatName()));
+    }
+
+    if (FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4EXT)) {
+      String xPathForGridElement = "capabilities/AcceptList";
+      addElement(doc, xPathForGridElement,
+               new Element("accept").addContent("netcdf4ext").setAttribute("displayName", SupportedFormat.NETCDF4EXT.getFormatName()));
+    }
+
+    if (wantXml) {
+      return new ModelAndView("threddsXmlView", "Document", doc);
+
+    } else {
+      Map<String, Object> model = new HashMap<>();
+      model.put("Document", doc);
+      model.put("Transform", xslt);
+      return new ModelAndView("threddsXsltView", model); // use xslt to transform into web page
+    }
+  }
+
+  private ModelAndView showGridForm(GridDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint)
+          throws IOException, TransformerException, JDOMException {
+    boolean formatAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
+    GridDatasetInfo writer = new GridDatasetInfo(gds, "path");
+
+    if (wantXml) {
+      Document datasetDescription = writer.makeDatasetDescription();
+      Element root = datasetDescription.getRootElement();
+      root.setAttribute("location", datsetUrlPath);
+      if (formatAvailable)
+        addNetcdf4Format(datasetDescription, "/gridDataset");
+
+      return new ModelAndView("threddsXmlView", "Document", datasetDescription);
+
+    } else {
+      String xslt = isPoint ? "ncssGridAsPoint" : "ncssGrid";
+      Document doc = writer.makeGridForm();
+      if (formatAvailable)
+        addNetcdf4Format(doc, "/gridForm");
+
+      Map<String, Object> model = new HashMap<>();
+      model.put("Document", doc);
+      model.put("Transform", xslt);
+      return new ModelAndView("threddsXsltView", model); // use xslt to transform into web page
+    }
+  }
+
+  private void addNetcdf4Format(Document datasetDescriptionDoc, String rootElementName) throws JDOMException {
+    String xPathForGridElement = rootElementName + "/AcceptList/Grid";
+    addElement(datasetDescriptionDoc, xPathForGridElement, new Element("accept").addContent("netcdf4").setAttribute
+            ("displayName", "netcdf4"));
+
+    String xPathForGridAsPointElement = rootElementName + "/AcceptList/GridAsPoint";
+    addElement(datasetDescriptionDoc, xPathForGridAsPointElement, new Element("accept").addContent("netcdf4")
+            .setAttribute("displayName", "netcdf4"));
+  }
+
+  private void addElement(Document datasetDescriptionDoc, String xPath, Element element) throws JDOMException {
+    XPath gridXpath = XPath.newInstance(xPath);
+    Element acceptListParent = (Element) gridXpath
+            .selectSingleNode(datasetDescriptionDoc);
+    acceptListParent.addContent(element);
+  }
 }
