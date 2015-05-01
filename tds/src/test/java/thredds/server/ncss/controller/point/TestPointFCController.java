@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml"}, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestPointFCController {
 
