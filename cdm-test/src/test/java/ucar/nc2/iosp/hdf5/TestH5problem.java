@@ -33,10 +33,9 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import org.junit.Test;
 import ucar.ma2.Array;
-import ucar.nc2.NCdumpW;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 
 import java.io.IOException;
 
@@ -53,6 +52,7 @@ public class TestH5problem {
     String filename = TestH5.testDir + "ssec-h5/MYD04_L2.A2006188.1830.005.2006194121515.hdf";
     try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
       Variable v = ncfile.findVariable("/U-MARF/EPS/IASI_xxx_1C/DATA/SPECT_LAT_ARRAY");
+      assert v != null;
       Array data = v.read();
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
       NCdumpW.printArray(data, "primary_cloud", System.out, null);
@@ -63,6 +63,25 @@ public class TestH5problem {
   String bad = TestH5.testDir + "compressCompoundBarrowdale.h5";
 
  // NetcdfFile ncfile = NetcdfFile.open(testDir + "eos/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5");
+
+  // The HugeHeapId problem: java.io.IOException: java.lang.RuntimeException: Cant find DHeapId=0
+  // fixes by rschmunk 4/30/2015
+  @Test
+  public void problemHugeHeapId() throws IOException {
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = TestH5.testDir + "SMAP_L4_SM_aup_20140115T030000_V05007_001.h5";
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Group g = ncfile.findGroup("Metadata");
+      assert g != null;
+      Attribute att = g.findAttribute("iso_19139_dataset_xml");
+      assert att != null;
+      assert att.isString();
+      String val = att.getStringValue();
+      System.out.printf(" len of %s is %d%n", att.getFullName(), val.length());
+      assert val.length() > 200 * 1000; // silly rabbit
+    }
+  }
+
 
 
 }
