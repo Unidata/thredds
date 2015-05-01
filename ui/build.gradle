@@ -61,6 +61,8 @@ jar {
     }
 }
 
+shadowJar.archiveName = "toolsUI-${version}.jar"
+
 ext {
     toolsUIjar = 'toolsUI-' + version + '.jar'
     webstartWorkingDir = "build/signed"
@@ -70,38 +72,6 @@ ext {
 
     jarsContainingDuplicateEntries = ['xmlbeans-2.6.0.jar']
 }
-
-//shadow {
-//    outputFile = file("${destinationDir}/${toolsUIjar}")
-//    stats = true
-//
-//    exclude 'AUTHORS'    // crap from other packages
-//    exclude 'DATE'
-//    exclude 'LICENCE'
-//    exclude 'LICENSE'
-//    exclude 'NOTICE'
-//    exclude '*.txt'
-//    exclude '*.xml'
-//    exclude 'META-INF/DEPENDENCIES'
-//    exclude 'META-INF/LICENSE'
-//    exclude 'META-INF/NOTICE'
-//    exclude 'META-INF/*.SF'
-//    exclude 'META-INF/*.DSA'
-//    exclude 'META-INF/*.RSA'
-//    exclude 'META-INF/*.txt'
-//    exclude 'META-INF/*.xml'
-//
-//    transformer(ManifestResourceTransformer) {
-//        mainClass = 'ucar.nc2.ui.ToolsUI'     // Do I need this, given that I've set 'Main-Class' in jar?
-//    }
-//    transformer(AppendingTransformer) {
-//        resource = 'META-INF/spring.handlers'
-//    }
-//    transformer(AppendingTransformer) {
-//        resource = 'META-INF/spring.schemas'
-//    }
-//    transformer(ServiceFileTransformer) {}
-//}
 
 // It's possible to test web start files locally before deploying them.
 // 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,

@@ -24,7 +24,7 @@ subprojects {
         options.compilerArgs = ['-Xlint:-options']
     }
 
-    tasks.withType(Jar) {   // Applies to Jar, War, and Ear tasks.
+    tasks.withType(Jar) {   // Applies to Jar, War, Ear and shadowJar tasks.
         manifest {
             // Subprojects have not yet been configured, but they may want to reassign these attributes.
             // So, we're going to delay evaluation by using lazy GStrings: http://goo.gl/zwWnPh
@@ -61,6 +61,29 @@ subprojects {
     afterEvaluate {
         // For projects using the shadow plugin, create the fat jar after creating the normal jar.
         if (pluginManager.hasPlugin("com.github.johnrengelman.shadow")) {
+            shadowJar {
+                // Filter out crap from various other packages.
+                exclude 'AUTHORS'
+                exclude 'DATE'
+                exclude 'LICENCE'
+                exclude 'LICENSE'
+                exclude 'NOTICE'
+                exclude '*.txt'
+                exclude '*.xml'
+                exclude 'META-INF/DEPENDENCIES'
+                exclude 'META-INF/LICENSE'
+                exclude 'META-INF/NOTICE'
+                exclude 'META-INF/*.SF'
+                exclude 'META-INF/*.DSA'
+                exclude 'META-INF/*.RSA'
+                exclude 'META-INF/*.txt'
+                exclude 'META-INF/*.xml'
+
+                append('META-INF/spring.handlers')
+                append('META-INF/spring.schemas')
+                mergeServiceFiles()
+            }
+
             tasks.jar.finalizedBy tasks.shadowJar
         }
     }

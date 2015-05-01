@@ -20,28 +20,7 @@ jar.manifest.attributes 'Main-Class': 'thredds.tdm.Tdm'
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
-shadowJar {
-    archiveName = "tdm-4.6.jar"
-
-    append('META-INF/spring.handlers')
-    append('META-INF/spring.schemas')
-
-    // Filter out crap from various other packages.
-    exclude 'AUTHORS'
-    exclude 'DATE'
-    exclude 'LICENCE'
-    exclude 'LICENSE'
-    exclude 'NOTICE'
-    exclude '*.txt'
-    exclude '*.xml'
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.txt'
-    exclude 'META-INF/*.xml'
-}
+shadowJar.archiveName = "tdm-4.6.jar"
 
 task showClasspath << {
     buildscript.configurations.classpath.each { println it }

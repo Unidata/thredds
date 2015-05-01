@@ -89,6 +89,30 @@
                   <exclude>log4j:log4j:jar:</exclude>
                 </excludes>
               </artifactSet>
+
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <!-- Filter out crap from various other packages. -->
+                    <excludes>AUTHORS</excludes>
+                    <excludes>DATE</excludes>
+                    <excludes>LICENCE</excludes>
+                    <excludes>LICENSE</excludes>
+                    <excludes>NOTICE</excludes>
+                    <excludes>*.txt</excludes>
+                    <excludes>*.xml</excludes>
+                    <excludes>META-INF/DEPENDENCIES</excludes>
+                    <excludes>META-INF/LICENSE</excludes>
+                    <excludes>META-INF/NOTICE</excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <excludes>META-INF/*.txt</excludes>
+                    <excludes>META-INF/*.xml</excludes>
+                  </excludes>
+                </filter>
+              </filters>
             </configuration>
           </execution>
         </executions>

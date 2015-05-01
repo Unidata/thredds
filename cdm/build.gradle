@@ -57,6 +57,8 @@ task releaseDocs(dependsOn: javadoc) << {
     }
 }
 
+jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'
+
 //shadow {
 //    outputFile = file("${destinationDir}/cdms-${version}.jar")
 //    stats = true

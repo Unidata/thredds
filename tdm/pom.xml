@@ -140,8 +140,9 @@
                     <excludes>META-INF/DEPENDENCIES</excludes>
                     <excludes>META-INF/LICENSE</excludes>
                     <excludes>META-INF/NOTICE</excludes>
-                    <excludes>META-INF/*.DSA</excludes>
-                    <excludes>META-INF/*.RSA</excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
                     <excludes>META-INF/*.txt</excludes>
                     <excludes>META-INF/*.xml</excludes>
                   </excludes>

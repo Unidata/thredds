@@ -13,17 +13,6 @@ dependencies {
     runtime libraries["slf4j-jdk14"]
 }
 
-//////////////////////////////////////////////////////////
-
-ext {
-    ncIdvJar = 'ncIdvs-' + version + '.jar'
-    webstartWorkingDir = "build/signed"
-    if (project.hasProperty("webdir")) {
-        webstartDir = webdir + "webstart"
-    }
-    destinationDir = 'build/libs/'
-}
-
 apply plugin: 'com.github.johnrengelman.shadow'
 
 shadowJar {
@@ -35,22 +24,15 @@ shadowJar {
     exclude 'edu/wisc/**'
     exclude 'nom/**'
     exclude 'visad/**'
+}
 
-    // Filter out crap from various other packages.
-    exclude 'AUTHORS'
-    exclude 'DATE'
-    exclude 'LICENCE'
-    exclude 'LICENSE'
-    exclude 'NOTICE'
-    exclude '*.txt'
-    exclude '*.xml'
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.txt'
-    exclude 'META-INF/*.xml'
+ext {
+    ncIdvJar = 'ncIdvs-' + version + '.jar'
+    webstartWorkingDir = "build/signed"
+    if (project.hasProperty("webdir")) {
+        webstartDir = webdir + "webstart"
+    }
+    destinationDir = 'build/libs/'
 }
 
 /* following properties should be in gradle.properties:
