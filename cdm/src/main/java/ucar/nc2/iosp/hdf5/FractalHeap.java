@@ -240,8 +240,8 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
 
         switch (subtype) {
           case 1:
-            n = h5.getNumBytesFromMax(nManagedObjects);      // guess
-            offset = h5.makeIntFromBytes(heapId, 1, n);      // [16,1,0,0,0,0,0,0]
+          case 2:
+            offset = h5.makeIntFromBytes(heapId, 1, (heapId.length-1));
             break;
         }
       } else if (type == 2) {
