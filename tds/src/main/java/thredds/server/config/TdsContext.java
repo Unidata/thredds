@@ -376,7 +376,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
    * "stable", "development") and their corresponding
    * version numbers (i.e. 4.5.2)
    */
-  private Map<String, String> getLatestVersionInfo() {
+  public Map<String, String> getLatestVersionInfo() {
     int socTimeout = 1; // http socket timeout in seconds
     int connectionTimeout = 3; // http connection timeout in seconds
     Map<String, String> latestVersionInfo = new HashMap<>();
