@@ -54,7 +54,7 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestRestrictDataset {
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
             {"/dodsC/testRestrictedDataset/testData2.nc.dds"},

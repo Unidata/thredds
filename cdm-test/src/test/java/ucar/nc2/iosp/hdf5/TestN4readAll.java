@@ -52,7 +52,7 @@ import java.util.Collection;
 public class TestN4readAll {
   public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
  	public static Collection<Object[]> getTestParameters() throws IOException {
     Collection<Object[]> filenames = new ArrayList<>();
     TestDir.actOnAllParameterized(testDir + "nc4", null, filenames);

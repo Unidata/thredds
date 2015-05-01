@@ -44,7 +44,7 @@ import java.util.List;
 public class TestReadAndCountDods {
   static String base = "thredds:resolve:http://thredds-dev.unidata.ucar.edu/thredds/";
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

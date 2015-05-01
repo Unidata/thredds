@@ -54,7 +54,7 @@ import java.util.List;
 public class TestH4readAndCount {
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

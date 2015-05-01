@@ -41,10 +41,10 @@ public class TestNcstreamCompareWithFiles {
     System.out.printf("success = %d/%d %n", success, total);
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
 
-   List<Object[]>  result = new ArrayList<Object[]>(500);
+   List<Object[]>  result = new ArrayList<>(500);
 
     try {
       addFromScan(result, contentRoot +"/netcdf3/", new SuffixFileFilter(".nc"));

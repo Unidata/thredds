@@ -58,7 +58,7 @@ public class PingTdsOnMotherlode8080
         this.catalogUrl = catalogUrl;
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name="{0}")
     public static Collection<Object[]> getCatalogUrls()
     {
         Collection<Object[]> catUrls = StandardCatalogUtils.getIddMainCatalogUrlArrayCollection();

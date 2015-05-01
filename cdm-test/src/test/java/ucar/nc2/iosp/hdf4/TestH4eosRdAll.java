@@ -49,7 +49,7 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public class TestH4eosRdAll {
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
  	public static Collection<Object[]> getTestParameters() throws IOException {
     Collection<Object[]> filenames = new ArrayList<>();
     H4EosFileFilter ff = new H4EosFileFilter();

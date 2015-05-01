@@ -55,7 +55,7 @@ public class TestH5readAll {
     H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
  	public static Collection<Object[]> getTestParameters() throws IOException {
     TestH5.H5FileFilter ff = new TestH5.H5FileFilter();
     Collection<Object[]> filenames = new ArrayList<>();

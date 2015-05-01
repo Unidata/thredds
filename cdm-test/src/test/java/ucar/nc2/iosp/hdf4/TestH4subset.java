@@ -55,7 +55,7 @@ public class TestH4subset {
   static private String dirName = TestH5.testDir;
   static private int nt = 3;
   
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

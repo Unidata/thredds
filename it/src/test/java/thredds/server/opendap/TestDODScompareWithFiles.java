@@ -63,7 +63,7 @@ public class TestDODScompareWithFiles {
   static boolean showCompare = false, showEach = false, compareData  = false;
   static String contentRoot = TestDir.cdmUnitTestDir;
 
-   @Parameterized.Parameters
+   @Parameterized.Parameters(name="{0}")
    public static List<Object[]> getTestParameters() {
 
     List<Object[]>  result = new ArrayList<Object[]>(20);

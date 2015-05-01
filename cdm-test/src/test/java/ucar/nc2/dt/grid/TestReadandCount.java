@@ -58,7 +58,7 @@ public class TestReadandCount {
   private static String grib1dir = TestDir.cdmUnitTestDir +"formats/grib1/";
   private static String grib2dir = TestDir.cdmUnitTestDir +"formats/grib2/";
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

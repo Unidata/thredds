@@ -64,7 +64,7 @@ public class TestProjections {
   private static String testDir= TestDir.cdmUnitTestDir + "transforms/";
   private static LatLonPointImpl testPoint = new LatLonPointImpl(0, 145.0);
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}-{1}")
   public static Collection<Object[]> data() {
     Object[][] data = new Object[][]{
 

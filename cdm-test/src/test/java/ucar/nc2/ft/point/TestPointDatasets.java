@@ -210,7 +210,7 @@ public class TestPointDatasets {
     return result;
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

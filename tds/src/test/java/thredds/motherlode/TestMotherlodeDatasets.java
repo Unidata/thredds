@@ -63,7 +63,7 @@ import ucar.httpservices.HTTPSession;
 public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   public static String server = "http://thredds-test.unidata.ucar.edu/thredds";
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
  	public static Collection<Object[]> getTestParameters() {
  		return Arrays.asList(new Object[][]{
             {"/catalog/grib/NCEP/WW3/Global/catalog.xml", CatalogCrawler.Type.random_direct, false},

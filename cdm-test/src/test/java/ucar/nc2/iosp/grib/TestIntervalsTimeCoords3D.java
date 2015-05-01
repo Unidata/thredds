@@ -29,7 +29,7 @@ import java.util.Collection;
 @Category(NeedsCdmUnitTest.class)
 public class TestIntervalsTimeCoords3D {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name="{0}")
     public static Collection<Object[]> getTestParameters() throws IOException {
       Collection<Object[]> params = new ArrayList<>();
       params.add(new Object[]{TestDir.cdmUnitTestDir + "formats/grib1/QPE.20101005.009.157", "VAR_9-157-2-61_L1_Imixed_S4", boundsQPE, 3});

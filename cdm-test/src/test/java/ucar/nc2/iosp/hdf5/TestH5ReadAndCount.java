@@ -53,7 +53,7 @@ import java.util.List;
 public class TestH5ReadAndCount {
   static public String testDir = TestH5.testDir;
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 

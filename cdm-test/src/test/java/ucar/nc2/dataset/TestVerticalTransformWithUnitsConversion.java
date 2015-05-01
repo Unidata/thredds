@@ -84,7 +84,7 @@ public class TestVerticalTransformWithUnitsConversion {
 		
 	}
 	
-	@Parameters
+	@Parameters(name="{0}")
 	public static Collection<Object[]> data(){
 		Object[][] data = new Object[][]{
 				{TestDir.cdmUnitTestDir + "transforms/idv_sigma.ncml", "/share/testdata/cdmUnitTest/transforms/idv_sigma.nc", new LatLonPointImpl(52.85, 27.56), "VNK201302" }, //AtmosSigma

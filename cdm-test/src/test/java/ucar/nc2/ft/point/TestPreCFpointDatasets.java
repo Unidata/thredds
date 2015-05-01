@@ -56,7 +56,7 @@ import java.util.List;
 public class TestPreCFpointDatasets {
   static public String CFpointObs_pre16 = TestDir.cdmLocalTestDataDir + "pointPre1.6/";
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     return TestPointDatasets.getAllFilesInDirectory(CFpointObs_pre16, new FileFilter() {
       public boolean accept(File f) {

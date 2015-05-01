@@ -23,7 +23,7 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 public class TestCatalogMapping {
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
 
     List<Object[]> result = new ArrayList<Object[]>(10);
