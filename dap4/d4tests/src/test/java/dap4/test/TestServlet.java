@@ -25,6 +25,7 @@ import org.junit.*;
  * test client side deserialization.
  */
 
+@Ignore
 public class TestServlet extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
