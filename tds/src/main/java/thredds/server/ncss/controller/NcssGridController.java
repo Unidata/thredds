@@ -1,7 +1,6 @@
 /* Copyright */
 package thredds.server.ncss.controller;
 
-import org.jdom2.JDOMException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
@@ -29,7 +28,6 @@ import ucar.nc2.util.IO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -77,7 +75,6 @@ public class NcssGridController extends NcssController {
       } else {
         throw new NcssException("Dataset Feature Type is " + ft.toString() + " but request is for Grids");
       }
-
     }
   }
 
@@ -128,7 +125,7 @@ public class NcssGridController extends NcssController {
   }
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
-  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException, JDOMException {
+  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException {
     if (!req.getParameterMap().isEmpty())
       throw new NcssException("Invalid info request.");
 

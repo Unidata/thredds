@@ -7,7 +7,7 @@
 </head>
 <body>
 <h2>Spring Configuration - 5.0</h2>
-<p><em>May 1,, 2015</em></p>
+<p><em>May 1, 2015</em></p>
 <h2>Notes</h2>
 <ol>
   <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
@@ -114,11 +114,10 @@
 <ul>
   <li>    We need a view resolver to find our views, which we have in view.xml. Must come before the jspResolver</li>
   <li>XmlViewResolver just means it reads from an XML file (views.xml) nothing to do with views of XML files. </li>
-  <li>In order to read in spring-servlett.xml, the mock framework in tds module needs  
+  <li><em><strong>NOTE: </strong></em>In order to read in spring-servlet.xml, the mock framework in tds module needs  
     <pre>locations&#32;=&#32;{&quot;/WEB-INF/applicationContext.xml&quot;,&#32;&quot;/WEB-INF/spring-servlet.xml&quot;}</pre>
   </li>
 </ul>
-<p>&nbsp;</p>
 <h2>Spring MVC</h2>
 <p><a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html">http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html</a></p>
 <p>Lots of ways, we want to standardize on one or a few idioms.</p>
@@ -207,7 +206,7 @@
     <td>NOT_FOUND</td>
     <td>unknown dataset</td>
   </tr>
-   <tr>
+  <tr>
     <td>IOException </td>
     <td>INTERNAL_SERVER_ERROR</td>
     <td>server I/O error</td>

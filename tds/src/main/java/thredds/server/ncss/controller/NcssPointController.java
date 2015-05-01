@@ -2,7 +2,6 @@
 package thredds.server.ncss.controller;
 
 import org.jdom2.Document;
-import org.jdom2.JDOMException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -26,7 +25,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -107,7 +105,7 @@ public class NcssPointController extends NcssController {
        if (fd == null) return null; // restricted dataset
        return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
      }
-   }
+  }
 
    @RequestMapping(value = {"**/station.xml"})
    ModelAndView getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {
