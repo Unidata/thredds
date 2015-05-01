@@ -56,6 +56,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
 import thredds.server.config.ThreddsConfig;
+import thredds.server.exception.RequestTooLargeException;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
 import thredds.util.TdsPathUtils;
@@ -752,7 +753,7 @@ public class OpendapServlet extends AbstractServlet {
     double maxSize = isAscii ? ascLimit : binLimit; // Mbytes
     if (dsize > maxSize) {
       log.info("Reject request size = {} Mbytes", dsize);
-      throw new UnsupportedOperationException("Request too big=" + dsize + " Mbytes, max=" + maxSize);
+      throw new RequestTooLargeException(dsize + " Mbytes, max=" + maxSize);
     }
   }
 

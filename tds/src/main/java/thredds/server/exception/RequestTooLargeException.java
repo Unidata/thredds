@@ -31,22 +31,16 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.ncss.exception;
+package thredds.server.exception;
 
-/**
- * An unsupported operation is thrown when the result data could be inconsistent because 
- * the data readers are yet not able to create the appropriate data structure for all the variables requested.   
- * 
- * @author mhermida
- *
- */
-public class UnsupportedOperationException extends NcssException {
+public class RequestTooLargeException extends RuntimeException {
 
-	/**
-	 * Creates an UnsupportedOperationException with a specific message
-	 */
-	public UnsupportedOperationException(String message){
+	public RequestTooLargeException(String message){
 		super(message);
-		
 	}
+	
+	public RequestTooLargeException(String message, Exception cause){
+		super(message, cause);
+	}	
+
 }

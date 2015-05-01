@@ -46,7 +46,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.core.StandardService;
 import thredds.server.config.TdsContext;
-import thredds.server.ncss.dataservice.NcssShowFeatureDatasetInfo;
 import thredds.server.ncss.exception.NcssException;
 import thredds.util.TdsPathUtils;
 
@@ -77,7 +76,7 @@ public abstract class NcssController {
   @Autowired
   NcssDiskCache ncssDiskCache;
 
-  /* @RequestMapping("/ncss/grid/**")
+    /* @RequestMapping("/ncss/grid/**")
   public String forwardGrid(HttpServletRequest req) {
     String reqString = req.getServletPath();
     assert reqString.startsWith("/ncss/grid");
@@ -144,12 +143,6 @@ public abstract class NcssController {
     return TdsPathUtils.extractPath(req, getBase(), endings);
   }
 
-  protected void writeResponse(String responseStr, HttpServletResponse response) throws IOException {
-    PrintWriter pw = response.getWriter();
-    pw.write(responseStr);
-    pw.flush();
-    response.flushBuffer();
-  }
 
   protected void setResponseHeaders(HttpServletResponse response, HttpHeaders httpHeaders) {
     Set<String> keySet = httpHeaders.keySet();

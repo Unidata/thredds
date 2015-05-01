@@ -129,7 +129,7 @@
   </li>
   <li>see <strong>CdmRemoteController.handleRequest()</strong> </li>
 </ul>
-<h3>Return HTML, XML as String</h3>
+<h3>Write HTML, XML yourself into a string</h3>
 <ul>
   <li>return a <strong>ResponseEntity&lt;String&gt;</strong> allows  to set headers, return value</li>
   <li>see <strong>CdmRemoteController.handleCapabilitiesRequest(), MetadataController</strong>  </li>
@@ -138,6 +138,22 @@
 <ul>
   <li>return a <strong>ModelAndView</strong>. view name is a jsp file, model is used by the jsp</li>
   <li>see <strong>ServerInfoController</strong></li>
+  <li>apaprently jsps are served by tomcat default servlet, so jsp name is full path name. perhaps switch to spring served, for consistency</li>
+</ul>
+<h3>Write XML</h3>
+<ul>
+  <li>return a <strong>ModelAndView</strong>. view name is <em>threddsXmlView</em>
+  , model has <em>Document</em>=jdom doc</li>
+  <li>see <strong>NcssShowFeatureDatasetInfo, NcssPointController</strong>
+  </li>
+</ul>
+<h3>Use XSLT to produce HTML</h3>
+<ul>
+  <li>typically used to produce HTML form</li>
+  <li>return a <strong>ModelAndView</strong>. view name is <em>threddsXsltView</em>
+    , model has <em>Document</em>=jdom doc, <em>Transform</em>=name of xslt xml doc</li>
+  <li>see <strong>NcssShowFeatureDatasetInfo</strong>
+  </li>
 </ul>
 <h3>Return Custom View</h3>
 <ul>
@@ -164,6 +180,68 @@
   <li> essentially a way to switch return types</li>
   <li>see <a href="https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc">https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc</a></li>
 </ul>
+<table width="761" border="1">
+  <tr>
+    <td width="254"><center>
+      <strong>Exception</strong>
+    </center></td>
+    <td width="267"><center>
+      <strong>Return</strong>
+    </center> </td>
+    <td width="218"><center>
+      <strong>Description</strong>
+    </center></td>
+  </tr>
+  <tr>
+    <td>ServiceNotAllowed </td>
+    <td>FORBIDDEN</td>
+    <td>disallowed in config</td>
+  </tr>
+  <tr>
+    <td>RequestTooLargeException </td>
+    <td>FORBIDDEN</td>
+    <td>requested data is too large</td>
+  </tr>
+   <tr>
+    <td>FileNotFoundException </td>
+    <td>NOT_FOUND</td>
+    <td>unknown dataset</td>
+  </tr>
+   <tr>
+    <td>IOException </td>
+    <td>INTERNAL_SERVER_ERROR</td>
+    <td>server I/O error</td>
+  </tr>
+  <tr>
+    <td><strong>NcssException </strong><br/>
+    DateUnitException<br/>
+    FeaturesNotFoundException<br/>
+    InvalidBBOXException<br/>
+    OutOfBoundariesException<br/>
+    TimeOutOfWindowException<br/>
+    UnsupportedResponseFormatException<br/>
+    VariableNotContainedInDatasetException<br/>
+    </td>
+    <td>BAD_REQUEST</td>
+    <td>invalid request</td>
+  </tr>
+  <tr>
+    <td>IllegalArgumentException </td>
+    <td>BAD_REQUEST</td>
+    <td>other</td>
+  </tr>
+  <tr>
+    <td>BindException </td>
+    <td>BAD_REQUEST</td>
+    <td>validation error</td>
+  </tr>
+  <tr>
+    <td>Throwable </td>
+    <td>INTERNAL_SERVER_ERROR</td>
+    <td>server error</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
 <hr />
 <h2>Servlets and Controllers mappings summary</h2>
 <p><a href="http://stackoverflow.com/questions/12569308/spring-difference-of-and-with-regards-to-paths">http://stackoverflow.com/questions/12569308/spring-difference-of-and-with-regards-to-paths</a></p>
@@ -251,7 +329,7 @@
       </tr>
       <tr>
         <td>CdmRemoteController</td>
-        <td>/cdmremote</td>
+        <td><strong>/cdmremote</strong></td>
         <td>/{path}?{cdmr query} (<a href="../../netcdf-java/reference/stream/CdmRemote.html">ref</a>)</td>
         <td>&nbsp;</td>
         <td>ResponseEntity&lt;String&gt;, void</td>
@@ -295,44 +373,36 @@
       </tr>
            <tr>
         <td>MetadataController</td>
-        <td>/metadata</td>
-        <td>/{path}?accept</td>
+        <td><strong>/metadata</strong></td>
+        <td>/{path}[?accept=xml]</td>
         <td>metadata=vars</td>
         <td>ResponseEntity&lt;String&gt;</td>
       </tr>
       <tr>
-        <td>NcssController</td>
-        <td>/ncss<br /></td>
-        <td>/{path}?{ncss query}</td>
-        <td>/ncss/grid ?</td>
-        <td>&nbsp;</td>
+        <td>NcssGridController</td>
+        <td><strong>/ncss/grid</strong><br /></td>
+        <td>/{path}?{ncss query} (<a href="../reference/services/NetcdfSubsetServiceReference.html">ref</a>)<br />
+          **/dataset.[html|xml] <br />
+          **/pointDataset.[html|xml]<br />
+          **/datasetBoundaries.xml<br />
+        </td>
+        <td><p>&nbsp;</p>
+        <p>&nbsp;</p></td>
+        <td>ModelAndView</td>
       </tr>
       <tr>
-        <td>NcssShowFeatureDatasetInfo</td>
-        <td>/ncss</td>
-        <td>**/dataset.html <br />
-          **/dataset.xml </td>
+        <td>NcssPointController</td>
+        <td><strong>/ncss/point</strong></td>
+        <td>/{path}?{ncss query} (<a href="../reference/services/NetcdfSubsetServiceReference.html">ref</a>)<br />
+          **/dataset.[html|xml] <br />
+          **/pointDataset.[html|xml]<br />
+          **/station.xml</td>
         <td>&nbsp;</td>
-        <td><p>ModelAndView          (XSLT) for HTML</p>
-        <p>ModelAndView -&gt; XmlView for XML</p></td>
-      </tr>
-      <tr>
-        <td>NcssDatasetInfoController</td>
-        <td>getStations</td>
-        <td>/ncss/**/station.xml</td>
-        <td>remove?</td>
-        <td>&nbsp;</td>
-      </tr>
-      <tr>
-        <td>NcssDatasetBoundariesController</td>
-        <td>getDatasetBoundaries</td>
-        <td>/ncss/**/datasetBoundaries.xml</td>
-        <td>remove?</td>
-        <td>&nbsp;</td>
+        <td><p>ModelAndView          </p></td>
       </tr>
         <tr>
         <td>RadarServerController</td>
-        <td>/radarServer2</td>
+        <td>/radarServer</td>
         <td>/{path}?{radar query}</td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>

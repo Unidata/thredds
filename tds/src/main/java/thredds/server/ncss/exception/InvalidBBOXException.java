@@ -32,32 +32,12 @@
  */
 package thredds.server.ncss.exception;
 
-/**
- * @author mhermida
- *
- */
 public class InvalidBBOXException extends NcssException {
 
-	private static final long serialVersionUID = -9059341389128306949L;
-	
-	/**
-	 * Creates an InvalidBBOXException with a specific message
-	 * @param message
-	 */	
 	public InvalidBBOXException(String message) {
 		super(message);
-
 	}
-
-	/**
-	 * Wraps an exception into an InvalidBBOXException with a specific message 
-	 * @param message
-	 * @param cause
-	 */
 	public InvalidBBOXException(String message, Exception cause) {
 		super(message, cause);
-
-	}	
-	
-
+	}
 }

@@ -32,8 +32,8 @@
  */
 package thredds.server.ncss.controller;
 
+import thredds.server.exception.RequestTooLargeException;
 import thredds.server.ncss.exception.*;
-import thredds.server.ncss.exception.UnsupportedOperationException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.server.config.ThreddsConfig;
@@ -89,7 +89,7 @@ class GridResponder extends GridDatasetResponder {
 			throws NcssException, InvalidRangeException, ParseException, IOException {
 
 		if (!checkRequestedVars(gds, params) && params.getVertCoord() != null ) { // LOOK should catch validation error earlier
-      throw new UnsupportedOperationException("The variables requested: " + params.getVar() +
+      throw new NcssException("The variables requested: " + params.getVar() +
               " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
     }
 
@@ -169,8 +169,7 @@ class GridResponder extends GridDatasetResponder {
 	}
 
 	private File writeCoordinatesSubset(NcssParamsBean params, NetcdfFileWriter.Version version)
-			throws OutOfBoundariesException, ParseException,
-			InvalidRangeException, RequestTooLargeException, IOException,
+			throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException,
 			InvalidBBOXException, TimeOutOfWindowException {
 
 		// Check coordinate params: maxx, maxy, minx, miny

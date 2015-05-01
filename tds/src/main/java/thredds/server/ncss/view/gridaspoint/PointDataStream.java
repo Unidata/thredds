@@ -44,11 +44,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncss.controller.NcssDiskCache;
-import thredds.server.ncss.exception.DateUnitException;
-import thredds.server.ncss.exception.UnsupportedOperationException;
 import thredds.server.ncss.format.SupportedFormat;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -56,12 +53,11 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 
 /**
  * merged into GridAsPointResponder.
- * left (fo now) for unit testing
+ * left (for now) for unit testing
  */
 public final class PointDataStream {
   static private Logger log = LoggerFactory.getLogger(PointDataStream.class);
@@ -76,7 +72,7 @@ public final class PointDataStream {
 		this.pointDataWriter = PointDataWriterFactory.factory(supportedFormat, outputStream, ncssDiskCache);
 	}
 
-	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws DateUnitException, UnsupportedOperationException, InvalidRangeException {
+	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws Exception {
 		
 		boolean allDone= false;
 		List<String> vars = new ArrayList<>();

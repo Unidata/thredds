@@ -50,6 +50,7 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.server.config.HtmlConfig;
 import thredds.server.config.ThreddsConfig;
+import thredds.server.exception.ServiceNotAllowed;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -88,7 +89,7 @@ public class RemoteCatalogServiceController {
                                        @Valid RemoteCatalogRequest params, BindingResult validationResult) throws Exception {
 
     if (!allowRemote)
-      throw new UnsupportedOperationException("Catalog services not supported for remote catalogs.");
+      throw new ServiceNotAllowed("Catalog services not supported for remote catalogs.");
 
     if (validationResult.hasErrors())
       throw new BindException(validationResult);

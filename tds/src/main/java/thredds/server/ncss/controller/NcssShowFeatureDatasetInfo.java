@@ -31,7 +31,7 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.ncss.dataservice;
+package thredds.server.ncss.controller;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -73,7 +73,7 @@ public class NcssShowFeatureDatasetInfo {
   TdsContext tdsContext;
 
   public ModelAndView showForm(FeatureDataset fd, String datasetUrlPath, boolean wantXml, boolean isPoint)
-          throws IOException, TransformerException, JDOMException {
+          throws IOException, JDOMException {
 
     FeatureType ft = fd.getFeatureType();
     switch (ft) {
@@ -93,7 +93,7 @@ public class NcssShowFeatureDatasetInfo {
   }
 
   private ModelAndView showPointForm(FeatureDatasetPoint fp, String datasetUrlPath, boolean wantXml, String xslt)
-          throws IOException, TransformerException, JDOMException {
+          throws IOException, JDOMException {
 
     FeatureDatasetPointXML xmlWriter = new FeatureDatasetPointXML(fp, datasetUrlPath);
     Document doc = xmlWriter.getCapabilitiesDocument();
@@ -121,8 +121,7 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  private ModelAndView showGridForm(GridDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint)
-          throws IOException, TransformerException, JDOMException {
+  private ModelAndView showGridForm(GridDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint) throws JDOMException {
     boolean formatAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
     GridDatasetInfo writer = new GridDatasetInfo(gds, "path");
 
@@ -160,8 +159,7 @@ public class NcssShowFeatureDatasetInfo {
 
   private void addElement(Document datasetDescriptionDoc, String xPath, Element element) throws JDOMException {
     XPath gridXpath = XPath.newInstance(xPath);
-    Element acceptListParent = (Element) gridXpath
-            .selectSingleNode(datasetDescriptionDoc);
+    Element acceptListParent = (Element) gridXpath.selectSingleNode(datasetDescriptionDoc);
     acceptListParent.addContent(element);
   }
 }

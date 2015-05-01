@@ -3,21 +3,19 @@ package thredds.server.ncss.controller;
 
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
-import thredds.server.ncss.exception.UnsupportedOperationException;
+import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
-import thredds.util.ContentType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -29,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.xml.transform.TransformerException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -52,12 +49,8 @@ public class NcssPointController extends NcssController {
                             @Valid NcssPointParamsBean params,
                             BindingResult validationResult) throws Exception {
 
-    // System.out.printf("%s%n", ServletUtil.showRequestDetail(null, req));
-
-    if (validationResult.hasErrors()) {
-      handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult);
-      return;
-    }
+    if (validationResult.hasErrors())
+      throw new BindException(validationResult);
 
     String datasetPath = getDatasetPath(req);
     try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
@@ -75,9 +68,8 @@ public class NcssPointController extends NcssController {
       } else if (ft == FeatureType.STATION) {
         handleRequestDsg(res, params, datasetPath, fd);
       } else {
-        throw new thredds.server.ncss.exception.UnsupportedOperationException("Feature Type " + ft.toString() + " not supported");
+         throw new NcssException("Dataset Feature Type is " + ft.toString() + " but request is for Points or Stations");
       }
-
     }
   }
 
@@ -103,9 +95,7 @@ public class NcssPointController extends NcssController {
   }
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
-  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
-     if (!req.getParameterMap().isEmpty())
-       throw new IllegalArgumentException("Invalid info request.");
+  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
      // the forms and dataset description
      String path = req.getServletPath();
@@ -114,21 +104,17 @@ public class NcssPointController extends NcssController {
      String datasetPath = getDatasetPath(req);
 
      try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
-       if (fd == null)
-         return null; // restricted dataset
-
+       if (fd == null) return null; // restricted dataset
        return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
      }
    }
 
    @RequestMapping(value = {"**/station.xml"})
-   void getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {
+   ModelAndView getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {
 
      String datasetPath = getDatasetPath(req);
      try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
-
-       if (fd == null)
-         throw new FileNotFoundException("Could not find Dataset "+datasetPath);
+       if (fd == null) return null;
 
        if (fd.getFeatureType() != FeatureType.STATION)
          throw new java.lang.UnsupportedOperationException("Station list request is only supported for Station features");
@@ -146,11 +132,7 @@ public class NcssPointController extends NcssController {
          llrect = new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
 
        Document doc = xmlWriter.makeStationCollectionDocument(llrect, stnsList);
-       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-       String infoString = fmt.outputString(doc);
-
-       res.setContentType(ContentType.xml.getContentHeader());
-       writeResponse(infoString, res);
+       return new ModelAndView("threddsXmlView", "Document", doc);
      }
    }
 }

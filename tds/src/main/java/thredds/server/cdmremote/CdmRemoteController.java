@@ -43,7 +43,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import thredds.core.TdsRequestedDataset;
-import thredds.util.Constants;
+import thredds.server.exception.ServiceNotAllowed;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -109,7 +109,7 @@ public class CdmRemoteController implements LastModified {
   public ResponseEntity<String> handleCapabilitiesRequest(HttpServletRequest request, HttpServletResponse response, @RequestParam String req) throws IOException {
 
     if (!allow)
-      return new ResponseEntity<>("Service not supported", null, HttpStatus.FORBIDDEN);
+      throw new ServiceNotAllowed("cdmremote");
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);
@@ -165,17 +165,14 @@ public class CdmRemoteController implements LastModified {
         default:
           return new ResponseEntity<>("Unrecognized request", null, HttpStatus.BAD_REQUEST);
       }
-
     }
   }
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=header")
   public void handleHeaderRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
 
-    if (!allow) {
-      response.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      return; //  "Service not supported";
-    }
+    if (!allow)
+      throw new ServiceNotAllowed("cdmremote");
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);
@@ -197,24 +194,18 @@ public class CdmRemoteController implements LastModified {
 
       if (showReq)
         System.out.printf("CdmRemoteController header ok, size=%s%n", size);
-
     }
-
   }
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=data")
   public void handleRequest(HttpServletRequest request, HttpServletResponse response,
-                            @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException {
+                            @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException {
 
-    if (!allow) {
-      response.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      return; //  "Service not supported";
-    }
+    if (!allow)
+      throw new ServiceNotAllowed("cdmremote");
 
-    if (qb.hasErrors()) {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, qb.toString());
-      return;
-    }
+    if (validationResult.hasErrors())
+      throw new BindException(validationResult);
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);

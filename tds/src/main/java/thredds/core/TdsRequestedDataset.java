@@ -72,6 +72,7 @@ public class TdsRequestedDataset {
     return trd.openAsFeatureCollection(request, response);
   }
 
+  // throw exception of error, return null if restricteed dataset
   public static FeatureDataset getFeatureDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;

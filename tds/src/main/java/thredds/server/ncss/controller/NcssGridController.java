@@ -4,6 +4,7 @@ package thredds.server.ncss.controller;
 import org.jdom2.JDOMException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,12 +54,8 @@ public class NcssGridController extends NcssController {
                             @Valid NcssGridParamsBean params,
                             BindingResult validationResult) throws Exception {
 
-    // System.out.printf("%s%n", ServletUtil.showRequestDetail(null, req));
-
-    if (validationResult.hasErrors()) {
-      handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult);
-      return;
-    }
+    if (validationResult.hasErrors())
+      throw new BindException(validationResult);
 
     String datasetPath = getDatasetPath(req);
     try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
@@ -78,7 +75,7 @@ public class NcssGridController extends NcssController {
           handleRequestGridAsPoint(res, params, datasetPath, fd);
         }
       } else {
-        throw new thredds.server.ncss.exception.UnsupportedOperationException("Feature Type " + ft.toString() + " not supported");
+        throw new NcssException("Dataset Feature Type is " + ft.toString() + " but request is for Grids");
       }
 
     }
@@ -86,8 +83,6 @@ public class NcssGridController extends NcssController {
 
   void handleRequestGrid(HttpServletResponse res, NcssParamsBean params, String datasetPath,
                          GridDataset gridDataset) throws IOException, NcssException, ParseException, InvalidRangeException {
-
-    //params.isValidGridRequest(); ???
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());
@@ -133,9 +128,9 @@ public class NcssGridController extends NcssController {
   }
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
-  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, TransformerException, JDOMException {
+  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException, JDOMException {
     if (!req.getParameterMap().isEmpty())
-      throw new IllegalArgumentException("Invalid info request.");
+      throw new NcssException("Invalid info request.");
 
     // the forms and dataset description
     String path = req.getServletPath();
@@ -144,9 +139,7 @@ public class NcssGridController extends NcssController {
     String datasetPath = getDatasetPath(req);
 
     try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
-      if (fd == null)
-        return null; // restricted dataset
-
+      if (fd == null) return null; // restricted dataset
       return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
     }
   }
@@ -159,8 +152,7 @@ public class NcssGridController extends NcssController {
     String datasetPath = getDatasetPath(req);
 
     try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
-      if (fd == null)
-        return;
+      if (fd == null) return;
 
       if (fd.getFeatureType() != FeatureType.GRID)
         throw new java.lang.UnsupportedOperationException("Dataset Boundaries request is only supported on Grid features");

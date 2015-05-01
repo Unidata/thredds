@@ -41,7 +41,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thredds.server.ncss.dataservice.StructureDataFactory;
 import thredds.server.ncss.util.NcssRequestUtils;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;

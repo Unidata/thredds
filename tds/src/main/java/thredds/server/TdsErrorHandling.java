@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+import thredds.server.exception.RequestTooLargeException;
+import thredds.server.exception.ServiceNotAllowed;
+import thredds.server.ncss.exception.NcssException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +29,13 @@ import java.util.List;
 
 /**
  * Global Exception handling
+ *   ServiceNotAllowed                      FORBIDDEN
+ *   FileNotFoundException                  NOT_FOUND
+ *   IOException                            INTERNAL_SERVER_ERROR
+ *   UnsupportedOperationException          BAD_REQUEST
+ *   IllegalArgumentException               BAD_REQUEST
+ *   BindException                          BAD_REQUEST
+ *   Throwable                              INTERNAL_SERVER_ERROR
  *
  * @author caron
  * @see "https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc"
@@ -36,7 +46,20 @@ import java.util.List;
 public class TdsErrorHandling implements HandlerExceptionResolver {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TdsErrorHandling.class);
 
-  // these catch exception from any Controller
+  @ExceptionHandler(ServiceNotAllowed.class)
+  public ResponseEntity<String> handle(ServiceNotAllowed ex) {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity<>("Service Not Allowed: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
+  }
+
+  @ExceptionHandler(RequestTooLargeException.class)
+  public ResponseEntity<String> handle(RequestTooLargeException ex) {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity<>("Request Too Large: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
+  }
+
   @ExceptionHandler(FileNotFoundException.class)
   public ResponseEntity<String> handle(FileNotFoundException ex) {
     HttpHeaders responseHeaders = new HttpHeaders();
@@ -58,18 +81,18 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     return new ResponseEntity<>("IOException sending File " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  @ExceptionHandler(UnsupportedOperationException.class)
-  public ResponseEntity<String> handle(UnsupportedOperationException ex) {
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("UnsupportedOperationException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
-  }
-
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<String> handle(IllegalArgumentException ex) {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("IllegalArgumentException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(NcssException.class)
+  public ResponseEntity<String> handle(NcssException ex) {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity<>("Invalid Request: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(BindException.class)
@@ -110,6 +133,7 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
   @Override
   public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    logger.error("uncaught exception 2", ex);
     return null;
   }
 

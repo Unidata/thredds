@@ -32,28 +32,11 @@
  */
 package thredds.server.ncss.exception;
 
-/**
- * @author mhermida
- *
- */
 public class FeaturesNotFoundException extends NcssException {
-
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Creates an FeaturesNotFoundException with a specific message
-	 * @param message
-	 */	
 	public FeaturesNotFoundException(String message){
 		super(message);
 	}
-	
-	/**
-	 * Wraps an exception into an FeaturesNotFoundException with a specific message
-	 * @param message
-	 */		
 	public FeaturesNotFoundException(String message, Exception cause){
 		super(message, cause);
 	}	
-	
 }

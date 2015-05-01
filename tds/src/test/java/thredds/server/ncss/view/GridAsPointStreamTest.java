@@ -21,16 +21,13 @@ import thredds.mock.params.GridAsPointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.controller.NcssDiskCache;
-import thredds.server.ncss.exception.DateUnitException;
 import thredds.server.ncss.exception.OutOfBoundariesException;
-import thredds.server.ncss.exception.UnsupportedOperationException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.server.ncss.view.gridaspoint.PointDataStream;
 import thredds.server.ncss.dataservice.DatasetHandlerAdapter;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
@@ -100,10 +97,8 @@ public class GridAsPointStreamTest {
 	}
 	
 	@Test
-	public void shouldStreamStationCollection() throws OutOfBoundariesException, DateUnitException, UnsupportedOperationException, InvalidRangeException{
-		
+	public void shouldStreamStationCollection() throws Exception {
 		assertTrue( pointDataStream.stream(gridDataset, point, wantedDates, vars, vertCoord) );
-		
 	}
 	
 

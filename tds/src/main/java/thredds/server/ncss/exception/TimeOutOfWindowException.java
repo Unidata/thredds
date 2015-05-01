@@ -32,26 +32,11 @@
  */
 package thredds.server.ncss.exception;
 
-/**
- * @author mhermida
- *
- */
 public class TimeOutOfWindowException extends NcssException {
-
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Creates an TimeOutOfWindow with a specific message
-	 */
 	public TimeOutOfWindowException(String message){
 		super(message);
 	}
-	
-	/**
-	 * Wraps an exception into an TimeOutOfWindow with a specific message 
-	 */
 	public TimeOutOfWindowException(String message, Exception cause){
 		super(message, cause);
 	}	
-	
 }

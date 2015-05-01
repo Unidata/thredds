@@ -82,8 +82,6 @@ public class NcDDS extends ServerDDS {
     super((name));
 
     if (ncfile instanceof NetcdfDataset) {
-      createFromDataset((NetcdfDataset) ncfile);
-
       NetcdfDataset ncd = (NetcdfDataset) ncfile;
       if (ncd.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) {
         createFromDataset((NetcdfDataset) ncfile);
