@@ -35,7 +35,7 @@ import java.util.Collection;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml"}, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class CdmrControllerTest {
 
@@ -73,6 +73,8 @@ public class CdmrControllerTest {
    public void cdmRemoteRequestCapabilitiesTest() throws Exception {
      RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
    				.param("req", "capabilities");
+
+    System.out.printf("%s?req=capabilities%n", path);
 
      MvcResult result = this.mockMvc.perform( rb )
                .andExpect(MockMvcResultMatchers.status().is(200))

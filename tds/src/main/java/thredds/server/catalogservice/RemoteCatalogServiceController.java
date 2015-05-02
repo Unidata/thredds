@@ -79,7 +79,7 @@ public class RemoteCatalogServiceController {
   @Autowired
   private ConfigCatalogHtmlWriter writer;
 
-  @InitBinder
+  @InitBinder("RemoteCatalogRequest")
   protected void initBinder(WebDataBinder binder) {
     binder.setValidator(new RemoteCatalogRequestValidator());
   }

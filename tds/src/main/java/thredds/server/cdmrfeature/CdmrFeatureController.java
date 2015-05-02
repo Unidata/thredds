@@ -84,10 +84,10 @@ public class CdmrFeatureController implements LastModified {
     return TdsRequestedDataset.getLastModified(path);
   }
 
-  @InitBinder
-  protected void initBinder(WebDataBinder binder) {
-    binder.setValidator(new CdmRemoteQueryBeanValidator());
-  }
+  //@InitBinder
+ // protected void initBinder(WebDataBinder binder) {
+ //   binder.setValidator(new CdmRemoteQueryBeanValidator());
+ // }
 
   ////////////////////////////////////////////////////////////////////
 

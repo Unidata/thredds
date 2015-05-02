@@ -96,12 +96,12 @@ public class CdmRemoteController implements LastModified {
     return TdsRequestedDataset.getLastModified(path);
   }
 
-  @InitBinder
+  @InitBinder("CdmRemoteQueryBean")
   protected void initBinder(WebDataBinder binder) {
     binder.setValidator(new CdmRemoteQueryBeanValidator());
   }
 
-  // everything but header, data, which is binary data
+  // everything but header, data, which is binary data, and capabilities which is XML
   @RequestMapping(value = "/**", method = RequestMethod.GET)
   public ResponseEntity<String> handleCapabilitiesRequest(HttpServletRequest request, HttpServletResponse response, @RequestParam String req) throws IOException {
 
@@ -255,7 +255,7 @@ public class CdmRemoteController implements LastModified {
 
   }
 
-  public String getAbsolutePath(HttpServletRequest req) {
+  private String getAbsolutePath(HttpServletRequest req) {
     return ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath();
   }
 
