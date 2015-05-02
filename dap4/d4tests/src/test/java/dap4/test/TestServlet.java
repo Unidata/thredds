@@ -25,7 +25,6 @@ import org.junit.*;
  * test client side deserialization.
  */
 
-@Ignore
 public class TestServlet extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
@@ -666,7 +665,6 @@ public class TestServlet extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
-    @Ignore
     public void testServlet()
         throws Exception
     {

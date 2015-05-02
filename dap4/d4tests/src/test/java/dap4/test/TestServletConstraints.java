@@ -20,7 +20,6 @@ import java.util.*;
  * constraint processing.
  */
 
-@Ignore
 public class TestServletConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
@@ -310,7 +309,6 @@ public class TestServletConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
-    @Ignore
     public void testServletConstraints()
             throws Exception
     {

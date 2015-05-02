@@ -163,8 +163,6 @@ public class DapTestCommon extends TestCase
         this.title = name;
         setSystemProperties();
         initPaths();
-	    System.err.println("JUnit version is: " + junit.runner.Version.id());
-        System.err.flush();
     }
 
     protected void

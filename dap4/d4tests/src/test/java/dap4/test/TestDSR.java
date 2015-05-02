@@ -9,6 +9,7 @@ import dap4.test.util.DapTestCommon;
  * generation code
  */
 
+@Ignore
 public class TestDSR extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
