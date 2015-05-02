@@ -102,7 +102,7 @@ public class NcStream {
   }
 
 
-  static NcStreamProto.Attribute.Builder encodeAtt(Attribute att) {
+  static public NcStreamProto.Attribute.Builder encodeAtt(Attribute att) {
     NcStreamProto.Attribute.Builder attBuilder = NcStreamProto.Attribute.newBuilder();
     attBuilder.setName(att.getShortName());
     attBuilder.setType(encodeAttributeType(att.getDataType()));

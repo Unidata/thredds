@@ -30,32 +30,70 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.cdmremote.validation;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.validation.Constraint;
-import javax.validation.Payload;
+package thredds.server.cdmrfeature.cdmrfpoint;
 
 /**
- * @author mhermida
+ * not used, replaced by FeatureCollection i think
  *
+ * @author caron
+ * @since Jul 6, 2009
  */
-@Target({TYPE})
-@Retention(RUNTIME)
-@Constraint(validatedBy=CdmrfQueryValidator.class)
-@Documented
-public @interface CdmrfQueryConstraint {
 
-	String message() default "{thredds.server.cdmremote.validation.cdmrquerybeanvalidator}";
-	
-	Class<?>[] groups() default {};
-	
-	Class<? extends Payload>[] payload() default {};	
-	
+public class CollectionBean {
+
+  private String path;
+  private String spec;
+  private String recheck;
+  private String featureType;
+  private String raw;
+  private String resolution;
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public String getSpec() {
+    return spec;
+  }
+
+  public void setSpec(String spec) {
+    this.spec = spec;
+  }
+
+  public String getRecheck() {
+    return recheck;
+  }
+
+  public void setRecheck(String recheck) {
+    this.recheck = recheck;
+  }
+
+  public String getFeatureType() {
+    return featureType;
+  }
+
+  public void setFeatureType(String featureType) {
+    this.featureType = featureType;
+  }
+
+  public String getRaw() {
+    return raw;
+  }
+
+  public void setRaw(String raw) {
+    this.raw = raw;
+  }
+
+  public String getResolution() {
+    return resolution;
+  }
+
+  public void setResolution(String resolution) {
+    this.resolution = resolution;
+  }
+
 }

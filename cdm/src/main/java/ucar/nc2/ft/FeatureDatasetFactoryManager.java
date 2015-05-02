@@ -46,7 +46,7 @@ import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.ft.swath.SwathDatasetFactory;
-import ucar.nc2.stream.CdmrFeatureDataset;
+import ucar.nc2.ft.remote.CdmrFeatureDataset;
 
 import java.util.List;
 import java.util.ArrayList;

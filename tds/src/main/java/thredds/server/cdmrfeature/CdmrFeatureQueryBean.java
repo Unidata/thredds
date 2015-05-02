@@ -1,5 +1,5 @@
 /* Copyright */
-package thredds.server.cdmremote;
+package thredds.server.cdmrfeature;
 
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -8,6 +8,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
+import java.util.Arrays;
 import java.util.Formatter;
 
 /**
@@ -144,7 +145,7 @@ public class CdmrFeatureQueryBean {
   boolean validate() {
     RequestType reqType = getRequestType();
     if (reqType == null) {
-      errs.format("form must req=[%s]%n", RequestType.values());
+      errs.format("form must req=[%s]%n", Arrays.toString(RequestType.values()));
       fatal = true;
       return !fatal;
     }

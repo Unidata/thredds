@@ -30,7 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.cdmremote;
+package thredds.server.cdmrfeature;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -50,9 +50,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import thredds.core.TdsRequestedDataset;
-import thredds.server.cdmremote.params.CdmrfQueryBean;
-import thredds.server.cdmremote.stream.CdmrfStreamFactory;
-import thredds.server.cdmremote.view.CdmrfTextViewFactory;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.NetcdfFile;

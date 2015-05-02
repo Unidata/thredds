@@ -30,15 +30,11 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.cdmremote.validation;
+package thredds.server.cdmrfeature;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import thredds.server.cdmremote.params.CdmrfQueryBean;
-import thredds.server.cdmremote.params.CdmrfQueryBean.RequestType;
-import thredds.server.cdmremote.params.CdmrfQueryBean.SpatialSelection;
-import thredds.server.cdmremote.params.CdmrfQueryBean.TemporalSelection;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;

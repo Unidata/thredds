@@ -46,7 +46,7 @@ import java.util.Formatter;
 
 /**
  * A remote CDM dataset (extends NetcdfFile), using cdmremote protocol to communicate.
- * Similar to Opendap in that it is a remote access protocol.
+ * Similar to Opendap in that it is a remote access protocol using indexed data acess.
  * Supports full CDM / netcdf-4 data model.
  *
  * @author caron

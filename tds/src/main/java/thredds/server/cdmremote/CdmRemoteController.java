@@ -42,16 +42,17 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.servlet.ModelAndView;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.exception.ServiceNotAllowed;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.util.EscapeStrings;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.output.Format;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
@@ -84,10 +85,6 @@ public class CdmRemoteController implements LastModified {
   TdsContext tdsContext;
 
   private boolean allow = true;
-
-  public void setTdsContext(TdsContext tdsContext) {
-    this.tdsContext = tdsContext;
-  }
 
   public void setAllow(boolean allow) {
     this.allow = allow;
@@ -126,28 +123,6 @@ public class CdmRemoteController implements LastModified {
       if (ncfile == null) return null;  // failed resource control
 
       switch (req.toLowerCase()) {
-        case "capabilities":
-          Element rootElem = new Element("cdmRemoteCapabilities");
-          Document doc = new Document(rootElem);
-          rootElem.setAttribute("location", absPath);
-
-          Element elem = new Element("featureDataset");
-          FeatureType ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ncfile); // LOOK BAD - must figure out what is the featureType and save it
-          if (ftFromMetadata != null)
-            elem.setAttribute("type", ftFromMetadata.toString());
-          elem.setAttribute("url", absPath);
-          rootElem.addContent(elem);
-
-          XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-          String result = fmt.outputString(doc);
-
-          responseHeaders = new HttpHeaders();
-          //responseHeaders.setContentType(ContentType.HEADER, ContentType.xml.getMediaType);
-          // responseHeaders.setContentDispositionFormData("MyResponseHeader", "MyValue");
-          responseHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
-          //responseHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(datasetPath, ".xml"));
-          return new ResponseEntity<>(result, responseHeaders, HttpStatus.OK);
-
         case "form":
         case "cdl":
           ncfile.setLocation(datasetPath); // hide where the file is stored  LOOK
@@ -165,6 +140,33 @@ public class CdmRemoteController implements LastModified {
         default:
           return new ResponseEntity<>("Unrecognized request", null, HttpStatus.BAD_REQUEST);
       }
+    }
+  }
+
+  @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=capabilities")
+  public ModelAndView handleCapabilitiesRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+    if (!allow)
+      throw new ServiceNotAllowed("cdmremote");
+
+    String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
+    String absPath = getAbsolutePath(request);
+
+    try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
+      if (ncfile == null) return null;
+
+      Element rootElem = new Element("cdmRemoteCapabilities");
+      Document doc = new Document(rootElem);
+      rootElem.setAttribute("location", absPath);
+
+      Element elem = new Element("featureDataset");
+      FeatureType ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ncfile); // LOOK BAD - must figure out what is the featureType and save it
+      if (ftFromMetadata != null)
+        elem.setAttribute("type", ftFromMetadata.toString());
+      elem.setAttribute("url", absPath);
+      rootElem.addContent(elem);
+
+      return new ModelAndView("threddsXmlView", "Document", doc);
     }
   }
 

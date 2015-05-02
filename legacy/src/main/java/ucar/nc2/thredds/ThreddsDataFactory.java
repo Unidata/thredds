@@ -34,7 +34,7 @@ package ucar.nc2.thredds;
 
 import ucar.nc2.*;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.stream.CdmrFeatureDataset;
+import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.constants.FeatureType;
 

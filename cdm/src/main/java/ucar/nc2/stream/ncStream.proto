@@ -133,4 +133,4 @@ message Error {
 }
 
 //  cd c:/dev/github/thredds/cdm/src/main/java
-// protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
+//  protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto

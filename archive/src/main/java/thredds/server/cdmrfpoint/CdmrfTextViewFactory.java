@@ -30,7 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.cdmremote.view;
+package thredds.server.cdmrfeature.cdmrfpoint;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +45,6 @@ import org.jdom2.transform.XSLTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thredds.server.cdmremote.params.CdmrfQueryBean;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;

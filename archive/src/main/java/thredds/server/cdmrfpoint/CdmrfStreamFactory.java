@@ -30,7 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.cdmremote.stream;
+package thredds.server.cdmrfeature.cdmrfpoint;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -43,9 +43,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 
-import thredds.server.cdmremote.PointWriter;
-import thredds.server.cdmremote.StationWriter;
-import thredds.server.cdmremote.params.CdmrfQueryBean;
 import thredds.server.config.TdsContext;
 import thredds.servlet.ServletUtil;
 import thredds.server.config.ThreddsConfig;
@@ -59,6 +56,8 @@ import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.util.StringUtil2;
+
+import thredds.server.cdmrfeature.cdmrfpoint.CdmrfQueryBean;
 
 /**
  * @author mhermida
