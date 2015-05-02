@@ -12,7 +12,6 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level
  */
-@Ignore
 public class TestConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
@@ -130,7 +129,8 @@ public class TestConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests.add(locate1(8));
+            chosentests.add(locate1(6));
+            prop_visual = true;
         } else {
             for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);
@@ -157,7 +157,6 @@ public class TestConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test method
 
-    @Ignore
     public void testConstraints()
             throws Exception
     {
