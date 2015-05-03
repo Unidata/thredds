@@ -18,10 +18,6 @@ dependencies {
 
 jar.manifest.attributes 'Main-Class': 'thredds.tdm.Tdm'
 
-apply plugin: 'com.github.johnrengelman.shadow'
-
-shadowJar.archiveName = "tdm-4.6.jar"
-
 task showClasspath << {
     buildscript.configurations.classpath.each { println it }
 }

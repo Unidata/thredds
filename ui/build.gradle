@@ -32,8 +32,6 @@ dependencies {
 
 //////////////////////////////////////////////////////////
 
-apply plugin: 'com.github.johnrengelman.shadow'
-
 jar {
     manifest {
         attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
@@ -61,8 +59,6 @@ jar {
     }
 }
 
-shadowJar.archiveName = "toolsUI-${version}.jar"
-
 ext {
     toolsUIjar = 'toolsUI-' + version + '.jar'
     webstartWorkingDir = "build/signed"
@@ -85,6 +81,13 @@ ext {
 // 6. Change to webdir and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
 // but I couldn't get that working (and there was no error feedback).
 // TODO: Use the Sync task for this.
+/* following properties should be in gradle.properties:
+   keystore=name of keystore file
+   keystoreAlias=idv
+   keystorePassword=password of keystore file
+   webdir:parent of conan content directory
+   ftpdir:ftp directory
+ */
 task releaseWebstart(dependsOn: jar) << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
@@ -133,26 +136,6 @@ task releaseWebstart(dependsOn: jar) << {
     } else {
         println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
         +"must be defined to run \"releaseWebstart\" task."
-    }
-}
-
-/* following properties should be in gradle.properties:
-   keystore=name of keystore file
-   keystoreAlias=idv
-   keystorePassword=password of keystore file
-   webdir:parent of conan content directory
-   ftpdir:ftp directory
- */
-// TODO: Use the Sync task for this.
-task releaseCdm(dependsOn: shadowJar) << {
-    if (project.hasProperty("ftpdir")) {
-        println "copy " + toolsUIjar + " to " + ftpdir
-        copy { // does not give error message
-            from 'build/distributions/' + toolsUIjar
-            into ftpdir
-        }
-    } else {
-        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
     }
 }
 

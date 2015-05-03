@@ -65,6 +65,7 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
         logger.warn "Skipping all NeedsCdmUnitTest tests."
     }
 
+    // FIXME: Should I be using org.gradle.api.DomainObjectCollection.all(Closure) here instead?
     testTasks*.configure {
         useJUnit {
             // Propagate to Gradle Test Executor.

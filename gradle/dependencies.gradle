@@ -190,9 +190,9 @@ libraries["threddsIso"] = "EDS:threddsIso:2.2.5"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
-subprojects {
-    // all() executes the given closure against all configurations currently in the container,
-    // and any configurations added later as well.
+allprojects {
+    // Executes the given closure against all objects in this collection, and any objects subsequently added to this
+    // collection. See org.gradle.api.DomainObjectCollection.all(Closure)
     configurations.all {
         // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j".
         // This effectively converts every jcl call to an slf4j call.

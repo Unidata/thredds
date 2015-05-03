@@ -252,15 +252,33 @@
                 <excludes>
                   <exclude>edu.ucar:ui</exclude>
                   <exclude>aopalliance:aopalliance</exclude>
-                  <exclude>com.jgoodies:forms</exclude>
+                  <exclude>com.jgoodies:*</exclude>
                   <exclude>commons-logging:commons-logging</exclude>
-                  <exclude>jfree:*</exclude>
+                  <exclude>org.jfree:*</exclude>
                   <exclude>org.springframework:*</exclude>
                   <exclude>org.bounce:*</exclude>
                   <exclude>edu.ucar:d4tswar</exclude>
+                  <exclude>net.sf.ehcache:ehcache-core</exclude>
+                  <exclude>org.apache.commons:commons-lang3</exclude>
+                  <exclude>org.slf4j:slf4j-jdk14</exclude>
+                  <exclude>org.imgscalr:imgscalr-lib</exclude>
+
+                  <exclude>edu.ucar:waterml</exclude>
+                  <exclude>org.apache.xmlbeans:*</exclude>
+                  <exclude>org.n52.sensorweb:*</exclude>
+                  <exclude>net.sf.saxon:*</exclude>
                 </excludes>
               </artifactSet>
 
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.schemas</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
             </configuration>
 
           </execution>

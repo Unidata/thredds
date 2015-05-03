@@ -59,28 +59,6 @@ task releaseDocs(dependsOn: javadoc) << {
 
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'
 
-//shadow {
-//    outputFile = file("${destinationDir}/cdms-${version}.jar")
-//    stats = true
-//
-//    exclude 'META-INF/*.DSA'
-//    exclude 'META-INF/*.RSA'
-//    exclude 'META-INF/NOTICE'
-//    exclude 'META-INF/LICENSE'
-//    exclude 'META-INF/*.txt'
-//    exclude 'META-INF/*.xml'
-//
-//    artifactSet {
-//        exclude 'commons-logging:commons-logging:*'
-//    }
-//
-//    jar {
-//        manifest {
-//            attributes 'Main-Class': 'ucar.nc2.NCdumpW'
-//        }
-//    }
-//}
-
 //////////////////////////////////////// Test artifacts ////////////////////////////////////////
 
 // This technique was inspired by:

@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'provided-base'  // Gives us the "provided" configuration.
@@ -13,7 +11,7 @@ subprojects {
     processResources.destinationDir = compileJava.destinationDir
 
     // Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).all {
         options.encoding = 'UTF-8'
 
         // Disable warnings about cross-compilation:
@@ -24,32 +22,7 @@ subprojects {
         options.compilerArgs = ['-Xlint:-options']
     }
 
-    tasks.withType(Jar) {   // Applies to Jar, War, Ear and shadowJar tasks.
-        manifest {
-            // Subprojects have not yet been configured, but they may want to reassign these attributes.
-            // So, we're going to delay evaluation by using lazy GStrings: http://goo.gl/zwWnPh
-            // Evaluation will happen when these strings are read, which should first occur during the UP-TO-DATE
-            // check of the execution phase.
-            attributes 'Implementation-Title': "${-> project.title }",
-                    'Implementation-Version': "${-> project.version }",
-                    'Implementation-Vendor-Id': "${-> project.group }",
-                    'Implementation-Vendor': "${-> project.vendor }",
-                    'Implementation-URL': "${-> project.url }",
-                    'Created-By': "Gradle $gradle.gradleVersion",
-                    'Build-Jdk': System.properties['java.version'],
-                    'Built-By': System.properties['user.name']
-        }
-
-        doFirst {
-            // We cannot add this attribute during the configuration phase because it'll cause the jar task to never
-            // be UP-TO-DATE: http://goo.gl/kbVWXR. Adding it during the execution phase removes it as an input to
-            // Gradle's incremental build machinery.
-            SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-            manifest.attributes 'Built-On': iso_8601_format.format(new Date())
-        }
-    }
-
-    tasks.withType(Javadoc) {
+    tasks.withType(Javadoc).all {
         options.encoding = 'UTF-8'
 
         if (JavaVersion.current().isJava8Compatible()) {
@@ -57,38 +30,4 @@ subprojects {
             options.addStringOption('Xdoclint:none', '-quiet')
         }
     }
-
-    afterEvaluate {
-        // For projects using the shadow plugin, create the fat jar after creating the normal jar.
-        if (pluginManager.hasPlugin("com.github.johnrengelman.shadow")) {
-            shadowJar {
-                // Filter out crap from various other packages.
-                exclude 'AUTHORS'
-                exclude 'DATE'
-                exclude 'LICENCE'
-                exclude 'LICENSE'
-                exclude 'NOTICE'
-                exclude '*.txt'
-                exclude '*.xml'
-                exclude 'META-INF/DEPENDENCIES'
-                exclude 'META-INF/LICENSE'
-                exclude 'META-INF/NOTICE'
-                exclude 'META-INF/*.SF'
-                exclude 'META-INF/*.DSA'
-                exclude 'META-INF/*.RSA'
-                exclude 'META-INF/*.txt'
-                exclude 'META-INF/*.xml'
-
-                append('META-INF/spring.handlers')
-                append('META-INF/spring.schemas')
-                mergeServiceFiles()
-            }
-
-            tasks.jar.finalizedBy tasks.shadowJar
-        }
-    }
-}
-
-task foo << {
-    println new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date())
 }

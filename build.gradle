@@ -46,7 +46,8 @@ apply from: "$rootDir/gradle/dependencies.gradle"
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/testing.gradle"
 apply from: "$rootDir/gradle/coverage.gradle"
-
+apply from: "$rootDir/gradle/archiving.gradle"
+apply from: "$rootDir/gradle/fatJars.gradle"
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'

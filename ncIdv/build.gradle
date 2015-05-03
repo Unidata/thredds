@@ -8,22 +8,6 @@ dependencies {
     runtime project(":netcdf4")
     runtime project(":opendap")
     runtime project(":visad")
-
-    compile libraries["slf4j-api"]
-    runtime libraries["slf4j-jdk14"]
-}
-
-apply plugin: 'com.github.johnrengelman.shadow'
-
-shadowJar {
-    dependencies {
-        exclude(dependency('c3p0:c3p0'))  // Transitive dependency dragged in by libraries["quartz"]
-    }
-
-    // Filter out crap from libraries["visad"]
-    exclude 'edu/wisc/**'
-    exclude 'nom/**'
-    exclude 'visad/**'
 }
 
 ext {
