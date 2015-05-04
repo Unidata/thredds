@@ -3,6 +3,7 @@
     <xd:doc xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" scope="stylesheet">
         <xd:desc>
         Recent Modifications
+            <xd:p>2015-04-22. v2.3.4. concat naming_authority and id in fileIdentifier; change XSLT version to 1.0.</xd:p>
             <xd:p>2015-02-18. resolution value = missing when not available in NcML.</xd:p>
             <xd:p>2015-01-16. fixed date error to prevent replacement of all spaces (' ') with a 'T' in the dates certain cases.</xd:p>
             <xd:p>2014-11-25. fixed error that was outputting '::' at the end of a date.</xd:p>
@@ -16,7 +17,7 @@
             <xd:p> May 10, 2012 version 2.3 authored by Ted Habermann</xd:p>
         </xd:desc>
     </xd:doc>
-    <xsl:variable name="stylesheetVersion" select="'2.3.3'"/>
+    <xsl:variable name="stylesheetVersion" select="'2.3.4'"/>
     <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
     <xsl:strip-space elements="*"/>
     <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
@@ -28,7 +29,7 @@
     <xsl:variable name="standardNameCnt" select="count(/nc:netcdf/nc:variable/nc:attribute[@name='standard_name'])"/>
     <xsl:variable name="dimensionCnt" select="count(/nc:netcdf/nc:dimension)"/>
     <!-- Identifier Fields: 4 possible -->
-    <xsl:variable name="id" as="xs:string*" select="(/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='id']/@value,/nc:netcdf/nc:attribute[@name='id']/@value)"/>
+    <xsl:variable name="id" as="xs:string*" select="(/nc:attribute[@name='id']/@value,/nc:netcdf/nc:attribute[@name='id']/@value,/nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='id']/@value)"/>
     <xsl:variable name="identifierNameSpace" as="xs:string*" select="(/nc:netcdf/nc:attribute[@name='naming_authority']/@value,
     /nc:netcdf/nc:group[@name='THREDDSMetadata']/nc:attribute[@name='authority']/@value)"/>
     <xsl:variable name="metadataConvention" as="xs:string*" select="/nc:netcdf/nc:attribute[@name='Metadata_Conventions']/@value"/>
@@ -178,7 +179,16 @@
             </xsl:attribute>
             <gmd:fileIdentifier>
                 <xsl:call-template name="writeCharacterString">
-                    <xsl:with-param name="stringToWrite" select="$id[1]"/>
+                    <xsl:with-param name="stringToWrite">
+                        <xsl:choose>
+                            <xsl:when test="$identifierNameSpace[1]">
+                                <xsl:value-of select="concat($identifierNameSpace[1],':',$id[1])"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="$id[1]"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:with-param>
                 </xsl:call-template>
             </gmd:fileIdentifier>
             <gmd:language>
@@ -1079,7 +1089,7 @@
     <xsl:template name="writeCharacterString">
         <xsl:param name="stringToWrite"/>
         <xsl:choose>
-            <xsl:when test="$stringToWrite">
+            <xsl:when test="normalize-space($stringToWrite)">
                 <gco:CharacterString>
                     <xsl:value-of select="$stringToWrite"/>
                 </gco:CharacterString>

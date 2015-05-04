@@ -233,7 +233,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       } else { // not a partition
 
-        // tmi.setServiceName(this.orgService.getName());
+        // must be a file partition with only one file
+        boolean isFilePartition = config.ptype == FeatureCollectionConfig.PartitionType.file;
+        boolean onlyOneFile = isFilePartition && fromGc.getFiles().size() == 1;
+        if (onlyOneFile) {
+          parentCatalog.addService(orgService);
+          tmi.setServiceName(this.orgService.getName());
+        }
         result.setUrlPath(pathStart);
 
         if (ds.getType() == GribCollectionImmutable.Type.SRC) {
@@ -249,11 +255,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
         makeDatasetsFromGroups(result, groups, isSingleGroup);
 
-        if (config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
-          String filesPath = pathStart + "/" + FILES;
-          InvCatalogRef filesRef = new InvCatalogRef(this, FILES, getCatalogHref(filesPath));
-          filesRef.finish();
-          addFileDatasets(parentCatalog, result, fromGc, config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
+        if (!onlyOneFile && config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
+          //String filesPath = pathStart + "/" + FILES;
+          //InvCatalogRef filesRef = new InvCatalogRef(this, FILES, getCatalogHref(filesPath));
+          //filesRef.finish();
+          addFileDatasets(parentCatalog, result, fromGc); // , config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
         }
 
       }
@@ -367,7 +373,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }  */
 
     // this catalog lists the individual files comprising the collection.
-  protected void addFileDatasets(InvCatalogImpl parentCatalog, InvDatasetImpl parent, GribCollectionImmutable fromGc, boolean addLatest) throws IOException {
+  protected void addFileDatasets(InvCatalogImpl parentCatalog, InvDatasetImpl parent, GribCollectionImmutable fromGc) throws IOException {
     List<MFile> mfiles = new ArrayList<>(fromGc.getFiles());
     Collections.sort(mfiles);
     InvDatasetImpl filesParent = new InvDatasetImpl(this, "Raw Files");

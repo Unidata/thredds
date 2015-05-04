@@ -457,7 +457,7 @@ public class HTTPMethod implements AutoCloseable
     public byte[] getResponseAsBytes(int maxbytes)
     {
         byte[] contents = getResponseAsBytes();
-        if(contents.length > maxbytes) {
+        if(contents != null && contents.length > maxbytes) {
             byte[] result = new byte[maxbytes];
             System.arraycopy(contents, 0, result, 0, maxbytes);
             contents = result;

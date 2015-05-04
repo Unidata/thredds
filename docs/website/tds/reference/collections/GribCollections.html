@@ -46,19 +46,19 @@
 <ul>
   <li>Collection index files now use the suffix <strong>ncx3</strong>. These will be rewritten first time you access the files. The <strong>gbx9</strong> files do NOT need to be rewritten, which is good because those are the slow ones.</li>
   <li>TimePartition can now be set to <strong>directory</strong> (default), <strong>file, </strong>a time period<strong>, </strong>or<strong> none</strong>. Details <a href="Partitions.html">here</a>.</li>
-  <li>Multiple reference times are handled more efficiently, eg only one index file typically needs to be written.</li>
-  <li>DefaultServices. One can use the service name &quot;DefaultServices&quot; to use the default services for that Feature Type. (IN PROGRESS)
-    <ul>
-      <li> If you dont specify the service name, DefaultServices is used as the default.</li>
-      <li>DefaultServices use all  enabled services appropriate to that <a href="../../../netcdf-java/reference/FeatureDatasets/Overview.html">Feature Type</a>.</li>
-    </ul>
-  </li>
+  <li>Multiple reference times are handled more efficiently, eg only one index file typically needs to be written.  </li>
   <li>Global attributes promoted to dataset properties in the catalog</li>
   <li>Internal changes:
     <ul>
     <li>Internal memory use has been reduced.</li>
     <li>Runtime objects are now immutable, which makes caching possible.</li>
-    <li>RandomAccessFiles are kept in a seperate pool, so they can be ccached independent of the Collection objects.</li>
+    <li>RandomAccessFiles are kept in a seperate pool, so they can be cached independent of the Collection objects.</li>
+    </ul>
+  </li>
+  <li><em>(IN PROGRESS FOR VERSION 5) DefaultServices. One can use the service name &quot;DefaultServices&quot; to use the default services for that Feature Type. </em>
+    <ul>
+      <li><em> If you dont specify the service name, DefaultServices is used as the default.</em></li>
+      <li><em>DefaultServices use all  enabled services appropriate to that <a href="../../../netcdf-java/reference/FeatureDatasets/Overview.html">Feature Type</a>.</em>  </li>
     </ul>
   </li>
 </ul>
@@ -91,7 +91,7 @@
 <h3>Resulting Datasets:</h3>
 
 <p>The above example generates a TwoD and Best  dataset for the entire collection, a reference to the latest datset, as well as one dataset for each reference time in the collection, which become nested datasets in the
-  catalog. These datsets are named by their index files, in the form <strong>&lt;collection-name&gt;.&lt;referenceTime&gt;.ncx3</strong>, eg GFS-Puerto_Rico-20141110-000000.ncx3</p>
+  catalog. These datasets are named by their index files, in the form <strong>&lt;collection-name&gt;.&lt;referenceTime&gt;.ncx3</strong>, eg GFS-Puerto_Rico-20141110-000000.ncx3</p>
 <p>The simplified catalog is:</p>
 <pre>  &lt;dataset name=&quot;NCEP GFS Puerto_Rico (191km)&quot;&gt;<br />    &lt;metadata inherited=&quot;true&quot;&gt;<br />      &lt;serviceName&gt;VirtualServices&lt;/serviceName&gt;<br />      &lt;dataType&gt;GRID&lt;/dataType&gt;<br />      &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br />    &lt;/metadata&gt;<br />    &lt;dataset name=&quot;Full Collection (Reference / Forecast Time) Dataset&quot; ID=&quot;fmrc/NCEP/GFS/Puerto_Rico/TwoD&quot; urlPath=&quot;fmrc/NCEP/GFS/Puerto_Rico/TwoD&quot;&gt;<br />      &lt;documentation type=&quot;summary&quot;&gt;Two time dimensions: reference and forecast; full access to all GRIB records&lt;/documentation&gt;<br />    &lt;/dataset&gt;<br />    &lt;dataset name=&quot;Best NCEP GFS Puerto_Rico (191km) Time Series&quot; ID=&quot;fmrc/NCEP/GFS/Puerto_Rico/Best&quot; urlPath=&quot;fmrc/NCEP/GFS/Puerto_Rico/Best&quot;&gt;<br />      &lt;documentation type=&quot;summary&quot;&gt;Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time&lt;/documentation&gt;<br />    &lt;/dataset&gt;<br />    &lt;dataset name=&quot;Latest Collection for NCEP GFS Puerto_Rico (191km)&quot; urlPath=&quot;latest.xml&quot;&gt;<br />      &lt;serviceName&gt;latest&lt;/serviceName&gt;<br />    &lt;/dataset&gt;<br />    &lt;catalogRef xlink:href=&quot;/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-000000.ncx3/catalog.xml&quot; /&gt;<br />    &lt;catalogRef xlink:href=&quot;/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-060000.ncx3/catalog.xml&quot; /&gt;<br />    &lt;catalogRef xlink:href=&quot;/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-120000.ncx3/catalog.xml&quot; /&gt;<br />  &lt;/dataset&gt;<br /></pre>
 <p>The catalogRefs are links to virtual datasets, formed from the collection of records for the specified reference time, and independent of which file stores them.</p>

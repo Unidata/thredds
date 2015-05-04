@@ -32,13 +32,6 @@
  */
 package thredds.server.config;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -59,6 +52,9 @@ import thredds.inventory.CollectionUpdater;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.filesource.*;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
 
@@ -89,6 +85,7 @@ import java.util.*;
 @Component("tdsContext")
 public final class TdsContext implements ServletContextAware, InitializingBean, DisposableBean {
   private final Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
+  private final Logger logCatalogInit = LoggerFactory.getLogger(TdsContext.class.getName() + ".catalogInit");
 
   private String webappName;
   private String contextPath;
@@ -492,13 +489,22 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     tdsConfigMapper.setCorsConfig(this.corsConfig);
     tdsConfigMapper.setTdsUpdateConfig(this.tdsUpdateConfig);
     tdsConfigMapper.init(this);
-    
+    // log current server version in catalogInit, where it is
+    //  most likely to be seen by the user
+    String message = "You are currently running TDS version " + this.getVersionInfo();
+    logCatalogInit.info(message);
     // check and log the latest stable and development version information
-    // only if it is OK according to the threddsConfig file.
+    //  only if it is OK according to the threddsConfig file.
     if (this.tdsUpdateConfig.isLogVersionInfo()) {
-      Map<String, String> latestVersionInfo = getLatestVersionInfo(); 
-      for (Map.Entry entry : latestVersionInfo.entrySet()) {
-        logServerStartup.info("TdsContext latest " + entry.getKey() + " version = " + entry.getValue());
+      Map<String, String> latestVersionInfo = getLatestVersionInfo();
+      if (!latestVersionInfo.isEmpty()) {
+        logCatalogInit.info("Latest Available TDS Version Info:");
+        for (Map.Entry entry : latestVersionInfo.entrySet()) {
+          message = "latest " + entry.getKey() + " version = " + entry.getValue();
+          logServerStartup.info("TdsContext: " + message);
+          logCatalogInit.info("    " + message);
+        }
+        logCatalogInit.info("");
       }
     }
   }
@@ -568,40 +574,35 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
    * version numbers (i.e. 4.5.2)
    */
   private Map<String, String> getLatestVersionInfo() {
-    int conTimeOut = 1; // http connection timeout in seconds
-    int socTimeOut = 1; // http socket timeout in seconds
+    int socTimeout = 1; // http socket timeout in seconds
+    int connectionTimeout = 3; // http connection timeout in seconds
     Map<String, String> latestVersionInfo = new HashMap<>();
 
     String versionUrl = "http://www.unidata.ucar.edu/software/thredds/latest.xml";
-    HttpClient httpclient = new DefaultHttpClient();
-    final HttpParams httpParameters = httpclient.getParams();
-    
-    HttpConnectionParams.setConnectionTimeout(httpParameters, conTimeOut * 1000);
-    HttpConnectionParams.setSoTimeout(httpParameters, socTimeOut * 1000);
-    HttpGet request = new HttpGet(versionUrl);
-    request.setHeader("User-Agent", "TDS_" + getVersionInfo().replace(" ", ""));
 
-    HttpResponse response;
-    try {
-      response = httpclient.execute(request);
-      HttpEntity entity = response.getEntity();
+    try (HTTPSession httpClient = HTTPFactory.newSession(versionUrl)) {
 
-      try (InputStream content = entity.getContent()) {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document dom = db.parse(content);
-        Element docEle = dom.getDocumentElement();
-        NodeList versionElements = docEle.getElementsByTagName("version");
-        if (versionElements != null && versionElements.getLength() > 0) {
-          for (int i = 0; i < versionElements.getLength(); i++) {
-            //get the version element
-            Element versionElement = (Element) versionElements.item(i);
-            String verType = versionElement.getAttribute("name");
-            String verStr = versionElement.getAttribute("value");
-            latestVersionInfo.put(verType, verStr);
-          }
-        } 
-      } 
+      httpClient.setSoTimeout(socTimeout * 1000);
+      httpClient.setConnectionTimeout(connectionTimeout * 1000);
+      httpClient.setUserAgent("TDS_" + getVersionInfo().replace(" ", ""));
+      HTTPMethod method = HTTPFactory.Get(httpClient);
+      method.execute();
+      InputStream responseIs = method.getResponseBodyAsStream();
+
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document dom = db.parse(responseIs);
+      Element docEle = dom.getDocumentElement();
+      NodeList versionElements = docEle.getElementsByTagName("version");
+      if (versionElements != null && versionElements.getLength() > 0) {
+        for (int i = 0; i < versionElements.getLength(); i++) {
+          //get the version element
+          Element versionElement = (Element) versionElements.item(i);
+          String verType = versionElement.getAttribute("name");
+          String verStr = versionElement.getAttribute("value");
+          latestVersionInfo.put(verType, verStr);
+        }
+      }
     } catch (IOException e) {
       logServerStartup.warn("TdsContext - Could not get latest version information from Unidata.");
     } catch (ParserConfigurationException e) {

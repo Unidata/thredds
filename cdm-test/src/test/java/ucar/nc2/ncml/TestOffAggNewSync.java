@@ -48,31 +48,32 @@ import java.io.StringReader;
 public class TestOffAggNewSync {
 
   String dataDir = TestDir.cdmUnitTestDir + "formats/gini/";
-  
+  int ntimes = 3;
+
   private String aggExistingSync =
             "<?xml version='1.0' encoding='UTF-8'?>\n" +
             "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
             "  <aggregation  dimName='time' type='joinExisting' recheckEvery='1 sec' >\n" +
             "    <variableAgg name='IR_WV'/>\n" +
-            "    <scan location='"+dataDir+"' regExp='SUPER-NATIONAL.*\\.gini' dateFormatMark='SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm'/>\n" +
+            "    <scan location='"+dataDir+"' regExp='WEST-CONUS_4km_3.9.*\\.gini' dateFormatMark='WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm'/>\n" +
             "  </aggregation>\n" +
             "</netcdf>";
 
   @Test
   public void testMove() throws IOException, InterruptedException {
-    String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
+    String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
     if (!TestOffAggUpdating.move(fname))
       System.out.printf("Move failed on %s%n", fname);
     System.out.printf("%s%n", aggExistingSync);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, 7);
+    testAggCoordVar(ncfile, ntimes-1);
     ncfile.close();
 
     if (!TestOffAggUpdating.moveBack(fname))
       System.out.printf("Move back failed on %s%n", fname);
 
     ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, 8);
+    testAggCoordVar(ncfile, ntimes);
     ncfile.close();
     System.out.printf("ok testMove%n");
   }
@@ -80,13 +81,13 @@ public class TestOffAggNewSync {
   @Test
   public void testRemove() throws IOException, InterruptedException {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, 8);
+    testAggCoordVar(ncfile, ntimes);
     System.out.println("");
     ncfile.close();
 
-    String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
+    String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
     boolean ok = TestOffAggUpdating.move(fname);
-    int nfiles = ok ? 7 : 8;  // sometimes fails
+    int nfiles = ok ? ntimes-1 : ntimes;  // sometimes fails
 
     ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, nfiles);
@@ -98,12 +99,12 @@ public class TestOffAggNewSync {
 
   @Test
   public void testSync() throws IOException, InterruptedException {
-    String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
+    String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
     if (!TestOffAggUpdating.move(fname))
       System.out.printf("Move failed on %s%n", fname);
 
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, 7);
+    testAggCoordVar(ncfile, ntimes-1);
 
     if (!TestOffAggUpdating.moveBack(fname))
       System.out.printf("Move back failed on %s%n", fname);
@@ -111,7 +112,7 @@ public class TestOffAggNewSync {
     Thread.sleep(2000);
 
     ncfile.syncExtend();
-    testAggCoordVar(ncfile, 8);
+    testAggCoordVar(ncfile, ntimes);
     ncfile.close();
     System.out.printf("ok testSync%n");
   }
@@ -119,12 +120,12 @@ public class TestOffAggNewSync {
   @Test
   public void testSyncRemove() throws IOException, InterruptedException {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
-    testAggCoordVar(ncfile, 8);
+    testAggCoordVar(ncfile, ntimes);
     System.out.println("");
 
-    String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
+    String fname = dataDir + "WEST-CONUS_4km_3.9_20050912_2130.gini";
     boolean ok = TestOffAggUpdating.move(fname);
-    int nfiles = ok ? 7 : 8;  // sometimes fails
+    int nfiles = ok ? ntimes-1 : ntimes;  // sometimes fails
     Thread.sleep(2000);
 
     ncfile.syncExtend();
@@ -152,20 +153,6 @@ public class TestOffAggNewSync {
     assert data.getRank() == 1;
     assert data.getSize() == n;
     assert data.getShape()[0] == n;
-  }
-
-
-  boolean moveOld(String filename) {
-    File f = new File(filename);
-    if (f.exists())
-      return f.renameTo(new File(filename + ".save"));
-    return false;
-  }
-
-
-  boolean moveBackOld(String filename) {
-    File f = new File(filename + ".save");
-    return f.renameTo(new File(filename));
   }
 
 }

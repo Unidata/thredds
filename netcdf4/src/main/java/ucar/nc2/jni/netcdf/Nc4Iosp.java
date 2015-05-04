@@ -221,6 +221,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     skipEos = flags.isSet("HdfEos/turnOff");
   }
 
+  static final private boolean trace = true;
 
   //////////////////////////////////////////////////
   // Instance Variables
@@ -307,6 +308,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // open
     if (debug) System.out.println("open " + ncfile.getLocation());
     IntByReference ncidp = new IntByReference();
+    if (trace) System.out.printf("nc4.nc_open %s%n", ncfile.getLocation());
     int ret = nc4.nc_open(ncfile.getLocation(), readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     ncid = ncidp.getValue();

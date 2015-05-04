@@ -1,6 +1,8 @@
 package dap4.test;
 
 import dap4.test.util.DapTestCommon;
+import org.junit.Ignore;
+import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.ThreddsServer;
 
@@ -129,7 +131,8 @@ public class TestConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests.add(locate1(8));
+            chosentests.add(locate1(6));
+            prop_visual = true;
         } else {
             for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);

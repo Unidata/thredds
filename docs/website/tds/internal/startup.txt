@@ -12,9 +12,7 @@ this part sets up a spring listener that gets the contextConfigLocation from the
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-  
-  (dunno why we called it "applicationContext-tdsConfig.xml", is that some convention??)
-  
+    
   then theres this for the "root servlet, which is spring:
   
     <!-- root servlet -->
@@ -60,7 +58,7 @@ mappings are done, eg:
 not clear if classses are loaded here
 
 
-3. applicationContext-tdsConfig is processed, and TdsContext bean is made:
+3. applicationContext is processed, and TdsContext bean is made:
 
 2013-09-02T16:59:49.530-0600 [     18430][        ] INFO  serverStartup: TdsContext version= 4.3.20120406.1714 - 20120406.1714
 
@@ -149,10 +147,6 @@ tds.dir.cdmUnitTest=/share/testdata/cdmUnitTest
 ** problem is that tds.content.root.path is specified in 2 places.
 
 4. TdsContext.afterPropertiesSet
-
-  // Some properties are set from the tds.properties
-  // would be nice to make Immutable
-
 
     ServletUtil.setContextPath(contextPath);
 	ServletUtil.setRootPath(this.rootDirSource.getRootDirectoryPath());

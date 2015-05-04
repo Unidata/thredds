@@ -286,6 +286,9 @@ public class InvCatalogImpl extends InvCatalog {
    * @see InvCatalog#findDatasetByID
    */
   public void addDatasetByID(InvDatasetImpl ds) {
+    //if (ds.getID() != null && ds.getID().startsWith("null"))
+    //  System.out.printf("HEY addDatasetByID %s%n", ds.getID());
+
     if (ds.getID() != null)
       dsHash.put(ds.getID(), ds);
   }

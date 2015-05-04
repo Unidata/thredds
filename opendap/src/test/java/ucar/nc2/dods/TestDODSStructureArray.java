@@ -35,6 +35,7 @@ package ucar.nc2.dods;
 import opendap.test.TestSources;
 import org.junit.Test;
 import ucar.ma2.*;
+import ucar.unidata.test.util.UtilsTestStructureArray;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -201,7 +202,7 @@ public class TestDODSStructureArray {
     assert( data instanceof ArrayStructure);
     assert(data.getElementType() == StructureData.class);
 
-    new ucar.unidata.test.ma2.TestStructureArray().testArrayStructure( (ArrayStructure) data);
+    new UtilsTestStructureArray().testArrayStructure( (ArrayStructure) data);
     ncfile.close();
   }
 

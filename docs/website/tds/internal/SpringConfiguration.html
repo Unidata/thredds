@@ -5,203 +5,315 @@
 <title>Untitled Document</title>
 </head>
 <body>
-<h1>Servlets and Controllers mappings summary</h1>
-<h2><a name="TDSServletsConfiguration%284.4.0-alpha%29-4.1Servlets" id="TDSServletsConfiguration%284.4.0-alpha%29-4.1Servlets"></a>4.1 Servlets</h2>
-<div>
-  <table border="2">
-    <tbody>
-      <tr>
-        <th width="143">Servlet</th>
-        <th width="182">Mapping</th>
-      </tr>
-      <tr>
-        <td>Opendap</td>
-        <td>/dodsC/*</td>
-      </tr>
-      <tr>
-        <td>RestrictedDataset</td>
-        <td>/restrictedAccess/*</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2><a name="TDSServletsConfiguration%284.4.0-alpha%29-4.2NonannotatedSpringcontrollers" id="TDSServletsConfiguration%284.4.0-alpha%29-4.2NonannotatedSpringcontrollers"></a>4.2 Non-annotated Spring controllers</h2>
-<div>
-  <table width="822" border="2">
-    <tbody>
-      <tr>
-        <th width="237">Controller Class</th>
-        <th width="102">Servlet Name</th>
-        <th width="263">Mappings</th>
-        <th width="190">Configuration file</th>
-      </tr>
-      <tr>
-        <td>RadarCatalogController</td>
-        <td>radarServer</td>
-        <td>/radarServer/**/catalog.xml <br />
-          /radarServer/**/dataset.xml <br />
-          /radarServer/**/catalog.html <br />
-          /radarServer/**/dataset.html</td>
-        <td>radarServer-servlet.xml</td>
-      </tr>
-      <tr>
-        <td>RadarQueryController</td>
-        <td>radarServer</td>
-        <td>/radarServer/*<strong>/</strong>?*</td>
-        <td>radarServer-servlet.xml</td>
-      </tr>
-      <tr>
-        <td>RadarStationController</td>
-        <td>radarServer</td>
-        <td>/radarServer/**/stations.xml</td>
-        <td>radarServer-servlet.xml</td>
-      </tr>
-      <tr>
-        <td>ThreddsWmsController</td>
-        <td>wms</td>
-        <td>/wms/**</td>
-        <td>wms-servlet.xml</td>
-      </tr>
-      <tr>
-        <td> </td>
-        <td>root</td>
-        <td>/</td>
-        <td>servlet-context.xml</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2><a name="TDSServletsConfiguration%284.4.0-alpha%29-4.3AnnotatedSpringcontrollers" id="TDSServletsConfiguration%284.4.0-alpha%29-4.3AnnotatedSpringcontrollers"></a>4.3 Annotated Spring controllers</h2>
+<h2>Spring Configuration - 5.0</h2>
+<p><em>April 22, 2015</em></p>
+<h2>Notes</h2>
+<ol>
+  <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
+  <li>Layout of resources: webapp/** is visible if user knows the URL, but webapp/WEB-INF/** is only acessible from controllers.</li>
+  <li>Difference between mapping spring dispatcher servlet to &quot;/&quot; and to &quot;/*&quot;: 1) allow tomcat default servlet to handle jsps 2) spring takes over everything</li>
+</ol>
+<h2>Spring DI  </h2>
+<h3>Core Beans</h3>
+<ul>
+  <li>    TdsContext
+    <ul>
+      <li>calls        ThreddsConfig.init(), creates TdsConfigMapper      </li>
+    </ul>
+  </li>
+  <li>DataRootManager
+    <ul>
+    <li>*TdsContext</li>
+    <li>*DataRootPathMatcher</li>
+    <li>*ConfigCatalogManager</li>
+    <li>*ConfigCatalogCache    </li>
+    
+    <li>*FeatureCollectionCache</li>
+    </ul>
+  </li>
+  <li>DatasetManager
+    <ul>
+      <li>*DataRootManager</li>
+      <li>*FeatureCollectionCache</li>
+    </ul>
+  </li>
+  <li>ConfigCatalogManager
+    <ul>
+      <li>*TdsContext</li>
+      <li>-DataRootPathMatcher</li>
+      <li>-DatasetManager</li>
+      <li>-ConfigCatalogCache</li>
+    </ul>
+  </li>
+  <li>TdsInit      
+    <ul>
+      <li>*TdsContext</li>
+      <li>-DatasetManager</li>
+    </ul>
+  </li>
+  <li>ConfigCatalogCache
+    <ul>
+      <li>*TdsContext  </li>
+    </ul>
+  </li>
+</ul>
+<p>(* = read, - = write)</p>
+<h3>Startup</h3>
+<h4>Notes</h4>
+<ul>
+  <li>http://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring
+    <ul>
+      <li>The <strong>applicationContext.xml</strong> defines the beans for the &quot;root webapp context&quot;, i.e. the context associated with the webapp.</li>
+      <li>The <strong>spring-servlet.xml</strong> defines the beans for one servlet's app context. There can be many of these in a webapp, one per Spring servlet. We only have one.</li>
+      <li>Beans in spring-servlet.xml can reference beans in applicationContext.xml, but not vice versa.</li>
+      <li>All Spring MVC controllers must go in the spring-servlet.xml context.</li>
+      <li>In most simple cases, the applicationContext.xml context is unnecessary. It is generally used to contain beans that are shared between all servlets in a webapp. If you only have one servlet, then there's not really much point, unless you have a specific use for it. </li>
+      <li>We use <strong>applicationContext.xml</strong> to define generral TDS beans, and <strong>spring-servlet.xml</strong> to devine mvc (controllers, etc).</li>
+    </ul>
+  </li>
+  <li>Dont do any heavy processing in the bean initialization phase, just get the beans wired in</li>
+  <li>So bean constructors must not depend on anything else, or assume the order of wiring.</li>
+  <li>Do serious initialization from TdsInit, by listening for <em>ContextRefreshedEvent</em>
+    <ul>
+      <li>http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc</li>
+    </ul>
+  </li>
+</ul>
+<h4>Sequence</h4>
+<ol>
+  <li>    Tomcat loads <em>thredds.war</em> with /WEB-INF/web.xml</li>
+  <li>org.springframework.web.context.<em>ContextLoaderListener</em> listens for context loading</li>
+  <li>beans in <em>applicationContext.xml</em> are created and wired, annotations are found and wired</li>
+  <li>    ContextRefreshedEvent caught by <em>TdsInit</em>
+  <ol>
+    <li>read <em>threddsConfig.xml</em> and set values</li>
+    <li>register dataSources with <em>DatasetManager</em></li>
+    <li>call ConfigCatalogManager.init()</li>
+    </ol>
+  </li>
+  <li><em>ConfigCatalogManager</em> read config catalogs
+    <ol>
+      <li>add dataRoots to        <em>DataRootPathMatcher</em> </li>
+      <li>add catalogs to <em>ConfigCatalogCache</em></li>
+      <li>add ncml datasets to <em>DatasetManager</em> (may eliminate)</li>
+    </ol>
+  </li>
+</ol>
+<h3>threddsConfig.xml
+</h3>
+<ul>
+  <li>TdsInit using ThreddsConfig</li>
+  <li>ThreddsConfig.init() called from TdsContext.afterPropertiesSet()</li>
+  <li>TdsConfigMapper seems to be ethan's replacement ?? seems not used</li>
+  <li>none of it using autowire</li>
+</ul>
+<p><br>
+</p>
+<h2>Spring MVC</h2>
+<p>http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html</p>
+<p>Lots of ways, we want to standardize on one or a few idioms.</p>
+<h3>Handle completely</h3>
+<ul>
+  <li>see CdmRemoteController</li>
+  <li>return  ResponseEntity&lt;String&gt;</li>
+  <li>errors: handle these in the controller</li>
+</ul>
+<h3>ModelView</h3>
+<ul>
+  <li>use a view technology</li>
+  <li>return a ModelView</li>
+  <li>errors: throw exception, grab in an exception handler; essentially a way to switch return types</li>
+  <li>see LocalCatalogServiceController</li>
+</ul>
+<h3>Validation</h3>
+<ul>
+  <li>@Valid JSP 303, with hibernate implementation</li>
+  <li>org.springframework.validation.Validator</li>
+  <li>must put initBinder() into Controller  </li>
+  <li>see RemoteCatalogServiceController</li>
+  <li>dont need DataBinder  </li>
+</ul>
+<h3>Error handling</h3>
+<ul>
+  <li>Errors are handled by throwing an exception which is picked up by an ExceptionHandler, eg <strong>TdsErrorHandling</strong></li>
+  <li>let exceptions propagate out of the controllers - do not catch unless necessary</li>
+  <li> essentially a way to switch return types</li>
+  <li>see https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc</li>
+</ul>
+<hr />
+<h2>Servlets and Controllers mappings summary</h2>
+<p>http://stackoverflow.com/questions/12569308/spring-difference-of-and-with-regards-to-paths</p>
+<h3>User Visible Changes from 4.6</h3>
+<ul>
+  <li>all catalogs (except root) must start with /catalog
+    <ul>
+      <li>eg previous<strong> /thredds/idd/ncep.xml </strong> now must be <strong>/thredds/catalog/idd/ncep.xml</strong></li>
+      <li><strong>catalog.xm</strong>l is redirected to <strong>/catalog/catalog.xml</strong> in RootController</li>
+    </ul>
+  </li>
+  <li>previous<strong> /thredds/serverInfo.xml</strong> now must be <strong>/thredds/info/serverInfo.xml</strong></li>
+</ul>
+<h2><a></a>Valid TDS URLs</h2>
 <div>
   <table border="2">
     <tbody>
       <tr>
         <th width="226">Controller Class</th>
-        <th width="152">Handler method</th>
-        <th width="479">Mapping</th>
+        <th width="152">prefix</th>
+        <th width="391">URLs</th>
+        <th width="358">Notes</th>
       </tr>
       <tr>
         <td>RootController</td>
-        <td>getRootPage</td>
         <td>/</td>
+        <td>&quot;/&quot;, &quot;/catalog.html&quot; -&gt;<strong>redirect:/catalog/catalog.html</strong><br />
+        &quot;/catalog.xml&quot; -&gt; <strong>redirect:/catalog/catalog.xml</strong><br />
+        &quot;*.css&quot;,&#32;&quot;*.gif&quot;,&#32;&quot;*.jpg&quot;,&#32;&quot;*.png&quot; -&gt; look in <em>content/public</em></td>
+        <td>&nbsp;</td>
       </tr>
        <tr>
-        <td>CollectionController</td>
-        <td>handleCollectionTriggers</td>
-        <td>/admin/collection <br />
-          /admin/collection/trigger</td>
+        <td>AdminCollectionController</td>
+        <td>/admin/collection</td>
+        <td>/showStatus[.csv]<br />
+          /trigger<br />
+         /showFmrc</td>
+        <td><p>trigger requires <em>tdsTrigger</em> role (used by TDM)</p></td>
        </tr>
+      
+      <tr>
+        <td>AdminDebugController</td>
+        <td>/admin/debug</td>
+        <td>?cmd</td>
+        <td>&nbsp;</td>
+      </tr>
        <tr>
-        <td>CollectionController</td>
-        <td>showFmrcCache</td>
-        <td>/admin/fmrcCache <br />
-          /admin/fmrcCache/*</td>
+        <td>AdminDirDisplayController</td>
+        <td>/admin/dir</td>
+        <td>/content/{path}<br />
+          /content/tdm/{path}<br />
+         /logs/{path} -&gt; tomcat logs<br />
+         /dataDir/{path}</td>
+        <td>view=<em>threddsFileView</em></td>
       </tr>
-        <tr>
-        <td>DebugController</td>
-        <td>showDebugPage</td>
-        <td>/admin/debug <br />
-          /admin/debug/*</td>
-      </tr>
-      <tr>
-        <td>LogController</td>
-        <td>handleRequestInternal</td>
-        <td>/admin/log/** <br />
-          /admin/roots</td>
-      </tr>
-      <tr>
-        <td>DirDisplayController</td>
-        <td>handleRequestInternal</td>
-        <td>/admin/**</td>
+           <tr>
+        <td>AdminLogController</td>
+        <td>/admin/log</td>
+        <td>/access/current, /access/, /access/{filename}<br />
+          /thredds/current, /thredds/, /thredds/{filename}<br />
+            /dataroots.txt</p>
+        </td>
+        <td><p>requires          <em>tdsMonitor</em> role (used by TdsMonitor)</p></td>
       </tr>
       <tr>
-        <td>LocalCatalogServiceController</td>
-        <td>handleXmlRrequest<br />
-        handleHtmlRrequest</td>
-        <td>*.xml <br />
-          *.html</td>
+        <td>AdminSpringInfoController</td>
+        <td>/admin/spring</td>
+        <td>/showControllers</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
-        <td>RemoteCatalogServiceController</td>
-        <td>handleAll</td>
-        <td>          /remoteCatalogService <br />
-          /remoteCatalogValidation.html</td>
+        <td>CatalogServiceController</td>
+        <td><strong>/catalog</strong></td>
+        <td>/{path}/catalogName.[xml|html]</td>
+        <td>needs <strong>catalog</strong> prefix now</td>
       </tr>
       <tr>
-        <td>CdmrController</td>
-        <td>handleRequest</td>
-        <td>/cdmremote/**</td>
+        <td>CdmRemoteController</td>
+        <td>/cdmremote</td>
+        <td>/{path}?{cdmr query} (<a href="../../netcdf-java/reference/stream/CdmRemote.html">ref</a>)</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
         <td>CdmrfController</td>
-        <td>metadataRequestHandler</td>
-        <td>/cdmrfeature/**, params={&quot;req!=data&quot;, &quot;req!=dataForm&quot;,&quot;req!=header&quot; }</td>
+        <td>/cdmrfeature</td>
+        <td>/{path}?{cdmrf query}</td>
+        <td>keep?</td>
       </tr>
-      <tr>
-        <td>CdmrfController</td>
-        <td>headerRequestHandler</td>
-        <td>/cdmrfeature/**, params={&quot;req=header&quot;}</td>
+     <tr>
+        <td>Dap4Servlet</td>
+        <td>/dap4</td>
+        <td>/{path}?{dap4 query}</td>
+        <td>TODO</td>
       </tr>
-      <tr>
-        <td>CdmrfController</td>
-        <td>dataRequestHandler</td>
-        <td>/cdmrfeature/**, params={&quot;req=data&quot;}</td>
-      </tr> 
+     <tr>
+        <td>OpendapServlet</td>
+        <td>/dodsC</td>
+        <td>/{path}?{dap2 query}</td>
+        <td>TODO: break into client/server, seperate DTS</td>
+      </tr>
       <tr>
         <td>FileServerController</td>
-          <td>doGet</td>
-      <td>/fileServer/**</td>
-      </tr>
-      <tr>
-        <td>DLwriterController</td>
-         <td>doGet</td>
-       <td>/DLwriter/**</td>
+          <td>/fileServer</td>
+      <td>/{path}</td>
+      <td>&nbsp;</td>
       </tr>   
-      <tr>
+           <tr>
+        <td>ServerInfoController</td>
+        <td><strong>/info</strong></td>
+        <td>/serverInfo.html<br/>
+        /serverInfo.xml<br/>
+        /serverVersion.txt        </td>
+        <td>needs <strong>info</strong> prefix now</td>
+      </tr>
+           <tr>
         <td>MetadataController</td>
-        <td>getMetadata</td>
-        <td>/metadata/**</td>
+        <td>/metadata</td>
+        <td>/{path}?accept</td>
+        <td>metadata=vars</td>
       </tr>
       <tr>
         <td>NcssController</td>
-        <td>handleRequest <br /></td>
-        <td>/ncss/**</td>
+        <td>/ncss<br /></td>
+        <td>/{path}?{ncss query}</td>
+        <td>/ncss/grid ?</td>
       </tr>
       <tr>
         <td>NcssDatasetInfoController</td>
         <td>getDatasetDescription</td>
         <td>/ncss/**/dataset.html <br />
           /ncss/**/dataset.xml </td>
+        <td>remove?</td>
       </tr>
       <tr>
         <td>NcssDatasetInfoController</td>
         <td>getStations</td>
         <td>/ncss/**/station.xml</td>
+        <td>remove?</td>
       </tr>
       <tr>
         <td>NcssDatasetBoundariesController</td>
         <td>getDatasetBoundaries</td>
         <td>/ncss/**/datasetBoundaries.xml</td>
+        <td>remove?</td>
+      </tr>
+        <tr>
+        <td>RadarServerController</td>
+        <td>/radarServer2</td>
+        <td>/{path}?{radar query}</td>
+        <td>&nbsp;</td>
+      </tr>
+       <tr>
+        <td>RemoteCatalogServiceController</td>
+        <td>/remoteCatalogService</td>
+        <td>          ?command,dataset</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
-        <td>ServerInfoController</td>
-        <td>getServerInfoHtml<br/>
-        getServerInfoXML<br/>
-        getServerVersion</td>
-        <td>/serverInfo.html<br/>
-        /serverInfo.xml<br/>
-        /serverVersion.txt
-        </td>
+        <td>RestrictedAccessController</td>
+        <td>/restrictedAccess</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
       </tr>
-     <tr>
+           <tr>
         <td>ViewerController</td>
-        <td>launchViewer</td>
-        <td>{viewer}.jnlp</td>
+        <td>/view</td>
+        <td>/{viewer}.jnlp</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
         <td>WCSController</td>
-        <td>doGet</td>
-        <td>/wcs/*</td>
+        <td>/wcs</td>
+        <td>/{path}?{wcs query}</td>
+        <td>Needs to be cleaned up</td>
       </tr>
    </tbody>
   </table>

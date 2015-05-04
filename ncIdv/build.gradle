@@ -3,6 +3,7 @@ dependencies {
     runtime project(":bufr")
     runtime project(":grib")
     runtime project(":netcdf4")
+    runtime project(":clcommon")
     runtime project(":opendap")
     runtime project(":visad")
 

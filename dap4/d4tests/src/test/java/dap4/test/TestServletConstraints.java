@@ -6,6 +6,7 @@ import dap4.dap4shared.RequestMode;
 import dap4.test.servlet.*;
 import dap4.test.util.DapTestCommon;
 import dap4.test.util.Dump;
+import org.junit.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.*;
  * constraint processing.
  */
 
+@Ignore
 public class TestServletConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
@@ -308,6 +310,7 @@ public class TestServletConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Ignore
     public void testServletConstraints()
             throws Exception
     {

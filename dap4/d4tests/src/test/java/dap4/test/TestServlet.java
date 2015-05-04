@@ -15,6 +15,8 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.*;
+
 /**
  * TestServlet has multiple purposes.
  * 1. It test the d4tsservlet.
@@ -23,6 +25,7 @@ import java.util.List;
  * test client side deserialization.
  */
 
+@Ignore
 public class TestServlet extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
@@ -663,6 +666,7 @@ public class TestServlet extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Ignore
     public void testServlet()
         throws Exception
     {

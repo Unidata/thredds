@@ -360,8 +360,11 @@ public class HTTPSession implements AutoCloseable
 
     static synchronized public List<Cookie> getGlobalCookies()
     {
+        // Must be better way to do this.
         AbstractHttpClient client = new DefaultHttpClient(connmgr);
+        //coverity[RESOURCE_LEAK]
         List<Cookie> cookies = client.getCookieStore().getCookies();
+        client = null;
         return cookies;
     }
 

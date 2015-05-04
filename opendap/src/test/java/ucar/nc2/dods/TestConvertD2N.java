@@ -47,7 +47,7 @@ import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
-import ucar.unidata.test.ma2.TestMa2Utils;
+import ucar.unidata.test.util.UtilsMa2Test;
 
 /**
  *
@@ -174,7 +174,7 @@ public class TestConvertD2N {
 
       if (useNC) {
         Array data2 = v.read();
-        TestMa2Utils.testEquals(data, data2);
+        UtilsMa2Test.testEquals(data, data2);
       }
 
       if (showData)

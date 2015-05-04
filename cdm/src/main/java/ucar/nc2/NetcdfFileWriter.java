@@ -72,7 +72,7 @@ import java.util.*;
  * @author caron
  * @since 7/25/12
  */
-public class NetcdfFileWriter {
+public class NetcdfFileWriter implements AutoCloseable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
   static private Set<DataType> validN3types = EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT,
           DataType.DOUBLE, DataType.FLOAT);
@@ -155,6 +155,7 @@ public class NetcdfFileWriter {
   private boolean fill;
   private int extraHeader;
   private long preallocateSize;
+  private Map<String,String> varRenameMap = new HashMap<>();
 
   /**
    * Open an existing or create a new Netcdf file
@@ -700,7 +701,11 @@ public class NetcdfFileWriter {
   public Variable renameVariable(String oldName, String newName) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
     Variable v = ncfile.findVariable(oldName);
-    if (null != v) v.setName(newName);
+    if (null != v) {
+      String fullOldNameEscaped = v.getFullNameEscaped();
+      v.setName(newName);
+      varRenameMap.put(v.getFullNameEscaped(), fullOldNameEscaped);
+    }
     return v;
   }
 
@@ -877,10 +882,23 @@ public class NetcdfFileWriter {
     FileWriter2 fileWriter2 = new FileWriter2(this);
 
     for (Variable v : ncfile.getVariables()) {
-      Variable oldVar = oldFile.findVariable(v.getFullNameEscaped());
+      String oldVarName = v.getFullName();
+      Variable oldVar = oldFile.findVariable(oldVarName);
       if (oldVar != null) {
         fileWriter2.copyAll(oldVar, v);
-    }
+      } else if (varRenameMap.containsKey(oldVarName)) {
+        // var name has changed in ncfile - use the varRenameMap to find
+        //  the correct variable name to requst from oldFile
+        String realOldVarName = varRenameMap.get(oldVarName);
+        oldVar = oldFile.findVariable(realOldVarName);
+        if (oldVar != null) {
+          fileWriter2.copyAll(oldVar, v);
+        }
+      } else {
+        String message = "Cannot find variable " + oldVarName + " to copy to new file.";
+        log.warn(message);
+        System.out.println(message);
+      }
     }
 
     // delete old
@@ -1013,5 +1031,4 @@ public class NetcdfFileWriter {
       spiw = null;
     }
   }
-
 }

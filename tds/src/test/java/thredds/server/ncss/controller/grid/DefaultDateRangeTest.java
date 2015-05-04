@@ -107,7 +107,7 @@ public class DefaultDateRangeTest {
 		System.out.printf(" duration: expected=%d actual=%d%n", durationInSeconds, range.getDurationInSecs());
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );
 		//long duration =Math.abs( durationInSeconds - range.getDurationInSecs() );
-		assertTrue(Math.abs( durationInSeconds - range.getDurationInSecs() ) < 30 );
+		assertTrue(Math.abs( durationInSeconds - range.getDurationInSecs() ) < 100 );
 		
 	}
 }

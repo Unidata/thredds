@@ -79,9 +79,12 @@ public class GridAsPointRequestTest {
   @SpringJUnit4ParameterizedClassRunner.Parameters
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][] {
-           {"/ncss/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/pointDataset.html"},
-           {"/ncss/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/dataset.xml"},
-           {"/ncss/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/pointDataset.xml"},
+            {"/ncss/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/pointDataset.html"},
+            {"/ncss/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/dataset.xml"},
+            {"/ncss/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/pointDataset.xml"},
+            {"/ncss/grid/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/pointDataset.html"},
+            {"/ncss/grid/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/dataset.xml"},
+            {"/ncss/grid/testGridScan/GFS_CONUS_80km_20120229_1200.grib1/pointDataset.xml"},
     });
   }
 

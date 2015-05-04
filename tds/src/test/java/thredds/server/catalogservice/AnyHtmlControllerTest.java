@@ -52,7 +52,7 @@ public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/NCOF/POLCOMS/IRISH_SEA/catalog.html");
 		request.setServletPath("/NCOF/POLCOMS/IRISH_SEA/catalog.html");
 		//request.setParameter("command", "subset");
-		request.setParameter("dataset", "NCOF/POLCOMS/IRISH_SEA");
+		request.setParameter("dataset", "NCOF/POLCOMS/IRISH_SEA/POLCOMS-Irish-Sea_best.ncd");
         MockHttpServletResponse response = new MockHttpServletResponse();
 		
         ModelAndView mv =anyHtmlController.handleHtmlRequest(request, response);
