@@ -3,7 +3,7 @@
 
 //================================================ Repositories ================================================//
 
-allprojects {
+allprojects {  // Doesn't apply any plugins: safe to run closure on all projects.
     // TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
     // Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
     repositories {
@@ -190,7 +190,7 @@ libraries["threddsIso"] = "EDS:threddsIso:2.2.5"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
-allprojects {
+allprojects {  // Doesn't apply any plugins: safe to run closure on all projects.
     // Executes the given closure against all objects in this collection, and any objects subsequently added to this
     // collection. See org.gradle.api.DomainObjectCollection.all(Closure)
     configurations.all {

@@ -10,7 +10,7 @@ dependencies {
     testRuntime project(":grib")
     testCompile project(":httpservices")
     testRuntime project(":opendap")
-    testRuntime project(":visad")
+    testRuntime project(":visadCdm")
 
     testRuntime libraries["jaxen"]
     testCompile libraries["jdom2"]

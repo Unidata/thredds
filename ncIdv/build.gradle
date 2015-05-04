@@ -1,14 +1,15 @@
 description = "Package that generates a jar file for use in the IDV"
 ext.title = "ncIdv Module"
 
-dependencies {
-    compile project(":cdm")
-    runtime project(":bufr")
-    runtime project(":grib")
-    runtime project(":netcdf4")
-    runtime project(":opendap")
-    runtime project(":visad")
-}
+// These are now defined in /gradle/fatJars.gradle
+//dependencies {
+//    compile project(":cdm")
+//    runtime project(":bufr")
+//    runtime project(":grib")
+//    runtime project(":netcdf4")
+//    runtime project(":opendap")
+//    runtime project(":visadCdm")
+//}
 
 ext {
     ncIdvJar = 'ncIdvs-' + version + '.jar'
@@ -27,16 +28,16 @@ ext {
    ftpdir:ftp directory
  */
 // TODO: Use the Sync task for this.
-task releaseCdm(dependsOn: ['shadowJar']) << {
-    if (project.hasProperty("ftpdir")) {
-        // println "destinationDir= " + ${destinationDir}
-        println "copy " + ncIdvJar + " to " + ftpdir
-        copy { // does not give error message
-            // from ${destinationDir} + ncIdvJar
-            from ncIdvJar
-            into ftpdir
-        }
-    } else {
-        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
-    }
-}
+//task releaseCdm(dependsOn: ['shadowJar']) << {
+//    if (project.hasProperty("ftpdir")) {
+//        // println "destinationDir= " + ${destinationDir}
+//        println "copy " + ncIdvJar + " to " + ftpdir
+//        copy { // does not give error message
+//            // from ${destinationDir} + ncIdvJar
+//            from ncIdvJar
+//            into ftpdir
+//        }
+//    } else {
+//        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
+//    }
+//}

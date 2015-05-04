@@ -9,7 +9,7 @@ dependencies {
     testCompile project(":netcdf4")
     testRuntime project(":opendap")
     testCompile project(":httpservices")
-    testCompile project(":visad")
+    testCompile project(":visadCdm")
     testRuntime project(":clcommon")
 
     testCompile libraries["visad"]

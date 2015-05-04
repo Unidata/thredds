@@ -12,7 +12,7 @@ dependencies {
     compile project(":netcdf4")
     compile project(":opendap")
     compile project(":tdcommon")
-    runtime project(":visad")
+    runtime project(":visadCdm")
     compile project(":waterml")
     compile project(":dap4:d4core")
     compile project(":dap4:d4servletshared")
@@ -59,11 +59,6 @@ dependencies {
 
 war.archiveName = 'thredds.war'
 
-task printProps << {
-    println System.properties['java.version'];
-    for (prop in System.properties.propertyNames()) printf("%s = %s%n", prop, System.properties[prop])
-}
-
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
 apply plugin: 'org.akhikhl.gretty'
 
@@ -78,4 +73,25 @@ processTestResources.destinationDir = compileTestJava.destinationDir
 processTestResources {
     from "src/main/webapp"
     from "src/main/webapp/WEB-INF/classes"
+}
+
+war {
+    // This is the default version of tds.properties that we'll be replacing with the filtered version below.
+    // It seems crufty. TODO: After Maven is out of the picture, nuke it, along with any other tds.properties dupes.
+    exclude('WEB-INF/classes/thredds/server/tds.properties')  // Relative to src/main/webapp/
+
+    // This is a hack to handle Maven-style placeholders in a file to be filtered: http://goo.gl/9sQebt
+    // Once Maven is out of the picture, the easiest way to refactor this is to remove the dots from the property
+    // keys, so that expand(Map) works as expected.
+    ant.properties['project.version'] = project.version
+    ant.properties['build.timestamp'] = project.buildTimestamp  // Defined in root project.
+
+    from ('src/main/template/thredds/server/tds.properties') {
+        into 'WEB-INF/classes/thredds/server'
+        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+    }
+    from('README.txt') {
+        into 'docs'
+        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+    }
 }

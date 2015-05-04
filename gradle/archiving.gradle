@@ -1,7 +1,8 @@
-import java.text.SimpleDateFormat
-
-allprojects {
+allprojects {  // Doesn't apply any plugins: safe to run closure on all projects.
     tasks.withType(Jar).all {   // Applies to Jar, War, Ear and ShadowJar tasks.
+        // Fails the build when an attempt is made to add a duplicate entry to an archive.
+        duplicatesStrategy = 'fail'
+
         manifest {
             // Subprojects have not yet been configured, but they may want to reassign these attributes.
             // So, we're going to delay evaluation by using lazy GStrings: http://goo.gl/zwWnPh
@@ -21,8 +22,7 @@ allprojects {
             // We cannot add this attribute during the configuration phase because it'll cause the jar task to never
             // be UP-TO-DATE: http://goo.gl/kbVWXR. Adding it during the execution phase removes it as an input to
             // Gradle's incremental build machinery.
-            SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-            manifest.attributes 'Built-On': iso_8601_format.format(new Date())
+            manifest.attributes 'Built-On': project.buildTimestamp  // Defined in root project.
         }
     }
 }

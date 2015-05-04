@@ -1,4 +1,5 @@
-subprojects {
+configure(javaProjects) {
+    apply plugin: 'java'  // For testCompile configuration.
     apply from: "$rootDir/gradle/dependencies.gradle"
 
     dependencies {

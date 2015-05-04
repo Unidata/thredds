@@ -11,19 +11,29 @@ allprojects {
 description = "The Unidata THREDDS project includes the netCDF-Java library (aka CDM) " +
         "and the THREDDS Data Server (TDS)."
 
+import java.text.SimpleDateFormat
+
 // These will be inherited by subprojects: http://goo.gl/5mvqf7
 // After declaration, they should NOT be referred to using the "ext" namespace, instead preferring e.g.
 // "project.title" or simply "title": http://stackoverflow.com/questions/14530901
 // That way, the property will be robustly resolved, as described here: http://goo.gl/UBq0en
 // Otherwise, only the one specific ExtraPropertiesExtension will be searched.
+ext {
+    // Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
+    title = "Parent THREDDS and CDM modules"
 
-// Matches Maven's "project.name". Used in MANIFEST.MF for "Implementation-Title".
-ext.title = "Parent THREDDS and CDM modules"
-// Matches Maven's "project.organization.name". Used in MANIFEST.MF for "Implementation-Vendor".
-ext.vendor = "UCAR/Unidata"
-// Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
-ext.url = "http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"
+    // Matches Maven's "project.organization.name". Used in MANIFEST.MF for "Implementation-Vendor".
+   vendor = "UCAR/Unidata"
 
+    // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
+    url = "http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"
+
+    SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+    ext.buildTimestamp = iso_8601_format.format(new Date())
+
+    nonJavaProjects = allprojects.findAll { it.path in [ ':', ':dap4', ':ncIdv' ] }
+    javaProjects = allprojects - nonJavaProjects
+}
 
 // Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
 // exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.
@@ -43,12 +53,9 @@ buildscript {
 }
 
 apply from: "$rootDir/gradle/dependencies.gradle"
-apply from: "$rootDir/gradle/java.gradle"
+
 apply from: "$rootDir/gradle/testing.gradle"
+apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/coverage.gradle"
 apply from: "$rootDir/gradle/archiving.gradle"
 apply from: "$rootDir/gradle/fatJars.gradle"
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
-}

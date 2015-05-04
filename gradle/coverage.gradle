@@ -1,4 +1,4 @@
-allprojects {
+configure(javaProjects + rootProject) {
     // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
     apply plugin: "jacoco"
 

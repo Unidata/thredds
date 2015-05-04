@@ -14,7 +14,7 @@ dependencies {
     ncIdv project(':grib')
     ncIdv project(':netcdf4')
     ncIdv project(':opendap')
-    ncIdv project(':visad')
+    ncIdv project(':visadCdm')
 
     tdm project(':tdm')
 
@@ -51,7 +51,7 @@ fatJarTasks << tasks.create(name: 'buildDap4', type: ShadowJar) {
 
     doFirst {
         // This script is evaluated before :dap4:d4client, so we must wait until execution time to get its properties.
-        // This does not affect the incremental build.
+        // This does not affect the incremental build. The main disadvantage is that failure (if any) is delayed.
         manifest.attributes project(':dap4:d4client').tasks.jar.manifest.attributes
     }
 }
@@ -69,9 +69,7 @@ fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
     exclude 'nom/**'
     exclude 'visad/**'
 
-    doFirst {
-        manifest.attributes project(':ncIdv').tasks.jar.manifest.attributes
-    }
+    manifest.attributes 'Implementation-Title': 'ncIdv Module'
 }
 
 fatJarTasks << tasks.create(name: 'buildTdm', type: ShadowJar) {
