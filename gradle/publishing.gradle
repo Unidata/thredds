@@ -1,4 +1,4 @@
-subprojects {
+configure(javaProjects) {
     apply plugin: 'maven-publish'
 
     // Finds this project's Java software component, if any.

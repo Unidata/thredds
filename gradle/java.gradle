@@ -1,5 +1,6 @@
-subprojects {
+configure(javaProjects) {
     apply plugin: 'java'
+    apply plugin: 'provided-base'  // Gives us the "provided" configuration.
 
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
@@ -10,7 +11,7 @@ subprojects {
     processResources.destinationDir = compileJava.destinationDir
 
     // Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).all {
         options.encoding = 'UTF-8'
 
         // Disable warnings about cross-compilation:
@@ -21,26 +22,7 @@ subprojects {
         options.compilerArgs = ['-Xlint:-options']
     }
 
-    // FIXME: Extend these to all Jar subtypes (e.g. War)?
-    // Could I then add additional attributes in subproject build scripts?
-    jar {
-        manifest {
-            attributes 'Implementation-Title': project.name,
-                    'Implementation-Version': project.version,
-                    'Implementation-Vendor-Id': project.group,
-                    'Implementation-Vendor': 'UCAR/Unidata',
-                    // Commented out to avoid unnecessary re-compilation and re-jarring: http://goo.gl/kbVWXR
-                    // I think I can fix this by writing a builtOn.txt file in compileJava,
-                    // and then reading in its value here.
-                    // 'Built-On': new Date(),
-                    'Build-Jdk': JavaVersion.current(),
-                    'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
-                    'Permissions': 'all-permissions',
-                    'Trusted-Only': 'true'
-        }
-    }
-
-    tasks.withType(Javadoc) {
+    tasks.withType(Javadoc).all {
         options.encoding = 'UTF-8'
 
         if (JavaVersion.current().isJava8Compatible()) {

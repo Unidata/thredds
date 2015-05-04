@@ -1,3 +1,10 @@
+description = "The ucar.units Java package is for decoding and encoding formatted unit specifications " +
+        "(e.g. \"m/s\"), converting numeric values between compatible units (e.g. between \"m/s\" and \"knot\"), " +
+        "and for performing arithmetic operations on units (e.g. dividing one unit by another, " +
+        "or raising a unit to a power)."
+ext.title = "UDUNITS"
+ext.url = "http://www.unidata.ucar.edu/software/udunits/"
+
 dependencies {
     compile libraries["joda-time"]
     compile libraries["jcip-annotations"]

@@ -1,3 +1,7 @@
+description = "The NetCDF-Java Library is a Java interface to NetCDF files, as well as to many other types of " +
+        "scientific data formats."
+ext.title = "CDM core library"
+
 dependencies {
     compile project(':udunits')
     compile project(':httpservices')
@@ -39,6 +43,7 @@ javadoc {
     }
 }
 
+// TODO: Use the Sync task for this.
 task releaseDocs(dependsOn: javadoc) << {
     def releaseDir = webdir + "javadoc"
 
@@ -52,27 +57,7 @@ task releaseDocs(dependsOn: javadoc) << {
     }
 }
 
-//shadow {
-//    outputFile = file("${destinationDir}/cdms-${version}.jar")
-//    stats = true
-//
-//    exclude 'META-INF/*.DSA'
-//    exclude 'META-INF/*.RSA'
-//    exclude 'META-INF/NOTICE'
-//    exclude 'META-INF/LICENSE'
-//    exclude 'META-INF/*.txt'
-//    exclude 'META-INF/*.xml'
-//
-//    artifactSet {
-//        exclude 'commons-logging:commons-logging:*'
-//    }
-//
-//    jar {
-//        manifest {
-//            attributes 'Main-Class': 'ucar.nc2.NCdumpW'
-//        }
-//    }
-//}
+jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'
 
 //////////////////////////////////////// Test artifacts ////////////////////////////////////////
 

@@ -1,3 +1,5 @@
+ext.title = "THREDDS Data Manager (TDM)"
+
 dependencies {
     compile project(':httpservices')
     compile project(':cdm')
@@ -14,40 +16,7 @@ dependencies {
     runtime libraries["log4j-core"]
 }
 
-apply plugin: 'shadow'
-import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
-
-shadow {
-    outputFile = file("${destinationDir}/tdms-${version}.jar")
-    stats = true
-
-    exclude 'com/sleepycat/**'
-    exclude 'net/sf/**'
-    exclude 'org/quartz/**'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/*.txt'
-    exclude 'META-INF/*.xml'
-
-    artifactSet {
-        exclude 'commons-logging:commons-logging:*'
-    }
-
-    jar {
-        manifest {
-            attributes 'Main-Class': 'thredds.tdm.TdmRunner'
-        }
-    }
-
-    transformer(AppendingTransformer) {
-        resource = 'META-INF/spring.handlers'
-    }
-    transformer(AppendingTransformer) {
-        resource = 'META-INF/spring.schemas'
-    }
-}
+jar.manifest.attributes 'Main-Class': 'thredds.tdm.Tdm'
 
 task showClasspath << {
     buildscript.configurations.classpath.each { println it }

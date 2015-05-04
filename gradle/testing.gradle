@@ -1,4 +1,5 @@
-subprojects {
+configure(javaProjects) {
+    apply plugin: 'java'  // For testCompile configuration.
     apply from: "$rootDir/gradle/dependencies.gradle"
 
     dependencies {
@@ -65,6 +66,7 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
         logger.warn "Skipping all NeedsCdmUnitTest tests."
     }
 
+    // FIXME: Should I be using org.gradle.api.DomainObjectCollection.all(Closure) here instead?
     testTasks*.configure {
         useJUnit {
             // Propagate to Gradle Test Executor.

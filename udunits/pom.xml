@@ -10,8 +10,8 @@
 
   <artifactId>udunits</artifactId>
   <packaging>jar</packaging>
-  <name>udunits</name>
-  <url>http://www.unidata.ucar.edu/software/udunits//</url>
+  <name>UDUNITS</name>
+  <url>http://www.unidata.ucar.edu/software/udunits/</url>
 
   <description>The ucar.units Java package is for decoding and encoding
     formatted unit specifications (e.g. "m/s"), converting numeric values

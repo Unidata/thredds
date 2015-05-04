@@ -1,5 +1,3 @@
-apply plugin: 'war'
-
 dependencies {
     // A lot of these depedencies should be in the testRuntime config, not testCompile.
 
