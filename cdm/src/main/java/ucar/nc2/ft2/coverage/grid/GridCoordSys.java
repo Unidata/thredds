@@ -59,6 +59,14 @@ public class GridCoordSys {
     transformNames.add(p);
   }
 
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    Indent indent = new Indent(2);
+    toString(f, indent);
+    return f.toString();
+  }
+
   public void toString(Formatter f, Indent indent) {
     indent.incr();
     f.format("%s CoordSys '%s'", indent, name);

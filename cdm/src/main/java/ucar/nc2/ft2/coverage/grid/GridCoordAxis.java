@@ -112,6 +112,14 @@ public class GridCoordAxis {
     this.description = description;
   }
 
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    Indent indent = new Indent(2);
+    toString(f,indent);
+    return f.toString();
+  }
+
   public void toString(Formatter f, Indent indent) {
     indent.incr();
     f.format("%s CoordAxis '%s' axisType=%s dataType=%s", indent, name, axisType, dataType);

@@ -329,9 +329,6 @@ public class CoverageDisplay extends JPanel {
        }
      }); */
 
-
-
-
       // redraw timer
       redrawTimer = new javax.swing.Timer(0, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -370,6 +367,7 @@ public class CoverageDisplay extends JPanel {
           flds.put(Dataset.ServiceName, ServiceType.File.toString());  // bogus
           invDs = new Dataset(null, filename, flds, null, null);
           setDataset(invDs);
+
         } catch (Exception ue) {
           JOptionPane.showMessageDialog(CoverageDisplay.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
           ue.printStackTrace();
@@ -1011,7 +1009,7 @@ public class CoverageDisplay extends JPanel {
 
     eventsOK = false; // dont let this trigger redraw
     renderGrid.setCoverage(currentField);
-    setFields(grids);
+    // setFields(grids);
     setField(currentField);
 
     // LOOK if possible, change the projection and the map area to one that fits this dataset
@@ -1034,12 +1032,28 @@ public class CoverageDisplay extends JPanel {
 
   private boolean startOK = true;
 
-  public void setDataset(GridCoverageDataset coverageDataset) {
-    this.coverageDataset = coverageDataset;
+  public void setDataset(ucar.nc2.ui.coverage2.CoverageTable dsTable) {
+    this.coverageDataset = dsTable.getCoverageDataset();
+    setFieldsFromBeans(dsTable.getGridBeans());
+
     startOK = false; // wait till redraw is hit before drawing
     showDataset();
     datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
     //gridTable.setDataset(controller.getFields());
+  }
+
+  public void setDataset(GridCoverageDataset gcd) {
+    this.coverageDataset = gcd;
+    setFields(gcd.getGrids());
+
+    startOK = false; // wait till redraw is hit before drawing
+    showDataset();
+    datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
+    //gridTable.setDataset(controller.getFields());
+  }
+
+  void setFieldsFromBeans(java.util.List<CoverageTable.GridBean> fields) {
+    fieldChooser.setCollection(fields.iterator());
   }
 
   void setFields(java.util.List<GridCoverage> fields) {

@@ -343,7 +343,7 @@ public class ToolsUI extends JPanel {
     setDebugFlags();
   }
 
-  private void addListeners(final JTabbedPane tabPane ) {
+  private void addListeners(final JTabbedPane tabPane) {
     tabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = tabPane.getSelectedComponent();
@@ -711,10 +711,10 @@ public class ToolsUI extends JPanel {
         if (null != rafCache)
           rafCache.showCache(f);
         f.format("%nNetcdfFileCache contents%n");
-         ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-         if (null != cache)
-           cache.showCache(f);
-         viewerPanel.detailTA.setText(f.toString());
+        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+        if (null != cache)
+          cache.showCache(f);
+        viewerPanel.detailTA.setText(f.toString());
         viewerPanel.detailWindow.show();
       }
     };
@@ -937,7 +937,7 @@ public class ToolsUI extends JPanel {
     JMenu ncMenu = new JMenu("NetcdfFile");
     modeMenu.add(ncMenu);
 
-     /////////////////////////////////////
+    /////////////////////////////////////
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         setUseRecordStructure = (Boolean) getValue(BAMutil.STATE);
@@ -946,7 +946,7 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionPropertiesToggle(a, null, "nc3UseRecords", setUseRecordStructure, 'V', -1);
     BAMutil.addActionToMenu(ncMenu, a);
 
-     /////////////////////////////////////
+    /////////////////////////////////////
     JMenu dsMenu = new JMenu("NetcdfDataset");
     modeMenu.add(dsMenu);
 
@@ -1023,7 +1023,7 @@ public class ToolsUI extends JPanel {
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        GribData.setInterpolationMethod( state ? GribData.InterpolationMethod.cubic : GribData.InterpolationMethod.linear);
+        GribData.setInterpolationMethod(state ? GribData.InterpolationMethod.cubic : GribData.InterpolationMethod.linear);
       }
     };
     boolean useCubic = GribData.getInterpolationMethod() == GribData.InterpolationMethod.cubic;
@@ -1099,6 +1099,7 @@ public class ToolsUI extends JPanel {
   }
 
   DiskCache2Form diskCache2Form = null;
+
   private void setGribDiskCache() {
     if (diskCache2Form == null) {
       diskCache2Form = new DiskCache2Form(parentFrame, GribIndexCache.getDiskCache2());
@@ -1353,8 +1354,10 @@ public class ToolsUI extends JPanel {
       ioe.printStackTrace();
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
       if (threddsData != null) {
-        try {threddsData.close(); }
-        catch (IOException ioe2) { }
+        try {
+          threddsData.close();
+        } catch (IOException ioe2) {
+        }
       }
     }
 
@@ -1458,7 +1461,7 @@ public class ToolsUI extends JPanel {
         String[] values = (String[]) o;
         BufferedOutputStream out;
 
-        try ( FileOutputStream fos = new FileOutputStream(values[0])) {
+        try (FileOutputStream fos = new FileOutputStream(values[0])) {
           out = new BufferedOutputStream(fos, 60000);
           IO.copyUrlB(values[1], out, 60000);
           downloadStatus = values[1] + " written to " + values[0];
@@ -1898,9 +1901,9 @@ public class ToolsUI extends JPanel {
       } catch (Exception e) {
 
         if (Debug.isSet("Xdeveloper")) {
-           StringWriter sw = new StringWriter(10000);
-           e.printStackTrace(new PrintWriter(sw));
-           ta.setText(sw.toString());
+          StringWriter sw = new StringWriter(10000);
+          e.printStackTrace(new PrintWriter(sw));
+          ta.setText(sw.toString());
         } else {
           ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
         }
@@ -1943,9 +1946,9 @@ public class ToolsUI extends JPanel {
 
         } catch (Exception e) {
           if (Debug.isSet("Xdeveloper")) {
-           StringWriter sw = new StringWriter(10000);
-           e.printStackTrace(new PrintWriter(sw));
-           ta.setText(sw.toString());
+            StringWriter sw = new StringWriter(10000);
+            e.printStackTrace(new PrintWriter(sw));
+            ta.setText(sw.toString());
           } else {
             ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
           }
@@ -2083,7 +2086,7 @@ public class ToolsUI extends JPanel {
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            try (NetcdfDatasetInfo info = new NetcdfDatasetInfo( ds)) {
+            try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ds)) {
               detailTA.setText(info.writeXML());
               detailTA.appendLine("----------------------");
               detailTA.appendLine(info.getParseInfo());
@@ -2955,14 +2958,14 @@ public class ToolsUI extends JPanel {
 
   }
 
-    /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
   private class Grib1DataPanel extends OpPanel {
     Grib1DataTable gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
-      Grib1DataPanel(PreferencesExt p) {
+    Grib1DataPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
       gribTable = new Grib1DataTable(prefs);
       add(gribTable, BorderLayout.CENTER);
@@ -3123,7 +3126,7 @@ public class ToolsUI extends JPanel {
 
   } */
 
-    /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
   private class CdmIndexPanel extends OpPanel {
     CdmIndex3Panel indexPanel;
 
@@ -3131,10 +3134,10 @@ public class ToolsUI extends JPanel {
       indexPanel.clear();
     }
 
-      CdmIndexPanel(PreferencesExt p) {
+    CdmIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-        indexPanel = new CdmIndex3Panel(prefs, buttPanel);
-        indexPanel.addPropertyChangeListener(new PropertyChangeListener() {
+      indexPanel = new CdmIndex3Panel(prefs, buttPanel);
+      indexPanel.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib2Collection")) {
             String collectionName = (String) e.getNewValue();
@@ -3176,7 +3179,7 @@ public class ToolsUI extends JPanel {
 
   }
 
- /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
   private class GribIndexPanel extends OpPanel {
     ucar.nc2.ui.grib.GribIndexPanel gribTable;
 
@@ -3184,7 +3187,7 @@ public class ToolsUI extends JPanel {
       gribTable.closeOpenFiles();
     }
 
-   GribIndexPanel(PreferencesExt p) {
+    GribIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
       gribTable = new ucar.nc2.ui.grib.GribIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
@@ -3554,7 +3557,7 @@ public class ToolsUI extends JPanel {
 
   }  */
 
- /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
 
   private class GribTemplatePanel extends OpPanel {
     GribWmoTemplatesPanel codeTable;
@@ -3753,12 +3756,12 @@ public class ToolsUI extends JPanel {
 
   }
 
-    /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
   private class GribRewritePanel extends OpPanel {
     ucar.nc2.ui.grib.GribRewritePanel ftTable;
     final FileManager dirChooser;
 
-      GribRewritePanel(PreferencesExt prefs) {
+    GribRewritePanel(PreferencesExt prefs) {
       super(prefs, "dir:", false, false);
       dirChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
       ftTable = new ucar.nc2.ui.grib.GribRewritePanel(prefs, buttPanel);
@@ -3776,9 +3779,9 @@ public class ToolsUI extends JPanel {
             String datasetName = (String) e.getNewValue();
             openGrib1Data(datasetName);
           } else if (e.getPropertyName().equals("openGrib2Data")) {
-             String datasetName = (String) e.getNewValue();
-             openGrib2Data(datasetName);
-           }
+            String datasetName = (String) e.getNewValue();
+            openGrib2Data(datasetName);
+          }
         }
       });
 
@@ -3921,7 +3924,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-    /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
   private class Hdf5DataPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     Hdf5DataTable hdf5Table;
@@ -4995,7 +4998,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-    /////////////////////////////////
+  /////////////////////////////////
 
   private class CoveragePanel extends OpPanel {
     ucar.nc2.ui.coverage2.CoverageTable dsTable;
@@ -5003,7 +5006,7 @@ public class ToolsUI extends JPanel {
     JSplitPane split;
     IndependentWindow viewerWindow;
 
-    GridCoverageDataset ds = null;
+    GridCoverageDataset gcd = null;
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
@@ -5013,13 +5016,11 @@ public class ToolsUI extends JPanel {
       AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          if (ds != null) {
-            GridCoverageDataset gridDataset = dsTable.getCoverageDataset();
-            if (gridDataset == null) return;
-            if (display == null) makeDisplay();
-            display.setDataset(gridDataset);
-            viewerWindow.show();
-          }
+          GridCoverageDataset gridDataset = dsTable.getCoverageDataset();
+          if (gridDataset == null) return;
+          if (display == null) makeDisplay();
+          display.setDataset(dsTable);
+          viewerWindow.show();
         }
       });
       buttPanel.add(viewButton);
@@ -5046,7 +5047,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      GridCoverageDataset gcd = null;
       try {
         gcd = CdmrFeatureDataset2.factory(FeatureType.GRID, command);
         setDataset(gcd);
@@ -5081,8 +5081,8 @@ public class ToolsUI extends JPanel {
     }
 
     void closeOpenFiles() throws IOException {
-      if (ds != null) ds.close();
-      ds = null;
+      if (gcd != null) gcd.close();
+      gcd = null;
     }
 
     /* void setDataset(NetcdfDataset newds) {
@@ -5112,7 +5112,7 @@ public class ToolsUI extends JPanel {
     void setDataset(GridCoverageDataset gds) {
       if (gds == null) return;
       try {
-        if (ds != null) ds.close();
+        if (gcd != null) gcd.close();
       } catch (IOException ioe) {
         System.out.printf("close failed %n");
       }
@@ -5530,10 +5530,10 @@ public class ToolsUI extends JPanel {
 
       table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("openGrib2Collection")) {
-          String collectionName = (String) e.getNewValue();
-          openGrib2Collection(collectionName);
-        }
+          if (e.getPropertyName().equals("openGrib2Collection")) {
+            String collectionName = (String) e.getNewValue();
+            openGrib2Collection(collectionName);
+          }
         }
       });
     }
@@ -5853,8 +5853,10 @@ public class ToolsUI extends JPanel {
 
         JOptionPane.showMessageDialog(this, e.getMessage());
         if (result != null) {
-          try {result.close(); }
-          catch (IOException ioe2) { }
+          try {
+            result.close();
+          } catch (IOException ioe2) {
+          }
         }
         return false;
       }
@@ -6179,31 +6181,31 @@ public class ToolsUI extends JPanel {
       super(parentFrame);
 
       JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
-               "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
-               "<b>" + getVersion() + "</b>" +
-               "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
-               "<br><b><i>Developers:</b>John Caron, Ethan Davis, Sean Arms, Dennis Heimbinger, Lansing Madry, Ryan May, Christian Ward-Garrison</i></b>" +
-               "</center>" +
-               "<br><br>With thanks to these <b>Open Source</b> contributors:" +
-               "<ul>" +
-               "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
-               "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>" +
-               "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
-               "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (http://www.unidata.ucar.edu/software/IDV/)</li>" +
-               "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>" +
-               "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
-               "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
-               "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
-               "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
-               "<li><b>NetCDF C Library</b> library: Russ Rew, Ward Fisher, Dennis Heimbinger</li>" +
-               "<li><b>OPeNDAP Java</b> library: Dennis Heimbinger, James Gallagher, Nathan Potter, Don Denbo, et. al.(http://opendap.org)</li>" +
-               "<li><b>Protobuf serialization</b> library: Google (http://code.google.com/p/protobuf/)</li>" +
-               "<li><b>Simple Logging Facade for Java</b> library: Ceki Gulcu (http://www.slf4j.org/)</li>" +
-               "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
-               "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" +
-               "<li><b>Udunits:</b>: Steve Emmerson</li>" +
-               "</ul><center>Special thanks to <b>Sun/Oracle</b> (java.oracle.com) for the platform on which we stand." +
-               "</center></body></html> ");
+              "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
+              "<b>" + getVersion() + "</b>" +
+              "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
+              "<br><b><i>Developers:</b>John Caron, Ethan Davis, Sean Arms, Dennis Heimbinger, Lansing Madry, Ryan May, Christian Ward-Garrison</i></b>" +
+              "</center>" +
+              "<br><br>With thanks to these <b>Open Source</b> contributors:" +
+              "<ul>" +
+              "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
+              "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>" +
+              "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
+              "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+              "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>" +
+              "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
+              "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
+              "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
+              "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
+              "<li><b>NetCDF C Library</b> library: Russ Rew, Ward Fisher, Dennis Heimbinger</li>" +
+              "<li><b>OPeNDAP Java</b> library: Dennis Heimbinger, James Gallagher, Nathan Potter, Don Denbo, et. al.(http://opendap.org)</li>" +
+              "<li><b>Protobuf serialization</b> library: Google (http://code.google.com/p/protobuf/)</li>" +
+              "<li><b>Simple Logging Facade for Java</b> library: Ceki Gulcu (http://www.slf4j.org/)</li>" +
+              "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
+              "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" +
+              "<li><b>Udunits:</b>: Steve Emmerson</li>" +
+              "</ul><center>Special thanks to <b>Sun/Oracle</b> (java.oracle.com) for the platform on which we stand." +
+              "</center></body></html> ");
 
       JPanel main = new JPanel(new BorderLayout());
       main.setBorder(new javax.swing.border.LineBorder(Color.BLACK));
@@ -6272,9 +6274,9 @@ public class ToolsUI extends JPanel {
         int height = image.getHeight(null);
         setLocation(screenSize.width / 2 - (width / 2), screenSize.height / 2 - (height / 2));
         addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                setVisible(false);
-            }
+          public void mousePressed(MouseEvent e) {
+            setVisible(false);
+          }
         });
         setVisible(true);
       }
@@ -6335,7 +6337,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
 
-    // run this on the event thread
+  // run this on the event thread
   private static void createGui() {
     try {
       // Switch to Nimbus Look and Feel, if it's available.
@@ -6398,7 +6400,7 @@ public class ToolsUI extends JPanel {
         System.out.println(" " + arg);
       }
 
-        HTTPSession.debugHeaders(true);
+      HTTPSession.debugHeaders(true);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -6452,7 +6454,7 @@ public class ToolsUI extends JPanel {
 
     // spring initialization
     try (ClassPathXmlApplicationContext springContext =
-            new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml")) {
+                 new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml")) {
 
       // look for run line arguments
       boolean configRead = false;

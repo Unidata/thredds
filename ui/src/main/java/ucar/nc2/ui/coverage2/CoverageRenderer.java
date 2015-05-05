@@ -52,13 +52,6 @@ public class CoverageRenderer {
   private boolean sameProjection = false;
   private LatLonProjection projectll;       // special handling for LatLonProjection
 
-  // working objects to minimize excessive gc
-  //private LatLonPointImpl ptL1 = new LatLonPointImpl();
-  //private LatLonPointImpl ptL2 = new LatLonPointImpl();
-  // private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
-  //private ProjectionPointImpl ptP2 = new ProjectionPointImpl();
-  //private ProjectionRect[] rects = new ProjectionRect[2];
-
   private static final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
   private boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
 
@@ -161,7 +154,6 @@ public class CoverageRenderer {
   public void setDrawContourLabels(boolean drawContourLabels) {
     this.drawContourLabels = drawContourLabels;
   }
-
 
   /* get what vertical level to draw */
   public int getLevel() {

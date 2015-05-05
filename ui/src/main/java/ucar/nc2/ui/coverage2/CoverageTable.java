@@ -1,6 +1,7 @@
 package ucar.nc2.ui.coverage2;
 
 import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 //import ucar.nc2.dataset.*;
 //import ucar.nc2.ft.fmrc.GridDatasetInv;
@@ -13,7 +14,7 @@ import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 //import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.util.Format;
+import ucar.nc2.util.NamedObject;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
@@ -37,8 +38,8 @@ public class CoverageTable extends JPanel {
   private PreferencesExt prefs;
   private GridCoverageDataset gridDataset;
 
-  private BeanTable varTable, csTable, axisTable;
-  private JSplitPane split = null, split2 = null;
+  private BeanTable gridTable, csTable, axisTable, transTable;
+  private JSplitPane split = null, split2 = null, split3 = null;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
   private NetcdfOutputChooser outChooser;
@@ -46,16 +47,17 @@ public class CoverageTable extends JPanel {
   public CoverageTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    varTable = new BeanTable(GridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
-    JTable jtable = varTable.getJTable();
+    gridTable = new BeanTable(GridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false, "GridCoverage", "ucar.nc2.ft2.coverage.GridCoverage", null);
+    JTable jtable = gridTable.getJTable();
 
     PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GridBean vb = (GridBean) varTable.getSelectedBean();
+        GridBean vb = (GridBean) gridTable.getSelectedBean();
         //Variable v = vb.geogrid.getVariable();
         infoTA.clear();
         infoTA.appendLine("Coverage " + vb.geogrid.getName() + " :");
+        Formatter f= new Formatter();
         infoTA.appendLine(vb.geogrid.toString());
         infoTA.gotoTop();
         infoWindow.show();
@@ -73,51 +75,27 @@ public class CoverageTable extends JPanel {
       }
     });  */
 
-    /* csPopup.addAction("WCS DescribeCoverage", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
-        if (gridDataset.findGridDatatype(vb.getName()) != null) {
-          List<String> coverageIdList = Collections.singletonList(vb.getName());
-          try {
-            DescribeCoverage descCov =
-                    ((thredds.wcs.v1_0_0_1.DescribeCoverageBuilder)
-                            thredds.wcs.v1_0_0_1.WcsRequestBuilder
-                                    .newWcsRequestBuilder("1.0.0",
-                                            thredds.wcs.Request.Operation.DescribeCoverage,
-                                            gridDataset, ""))
-                            .setCoverageIdList(coverageIdList)
-                            .buildDescribeCoverage();
-            String dc = descCov.writeDescribeCoverageDocAsString();
-            infoTA.clear();
-            infoTA.appendLine(dc);
-            infoTA.gotoTop();
-            infoWindow.show();
-          } catch (WcsException e1) {
-            e1.printStackTrace();
-          } catch (IOException e1) {
-            e1.printStackTrace();
-          }
-        }
-      }
-    });  */
-
     // the info window
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // show coordinate systems and axis
-    csTable = new BeanTable(CoordSysBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
-    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
+    csTable = new BeanTable(CoordSysBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false, "GridCoordSys", "ucar.nc2.ft2.coverage.GridCoordSys", null);
+    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false, "GridCooordAxis", "ucar.nc2.ft2.coverage.GridCooordAxis", null);
+    transTable = new BeanTable(CoordTransBean.class, (PreferencesExt) prefs.node("GeoCoordinateTransformBean"), false, "GridCoordTransform", "ucar.nc2.ft2.coverage.GridCoordTransform", null);
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, csTable);
-    split.setDividerLocation(prefs.getInt("splitPos", 500));
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, gridTable, csTable);
+    split.setDividerLocation(prefs.getInt("splitPos", 300));
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, axisTable);
-    split2.setDividerLocation(prefs.getInt("splitPos2", 500));
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, transTable);
+    split2.setDividerLocation(prefs.getInt("splitPos2", 200));
+
+    split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, axisTable);
+    split3.setDividerLocation(prefs.getInt("splitPos3", 200));
 
     setLayout(new BorderLayout());
-    add(split2, BorderLayout.CENTER);
+    add(split3, BorderLayout.CENTER);
   }
 
   /* public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
@@ -264,12 +242,15 @@ public class CoverageTable extends JPanel {
   }
 
   public void save() {
-    varTable.saveState(false);
+    gridTable.saveState(false);
+    csTable.saveState(false);
+    axisTable.saveState(false);
+    transTable.saveState(false);
+
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (csTable != null) csTable.saveState(false);
-    if (axisTable != null) axisTable.saveState(false);
+    prefs.putInt("splitPos", split.getDividerLocation());
+    prefs.putInt("splitPos2", split2.getDividerLocation());
+    prefs.putInt("splitPos3", split3.getDividerLocation());
   }
 
   /* public void setDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
@@ -307,12 +288,17 @@ public class CoverageTable extends JPanel {
     List<GridBean> beanList = new ArrayList<>();
     for (GridCoverage g : gridDataset.getGrids())
       beanList.add(new GridBean(g));
-    varTable.setBeans(beanList);
+    gridTable.setBeans(beanList);
 
     List<CoordSysBean> csList = new ArrayList<>();
     for (GridCoordSys gcs : gridDataset.getCoordSys())
       csList.add(new CoordSysBean(gcs));
     csTable.setBeans(csList);
+
+    List<CoordTransBean> transList = new ArrayList<>();
+    for (GridCoordTransform t : gridDataset.getCoordTransforms())
+      transList.add(new CoordTransBean(t));
+    transTable.setBeans(transList);
 
     List<AxisBean> axisList = new ArrayList<>();
     for (GridCoordAxis axis : gridDataset.getCoordAxes())
@@ -330,8 +316,12 @@ public class CoverageTable extends JPanel {
     return gridDataset;
   }
 
+  public List<GridBean> getGridBeans() {
+    return (List<GridBean>) gridTable.getBeans();
+  }
+
   public List<String> getSelectedGrids() {
-    List grids = varTable.getSelectedBeans();
+    List grids = gridTable.getSelectedBeans();
     List<String> result = new ArrayList<>();
     for (Object bean : grids) {
       GridBean gbean = (GridBean) bean;
@@ -342,7 +332,7 @@ public class CoverageTable extends JPanel {
 
 
   public GridCoverage getGrid() {
-    GridBean vb = (GridBean) varTable.getSelectedBean();
+    GridBean vb = (GridBean) gridTable.getSelectedBean();
     if (vb == null) {
       List<GridCoverage> grids = gridDataset.getGrids();
       if (grids.size() > 0)
@@ -353,7 +343,7 @@ public class CoverageTable extends JPanel {
     return gridDataset.findCoverage(vb.getName());
   }
 
-  public class GridBean {
+  public class GridBean implements NamedObject {
     // static public String editableProperties() { return "title include logging freq"; }
 
     GridCoverage geogrid;
@@ -488,6 +478,40 @@ public class CoverageTable extends JPanel {
       this.coordTrans = coordTrans;
     }
   }
+
+  public class CoordTransBean {
+    private GridCoordTransform gcs;
+    String params;
+    boolean isHoriz;
+
+    // no-arg constructor
+    public CoordTransBean() {
+    }
+
+    public CoordTransBean(GridCoordTransform gcs) {
+      this.gcs = gcs;
+      this.isHoriz = gcs.isHoriz();
+
+      Formatter buff = new Formatter();
+      for (Attribute att : gcs.getParameters())
+        buff.format("%s, ", att);
+      params = buff.toString();
+    }
+
+    public String getName() {
+      return gcs.getName();
+    }
+
+    public String getParams() {
+      return params;
+    }
+
+    public String getIsHoriz() {
+      return Boolean.toString(isHoriz);
+    }
+  }
+
+
 
   public class AxisBean {
     GridCoordAxis axis;

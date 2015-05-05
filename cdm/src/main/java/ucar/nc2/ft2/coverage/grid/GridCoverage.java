@@ -74,6 +74,14 @@ public class GridCoverage {
     this.description = description;
   }
 
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    Indent indent = new Indent(2);
+    toString(f,indent);
+    return f.toString();
+  }
+
   public void toString(Formatter f, Indent indent) {
     indent.incr();
     f.format("%s  %s type=%s units=%s%n", indent, name, dataType, units);
