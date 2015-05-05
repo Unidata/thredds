@@ -2,11 +2,12 @@
 package ucar.nc2.ft2.coverage.grid;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.util.Indent;
+import ucar.unidata.geoloc.ProjectionImpl;
 
-import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  message CoordTransform {
@@ -17,11 +18,17 @@ import java.util.List;
  * @author caron
  * @since 5/4/2015
  */
-public class GridCoordTransform {
+public class GridCoordTransform implements AttributeContainer {
 
   boolean isHoriz;
   String name;
-  List<Attribute> parameters;
+  AttributeContainerHelper attributes;
+  ProjectionImpl projection;
+
+  public GridCoordTransform(String name) {
+    this.name = name;
+    attributes = new AttributeContainerHelper(name);
+  }
 
   public boolean isHoriz() {
     return isHoriz;
@@ -35,21 +42,12 @@ public class GridCoordTransform {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public ProjectionImpl getProjection() {
+    return projection;
   }
 
-  public List<Attribute> getParameters() {
-    return parameters;
-  }
-
-  public void setParameters(List<Attribute> parameters) {
-    this.parameters = parameters;
-  }
-
-  public void addParameter(Attribute p) {
-    if (parameters == null) parameters = new ArrayList<>();
-    parameters.add(p);
+  public void setProjection(ProjectionImpl projection) {
+    this.projection = projection;
   }
 
   @Override
@@ -64,10 +62,49 @@ public class GridCoordTransform {
     indent.incr();
     f.format("%s CoordTransform '%s'", indent, name);
     f.format(" isHoriz: %s%n", isHoriz);
-    for (Attribute att : parameters)
+    for (Attribute att : attributes.getAttributes())
       f.format("%s     %s%n", indent, att);
     f.format("%n");
 
     indent.decr();
+  }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+  // AttributeHelper
+
+  public java.util.List<Attribute> getAttributes() {
+    return attributes.getAttributes();
+  }
+
+  public Attribute findAttribute(String name) {
+    return attributes.findAttribute(name);
+  }
+
+  public Attribute findAttributeIgnoreCase(String name) {
+    return attributes.findAttributeIgnoreCase(name);
+  }
+
+  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  }
+
+  public Attribute addAttribute(Attribute att) {
+    return attributes.addAttribute(att);
+  }
+
+  public void addAll(Iterable<Attribute> atts) {
+    attributes.addAll(atts);
+  }
+
+  public boolean remove(Attribute a) {
+    return attributes.remove(a);
+  }
+
+  public boolean removeAttribute(String attName) {
+    return attributes.removeAttribute(attName);
+  }
+
+  public boolean removeAttributeIgnoreCase(String attName) {
+    return attributes.removeAttributeIgnoreCase(attName);
   }
 }

@@ -64,7 +64,7 @@ public class Group extends CDMNode implements AttributeContainer {
   protected List<Variable> variables = new ArrayList<>();
   protected List<Dimension> dimensions = new ArrayList<>();
   protected List<Group> groups = new ArrayList<>();
-  protected List<Attribute> attributes = new ArrayList<>();
+  protected AttributeContainerHelper attributes;
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
   private int hashCode = 0;
 
@@ -261,54 +261,46 @@ public class Group extends CDMNode implements AttributeContainer {
     return null;
   }
 
-  /**
-   * Get the set of attributes contained directly in this Group.
-   *
-   * @return immutable List of type Attribute; may be empty, not null.
-   */
+   //////////////////////////////////////////////////////////////////////////////////////////////////
+  // AttributeHelper
+
   public java.util.List<Attribute> getAttributes() {
-    return immutable ? attributes : Collections.unmodifiableList(attributes);
+    return attributes.getAttributes();
   }
 
-  /**
-   * Add all; replace old if has same name
-   */
-  public void addAll(Iterable<Attribute> atts) {
-    for (Attribute att : atts) addAttribute(att);
-  }
-
-  /**
-   * Find an Attribute in this Group by its name.
-   *
-   * @param name the name of the attribute.
-   * @return the attribute, or null if not found
-   */
   public Attribute findAttribute(String name) {
-    if (name == null) return null;
-    // name = NetcdfFile.makeNameUnescaped(name);
-
-    for (Attribute a : attributes) {
-      if (name.equals(a.getShortName()))
-        return a;
-    }
-    return null;
+    return attributes.findAttribute(name);
   }
 
-  /**
-   * Find an Attribute in this Group by its name, ignore case.
-   *
-   * @param name the name of the attribute
-   * @return the attribute, or null if not found
-   */
   public Attribute findAttributeIgnoreCase(String name) {
-    if (name == null) return null;
-    //name =  NetcdfFile.makeNameUnescaped(name);
-    for (Attribute a : attributes) {
-      if (name.equalsIgnoreCase(a.getShortName()))
-        return a;
-    }
-    return null;
+    return attributes.findAttributeIgnoreCase(name);
   }
+
+  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  }
+
+  public Attribute addAttribute(Attribute att) {
+    return attributes.addAttribute(att);
+  }
+
+  public void addAll(Iterable<Attribute> atts) {
+    attributes.addAll(atts);
+  }
+
+  public boolean remove(Attribute a) {
+    return attributes.remove(a);
+  }
+
+  public boolean removeAttribute(String attName) {
+    return attributes.removeAttribute(attName);
+  }
+
+  public boolean removeAttributeIgnoreCase(String attName) {
+    return attributes.removeAttributeIgnoreCase(attName);
+  }
+
+  ////////////////////////////////////////////////////////////////////////
 
   /**
    * Find an Enumeration Typedef using its (short) name. If it doesnt exist in this group,
@@ -370,7 +362,7 @@ public class Group extends CDMNode implements AttributeContainer {
     sbuff.append("Group ");
     sbuff.append(getShortName());
     sbuff.append("\n");
-    for (Attribute att : attributes) {
+    for (Attribute att : attributes.getAttributes()) {
       sbuff.append("  ").append(getShortName()).append(":");
       sbuff.append(att.toString());
       sbuff.append(";");
@@ -384,7 +376,7 @@ public class Group extends CDMNode implements AttributeContainer {
     boolean hasD = (dimensions.size() > 0);
     boolean hasV = (variables.size() > 0);
     // boolean hasG = (groups.size() > 0);
-    boolean hasA = (attributes.size() > 0);
+    boolean hasA = (attributes.getAttributes().size() > 0);
 
     if (hasE) {
       out.format("%stypes:%n", indent);
@@ -435,7 +427,7 @@ public class Group extends CDMNode implements AttributeContainer {
       else
         out.format("%s// group attributes:%n", indent);
       //indent.incr();
-      for (Attribute att : attributes) {
+      for (Attribute att : attributes.getAttributes()) {
         //String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
         out.format("%s:", indent);
         att.writeCDL(out, strict);
@@ -461,6 +453,7 @@ public class Group extends CDMNode implements AttributeContainer {
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
     super(shortName);    
     this.ncfile = ncfile;
+    this.attributes = new AttributeContainerHelper(shortName);
     setParentGroup(parent == null ? ncfile.getRootGroup() : parent);
   }
 
@@ -485,24 +478,6 @@ public class Group extends CDMNode implements AttributeContainer {
     if (immutable) throw new IllegalStateException("Cant modify");
     setShortName(shortName);
     return getShortName();
-  }
-
-  /**
-   * Add new Attribute; replace old if has same name.
-   *
-   * @param att add this Attribute.
-   */
-  public Attribute addAttribute(Attribute att) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    for (int i = 0; i < attributes.size(); i++) {
-      Attribute a = attributes.get(i);
-      if (att.getShortName().equals(a.getShortName())) {
-        attributes.set(i, att); // replace
-        return att;
-      }
-    }
-    attributes.add(att);
-    return att;
   }
 
   /**
@@ -574,17 +549,6 @@ public class Group extends CDMNode implements AttributeContainer {
 
     variables.add(v);
     v.setParentGroup(this); // variable can only be in one group
-  }
-
-  /**
-   * Remove an Attribute : uses the attribute hashCode to find it.
-   *
-   * @param a remove this Attribute.
-   * @return true if was found and removed
-   */
-  public boolean remove(Attribute a) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    return a != null && attributes.remove(a);
   }
 
   /**
@@ -666,7 +630,7 @@ public class Group extends CDMNode implements AttributeContainer {
     variables = Collections.unmodifiableList(variables);
     dimensions = Collections.unmodifiableList(dimensions);
     groups = Collections.unmodifiableList(groups);
-    attributes = Collections.unmodifiableList(attributes);
+    attributes.setImmutable();
     return this;
   }
 

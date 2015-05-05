@@ -33,26 +33,23 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.unidata.geoloc.vertical.WRFEta;
-import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.Parameter;
 
 /**
- *
  * @author caron
  */
-public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
+public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
   private CoordinateSystem cs;
-
-  public WRFEtaTransformBuilder() {}
 
   public WRFEtaTransformBuilder(CoordinateSystem cs) {
     this.cs = cs;
   }
 
-  public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable v) {
+  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer v) {
     VerticalCT.Type type = VerticalCT.Type.WRFEta;
     VerticalCT ct = new VerticalCT(type.toString(), getTransformName(), type, this);
 
@@ -64,28 +61,24 @@ public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
     ct.addParameter(new Parameter(WRFEta.BasePressureVariable, "PB"));
 
     if (cs.getXaxis() != null)
-    ct.addParameter(new Parameter(WRFEta.IsStaggeredX, ""+isStaggered(cs.getXaxis())));
+      ct.addParameter(new Parameter(WRFEta.IsStaggeredX, "" + isStaggered(cs.getXaxis())));
     else
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredX, ""+isStaggered2(cs.getLonAxis(), 1)));
+      ct.addParameter(new Parameter(WRFEta.IsStaggeredX, "" + isStaggered2(cs.getLonAxis(), 1)));
 
     if (cs.getYaxis() != null)
-    ct.addParameter(new Parameter(WRFEta.IsStaggeredY, ""+isStaggered(cs.getYaxis())));
+      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered(cs.getYaxis())));
     else
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, ""+isStaggered2(cs.getLonAxis(), 0)));
+      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered2(cs.getLonAxis(), 0)));
 
-    ct.addParameter(new Parameter(WRFEta.IsStaggeredZ, ""+isStaggered(cs.getZaxis())));
+    ct.addParameter(new Parameter(WRFEta.IsStaggeredZ, "" + isStaggered(cs.getZaxis())));
 
-    ct.addParameter(new Parameter("eta", ""+cs.getZaxis().getFullName()));
+    ct.addParameter(new Parameter("eta", "" + cs.getZaxis().getFullName()));
 
     return ct;
   }
 
   public String getTransformName() {
-    return "WRF_Eta";
-  }
-
-  public TransformType getTransformType() {
-    return TransformType.Vertical;
+    return VerticalCT.Type.WRFEta.name();
   }
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
@@ -93,20 +86,20 @@ public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
   }
 
   private boolean isStaggered(CoordinateAxis axis) {
-  	if (axis == null) return false;
-  	String name = axis.getShortName();
-  	if (name == null) return false;
-  	if (name.endsWith("stag")) return true;
-  	return false;
+    if (axis == null) return false;
+    String name = axis.getShortName();
+    if (name == null) return false;
+    if (name.endsWith("stag")) return true;
+    return false;
   }
 
   private boolean isStaggered2(CoordinateAxis axis, int dimIndex) {
-  	if (axis == null) return false;
-  	Dimension dim = axis.getDimension(dimIndex);
-  	if (dim == null) return false;
-  	if (dim.getShortName().endsWith("stag")) return true;
-  	return false;
-}
+    if (axis == null) return false;
+    Dimension dim = axis.getDimension(dimIndex);
+    if (dim == null) return false;
+    if (dim.getShortName().endsWith("stag")) return true;
+    return false;
+  }
 
 }
 

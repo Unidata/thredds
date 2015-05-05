@@ -33,9 +33,9 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
-import ucar.nc2.Variable;
 import ucar.unidata.geoloc.Earth;
 
 /**
@@ -43,17 +43,13 @@ import ucar.unidata.geoloc.Earth;
  *
  * @author caron
  */
-public class LambertConformalConic extends AbstractCoordTransBuilder {
+public class LambertConformalConic extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.LAMBERT_CONFORMAL_CONIC;
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
-
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double[] pars = readAttributeDouble2(ctv.findAttribute( CF.STANDARD_PARALLEL));
     if (pars == null) return null;
 
@@ -63,7 +59,7 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      double scalef = getFalseEastingScaleFactor(geoCoordinateUnits);
       false_easting *= scalef;
       false_northing *= scalef;
     }
@@ -84,6 +80,6 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
       proj = new ucar.unidata.geoloc.projection.LambertConformal(lat0, lon0, pars[0], pars[1], false_easting, false_northing, earth_radius);
     }
 
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

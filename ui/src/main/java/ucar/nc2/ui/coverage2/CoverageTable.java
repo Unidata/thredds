@@ -114,55 +114,7 @@ public class CoverageTable extends JPanel {
     });
     buttPanel.add(infoButton);
 
-    /* JButton wcsButton = new JButton("WCS");
-    wcsButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (gridDataset != null) {
-          URI gdUri = null;
-          try {
-            gdUri = new URI("http://none.such.server/thredds/wcs/dataset");
-          } catch (URISyntaxException e1) {
-            e1.printStackTrace();
-            return;
-          }
-          GetCapabilities getCap =
-                  ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
-                          thredds.wcs.v1_0_0_1.WcsRequestBuilder
-                                  .newWcsRequestBuilder("1.0.0",
-                                          thredds.wcs.Request.Operation.GetCapabilities,
-                                          gridDataset, ""))
-                          .setServerUri(gdUri)
-                          .setSection(GetCapabilities.Section.All)
-                          .buildGetCapabilities();
-          try {
-            String gc = getCap.writeCapabilitiesReportAsString();
-            infoTA.setText(gc);
-            infoTA.gotoTop();
-            infoWindow.show();
-          } catch (WcsException e1) {
-            e1.printStackTrace();
-          }
-        }
-      }
-    });
-    buttPanel.add(wcsButton);
-
-    JButton invButton = new JButton("GridInv");
-    invButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (gridDataset == null) return;
-        if (!(gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) return;
-        GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
-        try {
-          infoTA.setText(inv.writeXML(new Date()));
-          infoTA.gotoTop();
-          infoWindow.show();
-        } catch (Exception e1) {
-          e1.printStackTrace();
-        }
-      }
-    });
-    buttPanel.add(invButton);
+    /*
 
     /* AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -236,10 +188,6 @@ public class CoverageTable extends JPanel {
       ioe.printStackTrace();
     }
   } */
-
-  public PreferencesExt getPrefs() {
-    return prefs;
-  }
 
   public void save() {
     gridTable.saveState(false);
@@ -328,19 +276,6 @@ public class CoverageTable extends JPanel {
       result.add(gbean.getName());
     }
     return result;
-  }
-
-
-  public GridCoverage getGrid() {
-    GridBean vb = (GridBean) gridTable.getSelectedBean();
-    if (vb == null) {
-      List<GridCoverage> grids = gridDataset.getGrids();
-      if (grids.size() > 0)
-        return grids.get(0);
-      else
-        return null;
-    }
-    return gridDataset.findCoverage(vb.getName());
   }
 
   public class GridBean implements NamedObject {
@@ -493,7 +428,7 @@ public class CoverageTable extends JPanel {
       this.isHoriz = gcs.isHoriz();
 
       Formatter buff = new Formatter();
-      for (Attribute att : gcs.getParameters())
+      for (Attribute att : gcs.getAttributes())
         buff.format("%s, ", att);
       params = buff.toString();
     }
@@ -510,8 +445,6 @@ public class CoverageTable extends JPanel {
       return Boolean.toString(isHoriz);
     }
   }
-
-
 
   public class AxisBean {
     GridCoordAxis axis;

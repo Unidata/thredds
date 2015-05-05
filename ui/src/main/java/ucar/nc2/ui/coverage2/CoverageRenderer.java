@@ -19,7 +19,8 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Render coverages using Java2D API.
+ * ft2.coverage widget for displaying using Java2D API.
+ * more or less the view in MVC
  *
  * @author John
  * @since 12/27/12
@@ -64,38 +65,27 @@ public class CoverageRenderer {
 
   ///// bean properties
 
-  /**
-   * get the current ColorScale
-   */
+  /* get the current ColorScale */
   public ColorScale getColorScale() {
     return cs;
   }
 
-  /**
-   * set the ColorScale to use
-   */
+  /* set the ColorScale to use */
   public void setColorScale(ColorScale cs) {
     this.cs = cs;
   }
 
-  /**
-   * set the ColorScale data min/max type
-   *
-   * @param type MinMaxType
-   */
+  /* set the ColorScale data min/max type */
   public void setDataMinMaxType(ColorScale.MinMaxType type) {
     if (type != dataMinMaxType) {
       dataMinMaxType = type;
     }
   }
 
-  /**
-   * set the Grid
-   */
+  /* set the Grid */
   public void setCoverage(GridCoverage grid) {
     this.orgGrid = grid;
     this.lastGrid = null;
-    // dataProjection = grid.getCoordinateSystem().getProjection();
     makeStridedGrid();
     isNewField = true;
   }
@@ -104,24 +94,22 @@ public class CoverageRenderer {
     return dataH;
   }
 
-  /**
-   * get the current GridDatatype data projection
-   */
+  /* get the current data projection */
   public ProjectionImpl getDataProjection() {
     return dataProjection;
   }
 
-  /**
-   * get the current display projection
-   */
+  public void setDataProjection(ProjectionImpl dataProjection) {
+    this.dataProjection = dataProjection;
+  }
+
+  /* get the current display projection */
   public ProjectionImpl getDisplayProjection() {
     return drawProjection;
   }
 
-  /**
-   * set the Projection to use for drawing
-   */
-  public void setProjection(ProjectionImpl project) {
+  /* set the Projection to use for drawing */
+  public void setViewProjection(ProjectionImpl project) {
     drawProjection = project;
   }
 

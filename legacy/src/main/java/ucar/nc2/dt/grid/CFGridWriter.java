@@ -33,11 +33,8 @@
 package ucar.nc2.dt.grid;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -61,14 +58,13 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
+import ucar.nc2.dataset.transform.AbstractTransformBuilder;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategyGrib;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
@@ -527,7 +523,7 @@ public class CFGridWriter {
       Attribute east = ctv.findAttribute("false_easting");
       Attribute north = ctv.findAttribute("false_northing");
       if ((null != east) || (null != north)) {
-        double scalef = AbstractCoordTransBuilder.getFalseEastingScaleFactor(ds, ctv);
+        double scalef = AbstractTransformBuilder.getFalseEastingScaleFactor(ds, ctv);
         if (scalef != 1.0) {
           convertAttribute(ctv, east, scalef);
           convertAttribute(ctv, north, scalef);

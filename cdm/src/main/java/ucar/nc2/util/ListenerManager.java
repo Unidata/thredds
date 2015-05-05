@@ -218,7 +218,7 @@ public class ListenerManager {
         logger.error("ListenerManager IllegalArgumentException", e);
       } catch (InvocationTargetException e) {
         iter.remove();
-        logger.error("ListenerManager InvocationTargetException on " + method+ " threw exception " + e.getTargetException(), e);
+        logger.error("ListenerManager InvocationTargetException on " + method + " threw exception " + e.getTargetException(), e);
       }
     }
   }

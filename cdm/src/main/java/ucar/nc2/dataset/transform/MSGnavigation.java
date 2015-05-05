@@ -32,12 +32,9 @@
  */
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.Variable;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
@@ -48,17 +45,13 @@ import ucar.unidata.geoloc.ProjectionImpl;
  */
 
 
-public class MSGnavigation extends AbstractCoordTransBuilder {
+public class MSGnavigation extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
     public String getTransformName() {
       return "MSGnavigation";
     }
 
-    public TransformType getTransformType() {
-      return TransformType.Projection;
-    }
-
-    public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+    public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
 
       double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
       double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
@@ -69,7 +62,7 @@ public class MSGnavigation extends AbstractCoordTransBuilder {
       double scale_y = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.sat.MSGnavigation.SCALE_Y, Double.NaN);
 
       ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, major_axis, minor_axis, height, scale_x, scale_y);
-      return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+      return new ProjectionCT(ctv.getName(), "FGDC", proj);
     }
 
 }

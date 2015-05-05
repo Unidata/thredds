@@ -40,7 +40,7 @@ import ucar.ma2.Range;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
+import ucar.nc2.dataset.transform.AbstractTransformBuilder;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
@@ -398,7 +398,7 @@ public class CFGridWriter2 {
       Attribute east = ctv.findAttribute("false_easting");
       Attribute north = ctv.findAttribute("false_northing");
       if ((null != east) || (null != north)) {
-        double scalef = AbstractCoordTransBuilder.getFalseEastingScaleFactor(ds, ctv);
+        double scalef = AbstractTransformBuilder.getFalseEastingScaleFactor(ds, ctv);
         if (scalef != 1.0) {
           convertAttribute(ctv, east, scalef);
           convertAttribute(ctv, north, scalef);

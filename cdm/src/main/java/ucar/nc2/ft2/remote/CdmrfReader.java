@@ -154,14 +154,11 @@ public class CdmrfReader {
   }
    */
   GridCoordTransform decodeCoordTransform(CdmrFeatureProto.CoordTransform proto) {
-    GridCoordTransform result = new GridCoordTransform();
-    result.setName(proto.getName());
+    GridCoordTransform result = new GridCoordTransform(proto.getName());
     result.setIsHoriz(proto.getIsHoriz());
 
-    List<Attribute> atts = new ArrayList<>();
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getParamsList())
-      atts.add(NcStream.decodeAtt(patt));
-    result.setParameters(atts);
+      result.addAttribute(NcStream.decodeAtt(patt));
 
     return result;
   }

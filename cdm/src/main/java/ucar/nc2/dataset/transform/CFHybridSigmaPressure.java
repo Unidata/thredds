@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
@@ -44,25 +45,25 @@ import ucar.unidata.util.Parameter;
  *  *
  * @author caron
  */
-public class VAtmHybridSigmaPressure extends AbstractCoordTransBuilder {
+public class CFHybridSigmaPressure extends AbstractTransformBuilder implements VertTransformBuilderIF {
   private boolean useAp;
   private String a, b, ps, p0, ap;
 
   public String getTransformName() {
-    return "atmosphere_hybrid_sigma_pressure_coordinate";
+    return VerticalCT.Type.HybridSigmaPressure.name();
   }
 
   public TransformType getTransformType() {
     return TransformType.Vertical;
   }
 
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula_terms = getFormula(ds, ctv);
+  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+    String formula_terms = getFormula(ctv);
     if (null == formula_terms) return null;
 
     useAp = formula_terms.contains("ap:");
 
-    CoordinateTransform rs = new VerticalCT("AtmHybridSigmaPressure_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
+    VerticalCT rs = new VerticalCT("AtmHybridSigmaPressure_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
 

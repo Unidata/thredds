@@ -2,7 +2,11 @@
 package ucar.nc2.ft2.coverage.grid;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.dataset.CoordTransBuilder;
 import ucar.nc2.util.Indent;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.projection.LatLonProjection;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -125,5 +129,32 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
       if (gcs.getName().equalsIgnoreCase(name)) return gcs;
     return null;
   }
+
+  public GridCoordTransform findCoordTransform(String name) {
+    for (GridCoordTransform ct : coordTransforms)
+      if (ct.getName().equalsIgnoreCase(name)) return ct;
+    return null;
+  }
+
+  public ProjectionImpl getProjection(GridCoverage coverage) {
+    GridCoordSys gcs = findCoordSys(coverage.getCoordSysName());
+    for (String ctName : gcs.getTransformNames()) {
+      GridCoordTransform ct = findCoordTransform(ctName);
+      if (ct.isHoriz)
+        return makeProjection(ct);
+    }
+    return new LatLonProjection();
+  }
+
+  public ProjectionImpl makeProjection(GridCoordTransform transform) {
+    ProjectionImpl proj = transform.getProjection();
+    if (proj == null) {
+      Formatter errInfo = new Formatter();
+      proj = CoordTransBuilder.makeProjection(transform, errInfo);  // LOOK could store the projection in the transform
+    }
+    transform.setProjection(proj);
+    return proj;
+  }
+
 
 }

@@ -26,7 +26,6 @@ import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
@@ -47,7 +46,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Description
+ * ft2.coverage widget for displaying
+ * more or less the controller in MVC
  *
  * @author John
  * @since 12/27/12
@@ -144,8 +144,8 @@ public class CoverageDisplay extends JPanel {
 
   // rendering
   private AffineTransform atI = new AffineTransform();  // identity transform
-  private ucar.nc2.ui.util.Renderer renderMap = null;
-  private CoverageRenderer renderGrid;
+  private ucar.nc2.ui.util.Renderer mapRenderer = null;
+  private CoverageRenderer coverageRenderer;
   //private WindRenderer renderWind;
   private javax.swing.Timer redrawTimer;
 
@@ -194,21 +194,21 @@ public class CoverageDisplay extends JPanel {
       csDataMinMax.setToolTipText("ColorScale Min/Max setting");
       csDataMinMax.addActionListener(new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          renderGrid.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
+          coverageRenderer.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
           redrawLater();
         }
       });
 
       // renderer
       // set up the renderers; Maps are added by addMapBean()
-      renderGrid = new CoverageRenderer(store);
-      renderGrid.setColorScale(colorScale);
+      coverageRenderer = new CoverageRenderer(store);
+      coverageRenderer.setColorScale(colorScale);
 
       strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
       strideSpinner.addChangeListener(new ChangeListener() {
         public void stateChanged(ChangeEvent e) {
           Integer val = (Integer) strideSpinner.getValue();
-          renderGrid.setHorizStride(val.intValue());
+          coverageRenderer.setHorizStride(val.intValue());
         }
       });
 
@@ -577,7 +577,7 @@ public class CoverageDisplay extends JPanel {
 
     dataProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ProjectionImpl dataProjection = renderGrid.getDataProjection();
+        ProjectionImpl dataProjection = coverageRenderer.getDataProjection();
         if (null != dataProjection)
           setProjection(dataProjection);
       }
@@ -619,40 +619,40 @@ public class CoverageDisplay extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
         // System.out.println("showGridAction state "+state);
-        renderGrid.setDrawGridLines(state.booleanValue());
+        coverageRenderer.setDrawGridLines(state.booleanValue());
         draw(false);
       }
     };
     BAMutil.setActionProperties(showGridAction, "Grid", "show grid lines", true, 'G', 0);
     state = store.getBoolean("showGridAction", false);
     showGridAction.putValue(BAMutil.STATE, new Boolean(state));
-    renderGrid.setDrawGridLines(state);
+    coverageRenderer.setDrawGridLines(state);
 
     // contouring
     showContoursAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        renderGrid.setDrawContours(state.booleanValue());
+        coverageRenderer.setDrawContours(state.booleanValue());
         draw(false);
       }
     };
     BAMutil.setActionProperties(showContoursAction, "Contours", "show contours", true, 'C', 0);
     state = store.getBoolean("showContoursAction", false);
     showContoursAction.putValue(BAMutil.STATE, new Boolean(state));
-    renderGrid.setDrawContours(state);
+    coverageRenderer.setDrawContours(state);
 
     // contouring labels
     showContourLabelsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        renderGrid.setDrawContourLabels(state.booleanValue());
+        coverageRenderer.setDrawContourLabels(state.booleanValue());
         draw(false);
       }
     };
     BAMutil.setActionProperties(showContourLabelsAction, "ContourLabels", "show contour labels", true, 'L', 0);
     state = store.getBoolean("showContourLabelsAction", false);
     showContourLabelsAction.putValue(BAMutil.STATE, new Boolean(state));
-    renderGrid.setDrawContourLabels(state);
+    coverageRenderer.setDrawContourLabels(state);
 
     /* winds
     showWindsAction = new AbstractAction() {
@@ -804,9 +804,9 @@ public class CoverageDisplay extends JPanel {
       public void actionPerformed(NewProjectionEvent e) {
         if (Debug.isSet("event/NewProjection"))
           System.out.println("Controller got NewProjectionEvent " + navPanel.getMapArea());
-        if (eventsOK && renderMap != null) {
-          renderMap.setProjection(e.getProjection());
-          renderGrid.setProjection(e.getProjection());
+        if (eventsOK && mapRenderer != null) {
+          mapRenderer.setProjection(e.getProjection());
+          coverageRenderer.setViewProjection(e.getProjection());
           drawH(false);
         }
       }
@@ -863,8 +863,6 @@ public class CoverageDisplay extends JPanel {
     }
   });  */
   }
-
-  private ProjectionPointImpl projPoint = new ProjectionPointImpl();
 
   private int findIndexFromName(List<NamedObject> list, String name) {
     for (int idx = 0; idx < list.size(); idx++) {
@@ -965,7 +963,7 @@ public class CoverageDisplay extends JPanel {
   }
 
   void setMapRenderer(ucar.nc2.ui.util.Renderer mapRenderer) {
-    this.renderMap = mapRenderer;
+    this.mapRenderer = mapRenderer;
     mapRenderer.setProjection(navPanel.getProjectionImpl());
     mapRenderer.setColor(mapColor);
     redrawLater();
@@ -1008,12 +1006,13 @@ public class CoverageDisplay extends JPanel {
     currentRunTime = 0;
 
     eventsOK = false; // dont let this trigger redraw
-    renderGrid.setCoverage(currentField);
+    coverageRenderer.setCoverage(currentField);
+    coverageRenderer.setDataProjection(coverageDataset.getProjection(currentField));
     // setFields(grids);
     setField(currentField);
 
     // LOOK if possible, change the projection and the map area to one that fits this dataset
-    ProjectionImpl dataProjection = null; // currentField.getCoordinateSystem().getProjection();
+    ProjectionImpl dataProjection = coverageDataset.getProjection(currentField);
     if (dataProjection != null)
       setProjection(dataProjection);
 
@@ -1026,7 +1025,7 @@ public class CoverageDisplay extends JPanel {
   }
 
   public void setDataMinMaxType(ColorScale.MinMaxType type) {
-    renderGrid.setDataMinMaxType(type);
+    coverageRenderer.setDataMinMaxType(type);
     redrawLater();
   }
 
@@ -1071,7 +1070,8 @@ public class CoverageDisplay extends JPanel {
     if (null == gg)
       return false;
 
-    renderGrid.setCoverage(gg);
+    coverageRenderer.setCoverage(gg);
+    coverageRenderer.setDataProjection(coverageDataset.getProjection(gg));
     currentField = gg;
 
     GridCoordSys gcs = coverageDataset.findCoordSys(gg.getCoordSysName());
@@ -1180,9 +1180,9 @@ public class CoverageDisplay extends JPanel {
 
   public void setProjection(ProjectionImpl p) {
     project = p;
-    if (renderMap != null)
-      renderMap.setProjection(p);
-    renderGrid.setProjection(p);
+    if (mapRenderer != null)
+      mapRenderer.setProjection(p);
+    coverageRenderer.setViewProjection(p);
     // renderWind.setProjection( p);
     navPanel.setProjectionImpl(p);
     redrawLater();
@@ -1192,14 +1192,14 @@ public class CoverageDisplay extends JPanel {
 
   void start(boolean ok) {
     startOK = ok;
-    renderGrid.makeStridedGrid();
+    coverageRenderer.makeStridedGrid();
   }
 
   synchronized void draw(boolean immediate) {
     if (!startOK) return;
 
-    renderGrid.setLevel(currentLevel);
-    renderGrid.setTime(currentTime);
+    coverageRenderer.setLevel(currentLevel);
+    coverageRenderer.setTime(currentTime);
     //renderGrid.setSlice(currentSlice);
     //renderGrid.setEnsemble(currentEnsemble);
     //renderGrid.setRunTime(currentRunTime);
@@ -1234,16 +1234,16 @@ public class CoverageDisplay extends JPanel {
 
     // draw grid
     startTime = System.currentTimeMillis();
-    renderGrid.renderPlanView(gNP, atI);
+    coverageRenderer.renderPlanView(gNP, atI);
     if (Debug.isSet("timing/GridDraw")) {
       tookTime = System.currentTimeMillis() - startTime;
       System.out.println("timing.GridDraw: " + tookTime * .001 + " seconds");
     }
 
     //draw Map
-    if (renderMap != null) {
+    if (mapRenderer != null) {
       startTime = System.currentTimeMillis();
-      renderMap.draw(gNP, atI);
+      mapRenderer.draw(gNP, atI);
       if (Debug.isSet("timing/MapDraw")) {
         tookTime = System.currentTimeMillis() - startTime;
         System.out.println("timing/MapDraw: " + tookTime * .001 + " seconds");

@@ -1936,7 +1936,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
     variables.addAll(g.variables);
 
     // LOOK should group atts be promoted to global atts?
-    for (Attribute oldAtt : g.attributes) {
+    for (Attribute oldAtt : g.getAttributes()) {
       if (g == rootGroup) {
         gattributes.add(oldAtt);
       } else {

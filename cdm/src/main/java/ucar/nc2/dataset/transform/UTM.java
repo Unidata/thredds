@@ -34,11 +34,8 @@
 package ucar.nc2.dataset.transform;
 
 import ucar.nc2.Attribute;
-import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Variable;
 import ucar.unidata.geoloc.projection.UtmProjection;
 
 /**
@@ -46,17 +43,13 @@ import ucar.unidata.geoloc.projection.UtmProjection;
  *  *
  * @author caron
  */
-public class UTM extends AbstractCoordTransBuilder {
+public class UTM extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return UtmProjection.GRID_MAPPING_NAME;
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
-
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double zoned = readAttributeDouble( ctv, UtmProjection.UTM_ZONE1, Double.NaN);
     if (Double.isNaN(zoned))
       zoned = readAttributeDouble( ctv, UtmProjection.UTM_ZONE2, Double.NaN);
@@ -76,6 +69,6 @@ public class UTM extends AbstractCoordTransBuilder {
 
     // double a, double f, int zone, boolean isNorth
     UtmProjection proj = (axis != 0.0) ? new UtmProjection(axis, f, zone, isNorth) : new UtmProjection(zone, isNorth);
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

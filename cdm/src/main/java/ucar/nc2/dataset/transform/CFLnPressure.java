@@ -33,69 +33,56 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
-import ucar.unidata.geoloc.vertical.OceanS;
+import ucar.unidata.geoloc.vertical.AtmosLnPressure;
 import ucar.unidata.util.Parameter;
 
 /**
- * Create a ocean_s_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
- *
+ * implementation for CF vertical coordinate "atmosphere_ln_pressure_coordinate".
+ * DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
  * @author caron
+ * @since May 6, 2008
  */
-public class VOceanS extends AbstractCoordTransBuilder {
-  private String s = "", eta = "", depth = "", a = "", b = "", depth_c = "";
+public class CFLnPressure extends AbstractTransformBuilder implements VertTransformBuilderIF {
+  private String p0, lev;
 
   public String getTransformName() {
-    return "ocean_s_coordinate";
+    return VerticalCT.Type.LnPressure.name();
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Vertical;
-  }
-
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula_terms = getFormula(ds, ctv);
+  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+    String formula_terms = getFormula(ctv);
     if (null == formula_terms) return null;
 
      // parse the formula string
-    String[] values = parseFormula(formula_terms, "s eta depth a b depth_c");
+    String[] values = parseFormula(formula_terms, "p0 lev");
     if (values == null) return null;
 
-    s = values[0];
-    eta = values[1];
-    depth = values[2];
-    a = values[3];
-    b = values[4];
-    depth_c = values[5];
+    p0 = values[0];
+    lev = values[1];
 
-    CoordinateTransform rs = new VerticalCT("OceanS_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.OceanS, this);
+    VerticalCT rs = new VerticalCT("AtmSigma_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.LnPressure, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
-   // rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) + (depth(x,y)-depth_c)*C(z)")));
-     //-sachin 03/25/09 modify formula according to Hernan Arango
-    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = depth_c*s(z) + (depth(x,y)-depth_c)*C(z) + eta(x,y) * (1 + (depth_c*s(z) + (depth(x,y)-depth_c)*C(z))/depth(x,y) ")));
-    rs.addParameter((new Parameter("C_formula", "C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)")));
+    rs.addParameter(new Parameter("formula", "pressure(z) = p0 * exp(-lev(k))"));
 
-    if (!addParameter(rs, OceanS.ETA, ds, eta)) return null;
-    if (!addParameter(rs, OceanS.S, ds, s)) return null;
-    if (!addParameter(rs, OceanS.DEPTH, ds, depth)) return null;
-
-    if (!addParameter(rs, OceanS.DEPTH_C, ds, depth_c)) return null;
-    if (!addParameter(rs, OceanS.A, ds, a)) return null;
-    if (!addParameter(rs, OceanS.B, ds, b)) return null;
+    if (!addParameter( rs, AtmosLnPressure.P0, ds, p0)) return null;
+    if (!addParameter( rs, AtmosLnPressure.LEV, ds, lev)) return null;
 
     return rs;
   }
 
   public String toString() {
-    return "OceanS:" + " s:"+s + " eta:"+eta + " depth:"+depth + " a:"+a + " b:"+b+" depth_c:"+depth_c;    
-
+    return "AtmLnPressure:" + "p0:"+p0 + " lev:"+lev;
   }
+
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new OceanS(ds, timeDim, vCT.getParameters());
+    return new AtmosLnPressure(ds, timeDim, vCT.getParameters());
   }
 }
+
 

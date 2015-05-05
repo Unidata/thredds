@@ -33,12 +33,9 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Variable;
 import ucar.unidata.geoloc.Earth;
 
 /**
@@ -46,17 +43,13 @@ import ucar.unidata.geoloc.Earth;
  *
  * @author caron
  */
-public class PolarStereographic extends AbstractCoordTransBuilder {
+public class PolarStereographic extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.POLAR_STEREOGRAPHIC;
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
-
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double lon0 = readAttributeDouble( ctv, CF.STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE, Double.NaN);
     if (Double.isNaN(lon0))
       lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
@@ -94,7 +87,7 @@ public class PolarStereographic extends AbstractCoordTransBuilder {
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      double scalef = getFalseEastingScaleFactor(geoCoordinateUnits);
       false_easting *= scalef;
       false_northing *= scalef;
     }
@@ -113,7 +106,7 @@ public class PolarStereographic extends AbstractCoordTransBuilder {
     } else {
       proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale, false_easting, false_northing, earth_radius);
     }
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 
     public static void main(String arg[]) {

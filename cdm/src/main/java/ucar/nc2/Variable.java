@@ -99,7 +99,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected DataType dataType;
   protected int elementSize;
   protected List<Dimension> dimensions = new ArrayList<>(5);
-  protected List<Attribute> attributes = new ArrayList<>();
+  // protected List<Attribute> attributes = new ArrayList<>();
+  protected AttributeContainerHelper attributes;
 
   protected boolean isVariableLength = false;
   protected boolean isMetadata = false;
@@ -312,43 +313,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
         return i;
     }
     return -1;
-  }
-
-  /**
-   * Returns the set of attributes for this variable.
-   *
-   * @return List<Attribute>, not a copy, but may be immutable
-   */
-  public java.util.List<Attribute> getAttributes() {
-    return immutable ? attributes : Collections.unmodifiableList(attributes);
-  }
-
-  /**
-   * Find an Attribute by name.
-   *
-   * @param name the name of the attribute
-   * @return the attribute, or null if not found
-   */
-  public Attribute findAttribute(String name) {
-    for (Attribute a : attributes) {
-      if (name.equals(a.getShortName()))
-        return a;
-    }
-    return null;
-  }
-
-  /**
-   * Find an Attribute by name, ignoring the case.
-   *
-   * @param name the name of the attribute
-   * @return the attribute, or null if not found
-   */
-  public Attribute findAttributeIgnoreCase(String name) {
-    for (Attribute a : attributes) {
-      if (name.equalsIgnoreCase(a.getShortName()))
-        return a;
-    }
-    return null;
   }
 
   /**
@@ -1198,8 +1162,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       setParentGroup((group == null) ? ncfile.getRootGroup() : group);
     else
       setParentStructure(parent);
-    //if (shortName.indexOf(".") >= 0)
-    //  System.out.println("HEY gotta .");
+    attributes = new AttributeContainerHelper(shortName);
   }
 
   /**
@@ -1229,7 +1192,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   public Variable(Variable from) {
     super(from.getShortName());
-    this.attributes = new ArrayList<>(from.attributes); // attributes are immutable
+    this.attributes = new AttributeContainerHelper(from.attributes);
     this.cache = from.cache; // caller should do createNewCache() if dont want to share
     setDataType(from.getDataType());
     this.dimensions = new ArrayList<>(from.dimensions); // dimensions are shared
@@ -1312,68 +1275,46 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     this.elementSize = elementSize;
   }
 
-  /**
-   * Add new or replace old if has same name
-   *
-   * @param att add this Attribute
-   * @return the added attribute
-   */
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // AttributeHelper
+
+  public java.util.List<Attribute> getAttributes() {
+    return attributes.getAttributes();
+  }
+
+  public Attribute findAttribute(String name) {
+    return attributes.findAttribute(name);
+  }
+
+  public Attribute findAttributeIgnoreCase(String name) {
+    return attributes.findAttributeIgnoreCase(name);
+  }
+
+  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    return attributes.findAttValueIgnoreCase(attName, defaultValue);
+  }
+
   public Attribute addAttribute(Attribute att) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    if (att == null)
-      throw new IllegalArgumentException();
-    for (int i = 0; i < attributes.size(); i++) {
-      Attribute a = attributes.get(i);
-      if (att.getShortName().equals(a.getShortName())) {
-        attributes.set(i, att); // replace
-        return att;
-      }
-    }
-    attributes.add(att);
-    return att;
+    return attributes.addAttribute(att);
   }
 
-  /**
-   * Add all; replace old if has same name
-   */
   public void addAll(Iterable<Attribute> atts) {
-    for (Attribute att : atts) addAttribute(att);
+    attributes.addAll(atts);
   }
 
-  /**
-   * Remove an Attribute : uses the attribute hashCode to find it.
-   *
-   * @param a remove this attribute
-   * @return true if was found and removed
-   */
   public boolean remove(Attribute a) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    return a != null && attributes.remove(a);
+    return attributes.remove(a);
   }
 
-  /**
-   * Remove an Attribute by name.
-   *
-   * @param attName if exists, remove this attribute
-   * @return true if was found and removed
-   */
   public boolean removeAttribute(String attName) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    Attribute att = findAttribute(attName);
-    return att != null && attributes.remove(att);
+    return attributes.removeAttribute(attName);
   }
 
-  /**
-   * Remove an Attribute by name, ignoring case
-   *
-   * @param attName if exists, remove this attribute
-   * @return true if was found and removed
-   */
   public boolean removeAttributeIgnoreCase(String attName) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    Attribute att = findAttributeIgnoreCase(attName);
-    return att != null && attributes.remove(att);
+    return attributes.removeAttributeIgnoreCase(attName);
   }
+
+  ////////////////////////////////////////////////////////////////////////
 
   /**
    * Set the shape with a list of Dimensions. The Dimensions may be shared or not.
@@ -1388,6 +1329,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     this.dimensions = (dims == null) ? new ArrayList<Dimension>() : new ArrayList<>(dims);
     resetShape();
   }
+
 
   /**
    * Use when dimensions have changed, to recalculate the shape.
@@ -1514,7 +1456,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   public Variable setImmutable() {
     super.setImmutable(true);
     dimensions = Collections.unmodifiableList(dimensions);
-    attributes = Collections.unmodifiableList(attributes);
+    attributes.setImmutable();
     return this;
   }
 

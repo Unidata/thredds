@@ -33,6 +33,8 @@
 
 package ucar.nc2.dataset;
 
+import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.transform.VertTransformBuilderIF;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.nc2.Dimension;
 import net.jcip.annotations.Immutable;
@@ -44,113 +46,129 @@ import net.jcip.annotations.Immutable;
  * This class just records the transformation parameters. The mathematical transformation itself is
  * delegated to a class implementing ucar.unidata.geoloc.vertical.VerticalTransform.
  *
- * @author  caron
+ * @author caron
  */
 @Immutable
 public class VerticalCT extends CoordinateTransform {
-   private final VerticalCT.Type type;
-   private final CoordTransBuilderIF builder;
+  private final VerticalCT.Type type;
+  private final VertTransformBuilderIF builder;
 
   /**
    * Create a Vertical Coordinate Transform.
-   * @param name name of transform, must be unique within the dataset.
+   *
+   * @param name      name of transform, must be unique within the dataset.
    * @param authority naming authority.
-   * @param type type of vertical transform
-   * @param builder creates the VerticalTransform
+   * @param type      type of vertical transform
+   * @param builder   creates the VerticalTransform
    */
-  public VerticalCT (String name, String authority, VerticalCT.Type type, CoordTransBuilderIF builder) {
-    super( name, authority, TransformType.Vertical);
+  public VerticalCT(String name, String authority, VerticalCT.Type type, VertTransformBuilderIF builder) {
+    super(name, authority, TransformType.Vertical);
     this.type = type;
     this.builder = builder;
   }
 
   /**
    * Copy Constructor
+   *
    * @param from copy from this one
    */
-  public VerticalCT (VerticalCT from) {
-    super( from.getName(), from.getAuthority(), from.getTransformType());
+  public VerticalCT(VerticalCT from) {
+    super(from.getName(), from.getAuthority(), from.getTransformType());
     this.type = from.getVerticalTransformType();
     this.builder = from.getBuilder();
   }
 
   /**
    * get the Vertical Transform type
+   *
    * @return the Vertical Transform Type
-    */
-  public VerticalCT.Type getVerticalTransformType() { return type; }
+   */
+  public VerticalCT.Type getVerticalTransformType() {
+    return type;
+  }
 
   /**
    * Use the builder to make the Vertical Transform function
    *
-   * @param ds containing dataset
+   * @param ds      containing dataset
    * @param timeDim time Dimension
    * @return VerticalTransform
-   * @see CoordTransBuilderIF#makeMathTransform
+   * @see VertTransformBuilderIF#makeMathTransform
    */
   public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
     return builder.makeMathTransform(ds, timeDim, this);
   }
 
-  /** get the CoordTransBuilderIF
+  /**
+   * get the CoordTransBuilderIF
+   *
    * @return builder
    */
-  public CoordTransBuilderIF getBuilder() { return builder; }
+  public VertTransformBuilderIF getBuilder() {
+    return builder;
+  }
 
   @Override
   public String toString() {
     return "VerticalCT {" +
-        "type=" + type +
-        ", builder=" + builder.getTransformName() +
-        '}';
+            "type=" + type +
+            ", builder=" + builder.getTransformName() +
+            '}';
   }
 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // inner class VerticalCT.Type
-  private static final java.util.Map<String,Type> hash = new java.util.HashMap<>(10);
+  // private static final java.util.Map<String,Type> hash = new java.util.HashMap<>(10);
 
   /**
    * Enumeration of known Vertical transformations.
    */
-  public static class Type {
+  public enum Type {
     // These are from CF-1.0: not all are implemented because we dont have an example to test
-    public final static Type Sigma = new Type("atmosphere_sigma");
-    public final static Type HybridSigmaPressure = new Type("atmosphere_hybrid_sigma_pressure");
-    public final static Type HybridHeight = new Type("atmosphere_hybrid_height");
-    public final static Type Sleve = new Type("atmosphere_sleve");
-    public final static Type OceanSigma = new Type("ocean_sigma");
-    public final static Type OceanS = new Type("ocean_s");
-    public final static Type OceanSigmaZ = new Type("ocean_sigma_z");
-
-    // others
-    public final static Type Existing3DField = new Type("Existing3DField");
-    public final static Type WRFEta = new Type("WRFEta");
+    HybridSigmaPressure(CF.atmosphere_hybrid_sigma_pressure_coordinate),
+    HybridHeight(CF.atmosphere_hybrid_height_coordinate),
+    LnPressure(CF.atmosphere_ln_pressure_coordinate),
+    OceanSigma(CF.ocean_sigma_coordinate),
+    OceanS(CF.ocean_s_coordinate),
+    Sleve(CF.atmosphere_sleve_coordinate),
+    Sigma(CF.atmosphere_sigma_coordinate),
 
     //-Sachin 03/25/09
-    public final static Type OceanSG1 = new Type("ocean_s_g1");
-    public final static Type OceanSG2 = new Type("ocean_s_g2"); 
+    OceanSG1("ocean_s_g1"),
+    OceanSG2("ocean_s_g2"),
+
+    // others
+    Existing3DField("atmosphere_sigma"),
+    WRFEta("WRFEta");
 
     private final String name;
 
-    /** Constructor
+    /**
+     * Constructor
+     *
      * @param s name of Type
      */
-    public Type(String s) {
+    Type(String s) {
       this.name = s;
-      hash.put( s, this);
     }
 
     /**
      * Find the VerticalCT.Type that matches this name.
+     *
      * @param name find this name
      * @return VerticalCT.Type or null if no match.
      */
     public static Type getType(String name) {
-      if (name == null) return null;
-      return hash.get( name);
+      for (Type t : Type.values()) {
+        if (t.name.equalsIgnoreCase(name)) return t;
+      }
+      return null;
     }
-    public String toString() { return name; }
+
+    public String toString() {
+      return name;
+    }
   }
 
 }

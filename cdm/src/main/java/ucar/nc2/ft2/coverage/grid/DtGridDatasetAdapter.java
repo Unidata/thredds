@@ -108,11 +108,11 @@ public class DtGridDatasetAdapter implements GridCoverageDatasetIF {
     ucar.nc2.dataset.CoordinateTransform dtCoordTransform;
 
     Transform(ucar.nc2.dataset.CoordinateTransform dtCoordTransform) {
+      super(dtCoordTransform.getName());
       this.dtCoordTransform = dtCoordTransform;
-      setName(dtCoordTransform.getName());
       setIsHoriz(dtCoordTransform.getTransformType() == TransformType.Projection);
       for (Parameter p : dtCoordTransform.getParameters())
-        addParameter(new Attribute(p));  // LOOK could switch to Parmatere insteadd of Attribute
+        addAttribute(new Attribute(p));
     }
   }
 

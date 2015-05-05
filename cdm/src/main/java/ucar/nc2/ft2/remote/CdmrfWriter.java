@@ -135,7 +135,7 @@ public class CdmrfWriter {
     CdmrFeatureProto.CoordTransform.Builder builder = CdmrFeatureProto.CoordTransform.newBuilder();
     builder.setIsHoriz(gct.isHoriz());
     builder.setName(gct.getName());
-    for (Attribute att : gct.getParameters())
+    for (Attribute att : gct.getAttributes())
       builder.addParams(NcStream.encodeAtt(att));
     return builder;
   }

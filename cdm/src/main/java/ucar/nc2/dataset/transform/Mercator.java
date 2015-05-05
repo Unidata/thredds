@@ -33,19 +33,16 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Variable;
 
 /**
  * Create a Mercator Projection from the information in the Coordinate Transform Variable.
  *
  * @author caron
  */
-public class Mercator extends AbstractCoordTransBuilder {
+public class Mercator extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   @Override
   public String getTransformName() {
@@ -53,12 +50,7 @@ public class Mercator extends AbstractCoordTransBuilder {
   }
 
   @Override
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
-
-  @Override
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double par = readAttributeDouble( ctv, CF.STANDARD_PARALLEL, Double.NaN);
     if (Double.isNaN(par)) {
       double scale = readAttributeDouble( ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
@@ -68,20 +60,10 @@ public class Mercator extends AbstractCoordTransBuilder {
       par = ucar.unidata.geoloc.projection.Mercator.convertScaleToStandardParallel(scale);
     }
 
-    double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN); // LOOK not used
-    double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
-    double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
-    double earth_radius = getEarthRadiusInKm(ctv);
-
-    if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(ds, ctv);
-      false_easting *= scalef;
-      false_northing *= scalef;
-    }
+    readStandardParams(ctv, geoCoordinateUnits);
 
     ucar.unidata.geoloc.projection.Mercator proj =
             new ucar.unidata.geoloc.projection.Mercator( lon0, par, false_easting, false_northing, earth_radius);
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

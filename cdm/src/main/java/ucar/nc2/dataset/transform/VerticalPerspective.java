@@ -33,31 +33,24 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.Variable;
+import ucar.nc2.dataset.*;
 
 /**
  * VerticalPerspectiveView projection.
  *
  * @author caron
  */
-public class VerticalPerspective extends AbstractCoordTransBuilder {
+public class VerticalPerspective extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   public String getTransformName() {
-    return "vertical_perspective";
+    return CF.VERTICAL_PERSPECTIVE;
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
 
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-
-    readStandardParams(ds, ctv);
+    readStandardParams(ctv, geoCoordinateUnits);
 
     double distance = readAttributeDouble(ctv, CF.PERSPECTIVE_POINT_HEIGHT, Double.NaN);
     if (Double.isNaN(distance)) {
@@ -76,6 +69,6 @@ public class VerticalPerspective extends AbstractCoordTransBuilder {
                     lon0, earth_radius, distance / 1000., false_easting,
                     false_northing);
 
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

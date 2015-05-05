@@ -103,6 +103,14 @@ public interface CF {
 
   // vertical coordinate
   public static final String atmosphere_ln_pressure_coordinate = "atmosphere_ln_pressure_coordinate";
+  public static final String atmosphere_sigma_coordinate = "atmosphere_sigma_coordinate";
+  public static final String atmosphere_hybrid_sigma_pressure_coordinate = "atmosphere_hybrid_sigma_pressure_coordinate";
+  public static final String atmosphere_hybrid_height_coordinate = "atmosphere_hybrid_height_coordinate";
+  public static final String atmosphere_sleve_coordinate = "atmosphere_sleve_coordinate";
+  public static final String ocean_sigma_coordinate = "ocean_sigma_coordinate";
+  public static final String ocean_s_coordinate = "ocean_s_coordinate";
+  public static final String ocean_sigma_z_coordinate = "ocean_sigma_z_coordinate";
+  public static final String ocean_double_sigma_coordinate = "ocean_double_sigma_coordinate";
 
   public static final String formula_terms = "formula_terms";
 

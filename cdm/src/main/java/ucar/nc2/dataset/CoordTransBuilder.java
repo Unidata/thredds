@@ -33,13 +33,17 @@
 
 package ucar.nc2.dataset;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.transform.*;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
+import ucar.nc2.ft2.coverage.grid.GridCoordTransform;
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
 
 import java.util.List;
@@ -81,11 +85,11 @@ public class CoordTransBuilder {
     registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
 
     // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class); // DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
-    registerTransform("atmosphere_hybrid_height_coordinate", VAtmHybridHeight.class);
-    registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", VAtmHybridSigmaPressure.class);
-    registerTransform("atmosphere_sigma_coordinate", VAtmSigma.class);
-    registerTransform("ocean_s_coordinate", VOceanS.class);
-    registerTransform("ocean_sigma_coordinate", VOceanSigma.class);
+    registerTransform("atmosphere_hybrid_height_coordinate", CFHybridHeight.class);
+    registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", CFHybridSigmaPressure.class);
+    registerTransform("atmosphere_sigma_coordinate", CFSigma.class);
+    registerTransform("ocean_s_coordinate", CFOceanS.class);
+    registerTransform("ocean_sigma_coordinate", CFOceanSigma.class);
     registerTransform("explicit_field", VExplicitField.class);
     registerTransform("existing3DField", VExplicitField.class); // deprecate
 
@@ -103,8 +107,8 @@ public class CoordTransBuilder {
     * @param c class that implements CoordTransBuilderIF.
     */
   static public void registerTransform( String transformName, Class c) {
-    if (!(CoordTransBuilderIF.class.isAssignableFrom( c)))
-      throw new IllegalArgumentException("Class "+c.getName()+" must implement CoordTransBuilderIF");
+    if (!(VertTransformBuilderIF.class.isAssignableFrom( c)) && !(HorizTransformBuilderIF.class.isAssignableFrom( c)))
+      throw new IllegalArgumentException("Class "+c.getName()+" must implement VertTransformBuilderIF or HorizTransformBuilderIF");
 
     // fail fast - check newInstance works
     try {
@@ -160,25 +164,24 @@ public class CoordTransBuilder {
   }
 
   /**
-   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
-   * registered CoordTransBuilder.
-   * @param ds enclosing dataset
+   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or registered CoordTransBuilder.
+   * @param ds enclosing dataset, only used for vertical transforms
    * @param ctv the Coordinate Transform Variable - container for the transform parameters
    * @param parseInfo pass back information about the parsing.
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
-  static public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable ctv, Formatter parseInfo, Formatter errInfo) {
+  static public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, AttributeContainer ctv, Formatter parseInfo, Formatter errInfo) {
     // standard name
-    String transform_name = ds.findAttValueIgnoreCase(ctv, "transform_name", null);
+    String transform_name = ctv.findAttValueIgnoreCase("transform_name", null);
     if (null == transform_name)
-      transform_name = ds.findAttValueIgnoreCase(ctv, "Projection_Name", null);
+      transform_name = ctv.findAttValueIgnoreCase("Projection_Name", null);
 
     // these names are from CF - dont want to have to duplicate
     if (null == transform_name)
-      transform_name = ds.findAttValueIgnoreCase(ctv, CF.GRID_MAPPING_NAME, null);
+      transform_name = ctv.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
     if (null == transform_name)
-      transform_name = ds.findAttValueIgnoreCase(ctv, CF.STANDARD_NAME, null);
+      transform_name = ctv.findAttValueIgnoreCase(CF.STANDARD_NAME, null);
 
     if (null == transform_name) {
       parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s%n", ctv);
@@ -200,25 +203,39 @@ public class CoordTransBuilder {
       return null;
     }
 
-      // get an instance of that class
-    CoordTransBuilderIF builder = null;
+         // get an instance of that class
+    Object builderObject;
     try {
-      builder = (CoordTransBuilderIF) builderClass.newInstance();
-    } catch (InstantiationException e) {
-      log.error("Cant instantiate "+builderClass.getName(), e);
-    } catch (IllegalAccessException e) {
-      log.error("Cant access "+builderClass.getName(), e);
+      builderObject = builderClass.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      log.error("Cant create new instance "+builderClass.getName(), e);
+      return null;
     }
-    if (null == builder) { // cant happen - because this was tested in registerTransform()
+
+    if (null == builderObject) { // cant happen - because this was tested in registerTransform()
       parseInfo.format("**Failed to build CoordTransBuilder object from class= %s for Variable= %s%n", builderClass.getName(), ctv);
       return null;
     }
 
-    builder.setErrorBuffer( errInfo);
-    CoordinateTransform ct = builder.makeCoordinateTransform(ds, ctv);
+    CoordinateTransform ct = null;
+    if (builderObject instanceof VertTransformBuilderIF){
+      VertTransformBuilderIF vertBuilder = (VertTransformBuilderIF) builderObject;
+      vertBuilder.setErrorBuffer(errInfo);
+      ct = vertBuilder.makeCoordinateTransform(ds, ctv);
+
+    } else if (builderObject instanceof HorizTransformBuilderIF){
+      HorizTransformBuilderIF horizBuilder = (HorizTransformBuilderIF) builderObject;
+      horizBuilder.setErrorBuffer(errInfo);
+      String units = AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv); // barfola
+      ct = horizBuilder.makeCoordinateTransform(ctv, units);
+
+    } else {
+      log.error("Illegals class "+builderClass.getName());
+      return null;
+    }
 
     if (ct != null) {
-      parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n",transform_name, ctv.getFullName(), builder);
+      parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(), builderObject.getClass().getName());
     }
 
     return ct;
@@ -252,6 +269,57 @@ public class CoordTransBuilder {
     v.setCachedData(data, true);
 
     return v;
+  }
+
+  /**
+   * Make a CoordinateTransform object from the parameters in a GridCoordTransform, using an intrinsic or
+   * registered CoordTransBuilder.
+   * @param errInfo pass back error information.
+   * @return CoordinateTransform, or null if failure.
+   */
+  static public ProjectionImpl makeProjection(GridCoordTransform gct, Formatter errInfo) {
+    // standard name
+    String transform_name = gct.findAttValueIgnoreCase(CF.GRID_MAPPING_NAME, null);
+
+    if (null == transform_name) {
+      errInfo.format("**Failed to find Coordinate Transform name from GridCoordTransform= %s%n", gct);
+      return null;
+    }
+
+    transform_name = transform_name.trim();
+
+    // do we have a transform registered for this ?
+    Class builderClass = null;
+    for (Transform transform : transformList) {
+      if (transform.transName.equals(transform_name)) {
+        builderClass = transform.transClass;
+        break;
+      }
+    }
+    if (null == builderClass) {
+      errInfo.format("**Failed to find CoordTransBuilder name= %s from GridCoordTransform= %s%n", transform_name, gct);
+      return null;
+    }
+
+      // get an instance of that class
+    HorizTransformBuilderIF builder = null;
+    try {
+      builder = (HorizTransformBuilderIF) builderClass.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      log.error("Cant create new instance "+builderClass.getName(), e);
+      return null;
+    }
+    if (null == builder) { // cant happen - because this was tested in registerTransform()
+      errInfo.format("**Failed to build CoordTransBuilder object from class= %s for GridCoordTransform= %s%n", builderClass.getName(), gct);
+      return null;
+    }
+
+    String units = gct.findAttValueIgnoreCase(CDM.UNITS, null);
+    builder.setErrorBuffer( errInfo);
+    ProjectionCT ct = builder.makeCoordinateTransform(gct, units);
+    assert ct != null;
+
+    return ct.getProjection();
   }
 
 }

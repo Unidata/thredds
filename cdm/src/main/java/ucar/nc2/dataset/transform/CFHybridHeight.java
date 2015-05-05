@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 
@@ -46,7 +47,7 @@ import ucar.unidata.util.Parameter;
  *
  * @author murray
  */
-public class VAtmHybridHeight extends AbstractCoordTransBuilder {
+public class CFHybridHeight extends AbstractTransformBuilder implements VertTransformBuilderIF {
 
   /**
    * The name of the a term
@@ -69,7 +70,7 @@ public class VAtmHybridHeight extends AbstractCoordTransBuilder {
    * @return the name
    */
   public String getTransformName() {
-    return "atmosphere_hybrid_height_coordinate";
+    return VerticalCT.Type.HybridHeight.name();
   }
 
   /**
@@ -88,8 +89,8 @@ public class VAtmHybridHeight extends AbstractCoordTransBuilder {
    * @param ctv the variable with the formula
    * @return the <code>CoordinateTransform</code>
    */
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula_terms = getFormula(ds, ctv);
+  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+    String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
 
@@ -101,15 +102,11 @@ public class VAtmHybridHeight extends AbstractCoordTransBuilder {
     b = values[1];
     orog = values[2];
 
-    CoordinateTransform rs = new VerticalCT("AtmHybridHeight_Transform_"
-            + ctv.getShortName(), getTransformName(),
-            VerticalCT.Type.HybridHeight, this);
+    VerticalCT rs = new VerticalCT("AtmHybridHeight_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.HybridHeight, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
 
-    rs.addParameter(
-            new Parameter(
-                    "formula", "height(x,y,z) = a(z) + b(z)*orog(x,y)"));
+    rs.addParameter(new Parameter("formula", "height(x,y,z) = a(z) + b(z)*orog(x,y)"));
     if (!addParameter(rs, HybridHeight.A, ds, a)) {
       return null;
     }
@@ -139,8 +136,7 @@ public class VAtmHybridHeight extends AbstractCoordTransBuilder {
    * @param vCT     the vertical coordinate transform
    * @return the VerticalTransform
    */
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(
-          NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return new HybridHeight(ds, timeDim, vCT.getParameters());
   }
 }

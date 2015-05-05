@@ -37,20 +37,17 @@
  */
 package ucar.nc2.dataset.transform;
 
-import ucar.nc2.Variable;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
 import ucar.unidata.geoloc.Earth;
 
 /**
  * Polyconic Projection.
  * @author ghansham@sac.isro.gov.in 1/8/2012
  */
-public class PolyconicProjection extends AbstractCoordTransBuilder {
+public class PolyconicProjection extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
 
     double lon0 = readAttributeDouble(ctv, "longitude_of_central_meridian", Double.NaN);
     double lat0 = readAttributeDouble(ctv, "latitude_of_projection_origin", Double.NaN);
@@ -69,14 +66,10 @@ public class PolyconicProjection extends AbstractCoordTransBuilder {
       proj = new ucar.unidata.geoloc.projection.proj4.PolyconicProjection(lat0, lon0);
     }
 
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 
   public String getTransformName() {
     return "polyconic";
-  }
-
-  public TransformType getTransformType() {
-    return TransformType.Projection;
   }
 }

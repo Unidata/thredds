@@ -33,12 +33,9 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.Variable;
+import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 
 /**
@@ -46,21 +43,17 @@ import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
  *
  * @author caron
  */
-public class AlbersEqualArea extends AbstractCoordTransBuilder {
+public class AlbersEqualArea extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.ALBERS_CONICAL_EQUAL_AREA;
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
-
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double[] pars = readAttributeDouble2(ctv.findAttribute(CF.STANDARD_PARALLEL));
     if (pars == null) return null;
 
-    readStandardParams(ds, ctv);
+    readStandardParams(ctv, geoCoordinateUnits);
 
     ucar.unidata.geoloc.ProjectionImpl proj;
 
@@ -71,6 +64,6 @@ public class AlbersEqualArea extends AbstractCoordTransBuilder {
       proj = new ucar.unidata.geoloc.projection.AlbersEqualArea(lat0, lon0, pars[0], pars[1], false_easting, false_northing, earth_radius);
     }
 
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

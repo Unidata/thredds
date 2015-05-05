@@ -33,43 +33,26 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
-import ucar.nc2.Variable;
 
 /**
  * Create a LambertAzimuthal Projection from the information in the Coordinate Transform Variable.
  *
  * @author caron
  */
-public class LambertAzimuthal extends AbstractCoordTransBuilder {
+public class LambertAzimuthal extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.LAMBERT_AZIMUTHAL_EQUAL_AREA;
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
-
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-
-    double lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
-    double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
-    double earth_radius = getEarthRadiusInKm(ctv);
-
-    if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(ds, ctv);
-      false_easting *= scalef;
-      false_northing *= scalef;
-    }
-
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+    readStandardParams(ctv, geoCoordinateUnits);
     ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea proj =
             new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing, earth_radius);
-
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }
 

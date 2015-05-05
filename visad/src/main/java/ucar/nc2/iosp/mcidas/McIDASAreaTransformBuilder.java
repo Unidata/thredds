@@ -36,20 +36,18 @@ package ucar.nc2.iosp.mcidas;
 import ucar.ma2.Array;
 
 import ucar.nc2.Attribute;
-import ucar.nc2.Variable;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.ProjectionCT;
 
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
+import ucar.nc2.dataset.transform.AbstractTransformBuilder;
+import ucar.nc2.dataset.transform.HorizTransformBuilderIF;
 
 /**
  * Projection based on Mcidas Area files.
  *
  * @author caron
  */
-public class McIDASAreaTransformBuilder extends AbstractCoordTransBuilder {
+public class McIDASAreaTransformBuilder extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   /**
    * Get the transform name
@@ -61,22 +59,12 @@ public class McIDASAreaTransformBuilder extends AbstractCoordTransBuilder {
   }
 
   /**
-   * Get the Transform Type
-   *
-   * @return TransformType.Projection
-   */
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
-
-  /**
    * Make the coordinate transform
    *
-   * @param ds  the dataset
    * @param ctv the coordinate transform variable
    * @return the coordinate transform
    */
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String units) {
 
     int[] area = getIntArray(ctv, McIDASAreaProjection.ATTR_AREADIR);
     int[] nav = getIntArray(ctv, McIDASAreaProjection.ATTR_NAVBLOCK);
@@ -86,7 +74,7 @@ public class McIDASAreaTransformBuilder extends AbstractCoordTransBuilder {
     }
 
     McIDASAreaProjection proj = new McIDASAreaProjection(area, nav, aux);
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 
   /**
@@ -96,10 +84,10 @@ public class McIDASAreaTransformBuilder extends AbstractCoordTransBuilder {
    * @param attName the attribute name
    * @return the int array
    */
-  private int[] getIntArray(Variable ctv, String attName) {
+  private int[] getIntArray(AttributeContainer ctv, String attName) {
     Attribute att = ctv.findAttribute(attName);
     if (att == null) {
-      throw new IllegalArgumentException("McIDASArea coordTransformVariable " + ctv.getFullName() + " must have " + attName + " attribute");
+      throw new IllegalArgumentException("McIDASArea coordTransformVariable " + ctv.getName() + " must have " + attName + " attribute");
     }
 
     Array arr = att.getValues();

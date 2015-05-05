@@ -33,12 +33,9 @@
 
 package ucar.nc2.dataset.transform;
 
-import ucar.nc2.Variable;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
@@ -85,18 +82,14 @@ import ucar.unidata.geoloc.ProjectionImpl;
  * @author caron
  * @since 12/5/13
  */
-public class Geostationary extends AbstractCoordTransBuilder {
+public class Geostationary extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
     public String getTransformName() {
       return CF.GEOSTATIONARY;
     }
 
-    public TransformType getTransformType() {
-      return TransformType.Projection;
-    }
-
-    public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-      readStandardParams(ds, ctv);
+    public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+      readStandardParams(ctv, geoCoordinateUnits);
 
       double subLonDegrees = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
       if (Double.isNaN(subLonDegrees)) {
@@ -118,8 +111,8 @@ public class Geostationary extends AbstractCoordTransBuilder {
       double inv_flattening = readAttributeDouble( ctv, CF.INVERSE_FLATTENING, Double.NaN);
 
 
-      String sweep_angle = readAttribute( ctv, CF.SWEEP_ANGLE_AXIS, null);
-      String fixed_angle = readAttribute( ctv, CF.FIXED_ANGLE_AXIS, null);
+      String sweep_angle = ctv.findAttValueIgnoreCase(CF.SWEEP_ANGLE_AXIS, null);
+      String fixed_angle = ctv.findAttValueIgnoreCase(CF.FIXED_ANGLE_AXIS, null);
 
       if (sweep_angle == null && fixed_angle == null)
         throw new IllegalArgumentException("Must specify "+CF.SWEEP_ANGLE_AXIS+" or "+CF.FIXED_ANGLE_AXIS);
@@ -133,7 +126,7 @@ public class Geostationary extends AbstractCoordTransBuilder {
       ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(
               subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX);
 
-      return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+      return new ProjectionCT(ctv.getName(), "FGDC", proj);
     }
 
 }

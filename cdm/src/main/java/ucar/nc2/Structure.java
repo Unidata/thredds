@@ -579,7 +579,7 @@ public class Structure extends Variable {
     sbuff.format("Structure ");
     getNameAndDimensions(sbuff, false, true);
     sbuff.format("%n");
-    for (Attribute att : attributes) {
+    for (Attribute att : attributes.getAttributes()) {
       sbuff.format("  %s:%s;%n",getShortName(), att.toString());
     }
     return sbuff.toString();

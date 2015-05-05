@@ -33,32 +33,25 @@
 
 package ucar.nc2.dataset.transform;
 
-import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Variable;
 
 /**
  * Create a Rotated LatLon Projection from the information in the Coordinate Transform Variable.
  */
-public class RotatedLatLon extends AbstractCoordTransBuilder {
+public class RotatedLatLon extends AbstractTransformBuilder implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return ucar.unidata.geoloc.projection.RotatedLatLon.GRID_MAPPING_NAME;
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Projection;
-  }
-
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
+  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double lon = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LONGITUDE, Double.NaN);
     double lat = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LATITUDE, Double.NaN);
     double angle = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_ANGLE, Double.NaN);
 
     ucar.unidata.geoloc.projection.RotatedLatLon proj = new ucar.unidata.geoloc.projection.RotatedLatLon( lat, lon, angle);
-    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 
 }

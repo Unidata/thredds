@@ -26,7 +26,21 @@
   <li>thredds.servlet.ViewerLinkProvider has InvDatasetImpl changed to Dataset</li>
   <li>thredds.server.viewer.dataservice.ViewerService has InvDatasetImpl changed to Dataset</li>
 </ul>
-<h5>Feature Types</h5>
+<h3>Coordinate Systems</h3>
+<ul>
+  <li>    <strong>ucar.nc2.dataset.CoordTransBuilderIF </strong>is split into     <strong>ucar.nc2.dataset.builder.HorizTransformBuilderIF</strong> and <strong>ucar.nc2.dataset.builder.VertTransformBuilderIF</strong></li>
+  <li><strong>HorizTransformBuilderIF </strong>now uses <strong>AttributeContainer</strong>
+    instead of <strong>NetcdfDataset, Variable</strong>
+    <ul>
+      <li><em>CoordinateTransform&#32;makeCoordinateTransform(NetcdfDataset&#32;ds,&#32;Variable&#32;ctv)</em> is now <em>ProjectionCT
+        ma</em><em>keCoordinateTransform(AttributeContainer&#32;ctv)
+      </em></li>
+    </ul>
+  </li>
+  <li>Previously, the optional <strong>false_easting</strong><em><strong><a name="false_easting"></a>, </strong></em>and<em><strong> false_northing</strong></em> should match the units
+  of the x and y projection coordinates</li>
+</ul>
+<h3>Feature Types</h3>
 <ul>
   <li> <strong>ucar.nc2.dt.TypedDatasetFactory </strong>has been removed. Use <strong>ucar.nc2.ft.FeatureDatasetFactoryManager.</strong></li>
 </ul>
@@ -94,10 +108,7 @@
     <li></li>
   </ul>
 </ul>
-<h3>API changes</h3>
-<ul>
-  <li>    <strong>ucar.nc2.dt.TypedDatasetFactory </strong>has been removed. Use    <strong>ucar.nc2.ft.FeatureDatasetFactoryManager.</strong></li>
-</ul>
+<h3>&nbsp;</h3>
 <h3>Internal changes</h3>
 <ul>
   <li><strong>HttpClient</strong> library upgraded to 4.2, previously was 3.</li>

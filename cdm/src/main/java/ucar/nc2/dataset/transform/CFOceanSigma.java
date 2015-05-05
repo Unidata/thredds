@@ -31,54 +31,57 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.dataset;
+package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
-
-import java.util.Formatter;
+import ucar.unidata.geoloc.vertical.OceanSigma;
+import ucar.unidata.util.Parameter;
 
 /**
- * Implement this interface to add a Coordinate Transform to a NetcdfDataset.
- * Must be able to know how to build one from the info in a Coordinate Transform Variable.
+ * Create a ocean_sigma_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
  *
- * @author john caron
+ * @author caron
  */
-public interface CoordTransBuilderIF {
+public class CFOceanSigma extends AbstractTransformBuilder implements VertTransformBuilderIF {
+  private String sigma,eta,depth;
 
-  /**
-   * Make a CoordinateTransform from a Coordinate Transform Variable.
-   * @param ds the containing dataset
-   * @param ctv the coordinate transform variable.
-   * @return CoordinateTransform
-   */
-  public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable ctv);
+  public String getTransformName() {
+    return VerticalCT.Type.OceanSigma.name();
+  }
 
-  /**
-   * Make a VerticalTransform. Only implement if you are a TransformType.Vertical.
-   * We need to defer making the transform until we've identified the time coordinate dimension.
-   * @param ds the dataset
-   * @param timeDim the time dimension
-   * @param vCT the vertical coordinate transform
-   * @return ucar.unidata.geoloc.vertical.VerticalTransform math transform
-   */
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
+  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+    String formula_terms = getFormula(ctv);
+    if (null == formula_terms) return null;
 
-  /**
-   * Get the Transform name. Typically this is matched on by an attribute in the dataset.
-   * @return name of the transform.
-   */
-  public String getTransformName();
+    String[] values = parseFormula(formula_terms, "sigma eta depth");
+    if (values == null) return null;
+    
+    sigma = values[0];
+    eta = values[1];
+    depth = values[2];
 
-  /**
-   * Get the Transform Type : Vertical or Projection
-   * @return type of trrasnform
-   */
-  public TransformType getTransformType();
+    VerticalCT rs = new VerticalCT("OceanSigma_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
+    rs.addParameter(new Parameter("standard_name", getTransformName()));
+    rs.addParameter(new Parameter("formula_terms", formula_terms));
+    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(n,j,i) + sigma(k)*(depth(j,i)+eta(n,j,i))")));
 
-  /***
-   * Pass in a Formatter where error messages can be appended.
-   * @param sb use this Formatter to record parse and error info
-   */
-  public void setErrorBuffer( Formatter sb);
+    if (!addParameter(rs, OceanSigma.SIGMA, ds, sigma)) return null;
+    if (!addParameter(rs, OceanSigma.ETA, ds, eta)) return null;
+    if (!addParameter(rs, OceanSigma.DEPTH, ds, depth)) return null;
+
+    return rs;
+  }
+
+
+  public String toString() {
+    return "OceanS:" + " sigma:"+ sigma + " eta:"+eta + " depth:"+depth;
+  }
+
+  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+    return new OceanSigma(ds, timeDim, vCT.getParameters());
+  }
 }
+

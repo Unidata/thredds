@@ -37,9 +37,10 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.transform.AbstractTransformBuilder;
+import ucar.nc2.dataset.transform.VertTransformBuilderIF;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.util.Parameter;
@@ -114,24 +115,20 @@ public class CSMConvention extends COARDSConvention {
     return super.makeCoordinateTransform(ds, ctv);
   }
 
-  private class HybridSigmaPressureBuilder extends AbstractCoordTransBuilder {
+  private class HybridSigmaPressureBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
     public String getTransformName() {
       return "csm_hybrid_sigma_pressure";
     }
 
-    public TransformType getTransformType() {
-      return TransformType.Vertical;
-    }
-
-    public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-      CoordinateTransform rs = new VerticalCT(ctv.getFullName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
+    public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+      VerticalCT rs = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
       rs.addParameter(new Parameter("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
 
       if (!addParameter2(rs, HybridSigmaPressure.PS, ds, ctv, "PS_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.A, ds, ctv, "A_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.B, ds, ctv, "B_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.P0, ds, ctv, "P0_var", false)) return null;
-      parseInfo.format("CSMConvention made SigmaPressureCT %s%n",ctv.getFullName());
+      parseInfo.format("CSMConvention made SigmaPressureCT %s%n",ctv.getName());
       return rs;
     }
 
@@ -140,23 +137,19 @@ public class CSMConvention extends COARDSConvention {
     }
   }
 
-  private class SigmaBuilder extends AbstractCoordTransBuilder {
+  private class SigmaBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
     public String getTransformName() {
       return "csm_sigma_level";
     }
 
-    public TransformType getTransformType() {
-      return TransformType.Vertical;
-    }
-
-    public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-      CoordinateTransform rs = new VerticalCT("sigma-" + ctv.getFullName(), conventionName, VerticalCT.Type.Sigma, this);
+    public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+      VerticalCT rs = new VerticalCT("sigma-" + ctv.getName(), conventionName, VerticalCT.Type.Sigma, this);
       rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
 
       if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.SIGMA, ds, ctv, "B_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.PTOP, ds, ctv, "P0_var", false)) return null;
-      parseInfo.format("CSMConvention made SigmaCT %s%n", ctv.getFullName());
+      parseInfo.format("CSMConvention made SigmaCT %s%n", ctv.getName());
       return rs;
     }
 
@@ -178,9 +171,9 @@ public class CSMConvention extends COARDSConvention {
    * @param readData  if true, read data and use a  s parameter value
    * @return true if success, false is failed
    */
-  protected boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, Variable v, String attName, boolean readData) {
+  protected boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, AttributeContainer v, String attName, boolean readData) {
     String varName;
-    if (null == (varName = ds.findAttValueIgnoreCase(v, attName, null))) {
+    if (null == (varName = v.findAttValueIgnoreCase(attName, null))) {
       parseInfo.format("CSMConvention No Attribute named %s%n", attName);
       return false;
     }

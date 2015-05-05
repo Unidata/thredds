@@ -33,12 +33,10 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.vertical.OceanSG2;
 import ucar.unidata.util.Parameter;
 
@@ -48,19 +46,15 @@ import ucar.unidata.util.Parameter;
  *
  * @author Sachin (skbhate@ngi.msstate.edu)
  */
-public class VOceanSG2 extends AbstractCoordTransBuilder {
+public class VOceanSG2 extends AbstractTransformBuilder implements VertTransformBuilderIF {
   private String s = "", eta = "", depth = "", c = "", depth_c = "";
 
   public String getTransformName() {
-    return "ocean_s_coordinate_g2";
+    return VerticalCT.Type.OceanSG2.name();
   }
 
-  public TransformType getTransformType() {
-    return TransformType.Vertical;
-  }
-
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula_terms = getFormula(ds, ctv);
+  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+    String formula_terms = getFormula(ctv);
     if (null == formula_terms) return null;
 
     // :formula_terms = "s: s_rho c: Cs_r eta: zeta depth: h  depth_c: hc";
@@ -73,8 +67,7 @@ public class VOceanSG2 extends AbstractCoordTransBuilder {
     depth = values[3];
     depth_c = values[4];
 
-
-    CoordinateTransform rs = new VerticalCT("OceanSG2_Transform_" + ctv.getFullName(), getTransformName(), VerticalCT.Type.OceanSG2, this);
+    VerticalCT rs = new VerticalCT("OceanSG2_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.OceanSG2, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y) + (eta(x,y) + depth([n],x,y)) * ((depth_c*s(z) + depth([n],x,y)*C(z))/(depth_c+depth([n],x,y)))")));
@@ -83,7 +76,6 @@ public class VOceanSG2 extends AbstractCoordTransBuilder {
     if (!addParameter(rs, OceanSG2.DEPTH, ds, depth)) return null;
     if (!addParameter(rs, OceanSG2.DEPTH_C, ds, depth_c)) return null;
     if (!addParameter(rs, OceanSG2.C, ds, c)) return null;
-
 
     return rs;
   }

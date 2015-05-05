@@ -33,60 +33,50 @@
 
 package ucar.nc2.dataset.transform;
 
-import ucar.nc2.dataset.*;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
-import ucar.unidata.geoloc.vertical.AtmosSigma;
-import ucar.unidata.util.Parameter;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VerticalCT;
+
+import java.util.Formatter;
 
 /**
- * Create a atmosphere_sigma_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
- *  *
- * @author caron
+ * Implement this interface to add a Coordinate Transform to a NetcdfDataset.
+ * Must be able to know how to build one from the info in a Coordinate Transform Variable.
+ *
  */
-public class VAtmSigma extends AbstractCoordTransBuilder {
-  private String sigma="", ps="", ptop="";
+public interface VertTransformBuilderIF {
 
-  public String getTransformName() {
-    return "atmosphere_sigma_coordinate";
-  }
+  /**
+   * Make a vertical CoordinateTransform from a Coordinate Transform Variable.
+   * A VerticalCT is just a container for the metadata, the real work is in the VerticalTransform
+   *
+   * @param ds the containing dataset
+   * @param ctv the coordinate transform variable.
+   * @return CoordinateTransform
+   */
+  VerticalCT makeCoordinateTransform (NetcdfDataset ds, AttributeContainer ctv);
 
-  public TransformType getTransformType() {
-    return TransformType.Vertical;
-  }
+  /**
+   * Make a VerticalTransform.
+   * We need to defer making the transform until we've identified the time coordinate dimension.
+   * @param ds the dataset
+   * @param timeDim the time dimension
+   * @param vCT the vertical coordinate transform
+   * @return ucar.unidata.geoloc.vertical.VerticalTransform math transform
+   */
+  ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
 
-  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula_terms = getFormula(ds, ctv);
-    if (null == formula_terms) return null;
+  /**
+   * Get the Transform name. Typically this is matched on by an attribute in the dataset.
+   * @return name of the transform.
+   */
+  String getTransformName();
 
-     // parse the formula string
-    String[] values = parseFormula(formula_terms, "sigma ps ptop");
-    if (values == null) return null;
-
-    sigma = values[0];
-    ps = values[1];
-    ptop = values[2];
-
-    CoordinateTransform rs = new VerticalCT("AtmSigma_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.Sigma, this);
-    rs.addParameter(new Parameter("standard_name", getTransformName()));
-    rs.addParameter(new Parameter("formula_terms", formula_terms));
-
-    rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
-
-    if (!addParameter( rs, AtmosSigma.PS, ds, ps)) return null;
-    if (!addParameter( rs, AtmosSigma.SIGMA, ds, sigma)) return null;
-    if (!addParameter( rs, AtmosSigma.PTOP, ds, ptop)) return null;
-
-    return rs;
-  }
-
-  public String toString() { 
-    return "Sigma:" + "sigma:"+sigma + " ps:"+ps + " ptop:"+ptop;
-  }
-
-
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new AtmosSigma(ds, timeDim, vCT.getParameters());
-  }
+  /***
+   * Pass in a Formatter where error messages can be appended.
+   * @param sb use this Formatter to record parse and error info
+   */
+  void setErrorBuffer( Formatter sb);
 }
-
