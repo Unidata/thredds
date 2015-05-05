@@ -1,4 +1,4 @@
-configure(allprojects) {
+configure(publishedProjects) {
     apply plugin: 'maven-publish'
 
     publishing {
@@ -19,6 +19,12 @@ configure(allprojects) {
             }
         }
     }
+
+//    repositories {
+//        flatDir {
+//            dirs buildDir
+//        }
+//    }
 }
 
 ///////////////////////////////////////////////// Root /////////////////////////////////////////////////
