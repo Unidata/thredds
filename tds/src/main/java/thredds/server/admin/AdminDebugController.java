@@ -63,6 +63,7 @@ public class AdminDebugController {
   @Autowired
   HtmlWriting htmlu;
 
+  // LOOK change to ResponseEntity<String>
   @RequestMapping( method = RequestMethod.GET)
   protected void showDebugPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType(ContentType.html.getContentHeader());

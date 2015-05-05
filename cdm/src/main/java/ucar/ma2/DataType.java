@@ -38,6 +38,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Type-safe enumeration of data types.
+ * Do not change the ordering of these enums, as they are used in protobuf messages, only add new ones onto the end.
  *
  * @author john caron
  */

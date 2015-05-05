@@ -60,12 +60,12 @@ public class NcStreamReader {
     NcStream.readFully(is, b);
 
     // starts with MAGIC_START, MAGIC_HEADER or just MAGIC_HEADER
-    if (test(b, NcStream.MAGIC_START)) {
-      if (!readAndTest(is, NcStream.MAGIC_HEADER))
+    if (NcStream.test(b, NcStream.MAGIC_START)) {
+      if (!NcStream.readAndTest(is, NcStream.MAGIC_HEADER))
         throw new IOException("Data corrupted on "+ncfile.getLocation());
 
     } else {
-      if (!test(b, NcStream.MAGIC_HEADER))
+      if (!NcStream.test(b, NcStream.MAGIC_HEADER))
         throw new IOException("Data corrupted on "+ncfile.getLocation());
     }
 
@@ -92,7 +92,6 @@ public class NcStreamReader {
     }
 
     return ncfile;
-
   }
 
   static class DataResult {
@@ -113,7 +112,7 @@ public class NcStreamReader {
    * @throws IOException on read error
    */
   public DataResult readData(InputStream is, NetcdfFile ncfile) throws IOException {
-    if (!readAndTest(is, NcStream.MAGIC_DATA))
+    if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
       throw new IOException("Data transfer corrupted on "+ncfile.getLocation());
 
     int psize = NcStream.readVInt(is);
@@ -178,7 +177,7 @@ public class NcStreamReader {
   }
 
   public StructureDataIterator getStructureIterator(InputStream is, NetcdfFile ncfile) throws IOException {
-    if (!readAndTest(is, NcStream.MAGIC_DATA))
+    if (!NcStream.readAndTest(is, NcStream.MAGIC_DATA))
       throw new IOException("Data transfer corrupted on "+ncfile.getLocation());
 
     int psize = NcStream.readVInt(is);
@@ -223,14 +222,14 @@ public class NcStreamReader {
       NcStream.readFully(is, b);
 
      // starts with MAGIC_START, MAGIC_HEADER or just MAGIC_HEADER
-     if (test(b, NcStream.MAGIC_VDATA)) {
+     if (NcStream.test(b, NcStream.MAGIC_VDATA)) {
        int dsize = NcStream.readVInt(is);
        byte[] datab = new byte[dsize];
        NcStream.readFully(is, datab);
        curr = NcStream.decodeStructureData(members, datab);
        // System.out.printf("StreamDataIterator read sdata size= %d%n", dsize);
 
-     } else if (test(b, NcStream.MAGIC_VEND)) {
+     } else if (NcStream.test(b, NcStream.MAGIC_VEND)) {
         curr = null;
 
      } else {
@@ -265,23 +264,6 @@ public class NcStreamReader {
     }
   }
 
-
-  private boolean readAndTest(InputStream is, byte[] test) throws IOException {
-    byte[] b = new byte[test.length];
-    NcStream.readFully(is, b);
-
-    if (b.length != test.length) return false;
-    for (int i = 0; i < b.length; i++)
-      if (b[i] != test[i]) return false;
-    return true;
-  }
-
-  private boolean test(byte[] b, byte[] test) throws IOException {
-    if (b.length != test.length) return false;
-    for (int i = 0; i < b.length; i++)
-      if (b[i] != test[i]) return false;
-    return true;
-  }
 
   /////////////////////////////////////////////////////////////////////
 

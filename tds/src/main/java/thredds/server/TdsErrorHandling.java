@@ -95,6 +95,13 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     return new ResponseEntity<>("Invalid Request: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(org.springframework.web.bind.ServletRequestBindingException.class)
+  public ResponseEntity<String> handle(org.springframework.web.bind.ServletRequestBindingException ex) {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity<>("Invalid Request: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+  }
+
   @ExceptionHandler(BindException.class)
   public ResponseEntity<String> handle(BindException ex) {
     BindingResult validationResult = ex.getBindingResult();

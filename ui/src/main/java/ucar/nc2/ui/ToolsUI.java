@@ -54,6 +54,8 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.cover.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.remote.CdmrFeatureDataset2;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribIndexCache;
@@ -559,7 +561,7 @@ public class ToolsUI extends JPanel {
 
         break;
       case "Coverages":
-        coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage"));
+        coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage2"));
         c = coveragePanel;
 
         break;
@@ -4996,23 +4998,23 @@ public class ToolsUI extends JPanel {
     /////////////////////////////////
 
   private class CoveragePanel extends OpPanel {
-    CoverageTable dsTable;
-    CoverageDisplay display;
+    ucar.nc2.ui.coverage2.CoverageTable dsTable;
+    ucar.nc2.ui.coverage2.CoverageDisplay display;
     JSplitPane split;
     IndependentWindow viewerWindow;
 
-    NetcdfDataset ds = null;
+    GridCoverageDataset ds = null;
 
     CoveragePanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
-      dsTable = new CoverageTable(prefs);
+      dsTable = new ucar.nc2.ui.coverage2.CoverageTable(prefs);
       add(dsTable, BorderLayout.CENTER);
 
       AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            CoverageDataset gridDataset = dsTable.getCoverageDataset();
+            GridCoverageDataset gridDataset = dsTable.getCoverageDataset();
             if (gridDataset == null) return;
             if (display == null) makeDisplay();
             display.setDataset(gridDataset);
@@ -5022,13 +5024,13 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(viewButton);
 
-      dsTable.addExtra(buttPanel, fileChooser);
+      //dsTable.addExtra(buttPanel, fileChooser);
     }
 
     private void makeDisplay() {
       viewerWindow = new IndependentWindow("Coverage Viewer", BAMutil.getImage("netcdfUI"));
 
-      display = new CoverageDisplay((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
+      display = new ucar.nc2.ui.coverage2.CoverageDisplay((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
       display.addMapBean(new WorldMapBean());
       display.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
       display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
@@ -5039,11 +5041,20 @@ public class ToolsUI extends JPanel {
       if (bounds.y < 0) bounds.x = 0;
       viewerWindow.setBounds(bounds);
     }
+
     boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
-      NetcdfDataset newds;
+      GridCoverageDataset gcd = null;
+      try {
+        gcd = CdmrFeatureDataset2.factory(FeatureType.GRID, command);
+        setDataset(gcd);
+
+      } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "CdmrFeatureDataset2.open cant open " + command);
+      /* NetcdfDataset newds;
       try {
         newds = NetcdfDataset.openDataset(command, true, null);
         if (newds == null) {
@@ -5055,7 +5066,7 @@ public class ToolsUI extends JPanel {
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + ioe.getMessage());
         //ioe.printStackTrace();
-        err = true;
+        err = true;    */
 
       } catch (Throwable ioe) {
         ioe.printStackTrace();
@@ -5074,7 +5085,7 @@ public class ToolsUI extends JPanel {
       ds = null;
     }
 
-    void setDataset(NetcdfDataset newds) {
+    /* void setDataset(NetcdfDataset newds) {
       if (newds == null) return;
       try {
         if (ds != null) ds.close();
@@ -5096,9 +5107,9 @@ public class ToolsUI extends JPanel {
         return;
       }
       setSelectedItem(newds.getLocation());
-    }
+    }  */
 
-    void setDataset(CoverageDataset gds) {
+    void setDataset(GridCoverageDataset gds) {
       if (gds == null) return;
       try {
         if (ds != null) ds.close();
@@ -5112,7 +5123,7 @@ public class ToolsUI extends JPanel {
         e.printStackTrace();
         return;
       }
-      setSelectedItem(gds.getLocation());
+      setSelectedItem(gds.getName());
     }
 
     void save() {

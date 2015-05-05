@@ -35,28 +35,23 @@ package thredds.server.cdmrfeature;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.core.TdsRequestedDataset;
-import thredds.server.cdmremote.CdmRemoteQueryBeanValidator;
 import thredds.server.config.TdsContext;
 import thredds.server.exception.ServiceNotAllowed;
 import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.*;
 
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.ft.remote.CdmrGridAdapter;
-import ucar.nc2.ft.remote.CdmrfWriter;
-import ucar.nc2.NetcdfFile;
+import ucar.nc2.ft2.coverage.grid.DtGridDatasetAdapter;
+import ucar.nc2.ft2.remote.CdmrfWriter;
 
 /**
  * Controller for CdmrFeature service.
@@ -99,18 +94,21 @@ public class CdmrFeatureController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmrfeature");
 
-    try (GridDataset ncfile = TdsRequestedDataset.getGridDataset(request, response, datasetPath)) {
-      if (ncfile == null) return;
+    try (GridDataset gds = TdsRequestedDataset.getGridDataset(request, response, datasetPath)) {
+      if (gds == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());
       response.setHeader("Content-Description", "ncstream");
-      CdmrGridAdapter cdmrg = new CdmrGridAdapter(ncfile);
+      DtGridDatasetAdapter cdmrg = new DtGridDatasetAdapter(gds);
       CdmrfWriter writer = new CdmrfWriter(cdmrg, ServletUtil.getRequestBase(request));
       long size = writer.sendHeader(out);
       out.flush();
 
       if (showReq)
         System.out.printf("CdmRemoteController header ok, size=%s%n", size);
+
+    } catch (Throwable t) {
+      t.printStackTrace();
     }
   }
 

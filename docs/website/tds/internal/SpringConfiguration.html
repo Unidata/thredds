@@ -12,7 +12,7 @@
 <ol>
   <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
   <li>Layout of resources: webapp/** is visible if user knows the URL, but webapp/WEB-INF/** is only acessible from controllers.</li>
-  <li>Difference between mapping spring dispatcher servlet to &quot;/&quot; and to &quot;/*&quot;: 1) allow tomcat default servlet to handle jsps 2) spring takes over everything. Currently we need 1)</li>
+  <li>Difference between mapping spring dispatcher servlet to &quot;/&quot; and to &quot;/*&quot;: 1) allow tomcat default servlet to handle jsps 2) spring takes over everything. Currently we need 1), but probably should switch to 2).</li>
 </ol>
 <h2>Spring DI  </h2>
 <h3>Core Beans</h3>
@@ -121,6 +121,7 @@
 <h2>Spring MVC</h2>
 <p><a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html">http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html</a></p>
 <p>Lots of ways, we want to standardize on one or a few idioms.</p>
+<p>Returning null means &quot;weve handled it, dont have to do anyting&quot;. We use this to deal with restrictedDataset redirects.</p>
 <h3>Need to write Binary data</h3>
 <ul>
   <li>return void </li>
@@ -162,12 +163,20 @@
   <li>configured in  WEB-INF/view.xml</li>
 </ul>
 <h3>Validation</h3>
+<ol>
+  <li>The Validator and the DataBinder make up the validation package, which is primarily used in but not limited to the MVC framework.
+    <ul>
+      <li><a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html">http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html</a></li>
+      <li><a href="http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model">http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model</a></li>
+    </ul>
+  </li>
+</ol>
 <ul>
   <li>@Valid JSP 303, with hibernate implementation</li>
   <li><strong>org.springframework.validation.Validator</strong></li>
   <li>dont need DataBinder </li>
   <li>must put initBinder() into Controller  </li>
-  <li>see <strong>RemoteCatalogServiceController</strong></li>
+  <li>see <strong>RemoteCatalogServiceController, CdmRemoteController</strong></li>
   <li>error handling:
     <pre>if&#32;(validationResult.hasErrors())<br />&#32;&#32;throw&#32;new&#32;BindException(validationResult);</pre>
   </li>

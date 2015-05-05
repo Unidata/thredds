@@ -33,6 +33,7 @@
 package thredds.server.admin;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,21 +72,12 @@ public class AdminDirDisplayController {
 	  
     String path = TdsPathUtils.extractPath(req, "/admin/dir");
 
-    /* Don't allow ".." directories in path.   now done in TdsPathUtils.extractPath
-    if (path.contains("/../")
-        || path.equals("..")
-        || path.startsWith("../")
-        || path.endsWith("/..")) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain ..");
-      return null;
-    } */
-
     File file = null;
     if (path.startsWith("content/")) {
       // Check in content/thredds directory (which includes content/thredds/public).
       file = new File(tdsContext.getContentDirectory(), path.substring(8));
       // If not found, check in content/thredds and altContent (but not content/thredds/public).
-      if ( ! file.exists() )
+      if ( !file.exists() )
         file = tdsContext.getCatalogRootDirSource().getFile( path.substring(8));
 
     } else if (path.startsWith("logs/")) {
@@ -96,14 +88,15 @@ public class AdminDirDisplayController {
       file = TdsRequestedDataset.getFile(root);
     }
 
-    if (file == null) {
+    if (file == null || !file.exists()) {
+      throw new FileNotFoundException(path);
       // RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(), req, res );  // LOOK wtf ?
-      return null;
+      // return null;
     }
 
-    if (file.isDirectory()) {
+    if (file.exists() && file.isDirectory()) {
       int i = htmlu.writeDirectory(res, file, path);
-      int status = (i == 0) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_OK;
+      res.setStatus((i == 0) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_OK);
       return null;
     }
 

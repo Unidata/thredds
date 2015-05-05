@@ -493,7 +493,7 @@ public class NcStream {
     return true;
   }
 
-  static public boolean test(Byte[] b, byte[] test) throws IOException {
+  static public boolean test(byte[] b, byte[] test) throws IOException {
     if (b.length != test.length) return false;
     for (int i = 0; i < b.length; i++)
       if (b[i] != test[i]) return false;
@@ -544,7 +544,7 @@ public class NcStream {
     return new EnumTypedef(enumType.getName(), map);
   }
 
-  static Attribute decodeAtt(NcStreamProto.Attribute attp) {
+  static public Attribute decodeAtt(NcStreamProto.Attribute attp) {
     int len = attp.getLen();
     if (len == 0) // deal with empty attribute
       return new Attribute(attp.getName(), decodeAttributeType(attp.getType()), false);  // LOOK unsigned

@@ -36,6 +36,7 @@ package ucar.nc2.constants;
 /**
  * Type-safe enumeration of netCDF Coordinate Axis types. These are used for tagging
  * georeferencing axes.
+ * Do not change the ordering of these enums, as they are used in protobuf messages, only add new ones onto the end.
  *
  * @author john caron
  */

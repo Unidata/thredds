@@ -187,6 +187,7 @@ public class AdminCollectionController {
 
   }
 
+  // LOOK change to ResponseEntity<String>
   @RequestMapping(value = {"/showStatus"})
   protected ModelAndView handleCollectionStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
     res.setContentType(ContentType.html.getContentHeader());
@@ -211,6 +212,7 @@ public class AdminCollectionController {
     return null;
   }
 
+  // LOOK change to ResponseEntity<String>
   @RequestMapping(value = {"/showStatus.csv"})
   protected ModelAndView handleCollectionStatusCsv(HttpServletRequest req, HttpServletResponse res) throws Exception {
     res.setContentType(ContentType.csv.getContentHeader());
@@ -235,6 +237,7 @@ public class AdminCollectionController {
     return null;
   }
 
+  // LOOK change to ResponseEntity<String>
   @RequestMapping(value = {"/trigger"})  // LOOK should require collection and trigger type params
   protected ModelAndView triggerFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
@@ -286,6 +289,7 @@ public class AdminCollectionController {
     return null;
   }
 
+  // LOOK change to ResponseEntity<String>
   @RequestMapping(value = {""})
   protected ModelAndView showFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws Exception {
     res.setContentType(ContentType.html.getContentHeader());

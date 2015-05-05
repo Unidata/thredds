@@ -1,0 +1,52 @@
+import "ucar/nc2/stream/ncStream.proto";
+
+option java_package = "ucar.nc2.ft2.remote";
+option java_outer_classname = "CdmrFeatureProto";
+
+message CoordTransform {
+  required bool isHoriz = 1;
+  required string name = 2;
+  repeated Attribute params = 3;
+}
+
+message CoordAxis {
+  required string name = 1;
+  required DataType dataType = 2;
+  required int32 axisType = 3;    // ucar.nc2.constants.AxisType ordinal
+  required int64 nvalues = 4;
+  required string units = 5;
+  optional string description = 6;
+  optional bool isRegular = 7;
+  required double min = 8;        // required ??
+  required double max = 9;
+  optional double resolution = 10;
+}
+
+message CoordSys {
+  required string name = 1;
+  repeated string axisNames = 2;
+  repeated string transformNames = 3;
+  repeated CoordSys components = 4;        // ??
+}
+
+message GridCoverage {
+  required string name = 1;     // full name
+  required DataType dataType = 2;
+  optional bool unsigned = 3 [default = false];
+  repeated Attribute atts = 4;
+  required string coordSys = 5;
+  optional string units = 6;
+  optional string description = 7;
+}
+
+message GridCoverageDataset {
+  required string name = 1;
+  repeated Attribute atts = 2;
+  repeated CoordSys coordSys = 3;
+  repeated CoordTransform coordTransforms = 4;
+  repeated CoordAxis coordAxes = 5;
+  repeated GridCoverage grids = 6;
+}
+
+//  cd c:/dev/github/thredds50/cdm/src/main/java
+//  protoc --proto_path=. --java_out=. ucar/nc2/ft2/remote/cdmrfeature.proto

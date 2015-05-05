@@ -380,8 +380,7 @@ public class HtmlWriting {
    * @return the number of characters (Unicode code units) in the response.
    * @throws java.io.IOException if an I/O exception occurs.
    */
-  public int writeDirectory(HttpServletResponse res, File dir, String path)
-          throws IOException {
+  public int writeDirectory(HttpServletResponse res, File dir, String path) throws IOException {
     // error checking
     if (dir == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);

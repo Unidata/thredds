@@ -33,7 +33,7 @@
 package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.ft.remote.CdmrFeatureDataset;
+import ucar.nc2.ft2.remote.CdmrFeatureDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;

@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ft.remote;
+package ucar.nc2.ft2.remote;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
@@ -70,30 +70,29 @@ public class CdmrFeatureDataset {
     if (endpoint.startsWith(SCHEME))
       endpoint = endpoint.substring(SCHEME.length());
 
+    if (wantFeatureType == FeatureType.GRID) {
+      //old way to get a grid - wrap a CdmRemote
+      CdmRemote ncremote = new CdmRemote(endpoint);
+      NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
+      return new GridDataset(ncd);
+    }
+
     Document doc = getCapabilities(endpoint);
     Element root = doc.getRootElement();
     Element elem = root.getChild("featureDataset");
     String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
-    String uri = elem.getAttribute("url").getValue();
 
-    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= %s url=%s%n", endpoint, fType, uri);
+    endpoint = elem.getAttribute("url").getValue();
+    wantFeatureType = FeatureType.getType(fType);
+    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= '%s' url=%s%n", endpoint, fType, endpoint);
 
-    FeatureType ft = FeatureType.getType(fType);
+    List<VariableSimpleIF> dataVars = FeatureDatasetPointXML.getDataVariables(doc);
+    LatLonRect bb = FeatureDatasetPointXML.getSpatialExtent(doc);
+    CalendarDateRange dr = FeatureDatasetPointXML.getTimeSpan(doc);
+    DateUnit timeUnit = FeatureDatasetPointXML.getTimeUnit(doc);
+    String altUnits = FeatureDatasetPointXML.getAltUnits(doc);
 
-    if (ft == null || ft == FeatureType.NONE || ft == FeatureType.GRID) {
-      CdmRemote ncremote = new CdmRemote(uri);
-      NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
-      return new GridDataset(ncd);
-
-    } else {
-      List<VariableSimpleIF> dataVars = FeatureDatasetPointXML.getDataVariables(doc);
-      LatLonRect bb = FeatureDatasetPointXML.getSpatialExtent(doc);
-      CalendarDateRange dr = FeatureDatasetPointXML.getTimeSpan(doc);
-      DateUnit timeUnit = FeatureDatasetPointXML.getTimeUnit(doc);
-      String altUnits = FeatureDatasetPointXML.getAltUnits(doc);
-
-      return new PointDatasetRemote(ft, uri, timeUnit, altUnits, dataVars, bb, dr);
-    }
+    return new PointDatasetRemote(wantFeatureType, endpoint, timeUnit, altUnits, dataVars, bb, dr);
   }
 
   static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
