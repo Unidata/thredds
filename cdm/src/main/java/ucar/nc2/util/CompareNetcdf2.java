@@ -59,15 +59,16 @@ public class CompareNetcdf2 {
     return tc.compare(org, copy);
   }
 
-  static public interface ObjFilter {
+  public interface ObjFilter {
     boolean attCheckOk(Variable v, Attribute att);
     boolean varDataTypeCheckOk(Variable v);
   }
 
   static public boolean compareLists(List org, List copy, Formatter f) {
-    return checkContains("first", org, copy, f) && checkContains("second", copy, org, f);
+    boolean ok1 = checkContains("first", org, copy, f);
+    boolean ok2 = checkContains("second", copy, org, f);
+    return ok1 && ok2;
   }
-
 
   static private boolean checkContains(String what, List container, List wantList, Formatter f) {
     boolean ok = true;

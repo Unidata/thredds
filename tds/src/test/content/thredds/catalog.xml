@@ -56,7 +56,7 @@
   </datasetScan>
 
   <!-- a scan on the entire /upc/share/cdmUnitTest directory; not all services will make sense -->
-  <datasetScan name="Test scan cdmUnitTest (ID)" ID="scanCdmUnitTests" path="scanCdmUnitTests" location="${cdmUnitTest}\">
+  <datasetScan name="Test scan cdmUnitTest (ID)" ID="scanCdmUnitTests" path="scanCdmUnitTests" location="${cdmUnitTest}/">
     <metadata inherited="true">
       <serviceName>all</serviceName>
     </metadata>
