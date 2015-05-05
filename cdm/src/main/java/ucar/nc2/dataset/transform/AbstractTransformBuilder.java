@@ -72,7 +72,7 @@ public abstract class AbstractTransformBuilder {
       for (CoordinateAxis axis : axes) {
         if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
           Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
-          units = v.getUnitsString();
+          units = (v == null) ? axis.getUnitsString() : v.getUnitsString();
           break;
         }
       }
