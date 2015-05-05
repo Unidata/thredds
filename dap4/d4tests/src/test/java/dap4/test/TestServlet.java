@@ -15,6 +15,8 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.*;
+
 /**
  * TestServlet has multiple purposes.
  * 1. It test the d4tsservlet.

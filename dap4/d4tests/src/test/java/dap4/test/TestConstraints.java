@@ -128,7 +128,8 @@ public class TestConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests.add(locate1(8));
+            chosentests.add(locate1(6));
+            prop_visual = true;
         } else {
             for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);

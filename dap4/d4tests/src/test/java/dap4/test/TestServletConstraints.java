@@ -6,6 +6,7 @@ import dap4.dap4shared.RequestMode;
 import dap4.test.servlet.*;
 import dap4.test.util.DapTestCommon;
 import dap4.test.util.Dump;
+import org.junit.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
