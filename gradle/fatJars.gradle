@@ -41,12 +41,13 @@ buildscript {
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
+
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 def fatJarTasks = []
 
 fatJarTasks << tasks.create(name: 'buildDap4', type: ShadowJar) {
-    archiveName = "dap4-${project.version}.jar"
+    baseName = 'dap4'
     configurations = [project.configurations.dap4]
 
     doFirst {
@@ -57,7 +58,7 @@ fatJarTasks << tasks.create(name: 'buildDap4', type: ShadowJar) {
 }
 
 fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
-    archiveName = "ncIdv-${project.version}.jar"
+    baseName = 'ncIdv'
     configurations = [project.configurations.ncIdv]
 
     dependencies {
@@ -73,7 +74,7 @@ fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
 }
 
 fatJarTasks << tasks.create(name: 'buildTdm', type: ShadowJar) {
-    archiveName = "tdm-4.6.jar"
+    baseName = 'tdm'
     configurations = [project.configurations.tdm]
 
     doFirst {
@@ -82,7 +83,7 @@ fatJarTasks << tasks.create(name: 'buildTdm', type: ShadowJar) {
 }
 
 fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
-    archiveName = "netcdfAll-${project.version}.jar"
+    baseName = 'netcdfAll'
     configurations = [project.configurations.netcdfAll]
 
     doFirst {
@@ -91,7 +92,7 @@ fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
 }
 
 fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
-    archiveName = "toolsUI-${project.version}.jar"
+    baseName = 'toolsUI'
     configurations = [project.configurations.toolsUI]
 
     doFirst {

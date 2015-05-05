@@ -1,22 +1,54 @@
-configure(javaProjects) {
+configure(allprojects) {
     apply plugin: 'maven-publish'
 
-    // Finds this project's Java software component, if any.
-    // This component is added when the Java plugin is applied.
-    def javaSoftwareComponent = components.findByName("java")
+    publishing {
+        publications {
+            // The Java plugin adds the 'java' software component to a project.
+            // The War plugin adds the 'web' software component to a project.
+            ['java', 'web'].each { String name ->
+                def softwareComponent = components.findByName name
 
-    if (javaSoftwareComponent) {  // Groovy truth! Equivalent to: "javaSoftwareComponent != null"
-        publishing {
-            publications {
-                // Creates a maven publication named after the project. This will also generate several tasks:
-                //   generatePomFileFor$namePublication
-                //   publish$namePublicationToMavenLocal
-                //   publishToMavenLocal
-                //   publish
-                "$name"(MavenPublication) {
-                    from javaSoftwareComponent
+                // Creates a Maven publication with the given name. It will also generate a couple tasks:
+                //   generatePomFileFor${name}Publication
+                //   publish${name}PublicationToMavenLocal
+                if (softwareComponent) {
+                    "$name"(MavenPublication) {
+                        from softwareComponent
+                    }
                 }
             }
         }
+    }
+}
+
+///////////////////////////////////////////////// Root /////////////////////////////////////////////////
+
+import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
+
+publishing {
+    publications {
+        // Publish all artifacts we've added to the "archives" configuration of the root project. See fatJars.gradle.
+        rootProject.configurations.archives.allArtifacts.each {
+            if (it instanceof ArchivePublishArtifact) {
+                AbstractArchiveTask task = (it as ArchivePublishArtifact).archiveTask
+
+                "$task.baseName"(MavenPublication) {
+                    artifactId task.baseName
+                    artifact task
+                }
+            }
+        }
+    }
+}
+
+// The rules for when you can access GenerateMavenPom tasks are convoluted: https://goo.gl/ftqDK8
+// The model block didn't work for me; only gradle.projectsEvaluated.
+gradle.projectsEvaluated {
+    task generatePomFilesForPublication {
+        Collection<Task> allTasks = project.getAllTasks(true).values().flatten()
+        Collection<Task> genPomTasks = allTasks.findAll {
+            it instanceof org.gradle.api.publish.maven.tasks.GenerateMavenPom
+        }
+        dependsOn genPomTasks
     }
 }
