@@ -212,6 +212,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
 
   //////////////////////////////////////////
   static public double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
+    double factor = 1.0;
     String units = ds.findAttValueIgnoreCase(ctv, CDM.UNITS, null);
     if (units == null) {
       List<CoordinateAxis> axes = ds.getCoordinateAxes();
@@ -227,12 +228,13 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     if (units != null) {
       try {
         SimpleUnit unit = SimpleUnit.factoryWithExceptions(units);
-        return unit.convertTo(1.0, SimpleUnit.kmUnit);
+        factor =  unit.convertTo(1.0, SimpleUnit.kmUnit);
       } catch (Exception e) {
         log.error(units + " not convertible to km");
       }
     }
-    return 1.0;
+
+    return factor;
   }
 
     /**

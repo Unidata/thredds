@@ -454,7 +454,11 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String name = dsElem.getAttributeValue("name");
     String path = dsElem.getAttributeValue("path");
 
-    String scanDir = expandAliasForPath(dsElem.getAttributeValue("location"));
+    String locationOrg = dsElem.getAttributeValue("location");
+    String scanDir = expandAliasForPath(locationOrg);
+    if (scanDir.startsWith("${")) {
+      scanDir = expandAliasForPath(locationOrg);  // debugging
+    }
 
     // Read datasetConfig element
     String configClassName = null;
