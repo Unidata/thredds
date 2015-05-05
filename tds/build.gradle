@@ -57,8 +57,6 @@ dependencies {
     runtime libraries["log4j-web"]
 }
 
-war.archiveName = 'thredds.war'
-
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
 apply plugin: 'org.akhikhl.gretty'
 

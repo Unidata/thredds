@@ -16,7 +16,6 @@ dependencies {
 }
 
 war {
-    archiveName = "d4ts.war"
     File d4testsResourcesDir = project(":dap4:d4tests").file('src/test/data/resources')
 
     from (new File(d4testsResourcesDir, 'favicon.ico')) {

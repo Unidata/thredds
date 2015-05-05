@@ -15,5 +15,3 @@ dependencies {
     runtime libraries["log4j-core"]
     runtime libraries["log4j-web"]
 }
-
-war.archiveName = "dts.war"

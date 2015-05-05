@@ -3,17 +3,25 @@ configure(publishedProjects) {
 
     publishing {
         publications {
-            // The Java plugin adds the 'java' software component to a project.
-            // The War plugin adds the 'web' software component to a project.
-            ['java', 'web'].each { String name ->
-                def softwareComponent = components.findByName name
+            // Try to create a publication from the project's 'web' component (WAR file) first.
+            // If it doesn't have one, try to create a publication from the project's 'java' component (JAR file).
+            // This logic is meant to handle subprojects like :tds that have both 'web' AND 'java' components.
+            // In such cases, we want only the 'web' component to be published, to avoid issues in Maven where
+            // multiple artifacts have the same groupId/artifactId coordinates.
+            ['web', 'java'].each { String name ->
+                if (!withType(MavenPublication)) {  // Project does not currently have any Maven publications.
+                    def softwareComponent = components.findByName name
 
-                // Creates a Maven publication with the given name. It will also generate a couple tasks:
-                //   generatePomFileFor${name}Publication
-                //   publish${name}PublicationToMavenLocal
-                if (softwareComponent) {
-                    "$name"(MavenPublication) {
-                        from softwareComponent
+                    if (softwareComponent) {
+                        // Creates a Maven publication with the given name. It will also generate several tasks:
+                        //   generatePomFileFor${name}Publication
+                        //   publish${name}PublicationToMavenLocal
+                        //   publishToMavenLocal  (depends on all instances of the above task)
+                        //   publish${name}PublicationTo${repoName}Repository
+                        //   publish  (depends on all instances of the above task)
+                        "$name"(MavenPublication) {
+                            from softwareComponent
+                        }
                     }
                 }
             }
