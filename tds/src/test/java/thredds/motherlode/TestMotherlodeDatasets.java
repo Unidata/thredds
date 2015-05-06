@@ -128,8 +128,9 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
       out.close();
     }
 
-    //assert countNoAccess == 0;
     assert countNoOpen == 0;
+    assert crawler.getNumReadFailures() == 0 :
+            String.format("Failed to read %s catalogs.", crawler.getNumReadFailures());
   }
 
   @Override

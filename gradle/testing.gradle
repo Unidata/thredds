@@ -108,9 +108,10 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
         }
     }
 
-    // Add the content root to :it's gretty extension as a system property.
-    // This is how we propagate the property to the embedded Tomcat that's started for :it:integrationTest.
+    // Add the content root and testdata dir to :it's gretty extension as system properties.
+    // This is how we propagate these properties to the embedded Tomcat that's started for :it:integrationTest.
     project(":it").gretty.systemProperty contentRootKey, rootProject.property(contentRootKey)
+    project(':it').gretty.systemProperty testdataDirKey, rootProject.property(testdataDirKey)
 }
 
 /**
