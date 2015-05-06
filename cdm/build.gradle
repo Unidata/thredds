@@ -75,12 +75,12 @@ task testJar(type: Jar, dependsOn: testClasses,
     from sourceSets.test.output.getAsFileTree().matching {
         include 'ucar/nc2/TestLocal.class'
         include 'ucar/nc2/util/UnitTestCommon.class'
-        include 'ucar/unidata/test/ma2/TestMa2Utils.class'
-        include 'ucar/unidata/test/ma2/TestStructureArray.class'
         include 'ucar/unidata/test/util/CompareNetcdf.class'
         include 'ucar/unidata/test/util/TestDir*.class'
         include 'ucar/unidata/test/util/TestFileDirUtils.class'
         include 'ucar/unidata/test/util/ThreddsServer.class'
+        include 'ucar/unidata/test/util/UtilsMa2Test.class'
+        include 'ucar/unidata/test/util/UtilsTestStructureArray.class'
 
         // All 3 of these are included in the same source file: ucar/unidata/test/Diff.java
         // Also, 2 of the class names aren't capitalized. Ugh.
