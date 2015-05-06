@@ -33,15 +33,17 @@
 package ucar.nc2.iosp.gini;
 
 import junit.framework.*;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestGini extends TestCase {
-
   public static String compressGini = TestDir.cdmUnitTestDir + "formats/gini/n0r_20041013_1852-compress";
   public static String uncompressGini = TestDir.cdmUnitTestDir + "formats/gini/n0r_20041013_1852-uncompress";
   public static String compress_n1p = TestDir.cdmUnitTestDir + "formats/gini/n1p_20041206_2140";

@@ -107,7 +107,7 @@ public class TestReadAndCountDods {
 
   @Test
   public void readAndCount() throws Exception {
-    ThreddsServer.DEV.assumeIsAvailable();
+    ThreddsServer.TEST.assumeIsAvailable();
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 

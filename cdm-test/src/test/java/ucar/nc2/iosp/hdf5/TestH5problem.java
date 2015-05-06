@@ -34,8 +34,10 @@
 package ucar.nc2.iosp.hdf5;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.nc2.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
@@ -45,6 +47,7 @@ import java.io.IOException;
  * @author caron
  * @since 10/27/2014
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestH5problem {
 
   public void problemV() throws IOException {
