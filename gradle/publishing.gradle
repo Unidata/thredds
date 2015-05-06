@@ -1,6 +1,12 @@
 configure(publishedProjects) {
     apply plugin: 'maven-publish'
 
+    // The PublishingExtension is a DeferredConfigurable model element, meaning that extension will be configured as
+    // late as possible in the build. So any 'publishing' configuration blocks are not evaluated until either:
+    //   1. The project is about to execute, or
+    //   2. the publishing extension is referenced as an instance, as opposed to via a configuration closure.
+    // This is why we can reference 'web' software components, even though the subprojects that apply the war plugin
+    // haven't been evaluated yet.
     publishing {
         publications {
             // Try to create a publication from the project's 'web' component (WAR file) first.
@@ -26,13 +32,24 @@ configure(publishedProjects) {
                 }
             }
         }
-    }
 
-//    repositories {
-//        flatDir {
-//            dirs buildDir
-//        }
-//    }
+        repositories {
+            String version = rootProject.version as String
+            if (version.endsWith('SNAPSHOT')) {
+                maven {
+                    name = 'snapshots'
+                    url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots/'
+                    // Set credentials in taskGraph.whenReady {}
+                }
+            } else {
+                maven {
+                    name = 'releases'
+                    url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/'
+                    // Set credentials in taskGraph.whenReady {}
+                }
+            }
+        }
+    }
 }
 
 ///////////////////////////////////////////////// Root /////////////////////////////////////////////////
@@ -55,14 +72,26 @@ publishing {
     }
 }
 
-// The rules for when you can access GenerateMavenPom tasks are convoluted: https://goo.gl/ftqDK8
-// The model block didn't work for me; only gradle.projectsEvaluated.
-gradle.projectsEvaluated {
-    task generatePomFilesForPublication {
-        Collection<Task> allTasks = project.getAllTasks(true).values().flatten()
-        Collection<Task> genPomTasks = allTasks.findAll {
-            it instanceof org.gradle.api.publish.maven.tasks.GenerateMavenPom
-        }
-        dependsOn genPomTasks
+gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+    Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll { it instanceof PublishToMavenRepository }
+    if (!mavenPublishTasks) {
+        return  // We're not running any tasks that publish to a Maven repo.
+    }
+
+    Closure nexusCredentials = {
+        username = getPropertyOrFailBuild 'nexus.username'
+        password = getPropertyOrFailBuild 'nexus.password'
+    }
+
+    mavenPublishTasks.each {
+        it.repository.credentials nexusCredentials
+    }
+}
+
+String getPropertyOrFailBuild(String key) {
+    if (!rootProject.hasProperty(key)) {
+        throw new GradleException("You must define the '$key' property in order to publish to Nexus.")
+    } else {
+        rootProject.property(key) as String
     }
 }
