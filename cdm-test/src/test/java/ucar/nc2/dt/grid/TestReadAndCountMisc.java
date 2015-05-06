@@ -33,8 +33,7 @@
 package ucar.nc2.dt.grid;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 /**
  * Describe
@@ -46,20 +45,22 @@ public class TestReadAndCountMisc {
   // For some reason, this fails on Travis after a 10-minute timeout. It succeeds everywhere else.
   // We assume that thredds.ucar.edu is unreachable due to some limitation and/or bug in Travis.
   @Test
-  @Category(NotTravis.class)
   public void testLiveServer() throws Exception {
+    ThreddsServer.LIVE.assumeIsAvailable();
     TestReadandCount.doOne("thredds:resolve:http://thredds.ucar.edu/thredds/",
             "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);  // flips between 40 and 33
   }
 
   @Test
   public void testTestServer() throws Exception {
+    ThreddsServer.TEST.assumeIsAvailable();
     TestReadandCount.doOne("thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/",
             "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
   }
 
   @Test
   public void testDevServer() throws Exception {
+    ThreddsServer.DEV.assumeIsAvailable();
     TestReadandCount.doOne("thredds:resolve:http://thredds-dev.unidata.ucar.edu/thredds/",
             "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
   }

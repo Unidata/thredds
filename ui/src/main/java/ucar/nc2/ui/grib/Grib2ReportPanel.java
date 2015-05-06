@@ -1,7 +1,7 @@
 package ucar.nc2.ui.grib;
 
 import org.itadaki.bzip2.BZip2OutputStream;
-import org.itadaki.bzip2.BitOutputStream;
+import org.itadaki.bzip2.BZip2BitOutputStream;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -230,7 +230,7 @@ public class Grib2ReportPanel extends ReportPanel {
     // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
 
     BZip2OutputStream zipper = new BZip2OutputStream(out);
-    BitOutputStream bitOut = new BitOutputStream(zipper);
+    BZip2BitOutputStream bitOut = new BZip2BitOutputStream(zipper);
     float diffMax = -Float.MAX_VALUE;
     for (float fd : data) {
       int packed_data = Math.round((fd - add_offset) / scale_factor);

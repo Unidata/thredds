@@ -33,18 +33,20 @@
 package ucar.nc2.iosp.nexrad2;
 
 import org.junit.Test;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
-
-import java.io.IOException;
-import java.io.File;
-
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
+import java.io.File;
+import java.io.IOException;
+
+@Category(NeedsCdmUnitTest.class)
 public class TestNexrad2HiResolution {
 
   @Test

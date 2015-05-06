@@ -33,18 +33,6 @@
 
 package ucar.httpservices;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-
-import org.apache.http.*;
-import org.apache.http.client.methods.*;
-import org.apache.http.client.params.AllClientPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HttpContext;
-
 /**
  * HTTPFactory creates method instance.
  * This code was originally in HttpMethod.

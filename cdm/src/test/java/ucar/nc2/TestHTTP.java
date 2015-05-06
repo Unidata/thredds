@@ -32,15 +32,18 @@
  */
 package ucar.nc2;
 
+import org.junit.Before;
 import org.junit.Test;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.writer.DataFactory;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.Index;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -49,6 +52,11 @@ import java.util.Formatter;
 
 public class TestHTTP  {
   String url = "http://" + TestDir.threddsTestServer + "/thredds/fileServer/testdata/mydata1.nc";
+
+  @Before
+  public void setUp() {
+    ThreddsServer.REMOTETEST.assumeIsAvailable();
+  }
 
   @Test
   public void testOpenNetcdfFile() throws IOException {

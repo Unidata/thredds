@@ -1,0 +1,6 @@
+ext.title = "Data Access Protocol (DAP) version 4.0"  // Will be inherited by subprojects.
+
+subprojects {
+    // TODO: Give the subprojects real titles.
+    ext.title = "DAP4: $name"
+}

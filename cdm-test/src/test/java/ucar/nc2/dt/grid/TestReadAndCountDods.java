@@ -35,6 +35,7 @@ package ucar.nc2.dt.grid;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +107,7 @@ public class TestReadAndCountDods {
 
   @Test
   public void readAndCount() throws Exception {
+    ThreddsServer.DEV.assumeIsAvailable();
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 

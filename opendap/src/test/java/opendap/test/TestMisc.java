@@ -32,12 +32,11 @@
 
 package opendap.test;
 
-import org.junit.Test;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.nc2.util.rc.RC;
 import ucar.unidata.test.Diff;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -103,6 +102,7 @@ public class TestMisc extends UnitTestCommon
     public void
     testMisc() throws Exception
     {
+        ThreddsServer.REMOTETEST.assumeIsAvailable();
         System.out.println("TestMisc:");
         for(Testcase testcase : testcases) {
             System.out.println("url: " + testcase.url);

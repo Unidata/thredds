@@ -1,17 +1,15 @@
-dependencies {
-    compile project(":cdm")
-    runtime project(":bufr")
-    runtime project(":grib")
-    runtime project(":netcdf4")
-    runtime project(":clcommon")
-    runtime project(":opendap")
-    runtime project(":visad")
+description = "Package that generates a jar file for use in the IDV"
+ext.title = "ncIdv Module"
 
-    compile libraries["slf4j-api"]
-    runtime libraries["slf4j-jdk14"]
-}
-
-//////////////////////////////////////////////////////////
+// These are now defined in /gradle/fatJars.gradle
+//dependencies {
+//    compile project(":cdm")
+//    runtime project(":bufr")
+//    runtime project(":grib")
+//    runtime project(":netcdf4")
+//    runtime project(":opendap")
+//    runtime project(":visadCdm")
+//}
 
 ext {
     ncIdvJar = 'ncIdvs-' + version + '.jar'
@@ -22,39 +20,6 @@ ext {
     destinationDir = 'build/libs/'
 }
 
-apply plugin: 'shadow'
-
-shadow {
-    outputFile = file("${destinationDir}/${ncIdvJar}")
-    outputFile = file("${ncIdvJar}")
-    stats = true
-
-    exclude 'AUTHORS'    // crap from other packages
-    exclude 'DATE'
-    exclude 'LICENCE'
-    exclude 'LICENSE'
-    exclude 'NOTICE'
-    exclude '*.txt'
-    exclude '*.xml'
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.txt'
-    exclude 'META-INF/*.xml'
-
-    exclude 'edu/wisc/**'
-    exclude 'nom/**'
-    exclude 'visad/**'
-
-    artifactSet {
-        exclude 'commons-logging:commons-logging:*'
-        exclude 'net.sf.ehcache:ehcache-core:*'
-    }
-
-}
-
 /* following properties should be in gradle.properties:
    keystore=name of keystore file
    keystoreAlias=idv
@@ -62,16 +27,17 @@ shadow {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
-task releaseCdm(dependsOn: ['shadowJar']) << {
-    if (project.hasProperty("ftpdir")) {
-        // println "destinationDir= " + ${destinationDir}
-        println "copy " + ncIdvJar + " to " + ftpdir
-        copy { // does not give error message
-            // from ${destinationDir} + ncIdvJar
-            from ncIdvJar
-            into ftpdir
-        }
-    } else {
-        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
-    }
-}
+// TODO: Use the Sync task for this.
+//task releaseCdm(dependsOn: ['shadowJar']) << {
+//    if (project.hasProperty("ftpdir")) {
+//        // println "destinationDir= " + ${destinationDir}
+//        println "copy " + ncIdvJar + " to " + ftpdir
+//        copy { // does not give error message
+//            // from ${destinationDir} + ncIdvJar
+//            from ncIdvJar
+//            into ftpdir
+//        }
+//    } else {
+//        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
+//    }
+//}

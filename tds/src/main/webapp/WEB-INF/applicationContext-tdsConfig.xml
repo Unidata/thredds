@@ -26,7 +26,14 @@
    
   <!-- tell spring that tds.properties gets read in first and overrides anything else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <!-- Check system properties before looking in tds.properties. -->
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+
+    <!-- Default is "false": An exception will be thrown if a placeholder fails to resolve.
+    Switch this flag to "true" in order to preserve the placeholder String as-is in such a case,
+    leaving it up to other placeholder configurers to resolve it. -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+
     <property name="locations">
       <list>
         <value>classpath:thredds/server/tds.properties</value>
@@ -35,7 +42,7 @@
   </bean>
 
    <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
-     <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
+     <entry key="cdmUnitTest" value="${unidata.testdata.path}/cdmUnitTest/"/>
    </util:map>
 
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />

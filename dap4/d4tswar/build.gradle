@@ -8,9 +8,27 @@ dependencies {
     compile project(':cdm')
     compile project(':netcdf4')
 
-    providedCompile libraries["javax.servlet-api"]
+    provided libraries["javax.servlet-api"]
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-core"]
     runtime libraries["log4j-web"]
+}
+
+war {
+    File d4testsResourcesDir = project(":dap4:d4tests").file('src/test/data/resources')
+
+    from (new File(d4testsResourcesDir, 'favicon.ico')) {
+        into('WEB-INF/')
+    }
+    from (new File(d4testsResourcesDir, "testfiles/")) {
+        into('WEB-INF/resources/testfiles/')
+        include('*.syn')
+        include('*.nc')
+        include('*.hdf5')
+    }
+    from(new File(d4testsResourcesDir, "testfiles/dmr/")) {
+        into('WEB-INF/resources/testfiles/dmr/')
+        include('*.dmr')
+    }
 }

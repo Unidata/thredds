@@ -3,7 +3,7 @@
 
 //================================================ Repositories ================================================//
 
-allprojects {
+allprojects {  // Doesn't apply any plugins: safe to run closure on all projects.
     // TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
     // Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
     repositories {
@@ -30,9 +30,11 @@ ext {
 
 libraries["gretty"] = "org.akhikhl.gretty:gretty:1.2.0"
 
-libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:0.8"
+libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.1"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
+
+libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.1"
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
@@ -188,9 +190,9 @@ libraries["threddsIso"] = "EDS:threddsIso:2.2.5"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
-subprojects {
-    // all() executes the given closure against all configurations currently in the container,
-    // and any configurations added later as well.
+allprojects {  // Doesn't apply any plugins: safe to run closure on all projects.
+    // Executes the given closure against all objects in this collection, and any objects subsequently added to this
+    // collection. See org.gradle.api.DomainObjectCollection.all(Closure)
     configurations.all {
         // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j".
         // This effectively converts every jcl call to an slf4j call.

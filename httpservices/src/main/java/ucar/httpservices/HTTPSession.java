@@ -114,7 +114,7 @@ public class HTTPSession implements AutoCloseable
 
     // Define all the legal properties
     // From class AllClientPNames
-    // Use aliases because in httpclietn 4.3, AllClientPNames is deprecated
+    // Use aliases because in httpclient 4.3, AllClientPNames is deprecated
 
     static public final String ALLOW_CIRCULAR_REDIRECTS = AllClientPNames.ALLOW_CIRCULAR_REDIRECTS;
     static public final String HANDLE_REDIRECTS = AllClientPNames.HANDLE_REDIRECTS;

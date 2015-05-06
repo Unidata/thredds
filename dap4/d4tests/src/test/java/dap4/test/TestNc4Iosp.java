@@ -3,7 +3,9 @@ package dap4.test;
 import dap4.core.util.DapException;
 import dap4.servlet.CDMDSP;
 import dap4.test.util.DapTestCommon;
+import org.junit.Assume;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -161,13 +163,16 @@ public class TestNc4Iosp extends DapTestCommon
     public void testNc4Iosp()
         throws Exception
     {
-            boolean allpass = true;
-            for(Nc4IospTest testcase : chosentests) {
-                boolean ok = doOneTest(testcase);
-                if(!ok)
-                    allpass = false;
-            }
-            assertTrue("At least one test failed", allpass);
+        // Ignore this test if NetCDF-4 isn't present.
+        Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+
+        boolean allpass = true;
+        for(Nc4IospTest testcase : chosentests) {
+            boolean ok = doOneTest(testcase);
+            if(!ok)
+                allpass = false;
+        }
+        assertTrue("At least one test failed", allpass);
     }
 
     //////////////////////////////////////////////////
