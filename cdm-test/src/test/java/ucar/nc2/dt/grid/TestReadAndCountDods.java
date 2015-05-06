@@ -104,12 +104,12 @@ public class TestReadAndCountDods {
     this.nVertCooordAxes = nVertCooordAxes;
   }
 
-  //@Test
+  @Test
   public void readAndCount() throws Exception {
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
-  @Test
+  //@Test
   public void testProblem() throws Exception {
     TestReadandCount.doOne("thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/",
             "catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
