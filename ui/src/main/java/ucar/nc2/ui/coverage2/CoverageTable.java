@@ -95,6 +95,15 @@ public class CoverageTable extends JPanel {
         infoWindow.show();
       }
     });
+    csPopup.addAction("Show Coord Value differences", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        infoTA.clear();
+        infoTA.appendLine(bean.showCoordValueDiffs());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
 
   }
 
@@ -452,7 +461,6 @@ public class CoverageTable extends JPanel {
     DataType dataType;
     AxisType axisType;
     long nvalues;
-    boolean isRegular;
     double resolution;
 
     // no-arg constructor
@@ -469,7 +477,6 @@ public class CoverageTable extends JPanel {
       setUnits(v.getUnits());
       setDescription(v.getDescription());
       setNvalues(v.getNvalues());
-      setIsRegular(v.isRegular());
       setResolution(v.getResolution());
     }
 
@@ -513,12 +520,8 @@ public class CoverageTable extends JPanel {
       this.dataType = dataType;
     }
 
-    public String getIsRegular() {
-      return Boolean.toString(isRegular);
-    }
-
-    public void setIsRegular(boolean isRegular) {
-      this.isRegular = isRegular;
+    public String getSpacing() {
+      return axis.getSpacing().toString();
     }
 
     public long getNvalues() {
@@ -547,6 +550,33 @@ public class CoverageTable extends JPanel {
 
     public boolean getHasData() {
       return axis.getValues() != null;
+    }
+
+    String showCoordValueDiffs() {
+      Formatter f = new Formatter();
+      double[] values = axis.getValues();
+      int n = values.length;
+      switch (axis.getSpacing()) {
+        case irregularPoint:
+        case contiguousInterval:
+          f.format("%n%s (npts=%d)%n", axis.getSpacing(), n);
+          for (int i=0; i<n-1; i++) {
+            double diff = values[i+1] - values[i];
+            f.format("%10f %10f == %10f%n", values[i], values[i+1], diff);
+          }
+          f.format("%n");
+          break;
+
+        case discontiguousInterval:
+           f.format("%ndiscontiguous intervals (npts=%d)%n",n);
+           for (int i=0; i<n; i+=2) {
+             double diff = values[i + 1] - values[i];
+             f.format("(%10f,%10f) = %10f%n", values[i], values[i + 1], diff);
+           }
+           f.format("%n");
+           break;
+       }
+      return f.toString();
     }
   }
 

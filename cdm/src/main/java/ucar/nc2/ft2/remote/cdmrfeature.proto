@@ -16,7 +16,7 @@ message CoordAxis {
   required string units = 4;
   optional string description = 5;
   required int64 nvalues = 6;
-  optional bool isRegular = 7;
+  required int32 spacing = 7;         // GridCoordAxis.Spacing ordinal
   required double startValue = 8;
   required double endValue = 9;
   optional double resolution = 10;     // resolution = (max-min) / (nvalues-1)

@@ -210,15 +210,13 @@ public class ListenerManager {
 
       try {
         method.invoke(client, args);
-      } catch (IllegalAccessException e) {
-        iter.remove();
-        logger.error("ListenerManager IllegalAccessException", e);
-      } catch (IllegalArgumentException e) {
-        iter.remove();
-        logger.error("ListenerManager IllegalArgumentException", e);
-      } catch (InvocationTargetException e) {
-        iter.remove();
-        logger.error("ListenerManager InvocationTargetException on " + method + " threw exception " + e.getTargetException(), e);
+      } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+        e.printStackTrace();
+        if (e.getCause() != null)
+          e.getCause().printStackTrace();
+
+        // iter.remove();
+        logger.error("ListenerManager calling " + method + " threw exception ", e);
       }
     }
   }

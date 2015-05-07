@@ -466,12 +466,13 @@ public class CoverageRenderer {
       //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
     GridSubset subset = new GridSubset(dataState.geocs);
     if (level >= 0 && dataState.zaxis != null) {
-      double levelVal = dataState.zaxis.getValue(level);
-      subset.set(GridCoordAxis.Type.Z, levelVal);
+      double levelVal = dataState.zaxis.getCoord(level);
+      subset.set(GridCoordAxis.Type.Z, Double.toString(levelVal));
     }
 
     try {
       dataH = dataState.grid.readData(subset);
+      dataH = dataH.reduce(); // get rid of n=1 dimensions
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -830,10 +831,10 @@ public class CoverageRenderer {
     if (debugMiss) System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
 
     if (sameProjection) {
-      double xmin = Math.min(dataState.xaxis.getCoordEdge(0), dataState.xaxis.getCoordEdge(nx));
-      double xmax = Math.max(dataState.xaxis.getCoordEdge(0), dataState.xaxis.getCoordEdge(nx));
-      double ymin = Math.min(dataState.yaxis.getCoordEdge(0), dataState.yaxis.getCoordEdge(ny));
-      double ymax = Math.max(dataState.yaxis.getCoordEdge(0), dataState.yaxis.getCoordEdge(ny));
+      double xmin = Math.min(dataState.xaxis.getCoordEdge1(0), dataState.xaxis.getCoordEdgeLast());
+      double xmax = Math.max(dataState.xaxis.getCoordEdge1(0), dataState.xaxis.getCoordEdgeLast());
+      double ymin = Math.min(dataState.yaxis.getCoordEdge1(0), dataState.yaxis.getCoordEdgeLast());
+      double ymax = Math.max(dataState.yaxis.getCoordEdge1(0), dataState.yaxis.getCoordEdgeLast());
 
       // pre color the drawing area with the most used color
       count += drawRect(g, modeColor, xmin, ymin, xmax, ymax, drawProjection.isLatLon());
@@ -846,8 +847,8 @@ public class CoverageRenderer {
     // draw individual rects with run length
     Index imaH = dataH.getIndex();
     for (int y = 0; y < ny; y++) {
-      double ybeg = dataState.yaxis.getCoordEdge(y);
-      double yend = dataState.yaxis.getCoordEdge(y + 1);
+      double ybeg = dataState.yaxis.getCoordEdge1(y);
+      double yend = dataState.yaxis.getCoordEdge2(y);
       int thisColor, lastColor = 0;
       int run = 0;
       int xbeg = 0;
@@ -868,7 +869,7 @@ public class CoverageRenderer {
         else {
           if (sameProjection) {
             if (lastColor != modeColor) // dont have to draw these
-              count += drawRect(g, lastColor, dataState.xaxis.getCoordEdge(xbeg), ybeg, dataState.xaxis.getCoordEdge(x), yend, drawProjection.isLatLon());
+              count += drawRect(g, lastColor, dataState.xaxis.getCoordEdge1(xbeg), ybeg, dataState.xaxis.getCoordEdge2(x), yend, drawProjection.isLatLon());
           } //else {
             //if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
             //count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, x);
@@ -881,7 +882,7 @@ public class CoverageRenderer {
       // get the ones at the end
       if (sameProjection) {
         if (lastColor != modeColor)
-          count += drawRect(g, lastColor, dataState.xaxis.getCoordEdge(xbeg), ybeg, dataState.xaxis.getCoordEdge(nx), yend, drawProjection.isLatLon());
+          count += drawRect(g, lastColor, dataState.xaxis.getCoordEdge1(xbeg), ybeg, dataState.xaxis.getCoordEdgeLast(), yend, drawProjection.isLatLon());
       } //else {
         //if (!useModeForProjections || (lastColor != modeColor))
         //count += drawPathRun(g, lastColor, ybeg, yend, xaxis1D, xbeg, nx - 1);

@@ -169,7 +169,7 @@ public class CdmrfWriter {
     if (axis.getUnits() != null) builder.setUnits(axis.getUnits());
     if (axis.getDescription() != null) builder.setDescription(axis.getDescription());
 
-    builder.setIsRegular(axis.isRegular());
+    builder.setSpacing(axis.getSpacing().ordinal());
     builder.setStartValue(axis.getStartValue());
     builder.setEndValue(axis.getEndValue());
     builder.setResolution(axis.getResolution());
@@ -177,7 +177,7 @@ public class CdmrfWriter {
     if (!axis.isRegular() && axis.getNvalues() < MAX_INLINE_NVALUES) {
       try {
         double[] values = axis.readValues();
-        ByteBuffer bb = ByteBuffer.allocate((int) (8 * axis.getNvalues()));
+        ByteBuffer bb = ByteBuffer.allocate(8 * values.length);
         DoubleBuffer db = bb.asDoubleBuffer();
         db.put( values);
         builder.setValues(ByteString.copyFrom(bb.array()));

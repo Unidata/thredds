@@ -23,8 +23,8 @@ public class GridSubset {
     this.gcs = gcs;
   }
 
-  public void set(GridCoordAxis.Type type, Number value) {
-    req.put(type.name(), value.toString());
+  public void set(GridCoordAxis.Type type, String value) {
+    req.put(type.name(),value);
   }
 
   public Set<Map.Entry<String, String>> getEntries() {

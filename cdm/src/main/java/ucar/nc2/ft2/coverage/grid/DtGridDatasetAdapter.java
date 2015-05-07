@@ -155,30 +155,58 @@ public class DtGridDatasetAdapter implements GridCoverageDatasetIF {
   }
 
   private class Axis extends GridCoordAxis {
-    ucar.nc2.dataset.CoordinateAxis dtCoordAxis;
+    ucar.nc2.dataset.CoordinateAxis1D dtCoordAxis;
+    Spacing spacing;
 
     Axis(ucar.nc2.dataset.CoordinateAxis dtCoordAxis) {
-      this.dtCoordAxis = dtCoordAxis;
+      this.dtCoordAxis = (CoordinateAxis1D) dtCoordAxis;
       setName(dtCoordAxis.getFullName());
       setDataType(dtCoordAxis.getDataType());
       setAxisType(dtCoordAxis.getAxisType());
       setUnits(dtCoordAxis.getUnitsString());
       setDescription(dtCoordAxis.getDescription());
-
       setNvalues(dtCoordAxis.getSize());
-      if (dtCoordAxis instanceof CoordinateAxis1D) { // LOOK for grid, should always be true
-        CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
-        setStartValue(axis1D.getCoordValue(0));
-        setEndValue(axis1D.getCoordValue((int)axis1D.getSize()-1));
-        setIsRegular(axis1D.isRegular());
-      }
+
+      CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
+      setStartValue(axis1D.getCoordValue(0));
+      setEndValue(axis1D.getCoordValue((int)axis1D.getSize()-1));
+      if (axis1D.isRegular())
+        spacing = Spacing.regular;
+      else if (!axis1D.isInterval())
+        spacing = Spacing.irregularPoint;
+      else if (axis1D.isContiguous())
+        spacing = Spacing.contiguousInterval;
+      else
+        spacing = Spacing.discontiguousInterval;
+      setSpacing(spacing.ordinal());
     }
 
+    /*
+   * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
+   * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
+   * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+   * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
+   */
     @Override
     public double[] readValues() throws IOException {
-      Array data = dtCoordAxis.read();
-      setValues((double[])data.get1DJavaArray(double.class));
-      return getValues();
+      switch (spacing) {
+        case irregularPoint:
+          return dtCoordAxis.getCoordValues();
+        case contiguousInterval:
+          return dtCoordAxis.getCoordEdges();
+        case discontiguousInterval:
+          int n = (int) dtCoordAxis.getSize();
+          double[] result = new double[2*n];
+          double[] bounds1 = dtCoordAxis.getBound1();
+          double[] bounds2 = dtCoordAxis.getBound2();
+          int count = 0;
+          for (int i=0; i<n; i++) {
+            result[count++] = bounds1[i];
+            result[count++] = bounds2[i];
+          }
+          return result;
+      }
+      return null;
     }
   }
 

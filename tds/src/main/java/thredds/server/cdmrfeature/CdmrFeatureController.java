@@ -164,7 +164,7 @@ public class CdmrFeatureController implements LastModified {
 
   private GridSubset makeSubset(CdmrFeatureQueryBean qb) {
     GridSubset subset = new GridSubset();
-    if (qb.getZ() != null) subset.set(GridCoordAxis.Type.Z, Double.valueOf(qb.getZ()));
+    if (qb.getZ() != null) subset.set(GridCoordAxis.Type.Z, qb.getZ());
     return subset;
   }
 

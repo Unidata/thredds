@@ -1082,12 +1082,7 @@ public class CoverageDisplay extends JPanel {
 
     // set levels
     if (vertAxis != null) {
-      double[] vertValues = vertAxis.getValues();  // LOOK may need to read
-      levelNames = new ArrayList<>();
-      for (double val : vertValues) {
-        String name = Format.d(val, 5, 8);
-        levelNames.add(new NamedAnything(name, name+" "+vertAxis.getUnits()));
-      }
+      levelNames = vertAxis.getCoordValueNames();
       if ((levelNames == null) || (currentLevel >= levelNames.size()))
         currentLevel = 0;
       //vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);

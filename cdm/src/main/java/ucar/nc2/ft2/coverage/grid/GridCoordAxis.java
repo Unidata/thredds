@@ -4,29 +4,41 @@ package ucar.nc2.ft2.coverage.grid;
 import ucar.ma2.DataType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.NamedAnything;
+import ucar.nc2.util.NamedObject;
+import ucar.unidata.util.Format;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 
 /**
- * Describe
+ * GridCoordAxis
+ * 1) regularly spaced points or intervals (min, max, npts), edges assumed half-way
+ * 2) irregular spaced points (values, npts), edges assumed half-way
+ * 3) irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1
+ * 4) irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
+ * <p/>
+ * maybe can be regular with missing values ??
  *
  * @author caron
  * @since 5/4/2015
  */
 public class GridCoordAxis {
   public enum Type {X, Y, Z, T}
+  public enum Spacing {regular, irregularPoint, contiguousInterval, discontiguousInterval}
 
   String name;
   DataType dataType;
   AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
   long nvalues;
   String units, description;
-  boolean isRegular;
+  Spacing spacing;
   double startValue;
   double endValue;
   double resolution;
-  double[] values;   // may be null
+  double[] values;   // null if isRegular,
 
   public String getName() {
     return name;
@@ -64,17 +76,21 @@ public class GridCoordAxis {
     this.nvalues = nvalues;
   }
 
-  public boolean isRegular() {
-    return isRegular;
+  public Spacing getSpacing() {
+    return spacing;
   }
 
-  public void setIsRegular(boolean isRegular) {
-    this.isRegular = isRegular;
+  public void setSpacing(int spacingOrdinal) {
+    this.spacing = Spacing.values()[spacingOrdinal];
+  }
+
+  public boolean isRegular() {
+    return (spacing == Spacing.regular);
   }
 
   public double getResolution() {
-    if (resolution == 0.0 && isRegular && nvalues > 0)
-      resolution = (endValue - startValue) / (nvalues-1);
+    if (resolution == 0.0 && isRegular() && nvalues > 1)
+      resolution = (endValue - startValue) / (nvalues - 1);
     return resolution;
   }
 
@@ -138,29 +154,125 @@ public class GridCoordAxis {
   public void toString(Formatter f, Indent indent) {
     indent.incr();
     f.format("%s CoordAxis '%s' axisType=%s dataType=%s", indent, name, axisType, dataType);
-    f.format(" npts: %d [%f,%f] '%s' isRegular=%s", nvalues, startValue, endValue, units, isRegular);
+    f.format(" npts: %d [%f,%f] '%s' spacing=%s", nvalues, startValue, endValue, units, spacing);
     if (resolution != 0.0)
       f.format(" resolution=%f", resolution);
     f.format("%n");
 
     if (values != null) {
-      f.format("%nvalues=");
-      for (double v : values)
-        f.format("%f,", v);
-      f.format("%n");
+      int n = values.length;
+      switch (spacing) {
+        case irregularPoint:
+        case contiguousInterval:
+          f.format("%ncontiguous (%d)=",n);
+          for (double v : values)
+            f.format("%f,", v);
+          f.format("%n");
+          break;
+
+        case discontiguousInterval:
+           f.format("%ndiscontiguous (%d)=",n);
+           for (int i=0; i<n; i+=2)
+             f.format("(%f,%f) ", values[i], values[i+1]);
+           f.format("%n");
+           break;
+       }
     }
 
     indent.decr();
   }
 
-  public double getCoordEdge(int index) {
-    return startValue + (index - .5) * resolution;
+  /*
+   * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
+   * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
+   * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+   * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
+   */
+
+  public double getCoordEdge1(int index) {
+    if (index >= nvalues) throw new IllegalArgumentException("Index must be <"+nvalues);
+    switch (spacing) {
+      case regular:
+        return startValue + (index - .5) * resolution;
+
+      case irregularPoint:
+        if (index > 0)
+          return (values[index-1] + values[index]) / 2;
+        else
+          return values[0] - (values[1] - values[0]) / 2;
+
+      case contiguousInterval:
+        return values[index];
+
+      case discontiguousInterval:
+        return values[2*index];
+    }
+    throw new IllegalStateException("Unknown spacing="+spacing);
   }
 
-  public double getValue(int index) {
-    if (values != null)
-      return values[index];
-    else
-      return startValue + index* resolution;
+  public double getCoordEdge2(int index) {
+    if (index >= nvalues) throw new IllegalArgumentException("Index must be <"+nvalues);
+    switch (spacing) {
+      case regular:
+        return startValue + (index + .5) * resolution;
+
+      case irregularPoint:
+        if (index < nvalues-1)
+          return (values[index] + values[index+1]) / 2;
+        else
+          return values[index] + (values[index] - values[index-1]) / 2;
+
+      case contiguousInterval:
+        return values[index+1];
+
+      case discontiguousInterval:
+        return values[2*index+1];
+    }
+    throw new IllegalStateException("Unknown spacing="+spacing);
   }
+
+  public double getCoordEdgeLast() {
+    return getCoordEdge2((int) nvalues - 1);
+  }
+
+  public double getCoord(int index) {
+    if (index >= nvalues) throw new IllegalArgumentException("Index must be <"+nvalues);
+    switch (spacing) {
+      case regular:
+        return startValue + index * resolution;
+
+      case irregularPoint:
+        return values[index];
+
+      case contiguousInterval:
+        return (values[index] + values[index+1]) / 2;
+
+      case discontiguousInterval:
+        return (values[2*index] + values[2*index+1]) / 2;
+    }
+    throw new IllegalStateException("Unknown spacing="+spacing);
+  }
+
+  public List<NamedObject> getCoordValueNames() {
+    List<NamedObject> result = new ArrayList<>();
+    for (int i=0; i<nvalues; i++) {
+      String valName="";
+      switch (spacing) {
+        case regular:
+        case irregularPoint:
+          valName = Format.d(getCoord(i), 3);
+          break;
+
+        case contiguousInterval:
+        case discontiguousInterval:
+          valName = Format.d(getCoordEdge1(i), 3)+","+Format.d(getCoordEdge2(i), 3);
+          break;
+
+      }
+      result.add(new NamedAnything(valName, valName + " " + getUnits()));
+    }
+
+    return result;
+  }
+
 }

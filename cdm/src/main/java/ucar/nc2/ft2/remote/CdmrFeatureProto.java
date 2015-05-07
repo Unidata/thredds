@@ -1096,15 +1096,23 @@ public final class CdmrFeatureProto {
      */
     long getNvalues();
 
-    // optional bool isRegular = 7;
+    // required int32 spacing = 7;
     /**
-     * <code>optional bool isRegular = 7;</code>
+     * <code>required int32 spacing = 7;</code>
+     *
+     * <pre>
+     * GridCoordAxis.Spacing ordinal
+     * </pre>
      */
-    boolean hasIsRegular();
+    boolean hasSpacing();
     /**
-     * <code>optional bool isRegular = 7;</code>
+     * <code>required int32 spacing = 7;</code>
+     *
+     * <pre>
+     * GridCoordAxis.Spacing ordinal
+     * </pre>
      */
-    boolean getIsRegular();
+    int getSpacing();
 
     // required double startValue = 8;
     /**
@@ -1251,7 +1259,7 @@ public final class CdmrFeatureProto {
             }
             case 56: {
               bitField0_ |= 0x00000040;
-              isRegular_ = input.readBool();
+              spacing_ = input.readInt32();
               break;
             }
             case 65: {
@@ -1511,20 +1519,28 @@ public final class CdmrFeatureProto {
       return nvalues_;
     }
 
-    // optional bool isRegular = 7;
-    public static final int ISREGULAR_FIELD_NUMBER = 7;
-    private boolean isRegular_;
+    // required int32 spacing = 7;
+    public static final int SPACING_FIELD_NUMBER = 7;
+    private int spacing_;
     /**
-     * <code>optional bool isRegular = 7;</code>
+     * <code>required int32 spacing = 7;</code>
+     *
+     * <pre>
+     * GridCoordAxis.Spacing ordinal
+     * </pre>
      */
-    public boolean hasIsRegular() {
+    public boolean hasSpacing() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional bool isRegular = 7;</code>
+     * <code>required int32 spacing = 7;</code>
+     *
+     * <pre>
+     * GridCoordAxis.Spacing ordinal
+     * </pre>
      */
-    public boolean getIsRegular() {
-      return isRegular_;
+    public int getSpacing() {
+      return spacing_;
     }
 
     // required double startValue = 8;
@@ -1614,7 +1630,7 @@ public final class CdmrFeatureProto {
       units_ = "";
       description_ = "";
       nvalues_ = 0L;
-      isRegular_ = false;
+      spacing_ = 0;
       startValue_ = 0D;
       endValue_ = 0D;
       resolution_ = 0D;
@@ -1642,6 +1658,10 @@ public final class CdmrFeatureProto {
         return false;
       }
       if (!hasNvalues()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSpacing()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -1679,7 +1699,7 @@ public final class CdmrFeatureProto {
         output.writeInt64(6, nvalues_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeBool(7, isRegular_);
+        output.writeInt32(7, spacing_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeDouble(8, startValue_);
@@ -1728,7 +1748,7 @@ public final class CdmrFeatureProto {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(7, isRegular_);
+          .computeInt32Size(7, spacing_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
@@ -1874,7 +1894,7 @@ public final class CdmrFeatureProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         nvalues_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000020);
-        isRegular_ = false;
+        spacing_ = 0;
         bitField0_ = (bitField0_ & ~0x00000040);
         startValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000080);
@@ -1939,7 +1959,7 @@ public final class CdmrFeatureProto {
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.isRegular_ = isRegular_;
+        result.spacing_ = spacing_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000080;
         }
@@ -1996,8 +2016,8 @@ public final class CdmrFeatureProto {
         if (other.hasNvalues()) {
           setNvalues(other.getNvalues());
         }
-        if (other.hasIsRegular()) {
-          setIsRegular(other.getIsRegular());
+        if (other.hasSpacing()) {
+          setSpacing(other.getSpacing());
         }
         if (other.hasStartValue()) {
           setStartValue(other.getStartValue());
@@ -2033,6 +2053,10 @@ public final class CdmrFeatureProto {
           return false;
         }
         if (!hasNvalues()) {
+          
+          return false;
+        }
+        if (!hasSpacing()) {
           
           return false;
         }
@@ -2430,35 +2454,51 @@ public final class CdmrFeatureProto {
         return this;
       }
 
-      // optional bool isRegular = 7;
-      private boolean isRegular_ ;
+      // required int32 spacing = 7;
+      private int spacing_ ;
       /**
-       * <code>optional bool isRegular = 7;</code>
+       * <code>required int32 spacing = 7;</code>
+       *
+       * <pre>
+       * GridCoordAxis.Spacing ordinal
+       * </pre>
        */
-      public boolean hasIsRegular() {
+      public boolean hasSpacing() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional bool isRegular = 7;</code>
+       * <code>required int32 spacing = 7;</code>
+       *
+       * <pre>
+       * GridCoordAxis.Spacing ordinal
+       * </pre>
        */
-      public boolean getIsRegular() {
-        return isRegular_;
+      public int getSpacing() {
+        return spacing_;
       }
       /**
-       * <code>optional bool isRegular = 7;</code>
+       * <code>required int32 spacing = 7;</code>
+       *
+       * <pre>
+       * GridCoordAxis.Spacing ordinal
+       * </pre>
        */
-      public Builder setIsRegular(boolean value) {
+      public Builder setSpacing(int value) {
         bitField0_ |= 0x00000040;
-        isRegular_ = value;
+        spacing_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional bool isRegular = 7;</code>
+       * <code>required int32 spacing = 7;</code>
+       *
+       * <pre>
+       * GridCoordAxis.Spacing ordinal
+       * </pre>
        */
-      public Builder clearIsRegular() {
+      public Builder clearSpacing() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        isRegular_ = false;
+        spacing_ = 0;
         onChanged();
         return this;
       }
@@ -7966,25 +8006,25 @@ public final class CdmrFeatureProto {
       "\n%ucar/nc2/ft2/remote/cdmrfeature.proto\032" +
       "\036ucar/nc2/stream/ncStream.proto\"K\n\016Coord" +
       "Transform\022\017\n\007isHoriz\030\001 \002(\010\022\014\n\004name\030\002 \002(\t" +
-      "\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\332\001\n\tCoordAx" +
+      "\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\330\001\n\tCoordAx" +
       "is\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.Dat" +
       "aType\022\020\n\010axisType\030\003 \002(\005\022\r\n\005units\030\004 \002(\t\022\023" +
-      "\n\013description\030\005 \001(\t\022\017\n\007nvalues\030\006 \002(\003\022\021\n\t" +
-      "isRegular\030\007 \001(\010\022\022\n\nstartValue\030\010 \002(\001\022\020\n\010e" +
-      "ndValue\030\t \002(\001\022\022\n\nresolution\030\n \001(\001\022\016\n\006val" +
-      "ues\030\013 \001(\014\"b\n\010CoordSys\022\014\n\004name\030\001 \002(\t\022\021\n\ta",
-      "xisNames\030\002 \003(\t\022\026\n\016transformNames\030\003 \003(\t\022\035" +
-      "\n\ncomponents\030\004 \003(\0132\t.CoordSys\"\242\001\n\014GridCo" +
-      "verage\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t" +
-      ".DataType\022\027\n\010unsigned\030\003 \001(\010:\005false\022\030\n\004at" +
-      "ts\030\004 \003(\0132\n.Attribute\022\020\n\010coordSys\030\005 \002(\t\022\r" +
-      "\n\005units\030\006 \001(\t\022\023\n\013description\030\007 \001(\t\"\301\001\n\023G" +
-      "ridCoverageDataset\022\014\n\004name\030\001 \002(\t\022\030\n\004atts" +
-      "\030\002 \003(\0132\n.Attribute\022\033\n\010coordSys\030\003 \003(\0132\t.C" +
-      "oordSys\022(\n\017coordTransforms\030\004 \003(\0132\017.Coord" +
-      "Transform\022\035\n\tcoordAxes\030\005 \003(\0132\n.CoordAxis",
-      "\022\034\n\005grids\030\006 \003(\0132\r.GridCoverageB\'\n\023ucar.n" +
-      "c2.ft2.remoteB\020CdmrFeatureProto"
+      "\n\013description\030\005 \001(\t\022\017\n\007nvalues\030\006 \002(\003\022\017\n\007" +
+      "spacing\030\007 \002(\005\022\022\n\nstartValue\030\010 \002(\001\022\020\n\010end" +
+      "Value\030\t \002(\001\022\022\n\nresolution\030\n \001(\001\022\016\n\006value" +
+      "s\030\013 \001(\014\"b\n\010CoordSys\022\014\n\004name\030\001 \002(\t\022\021\n\taxi",
+      "sNames\030\002 \003(\t\022\026\n\016transformNames\030\003 \003(\t\022\035\n\n" +
+      "components\030\004 \003(\0132\t.CoordSys\"\242\001\n\014GridCove" +
+      "rage\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.D" +
+      "ataType\022\027\n\010unsigned\030\003 \001(\010:\005false\022\030\n\004atts" +
+      "\030\004 \003(\0132\n.Attribute\022\020\n\010coordSys\030\005 \002(\t\022\r\n\005" +
+      "units\030\006 \001(\t\022\023\n\013description\030\007 \001(\t\"\301\001\n\023Gri" +
+      "dCoverageDataset\022\014\n\004name\030\001 \002(\t\022\030\n\004atts\030\002" +
+      " \003(\0132\n.Attribute\022\033\n\010coordSys\030\003 \003(\0132\t.Coo" +
+      "rdSys\022(\n\017coordTransforms\030\004 \003(\0132\017.CoordTr" +
+      "ansform\022\035\n\tcoordAxes\030\005 \003(\0132\n.CoordAxis\022\034",
+      "\n\005grids\030\006 \003(\0132\r.GridCoverageB\'\n\023ucar.nc2" +
+      ".ft2.remoteB\020CdmrFeatureProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -8002,7 +8042,7 @@ public final class CdmrFeatureProto {
           internal_static_CoordAxis_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_CoordAxis_descriptor,
-              new java.lang.String[] { "Name", "DataType", "AxisType", "Units", "Description", "Nvalues", "IsRegular", "StartValue", "EndValue", "Resolution", "Values", });
+              new java.lang.String[] { "Name", "DataType", "AxisType", "Units", "Description", "Nvalues", "Spacing", "StartValue", "EndValue", "Resolution", "Values", });
           internal_static_CoordSys_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_CoordSys_fieldAccessorTable = new

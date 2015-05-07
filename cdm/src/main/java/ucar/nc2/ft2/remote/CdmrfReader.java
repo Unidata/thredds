@@ -182,7 +182,7 @@ public class CdmrfReader {
     result.setUnits(proto.getUnits());
     result.setDescription(proto.getDescription());
 
-    result.setIsRegular(proto.getIsRegular());
+    result.setSpacing(proto.getSpacing());
     result.setStartValue(proto.getStartValue());
     result.setEndValue(proto.getEndValue());
     result.setResolution(proto.getResolution());
@@ -191,7 +191,7 @@ public class CdmrfReader {
       // LOOK may mess with ability to change var size later.
       ByteBuffer bb = ByteBuffer.wrap(proto.getValues().toByteArray());
       DoubleBuffer db = bb.asDoubleBuffer();
-      int n = (int) proto.getNvalues();
+      int n = db.remaining();
       double[] data = new double[n];
       for (int i=0; i<n; i++) data[i] = db.get(i);
       result.setValues(data);
