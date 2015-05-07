@@ -33,7 +33,9 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.UtilsMa2Test;
 import ucar.unidata.test.util.TestDir;
 
@@ -208,6 +210,7 @@ public class TestReadStrides extends TestCase {
     ncfile.close();
   }
 
+  @Category(NeedsCdmUnitTest.class)
   public void testReadStridesAll() throws IOException, InvalidRangeException {
     testReadStrides(TestDir.cdmLocalTestDataDir+"ncml/nc/time0.nc");
     testReadStrides(TestDir.cdmUnitTestDir+"formats/gini/HI-NATIONAL_14km_IR_20050918_2000.gini");

@@ -36,15 +36,16 @@ package ucar.nc2.iosp.mcidas;
 import edu.wisc.ssec.mcidas.AreaFile;
 import edu.wisc.ssec.mcidas.AreaFileException;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -53,6 +54,7 @@ import java.io.IOException;
  * @author caron
  * @since 8/30/13
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestReadingMcIdas {
 
   @Test

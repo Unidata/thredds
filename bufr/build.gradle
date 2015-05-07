@@ -1,3 +1,6 @@
+description = "Reading BUFR files with the NetCDF-java library."
+ext.title = "BUFR IOSP"
+
 dependencies {
     compile project(":cdm")
     compile libraries["jdom2"]
@@ -6,3 +9,5 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["slf4j-api"]
 }
+
+apply plugin: 'java'

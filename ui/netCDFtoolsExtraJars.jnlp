@@ -4,8 +4,8 @@
     <information>
         <title>NetCDF Tools UI 4.6</title>
         <vendor>Unidata</vendor>
-        <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/documentation.htm"/>
-        <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>
+        <homepage href="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"/>
+        <description kind="short">Graphical interface to netCDF-Java / Common Data Model</description>
         <icon href="nc.gif"/>
         <offline-allowed/>
     </information>
@@ -17,10 +17,15 @@
 
     <update check="timeout" policy="always"/>
 
+    <!-- Review the JNLP spec: http://docs.oracle.com/javase/8/docs/technotes/guides/javaws/developersguide/syntax.html -->
+    <!-- In particular, all of these jars should have the download="lazy" attribute. -->
     <resources>
         <j2se version="1.7+" max-heap-size="1500m"/>
         <!-- Updated by hand for 4.6.0, using :ui:showDependencies to print the deps.
         In the future, we should be generating this file in Gradle. -->
+
+        <!-- In theory, Webstart will use these in conjunction with netcdfUI.jar/META-INF/INDEX.LIST to download
+             the minimum number of dependencies when running the application. -->
         <jar href="cdm-4.6.0.jar"/>
         <jar href="clcommon-4.6.0.jar"/>
         <jar href="bufr-4.6.0.jar"/>

@@ -1,25 +1,22 @@
 package thredds.server.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockServletConfig;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.mock.web.TdsContentRootPath;
 import thredds.servlet.ThreddsConfig;
+import ucar.unidata.test.util.NeedsContentRoot;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"},loader=MockTdsContextLoader.class)
+@Category(NeedsContentRoot.class)
 public class ThreddsConfigTest {
 
   @Autowired
@@ -48,6 +45,4 @@ public class ThreddsConfigTest {
 	public void testHasElement(){
 	   assertFalse(ThreddsConfig.hasElement("AggregationCache") );
 	}
-	
-	
 }

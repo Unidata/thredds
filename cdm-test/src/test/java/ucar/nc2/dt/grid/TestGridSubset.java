@@ -38,9 +38,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.writer.DataFactory;
 import ucar.ma2.*;
-import ucar.nc2.Dimension;
 import ucar.nc2.NCdumpW;
-import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -48,16 +47,13 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
-
-import ucar.nc2.constants.FeatureType;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -199,8 +195,8 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testDODS() throws Exception {
+    ThreddsServer.LIVE.assumeIsAvailable();
     String ds = "http://thredds.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
     GridDataset dataset = null;
 
@@ -332,6 +328,7 @@ public class TestGridSubset {
 
   @Test
   public void test3D() throws Exception {
+    ThreddsServer.DEV.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
       System.out.printf("%s%n", dataset.getLocation());
       //GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
@@ -496,8 +493,8 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testBBSubset() throws Exception {
+    ThreddsServer.LIVE.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best")) {
       GeoGrid grid = dataset.findGridByName("Pressure_surface");
       assert null != grid;
@@ -525,8 +522,8 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testBBSubset2() throws Exception {
+    ThreddsServer.LIVE.assumeIsAvailable();
     try (GridDataset dataset = GridDataset.open("dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best")) {
       GeoGrid grid = dataset.findGridByName("Pressure_hybrid");
       assert null != grid;
@@ -751,8 +748,8 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NotTravis.class)
   public void testFindVerticalCoordinate() throws Exception {
+    ThreddsServer.LIVE.assumeIsAvailable();
     String filename = "dods://thredds.ucar.edu/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
     try (GridDataset dataset = GridDataset.open(filename)) {
       GeoGrid grid = dataset.findGridByName("Geopotential_height_isobaric");
@@ -952,6 +949,7 @@ public class TestGridSubset {
 
   // has runtime(time), time(time)
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testTPgribCollection() throws Exception {
     try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx3")) {
       GeoGrid grid = dataset.findGridByName("Pressure_surface");

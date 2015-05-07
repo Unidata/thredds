@@ -1,3 +1,6 @@
+description = "Decoder for the GRIB format."
+ext.title = "GRIB IOSP and Feature Collection"
+
 dependencies {
     compile project(':cdm')
     compile libraries["protobuf-java"]

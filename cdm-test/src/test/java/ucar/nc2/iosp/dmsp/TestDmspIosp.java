@@ -34,9 +34,11 @@
 package ucar.nc2.iosp.dmsp;
 
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -139,6 +141,7 @@ public class TestDmspIosp extends TestCase {
   /**
    * Test ...
    */
+  @Category(NeedsCdmUnitTest.class)
   public void testDimAndAtt() throws IOException {
     setupReadDmspAsNetcdf(this.testFilePath, this.testDataFileName);
     assertTrue("Created NetcdfFile is null.", meNcf != null);
@@ -201,6 +204,7 @@ public class TestDmspIosp extends TestCase {
 
   }
 
+  @Category(NeedsCdmUnitTest.class)
   public void testReadEpoch() throws IOException {
     setupReadDmspAsNetcdf(this.testFilePath, this.testDataFileName);
 
@@ -272,6 +276,7 @@ public class TestDmspIosp extends TestCase {
     meNcf.close();
   }
 
+  @Category(NeedsCdmUnitTest.class)
   public void testLatLonCalcAndCache() throws IOException {
     setupReadDmspAsNetcdf(this.testFilePath, this.testDataFileName);
 
@@ -345,7 +350,7 @@ public class TestDmspIosp extends TestCase {
   //
   // I.e., if a user requests one point in a particular dimension, that
   // dimension will be removed.
-
+  @Category(NeedsCdmUnitTest.class)
   public void testSectionVsSectionNoReduce() throws IOException {
     setupReadDmspAsNetcdf(this.testFilePath, this.testDataFileName);
 

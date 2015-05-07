@@ -33,13 +33,17 @@
 package ucar.nc2.iosp.bufr;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
-import java.io.*;
-import java.util.Formatter;
-
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * Sanity check on reading bufr messages
@@ -47,6 +51,7 @@ import ucar.unidata.test.util.TestDir;
  * @author caron
  * @since Apr 1, 2008
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestBufrRead {
   String unitDir =  TestDir.cdmUnitTestDir + "formats/bufr";
   boolean show = false;

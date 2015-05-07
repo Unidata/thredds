@@ -33,6 +33,7 @@
 package ucar.nc2.dt.radial;
 
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -40,6 +41,7 @@ import ucar.nc2.dt.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -48,6 +50,7 @@ import java.util.Collection;
 
 /** Test radial datasets in the JUnit framework. */
 
+@Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestRadialDatasetNew {
 

@@ -1,12 +1,11 @@
 package thredds.tds.idd;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.client.catalog.Catalog;
 import thredds.tds.ethan.TestAll;
-import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.Collection;
 
@@ -18,7 +17,6 @@ import static org.junit.Assert.assertNotNull;
  * @author edavis
  * @since 4.0
  */
-@Category(NotTravis.class)
 @RunWith(Parameterized.class)
 public class PingMotherlodeTdsTest
 {
@@ -43,6 +41,7 @@ public class PingMotherlodeTdsTest
   @Test
   public void pingMotherlodeCatalogs()
   {
+    ThreddsServer.LIVE.assumeIsAvailable();
     StringBuilder msgLog = new StringBuilder();
 
     String url = this.tdsUrl + this.catUrl;

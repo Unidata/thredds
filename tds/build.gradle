@@ -1,3 +1,8 @@
+description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
+        "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
+ext.title = "THREDDS Data Server (TDS)"
+ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
+
 apply plugin: 'war'
 
 dependencies {
@@ -7,7 +12,7 @@ dependencies {
     compile project(":netcdf4")
     compile project(":opendap")
     compile project(":tdcommon")
-    runtime project(":visad")
+    runtime project(":visadCdm")
     compile project(":waterml")
     compile project(":dap4:d4core")
     compile project(":dap4:d4servletshared")
@@ -36,7 +41,7 @@ dependencies {
     compile libraries["geoapi-pending"]
     compile libraries["oro"]
 
-    providedCompile libraries["javax.servlet-api"]
+    provided libraries["javax.servlet-api"]
     runtime libraries["jstl"]
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]
@@ -52,40 +57,12 @@ dependencies {
     runtime libraries["log4j-web"]
 }
 
-war {
-    archiveName = 'thredds.war'
-
-    manifest {
-        attributes 'Implementation-Version': project.version,
-                'Implementation-Title': 'THREDDS Data Server (TDS)',
-                'Implementation-Vendor': 'UCAR/Unidata',
-                'Implementation-Vendor-Id': project.version,
-                // Commented out to avoid unnecessary re-compilation and re-jarring: http://goo.gl/kbVWXR
-                // I think I can fix this by writing a builtOn.txt file in compileJava,
-                // and then reading in its value here.
-                // 'Built-On': new Date(),
-                'Build-Jdk': JavaVersion.current()
-    }
-
-}
-
-task printProps << {
-    println System.properties['java.version'];
-    for (prop in System.properties.propertyNames()) printf("%s = %s%n", prop, System.properties[prop])
-}
-
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
 apply plugin: 'org.akhikhl.gretty'
 
 test {
     // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
     exclude 'thredds/tds/**'
-
-//    def contentRoot = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.12/content'
-//    def contentRoot = 'Q:/cdmUnitTest/it/content'
-
-//    systemProperty 'tds.content.root.path', contentRoot
-//    systemProperty 'tds.dir.cdmUnitTest', 'Q:/cdmUnitTest'
 }
 
 // Tests expect for test resources to be copied to the same directory as the test classes.
@@ -94,4 +71,25 @@ processTestResources.destinationDir = compileTestJava.destinationDir
 processTestResources {
     from "src/main/webapp"
     from "src/main/webapp/WEB-INF/classes"
+}
+
+war {
+    // This is the default version of tds.properties that we'll be replacing with the filtered version below.
+    // It seems crufty. TODO: After Maven is out of the picture, nuke it, along with any other tds.properties dupes.
+    exclude('WEB-INF/classes/thredds/server/tds.properties')  // Relative to src/main/webapp/
+
+    // This is a hack to handle Maven-style placeholders in a file to be filtered: http://goo.gl/9sQebt
+    // Once Maven is out of the picture, the easiest way to refactor this is to remove the dots from the property
+    // keys, so that expand(Map) works as expected.
+    ant.properties['project.version'] = project.version
+    ant.properties['build.timestamp'] = project.buildTimestamp  // Defined in root project.
+
+    from ('src/main/template/thredds/server/tds.properties') {
+        into 'WEB-INF/classes/thredds/server'
+        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+    }
+    from('README.txt') {
+        into 'docs'
+        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+    }
 }

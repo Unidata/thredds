@@ -31,13 +31,17 @@
  */
 package ucar.nc2.util.net;
 
-import ucar.httpservices.*;
-
-import junit.framework.TestCase;
-import org.apache.http.auth.*;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -68,6 +72,10 @@ public class NoTestAuth2 extends UnitTestCommon
       new Data("https://"+TestDir.dap2TestServer+"/dts/b31.dds",null),
     };
 
+  @Override
+  public void setUp() {
+    ThreddsServer.REMOTETEST.assumeIsAvailable();
+  }
 
   public void testAuth2() throws Exception
   {

@@ -786,10 +786,7 @@
           <version>${maven-jar-plugin.version}</version>
           <configuration>
             <archive>
-              <index>true</index>
-              <!-- Archive will contain an INDEX.LIST file. -->
               <manifest>
-                <addClasspath>true</addClasspath>
                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               </manifest>
               <manifestEntries>

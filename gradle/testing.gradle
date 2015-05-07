@@ -1,4 +1,5 @@
-subprojects {
+configure(javaProjects) {
+    apply plugin: 'java'  // For testCompile configuration.
     apply from: "$rootDir/gradle/dependencies.gradle"
 
     dependencies {
@@ -10,36 +11,24 @@ subprojects {
         }
     }
 
+    Project subproject = delegate
+
     // Add an SLF4J binding to testRuntime, if necessary.
     afterEvaluate {
-        if (testRuntimeHasDepNamed("slf4j-api")) {
-            if (!testRuntimeHasDepNamed("slf4j-jdk14") && !testRuntimeHasDepNamed("log4j-slf4j-impl")) {
-                dependencies.testRuntime libraries["slf4j-jdk14"]  // Default binding.
+        if (testRuntimeHasDepNamed(subproject, "slf4j-api")) {
+            if (!testRuntimeHasDepNamed(subproject, "slf4j-jdk14") &&
+                    !testRuntimeHasDepNamed(subproject, "log4j-slf4j-impl")) {
+                logger.info "Using default binding (slf4j-jdk14) to log testing messages in '$subproject.path'."
+                dependencies.testRuntime libraries["slf4j-jdk14"]
             }
-        }
-    }
-
-    tasks.withType(Test) {
-        // Eventually create a JUnit category for tests that need this.
-        String propKey = 'tds.content.root.path'
-        def propVal = System.properties[propKey]  // Defined in gradle.properties or command line.
-
-        if (propVal) {
-            systemProperty propKey, propVal  // Propagate to Gradle Test Executor.
-        } else {
-            logger.warn "\"$propKey\" not defined! Some tests will fail."
-        }
-
-        if (!System.env['TRAVIS']) {
-            ignoreFailures true  // Don't fail the build on test failure unless we're running on Travis.
         }
     }
 }
 
-boolean testRuntimeHasDepNamed(String depName) {
+boolean testRuntimeHasDepNamed(Project project, String depName) {
     try {
         // Groovy truth: empty collections are coerced to false.
-        configurations.getByName('testRuntime').allDependencies.findAll { it.name == depName }
+        project.configurations.getByName('testRuntime').allDependencies.findAll { it.name == depName }
     } catch (UnknownConfigurationException e) {  // Project did not have a configuration named 'testRuntime'.
         logger.debug e.message
         false
@@ -57,68 +46,97 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     // Is there a better way to detect Jenkins?
     boolean isJenkins = System.env['JENKINS_URL']  // We only care if prop is defined, not its actual value.
 
-    if (isJenkins) {
-        // Never exclude any tests when running on Jenkins.
-        // We're explicitly checking for this so that we don't accidentally exclude tests due to a mis-configuration
-        // of one of the properties below. In that scenario, we want tests to fail so that we know to fix our config.
-        return
-    }
-
     boolean isTravis = System.env['TRAVIS']
 
+    // We only want to write these log messages once, which is why we don't have them in the "testTasks*.configure{}"
+    // block below.
     if (isTravis) {
         logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
     }
 
-    boolean isCdmUnitTestDirAvailable = true
-    String testdataDirPath = getTestdataDirPath()
-
-    if (!testdataDirPath) {
-        logger.warn "Skipping all NeedsCdmUnitTest tests: \"unidata.testdata.path\" property not defined."
-        isCdmUnitTestDirAvailable = false
-    } else if (!new File(testdataDirPath).isDirectory()) {
-        logger.warn "Skipping all NeedsCdmUnitTest tests: \"$testdataDirPath\" directory not found."
-        isCdmUnitTestDirAvailable = false
+    String contentRootKey = "tds.content.root.path"
+    boolean isContentRootAvailable = isPropertyValidDirectory(contentRootKey)
+    if (!isContentRootAvailable && !isJenkins) {        // Never skip any tests on Jenkins.
+        logger.warn "Skipping all NeedsContentRoot tests."
     }
 
+    String testdataDirKey = "unidata.testdata.path"
+    boolean isCdmUnitTestDirAvailable = isPropertyValidDirectory(testdataDirKey)
+    if (!isCdmUnitTestDirAvailable && !isJenkins) {     // Never skip any tests on Jenkins.
+        logger.warn "Skipping all NeedsCdmUnitTest tests."
+    }
+
+    // FIXME: Should I be using org.gradle.api.DomainObjectCollection.all(Closure) here instead?
     testTasks*.configure {
         useJUnit {
-            if (isTravis) {
-                excludeCategories 'ucar.unidata.test.util.NotTravis'
+            // Propagate to Gradle Test Executor.
+            String jnaKey = 'jna.library.path'
+            String jnaVal = System.getProperty(jnaKey)
+            if (jnaVal) {
+                systemProperty jnaKey, jnaVal
             }
-            if (!isCdmUnitTestDirAvailable) {
+
+            if (isTravis) {
+                ignoreFailures false  // On Travis, abort the build if any tests fail.
+
+                // Temporarily commented out to test JUnit Assume for server reachability.
+                // excludeCategories 'ucar.unidata.test.util.NotTravis'
+            } else {
+                ignoreFailures true  // In every other environment, don't let test failures abort the build.
+            }
+
+            systemProperty contentRootKey, rootProject.property(contentRootKey)  // Propagate to Gradle Test Executor.
+
+            if (!isContentRootAvailable && !isJenkins) {        // Never skip any tests on Jenkins.
+                excludeCategories 'ucar.unidata.test.util.NeedsContentRoot'
+
+                if (path == ":it:integrationTest") {
+                    logger.warn "Skipping all integration tests (task \'$path\'): " +
+                            "\'$contentRootKey\' property not defined."
+
+                    // We can't stand up a functioning TDS test instance without a valid content root,
+                    // so disable the integration test task altogether.
+                    setEnabled false
+                }
+            }
+
+            systemProperty testdataDirKey, rootProject.property(testdataDirKey)  // Propagate to Gradle Test Executor.
+
+            if (!isCdmUnitTestDirAvailable && !isJenkins) {     // Never skip any tests on Jenkins.
                 excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
             }
         }
     }
+
+    // Add the content root and testdata dir to :it's gretty extension as system properties.
+    // This is how we propagate these properties to the embedded Tomcat that's started for :it:integrationTest.
+    project(":it").gretty.systemProperty contentRootKey, rootProject.property(contentRootKey)
+    project(':it').gretty.systemProperty testdataDirKey, rootProject.property(testdataDirKey)
 }
 
-// Copied from ucar.nc2.util.Misc with minor modification.
-String getTestdataDirPath() {
-    String threddsPropFileName = "thredds.properties";
-    String testdataDirPropName = "unidata.testdata.path";
-    String testdataDirPath = null;
+/**
+ * Returns {@code true} if the given Project property exists and denotes an existing directory in the file system.
+ * Otherwise, {@code false} is returned and the property is set to {@code "/NO/$propKey/FOUND/"}.
+ *
+ * @param propKey   the name of a property set in this Project. It'll likely have been loaded from gradle.properties.
+ * @return {@code true} if the given Project property exists and denotes an existing directory in the file system.
+ */
+boolean isPropertyValidDirectory(String propKey) {
+    if (!hasProperty(propKey)) {
+        logger.warn "\'$propKey\' property not defined."
+        ext[propKey] = "/NO/$propKey/FOUND/"            // New property must be created in the ext namespace.
+        return false
+    } else {
+        String propVal = property(propKey) as String;
 
-    if (testdataDirPath == null)
-        testdataDirPath = System.getProperty(testdataDirPropName);  // Check for system property
-
-    if (testdataDirPath == null) {
-        File userHomeDirFile = new File(System.getProperty("user.home"));
-        File userThreddsPropsFile = new File(userHomeDirFile, threddsPropFileName);
-        if (userThreddsPropsFile.exists() && userThreddsPropsFile.canRead()) {
-            Properties userThreddsProps = new Properties();
-            try {
-                userThreddsProps.load(new FileInputStream(userThreddsPropsFile));
-            } catch (IOException e) {
-                System.out.println("**Failed loading user THREDDS property file: " + e.getMessage());
-            }
-            if (!userThreddsProps.isEmpty()) {
-                testdataDirPath = userThreddsProps.getProperty(testdataDirPropName);
-            }
+        if (!new File(propVal).isDirectory()) {
+            logger.warn "\'$propVal\' directory not found."
+            setProperty propKey, "/NO/$propKey/FOUND/"  // Property exists on Project; change its value.
+            return false
+        } else {
+            return true
         }
     }
-
-    return testdataDirPath;
 }
 
 ///////////////////////////////////////////////// Root /////////////////////////////////////////////////

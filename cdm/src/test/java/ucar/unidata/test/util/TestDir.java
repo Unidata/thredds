@@ -20,7 +20,7 @@ import java.util.*;
  * @author caron
  * @since 3/23/12
  * Modified 5/15/14 to add remote test server paths
- * 
+ *
  * This singleton class computes and stores a variety of constants.
  * <p>
  * <table>
@@ -345,7 +345,7 @@ public class TestDir {
     ReadAllVariables act = new ReadAllVariables();
     act.doAct(filename);
   }
-  
+
   private static class ReadAllVariables implements Act {
 
     @Override

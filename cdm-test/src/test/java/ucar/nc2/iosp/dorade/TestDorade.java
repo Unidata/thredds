@@ -33,17 +33,19 @@
 package ucar.nc2.iosp.dorade;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
-
+@Category(NeedsCdmUnitTest.class)
 public class TestDorade {
 
   public static String groundDoradeFile = TestDir.cdmUnitTestDir + "formats/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";

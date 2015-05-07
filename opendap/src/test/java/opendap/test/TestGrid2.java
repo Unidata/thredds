@@ -35,6 +35,7 @@ package opendap.test;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.*;
 
@@ -73,7 +74,7 @@ public class TestGrid2 extends UnitTestCommon
     public void testGrid2()
             throws Exception
     {
-
+        ThreddsServer.REMOTETEST.assumeIsAvailable();
         System.out.println("TestGrid2:");
         String url = null;
         boolean pass = true;

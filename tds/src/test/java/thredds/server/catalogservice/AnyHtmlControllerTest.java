@@ -1,21 +1,22 @@
 package thredds.server.catalogservice;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import org.junit.Before;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.ModelAndView;
-
 import thredds.mock.web.MockTdsContextLoader;
+import ucar.unidata.test.util.NeedsContentRoot;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 @WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@Category(NeedsContentRoot.class)
 public class AnyHtmlControllerTest extends AbstractCatalogServiceTest{
 
 	@Autowired

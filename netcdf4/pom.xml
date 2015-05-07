@@ -9,7 +9,9 @@
   </parent>
 
   <artifactId>netcdf4</artifactId>
-  <name>netCDF-4 IOSP JNI connection to C library</name>
+  <name>NetCDF-4 IOSP</name>
+  <description>An IOSP for NetCDF-4 that loads the C library to read and write files.</description>
+  <url>https://www.unidata.ucar.edu/software/netcdf/</url>
 
   <dependencies>
     <dependency>

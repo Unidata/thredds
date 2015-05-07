@@ -33,7 +33,6 @@
 package thredds.client.catalog.writer;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
@@ -71,6 +70,8 @@ public class CatalogCrawler {
 
   private Random random;
   private int countCatrefs = 0;
+
+  private int numReadFailures = 0;
 
   /**
    * Constructor.
@@ -161,8 +162,10 @@ public class CatalogCrawler {
         return;
 
       Catalog cat = readCatref(catref, out, indent);
-      if (cat == null)
+      if (cat == null) {
+        numReadFailures++;
         return;
+      }
 
       crawl(cat, task, out, context, indent.incr());
       indent.decr();
@@ -263,6 +266,10 @@ public class CatalogCrawler {
             .add("random", random)
             .add("countCatrefs", countCatrefs)
             .toString();
+  }
+
+  public int getNumReadFailures() {
+    return numReadFailures;
   }
 
   //////////////////////////////////////////////////////////////////////////////

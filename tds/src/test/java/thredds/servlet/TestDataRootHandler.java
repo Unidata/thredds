@@ -32,10 +32,22 @@
  */
 package thredds.servlet;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import thredds.catalog.*;
+import thredds.crawlabledataset.CrawlableDatasetFilter;
+import thredds.crawlabledataset.filter.MultiSelectorFilter;
+import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
+import thredds.mock.web.MockTdsContextLoader;
+import ucar.unidata.test.util.NeedsContentRoot;
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,31 +57,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvCatalogRef;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.InvDatasetScan;
-import thredds.catalog.InvMetadata;
-import thredds.catalog.InvService;
-import thredds.catalog.ServiceType;
-import thredds.catalog.ThreddsMetadata;
-import thredds.catalog.XMLEntityResolver;
-import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.crawlabledataset.filter.MultiSelectorFilter;
-import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
-import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.config.TdsContext;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import static org.junit.Assert.*;
 
 /**
  * Test DataRootHandler. NOT WORKING
@@ -81,6 +69,7 @@ import ucar.unidata.test.util.TestFileDirUtils;
 //@RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@Category(NeedsContentRoot.class)
 public class TestDataRootHandler
 {
 

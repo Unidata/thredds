@@ -35,22 +35,21 @@ package thredds.tds.ethan.httpunit;
 
 import com.meterware.httpunit.*;
 import junit.framework.TestCase;
-import org.junit.experimental.categories.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
-import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.*;
-import java.util.Properties;
 import java.security.cert.Certificate;
+import java.util.Properties;
 
 /**
  * A description
@@ -58,7 +57,6 @@ import java.security.cert.Certificate;
  * @author edavis
  * @since 15 July 2005 15:50:59 -0600
  */
-@Category(NotTravis.class)
 public class TestServerSite extends TestCase
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestServerSite.class );
@@ -85,8 +83,10 @@ public class TestServerSite extends TestCase
     super( name );
   }
 
+  @Override
   protected void setUp()
   {
+    ThreddsServer.LIVE.assumeIsAvailable();
     wc = new WebConversation();
 
     Properties env = System.getProperties();
