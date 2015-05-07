@@ -151,7 +151,7 @@ public class HTTPCachingProvider implements CredentialsProvider
             // search for matching authstore entries
             List<HTTPAuthStore.Entry> matches = this.store.search(this.principal, this.authscope);
             if(matches.size() == 0)
-                throw new InvalidCredentialsException("HTTPCachingProvider: no match for:" + this.authscope);
+                throw new InvalidCredentialsException("HTTPCachingProvider: no credentials that match Authorization scope:" + this.authscope);
 
             // Choose the most restrictive
             HTTPAuthStore.Entry entry = matches.get(0);
@@ -174,7 +174,7 @@ public class HTTPCachingProvider implements CredentialsProvider
 
             return credentials;
         } catch (InvalidCredentialsException ice) {
-            HTTPSession.log.error(ice.getMessage());
+            HTTPSession.log.debug(ice.getMessage());
             return null;
         }
     }
