@@ -115,7 +115,6 @@ public class CatalogCrawler {
 
     if (isValid)
       return crawl(cat, task, out, context, new Indent(2));
-
     return 0;
   }
 
