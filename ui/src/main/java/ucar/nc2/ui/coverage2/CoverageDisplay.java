@@ -15,7 +15,7 @@ import ucar.nc2.constants.FeatureType;
 //import ucar.nc2.ft.cover.impl.CoverageDatasetImpl;
 //import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.ft2.coverage.grid.*;
-import ucar.nc2.ft2.remote.CdmrFeatureDataset2;
+import ucar.nc2.ft2.remote.CdmrFeatureDataset;
 import ucar.nc2.ui.event.ActionCoordinator;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
@@ -24,9 +24,11 @@ import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.util.Format;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
@@ -1006,7 +1008,7 @@ public class CoverageDisplay extends JPanel {
     currentRunTime = 0;
 
     eventsOK = false; // dont let this trigger redraw
-    coverageRenderer.setCoverage(currentField);
+    coverageRenderer.setCoverage(coverageDataset, currentField);
     coverageRenderer.setDataProjection(coverageDataset.getProjection(currentField));
     // setFields(grids);
     setField(currentField);
@@ -1070,30 +1072,36 @@ public class CoverageDisplay extends JPanel {
     if (null == gg)
       return false;
 
-    coverageRenderer.setCoverage(gg);
+    coverageRenderer.setCoverage(coverageDataset, gg);
     coverageRenderer.setDataProjection(coverageDataset.getProjection(gg));
     currentField = gg;
 
     GridCoordSys gcs = coverageDataset.findCoordSys(gg.getCoordSysName());
+    GridCoordAxis vertAxis = coverageDataset.getZAxis(gcs);
     //gcs.setProjectionBoundingBox();
 
-    /* set levels
-    if (gcs.getVerticalAxis() != null && gcs.getVerticalAxis() instanceof CoordinateAxis1D) {
-      CoordinateAxis1D vaxis = (CoordinateAxis1D) gcs.getVerticalAxis();
-      levelNames = vaxis.getNames();
+    // set levels
+    if (vertAxis != null) {
+      double[] vertValues = vertAxis.getValues();  // LOOK may need to read
+      levelNames = new ArrayList<>();
+      for (double val : vertValues) {
+        String name = Format.d(val, 5, 8);
+        levelNames.add(new NamedAnything(name, name+" "+vertAxis.getUnits()));
+      }
       if ((levelNames == null) || (currentLevel >= levelNames.size()))
         currentLevel = 0;
       //vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
 
       setChooserWanted("level", true);
-      java.util.List<NamedObject> levels = vaxis.getNames();
-      levelChooser.setCollection(levels.iterator(), true);
-      NamedObject no = levels.get(currentLevel);
+      levelChooser.setCollection(levelNames.iterator(), true);
+      NamedObject no = levelNames.get(currentLevel);
       levelChooser.setSelectedByName(no.getName());
-    } else { */
+
+    } else {
       levelNames = new ArrayList<>();
       setChooserWanted("level", false);
-    // }
+      coverageRenderer.setLevel(-1);
+    }
 
     /* set times
     if (gcs.getTimeAxis() != null && gcs.getTimeAxis() instanceof CoordinateAxis1DTime) {
@@ -1192,7 +1200,6 @@ public class CoverageDisplay extends JPanel {
 
   void start(boolean ok) {
     startOK = ok;
-    coverageRenderer.makeStridedGrid();
   }
 
   synchronized void draw(boolean immediate) {
@@ -1473,7 +1480,7 @@ public class CoverageDisplay extends JPanel {
     public void run() {
       GridCoverageDataset gcd = null;
       try {
-        gcd = CdmrFeatureDataset2.factory(FeatureType.GRID, endpoint.toString());
+        gcd = CdmrFeatureDataset.factory(FeatureType.GRID, endpoint.toString());
       } catch (IOException e) {
         setError("Failed to open datset: "+e.getMessage());
       }

@@ -147,8 +147,7 @@ public class NcStreamReader {
         ii.setObjectNext( ByteBuffer.wrap(sb));
       }
       return new DataResult(dproto.getVarName(), data);
-
-    } 
+    }
 
     // otherwise read data message
     int dsize = NcStream.readVInt(is);
@@ -194,7 +193,7 @@ public class NcStreamReader {
     return new StreamDataIterator(is, members);
   }
 
-  private class StreamDataIterator implements StructureDataIterator {
+  private static class StreamDataIterator implements StructureDataIterator {
     private InputStream is;
     private StructureMembers members;
     private StructureData curr = null;

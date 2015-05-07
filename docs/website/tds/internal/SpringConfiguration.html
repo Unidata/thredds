@@ -167,7 +167,6 @@
   <li>The Validator and the DataBinder make up the validation package, which is primarily used in but not limited to the MVC framework.
     <ul>
       <li><a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html">http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html</a></li>
-      <li><a href="http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model">http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model</a></li>
     </ul>
   </li>
 </ol>
@@ -175,7 +174,7 @@
   <li>@Valid JSP 303, with hibernate implementation</li>
   <li><strong>org.springframework.validation.Validator</strong></li>
   <li>dont need DataBinder </li>
-  <li>must put initBinder() into Controller  </li>
+  <li>must put initBinder() into Controller. some question on how to restrict to correct model fields, see <a href="http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model">http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model</a></li>
   <li>see <strong>RemoteCatalogServiceController, CdmRemoteController</strong></li>
   <li>error handling:
     <pre>if&#32;(validationResult.hasErrors())<br />&#32;&#32;throw&#32;new&#32;BindException(validationResult);</pre>
@@ -343,10 +342,10 @@
         <td>ResponseEntity&lt;String&gt;, void</td>
       </tr>
       <tr>
-        <td>CdmrfController</td>
-        <td>/cdmrfeature</td>
-        <td>/{path}?{cdmrf query}</td>
-        <td>keep?</td>
+        <td>CdmrFeatureController</td>
+        <td><strong>/cdmrfeature</strong></td>
+        <td>/{path}?{cdmrf query} (<a href="../../netcdf-java/reference/stream/CdmrFeature.html">ref</a>)</td>
+        <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
      <tr>

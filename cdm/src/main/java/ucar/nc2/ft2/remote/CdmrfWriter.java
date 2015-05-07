@@ -1,12 +1,17 @@
 /* Copyright */
 package ucar.nc2.ft2.remote;
 
+import com.google.protobuf.ByteString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.stream.NcStream;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 
 /**
  * Server side for Cdmrf
@@ -15,8 +20,12 @@ import java.io.OutputStream;
  * @since 5/1/2015
  */
 public class CdmrfWriter {
+  static private final Logger logger = LoggerFactory.getLogger(CdmrfWriter.class);
+
   //  must start with this "CDFF"
   static public final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x46};
+  static public final int MAX_INLINE_NVALUES = 1000;
+  private static final boolean show = false;
 
   GridCoverageDatasetIF gridDataset;
   String location;
@@ -25,8 +34,6 @@ public class CdmrfWriter {
     this.gridDataset = gridDataset;
     this.location = location;
   }
-
-  private boolean show = true;
 
   public long sendHeader(OutputStream out) throws IOException {
     long size = 0;
@@ -159,13 +166,27 @@ public class CdmrfWriter {
     builder.setDataType(NcStream.encodeDataType(axis.getDataType()));
     builder.setAxisType(axis.getAxisType().ordinal());
     builder.setNvalues(axis.getNvalues());
-    builder.setUnits(axis.getUnits());
-    builder.setDescription(axis.getDescription());
+    if (axis.getUnits() != null) builder.setUnits(axis.getUnits());
+    if (axis.getDescription() != null) builder.setDescription(axis.getDescription());
 
     builder.setIsRegular(axis.isRegular());
-    builder.setMin(axis.getMin());
-    builder.setMax(axis.getMax());
+    builder.setStartValue(axis.getStartValue());
+    builder.setEndValue(axis.getEndValue());
     builder.setResolution(axis.getResolution());
+
+    if (!axis.isRegular() && axis.getNvalues() < MAX_INLINE_NVALUES) {
+      try {
+        double[] values = axis.readValues();
+        ByteBuffer bb = ByteBuffer.allocate((int) (8 * axis.getNvalues()));
+        DoubleBuffer db = bb.asDoubleBuffer();
+        db.put( values);
+        builder.setValues(ByteString.copyFrom(bb.array()));
+
+      } catch (IOException e) {
+        e.printStackTrace();
+        logger.error("failed to read data", e);
+      }
+    }
 
     /* for (Attribute att : axis.getParameters())
       builder.addParams(NcStream.encodeAtt(att)); */

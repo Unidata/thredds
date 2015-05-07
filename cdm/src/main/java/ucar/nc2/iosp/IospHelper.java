@@ -489,7 +489,7 @@ public class IospHelper {
   }
 
   /**
-   * Copy data to a channel. Used by ncstream. Not doing Structures correctly yet.
+   * Copy data to a OutputStream. Used by ncstream. Not doing Structures correctly yet.
    *
    * @param data    copy from here
    * @param out     copy to here

@@ -35,6 +35,11 @@ package thredds.server.cdmrfeature;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.LastModified;
@@ -45,13 +50,19 @@ import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.*;
+import java.util.zip.DeflaterOutputStream;
 
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
+import ucar.ma2.*;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.ft2.coverage.grid.DtGridDatasetAdapter;
+import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.ft2.remote.CdmrfWriter;
+import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamProto;
 
 /**
  * Controller for CdmrFeature service.
@@ -62,7 +73,8 @@ import ucar.nc2.ft2.remote.CdmrfWriter;
 @RequestMapping("/cdmrfeature")
 public class CdmrFeatureController implements LastModified {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrFeatureController.class);
-  private static final boolean debug = false, showReq = false;
+  private static final boolean showReq = true;
+  private static final boolean showRes = true;
 
   @Autowired
   TdsContext tdsContext;
@@ -79,18 +91,22 @@ public class CdmrFeatureController implements LastModified {
     return TdsRequestedDataset.getLastModified(path);
   }
 
-  //@InitBinder
- // protected void initBinder(WebDataBinder binder) {
- //   binder.setValidator(new CdmRemoteQueryBeanValidator());
- // }
+  private Validator validator = new CdmrFeatureQueryBeanValidator();
+
+  @InitBinder
+  protected void initBinder(WebDataBinder binder) {
+    binder.setValidator(validator);
+  }
 
   ////////////////////////////////////////////////////////////////////
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=header")
   public void handleHeaderRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
+    if (showReq)
+      System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
 
     if (!allow)
-      throw new ServiceNotAllowed("cdmremote");
+      throw new ServiceNotAllowed("cdmrfeature");
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmrfeature");
 
@@ -104,12 +120,96 @@ public class CdmrFeatureController implements LastModified {
       long size = writer.sendHeader(out);
       out.flush();
 
-      if (showReq)
-        System.out.printf("CdmRemoteController header ok, size=%s%n", size);
+      if (showRes)
+        System.out.printf(" CdmrFeatureController.getHeader sent, message size=%s%n", size);
 
     } catch (Throwable t) {
       t.printStackTrace();
     }
+  }
+
+  @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=data")
+  public void handleDataRequest(HttpServletRequest request, HttpServletResponse response,
+                                @Valid CdmrFeatureQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException {
+
+    if (showReq)
+      System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
+
+    if (!allow)
+      throw new ServiceNotAllowed("cdmrfeature");
+
+    if (validationResult.hasErrors())
+      throw new BindException(validationResult);
+
+    String datasetPath = TdsPathUtils.extractPath(request, "/cdmrfeature");
+
+    try (GridDataset gds = TdsRequestedDataset.getGridDataset(request, response, datasetPath)) {
+      if (gds == null) return;
+
+      response.setContentType(ContentType.binary.getContentHeader());
+      response.setHeader("Content-Description", "ncstream");
+      DtGridDatasetAdapter cdmrg = new DtGridDatasetAdapter(gds);
+
+      GridCoverage grid = cdmrg.findCoverage(qb.getVar());
+      GridSubset subset = makeSubset(qb);
+
+      Array data = grid.readData(subset);
+      sendData(grid, data, out, true);
+      out.flush();
+
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+  }
+
+  private GridSubset makeSubset(CdmrFeatureQueryBean qb) {
+    GridSubset subset = new GridSubset();
+    if (qb.getZ() != null) subset.set(GridCoordAxis.Type.Z, Double.valueOf(qb.getZ()));
+    return subset;
+  }
+
+  public long sendData(GridCoverage grid, Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
+
+    // length of data uncompressed
+    long uncompressedLength = data.getSizeBytes();
+
+    long size = 0;
+    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
+    NcStreamProto.Data dataProto = NcStream.encodeDataProto(grid.getName(), grid.getDataType(), new Section(data.getShape()), deflate, (int) uncompressedLength);
+    byte[] datab = dataProto.toByteArray();
+    size += NcStream.writeVInt(out, datab.length); // dataProto len
+    size += writeBytes(out, datab); // dataProto
+
+    // regular arrays
+    if (deflate) {
+      // write to an internal buffer, so we can find out the size
+      ByteArrayOutputStream bout = new ByteArrayOutputStream();
+      DeflaterOutputStream dout = new DeflaterOutputStream(bout);
+      IospHelper.copyToOutputStream(data, dout);
+
+      // write internal buffer to output stream
+      dout.close();
+      int deflatedSize = bout.size();
+      size += NcStream.writeVInt(out, deflatedSize);
+      bout.writeTo(out);
+      size += deflatedSize;
+      float ratio = ((float) uncompressedLength)/deflatedSize;
+      if (showRes) System.out.printf(" CdmrFeatureController.sendData grid='%s' org/compress= %d/%d = %f%n", grid.getName(), uncompressedLength, deflatedSize, ratio);
+
+    }  else {
+
+      size += NcStream.writeVInt(out, (int) uncompressedLength); // data len or number of objects
+      if (showRes) System.out.printf(" CdmrFeatureController.sendData grid='%s' data len=%d%n", grid.getName(), uncompressedLength);
+
+      size += IospHelper.copyToOutputStream(data, out);
+    }
+
+    return size;
+  }
+
+  private int writeBytes(OutputStream out, byte[] b) throws IOException {
+    out.write(b);
+    return b.length;
   }
 
 }

@@ -280,7 +280,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     if (!wasRead) doRead();
 
-    return Math.min(coords[0], coords[(int) getSize() - 1]);
+    return Math.min(coords[0], coords[coords.length - 1]);
   }
 
   @Override
@@ -289,7 +289,25 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     if (!wasRead) doRead();
 
-    return Math.max(coords[0], coords[(int) getSize() - 1]);
+    return Math.max(coords[0], coords[coords.length - 1]);
+  }
+
+  public double getMinEdgeValue() {
+    if (edge == null) return getMinValue();
+    if (!isNumeric())
+      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
+    if (!wasRead) doRead();
+
+    return Math.min(edge[0], edge[edge.length - 1]);
+  }
+
+  public double getMaxEdgeValue() {
+    if (edge == null) return getMaxValue();
+    if (!isNumeric())
+      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
+    if (!wasRead) doRead();
+
+    return Math.max(edge[0], edge[edge.length - 1]);
   }
 
   /**

@@ -1,18 +1,20 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
+import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.TransformType;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.util.Parameter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Adapt ucar.nc2.dt.GridDataset to ucar.nc2.ft.cover.grid.GridCoverageDatasetIF
@@ -22,9 +24,14 @@ import java.util.List;
  */
 public class DtGridDatasetAdapter implements GridCoverageDatasetIF {
   private GridDataset proxy;
+  private List<GridCoverage> grids;
 
   public DtGridDatasetAdapter(GridDataset proxy) {
     this.proxy = proxy;
+
+    grids = new ArrayList<>();
+    for (GridDatatype dtGrid : proxy.getGrids())
+      grids.add(new Grid(dtGrid));
   }
 
   @Override
@@ -32,11 +39,16 @@ public class DtGridDatasetAdapter implements GridCoverageDatasetIF {
     return proxy.getLocation();
   }
 
+  @Override
   public List<GridCoverage> getGrids() {
-    List<GridCoverage> result = new ArrayList<>();
-    for (GridDatatype dtGrid : proxy.getGrids())
-      result.add(new Grid(dtGrid));
-    return result;
+    return grids;
+  }
+
+  @Override
+  public GridCoverage findCoverage(String name) {
+    for (GridCoverage grid : grids)
+      if (grid.getName().equalsIgnoreCase(name)) return grid;
+    return null;
   }
 
   @Override
@@ -55,24 +67,30 @@ public class DtGridDatasetAdapter implements GridCoverageDatasetIF {
 
   @Override
   public List<GridCoordTransform> getCoordTransforms() {
+    Set<String> transformNames = new HashSet<>();
     List<ucar.nc2.ft2.coverage.grid.GridCoordTransform> result = new ArrayList<>();
     for (Gridset gset : proxy.getGridsets()) {
       ucar.nc2.dt.GridCoordSystem gcs = gset.getGeoCoordSystem();
-      for (ucar.nc2.dataset.CoordinateTransform ct : gcs.getCoordinateTransforms()) {
-        result.add(new Transform(ct)); // LOOK duplicates
-      }
+      for (ucar.nc2.dataset.CoordinateTransform ct : gcs.getCoordinateTransforms())
+        if (!transformNames.contains(ct.getName())) {
+          result.add(new Transform(ct));
+          transformNames.add(ct.getName());
+        }
     }
     return result;
   }
 
   @Override
   public List<GridCoordAxis> getCoordAxes() {
+    Set<String> axisNames = new HashSet<>();
     List<ucar.nc2.ft2.coverage.grid.GridCoordAxis> result = new ArrayList<>();
     for (Gridset gset : proxy.getGridsets()) {
       ucar.nc2.dt.GridCoordSystem gcs = gset.getGeoCoordSystem();
-      for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordinateAxes()) {
-        result.add(new Axis(axis)); // LOOK duplicates
-      }
+      for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordinateAxes())
+        if (!axisNames.contains(axis.getFullName())) {
+          result.add(new Axis(axis));
+          axisNames.add(axis.getFullName());
+        }
     }
     return result;
   }
@@ -88,6 +106,26 @@ public class DtGridDatasetAdapter implements GridCoverageDatasetIF {
       setCoordSysName(dtGrid.getCoordinateSystem().getName());
       setUnits(dtGrid.getUnitsString());
       setDescription(dtGrid.getDescription());
+    }
+
+    @Override
+    public Array readData(GridSubset subset) throws IOException {
+      int level = -1;
+      for (Map.Entry<String, String> entry : subset.getEntries()) {
+        switch (entry.getKey()) {
+          case "Z":
+            double val = Double.parseDouble(entry.getValue());
+            level = findZcoordIndexFromValue( val);
+            break;
+        }
+      }
+      return dtGrid.readDataSlice(0, 0, 0, level, -1, -1);
+    }
+
+    int findZcoordIndexFromValue(double val) {
+      GridCoordSystem gcs = dtGrid.getCoordinateSystem();
+      CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+      return zaxis.findCoordElement(val);
     }
   }
 
@@ -130,10 +168,17 @@ public class DtGridDatasetAdapter implements GridCoverageDatasetIF {
       setNvalues(dtCoordAxis.getSize());
       if (dtCoordAxis instanceof CoordinateAxis1D) { // LOOK for grid, should always be true
         CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
-        setMin(axis1D.getMinValue());
-        setMax(axis1D.getMaxValue());
+        setStartValue(axis1D.getCoordValue(0));
+        setEndValue(axis1D.getCoordValue((int)axis1D.getSize()-1));
         setIsRegular(axis1D.isRegular());
       }
+    }
+
+    @Override
+    public double[] readValues() throws IOException {
+      Array data = dtCoordAxis.read();
+      setValues((double[])data.get1DJavaArray(double.class));
+      return getValues();
     }
   }
 

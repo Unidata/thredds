@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
@@ -52,10 +53,9 @@ import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.cover.CoverageDataset;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.remote.CdmrFeatureDataset2;
+import ucar.nc2.ft2.remote.CdmrFeatureDataset;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribIndexCache;
@@ -69,8 +69,6 @@ import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.ui.coverage.CoverageDisplay;
-import ucar.nc2.ui.coverage.CoverageTable;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
@@ -1331,6 +1329,11 @@ public class ToolsUI extends JPanel {
 
     if (s.getType() == thredds.client.catalog.ServiceType.WMS) {
       openWMSDataset(invAccess.getStandardUrlName());
+      return;
+    }
+
+    if (s.getType() == ServiceType.CdmrFeature) {
+      openCoverageDataset(invAccess.getStandardUrlName());
       return;
     }
 
@@ -5048,7 +5051,7 @@ public class ToolsUI extends JPanel {
       boolean err = false;
 
       try {
-        gcd = CdmrFeatureDataset2.factory(FeatureType.GRID, command);
+        gcd = CdmrFeatureDataset.factory(FeatureType.GRID, command);
         setDataset(gcd);
 
       } catch (IOException e) {

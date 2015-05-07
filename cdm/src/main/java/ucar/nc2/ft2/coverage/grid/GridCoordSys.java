@@ -1,11 +1,10 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Indent;
 
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  /*
@@ -47,7 +46,7 @@ public class GridCoordSys {
   }
 
   public List<String> getTransformNames() {
-    return transformNames;
+    return (transformNames != null) ? transformNames : new ArrayList<String>();
   }
 
   public void setTransformNames(List<String> transformNames) {
@@ -80,4 +79,5 @@ public class GridCoordSys {
 
     indent.decr();
   }
+
 }

@@ -24,14 +24,26 @@ public final class CdmrFeatureProto {
     // required string name = 2;
     /**
      * <code>required string name = 2;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     boolean hasName();
     /**
      * <code>required string name = 2;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     java.lang.String getName();
     /**
      * <code>required string name = 2;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -194,12 +206,20 @@ public final class CdmrFeatureProto {
     private java.lang.Object name_;
     /**
      * <code>required string name = 2;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public boolean hasName() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
      * <code>required string name = 2;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -217,6 +237,10 @@ public final class CdmrFeatureProto {
     }
     /**
      * <code>required string name = 2;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -629,12 +653,20 @@ public final class CdmrFeatureProto {
       private java.lang.Object name_ = "";
       /**
        * <code>required string name = 2;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public boolean hasName() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
        * <code>required string name = 2;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -649,6 +681,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 2;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -665,6 +701,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 2;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder setName(
           java.lang.String value) {
@@ -678,6 +718,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 2;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -687,6 +731,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 2;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -956,14 +1004,26 @@ public final class CdmrFeatureProto {
     // required string name = 1;
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     boolean hasName();
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     java.lang.String getName();
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -996,45 +1056,45 @@ public final class CdmrFeatureProto {
      */
     int getAxisType();
 
-    // required int64 nvalues = 4;
+    // required string units = 4;
     /**
-     * <code>required int64 nvalues = 4;</code>
-     */
-    boolean hasNvalues();
-    /**
-     * <code>required int64 nvalues = 4;</code>
-     */
-    long getNvalues();
-
-    // required string units = 5;
-    /**
-     * <code>required string units = 5;</code>
+     * <code>required string units = 4;</code>
      */
     boolean hasUnits();
     /**
-     * <code>required string units = 5;</code>
+     * <code>required string units = 4;</code>
      */
     java.lang.String getUnits();
     /**
-     * <code>required string units = 5;</code>
+     * <code>required string units = 4;</code>
      */
     com.google.protobuf.ByteString
         getUnitsBytes();
 
-    // optional string description = 6;
+    // optional string description = 5;
     /**
-     * <code>optional string description = 6;</code>
+     * <code>optional string description = 5;</code>
      */
     boolean hasDescription();
     /**
-     * <code>optional string description = 6;</code>
+     * <code>optional string description = 5;</code>
      */
     java.lang.String getDescription();
     /**
-     * <code>optional string description = 6;</code>
+     * <code>optional string description = 5;</code>
      */
     com.google.protobuf.ByteString
         getDescriptionBytes();
+
+    // required int64 nvalues = 6;
+    /**
+     * <code>required int64 nvalues = 6;</code>
+     */
+    boolean hasNvalues();
+    /**
+     * <code>required int64 nvalues = 6;</code>
+     */
+    long getNvalues();
 
     // optional bool isRegular = 7;
     /**
@@ -1046,43 +1106,61 @@ public final class CdmrFeatureProto {
      */
     boolean getIsRegular();
 
-    // required double min = 8;
+    // required double startValue = 8;
     /**
-     * <code>required double min = 8;</code>
-     *
-     * <pre>
-     * required ??
-     * </pre>
+     * <code>required double startValue = 8;</code>
      */
-    boolean hasMin();
+    boolean hasStartValue();
     /**
-     * <code>required double min = 8;</code>
-     *
-     * <pre>
-     * required ??
-     * </pre>
+     * <code>required double startValue = 8;</code>
      */
-    double getMin();
+    double getStartValue();
 
-    // required double max = 9;
+    // required double endValue = 9;
     /**
-     * <code>required double max = 9;</code>
+     * <code>required double endValue = 9;</code>
      */
-    boolean hasMax();
+    boolean hasEndValue();
     /**
-     * <code>required double max = 9;</code>
+     * <code>required double endValue = 9;</code>
      */
-    double getMax();
+    double getEndValue();
 
     // optional double resolution = 10;
     /**
      * <code>optional double resolution = 10;</code>
+     *
+     * <pre>
+     * resolution = (max-min) / (nvalues-1)
+     * </pre>
      */
     boolean hasResolution();
     /**
      * <code>optional double resolution = 10;</code>
+     *
+     * <pre>
+     * resolution = (max-min) / (nvalues-1)
+     * </pre>
      */
     double getResolution();
+
+    // optional bytes values = 11;
+    /**
+     * <code>optional bytes values = 11;</code>
+     *
+     * <pre>
+     * "immediate" - store small non-regular data in header
+     * </pre>
+     */
+    boolean hasValues();
+    /**
+     * <code>optional bytes values = 11;</code>
+     *
+     * <pre>
+     * "immediate" - store small non-regular data in header
+     * </pre>
+     */
+    com.google.protobuf.ByteString getValues();
   }
   /**
    * Protobuf type {@code CoordAxis}
@@ -1156,19 +1234,19 @@ public final class CdmrFeatureProto {
               axisType_ = input.readInt32();
               break;
             }
-            case 32: {
+            case 34: {
               bitField0_ |= 0x00000008;
-              nvalues_ = input.readInt64();
+              units_ = input.readBytes();
               break;
             }
             case 42: {
               bitField0_ |= 0x00000010;
-              units_ = input.readBytes();
+              description_ = input.readBytes();
               break;
             }
-            case 50: {
+            case 48: {
               bitField0_ |= 0x00000020;
-              description_ = input.readBytes();
+              nvalues_ = input.readInt64();
               break;
             }
             case 56: {
@@ -1178,17 +1256,22 @@ public final class CdmrFeatureProto {
             }
             case 65: {
               bitField0_ |= 0x00000080;
-              min_ = input.readDouble();
+              startValue_ = input.readDouble();
               break;
             }
             case 73: {
               bitField0_ |= 0x00000100;
-              max_ = input.readDouble();
+              endValue_ = input.readDouble();
               break;
             }
             case 81: {
               bitField0_ |= 0x00000200;
               resolution_ = input.readDouble();
+              break;
+            }
+            case 90: {
+              bitField0_ |= 0x00000400;
+              values_ = input.readBytes();
               break;
             }
           }
@@ -1236,12 +1319,20 @@ public final class CdmrFeatureProto {
     private java.lang.Object name_;
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -1259,6 +1350,10 @@ public final class CdmrFeatureProto {
     }
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -1314,33 +1409,17 @@ public final class CdmrFeatureProto {
       return axisType_;
     }
 
-    // required int64 nvalues = 4;
-    public static final int NVALUES_FIELD_NUMBER = 4;
-    private long nvalues_;
+    // required string units = 4;
+    public static final int UNITS_FIELD_NUMBER = 4;
+    private java.lang.Object units_;
     /**
-     * <code>required int64 nvalues = 4;</code>
+     * <code>required string units = 4;</code>
      */
-    public boolean hasNvalues() {
+    public boolean hasUnits() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>required int64 nvalues = 4;</code>
-     */
-    public long getNvalues() {
-      return nvalues_;
-    }
-
-    // required string units = 5;
-    public static final int UNITS_FIELD_NUMBER = 5;
-    private java.lang.Object units_;
-    /**
-     * <code>required string units = 5;</code>
-     */
-    public boolean hasUnits() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>required string units = 5;</code>
+     * <code>required string units = 4;</code>
      */
     public java.lang.String getUnits() {
       java.lang.Object ref = units_;
@@ -1357,7 +1436,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>required string units = 5;</code>
+     * <code>required string units = 4;</code>
      */
     public com.google.protobuf.ByteString
         getUnitsBytes() {
@@ -1373,17 +1452,17 @@ public final class CdmrFeatureProto {
       }
     }
 
-    // optional string description = 6;
-    public static final int DESCRIPTION_FIELD_NUMBER = 6;
+    // optional string description = 5;
+    public static final int DESCRIPTION_FIELD_NUMBER = 5;
     private java.lang.Object description_;
     /**
-     * <code>optional string description = 6;</code>
+     * <code>optional string description = 5;</code>
      */
     public boolean hasDescription() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>optional string description = 6;</code>
+     * <code>optional string description = 5;</code>
      */
     public java.lang.String getDescription() {
       java.lang.Object ref = description_;
@@ -1400,7 +1479,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string description = 6;</code>
+     * <code>optional string description = 5;</code>
      */
     public com.google.protobuf.ByteString
         getDescriptionBytes() {
@@ -1414,6 +1493,22 @@ public final class CdmrFeatureProto {
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
+    }
+
+    // required int64 nvalues = 6;
+    public static final int NVALUES_FIELD_NUMBER = 6;
+    private long nvalues_;
+    /**
+     * <code>required int64 nvalues = 6;</code>
+     */
+    public boolean hasNvalues() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>required int64 nvalues = 6;</code>
+     */
+    public long getNvalues() {
+      return nvalues_;
     }
 
     // optional bool isRegular = 7;
@@ -1432,44 +1527,36 @@ public final class CdmrFeatureProto {
       return isRegular_;
     }
 
-    // required double min = 8;
-    public static final int MIN_FIELD_NUMBER = 8;
-    private double min_;
+    // required double startValue = 8;
+    public static final int STARTVALUE_FIELD_NUMBER = 8;
+    private double startValue_;
     /**
-     * <code>required double min = 8;</code>
-     *
-     * <pre>
-     * required ??
-     * </pre>
+     * <code>required double startValue = 8;</code>
      */
-    public boolean hasMin() {
+    public boolean hasStartValue() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
-     * <code>required double min = 8;</code>
-     *
-     * <pre>
-     * required ??
-     * </pre>
+     * <code>required double startValue = 8;</code>
      */
-    public double getMin() {
-      return min_;
+    public double getStartValue() {
+      return startValue_;
     }
 
-    // required double max = 9;
-    public static final int MAX_FIELD_NUMBER = 9;
-    private double max_;
+    // required double endValue = 9;
+    public static final int ENDVALUE_FIELD_NUMBER = 9;
+    private double endValue_;
     /**
-     * <code>required double max = 9;</code>
+     * <code>required double endValue = 9;</code>
      */
-    public boolean hasMax() {
+    public boolean hasEndValue() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>required double max = 9;</code>
+     * <code>required double endValue = 9;</code>
      */
-    public double getMax() {
-      return max_;
+    public double getEndValue() {
+      return endValue_;
     }
 
     // optional double resolution = 10;
@@ -1477,28 +1564,61 @@ public final class CdmrFeatureProto {
     private double resolution_;
     /**
      * <code>optional double resolution = 10;</code>
+     *
+     * <pre>
+     * resolution = (max-min) / (nvalues-1)
+     * </pre>
      */
     public boolean hasResolution() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
      * <code>optional double resolution = 10;</code>
+     *
+     * <pre>
+     * resolution = (max-min) / (nvalues-1)
+     * </pre>
      */
     public double getResolution() {
       return resolution_;
+    }
+
+    // optional bytes values = 11;
+    public static final int VALUES_FIELD_NUMBER = 11;
+    private com.google.protobuf.ByteString values_;
+    /**
+     * <code>optional bytes values = 11;</code>
+     *
+     * <pre>
+     * "immediate" - store small non-regular data in header
+     * </pre>
+     */
+    public boolean hasValues() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    /**
+     * <code>optional bytes values = 11;</code>
+     *
+     * <pre>
+     * "immediate" - store small non-regular data in header
+     * </pre>
+     */
+    public com.google.protobuf.ByteString getValues() {
+      return values_;
     }
 
     private void initFields() {
       name_ = "";
       dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       axisType_ = 0;
-      nvalues_ = 0L;
       units_ = "";
       description_ = "";
+      nvalues_ = 0L;
       isRegular_ = false;
-      min_ = 0D;
-      max_ = 0D;
+      startValue_ = 0D;
+      endValue_ = 0D;
       resolution_ = 0D;
+      values_ = com.google.protobuf.ByteString.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1517,19 +1637,19 @@ public final class CdmrFeatureProto {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasNvalues()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       if (!hasUnits()) {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasMin()) {
+      if (!hasNvalues()) {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasMax()) {
+      if (!hasStartValue()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEndValue()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -1550,25 +1670,28 @@ public final class CdmrFeatureProto {
         output.writeInt32(3, axisType_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt64(4, nvalues_);
+        output.writeBytes(4, getUnitsBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getUnitsBytes());
+        output.writeBytes(5, getDescriptionBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBytes(6, getDescriptionBytes());
+        output.writeInt64(6, nvalues_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeBool(7, isRegular_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeDouble(8, min_);
+        output.writeDouble(8, startValue_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeDouble(9, max_);
+        output.writeDouble(9, endValue_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeDouble(10, resolution_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeBytes(11, values_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1593,15 +1716,15 @@ public final class CdmrFeatureProto {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(4, nvalues_);
+          .computeBytesSize(4, getUnitsBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getUnitsBytes());
+          .computeBytesSize(5, getDescriptionBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, getDescriptionBytes());
+          .computeInt64Size(6, nvalues_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
@@ -1609,15 +1732,19 @@ public final class CdmrFeatureProto {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(8, min_);
+          .computeDoubleSize(8, startValue_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(9, max_);
+          .computeDoubleSize(9, endValue_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(10, resolution_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(11, values_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1741,20 +1868,22 @@ public final class CdmrFeatureProto {
         bitField0_ = (bitField0_ & ~0x00000002);
         axisType_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
-        nvalues_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
         units_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000008);
         description_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        nvalues_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000020);
         isRegular_ = false;
         bitField0_ = (bitField0_ & ~0x00000040);
-        min_ = 0D;
+        startValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000080);
-        max_ = 0D;
+        endValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000100);
         resolution_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000200);
+        values_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
 
@@ -1798,15 +1927,15 @@ public final class CdmrFeatureProto {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.nvalues_ = nvalues_;
+        result.units_ = units_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.units_ = units_;
+        result.description_ = description_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.description_ = description_;
+        result.nvalues_ = nvalues_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
@@ -1814,15 +1943,19 @@ public final class CdmrFeatureProto {
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000080;
         }
-        result.min_ = min_;
+        result.startValue_ = startValue_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000100;
         }
-        result.max_ = max_;
+        result.endValue_ = endValue_;
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000200;
         }
         result.resolution_ = resolution_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.values_ = values_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1850,30 +1983,33 @@ public final class CdmrFeatureProto {
         if (other.hasAxisType()) {
           setAxisType(other.getAxisType());
         }
-        if (other.hasNvalues()) {
-          setNvalues(other.getNvalues());
-        }
         if (other.hasUnits()) {
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000008;
           units_ = other.units_;
           onChanged();
         }
         if (other.hasDescription()) {
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000010;
           description_ = other.description_;
           onChanged();
+        }
+        if (other.hasNvalues()) {
+          setNvalues(other.getNvalues());
         }
         if (other.hasIsRegular()) {
           setIsRegular(other.getIsRegular());
         }
-        if (other.hasMin()) {
-          setMin(other.getMin());
+        if (other.hasStartValue()) {
+          setStartValue(other.getStartValue());
         }
-        if (other.hasMax()) {
-          setMax(other.getMax());
+        if (other.hasEndValue()) {
+          setEndValue(other.getEndValue());
         }
         if (other.hasResolution()) {
           setResolution(other.getResolution());
+        }
+        if (other.hasValues()) {
+          setValues(other.getValues());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1892,19 +2028,19 @@ public final class CdmrFeatureProto {
           
           return false;
         }
-        if (!hasNvalues()) {
-          
-          return false;
-        }
         if (!hasUnits()) {
           
           return false;
         }
-        if (!hasMin()) {
+        if (!hasNvalues()) {
           
           return false;
         }
-        if (!hasMax()) {
+        if (!hasStartValue()) {
+          
+          return false;
+        }
+        if (!hasEndValue()) {
           
           return false;
         }
@@ -1934,12 +2070,20 @@ public final class CdmrFeatureProto {
       private java.lang.Object name_ = "";
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -1954,6 +2098,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -1970,6 +2118,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder setName(
           java.lang.String value) {
@@ -1983,6 +2135,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -1992,6 +2148,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -2089,49 +2249,16 @@ public final class CdmrFeatureProto {
         return this;
       }
 
-      // required int64 nvalues = 4;
-      private long nvalues_ ;
+      // required string units = 4;
+      private java.lang.Object units_ = "";
       /**
-       * <code>required int64 nvalues = 4;</code>
+       * <code>required string units = 4;</code>
        */
-      public boolean hasNvalues() {
+      public boolean hasUnits() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>required int64 nvalues = 4;</code>
-       */
-      public long getNvalues() {
-        return nvalues_;
-      }
-      /**
-       * <code>required int64 nvalues = 4;</code>
-       */
-      public Builder setNvalues(long value) {
-        bitField0_ |= 0x00000008;
-        nvalues_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required int64 nvalues = 4;</code>
-       */
-      public Builder clearNvalues() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        nvalues_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // required string units = 5;
-      private java.lang.Object units_ = "";
-      /**
-       * <code>required string units = 5;</code>
-       */
-      public boolean hasUnits() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>required string units = 5;</code>
+       * <code>required string units = 4;</code>
        */
       public java.lang.String getUnits() {
         java.lang.Object ref = units_;
@@ -2145,7 +2272,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>required string units = 5;</code>
+       * <code>required string units = 4;</code>
        */
       public com.google.protobuf.ByteString
           getUnitsBytes() {
@@ -2161,51 +2288,51 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>required string units = 5;</code>
+       * <code>required string units = 4;</code>
        */
       public Builder setUnits(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000008;
         units_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string units = 5;</code>
+       * <code>required string units = 4;</code>
        */
       public Builder clearUnits() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000008);
         units_ = getDefaultInstance().getUnits();
         onChanged();
         return this;
       }
       /**
-       * <code>required string units = 5;</code>
+       * <code>required string units = 4;</code>
        */
       public Builder setUnitsBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000008;
         units_ = value;
         onChanged();
         return this;
       }
 
-      // optional string description = 6;
+      // optional string description = 5;
       private java.lang.Object description_ = "";
       /**
-       * <code>optional string description = 6;</code>
+       * <code>optional string description = 5;</code>
        */
       public boolean hasDescription() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>optional string description = 5;</code>
        */
       public java.lang.String getDescription() {
         java.lang.Object ref = description_;
@@ -2219,7 +2346,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>optional string description = 5;</code>
        */
       public com.google.protobuf.ByteString
           getDescriptionBytes() {
@@ -2235,37 +2362,70 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>optional string description = 5;</code>
        */
       public Builder setDescription(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  bitField0_ |= 0x00000010;
         description_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>optional string description = 5;</code>
        */
       public Builder clearDescription() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         description_ = getDefaultInstance().getDescription();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string description = 6;</code>
+       * <code>optional string description = 5;</code>
        */
       public Builder setDescriptionBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  bitField0_ |= 0x00000010;
         description_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required int64 nvalues = 6;
+      private long nvalues_ ;
+      /**
+       * <code>required int64 nvalues = 6;</code>
+       */
+      public boolean hasNvalues() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>required int64 nvalues = 6;</code>
+       */
+      public long getNvalues() {
+        return nvalues_;
+      }
+      /**
+       * <code>required int64 nvalues = 6;</code>
+       */
+      public Builder setNvalues(long value) {
+        bitField0_ |= 0x00000020;
+        nvalues_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int64 nvalues = 6;</code>
+       */
+      public Builder clearNvalues() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        nvalues_ = 0L;
         onChanged();
         return this;
       }
@@ -2303,84 +2463,68 @@ public final class CdmrFeatureProto {
         return this;
       }
 
-      // required double min = 8;
-      private double min_ ;
+      // required double startValue = 8;
+      private double startValue_ ;
       /**
-       * <code>required double min = 8;</code>
-       *
-       * <pre>
-       * required ??
-       * </pre>
+       * <code>required double startValue = 8;</code>
        */
-      public boolean hasMin() {
+      public boolean hasStartValue() {
         return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>required double min = 8;</code>
-       *
-       * <pre>
-       * required ??
-       * </pre>
+       * <code>required double startValue = 8;</code>
        */
-      public double getMin() {
-        return min_;
+      public double getStartValue() {
+        return startValue_;
       }
       /**
-       * <code>required double min = 8;</code>
-       *
-       * <pre>
-       * required ??
-       * </pre>
+       * <code>required double startValue = 8;</code>
        */
-      public Builder setMin(double value) {
+      public Builder setStartValue(double value) {
         bitField0_ |= 0x00000080;
-        min_ = value;
+        startValue_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required double min = 8;</code>
-       *
-       * <pre>
-       * required ??
-       * </pre>
+       * <code>required double startValue = 8;</code>
        */
-      public Builder clearMin() {
+      public Builder clearStartValue() {
         bitField0_ = (bitField0_ & ~0x00000080);
-        min_ = 0D;
+        startValue_ = 0D;
         onChanged();
         return this;
       }
 
-      // required double max = 9;
-      private double max_ ;
+      // required double endValue = 9;
+      private double endValue_ ;
       /**
-       * <code>required double max = 9;</code>
+       * <code>required double endValue = 9;</code>
        */
-      public boolean hasMax() {
+      public boolean hasEndValue() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>required double max = 9;</code>
+       * <code>required double endValue = 9;</code>
        */
-      public double getMax() {
-        return max_;
+      public double getEndValue() {
+        return endValue_;
       }
       /**
-       * <code>required double max = 9;</code>
+       * <code>required double endValue = 9;</code>
        */
-      public Builder setMax(double value) {
+      public Builder setEndValue(double value) {
         bitField0_ |= 0x00000100;
-        max_ = value;
+        endValue_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required double max = 9;</code>
+       * <code>required double endValue = 9;</code>
        */
-      public Builder clearMax() {
+      public Builder clearEndValue() {
         bitField0_ = (bitField0_ & ~0x00000100);
-        max_ = 0D;
+        endValue_ = 0D;
         onChanged();
         return this;
       }
@@ -2389,18 +2533,30 @@ public final class CdmrFeatureProto {
       private double resolution_ ;
       /**
        * <code>optional double resolution = 10;</code>
+       *
+       * <pre>
+       * resolution = (max-min) / (nvalues-1)
+       * </pre>
        */
       public boolean hasResolution() {
         return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
        * <code>optional double resolution = 10;</code>
+       *
+       * <pre>
+       * resolution = (max-min) / (nvalues-1)
+       * </pre>
        */
       public double getResolution() {
         return resolution_;
       }
       /**
        * <code>optional double resolution = 10;</code>
+       *
+       * <pre>
+       * resolution = (max-min) / (nvalues-1)
+       * </pre>
        */
       public Builder setResolution(double value) {
         bitField0_ |= 0x00000200;
@@ -2410,10 +2566,66 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>optional double resolution = 10;</code>
+       *
+       * <pre>
+       * resolution = (max-min) / (nvalues-1)
+       * </pre>
        */
       public Builder clearResolution() {
         bitField0_ = (bitField0_ & ~0x00000200);
         resolution_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      // optional bytes values = 11;
+      private com.google.protobuf.ByteString values_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes values = 11;</code>
+       *
+       * <pre>
+       * "immediate" - store small non-regular data in header
+       * </pre>
+       */
+      public boolean hasValues() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      /**
+       * <code>optional bytes values = 11;</code>
+       *
+       * <pre>
+       * "immediate" - store small non-regular data in header
+       * </pre>
+       */
+      public com.google.protobuf.ByteString getValues() {
+        return values_;
+      }
+      /**
+       * <code>optional bytes values = 11;</code>
+       *
+       * <pre>
+       * "immediate" - store small non-regular data in header
+       * </pre>
+       */
+      public Builder setValues(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000400;
+        values_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes values = 11;</code>
+       *
+       * <pre>
+       * "immediate" - store small non-regular data in header
+       * </pre>
+       */
+      public Builder clearValues() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        values_ = getDefaultInstance().getValues();
         onChanged();
         return this;
       }
@@ -2435,14 +2647,26 @@ public final class CdmrFeatureProto {
     // required string name = 1;
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     boolean hasName();
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     java.lang.String getName();
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -2666,12 +2890,20 @@ public final class CdmrFeatureProto {
     private java.lang.Object name_;
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -2689,6 +2921,10 @@ public final class CdmrFeatureProto {
     }
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * must be unique in dataset
+     * </pre>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -3185,12 +3421,20 @@ public final class CdmrFeatureProto {
       private java.lang.Object name_ = "";
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -3205,6 +3449,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -3221,6 +3469,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder setName(
           java.lang.String value) {
@@ -3234,6 +3486,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -3243,6 +3499,10 @@ public final class CdmrFeatureProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * must be unique in dataset
+       * </pre>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -3772,7 +4032,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * full name
+     * must be unique in dataset
      * </pre>
      */
     boolean hasName();
@@ -3780,7 +4040,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * full name
+     * must be unique in dataset
      * </pre>
      */
     java.lang.String getName();
@@ -3788,7 +4048,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * full name
+     * must be unique in dataset
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -4029,7 +4289,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * full name
+     * must be unique in dataset
      * </pre>
      */
     public boolean hasName() {
@@ -4039,7 +4299,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * full name
+     * must be unique in dataset
      * </pre>
      */
     public java.lang.String getName() {
@@ -4060,7 +4320,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * full name
+     * must be unique in dataset
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -4686,7 +4946,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * full name
+       * must be unique in dataset
        * </pre>
        */
       public boolean hasName() {
@@ -4696,7 +4956,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * full name
+       * must be unique in dataset
        * </pre>
        */
       public java.lang.String getName() {
@@ -4714,7 +4974,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * full name
+       * must be unique in dataset
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -4734,7 +4994,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * full name
+       * must be unique in dataset
        * </pre>
        */
       public Builder setName(
@@ -4751,7 +5011,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * full name
+       * must be unique in dataset
        * </pre>
        */
       public Builder clearName() {
@@ -4764,7 +5024,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * full name
+       * must be unique in dataset
        * </pre>
        */
       public Builder setNameBytes(
@@ -7706,25 +7966,25 @@ public final class CdmrFeatureProto {
       "\n%ucar/nc2/ft2/remote/cdmrfeature.proto\032" +
       "\036ucar/nc2/stream/ncStream.proto\"K\n\016Coord" +
       "Transform\022\017\n\007isHoriz\030\001 \002(\010\022\014\n\004name\030\002 \002(\t" +
-      "\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\276\001\n\tCoordAx" +
+      "\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\332\001\n\tCoordAx" +
       "is\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.Dat" +
-      "aType\022\020\n\010axisType\030\003 \002(\005\022\017\n\007nvalues\030\004 \002(\003" +
-      "\022\r\n\005units\030\005 \002(\t\022\023\n\013description\030\006 \001(\t\022\021\n\t" +
-      "isRegular\030\007 \001(\010\022\013\n\003min\030\010 \002(\001\022\013\n\003max\030\t \002(" +
-      "\001\022\022\n\nresolution\030\n \001(\001\"b\n\010CoordSys\022\014\n\004nam" +
-      "e\030\001 \002(\t\022\021\n\taxisNames\030\002 \003(\t\022\026\n\016transformN",
-      "ames\030\003 \003(\t\022\035\n\ncomponents\030\004 \003(\0132\t.CoordSy" +
-      "s\"\242\001\n\014GridCoverage\022\014\n\004name\030\001 \002(\t\022\033\n\010data" +
-      "Type\030\002 \002(\0162\t.DataType\022\027\n\010unsigned\030\003 \001(\010:" +
-      "\005false\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\020\n\010coor" +
-      "dSys\030\005 \002(\t\022\r\n\005units\030\006 \001(\t\022\023\n\013description" +
-      "\030\007 \001(\t\"\301\001\n\023GridCoverageDataset\022\014\n\004name\030\001" +
-      " \002(\t\022\030\n\004atts\030\002 \003(\0132\n.Attribute\022\033\n\010coordS" +
-      "ys\030\003 \003(\0132\t.CoordSys\022(\n\017coordTransforms\030\004" +
-      " \003(\0132\017.CoordTransform\022\035\n\tcoordAxes\030\005 \003(\013" +
-      "2\n.CoordAxis\022\034\n\005grids\030\006 \003(\0132\r.GridCovera",
-      "geB\'\n\023ucar.nc2.ft2.remoteB\020CdmrFeaturePr" +
-      "oto"
+      "aType\022\020\n\010axisType\030\003 \002(\005\022\r\n\005units\030\004 \002(\t\022\023" +
+      "\n\013description\030\005 \001(\t\022\017\n\007nvalues\030\006 \002(\003\022\021\n\t" +
+      "isRegular\030\007 \001(\010\022\022\n\nstartValue\030\010 \002(\001\022\020\n\010e" +
+      "ndValue\030\t \002(\001\022\022\n\nresolution\030\n \001(\001\022\016\n\006val" +
+      "ues\030\013 \001(\014\"b\n\010CoordSys\022\014\n\004name\030\001 \002(\t\022\021\n\ta",
+      "xisNames\030\002 \003(\t\022\026\n\016transformNames\030\003 \003(\t\022\035" +
+      "\n\ncomponents\030\004 \003(\0132\t.CoordSys\"\242\001\n\014GridCo" +
+      "verage\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t" +
+      ".DataType\022\027\n\010unsigned\030\003 \001(\010:\005false\022\030\n\004at" +
+      "ts\030\004 \003(\0132\n.Attribute\022\020\n\010coordSys\030\005 \002(\t\022\r" +
+      "\n\005units\030\006 \001(\t\022\023\n\013description\030\007 \001(\t\"\301\001\n\023G" +
+      "ridCoverageDataset\022\014\n\004name\030\001 \002(\t\022\030\n\004atts" +
+      "\030\002 \003(\0132\n.Attribute\022\033\n\010coordSys\030\003 \003(\0132\t.C" +
+      "oordSys\022(\n\017coordTransforms\030\004 \003(\0132\017.Coord" +
+      "Transform\022\035\n\tcoordAxes\030\005 \003(\0132\n.CoordAxis",
+      "\022\034\n\005grids\030\006 \003(\0132\r.GridCoverageB\'\n\023ucar.n" +
+      "c2.ft2.remoteB\020CdmrFeatureProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -7742,7 +8002,7 @@ public final class CdmrFeatureProto {
           internal_static_CoordAxis_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_CoordAxis_descriptor,
-              new java.lang.String[] { "Name", "DataType", "AxisType", "Nvalues", "Units", "Description", "IsRegular", "Min", "Max", "Resolution", });
+              new java.lang.String[] { "Name", "DataType", "AxisType", "Units", "Description", "Nvalues", "IsRegular", "StartValue", "EndValue", "Resolution", "Values", });
           internal_static_CoordSys_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_CoordSys_fieldAccessorTable = new

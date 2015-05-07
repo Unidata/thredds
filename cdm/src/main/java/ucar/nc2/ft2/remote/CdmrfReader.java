@@ -11,6 +11,8 @@ import ucar.nc2.stream.NcStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +23,7 @@ import java.util.List;
  * @since 5/2/2015
  */
 public class CdmrfReader {
-  private boolean showRequest = true;
-  private boolean debug = true;
+  private static final boolean showRequest = true;
   String endpoint;
   GridCoverageDataset gridDataset;
 
@@ -39,7 +40,7 @@ public class CdmrfReader {
     // get the header
     try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
       method.setFollowRedirects(true);
-      if (showRequest) System.out.printf("CdmRemote request %s %n", url);
+      if (showRequest) System.out.printf("CdmrFeature request %s %n", url);
       int statusCode = method.execute();
 
       if (statusCode == 404)
@@ -75,10 +76,6 @@ public class CdmrfReader {
      int msize = NcStream.readVInt(is);
      byte[] m = new byte[msize];
      NcStream.readFully(is, m);
-
-     if (debug) {
-       System.out.println("READ header len= " + msize);
-     }
 
      CdmrFeatureProto.GridCoverageDataset proto = CdmrFeatureProto.GridCoverageDataset.parseFrom(m);
      GridCoverageDataset gridCoverage = decodeHeader(proto);
@@ -186,9 +183,19 @@ public class CdmrfReader {
     result.setDescription(proto.getDescription());
 
     result.setIsRegular(proto.getIsRegular());
-    result.setMin(proto.getMin());
-    result.setMax(proto.getMax());
+    result.setStartValue(proto.getStartValue());
+    result.setEndValue(proto.getEndValue());
     result.setResolution(proto.getResolution());
+
+    if (proto.hasValues()) {
+      // LOOK may mess with ability to change var size later.
+      ByteBuffer bb = ByteBuffer.wrap(proto.getValues().toByteArray());
+      DoubleBuffer db = bb.asDoubleBuffer();
+      int n = (int) proto.getNvalues();
+      double[] data = new double[n];
+      for (int i=0; i<n; i++) data[i] = db.get(i);
+      result.setValues(data);
+    }
 
     return result;
   }
@@ -203,7 +210,7 @@ public class CdmrfReader {
   }
    */
   GridCoverage decodeGrid(CdmrFeatureProto.GridCoverage proto) {
-    GridCoverage result = new GridCoverage();
+    GridCoverage result = new CdmrGridCoverage(endpoint);
     result.setName(proto.getName());
     result.setDataType(NcStream.decodeDataType(proto.getDataType()));
 

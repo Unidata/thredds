@@ -26,6 +26,7 @@
       <list>
         <value>opendap</value>
         <value>CdmRemote</value>
+        <value>CdmrFeature</value>
         <value>dap4</value>
         <value>NetcdfSubset</value>
         <value>wms</value>
@@ -35,7 +36,6 @@
         <value>uddc</value>
       </list>
     </property>
-
 
   </bean>
 

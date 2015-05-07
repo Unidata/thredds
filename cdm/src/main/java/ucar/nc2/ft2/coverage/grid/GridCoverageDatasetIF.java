@@ -22,4 +22,7 @@ public interface GridCoverageDatasetIF {
   List<GridCoordTransform> getCoordTransforms();
 
   List<GridCoordAxis> getCoordAxes();
+
+  GridCoverage findCoverage(String name);
+
 }

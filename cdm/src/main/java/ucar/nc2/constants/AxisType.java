@@ -42,9 +42,6 @@ package ucar.nc2.constants;
  */
 
 public enum AxisType {
-
-  //private static java.util.Map<String,AxisType> hash = new java.util.HashMap<String,AxisType>(10);
-
   /**
    * represents the runTime coordinate
    */
@@ -107,12 +104,12 @@ public enum AxisType {
   private final int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
   private final String cfAxisName; // X, Y, Z, T from http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-types
 
-  private AxisType(int order) {
+  AxisType(int order) {
     this.order = order;
     this.cfAxisName = null;
   }
 
-  private AxisType(int order, String cfAxisName) {
+  AxisType(int order, String cfAxisName) {
     this.order = order;
     this.cfAxisName = cfAxisName;
   }

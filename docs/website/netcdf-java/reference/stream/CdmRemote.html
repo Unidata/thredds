@@ -18,9 +18,7 @@
     full CDM data model.
   </li>
   <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and Unidata's
-    experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.2) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong>
-    Feature Datasets.
-  </li>
+  experimental <em>NetCDF Subset Service (NCSS)</em>. </li>
 </ol>
 <p>The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.</p>
 <hr />
@@ -40,8 +38,7 @@ where:
   slice := INTEGER
   start := INTEGER
   stride := INTEGER
-  end := INTEGER
-</pre>
+  end := INTEGER</pre>
 <ul>
   <li>Request parameter values are case-insensitive</li>
   <li>The var parameter is only used for data requests (req=data)</li>
@@ -116,35 +113,6 @@ where:
 <br/>  &lt;LatLonBox&gt;<br/>    &lt;west&gt;-180.0000&lt;/west&gt;<br/>    &lt;east&gt;180.0000&lt;/east&gt;<br/>    &lt;south&gt;-90.0000&lt;/south&gt;<br/>    &lt;north&gt;82.5199&lt;/north&gt;<br/>  &lt;/LatLonBox&gt;<br/>  &lt;AcceptList&gt;<br/>    &lt;accept&gt;raw&lt;/accept&gt;<br/>    &lt;accept&gt;xml&lt;/accept&gt;<br/>    &lt;accept&gt;csv&lt;/accept&gt;<br/>    &lt;accept&gt;netcdf&lt;/accept&gt;<br/>    &lt;accept&gt;ncstream&lt;/accept&gt;<br/>  &lt;/AcceptList&gt;<br/>&lt;/capabilities&gt;</pre>
 
 <p>&nbsp;</p>
-<hr width="100%"/>
-<h2>PointStream Grammer</h2>
-
-<p>An <em><strong>pointstream</strong></em> is a sequence of one or more messages:</p>
-<pre>   pointstream = {message}
-   message = stationListMessage | pointFeatureListMessage | errorMessage | endMessage
-   stationListMessage = MAGIC_StationList, vlen, PointStreamProto.StationList 
-   pointFeatureListMessage = pointFeatureCollectionMessage, {pointFeatureMessage}, (endMessage | errorMessage)
-
-
-   pointFeatureCollectionMessage = MAGIC_PointFeatureCollection, vlen, PointStreamProto.PointFeatureCollection
-   pointFeatureMessage = MAGIC_PointFeature, vlen, PointStreamProto.PointFeature
-   endMessage = MAGIC_END
-   errorMessage = MAGIC_ERR, vlen, NcStreamProto.Error
-   
-   vlen = variable length encoded positive integer == length of the following object in bytes
-
-
-   // 8 byte constants
-
-   MAGIC_StationList            =  0fe, 0xec, 0xce, 0xda 
-   MAGIC_PointFeatureCollection =  0xfi, 0xec, 0xce, 0xba <br/>
-   MAGIC_PointFeature           =  0xab, 0xec, 0xce, 0xba <br/>   MAGIC_END                    =  0xed, 0xed, 0xde, 0xde<br/>
-   MAGIC_ERR                    =  0xab, 0xad, 0xba, 0xda <br/>
-</pre>
-<p>The protobuf messages are defined by </p>
-<ul>
-  <li><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong></li>
-</ul>
 <p></p>
 <hr width="100%"/>
 <h2>Current notes on motherlode dev</h2>

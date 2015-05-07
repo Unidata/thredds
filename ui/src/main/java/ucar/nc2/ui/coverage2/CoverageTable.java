@@ -14,6 +14,7 @@ import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 //import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.nc2.util.Indent;
 import ucar.nc2.util.NamedObject;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -29,7 +30,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Description
+ * Bean Table for GridCoverage
  *
  * @author John
  * @since 12/25/12
@@ -48,43 +49,16 @@ public class CoverageTable extends JPanel {
     this.prefs = prefs;
 
     gridTable = new BeanTable(GridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false, "GridCoverage", "ucar.nc2.ft2.coverage.GridCoverage", null);
-    JTable jtable = gridTable.getJTable();
-
-    PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
-    csPopup.addAction("Show Declaration", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        GridBean vb = (GridBean) gridTable.getSelectedBean();
-        //Variable v = vb.geogrid.getVariable();
-        infoTA.clear();
-        infoTA.appendLine("Coverage " + vb.geogrid.getName() + " :");
-        Formatter f= new Formatter();
-        infoTA.appendLine(vb.geogrid.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
-      }
-    });
-
-    /* csPopup.addAction("Show Coordinates", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        CoverageBean vb = (CoverageBean) varTable.getSelectedBean();
-        Formatter f = new Formatter();
-        showCoordinates(vb, f);
-        infoTA.setText(f.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
-      }
-    });  */
+    csTable = new BeanTable(CoordSysBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false, "GridCoordSys", "ucar.nc2.ft2.coverage.GridCoordSys", null);
+    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false, "GridCoordAxis", "ucar.nc2.ft2.coverage.GridCoordAxis", null);
+    transTable = new BeanTable(CoordTransBean.class, (PreferencesExt) prefs.node("GeoCoordinateTransformBean"), false, "GridCoordTransform", "ucar.nc2.ft2.coverage.GridCoordTransform", null);
 
     // the info window
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
-    // show coordinate systems and axis
-    csTable = new BeanTable(CoordSysBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false, "GridCoordSys", "ucar.nc2.ft2.coverage.GridCoordSys", null);
-    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false, "GridCooordAxis", "ucar.nc2.ft2.coverage.GridCooordAxis", null);
-    transTable = new BeanTable(CoordTransBean.class, (PreferencesExt) prefs.node("GeoCoordinateTransformBean"), false, "GridCoordTransform", "ucar.nc2.ft2.coverage.GridCoordTransform", null);
-
+    // layout
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, gridTable, csTable);
     split.setDividerLocation(prefs.getInt("splitPos", 300));
 
@@ -96,6 +70,32 @@ public class CoverageTable extends JPanel {
 
     setLayout(new BorderLayout());
     add(split3, BorderLayout.CENTER);
+
+    // context menu
+    JTable jtable = gridTable.getJTable();
+    PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
+    csPopup.addAction("Show Declaration", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        GridBean vb = (GridBean) gridTable.getSelectedBean();
+        infoTA.clear();
+        infoTA.appendLine(vb.geogrid.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
+
+    jtable = axisTable.getJTable();
+    csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
+    csPopup.addAction("Show Axis", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        infoTA.clear();
+        infoTA.appendLine(bean.axis.toString());
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
+
   }
 
   /* public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
@@ -453,7 +453,7 @@ public class CoverageTable extends JPanel {
     AxisType axisType;
     long nvalues;
     boolean isRegular;
-    double min, max, resolution;
+    double resolution;
 
     // no-arg constructor
     public AxisBean() {
@@ -470,39 +470,7 @@ public class CoverageTable extends JPanel {
       setDescription(v.getDescription());
       setNvalues(v.getNvalues());
       setIsRegular(v.isRegular());
-      setMin(v.getMin());
-      setMax(v.getMax());
       setResolution(v.getResolution());
-
-      /* collect dimensions
-      StringBuffer lens = new StringBuffer();
-      StringBuffer names = new StringBuffer();
-      java.util.List dims = v.getDimensions();
-      for (int j = 0; j < dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        if (j > 0) {
-          lens.append(",");
-          names.append(",");
-        }
-        String name = dim.isShared() ? dim.getShortName() : "anon";
-        names.append(name);
-        lens.append(dim.getLength());
-      }
-      setDims(names.toString());
-      setShape(lens.toString());
-
-      AxisType at = v.getAxisType();
-      if (at != null)
-        setAxisType(at.toString());
-      String p = v.getPositive();
-      if (p != null)
-        setPositive(p);
-
-      if (v instanceof CoordinateAxis1D) {
-        CoordinateAxis1D v1 = (CoordinateAxis1D) v;
-        if (v1.isRegular())
-          setRegular(Double.toString(v1.getIncrement()));
-      } */
     }
 
     public String getName() {
@@ -553,14 +521,6 @@ public class CoverageTable extends JPanel {
       this.isRegular = isRegular;
     }
 
-    public String getDesc() {
-      return desc;
-    }
-
-    public void setDesc(String desc) {
-      this.desc = desc;
-    }
-
     public long getNvalues() {
       return nvalues;
     }
@@ -569,20 +529,12 @@ public class CoverageTable extends JPanel {
       this.nvalues = nvalues;
     }
 
-    public String getMin() {
-      return String.format("%8.3f", min);
+    public String getStartValue() {
+      return String.format("%8.3f", axis.getStartValue());
     }
 
-    public void setMin(double min) {
-      this.min = min;
-    }
-
-    public String getMax() {
-      return String.format("%8.3f", max);
-    }
-
-    public void setMax(double max) {
-      this.max = max;
+    public String getEndValue() {
+      return String.format("%8.3f", axis.getEndValue());
     }
 
     public String getResolution() {
@@ -592,8 +544,11 @@ public class CoverageTable extends JPanel {
     public void setResolution(double resolution) {
       this.resolution = resolution;
     }
-  }
 
+    public boolean getHasData() {
+      return axis.getValues() != null;
+    }
+  }
 
   /**
    * Wrap this in a JDialog component.

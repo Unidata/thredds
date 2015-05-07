@@ -2,15 +2,14 @@
 package ucar.nc2.ft2.coverage.grid;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordTransBuilder;
 import ucar.nc2.util.Indent;
-import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
 import java.io.IOException;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  message GridCoverageDataset {
@@ -75,7 +74,7 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
 
   @Override
   public List<GridCoordTransform> getCoordTransforms() {
-    return coordTransforms;
+    return (coordTransforms != null) ? coordTransforms : new ArrayList<GridCoordTransform>();
   }
 
   public void setCoordTransforms(List<GridCoordTransform> coordTransforms) {
@@ -130,11 +129,49 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
     return null;
   }
 
+  public GridCoordAxis findCoordAxis(String name) {
+    for (GridCoordAxis axis : coordAxes)
+      if (axis.getName().equalsIgnoreCase(name)) return axis;
+    return null;
+  }
+
   public GridCoordTransform findCoordTransform(String name) {
     for (GridCoordTransform ct : coordTransforms)
       if (ct.getName().equalsIgnoreCase(name)) return ct;
     return null;
   }
+
+  public GridCoordAxis getXAxis(GridCoordSys gcs) {
+    for (String axisName : gcs.getAxisNames()) {
+       GridCoordAxis axis = findCoordAxis(axisName);
+       if (axis.axisType == AxisType.GeoX || axis.axisType == AxisType.Lon) {
+         return axis;
+       }
+     }
+    throw new IllegalArgumentException("Cant find X axis for coordsys "+gcs.getName());
+  }
+
+  public GridCoordAxis getYAxis(GridCoordSys gcs) {
+    for (String axisName : gcs.getAxisNames()) {
+       GridCoordAxis axis = findCoordAxis(axisName);
+       if (axis.axisType == AxisType.GeoY || axis.axisType == AxisType.Lat) {
+         return axis;
+       }
+     }
+    throw new IllegalArgumentException("Cant find Y axis for coordsys "+gcs.getName());
+  }
+
+  public GridCoordAxis getZAxis(GridCoordSys gcs) {
+    for (String axisName : gcs.getAxisNames()) {
+       GridCoordAxis axis = findCoordAxis(axisName);
+       if (axis.axisType == AxisType.GeoZ || axis.axisType == AxisType.Height || axis.axisType == AxisType.Pressure) {
+         return axis;
+       }
+     }
+    return null;
+  }
+
+  ///////////////////////////////////////////////////////////////
 
   public ProjectionImpl getProjection(GridCoverage coverage) {
     GridCoordSys gcs = findCoordSys(coverage.getCoordSysName());
@@ -155,6 +192,5 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
     transform.setProjection(proj);
     return proj;
   }
-
 
 }

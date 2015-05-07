@@ -43,8 +43,6 @@ package opendap.dap;
 import java.net.*;
 import java.io.*;
 
-import opendap.dap.parsers.*;
-
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.zip.InflaterInputStream;
@@ -52,7 +50,6 @@ import java.util.zip.GZIPInputStream;
 
 import opendap.dap.parsers.ParseException;
 import org.apache.http.cookie.Cookie;
-import ucar.nc2.util.EscapeStrings;
 import org.apache.http.*;
 import org.apache.http.auth.*;
 import ucar.httpservices.*;

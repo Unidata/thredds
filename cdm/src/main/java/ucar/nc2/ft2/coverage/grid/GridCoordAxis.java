@@ -5,6 +5,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Indent;
 
+import java.io.IOException;
 import java.util.Formatter;
 
 /**
@@ -14,17 +15,18 @@ import java.util.Formatter;
  * @since 5/4/2015
  */
 public class GridCoordAxis {
-  
+  public enum Type {X, Y, Z, T}
+
   String name;
   DataType dataType;
   AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
   long nvalues;
   String units, description;
   boolean isRegular;
-  double min;        // ??
-  double max;
+  double startValue;
+  double endValue;
   double resolution;
-
+  double[] values;   // may be null
 
   public String getName() {
     return name;
@@ -72,7 +74,7 @@ public class GridCoordAxis {
 
   public double getResolution() {
     if (resolution == 0.0 && isRegular && nvalues > 0)
-      resolution = (max - min) / (nvalues + 1);    // n+1 assumes min and max are the edges. might be a bad assumption
+      resolution = (endValue - startValue) / (nvalues-1);
     return resolution;
   }
 
@@ -80,20 +82,20 @@ public class GridCoordAxis {
     this.resolution = resolution;
   }
 
-  public double getMin() {
-    return min;
+  public double getStartValue() {
+    return startValue;
   }
 
-  public void setMin(double min) {
-    this.min = min;
+  public void setStartValue(double startValue) {
+    this.startValue = startValue;
   }
 
-  public double getMax() {
-    return max;
+  public double getEndValue() {
+    return endValue;
   }
 
-  public void setMax(double max) {
-    this.max = max;
+  public void setEndValue(double endValue) {
+    this.endValue = endValue;
   }
 
   public String getUnits() {
@@ -112,22 +114,53 @@ public class GridCoordAxis {
     this.description = description;
   }
 
+  // to override
+  public double[] readValues() throws IOException {
+    return values;
+  }
+
+  public double[] getValues() {
+    return values;
+  }
+
+  public void setValues(double[] values) {
+    this.values = values;
+  }
+
   @Override
   public String toString() {
     Formatter f = new Formatter();
     Indent indent = new Indent(2);
-    toString(f,indent);
+    toString(f, indent);
     return f.toString();
   }
 
   public void toString(Formatter f, Indent indent) {
     indent.incr();
     f.format("%s CoordAxis '%s' axisType=%s dataType=%s", indent, name, axisType, dataType);
-    f.format(" npts: %d [%f,%f] '%s' isRegular=%s", nvalues, min, max, units, isRegular);
+    f.format(" npts: %d [%f,%f] '%s' isRegular=%s", nvalues, startValue, endValue, units, isRegular);
     if (resolution != 0.0)
       f.format(" resolution=%f", resolution);
     f.format("%n");
 
+    if (values != null) {
+      f.format("%nvalues=");
+      for (double v : values)
+        f.format("%f,", v);
+      f.format("%n");
+    }
+
     indent.decr();
+  }
+
+  public double getCoordEdge(int index) {
+    return startValue + (index - .5) * resolution;
+  }
+
+  public double getValue(int index) {
+    if (values != null)
+      return values[index];
+    else
+      return startValue + index* resolution;
   }
 }

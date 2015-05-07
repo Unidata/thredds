@@ -1,142 +1,45 @@
-/*
- * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
+/* Copyright */
 package ucar.nc2.ft2.remote;
 
-import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.remote.PointDatasetRemote;
-import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateUnit;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.input.SAXBuilder;
 
 /**
- * Factory for FeatureDataset using CdmrRemote protocol. GRID, POINT, STATION so far
- * this object represents the client, connecting to a remote dataset.
+ * Describe
  *
  * @author caron
- * @since May 19, 2009
+ * @since 5/2/2015
  */
 public class CdmrFeatureDataset {
-  static public final String SCHEME = "cdmrFeature:";
 
-  static private boolean debug = false;
-  static private boolean showXML = false;
-
-  static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
-    if (endpoint.startsWith(SCHEME))
-      endpoint = endpoint.substring(SCHEME.length());
+  static public GridCoverageDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
+    if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME))
+      endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
 
     if (wantFeatureType == FeatureType.GRID) {
-      //old way to get a grid - wrap a CdmRemote
-      CdmRemote ncremote = new CdmRemote(endpoint);
-      NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
-      return new GridDataset(ncd);
+      CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
+      return reader.open();
     }
 
-    Document doc = getCapabilities(endpoint);
-    Element root = doc.getRootElement();
-    Element elem = root.getChild("featureDataset");
-    String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
-
-    endpoint = elem.getAttribute("url").getValue();
-    wantFeatureType = FeatureType.getType(fType);
-    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= '%s' url=%s%n", endpoint, fType, endpoint);
-
-    List<VariableSimpleIF> dataVars = FeatureDatasetPointXML.getDataVariables(doc);
-    LatLonRect bb = FeatureDatasetPointXML.getSpatialExtent(doc);
-    CalendarDateRange dr = FeatureDatasetPointXML.getTimeSpan(doc);
-    DateUnit timeUnit = FeatureDatasetPointXML.getTimeUnit(doc);
-    String altUnits = FeatureDatasetPointXML.getAltUnits(doc);
-
-    return new PointDatasetRemote(wantFeatureType, endpoint, timeUnit, altUnits, dataVars, bb, dr);
+    return null;
   }
 
-  static private org.jdom2.Document getCapabilities(String endpoint) throws IOException {
-    org.jdom2.Document doc;
-    InputStream in = null;
-    try {
-      in = CdmRemote.sendQuery(endpoint, "req=capabilities");
-      SAXBuilder builder = new SAXBuilder(false);
-      doc = builder.build(in);  // closes in when done ??
+  String endpoint;
 
-    } catch (Throwable t) {
-      throw new IOException(t);
+  public CdmrFeatureDataset(String endpoint) {
+    this.endpoint = endpoint;
+  }
 
-    } finally {
-      //if (in != null)
-      //  in.close();
-    }
-
-    if (showXML) {
-      System.out.printf("*** endpoint = %s %n", endpoint);
-      XMLOutputter xmlOut = new XMLOutputter();
-      System.out.printf("*** CdmrFeatureDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
-    }
-
-    return doc;
+  public GridCoverageDataset open() throws IOException {
+    CdmrfReader reader = new CdmrfReader(endpoint);
+    return reader.open();
   }
 
   public static void main(String args[]) throws IOException {
-    String endpoint = "http://localhost:8080/thredds/cdmrfeature/idd/metar/ncdecodedLocalHome";
-    FeatureDatasetPoint fd = (FeatureDatasetPoint) CdmrFeatureDataset.factory(FeatureType.ANY, endpoint);
-    FeatureCollection fc = fd.getPointFeatureCollectionList().get(0);
-    System.out.printf("Result= %s %n %s %n", fd, fc);
-
-    /* StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) fc;
-    PointFeatureIterator pfIter = sfc.get(-1);
-    try {
-      while (pfIter.hasNext()) {
-        PointFeature pf = pfIter.next();
-        System.out.println("pf= " + pf);
-      }
-    } finally {
-      pfIter.finish();
-    } */
+    String endpoint = "http://localhost:8080/thredds/cdmrfeature/test/testData2.grib2";
+    GridCoverageDataset gdc = CdmrFeatureDataset.factory(FeatureType.GRID, endpoint);
+    System.out.printf("%n%s%n", gdc);
   }
-
-
 }

@@ -1,10 +1,13 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.IsMissingEvaluator;
 import ucar.nc2.Attribute;
 import ucar.nc2.util.Indent;
 
+import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
 
@@ -19,7 +22,7 @@ import java.util.List;
  * @author caron
  * @since 5/2/2015
  */
-public class GridCoverage {
+public abstract class GridCoverage implements IsMissingEvaluator {
   String name;
   DataType dataType;
   List<Attribute> atts;
@@ -78,7 +81,7 @@ public class GridCoverage {
   public String toString() {
     Formatter f = new Formatter();
     Indent indent = new Indent(2);
-    toString(f,indent);
+    toString(f, indent);
     return f.toString();
   }
 
@@ -93,4 +96,15 @@ public class GridCoverage {
     indent.decr();
   }
 
+  public abstract Array readData(GridSubset subset) throws IOException;
+
+  @Override
+  public boolean hasMissing() {
+    return true;
+  }
+
+  @Override
+  public boolean isMissing(double val) {
+    return Double.isNaN(val);
+  }
 }

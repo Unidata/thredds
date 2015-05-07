@@ -19,10 +19,9 @@
 <p>The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.</p>
 <hr />
 <p></p>
-<h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol (Point Feature API) </h2>
+<h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol</h2>
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
-<pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form | stations</strong>)
-  <strong>accept= </strong>(<strong>csv</strong> | <strong>xml</strong> | <strong>ncstream</strong> | <strong>netcdf</strong> )
+<pre>  <strong>req</strong>=( <strong></strong><strong>header</strong> | <strong>data</strong> <strong></strong>)
   <strong>time_start,time_end</strong>=time range
   <strong>north,south,east,west</strong>=bounding box
   <strong>var</strong>=vars
@@ -41,7 +40,13 @@ where:
   <li> literals are in bold</li>
 </ul>
 <h3>Grid</h3>
-<p>&nbsp;</p>
+<p>Possible requests are:</p>
+<pre>req=(header|data)
+var=vars
+coordname=value
+coordname=minvalue:maxvalue
+</pre>
+<p>Example service requests are:</p>
 <h3>PointDataset</h3>
 <p>Possible requests are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form</strong>)</pre>

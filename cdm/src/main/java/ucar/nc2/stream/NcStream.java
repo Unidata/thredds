@@ -225,6 +225,19 @@ public class NcStream {
     return builder.build();
   }
 
+  static public NcStreamProto.Data encodeDataProto(String varname, DataType datatype, Section section, boolean deflate, int uncompressedLength) {
+    NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
+    builder.setVarName(varname);
+    builder.setDataType(encodeDataType(datatype));
+    builder.setSection(encodeSection(section));
+    if (deflate) {
+      builder.setCompress(NcStreamProto.Compress.DEFLATE);
+      builder.setUncompressedSize(uncompressedLength);
+    }
+    builder.setVersion(2);
+    return builder.build();
+  }
+
   static public NcStreamProto.Section encodeSection(Section section) {
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
     for (Range r : section.getRanges()) {

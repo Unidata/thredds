@@ -40,7 +40,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.ft2.remote.CdmrFeatureDataset;
+import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
