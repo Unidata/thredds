@@ -4,14 +4,17 @@ package ucar.nc2.ft2.coverage.grid;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordTransBuilder;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
-import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
 import java.io.IOException;
 import java.util.*;
 
 /**
+ * maybe a single horiz coord system? single Calendar. single runtime coord? single time coord?
+ *
  message GridCoverageDataset {
    required string name = 1;
    repeated Attribute atts = 2;
@@ -23,20 +26,23 @@ import java.util.*;
  * @author caron
  * @since 5/2/2015
  */
-public class GridCoverageDataset implements GridCoverageDatasetIF {
+public class GridCoverageDataset implements AutoCloseable {
 
   String name;
+  List<Attribute> globalAttributes;
+  LatLonRect latLonBoundingBox;
+  ProjectionRect projBoundingBox;
+  CalendarDateRange calendarDateRange;
+
   List<GridCoordSys> coordSys;
   List<GridCoordTransform> coordTransforms;
   List<GridCoordAxis> coordAxes;
   List<GridCoverage> grids;
-  List<Attribute> globalAttributes;
 
   public void close() throws IOException {
     // NOOP
   }
 
-  @Override
   public String getName() {
     return name;
   }
@@ -45,16 +51,6 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
     this.name = name;
   }
 
-  @Override
-  public List<GridCoverage> getGrids() {
-    return grids;
-  }
-
-  public void setGrids(List<GridCoverage> grids) {
-    this.grids = grids;
-  }
-
-  @Override
   public List<Attribute> getGlobalAttributes() {
     return globalAttributes;
   }
@@ -63,7 +59,38 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
     this.globalAttributes = globalAttributes;
   }
 
-  @Override
+  public LatLonRect getLatLonBoundingBox() {
+    return latLonBoundingBox;
+  }
+
+  public void setLatLonBoundingBox(LatLonRect latLonBoundingBox) {
+    this.latLonBoundingBox = latLonBoundingBox;
+  }
+
+  public ProjectionRect getProjBoundingBox() {
+    return projBoundingBox;
+  }
+
+  public void setProjBoundingBox(ProjectionRect projBoundingBox) {
+    this.projBoundingBox = projBoundingBox;
+  }
+
+  public CalendarDateRange getCalendarDateRange() {
+    return calendarDateRange;
+  }
+
+  public void setCalendarDateRange(CalendarDateRange calendarDateRange) {
+    this.calendarDateRange = calendarDateRange;
+  }
+
+  public List<GridCoverage> getGrids() {
+    return grids;
+  }
+
+  public void setGrids(List<GridCoverage> grids) {
+    this.grids = grids;
+  }
+
   public List<GridCoordSys> getCoordSys() {
     return coordSys;
   }
@@ -72,7 +99,6 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
     this.coordSys = coordSys;
   }
 
-  @Override
   public List<GridCoordTransform> getCoordTransforms() {
     return (coordTransforms != null) ? coordTransforms : new ArrayList<GridCoordTransform>();
   }
@@ -81,7 +107,6 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
     this.coordTransforms = coordTransforms;
   }
 
-  @Override
   public List<GridCoordAxis> getCoordAxes() {
     return coordAxes;
   }
@@ -103,6 +128,10 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
     f.format("%s Global attributes:%n", indent);
     for (Attribute att : globalAttributes)
       f.format("%s  %s%n", indent, att);
+    f.format("%s Date Range:%s%n", indent, calendarDateRange);
+    f.format("%s LatLon BoundingBox:%s%n", indent, latLonBoundingBox);
+    if (projBoundingBox != null)
+      f.format("%s Projection BoundingBox:%s%n", indent, projBoundingBox);
     f.format("%s Coordinate Systems:%n", indent);
     for (GridCoordSys cs : coordSys)
       cs.toString(f, indent);
@@ -192,5 +221,18 @@ public class GridCoverageDataset implements GridCoverageDatasetIF {
     transform.setProjection(proj);
     return proj;
   }
+
+  /* public boolean containsLatLonPoint(String gridName, LatLonPoint latlon) {
+    GridCoverage grid = findCoverage(gridName);
+    GridCoordSys gcs = findCoordSys(grid.getCoordSysName());
+    Projection p = getProjection(grid);
+    ProjectionPoint pp = p.latLonToProj(latlon, null);
+    int[] xy = gcs.findXYindexFromCoord(pp.getX(), pp.getY(), null);
+    return !(xy[0] < 0 || xy[1] < 0);
+  }
+
+  public boolean hasEnsembleDimension() {
+    return false;
+  }  */
 
 }

@@ -40,6 +40,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft2.coverage.grid.DtGridDatasetAdapter;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -83,6 +85,14 @@ public class TdsRequestedDataset {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsGridDataset(request, response);
+  }
+
+  public static GridCoverageDataset getGridCoverage(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+    TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
+    if (path != null) trd.path = path;
+    GridDataset gds =  trd.openAsGridDataset(request, response);
+    return new DtGridDatasetAdapter(gds);
+
   }
 
   public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {

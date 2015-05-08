@@ -22,16 +22,24 @@ import java.util.*;
  * @author caron
  * @since 5/1/2015
  */
-public class DtGridDatasetAdapter implements GridCoverageDatasetIF {
+public class DtGridDatasetAdapter extends GridCoverageDataset {
   private GridDataset proxy;
   private List<GridCoverage> grids;
 
   public DtGridDatasetAdapter(GridDataset proxy) {
     this.proxy = proxy;
+    setLatLonBoundingBox(proxy.getBoundingBox());
+    setCalendarDateRange(proxy.getCalendarDateRange());
+    setProjBoundingBox(proxy.getProjBoundingBox());
 
     grids = new ArrayList<>();
     for (GridDatatype dtGrid : proxy.getGrids())
       grids.add(new Grid(dtGrid));
+  }
+
+  @Override
+  public void close() throws IOException {
+    proxy.close();
   }
 
   @Override

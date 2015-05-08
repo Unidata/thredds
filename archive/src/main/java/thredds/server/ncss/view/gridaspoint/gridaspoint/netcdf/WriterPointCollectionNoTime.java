@@ -31,7 +31,7 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.ncss.view.gridaspoint.netcdf;
+package thredds.server.ncss.view.gridaspoint.gridaspoint.netcdf;
 
 import java.io.IOException;
 import java.util.HashSet;

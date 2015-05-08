@@ -10,7 +10,7 @@ import java.util.List;
  * @author caron
  * @since 5/4/2015
  */
-public interface GridCoverageDatasetIF {
+public interface GridCoverageDatasetIF extends AutoCloseable {
   String getName();
 
   List<GridCoverage> getGrids();

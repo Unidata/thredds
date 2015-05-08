@@ -7,6 +7,11 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,10 +32,10 @@ public class CdmrfWriter {
   static public final int MAX_INLINE_NVALUES = 1000;
   private static final boolean show = false;
 
-  GridCoverageDatasetIF gridDataset;
+  GridCoverageDataset gridDataset;
   String location;
 
-  public CdmrfWriter(GridCoverageDatasetIF gridDataset, String location) throws IOException {
+  public CdmrfWriter(GridCoverageDataset gridDataset, String location) throws IOException {
     this.gridDataset = gridDataset;
     this.location = location;
   }
@@ -54,19 +59,25 @@ public class CdmrfWriter {
     return size;
   }
 
-  /*
-  message GridCoverageDataset {
-    required string name = 1;
-    repeated Attribute atts = 2;
-    repeated CoordSys coordSys = 3;
-    repeated CoordTransform coordTransforms = 4;
-    repeated CoordAxis axes = 5;
-    repeated GridCoverage grids = 6;
-  }
-   */
-  CdmrFeatureProto.GridCoverageDataset.Builder encodeHeader(GridCoverageDatasetIF gridDataset) {
+  /* message GridCoverageDataset {
+      required string name = 1;
+      repeated Attribute atts = 2;
+      required Rectangle latlonRect = 3;
+      optional Rectangle projRect = 4;
+      required CalendarDateRange timeRange = 5;
+
+      repeated CoordSys coordSys = 6;
+      repeated CoordTransform coordTransforms = 7;
+      repeated CoordAxis coordAxes = 8;
+      repeated GridCoverage grids = 9;
+    } */
+  CdmrFeatureProto.GridCoverageDataset.Builder encodeHeader(GridCoverageDataset gridDataset) {
     CdmrFeatureProto.GridCoverageDataset.Builder builder = CdmrFeatureProto.GridCoverageDataset.newBuilder();
     builder.setName(location);
+    builder.setDateRange(encodeDateRange(gridDataset.getCalendarDateRange()));
+    builder.setLatlonRect(encodeRectangle(gridDataset.getLatLonBoundingBox()));
+    if (gridDataset.getProjBoundingBox() != null)
+      builder.setProjRect(encodeRectangle(gridDataset.getProjBoundingBox()));
 
     for (Attribute att : gridDataset.getGlobalAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
@@ -86,6 +97,49 @@ public class CdmrfWriter {
     return builder;
   }
 
+  /* message Rectangle {
+      required double startx = 1;
+      required double starty = 2;
+      required double incx = 3;
+      required double incy = 4;
+    } */
+  CdmrFeatureProto.Rectangle.Builder encodeRectangle(LatLonRect rect) {
+    CdmrFeatureProto.Rectangle.Builder builder = CdmrFeatureProto.Rectangle.newBuilder();
+    //     this(r.getLowerLeftPoint(), r.getUpperRightPoint().getLatitude() - r.getLowerLeftPoint().getLatitude(), r.getWidth());
+    LatLonPoint ll = rect.getLowerLeftPoint();
+    LatLonPoint ur = rect.getUpperRightPoint();
+    builder.setStartx(ll.getLongitude());
+    builder.setStarty(ll.getLatitude());
+    builder.setIncx(rect.getWidth());
+    builder.setIncy(ur.getLatitude() - ll.getLatitude());
+    return builder;
+  }
+
+  CdmrFeatureProto.Rectangle.Builder encodeRectangle(ProjectionRect rect) {
+    CdmrFeatureProto.Rectangle.Builder builder = CdmrFeatureProto.Rectangle.newBuilder();
+    //      this(r.getMinX(), r.getMinY(), r.getMaxX(), r.getMaxY());
+    builder.setStartx(rect.getMinX());
+    builder.setStarty(rect.getMaxX());
+    builder.setIncx(rect.getWidth());
+    builder.setIncy(rect.getHeight());
+    return builder;
+  }
+
+  /* message CalendarDateRange {
+        required int64 start = 1;
+        required int64 end = 2;
+        required int32 calendar = 3; // calendar ordinal
+      } */
+  CdmrFeatureProto.CalendarDateRange.Builder encodeDateRange(CalendarDateRange dateRange) {
+    CdmrFeatureProto.CalendarDateRange.Builder builder = CdmrFeatureProto.CalendarDateRange.newBuilder();
+
+    builder.setStart(dateRange.getStart().getMillis());
+    builder.setEnd(dateRange.getEnd().getMillis());
+    Calendar cal = dateRange.getStart().getCalendar();
+    builder.setCalendar(cal.ordinal());
+    return builder;
+  }
+
   /*
   message GridCoverage {
     required string name = 1; // short name
@@ -100,7 +154,7 @@ public class CdmrfWriter {
     builder.setName(grid.getName());
     builder.setDataType(NcStream.encodeDataType(grid.getDataType()));
 
-    for (Attribute att : grid.getAtts())
+    for (Attribute att : grid.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
 
     builder.setUnits(grid.getUnits());
@@ -110,14 +164,12 @@ public class CdmrfWriter {
     return builder;
   }
 
-  /*
-  message CoordSys {
-    required string name = 1;
-    repeated string axisNames = 2;
-    repeated string transformNames = 3;
-    repeated CoordSys components = 4;        // ??
-  }
-  */
+  /* message CoordSys {
+      required string name = 1;
+      repeated string axisNames = 2;
+      repeated string transformNames = 3;
+      repeated CoordSys components = 4;        // ??
+    } */
   CdmrFeatureProto.CoordSys.Builder encodeCoordSys(GridCoordSys gcs) {
     CdmrFeatureProto.CoordSys.Builder builder = CdmrFeatureProto.CoordSys.newBuilder();
     builder.setName(gcs.getName());
@@ -131,13 +183,11 @@ public class CdmrfWriter {
   }
 
 
-  /*
-  message CoordTransform {
-    required bool isHoriz = 1;
-    required string name = 2;
-    repeated Attribute params = 3;
-  }
-  */
+  /* message CoordTransform {
+      required bool isHoriz = 1;
+      required string name = 2;
+      repeated Attribute params = 3;
+    } */
   CdmrFeatureProto.CoordTransform.Builder encodeCoordTransform(GridCoordTransform gct) {
     CdmrFeatureProto.CoordTransform.Builder builder = CdmrFeatureProto.CoordTransform.newBuilder();
     builder.setIsHoriz(gct.isHoriz());
@@ -147,19 +197,17 @@ public class CdmrfWriter {
     return builder;
   }
 
-  /*
-  message CoordAxis {
-    required string name = 1;
-    required DataType dataType = 2;
-    required int32 axisType = 3;    // ucar.nc2.constants.AxisType ordinal
-    required int64 nvalues = 4;
-    required string units = 5;
-    optional bool isRegular = 6;
-    required double min = 7;        // required ??
-    required double max = 8;
-    optional double resolution = 9;
-  }
-   */
+  /* message CoordAxis {
+      required string name = 1;
+      required DataType dataType = 2;
+      required int32 axisType = 3;    // ucar.nc2.constants.AxisType ordinal
+      required int64 nvalues = 4;
+      required string units = 5;
+      optional bool isRegular = 6;
+      required double min = 7;        // required ??
+      required double max = 8;
+      optional double resolution = 9;
+    } */
   CdmrFeatureProto.CoordAxis.Builder encodeCoordAxis(GridCoordAxis axis) {
     CdmrFeatureProto.CoordAxis.Builder builder = CdmrFeatureProto.CoordAxis.newBuilder();
     builder.setName(axis.getName());
@@ -179,7 +227,7 @@ public class CdmrfWriter {
         double[] values = axis.readValues();
         ByteBuffer bb = ByteBuffer.allocate(8 * values.length);
         DoubleBuffer db = bb.asDoubleBuffer();
-        db.put( values);
+        db.put(values);
         builder.setValues(ByteString.copyFrom(bb.array()));
 
       } catch (IOException e) {

@@ -30,7 +30,7 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncss.view.gridaspoint.netcdf;
+package thredds.server.ncss.view.gridaspoint.gridaspoint.netcdf;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

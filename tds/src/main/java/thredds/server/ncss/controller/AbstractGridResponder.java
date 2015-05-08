@@ -33,25 +33,7 @@
 package thredds.server.ncss.controller;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
-import thredds.server.ncss.exception.OutOfBoundariesException;
-import thredds.server.ncss.exception.TimeOutOfWindowException;
-import thredds.server.ncss.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.util.NcssRequestUtils;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridAsPointDataset;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -60,11 +42,10 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 
-
 /**
- * @author mhermida
+ * superclass for Grid responders
  */
-public abstract class GridDatasetResponder {
+public abstract class AbstractGridResponder {
 
   public static CalendarDateRange getRequestedDateRange(NcssParamsBean params, Calendar cal) throws ParseException {
     if (params.getTime() != null) {
@@ -82,92 +63,9 @@ public abstract class GridDatasetResponder {
     return CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate());
   }
 
-  /**
-   * Returns true if all the variables have the same vertical axes.
-   * Throws exception if some of the variables in the request is not contained on the dataset
-   */
-  protected boolean checkRequestedVars(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException {
-    //Check vars
-    if (params.getVar() == null || params.getVar().isEmpty())
-      return false; // err from VarParamsValidator
+  /* protected List<CalendarDate> getRequestedDates(GridCoverageDataset gcd, NcssParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException {
 
-    //if var = all--> all variables requested
-    if (params.getVar().get(0).equals("all")) {
-      params.setVar(NcssRequestUtils.getAllVarsAsList(gds));
-    }
-
-    //Check not only all vars are contained in the grid, also they have the same vertical coords
-    Iterator<String> it = params.getVar().iterator();
-    String varName = it.next();
-    //GridDatatype grid = gds.findGridByShortName(varName);
-    GridDatatype grid = gds.findGridDatatype(varName);
-    if (grid == null)
-      throw new VariableNotContainedInDatasetException("Variable: " + varName + " is not contained in the requested dataset");
-
-    CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
-    CoordinateAxis1D newVertAxis;
-    boolean sameVertCoord = true;
-
-    while (sameVertCoord && it.hasNext()) {
-      varName = it.next();
-      //grid = gds.findGridByShortName(varName);
-      grid = gds.findGridDatatype(varName);
-      if (grid == null)
-        throw new VariableNotContainedInDatasetException("Variable: " + varName + " is not contained in the requested dataset");
-
-      newVertAxis = grid.getCoordinateSystem().getVerticalAxis();
-
-      if (vertAxis != null) {
-        if (vertAxis.equals(newVertAxis)) {
-          vertAxis = newVertAxis;
-        } else {
-          sameVertCoord = false;
-        }
-      } else {
-        if (newVertAxis != null) sameVertCoord = false;
-      }
-    }
-
-    return sameVertCoord;
-  }
-
-  protected Map<String, List<String>> groupVarsByVertLevels(GridDataset gds, NcssParamsBean params) throws VariableNotContainedInDatasetException {
-    String no_vert_levels = "no_vert_level";
-    List<String> vars = params.getVar();
-    Map<String, List<String>> varsGroupsByLevels = new HashMap<>();
-
-    for (String var : vars) {
-      GridDatatype grid = gds.findGridDatatype(var);
-
-      //Variables should have been checked before...
-      if (grid == null) {
-        throw new VariableNotContainedInDatasetException("Variable: " + var + " is not contained in the requested dataset");
-      }
-
-      CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();
-
-      String axisKey;
-      if (axis == null) {
-        axisKey = no_vert_levels;
-      } else {
-        axisKey = axis.getShortName();
-      }
-
-      if (varsGroupsByLevels.containsKey(axisKey)) {
-        varsGroupsByLevels.get(axisKey).add(var);
-      } else {
-        List<String> varListForVerlLevel = new ArrayList<>();
-        varListForVerlLevel.add(var);
-        varsGroupsByLevels.put(axisKey, varListForVerlLevel);
-      }
-    }
-
-    return varsGroupsByLevels;
-  }
-
-  protected List<CalendarDate> getRequestedDates(GridDataset gds, NcssParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException {
-
-    GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds, params.getVar());
+    //GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gcd, params.getVar());
     List<CalendarDate> dates = gap.getDates();
 
     if (dates.isEmpty()) return dates;
@@ -224,6 +122,6 @@ public abstract class GridDatasetResponder {
 
     CalendarDateRange dateRange = getRequestedDateRange(params, cal);
     return NcssRequestUtils.wantedDates(gap, dateRange, time_window);
-  }
+  }   */
 
 }

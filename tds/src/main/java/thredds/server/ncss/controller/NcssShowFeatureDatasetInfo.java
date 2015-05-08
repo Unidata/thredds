@@ -49,6 +49,8 @@ import ucar.nc2.dt.grid.GridDatasetInfo;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.grid.GridDatasetCapabilities;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -65,9 +67,6 @@ public class NcssShowFeatureDatasetInfo {
 
     FeatureType ft = fd.getFeatureType();
     switch (ft) {
-      case GRID:
-        return showGridForm((GridDataset) fd, datasetUrlPath, wantXml, isPoint);
-
       case STATION:
         return showPointForm((FeatureDatasetPoint) fd, datasetUrlPath, wantXml, "ncssSobs");
 
@@ -77,7 +76,6 @@ public class NcssShowFeatureDatasetInfo {
       default:
         throw new IllegalStateException("Unsupported feature type "+ft);
     }
-
   }
 
   private ModelAndView showPointForm(FeatureDatasetPoint fp, String datasetUrlPath, boolean wantXml, String xslt)
@@ -109,9 +107,9 @@ public class NcssShowFeatureDatasetInfo {
     }
   }
 
-  private ModelAndView showGridForm(GridDataset gds, String datsetUrlPath, boolean wantXml, boolean isPoint) {
+  public ModelAndView showGridForm(GridCoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) {
     boolean formatAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
-    GridDatasetInfo writer = new GridDatasetInfo(gds, "path");
+    GridDatasetCapabilities writer = new GridDatasetCapabilities(gcd, "path");
 
     if (wantXml) {
       Document datasetDescription = writer.makeDatasetDescription();
@@ -122,9 +120,9 @@ public class NcssShowFeatureDatasetInfo {
 
       return new ModelAndView("threddsXmlView", "Document", datasetDescription);
 
-    } else {
+    } else { // LOOK WTF ??
       String xslt = isPoint ? "ncssGridAsPoint" : "ncssGrid";
-      Document doc = writer.makeGridForm();
+      Document doc = null; // writer.makeGridForm(); LOOK LOOK
       if (formatAvailable)
         addNetcdf4Format(doc, "/gridForm");
 

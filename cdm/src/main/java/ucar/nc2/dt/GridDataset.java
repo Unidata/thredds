@@ -35,6 +35,7 @@ package ucar.nc2.dt;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.time.CalendarDate;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
 
@@ -57,6 +58,9 @@ public interface GridDataset extends ucar.nc2.ft.FeatureDataset {
   public GridDatatype findGridDatatype( String name);
 
   public GridDatatype findGridByShortName(String shortName);
+
+
+  public ProjectionRect getProjBoundingBox();
 
   /**
    * Return GridDatatype objects grouped by GridCoordSystem. All GridDatatype in a Gridset

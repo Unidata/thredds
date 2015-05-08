@@ -45,6 +45,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.DataType;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
 import java.io.IOException;

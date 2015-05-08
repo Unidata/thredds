@@ -39,7 +39,7 @@ package thredds.server.ncss.exception;
  * @author mhermida
  *
  */
-public class OutOfBoundariesException extends NcssException{
+public class OutOfBoundariesException extends NcssException {
 	public OutOfBoundariesException(String message){
 		super(message);
 	}

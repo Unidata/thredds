@@ -7,6 +7,9 @@ import ucar.httpservices.HTTPSession;
 import ucar.nc2.Attribute;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.unidata.geoloc.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -84,19 +87,31 @@ public class CdmrfReader {
      return gridCoverage;
    }
 
-  /*
-  message GridCoverageDataset {
-    required string name = 1;
-    repeated Attribute atts = 2;
-    repeated CoordSys coordSys = 3;
-    repeated CoordTransform coordTransforms = 4;
-    repeated CoordAxis coordAxes = 5;
-    repeated GridCoverage grids = 6;
-  }
-   */
+  /* message CalendarDateRange {
+      required int64 start = 1;
+      required int64 end = 2;
+      required int32 calendar = 3; // ucar.nc2.time.Calendar ordinal
+    }
+
+    message GridCoverageDataset {
+      required string name = 1;
+      repeated Attribute atts = 2;
+      required Rectangle latlonRect = 3;
+      optional Rectangle projRect = 4;
+      required CalendarDateRange dateRange = 5;
+
+      repeated CoordSys coordSys = 6;
+      repeated CoordTransform coordTransforms = 7;
+      repeated CoordAxis coordAxes = 8;
+      repeated GridCoverage grids = 9;
+    } */
   GridCoverageDataset decodeHeader(CdmrFeatureProto.GridCoverageDataset proto) {
     GridCoverageDataset result = new GridCoverageDataset();
     result.setName(endpoint);
+    result.setLatLonBoundingBox(decodeLatLonRectangle(proto.getLatlonRect()));
+    result.setProjBoundingBox(decodeProjRectangle(proto.getProjRect()));
+    if (proto.hasDateRange())
+      result.setCalendarDateRange(decodeDateRange(proto.getDateRange()));
 
     List<Attribute> gatts = new ArrayList<>();
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
@@ -125,6 +140,30 @@ public class CdmrfReader {
 
     return result;
   }
+
+  /* message Rectangle {
+      required double startx = 1;
+      required double starty = 2;
+      required double incx = 3;
+      required double incy = 4;
+    } */
+  LatLonRect decodeLatLonRectangle(CdmrFeatureProto.Rectangle proto) {
+    LatLonPointImpl start = new LatLonPointImpl(proto.getStarty(), proto.getStartx());
+    return new LatLonRect(start, proto.getIncy(), proto.getIncx());
+  }
+
+  ProjectionRect decodeProjRectangle(CdmrFeatureProto.Rectangle proto) {
+    ProjectionPoint pt = new ProjectionPointImpl(proto.getStartx(), proto.getStarty());
+    return new ProjectionRect(pt, proto.getIncy(), proto.getIncx());
+  }
+
+  CalendarDateRange decodeDateRange(CdmrFeatureProto.CalendarDateRange proto) {
+    ucar.nc2.time.Calendar cal = ucar.nc2.time.Calendar.values()[proto.getCalendar()]; // ordinal
+    CalendarDate start = CalendarDate.of(cal, proto.getStart());
+    CalendarDate end = CalendarDate.of(cal, proto.getEnd());
+    return CalendarDateRange.of(start, end);
+  }
+
 
   /*
   message CoordSys {

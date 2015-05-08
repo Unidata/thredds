@@ -31,7 +31,7 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.ncss.view.gridaspoint.netcdf;
+package thredds.server.ncss.view.gridaspoint.gridaspoint.netcdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thredds.server.ncss.util.NcssRequestUtils;
+import thredds.server.ncss.controller.NcssRequestUtils;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;

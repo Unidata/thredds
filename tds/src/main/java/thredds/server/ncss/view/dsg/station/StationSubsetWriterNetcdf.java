@@ -4,7 +4,7 @@ import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.util.NcssRequestUtils;
+import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;

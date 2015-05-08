@@ -30,27 +30,26 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncss.view.gridaspoint;
+package thredds.server.ncss.view.gridaspoint.gridaspoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import thredds.server.ncss.controller.GridDatasetResponder;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.format.SupportedFormat;
-import thredds.server.ncss.util.NcssRequestUtils;
-import thredds.server.ncss.view.gridaspoint.netcdf.CFPointWriterWrapper;
-import thredds.server.ncss.view.gridaspoint.netcdf.CFPointWriterWrapperFactory;
+import thredds.server.ncss.controller.NcssRequestUtils;
+import thredds.server.ncss.view.gridaspoint.gridaspoint.netcdf.CFPointWriterWrapper;
+import thredds.server.ncss.view.gridaspoint.gridaspoint.netcdf.CFPointWriterWrapperFactory;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dt.GridDataset;
+
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.DiskCache2;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.LatLonPoint;
 
@@ -59,15 +58,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
-public class NetCDFPointDataWriter implements PointDataWriter {
-  static private Logger log = LoggerFactory.getLogger(NetCDFPointDataWriter.class);
+public class NetCDFGridAsPointWriter extends GridAsPointWriter {
+  static private Logger log = LoggerFactory.getLogger(NetCDFGridAsPointWriter.class);
 
-  public static NetCDFPointDataWriter factory(NetcdfFileWriter.Version version, OutputStream outputStream, NcssDiskCache ncssDiskCache) {
-    return new NetCDFPointDataWriter(version, outputStream, ncssDiskCache);
-  }
-
-  ///////////////////////////////////////////////////////////////////
-
+  private GridCoverageDataset gridDataset;
   private OutputStream outputStream;
   private NcssDiskCache ncssDiskCache;
   private File netcdfResult;
@@ -78,16 +72,16 @@ public class NetCDFPointDataWriter implements PointDataWriter {
   private HttpHeaders httpHeaders = new HttpHeaders();
   //private List<VariableSimpleIF> wantedVars;
 
-  private NetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream, NcssDiskCache ncssDiskCache) {
+  NetCDFGridAsPointWriter(GridCoverageDataset gridDataset, NetcdfFileWriter.Version version, OutputStream outputStream, NcssDiskCache ncssDiskCache) {
+    this.gridDataset = gridDataset;
     this.outputStream = outputStream;
     this.version = version;
     this.ncssDiskCache = ncssDiskCache;
     netcdfResult = ncssDiskCache.getDiskCache().createUniqueFile("ncss", ".nc");
   }
 
-  //public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates,
-  // DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
-  public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates,
+  @Override
+  public boolean header(Map<String, List<String>> groupedVars2, CalendarDateRange calendarDateRange,
                         List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {
 
     boolean headerDone = false;
@@ -113,10 +107,10 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 
     try {
       List<Attribute> atts = new ArrayList<>();
-      atts.add(new Attribute(CDM.TITLE, "Extract Points data from Grid file " + gridDataset.getLocation()));
+      atts.add(new Attribute(CDM.TITLE, "Extract Points data from Grid file " + gridDataset.getName()));
       pointWriterWrapper = CFPointWriterWrapperFactory.getWriterForFeatureType(
               version, featureType, netcdfResult.getAbsolutePath(), atts);
-      headerDone = pointWriterWrapper.header(groupedVars, gridDataset, wDates, timeDimAtts, point, vertCoord);
+      headerDone = pointWriterWrapper.header(groupedVars, gridDataset, calendarDateRange, timeDimAtts, point, vertCoord);
     } catch (IOException ioe) {
       log.error("Error writing header", ioe);
     }
@@ -124,11 +118,11 @@ public class NetCDFPointDataWriter implements PointDataWriter {
     return headerDone;
   }
 
-
-  public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates,
+  @Override
+  public boolean write(Map<String, List<String>> groupedVars, CalendarDateRange calendarDateRange,
                        LatLonPoint point, Double vertCoord) throws InvalidRangeException {
     if (wDates.isEmpty()) {
-      return write(groupedVars, gds, CalendarDate.of(new Date()), point, vertCoord);
+      return write(groupedVars, CalendarDate.of(new Date()), point, vertCoord);
     }
 
     //loop over wDates
@@ -138,14 +132,14 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 
     while (pointRead && it.hasNext()) {
       date = it.next();
-      pointRead = write(groupedVars, gds, date, point, vertCoord);
+      pointRead = write(groupedVars, date, point, vertCoord);
 
     }
 
     return pointRead;
   }
 
-  private boolean write(Map<String, List<String>> groupedVars, GridDataset gridDataset, CalendarDate date,
+  private boolean write(Map<String, List<String>> groupedVars, CalendarDate date,
                         LatLonPoint point, Double targetLevel) throws InvalidRangeException {
     return pointWriterWrapper.write(groupedVars, gridDataset, date, point, targetLevel);
   }
@@ -171,7 +165,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
   }
 
   @Override
-  public void setHTTPHeaders(GridDataset gridDataset, String pathInfo, boolean isStream) {
+  public void setHTTPHeaders(String pathInfo, boolean isStream) {
     //Set the response headers...
     String fileName = NcssRequestUtils.getFileNameForResponse(pathInfo, version);
     String url = ncssDiskCache.getServletCachePath() + netcdfResult.getName();

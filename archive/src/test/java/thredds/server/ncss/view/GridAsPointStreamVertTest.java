@@ -19,11 +19,11 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.GridAsPointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncss.controller.NcssController;
+import thredds.server.ncss.controller.AbstractNcssController;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.OutOfBoundariesException;
 import thredds.server.ncss.format.SupportedFormat;
-import thredds.server.ncss.util.NcssRequestUtils;
+import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.server.ncss.view.gridaspoint.PointDataStream;
 import thredds.server.ncss.dataservice.DatasetHandlerAdapter;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
@@ -81,7 +81,7 @@ public class GridAsPointStreamVertTest {
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception {
 		
-    String datasetPath = NcssController.getDatasetPath(this.pathInfo);
+    String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
 		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
     assert gridDataset != null : datasetPath;
 

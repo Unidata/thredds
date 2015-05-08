@@ -14,6 +14,7 @@ import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.params.NcssPointParamsBean;
+import thredds.server.ncss.view.dsg.DsgSubsetWriter;
 import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
@@ -36,7 +37,7 @@ import java.util.Formatter;
  */
 @Controller
 @RequestMapping("/ncss/point")
-public class NcssPointController extends NcssController {
+public class NcssPointController extends AbstractNcssController {
 
   protected String getBase() {
     return StandardService.netcdfSubsetPoint.getBase();
@@ -87,7 +88,7 @@ public class NcssPointController extends NcssController {
     }
 
     SupportedFormat format = supportedOp.getSupportedFormat(params.getAccept());
-    NcssResponder pds = DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, params, ncssDiskCache, res.getOutputStream(), format);
+    DsgSubsetWriter pds = DsgSubsetWriterFactory.newInstance((FeatureDatasetPoint) fd, params, ncssDiskCache, res.getOutputStream(), format);
     setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
     pds.respond(res, fd, datasetPath, params, format);
   }

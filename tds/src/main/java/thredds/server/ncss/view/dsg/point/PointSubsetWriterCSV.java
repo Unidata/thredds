@@ -3,7 +3,7 @@ package thredds.server.ncss.view.dsg.point;
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.util.NcssRequestUtils;
+import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.nc2.VariableSimpleIF;

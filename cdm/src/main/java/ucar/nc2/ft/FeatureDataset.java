@@ -39,6 +39,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
 
@@ -106,7 +107,7 @@ public interface FeatureDataset extends FileCacheable, AutoCloseable {
   public CalendarDate getCalendarDateEnd();
 
   /**
-   * The boundingBox for the entire dataset.
+   * The lat/lon boundingBox for the entire dataset.
    *
    * @return the lat/lon boundingBox for the entire dataset, or null if unknown.
    */

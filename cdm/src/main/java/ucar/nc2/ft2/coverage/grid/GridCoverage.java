@@ -45,7 +45,7 @@ public abstract class GridCoverage implements IsMissingEvaluator {
     this.dataType = dataType;
   }
 
-  public List<Attribute> getAtts() {
+  public List<Attribute> getAttributes() {
     return atts;
   }
 

@@ -40,13 +40,30 @@ message GridCoverage {
   optional string description = 7;
 }
 
+message CalendarDateRange {
+  required int64 start = 1;
+  required int64 end = 2;
+  required int32 calendar = 3; // ucar.nc2.time.Calendar ordinal
+}
+
+message Rectangle {
+  required double startx = 1;
+  required double starty = 2;
+  required double incx = 3;
+  required double incy = 4;
+}
+
 message GridCoverageDataset {
   required string name = 1;
   repeated Attribute atts = 2;
-  repeated CoordSys coordSys = 3;
-  repeated CoordTransform coordTransforms = 4;
-  repeated CoordAxis coordAxes = 5;
-  repeated GridCoverage grids = 6;
+  required Rectangle latlonRect = 3;
+  optional Rectangle projRect = 4;
+  required CalendarDateRange dateRange = 5;
+
+  repeated CoordSys coordSys = 6;
+  repeated CoordTransform coordTransforms = 7;
+  repeated CoordAxis coordAxes = 8;
+  repeated GridCoverage grids = 9;
 }
 
 //  cd c:/dev/github/thredds50/cdm/src/main/java

@@ -6,7 +6,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import thredds.core.TdsRequestedDataset;
-import thredds.server.ncss.controller.NcssController;
+import thredds.server.ncss.controller.AbstractNcssController;
 import ucar.nc2.dt.GridDataset;
 
 /**
@@ -28,7 +28,7 @@ public final class DatasetHandlerAdapter {
 		
 		req.setPathInfo(pathInfo);
 		
-    String datasetPath = NcssController.getDatasetPath(pathInfo);
+    String datasetPath = AbstractNcssController.getDatasetPath(pathInfo);
 		return TdsRequestedDataset.getGridDataset(req, res, datasetPath);
 	}
 

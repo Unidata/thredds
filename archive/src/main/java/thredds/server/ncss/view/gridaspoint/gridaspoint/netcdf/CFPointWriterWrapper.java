@@ -30,22 +30,27 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.server.ncss.controller;
+package thredds.server.ncss.view.gridaspoint.gridaspoint.netcdf;
 
-import org.springframework.http.HttpHeaders;
-import thredds.server.ncss.format.SupportedFormat;
-import thredds.server.ncss.params.NcssParamsBean;
-import ucar.nc2.ft.FeatureDataset;
+import java.util.List;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.geoloc.LatLonPoint;
+
 
 /**
  * @author mhermida
  *
  */
-public interface NcssResponder {
-	public void respond(HttpServletResponse res, FeatureDataset ft, String requestPathInfo, NcssParamsBean queryParams,
-          SupportedFormat format) throws Exception;
+public interface CFPointWriterWrapper {
 
-	public HttpHeaders getResponseHeaders(FeatureDataset fd, SupportedFormat format, String datasetPath);
+	public boolean header(Map<String, List<String>> groupedVars, GridCoverageDataset gds, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord);
+	
+	public boolean write(Map<String, List<String>> groupedVars,	GridCoverageDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) throws InvalidRangeException;
+	
+	public boolean trailer();
 }

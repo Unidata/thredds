@@ -19,7 +19,7 @@ import java.util.Map;
  * @since 3/22/11
  */
 public enum Calendar {
-  gregorian, proleptic_gregorian, noleap, all_leap, uniform30day, julian, none;
+  gregorian, proleptic_gregorian, noleap, all_leap, uniform30day, julian, none;  // do not change order, used in protobuf
 
   public static Calendar get(String s) {
     if (s == null) return null;

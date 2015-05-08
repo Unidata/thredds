@@ -5,7 +5,7 @@ import net.opengis.waterml.x20.CollectionType;
 import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.util.NcssRequestUtils;
+import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;

@@ -62,6 +62,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.util.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 /**
  * Make a NetcdfDataset into a collection of GeoGrids with Georeferencing coordinate systems.
@@ -182,11 +183,18 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   private LatLonRect llbbMax = null;
   private CalendarDateRange dateRangeMax = null;
+  private ProjectionRect projBB = null;
 
   private void makeRanges() {
 
     for (ucar.nc2.dt.GridDataset.Gridset gset : getGridsets()) {
       GridCoordSystem gcs = gset.getGeoCoordSystem();
+
+      ProjectionRect bb = gcs.getBoundingBox();
+      if (projBB == null)
+        projBB = bb;
+      else
+        projBB.add(bb);
 
       LatLonRect llbb = gcs.getLatLonBoundingBox();
       if (llbbMax == null)
@@ -267,6 +275,11 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   public LatLonRect getBoundingBox() {
     if (llbbMax == null) makeRanges();
     return llbbMax;
+  }
+
+  public ProjectionRect getProjBoundingBox() {
+    if (llbbMax == null) makeRanges();
+    return projBB;
   }
 
   public void calcBounds() throws java.io.IOException {

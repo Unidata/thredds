@@ -30,43 +30,36 @@
  *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package thredds.server.ncss.view.gridaspoint.gridaspoint.netcdf;
 
-package thredds.server.ncss.view.gridaspoint;
+import java.io.IOException;
+import java.util.List;
 
-import thredds.server.ncss.controller.NcssDiskCache;
-import thredds.server.ncss.format.SupportedFormat;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.util.DiskCache2;
-
-import java.io.OutputStream;
+import ucar.nc2.constants.CF;
 
 /**
- * Describe
+ * @author mhermida
  *
- * @author caron
- * @since 10/5/13
  */
-public class PointDataWriterFactory {
+public final class CFPointWriterWrapperFactory {
 
-  static public PointDataWriter factory(SupportedFormat wantFormat, OutputStream outputStream, NcssDiskCache ncssDiskCache) {
-
- 		if( wantFormat ==  SupportedFormat.XML_FILE || wantFormat ==  SupportedFormat.XML_STREAM){
- 		  return XMLPointDataWriter.factory(outputStream);
- 		}
-
-    if( wantFormat ==  SupportedFormat.NETCDF3){
-      return NetCDFPointDataWriter.factory(NetcdfFileWriter.Version.netcdf3, outputStream, ncssDiskCache);
- 		}
-
-    if( wantFormat ==  SupportedFormat.NETCDF4){
-      return NetCDFPointDataWriter.factory(NetcdfFileWriter.Version.netcdf4, outputStream, ncssDiskCache);
- 		}
-
-    if( wantFormat ==  SupportedFormat.CSV_FILE ||  wantFormat ==  SupportedFormat.CSV_STREAM){
-      return CSVPointDataWriter.factory(outputStream);
- 		}
-
- 		throw new IllegalStateException("PointDataWriter does not support "+ wantFormat);
-
- 	}
+	private CFPointWriterWrapperFactory(){}
+	
+	public static CFPointWriterWrapper getWriterForFeatureType( NetcdfFileWriter.Version version, CF.FeatureType featureType, String filePath, List<Attribute> atts   ) throws IOException{
+		
+		if(featureType == CF.FeatureType.timeSeries){		
+			return CFStationCollectionWriterWrapper.factory(version, filePath, atts);
+		}
+		if (featureType == CF.FeatureType.point ) {
+			//return WriterCFPointCollectionWrapper.createWrapper(filePath, atts);
+			return PointCollectionNoTimeWriterWrapper.createWrapper(version, filePath, atts);
+		}		
+		if (featureType == CF.FeatureType.timeSeriesProfile ) {
+			return CFTimeSeriesProfileCollectionWriterWrapper.createWrapper(version, filePath, atts);
+		}		
+		
+		throw new UnsupportedOperationException("Unsupported FeatureType: "+featureType.name());
+	}
 }

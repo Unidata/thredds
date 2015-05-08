@@ -57,7 +57,6 @@ import java.util.zip.DeflaterOutputStream;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.ma2.*;
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.ft2.remote.CdmrfWriter;
 import ucar.nc2.iosp.IospHelper;
@@ -110,13 +109,12 @@ public class CdmrFeatureController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmrfeature");
 
-    try (GridDataset gds = TdsRequestedDataset.getGridDataset(request, response, datasetPath)) {
-      if (gds == null) return;
+    try (GridCoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+      if (gridCoverageDataset == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());
       response.setHeader("Content-Description", "ncstream");
-      DtGridDatasetAdapter cdmrg = new DtGridDatasetAdapter(gds);
-      CdmrfWriter writer = new CdmrfWriter(cdmrg, ServletUtil.getRequestBase(request));
+      CdmrfWriter writer = new CdmrfWriter(gridCoverageDataset, ServletUtil.getRequestBase(request));
       long size = writer.sendHeader(out);
       out.flush();
 
@@ -143,14 +141,13 @@ public class CdmrFeatureController implements LastModified {
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmrfeature");
 
-    try (GridDataset gds = TdsRequestedDataset.getGridDataset(request, response, datasetPath)) {
-      if (gds == null) return;
+    try (GridCoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
+      if (gridCoverageDataset == null) return;
 
       response.setContentType(ContentType.binary.getContentHeader());
       response.setHeader("Content-Description", "ncstream");
-      DtGridDatasetAdapter cdmrg = new DtGridDatasetAdapter(gds);
 
-      GridCoverage grid = cdmrg.findCoverage(qb.getVar());
+      GridCoverage grid = gridCoverageDataset.findCoverage(qb.getVar());
       GridSubset subset = makeSubset(qb);
 
       Array data = grid.readData(subset);

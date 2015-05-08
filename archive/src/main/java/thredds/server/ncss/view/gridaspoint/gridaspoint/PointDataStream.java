@@ -31,7 +31,7 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.ncss.view.gridaspoint;
+package thredds.server.ncss.view.gridaspoint.gridaspoint;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -49,30 +49,28 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDataset.Gridset;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 
 /**
- * merged into GridAsPointResponder.
- * left (for now) for unit testing
+ * Read through the data, send "points" to the writer, which handles the format.
+ * The whole idea is to only read data in one place. Copy
  */
 public final class PointDataStream {
-  static private Logger log = LoggerFactory.getLogger(PointDataStream.class);
+/*   static private Logger log = LoggerFactory.getLogger(PointDataStream.class);
 
   public static PointDataStream factory(SupportedFormat supportedFormat, OutputStream outputStream, NcssDiskCache ncssDiskCache){
  		return new PointDataStream(supportedFormat, outputStream, ncssDiskCache);
  	}
 
-	private final PointDataWriter pointDataWriter;
+	private final GridAsPointWriter pointDataWriter;
 
 	private PointDataStream(SupportedFormat supportedFormat, OutputStream outputStream, NcssDiskCache ncssDiskCache) {
-		this.pointDataWriter = PointDataWriterFactory.factory(supportedFormat, outputStream, ncssDiskCache);
+		this.pointDataWriter = GridAsPointWriter.factory(supportedFormat, outputStream, ncssDiskCache);
 	}
 
-	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws Exception {
+	public boolean stream(GridCoverageDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws Exception {
 		
 		boolean allDone= false;
 		List<String> vars = new ArrayList<>();
@@ -82,7 +80,7 @@ public final class PointDataStream {
 		}
 					
 		//if(pointDataWriter.header(groupedVars, gds, wDates, getDateUnit(gds) , point, vertCoord)){
-		if (pointDataWriter.header(groupedVars, gds, wDates, getTimeDimAtts(gds) , point, vertCoord)){
+		if (pointDataWriter.header(groupedVars, gds, wDates, getTimeDimAtts(gds), point, vertCoord)){
 			boolean allPointsRead = false;
 			allPointsRead = pointDataWriter.write(groupedVars, gds, wDates, point, vertCoord);
 			allDone = pointDataWriter.trailer() && allPointsRead;
@@ -91,9 +89,11 @@ public final class PointDataStream {
 	}
 	
 	
-	private List<Attribute> getTimeDimAtts(GridDataset gds){
+	private List<Attribute> getTimeDimAtts(GridCoverageDataset gds) {
+		return new ArrayList<>();
+	}
 		
-		//If the grid does not have time axis, return null
+	/*	//If the grid does not have time axis, return null
 		//if(grid.getCoordinateSystem().getTimeAxis() == null)
 		//	return null;
 		CoordinateAxis1DTime tAxis = null;
@@ -134,12 +134,12 @@ public final class PointDataStream {
 			timeAtts.add(tLongName);
 		}		
 		
-		return timeAtts;		
+		return timeAtts;
 	}
 	
-	public final HttpHeaders getHttpHeaders(GridDataset gds, String pathInfo, Boolean isStream){
-		pointDataWriter.setHTTPHeaders(gds, pathInfo, isStream);
+	public final HttpHeaders getHttpHeaders(String pathInfo, Boolean isStream){
+		pointDataWriter.setHTTPHeaders(pathInfo, isStream);
 		return pointDataWriter.getResponseHeaders();
-	}
+	}  */
 
 }

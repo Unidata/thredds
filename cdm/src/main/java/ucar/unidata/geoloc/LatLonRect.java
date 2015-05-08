@@ -168,9 +168,7 @@ public class LatLonRect {
    * @param r rectangle to copy
    */
   public LatLonRect(LatLonRect r) {
-    this(r.getLowerLeftPoint(),
-        r.getUpperRightPoint().getLatitude()
-            - r.getLowerLeftPoint().getLatitude(), r.getWidth());
+    this(r.getLowerLeftPoint(), r.getUpperRightPoint().getLatitude() - r.getLowerLeftPoint().getLatitude(), r.getWidth());
   }
 
   /**
@@ -204,8 +202,7 @@ public class LatLonRect {
    * @return upper left corner of the bounding box
    */
   public LatLonPointImpl getUpperLeftPoint() {
-    return new LatLonPointImpl(upperRight.getLatitude(),
-        lowerLeft.getLongitude());
+    return new LatLonPointImpl(upperRight.getLatitude(), lowerLeft.getLongitude());
   }
 
   /**
@@ -214,8 +211,7 @@ public class LatLonRect {
    * @return lower left corner of the bounding box
    */
   public LatLonPointImpl getLowerRightPoint() {
-    return new LatLonPointImpl(lowerLeft.getLatitude(),
-        upperRight.getLongitude());
+    return new LatLonPointImpl(lowerLeft.getLatitude(), upperRight.getLongitude());
   }
 
 

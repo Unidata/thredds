@@ -19,11 +19,13 @@ import thredds.util.Constants;
 import thredds.util.ContentType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.grid.gis.GridBoundariesExtractor;
-import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
+import ucar.nc2.ft2.coverage.grid.GridCoordSys;
+import ucar.nc2.ft2.coverage.grid.GridCoverage;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.util.IO;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,55 +33,55 @@ import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * Handles all Ncss Grid Requests
+ * Validation done here, not in Responders
  *
  * @author caron
  * @since 4/29/2015
  */
 @Controller
 @RequestMapping("/ncss/grid")
-public class NcssGridController extends NcssController {
+public class NcssGridController extends AbstractNcssController {
 
   protected String getBase() {
     return StandardService.netcdfSubsetGrid.getBase();
   }
 
   @RequestMapping("**")
-  public void handleRequest(HttpServletRequest req, HttpServletResponse res,
-                            @Valid NcssGridParamsBean params,
-                            BindingResult validationResult) throws Exception {
+  public void handleRequest(HttpServletRequest req, HttpServletResponse res, @Valid NcssGridParamsBean params, BindingResult validationResult)
+          throws BindException, IOException, ParseException, NcssException, InvalidRangeException {
 
     if (validationResult.hasErrors())
       throw new BindException(validationResult);
 
     String datasetPath = getDatasetPath(req);
-    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
-      if (fd == null) return;
+    try (GridCoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
+      if (gcd == null) return;
 
       Formatter errs = new Formatter();
-      if (!params.intersectsTime(fd, errs)) {
+      if (!params.intersectsTime(gcd, errs)) {
         handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, errs.toString());
         return;
       }
 
-      FeatureType ft = fd.getFeatureType();
-      if (ft == FeatureType.GRID) {
-        if (!params.hasLatLonPoint()) {
-          handleRequestGrid(res, params, datasetPath, (GridDataset) fd);
-        } else {
-          handleRequestGridAsPoint(res, params, datasetPath, fd);
-        }
-      } else {
-        throw new NcssException("Dataset Feature Type is " + ft.toString() + " but request is for Grids");
-      }
+      // throws exception if grid names not valid
+      checkRequestedVars(gcd, params);
+
+      if (!params.hasLatLonPoint()) {
+        handleRequestGrid(res, params, datasetPath, gcd);
+      } //else {
+        //handleRequestGridAsPoint(res, params, datasetPath, gcd);
+      //}
     }
   }
 
-  void handleRequestGrid(HttpServletResponse res, NcssParamsBean params, String datasetPath,
-                         GridDataset gridDataset) throws IOException, NcssException, ParseException, InvalidRangeException {
+  private void handleRequestGrid(HttpServletResponse res, NcssParamsBean params, String datasetPath, GridCoverageDataset gcd)
+          throws IOException, NcssException, ParseException, InvalidRangeException {
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());
@@ -93,7 +95,13 @@ public class NcssGridController extends NcssController {
       }
     }
 
-    GridResponder gds = GridResponder.factory(gridDataset, datasetPath, ncssDiskCache);
+    // all variables have to have the same vertical axis if a vertical coordinate was set.
+    if (params.getVertCoord() != null && !checkVarsHaveSameVertAxis(gcd, params) ) {
+        throw new NcssException("The variables requested: " + params.getVar() +
+                " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
+      }
+
+    GridResponder gds = new GridResponder(gcd, datasetPath, ncssDiskCache);
     File netcdfResult = gds.getResponseFile(res, params, version);
 
     // filename download attachment
@@ -116,13 +124,27 @@ public class NcssGridController extends NcssController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
-  void handleRequestGridAsPoint(HttpServletResponse res, NcssParamsBean params, String datasetPath,
-                                FeatureDataset fd) throws Exception {
+  /* void handleRequestGridAsPoint(HttpServletResponse res, NcssParamsBean params, String datasetPath, GridCoverageDataset gcd)
+          throws IOException, ParseException, InvalidRangeException, NcssException {
+
+    // use the first grid
+    String gridName;
+    List<String> wantVars = params.getVar();
+    if (wantVars.size() > 0) gridName = wantVars.get(0);
+    else gridName = gcd.getGrids().get(0).getName();
+
+		// Check if the requested point is within boundaries
+    LatLonPoint latlon = new LatLonPointImpl(params.getLatitude(), params.getLongitude());
+    if (!gcd.containsLatLonPoint(gridName, latlon)) {
+			throw new OutOfBoundariesException("Requested Lat/Lon Point (+" + latlon + ") is not contained in the Data. "+
+					"Data Bounding Box = " + gcd.getLatLonBoundingBox().toString2());
+		}
+
     SupportedFormat format = SupportedOperation.POINT_REQUEST.getSupportedFormat(params.getAccept());
-    NcssResponder pds = GridAsPointResponder.factory(ncssDiskCache, format, res.getOutputStream());
-    setResponseHeaders(res, pds.getResponseHeaders(fd, format, datasetPath));
-    pds.respond(res, fd, datasetPath, params, format);
-  }
+    GridAsPointResponder pds =  new GridAsPointResponder(gcd, params, ncssDiskCache, format, res.getOutputStream());
+    setResponseHeaders(res, pds.getResponseHeaders(gcd, format, datasetPath));
+    pds.respond(params);
+  } */
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
   public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException {
@@ -135,26 +157,23 @@ public class NcssGridController extends NcssController {
     boolean showPointForm = path.endsWith("/pointDataset.html");
     String datasetPath = getDatasetPath(req);
 
-    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
-      if (fd == null) return null; // restricted dataset
-      return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
+    try (GridCoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
+      if (gcd == null) return null; // restricted dataset
+      return ncssShowDatasetInfo.showGridForm(gcd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
     }
   }
 
-  @RequestMapping("**/datasetBoundaries.xml")
+  /* @RequestMapping("** /datasetBoundaries.xml")
   void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException {
 
     //Checking request format...
     SupportedFormat sf = getSupportedFormat(params, SupportedOperation.DATASET_BOUNDARIES_REQUEST);
     String datasetPath = getDatasetPath(req);
 
-    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
-      if (fd == null) return;
+    try (GridCoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
+      if (gcd == null) return;
 
-      if (fd.getFeatureType() != FeatureType.GRID)
-        throw new java.lang.UnsupportedOperationException("Dataset Boundaries request is only supported on Grid features");
-
-      String boundaries = getBoundaries(sf, (GridDataset) fd);
+      String boundaries = getBoundaries(sf, gcd);
 
       res.setContentType(sf.getMimeType());
       res.getWriter().write(boundaries);
@@ -162,10 +181,10 @@ public class NcssGridController extends NcssController {
     }
   }
 
-  private String getBoundaries(SupportedFormat format, GridDataset gridDataset) {
+  private String getBoundaries(SupportedFormat format, GridCoverageDataset gcd) {
 
     String boundaries = "";
-    GridBoundariesExtractor gbe = GridBoundariesExtractor.valueOf(gridDataset);
+    GridBoundariesExtractor gbe = GridBoundariesExtractor.valueOf(gcd);   // LOOK
 
     if (format == SupportedFormat.WKT)
       boundaries = gbe.getDatasetBoundariesWKT();
@@ -173,7 +192,7 @@ public class NcssGridController extends NcssController {
       boundaries = gbe.getDatasetBoundariesGeoJSON();
 
     return boundaries;
-  }
+  }  */
 
   protected SupportedFormat getSupportedFormat(NcssParamsBean params, SupportedOperation operation) throws UnsupportedResponseFormatException {
 
@@ -195,6 +214,52 @@ public class NcssGridController extends NcssController {
   }
 
 
+  /**
+   * Checks that all the requested vars exist. If "all", fills out the param.vars with all grid names
+   * Throws exception if some of the variables in the request are not contained in the dataset
+   */
+  private void checkRequestedVars(GridCoverageDataset gcd, NcssParamsBean params) throws VariableNotContainedInDatasetException {
+
+    // if var == all --> all variables requested
+    if (params.getVar().get(0).equalsIgnoreCase("all")) {
+      params.setVar(getAllGridNames(gcd));
+      return;
+    }
+
+    // Check not all vars are contained in the grid
+    for (String gridName : params.getVar()) {
+      GridCoverage grid = gcd.findCoverage(gridName);
+      if (grid == null)
+        throw new VariableNotContainedInDatasetException("Variable: " + gridName + " is not contained in the requested dataset");
+    }
+  }
+
+  private List<String> getAllGridNames(GridCoverageDataset gcd) {
+    List<String> result = new ArrayList<>();
+    for (GridCoverage var : gcd.getGrids())
+      result.add(var.getName());
+    return result;
+  }
+
+  /**
+   * Returns true if all the variables have the same vertical axis (if they have an axis).
+   * Could be broadened to allow all with same coordinate unites? coordinate value??
+   */
+  protected boolean checkVarsHaveSameVertAxis(GridCoverageDataset gcd, NcssParamsBean params) throws VariableNotContainedInDatasetException {
+    String zaxisName = null;
+    for (String gridName : params.getVar()) {
+      GridCoverage grid = gcd.findCoverage(gridName);
+      GridCoordSys gcs = gcd.findCoordSys(grid.getCoordSysName());
+      GridCoordAxis zaxis = gcd.getZAxis(gcs);
+      if (zaxis != null) {
+        if (zaxisName == null)
+          zaxisName = zaxis.getName();
+        else if (!zaxisName.equals(zaxis.getName()))
+          return false;
+      }
+    }
+    return true;
+  }
 
    /* @RequestMapping(value = "**", params = {"!latitude", "!longitude", "!subset", "!req"})
    void getGridSubset(@Valid GridDataRequestParamsBean params,

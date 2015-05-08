@@ -57,15 +57,15 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Annotated controller for Netcdf Subset Service
+ * Superclass for ncss controllers
  *
  * @author jcaron
  * @author mhermida
  */
 @Controller
 @RequestMapping("/ncss")
-public abstract class NcssController {
-  static private final Logger logger = LoggerFactory.getLogger(NcssController.class);
+public abstract class AbstractNcssController {
+  static private final Logger logger = LoggerFactory.getLogger(AbstractNcssController.class);
 
   @Autowired
   TdsContext tdsContext;

@@ -1,11 +1,10 @@
 package thredds.server.ncss.view.dsg.point;
 
 import org.springframework.http.HttpHeaders;
-import thredds.server.ncss.controller.NcssController;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.util.NcssRequestUtils;
+import thredds.server.ncss.controller.NcssRequestUtils;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
@@ -18,7 +17,6 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.writer.CFPointWriterConfig;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 
 import java.io.File;
