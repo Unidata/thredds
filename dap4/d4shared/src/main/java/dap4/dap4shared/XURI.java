@@ -140,8 +140,8 @@ public class XURI
         // Parse the raw query (before decoding)
         String query = this.url.getRawQuery();
         String[] params = null;
-	    if(query != null)
-	        params = this.url.getRawQuery().split(QUERYSEP);
+        if(query != null)
+	     params = this.url.getRawQuery().split(QUERYSEP);
         if(params != null && params.length > 0) {
             this.query = "";
             for(String param : params) {

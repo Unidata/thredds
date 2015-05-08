@@ -1,13 +1,11 @@
 package dap4.test;
 
 import dap4.test.util.DapTestCommon;
-import org.junit.Ignore;
 import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.ThreddsServer;
 
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,11 +157,10 @@ public class TestConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test method
 
+    @Test
     public void testConstraints()
             throws Exception
     {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
-
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) {
                 assertTrue(false);
