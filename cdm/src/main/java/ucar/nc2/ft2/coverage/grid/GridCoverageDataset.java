@@ -2,6 +2,8 @@
 package ucar.nc2.ft2.coverage.grid;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordTransBuilder;
 import ucar.nc2.time.CalendarDateRange;
@@ -29,7 +31,7 @@ import java.util.*;
 public class GridCoverageDataset implements AutoCloseable {
 
   String name;
-  List<Attribute> globalAttributes;
+  AttributeContainerHelper atts;
   LatLonRect latLonBoundingBox;
   ProjectionRect projBoundingBox;
   CalendarDateRange calendarDateRange;
@@ -43,6 +45,18 @@ public class GridCoverageDataset implements AutoCloseable {
     // NOOP
   }
 
+  public String findAttValueIgnoreCase(String attName, String defaultValue) {
+    return atts.findAttValueIgnoreCase(attName, defaultValue);
+  }
+
+  public Attribute findAttribute(String attName) {
+    return atts.findAttribute(attName);
+  }
+
+  public Attribute findAttributeIgnoreCase(String attName) {
+    return atts.findAttributeIgnoreCase(attName);
+  }
+
   public String getName() {
     return name;
   }
@@ -52,11 +66,11 @@ public class GridCoverageDataset implements AutoCloseable {
   }
 
   public List<Attribute> getGlobalAttributes() {
-    return globalAttributes;
+    return atts.getAttributes();
   }
 
-  public void setGlobalAttributes(List<Attribute> globalAttributes) {
-    this.globalAttributes = globalAttributes;
+  public void setGlobalAttributes(AttributeContainerHelper globalAttributes) {
+    this.atts = globalAttributes;
   }
 
   public LatLonRect getLatLonBoundingBox() {
@@ -126,7 +140,7 @@ public class GridCoverageDataset implements AutoCloseable {
     Indent indent = new Indent(2);
     f.format("%sGridDatasetCoverage %s%n", indent, name);
     f.format("%s Global attributes:%n", indent);
-    for (Attribute att : globalAttributes)
+    for (Attribute att : atts.getAttributes())
       f.format("%s  %s%n", indent, att);
     f.format("%s Date Range:%s%n", indent, calendarDateRange);
     f.format("%s LatLon BoundingBox:%s%n", indent, latLonBoundingBox);
@@ -173,7 +187,7 @@ public class GridCoverageDataset implements AutoCloseable {
   public GridCoordAxis getXAxis(GridCoordSys gcs) {
     for (String axisName : gcs.getAxisNames()) {
        GridCoordAxis axis = findCoordAxis(axisName);
-       if (axis.axisType == AxisType.GeoX || axis.axisType == AxisType.Lon) {
+       if (axis.getAxisType() == AxisType.GeoX || axis.getAxisType() == AxisType.Lon) {
          return axis;
        }
      }
@@ -183,7 +197,7 @@ public class GridCoverageDataset implements AutoCloseable {
   public GridCoordAxis getYAxis(GridCoordSys gcs) {
     for (String axisName : gcs.getAxisNames()) {
        GridCoordAxis axis = findCoordAxis(axisName);
-       if (axis.axisType == AxisType.GeoY || axis.axisType == AxisType.Lat) {
+       if (axis.getAxisType() == AxisType.GeoY || axis.getAxisType() == AxisType.Lat) {
          return axis;
        }
      }
@@ -193,11 +207,31 @@ public class GridCoverageDataset implements AutoCloseable {
   public GridCoordAxis getZAxis(GridCoordSys gcs) {
     for (String axisName : gcs.getAxisNames()) {
        GridCoordAxis axis = findCoordAxis(axisName);
-       if (axis.axisType == AxisType.GeoZ || axis.axisType == AxisType.Height || axis.axisType == AxisType.Pressure) {
+       if (axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.Height || axis.getAxisType() == AxisType.Pressure) {
          return axis;
        }
      }
     return null;
+  }
+
+  public GridCoordAxis getAxis(GridCoordSys gcs, AxisType type) {
+    for (String axisName : gcs.getAxisNames()) {
+       GridCoordAxis axis = findCoordAxis(axisName);
+       if (axis.getAxisType() == type) {
+         return axis;
+       }
+     }
+    return null;
+  }
+
+  public String getAxisNames(GridCoverage grid) {
+    GridCoordSys gcs = findCoordSys(grid.getCoordSysName());
+    StringBuilder sb = new StringBuilder();
+    for (String axisName : gcs.getAxisNames()) {
+      sb.append(axisName);
+      sb.append(" ");
+    }
+    return sb.toString();
   }
 
   ///////////////////////////////////////////////////////////////
@@ -221,6 +255,18 @@ public class GridCoverageDataset implements AutoCloseable {
     transform.setProjection(proj);
     return proj;
   }
+
+  public long getSizeInBytes(GridCoverage grid) {
+    long total = 1;
+    GridCoordSys gcs = findCoordSys(grid.getCoordSysName());
+    for (String axisName : gcs.getAxisNames()) {
+      GridCoordAxis axis = findCoordAxis(axisName);
+      total *= axis.getNvalues();
+    }
+    total *= grid.getDataType().getSize();
+    return total;
+  }
+
 
   /* public boolean containsLatLonPoint(String gridName, LatLonPoint latlon) {
     GridCoverage grid = findCoverage(gridName);

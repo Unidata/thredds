@@ -217,6 +217,9 @@ public class CdmrfWriter {
     if (axis.getUnits() != null) builder.setUnits(axis.getUnits());
     if (axis.getDescription() != null) builder.setDescription(axis.getDescription());
 
+    for (Attribute att : axis.getAttributes())
+      builder.addAtts(NcStream.encodeAtt(att));
+
     builder.setSpacing(axis.getSpacing().ordinal());
     builder.setStartValue(axis.getStartValue());
     builder.setEndValue(axis.getEndValue());

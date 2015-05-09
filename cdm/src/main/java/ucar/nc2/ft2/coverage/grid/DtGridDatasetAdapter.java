@@ -3,6 +3,7 @@ package ucar.nc2.ft2.coverage.grid;
 
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateTransform;
@@ -118,22 +119,38 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
 
     @Override
     public Array readData(GridSubset subset) throws IOException {
+      GridCoordSystem gcs = dtGrid.getCoordinateSystem();
+      int ens = -1;
       int level = -1;
+      int time = -1;
+      int runtime = -1;
+
       for (Map.Entry<String, String> entry : subset.getEntries()) {
+        double val = Double.parseDouble(entry.getValue());
         switch (entry.getKey()) {
+          case "E":
+            CoordinateAxis1D ensAxis = gcs.getEnsembleAxis();
+            if (ensAxis != null) ens = ensAxis.findCoordElement(val);
+            break;
+
+          case "T":
+            CoordinateAxis1D taxis = gcs.getVerticalAxis();
+            if (taxis != null) time = taxis.findCoordElement(val);
+            break;
+
+          case "R":
+            CoordinateAxis1D raxis = gcs.getRunTimeAxis();
+            if (raxis != null) runtime = raxis.findCoordElement(val);
+            break;
+
           case "Z":
-            double val = Double.parseDouble(entry.getValue());
-            level = findZcoordIndexFromValue( val);
+            CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+            if (zaxis != null) level = zaxis.findCoordElement(val);
             break;
         }
       }
-      return dtGrid.readDataSlice(0, 0, 0, level, -1, -1);
-    }
-
-    int findZcoordIndexFromValue(double val) {
-      GridCoordSystem gcs = dtGrid.getCoordinateSystem();
-      CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-      return zaxis.findCoordElement(val);
+      //int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index
+      return dtGrid.readDataSlice(runtime, ens, time, level, -1, -1);
     }
   }
 
@@ -173,11 +190,17 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
       setAxisType(dtCoordAxis.getAxisType());
       setUnits(dtCoordAxis.getUnitsString());
       setDescription(dtCoordAxis.getDescription());
+
+      AttributeContainerHelper atts = new AttributeContainerHelper("dtCoordAxis");
+      for (Attribute patt : dtCoordAxis.getAttributes())
+        atts.addAttribute(patt);
+      setAttributes(atts);
+
       setNvalues(dtCoordAxis.getSize());
 
       CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
       setStartValue(axis1D.getCoordValue(0));
-      setEndValue(axis1D.getCoordValue((int)axis1D.getSize()-1));
+      setEndValue(axis1D.getCoordValue((int) axis1D.getSize() - 1));
       if (axis1D.isRegular())
         spacing = Spacing.regular;
       else if (!axis1D.isInterval())
@@ -204,11 +227,11 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
           return dtCoordAxis.getCoordEdges();
         case discontiguousInterval:
           int n = (int) dtCoordAxis.getSize();
-          double[] result = new double[2*n];
+          double[] result = new double[2 * n];
           double[] bounds1 = dtCoordAxis.getBound1();
           double[] bounds2 = dtCoordAxis.getBound2();
           int count = 0;
-          for (int i=0; i<n; i++) {
+          for (int i = 0; i < n; i++) {
             result[count++] = bounds1[i];
             result[count++] = bounds2[i];
           }

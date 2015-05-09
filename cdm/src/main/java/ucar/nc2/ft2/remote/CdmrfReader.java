@@ -5,6 +5,7 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
@@ -113,9 +114,9 @@ public class CdmrfReader {
     if (proto.hasDateRange())
       result.setCalendarDateRange(decodeDateRange(proto.getDateRange()));
 
-    List<Attribute> gatts = new ArrayList<>();
+    AttributeContainerHelper gatts = new AttributeContainerHelper("global atts");
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
-      gatts.add(NcStream.decodeAtt(patt));
+      gatts.addAttribute(NcStream.decodeAtt(patt));
     result.setGlobalAttributes(gatts);
 
     List<GridCoordSys> csys = new ArrayList<>();
@@ -220,6 +221,11 @@ public class CdmrfReader {
     result.setNvalues(proto.getNvalues());
     result.setUnits(proto.getUnits());
     result.setDescription(proto.getDescription());
+
+    AttributeContainerHelper atts = new AttributeContainerHelper("axis atts");
+    for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())
+      atts.addAttribute(NcStream.decodeAtt(patt));
+    result.setAttributes(atts);
 
     result.setSpacing(proto.getSpacing());
     result.setStartValue(proto.getStartValue());

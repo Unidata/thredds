@@ -464,7 +464,7 @@ public class CoverageRenderer {
 
     // get the data slice
       //dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
-    GridSubset subset = new GridSubset(dataState.geocs);
+    GridSubset subset = new GridSubset();
     if (level >= 0 && dataState.zaxis != null) {
       double levelVal = dataState.zaxis.getCoord(level);
       subset.set(GridCoordAxis.Type.Z, Double.toString(levelVal));

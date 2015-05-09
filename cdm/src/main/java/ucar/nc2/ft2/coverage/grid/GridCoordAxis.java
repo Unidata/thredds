@@ -2,6 +2,8 @@
 package ucar.nc2.ft2.coverage.grid;
 
 import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.NamedAnything;
@@ -15,30 +17,62 @@ import java.util.List;
 
 /**
  * GridCoordAxis
- * 1) regularly spaced points or intervals (min, max, npts), edges assumed half-way
- * 2) irregular spaced points (values, npts), edges assumed half-way
- * 3) irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1
- * 4) irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
+ * always one dimensional
+ * could make immutable and use a builder pattern
  * <p/>
+ * storage
+ * immediate (cached)
  * maybe can be regular with missing values ??
+ * huge - do not try to cache
  *
  * @author caron
  * @since 5/4/2015
  */
 public class GridCoordAxis {
-  public enum Type {X, Y, Z, T}
-  public enum Spacing {regular, irregularPoint, contiguousInterval, discontiguousInterval}
+  public enum Type {X, Y, Z, T, E, RT}
 
-  String name;
-  DataType dataType;
-  AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
-  long nvalues;
-  String units, description;
-  Spacing spacing;
-  double startValue;
-  double endValue;
-  double resolution;
-  double[] values;   // null if isRegular,
+  public enum Spacing {regular, irregularPoint, contiguousInterval, discontiguousInterval} // see Spacing below
+
+  /*
+  message CoordAxis {
+    required string name = 1;          // must be unique in dataset
+    required DataType dataType = 2;
+    required int32 axisType = 3;       // ucar.nc2.constants.AxisType ordinal
+    required string units = 4;
+    optional string description = 5;
+    required int64 nvalues = 6;
+    required int32 spacing = 7;         // GridCoordAxis.Spacing ordinal
+    required double startValue = 8;
+    required double endValue = 9;
+    optional double resolution = 10;     // resolution = (max-min) / (nvalues-1)
+    optional bytes values = 11;          // "immediate" - store small non-regular data in header
+  }
+   */
+  private String name;
+  private DataType dataType;
+  private AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
+  private String units, description;
+  private AttributeContainer attributes;
+
+  private long nvalues;
+  private Spacing spacing;
+  private double startValue;
+  private double endValue;
+  private double resolution;
+  private double[] values;     // null if isRegular,
+
+  public GridCoordAxis subset(double minValue, double maxValue) {
+    GridCoordAxis result = new GridCoordAxis();
+    result.setName(name);
+    result.setDataType(dataType);
+    result.setUnits(units);
+    result.setDescription(description);
+    result.setSpacing(spacing);
+    result.setResolution(resolution);
+    subsetValues(result, minValue, maxValue);
+
+    return result;
+  }
 
   public String getName() {
     return name;
@@ -68,6 +102,14 @@ public class GridCoordAxis {
     this.axisType = type;
   }
 
+  public List<Attribute> getAttributes() {
+    return attributes.getAttributes();
+  }
+
+  public void setAttributes(AttributeContainer attributes) {
+    this.attributes = attributes;
+  }
+
   public long getNvalues() {
     return nvalues;
   }
@@ -78,6 +120,10 @@ public class GridCoordAxis {
 
   public Spacing getSpacing() {
     return spacing;
+  }
+
+  public void setSpacing(Spacing spacing) {
+    this.spacing = spacing;
   }
 
   public void setSpacing(int spacingOrdinal) {
@@ -164,40 +210,43 @@ public class GridCoordAxis {
       switch (spacing) {
         case irregularPoint:
         case contiguousInterval:
-          f.format("%ncontiguous (%d)=",n);
+          f.format("%ncontiguous (%d)=", n);
           for (double v : values)
             f.format("%f,", v);
           f.format("%n");
           break;
 
         case discontiguousInterval:
-           f.format("%ndiscontiguous (%d)=",n);
-           for (int i=0; i<n; i+=2)
-             f.format("(%f,%f) ", values[i], values[i+1]);
-           f.format("%n");
-           break;
-       }
+          f.format("%ndiscontiguous (%d)=", n);
+          for (int i = 0; i < n; i += 2)
+            f.format("(%f,%f) ", values[i], values[i + 1]);
+          f.format("%n");
+          break;
+      }
     }
 
     indent.decr();
   }
 
+  ///////////////////////////////////////////////////////////////////
+  // Spacing
+
   /*
    * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
    * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
    * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-   * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
+   * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
    */
 
   public double getCoordEdge1(int index) {
-    if (index >= nvalues) throw new IllegalArgumentException("Index must be <"+nvalues);
+    if (index >= nvalues) throw new IllegalArgumentException("Index must be <" + nvalues);
     switch (spacing) {
       case regular:
         return startValue + (index - .5) * resolution;
 
       case irregularPoint:
         if (index > 0)
-          return (values[index-1] + values[index]) / 2;
+          return (values[index - 1] + values[index]) / 2;
         else
           return values[0] - (values[1] - values[0]) / 2;
 
@@ -205,30 +254,30 @@ public class GridCoordAxis {
         return values[index];
 
       case discontiguousInterval:
-        return values[2*index];
+        return values[2 * index];
     }
-    throw new IllegalStateException("Unknown spacing="+spacing);
+    throw new IllegalStateException("Unknown spacing=" + spacing);
   }
 
   public double getCoordEdge2(int index) {
-    if (index >= nvalues) throw new IllegalArgumentException("Index must be <"+nvalues);
+    if (index >= nvalues) throw new IllegalArgumentException("Index must be <" + nvalues);
     switch (spacing) {
       case regular:
         return startValue + (index + .5) * resolution;
 
       case irregularPoint:
-        if (index < nvalues-1)
-          return (values[index] + values[index+1]) / 2;
+        if (index < nvalues - 1)
+          return (values[index] + values[index + 1]) / 2;
         else
-          return values[index] + (values[index] - values[index-1]) / 2;
+          return values[index] + (values[index] - values[index - 1]) / 2;
 
       case contiguousInterval:
-        return values[index+1];
+        return values[index + 1];
 
       case discontiguousInterval:
-        return values[2*index+1];
+        return values[2 * index + 1];
     }
-    throw new IllegalStateException("Unknown spacing="+spacing);
+    throw new IllegalStateException("Unknown spacing=" + spacing);
   }
 
   public double getCoordEdgeLast() {
@@ -236,7 +285,7 @@ public class GridCoordAxis {
   }
 
   public double getCoord(int index) {
-    if (index >= nvalues) throw new IllegalArgumentException("Index must be <"+nvalues);
+    if (index >= nvalues) throw new IllegalArgumentException("Index must be <" + nvalues);
     switch (spacing) {
       case regular:
         return startValue + index * resolution;
@@ -245,18 +294,18 @@ public class GridCoordAxis {
         return values[index];
 
       case contiguousInterval:
-        return (values[index] + values[index+1]) / 2;
+        return (values[index] + values[index + 1]) / 2;
 
       case discontiguousInterval:
-        return (values[2*index] + values[2*index+1]) / 2;
+        return (values[2 * index] + values[2 * index + 1]) / 2;
     }
-    throw new IllegalStateException("Unknown spacing="+spacing);
+    throw new IllegalStateException("Unknown spacing=" + spacing);
   }
 
   public List<NamedObject> getCoordValueNames() {
     List<NamedObject> result = new ArrayList<>();
-    for (int i=0; i<nvalues; i++) {
-      String valName="";
+    for (int i = 0; i < nvalues; i++) {
+      String valName = "";
       switch (spacing) {
         case regular:
         case irregularPoint:
@@ -265,7 +314,7 @@ public class GridCoordAxis {
 
         case contiguousInterval:
         case discontiguousInterval:
-          valName = Format.d(getCoordEdge1(i), 3)+","+Format.d(getCoordEdge2(i), 3);
+          valName = Format.d(getCoordEdge1(i), 3) + "," + Format.d(getCoordEdge2(i), 3);
           break;
 
       }
@@ -274,5 +323,103 @@ public class GridCoordAxis {
 
     return result;
   }
+
+  private void subsetValues(GridCoordAxis result, double minValue, double maxValue) {
+    int count = 0, count2 = 0;
+    double[] subsetValues;
+
+    switch (spacing) {
+      case regular:
+        if (minValue > endValue)
+          throw new IllegalArgumentException("no points in subset: min > end");
+        if (maxValue < startValue)
+          throw new IllegalArgumentException("no points in subset: max < start");
+
+        double subsetStart, subsetEnd;
+        int minIndex, maxIndex;
+        if (minValue <= startValue) {
+          minIndex = 0;
+          subsetStart = startValue;
+        } else {
+          minIndex = (int) ((minValue - startValue) / resolution);
+          subsetStart = startValue + minIndex * resolution;
+        }
+        if (maxValue >= endValue) {
+          maxIndex = (int) nvalues - 1;
+          subsetEnd = endValue;
+        } else {
+          maxIndex = (int) ((maxValue - startValue) / resolution);
+          subsetEnd = startValue + maxIndex * resolution;
+        }
+        result.setStartValue(subsetStart);
+        result.setEndValue(subsetEnd);
+        result.setNvalues(maxIndex - minIndex + 1);
+        break;
+
+      case irregularPoint:
+        for (double val : getValues()) {
+          if (val > maxValue) break;
+          if (val >= minValue) count++;
+        }
+        if (count == 0)
+          throw new IllegalArgumentException("no points in subset: min > end");
+
+        subsetValues = new double[count];
+        for (double val : getValues()) {
+          if (val > maxValue) break;
+          if (val >= minValue) subsetValues[count2++] = val;
+        }
+
+        result.setNvalues(count);
+        result.setValues(subsetValues);
+        result.setStartValue(subsetValues[0]);
+        result.setEndValue(subsetValues[subsetValues.length-1]);
+        break;
+
+      case contiguousInterval:
+        int firstIndex = -1;
+        for (int i=0; i<values.length; i++) {                       // these are edges
+          if (values[i] <= maxValue && values[i+1] >= minValue) {   // count number of intervals that pass
+            count++;
+            if (firstIndex < 0) firstIndex = i;  // record first one that passes
+          }
+        }
+        if (count == 0)
+          throw new IllegalArgumentException("no points in subset: min > end");
+
+        subsetValues = new double[count+1];            // need npts+1
+        for (int i=firstIndex; i<=firstIndex+count; i++)
+          subsetValues[count2++] = values[i];
+
+        result.setNvalues(count);
+        result.setValues(subsetValues);
+        result.setStartValue(subsetValues[0]);
+        result.setEndValue(subsetValues[subsetValues.length-1]);
+        break;
+
+      case discontiguousInterval:
+        for (int i=0; i<values.length; i+=2) {                       // these are bounds (low, high)1, (low,high)2, ...
+          if (values[i] <= maxValue && values[i+1] >= minValue) count++;     // count number of intervals that pass
+        }
+        if (count == 0)
+          throw new IllegalArgumentException("no points in subset: min > end");
+
+        subsetValues = new double[2*count];                   // need 2*npts
+        for (int i=0; i<values.length; i+=2) {
+          if (values[i] <= maxValue && values[i+1] >= minValue) {
+            subsetValues[count2++] = values[i];
+            subsetValues[count2++] = values[i+1];
+          }
+        }
+
+        result.setNvalues(count);
+        result.setValues(subsetValues);
+        result.setStartValue(subsetValues[0]);
+        result.setEndValue(subsetValues[subsetValues.length-1]);
+        break;
+    }
+
+  }
+
 
 }

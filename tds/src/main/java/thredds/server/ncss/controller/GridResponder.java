@@ -40,6 +40,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.grid.CFGridWriter2;
+import ucar.nc2.ft2.coverage.grid.CFGridCoverageWriter;
 import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
 import ucar.nc2.ft2.coverage.grid.GridCoverage;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
@@ -228,8 +229,8 @@ class GridResponder extends AbstractGridResponder {
       throw new IllegalStateException("NCSS misconfigured cache = ");
  		String cacheFilename = ncFile.getPath();
 
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, cacheFilename, null); // default chunking - let user control at some point  LOOK LOOK
-    //CFGridWriter2.writeFile(gcd, vars, bbox, projRect, horizStride, zRange, dateRange, timeStride, addLatLon, writer);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, cacheFilename, null); // default chunking - let user control at some point
+		CFGridCoverageWriter.writeFile(gcd, vars, bbox, projRect, horizStride, zRange, dateRange, timeStride, addLatLon, writer);
 
  		return new File(cacheFilename);
  	}

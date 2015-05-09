@@ -126,6 +126,10 @@ public class CdmrFeatureController implements LastModified {
     }
   }
 
+  /* var=gridName
+     Z=value
+   */
+
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=data")
   public void handleDataRequest(HttpServletRequest request, HttpServletResponse response,
                                 @Valid CdmrFeatureQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException {

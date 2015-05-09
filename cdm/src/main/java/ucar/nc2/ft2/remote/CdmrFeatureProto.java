@@ -1038,9 +1038,34 @@ public final class CdmrFeatureProto {
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
-    // required int32 axisType = 3;
+    // repeated .Attribute atts = 3;
     /**
-     * <code>required int32 axisType = 3;</code>
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> 
+        getAttsList();
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index);
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    int getAttsCount();
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
+        getAttsOrBuilderList();
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
+        int index);
+
+    // required int32 axisType = 4;
+    /**
+     * <code>required int32 axisType = 4;</code>
      *
      * <pre>
      * ucar.nc2.constants.AxisType ordinal
@@ -1048,7 +1073,7 @@ public final class CdmrFeatureProto {
      */
     boolean hasAxisType();
     /**
-     * <code>required int32 axisType = 3;</code>
+     * <code>required int32 axisType = 4;</code>
      *
      * <pre>
      * ucar.nc2.constants.AxisType ordinal
@@ -1056,49 +1081,49 @@ public final class CdmrFeatureProto {
      */
     int getAxisType();
 
-    // required string units = 4;
+    // required string units = 5;
     /**
-     * <code>required string units = 4;</code>
+     * <code>required string units = 5;</code>
      */
     boolean hasUnits();
     /**
-     * <code>required string units = 4;</code>
+     * <code>required string units = 5;</code>
      */
     java.lang.String getUnits();
     /**
-     * <code>required string units = 4;</code>
+     * <code>required string units = 5;</code>
      */
     com.google.protobuf.ByteString
         getUnitsBytes();
 
-    // optional string description = 5;
+    // optional string description = 6;
     /**
-     * <code>optional string description = 5;</code>
+     * <code>optional string description = 6;</code>
      */
     boolean hasDescription();
     /**
-     * <code>optional string description = 5;</code>
+     * <code>optional string description = 6;</code>
      */
     java.lang.String getDescription();
     /**
-     * <code>optional string description = 5;</code>
+     * <code>optional string description = 6;</code>
      */
     com.google.protobuf.ByteString
         getDescriptionBytes();
 
-    // required int64 nvalues = 6;
+    // required int64 nvalues = 10;
     /**
-     * <code>required int64 nvalues = 6;</code>
+     * <code>required int64 nvalues = 10;</code>
      */
     boolean hasNvalues();
     /**
-     * <code>required int64 nvalues = 6;</code>
+     * <code>required int64 nvalues = 10;</code>
      */
     long getNvalues();
 
-    // required int32 spacing = 7;
+    // required int32 spacing = 11;
     /**
-     * <code>required int32 spacing = 7;</code>
+     * <code>required int32 spacing = 11;</code>
      *
      * <pre>
      * GridCoordAxis.Spacing ordinal
@@ -1106,7 +1131,7 @@ public final class CdmrFeatureProto {
      */
     boolean hasSpacing();
     /**
-     * <code>required int32 spacing = 7;</code>
+     * <code>required int32 spacing = 11;</code>
      *
      * <pre>
      * GridCoordAxis.Spacing ordinal
@@ -1114,29 +1139,29 @@ public final class CdmrFeatureProto {
      */
     int getSpacing();
 
-    // required double startValue = 8;
+    // required double startValue = 12;
     /**
-     * <code>required double startValue = 8;</code>
+     * <code>required double startValue = 12;</code>
      */
     boolean hasStartValue();
     /**
-     * <code>required double startValue = 8;</code>
+     * <code>required double startValue = 12;</code>
      */
     double getStartValue();
 
-    // required double endValue = 9;
+    // required double endValue = 13;
     /**
-     * <code>required double endValue = 9;</code>
+     * <code>required double endValue = 13;</code>
      */
     boolean hasEndValue();
     /**
-     * <code>required double endValue = 9;</code>
+     * <code>required double endValue = 13;</code>
      */
     double getEndValue();
 
-    // optional double resolution = 10;
+    // optional double resolution = 14;
     /**
-     * <code>optional double resolution = 10;</code>
+     * <code>optional double resolution = 14;</code>
      *
      * <pre>
      * resolution = (max-min) / (nvalues-1)
@@ -1144,7 +1169,7 @@ public final class CdmrFeatureProto {
      */
     boolean hasResolution();
     /**
-     * <code>optional double resolution = 10;</code>
+     * <code>optional double resolution = 14;</code>
      *
      * <pre>
      * resolution = (max-min) / (nvalues-1)
@@ -1152,9 +1177,9 @@ public final class CdmrFeatureProto {
      */
     double getResolution();
 
-    // optional bytes values = 11;
+    // optional bytes values = 15;
     /**
-     * <code>optional bytes values = 11;</code>
+     * <code>optional bytes values = 15;</code>
      *
      * <pre>
      * "immediate" - store small non-regular data in header
@@ -1162,7 +1187,7 @@ public final class CdmrFeatureProto {
      */
     boolean hasValues();
     /**
-     * <code>optional bytes values = 11;</code>
+     * <code>optional bytes values = 15;</code>
      *
      * <pre>
      * "immediate" - store small non-regular data in header
@@ -1237,47 +1262,55 @@ public final class CdmrFeatureProto {
               }
               break;
             }
-            case 24: {
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              atts_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.PARSER, extensionRegistry));
+              break;
+            }
+            case 32: {
               bitField0_ |= 0x00000004;
               axisType_ = input.readInt32();
               break;
             }
-            case 34: {
+            case 42: {
               bitField0_ |= 0x00000008;
               units_ = input.readBytes();
               break;
             }
-            case 42: {
+            case 50: {
               bitField0_ |= 0x00000010;
               description_ = input.readBytes();
               break;
             }
-            case 48: {
+            case 80: {
               bitField0_ |= 0x00000020;
               nvalues_ = input.readInt64();
               break;
             }
-            case 56: {
+            case 88: {
               bitField0_ |= 0x00000040;
               spacing_ = input.readInt32();
               break;
             }
-            case 65: {
+            case 97: {
               bitField0_ |= 0x00000080;
               startValue_ = input.readDouble();
               break;
             }
-            case 73: {
+            case 105: {
               bitField0_ |= 0x00000100;
               endValue_ = input.readDouble();
               break;
             }
-            case 81: {
+            case 113: {
               bitField0_ |= 0x00000200;
               resolution_ = input.readDouble();
               break;
             }
-            case 90: {
+            case 122: {
               bitField0_ |= 0x00000400;
               values_ = input.readBytes();
               break;
@@ -1290,6 +1323,9 @@ public final class CdmrFeatureProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          atts_ = java.util.Collections.unmodifiableList(atts_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -1393,11 +1429,47 @@ public final class CdmrFeatureProto {
       return dataType_;
     }
 
-    // required int32 axisType = 3;
-    public static final int AXISTYPE_FIELD_NUMBER = 3;
+    // repeated .Attribute atts = 3;
+    public static final int ATTS_FIELD_NUMBER = 3;
+    private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_;
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
+      return atts_;
+    }
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
+        getAttsOrBuilderList() {
+      return atts_;
+    }
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    public int getAttsCount() {
+      return atts_.size();
+    }
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
+      return atts_.get(index);
+    }
+    /**
+     * <code>repeated .Attribute atts = 3;</code>
+     */
+    public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
+        int index) {
+      return atts_.get(index);
+    }
+
+    // required int32 axisType = 4;
+    public static final int AXISTYPE_FIELD_NUMBER = 4;
     private int axisType_;
     /**
-     * <code>required int32 axisType = 3;</code>
+     * <code>required int32 axisType = 4;</code>
      *
      * <pre>
      * ucar.nc2.constants.AxisType ordinal
@@ -1407,7 +1479,7 @@ public final class CdmrFeatureProto {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>required int32 axisType = 3;</code>
+     * <code>required int32 axisType = 4;</code>
      *
      * <pre>
      * ucar.nc2.constants.AxisType ordinal
@@ -1417,17 +1489,17 @@ public final class CdmrFeatureProto {
       return axisType_;
     }
 
-    // required string units = 4;
-    public static final int UNITS_FIELD_NUMBER = 4;
+    // required string units = 5;
+    public static final int UNITS_FIELD_NUMBER = 5;
     private java.lang.Object units_;
     /**
-     * <code>required string units = 4;</code>
+     * <code>required string units = 5;</code>
      */
     public boolean hasUnits() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>required string units = 4;</code>
+     * <code>required string units = 5;</code>
      */
     public java.lang.String getUnits() {
       java.lang.Object ref = units_;
@@ -1444,7 +1516,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>required string units = 4;</code>
+     * <code>required string units = 5;</code>
      */
     public com.google.protobuf.ByteString
         getUnitsBytes() {
@@ -1460,17 +1532,17 @@ public final class CdmrFeatureProto {
       }
     }
 
-    // optional string description = 5;
-    public static final int DESCRIPTION_FIELD_NUMBER = 5;
+    // optional string description = 6;
+    public static final int DESCRIPTION_FIELD_NUMBER = 6;
     private java.lang.Object description_;
     /**
-     * <code>optional string description = 5;</code>
+     * <code>optional string description = 6;</code>
      */
     public boolean hasDescription() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>optional string description = 5;</code>
+     * <code>optional string description = 6;</code>
      */
     public java.lang.String getDescription() {
       java.lang.Object ref = description_;
@@ -1487,7 +1559,7 @@ public final class CdmrFeatureProto {
       }
     }
     /**
-     * <code>optional string description = 5;</code>
+     * <code>optional string description = 6;</code>
      */
     public com.google.protobuf.ByteString
         getDescriptionBytes() {
@@ -1503,27 +1575,27 @@ public final class CdmrFeatureProto {
       }
     }
 
-    // required int64 nvalues = 6;
-    public static final int NVALUES_FIELD_NUMBER = 6;
+    // required int64 nvalues = 10;
+    public static final int NVALUES_FIELD_NUMBER = 10;
     private long nvalues_;
     /**
-     * <code>required int64 nvalues = 6;</code>
+     * <code>required int64 nvalues = 10;</code>
      */
     public boolean hasNvalues() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>required int64 nvalues = 6;</code>
+     * <code>required int64 nvalues = 10;</code>
      */
     public long getNvalues() {
       return nvalues_;
     }
 
-    // required int32 spacing = 7;
-    public static final int SPACING_FIELD_NUMBER = 7;
+    // required int32 spacing = 11;
+    public static final int SPACING_FIELD_NUMBER = 11;
     private int spacing_;
     /**
-     * <code>required int32 spacing = 7;</code>
+     * <code>required int32 spacing = 11;</code>
      *
      * <pre>
      * GridCoordAxis.Spacing ordinal
@@ -1533,7 +1605,7 @@ public final class CdmrFeatureProto {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>required int32 spacing = 7;</code>
+     * <code>required int32 spacing = 11;</code>
      *
      * <pre>
      * GridCoordAxis.Spacing ordinal
@@ -1543,43 +1615,43 @@ public final class CdmrFeatureProto {
       return spacing_;
     }
 
-    // required double startValue = 8;
-    public static final int STARTVALUE_FIELD_NUMBER = 8;
+    // required double startValue = 12;
+    public static final int STARTVALUE_FIELD_NUMBER = 12;
     private double startValue_;
     /**
-     * <code>required double startValue = 8;</code>
+     * <code>required double startValue = 12;</code>
      */
     public boolean hasStartValue() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
-     * <code>required double startValue = 8;</code>
+     * <code>required double startValue = 12;</code>
      */
     public double getStartValue() {
       return startValue_;
     }
 
-    // required double endValue = 9;
-    public static final int ENDVALUE_FIELD_NUMBER = 9;
+    // required double endValue = 13;
+    public static final int ENDVALUE_FIELD_NUMBER = 13;
     private double endValue_;
     /**
-     * <code>required double endValue = 9;</code>
+     * <code>required double endValue = 13;</code>
      */
     public boolean hasEndValue() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>required double endValue = 9;</code>
+     * <code>required double endValue = 13;</code>
      */
     public double getEndValue() {
       return endValue_;
     }
 
-    // optional double resolution = 10;
-    public static final int RESOLUTION_FIELD_NUMBER = 10;
+    // optional double resolution = 14;
+    public static final int RESOLUTION_FIELD_NUMBER = 14;
     private double resolution_;
     /**
-     * <code>optional double resolution = 10;</code>
+     * <code>optional double resolution = 14;</code>
      *
      * <pre>
      * resolution = (max-min) / (nvalues-1)
@@ -1589,7 +1661,7 @@ public final class CdmrFeatureProto {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
-     * <code>optional double resolution = 10;</code>
+     * <code>optional double resolution = 14;</code>
      *
      * <pre>
      * resolution = (max-min) / (nvalues-1)
@@ -1599,11 +1671,11 @@ public final class CdmrFeatureProto {
       return resolution_;
     }
 
-    // optional bytes values = 11;
-    public static final int VALUES_FIELD_NUMBER = 11;
+    // optional bytes values = 15;
+    public static final int VALUES_FIELD_NUMBER = 15;
     private com.google.protobuf.ByteString values_;
     /**
-     * <code>optional bytes values = 11;</code>
+     * <code>optional bytes values = 15;</code>
      *
      * <pre>
      * "immediate" - store small non-regular data in header
@@ -1613,7 +1685,7 @@ public final class CdmrFeatureProto {
       return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
-     * <code>optional bytes values = 11;</code>
+     * <code>optional bytes values = 15;</code>
      *
      * <pre>
      * "immediate" - store small non-regular data in header
@@ -1626,6 +1698,7 @@ public final class CdmrFeatureProto {
     private void initFields() {
       name_ = "";
       dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
+      atts_ = java.util.Collections.emptyList();
       axisType_ = 0;
       units_ = "";
       description_ = "";
@@ -1673,6 +1746,12 @@ public final class CdmrFeatureProto {
         memoizedIsInitialized = 0;
         return false;
       }
+      for (int i = 0; i < getAttsCount(); i++) {
+        if (!getAtts(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -1686,32 +1765,35 @@ public final class CdmrFeatureProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeEnum(2, dataType_.getNumber());
       }
+      for (int i = 0; i < atts_.size(); i++) {
+        output.writeMessage(3, atts_.get(i));
+      }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt32(3, axisType_);
+        output.writeInt32(4, axisType_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getUnitsBytes());
+        output.writeBytes(5, getUnitsBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getDescriptionBytes());
+        output.writeBytes(6, getDescriptionBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeInt64(6, nvalues_);
+        output.writeInt64(10, nvalues_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt32(7, spacing_);
+        output.writeInt32(11, spacing_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeDouble(8, startValue_);
+        output.writeDouble(12, startValue_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeDouble(9, endValue_);
+        output.writeDouble(13, endValue_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeDouble(10, resolution_);
+        output.writeDouble(14, resolution_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        output.writeBytes(11, values_);
+        output.writeBytes(15, values_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1730,41 +1812,45 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(2, dataType_.getNumber());
       }
+      for (int i = 0; i < atts_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, atts_.get(i));
+      }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, axisType_);
+          .computeInt32Size(4, axisType_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getUnitsBytes());
+          .computeBytesSize(5, getUnitsBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getDescriptionBytes());
+          .computeBytesSize(6, getDescriptionBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(6, nvalues_);
+          .computeInt64Size(10, nvalues_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, spacing_);
+          .computeInt32Size(11, spacing_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(8, startValue_);
+          .computeDoubleSize(12, startValue_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(9, endValue_);
+          .computeDoubleSize(13, endValue_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(10, resolution_);
+          .computeDoubleSize(14, resolution_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(11, values_);
+          .computeBytesSize(15, values_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1874,6 +1960,7 @@ public final class CdmrFeatureProto {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getAttsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -1886,24 +1973,30 @@ public final class CdmrFeatureProto {
         bitField0_ = (bitField0_ & ~0x00000001);
         dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
         bitField0_ = (bitField0_ & ~0x00000002);
+        if (attsBuilder_ == null) {
+          atts_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        } else {
+          attsBuilder_.clear();
+        }
         axisType_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        units_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
-        description_ = "";
+        units_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
-        nvalues_ = 0L;
+        description_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
-        spacing_ = 0;
+        nvalues_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000040);
-        startValue_ = 0D;
+        spacing_ = 0;
         bitField0_ = (bitField0_ & ~0x00000080);
-        endValue_ = 0D;
+        startValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000100);
-        resolution_ = 0D;
+        endValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000200);
-        values_ = com.google.protobuf.ByteString.EMPTY;
+        resolution_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000400);
+        values_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
 
@@ -1940,39 +2033,48 @@ public final class CdmrFeatureProto {
           to_bitField0_ |= 0x00000002;
         }
         result.dataType_ = dataType_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (attsBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            atts_ = java.util.Collections.unmodifiableList(atts_);
+            bitField0_ = (bitField0_ & ~0x00000004);
+          }
+          result.atts_ = atts_;
+        } else {
+          result.atts_ = attsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000004;
         }
         result.axisType_ = axisType_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000008;
         }
         result.units_ = units_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000010;
         }
         result.description_ = description_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000020;
         }
         result.nvalues_ = nvalues_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000040;
         }
         result.spacing_ = spacing_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000080;
         }
         result.startValue_ = startValue_;
-        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000100;
         }
         result.endValue_ = endValue_;
-        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
           to_bitField0_ |= 0x00000200;
         }
         result.resolution_ = resolution_;
-        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
           to_bitField0_ |= 0x00000400;
         }
         result.values_ = values_;
@@ -2000,16 +2102,42 @@ public final class CdmrFeatureProto {
         if (other.hasDataType()) {
           setDataType(other.getDataType());
         }
+        if (attsBuilder_ == null) {
+          if (!other.atts_.isEmpty()) {
+            if (atts_.isEmpty()) {
+              atts_ = other.atts_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+            } else {
+              ensureAttsIsMutable();
+              atts_.addAll(other.atts_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.atts_.isEmpty()) {
+            if (attsBuilder_.isEmpty()) {
+              attsBuilder_.dispose();
+              attsBuilder_ = null;
+              atts_ = other.atts_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+              attsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getAttsFieldBuilder() : null;
+            } else {
+              attsBuilder_.addAllMessages(other.atts_);
+            }
+          }
+        }
         if (other.hasAxisType()) {
           setAxisType(other.getAxisType());
         }
         if (other.hasUnits()) {
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000010;
           units_ = other.units_;
           onChanged();
         }
         if (other.hasDescription()) {
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
           description_ = other.description_;
           onChanged();
         }
@@ -2067,6 +2195,12 @@ public final class CdmrFeatureProto {
         if (!hasEndValue()) {
           
           return false;
+        }
+        for (int i = 0; i < getAttsCount(); i++) {
+          if (!getAtts(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -2224,20 +2358,260 @@ public final class CdmrFeatureProto {
         return this;
       }
 
-      // required int32 axisType = 3;
+      // repeated .Attribute atts = 3;
+      private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
+        java.util.Collections.emptyList();
+      private void ensureAttsIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          atts_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Attribute>(atts_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> attsBuilder_;
+
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
+        if (attsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(atts_);
+        } else {
+          return attsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public int getAttsCount() {
+        if (attsBuilder_ == null) {
+          return atts_.size();
+        } else {
+          return attsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.Attribute getAtts(int index) {
+        if (attsBuilder_ == null) {
+          return atts_.get(index);
+        } else {
+          return attsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder setAtts(
+          int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.set(index, value);
+          onChanged();
+        } else {
+          attsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder setAtts(
+          int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder addAtts(ucar.nc2.stream.NcStreamProto.Attribute value) {
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.add(value);
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder addAtts(
+          int index, ucar.nc2.stream.NcStreamProto.Attribute value) {
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.add(index, value);
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder addAtts(
+          ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.add(builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder addAtts(
+          int index, ucar.nc2.stream.NcStreamProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder addAllAtts(
+          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Attribute> values) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          super.addAll(values, atts_);
+          onChanged();
+        } else {
+          attsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder clearAtts() {
+        if (attsBuilder_ == null) {
+          atts_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          onChanged();
+        } else {
+          attsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public Builder removeAtts(int index) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.remove(index);
+          onChanged();
+        } else {
+          attsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.Attribute.Builder getAttsBuilder(
+          int index) {
+        return getAttsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
+          int index) {
+        if (attsBuilder_ == null) {
+          return atts_.get(index);  } else {
+          return attsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public java.util.List<? extends ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
+           getAttsOrBuilderList() {
+        if (attsBuilder_ != null) {
+          return attsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(atts_);
+        }
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder() {
+        return getAttsFieldBuilder().addBuilder(
+            ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public ucar.nc2.stream.NcStreamProto.Attribute.Builder addAttsBuilder(
+          int index) {
+        return getAttsFieldBuilder().addBuilder(
+            index, ucar.nc2.stream.NcStreamProto.Attribute.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Attribute atts = 3;</code>
+       */
+      public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute.Builder> 
+           getAttsBuilderList() {
+        return getAttsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder> 
+          getAttsFieldBuilder() {
+        if (attsBuilder_ == null) {
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              ucar.nc2.stream.NcStreamProto.Attribute, ucar.nc2.stream.NcStreamProto.Attribute.Builder, ucar.nc2.stream.NcStreamProto.AttributeOrBuilder>(
+                  atts_,
+                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          atts_ = null;
+        }
+        return attsBuilder_;
+      }
+
+      // required int32 axisType = 4;
       private int axisType_ ;
       /**
-       * <code>required int32 axisType = 3;</code>
+       * <code>required int32 axisType = 4;</code>
        *
        * <pre>
        * ucar.nc2.constants.AxisType ordinal
        * </pre>
        */
       public boolean hasAxisType() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>required int32 axisType = 3;</code>
+       * <code>required int32 axisType = 4;</code>
        *
        * <pre>
        * ucar.nc2.constants.AxisType ordinal
@@ -2247,42 +2621,42 @@ public final class CdmrFeatureProto {
         return axisType_;
       }
       /**
-       * <code>required int32 axisType = 3;</code>
+       * <code>required int32 axisType = 4;</code>
        *
        * <pre>
        * ucar.nc2.constants.AxisType ordinal
        * </pre>
        */
       public Builder setAxisType(int value) {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         axisType_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required int32 axisType = 3;</code>
+       * <code>required int32 axisType = 4;</code>
        *
        * <pre>
        * ucar.nc2.constants.AxisType ordinal
        * </pre>
        */
       public Builder clearAxisType() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         axisType_ = 0;
         onChanged();
         return this;
       }
 
-      // required string units = 4;
+      // required string units = 5;
       private java.lang.Object units_ = "";
       /**
-       * <code>required string units = 4;</code>
+       * <code>required string units = 5;</code>
        */
       public boolean hasUnits() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required string units = 4;</code>
+       * <code>required string units = 5;</code>
        */
       public java.lang.String getUnits() {
         java.lang.Object ref = units_;
@@ -2296,7 +2670,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>required string units = 4;</code>
+       * <code>required string units = 5;</code>
        */
       public com.google.protobuf.ByteString
           getUnitsBytes() {
@@ -2312,51 +2686,51 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>required string units = 4;</code>
+       * <code>required string units = 5;</code>
        */
       public Builder setUnits(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  bitField0_ |= 0x00000010;
         units_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string units = 4;</code>
+       * <code>required string units = 5;</code>
        */
       public Builder clearUnits() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         units_ = getDefaultInstance().getUnits();
         onChanged();
         return this;
       }
       /**
-       * <code>required string units = 4;</code>
+       * <code>required string units = 5;</code>
        */
       public Builder setUnitsBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  bitField0_ |= 0x00000010;
         units_ = value;
         onChanged();
         return this;
       }
 
-      // optional string description = 5;
+      // optional string description = 6;
       private java.lang.Object description_ = "";
       /**
-       * <code>optional string description = 5;</code>
+       * <code>optional string description = 6;</code>
        */
       public boolean hasDescription() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional string description = 5;</code>
+       * <code>optional string description = 6;</code>
        */
       public java.lang.String getDescription() {
         java.lang.Object ref = description_;
@@ -2370,7 +2744,7 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string description = 5;</code>
+       * <code>optional string description = 6;</code>
        */
       public com.google.protobuf.ByteString
           getDescriptionBytes() {
@@ -2386,88 +2760,88 @@ public final class CdmrFeatureProto {
         }
       }
       /**
-       * <code>optional string description = 5;</code>
+       * <code>optional string description = 6;</code>
        */
       public Builder setDescription(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000020;
         description_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string description = 5;</code>
+       * <code>optional string description = 6;</code>
        */
       public Builder clearDescription() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         description_ = getDefaultInstance().getDescription();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string description = 5;</code>
+       * <code>optional string description = 6;</code>
        */
       public Builder setDescriptionBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000020;
         description_ = value;
         onChanged();
         return this;
       }
 
-      // required int64 nvalues = 6;
+      // required int64 nvalues = 10;
       private long nvalues_ ;
       /**
-       * <code>required int64 nvalues = 6;</code>
+       * <code>required int64 nvalues = 10;</code>
        */
       public boolean hasNvalues() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>required int64 nvalues = 6;</code>
+       * <code>required int64 nvalues = 10;</code>
        */
       public long getNvalues() {
         return nvalues_;
       }
       /**
-       * <code>required int64 nvalues = 6;</code>
+       * <code>required int64 nvalues = 10;</code>
        */
       public Builder setNvalues(long value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
         nvalues_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required int64 nvalues = 6;</code>
+       * <code>required int64 nvalues = 10;</code>
        */
       public Builder clearNvalues() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         nvalues_ = 0L;
         onChanged();
         return this;
       }
 
-      // required int32 spacing = 7;
+      // required int32 spacing = 11;
       private int spacing_ ;
       /**
-       * <code>required int32 spacing = 7;</code>
+       * <code>required int32 spacing = 11;</code>
        *
        * <pre>
        * GridCoordAxis.Spacing ordinal
        * </pre>
        */
       public boolean hasSpacing() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>required int32 spacing = 7;</code>
+       * <code>required int32 spacing = 11;</code>
        *
        * <pre>
        * GridCoordAxis.Spacing ordinal
@@ -2477,112 +2851,112 @@ public final class CdmrFeatureProto {
         return spacing_;
       }
       /**
-       * <code>required int32 spacing = 7;</code>
+       * <code>required int32 spacing = 11;</code>
        *
        * <pre>
        * GridCoordAxis.Spacing ordinal
        * </pre>
        */
       public Builder setSpacing(int value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         spacing_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required int32 spacing = 7;</code>
+       * <code>required int32 spacing = 11;</code>
        *
        * <pre>
        * GridCoordAxis.Spacing ordinal
        * </pre>
        */
       public Builder clearSpacing() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         spacing_ = 0;
         onChanged();
         return this;
       }
 
-      // required double startValue = 8;
+      // required double startValue = 12;
       private double startValue_ ;
       /**
-       * <code>required double startValue = 8;</code>
+       * <code>required double startValue = 12;</code>
        */
       public boolean hasStartValue() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>required double startValue = 8;</code>
+       * <code>required double startValue = 12;</code>
        */
       public double getStartValue() {
         return startValue_;
       }
       /**
-       * <code>required double startValue = 8;</code>
+       * <code>required double startValue = 12;</code>
        */
       public Builder setStartValue(double value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000100;
         startValue_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required double startValue = 8;</code>
+       * <code>required double startValue = 12;</code>
        */
       public Builder clearStartValue() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000100);
         startValue_ = 0D;
         onChanged();
         return this;
       }
 
-      // required double endValue = 9;
+      // required double endValue = 13;
       private double endValue_ ;
       /**
-       * <code>required double endValue = 9;</code>
+       * <code>required double endValue = 13;</code>
        */
       public boolean hasEndValue() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
-       * <code>required double endValue = 9;</code>
+       * <code>required double endValue = 13;</code>
        */
       public double getEndValue() {
         return endValue_;
       }
       /**
-       * <code>required double endValue = 9;</code>
+       * <code>required double endValue = 13;</code>
        */
       public Builder setEndValue(double value) {
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         endValue_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required double endValue = 9;</code>
+       * <code>required double endValue = 13;</code>
        */
       public Builder clearEndValue() {
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         endValue_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional double resolution = 10;
+      // optional double resolution = 14;
       private double resolution_ ;
       /**
-       * <code>optional double resolution = 10;</code>
+       * <code>optional double resolution = 14;</code>
        *
        * <pre>
        * resolution = (max-min) / (nvalues-1)
        * </pre>
        */
       public boolean hasResolution() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
-       * <code>optional double resolution = 10;</code>
+       * <code>optional double resolution = 14;</code>
        *
        * <pre>
        * resolution = (max-min) / (nvalues-1)
@@ -2592,46 +2966,46 @@ public final class CdmrFeatureProto {
         return resolution_;
       }
       /**
-       * <code>optional double resolution = 10;</code>
+       * <code>optional double resolution = 14;</code>
        *
        * <pre>
        * resolution = (max-min) / (nvalues-1)
        * </pre>
        */
       public Builder setResolution(double value) {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         resolution_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional double resolution = 10;</code>
+       * <code>optional double resolution = 14;</code>
        *
        * <pre>
        * resolution = (max-min) / (nvalues-1)
        * </pre>
        */
       public Builder clearResolution() {
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         resolution_ = 0D;
         onChanged();
         return this;
       }
 
-      // optional bytes values = 11;
+      // optional bytes values = 15;
       private com.google.protobuf.ByteString values_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes values = 11;</code>
+       * <code>optional bytes values = 15;</code>
        *
        * <pre>
        * "immediate" - store small non-regular data in header
        * </pre>
        */
       public boolean hasValues() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
+        return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
-       * <code>optional bytes values = 11;</code>
+       * <code>optional bytes values = 15;</code>
        *
        * <pre>
        * "immediate" - store small non-regular data in header
@@ -2641,7 +3015,7 @@ public final class CdmrFeatureProto {
         return values_;
       }
       /**
-       * <code>optional bytes values = 11;</code>
+       * <code>optional bytes values = 15;</code>
        *
        * <pre>
        * "immediate" - store small non-regular data in header
@@ -2651,20 +3025,20 @@ public final class CdmrFeatureProto {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000400;
+  bitField0_ |= 0x00000800;
         values_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional bytes values = 11;</code>
+       * <code>optional bytes values = 15;</code>
        *
        * <pre>
        * "immediate" - store small non-regular data in header
        * </pre>
        */
       public Builder clearValues() {
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000800);
         values_ = getDefaultInstance().getValues();
         onChanged();
         return this;
@@ -5648,7 +6022,7 @@ public final class CdmrFeatureProto {
      * <code>required int32 calendar = 3;</code>
      *
      * <pre>
-     * calendar ordinal
+     * ucar.nc2.time.Calendar ordinal
      * </pre>
      */
     boolean hasCalendar();
@@ -5656,7 +6030,7 @@ public final class CdmrFeatureProto {
      * <code>required int32 calendar = 3;</code>
      *
      * <pre>
-     * calendar ordinal
+     * ucar.nc2.time.Calendar ordinal
      * </pre>
      */
     int getCalendar();
@@ -5806,7 +6180,7 @@ public final class CdmrFeatureProto {
      * <code>required int32 calendar = 3;</code>
      *
      * <pre>
-     * calendar ordinal
+     * ucar.nc2.time.Calendar ordinal
      * </pre>
      */
     public boolean hasCalendar() {
@@ -5816,7 +6190,7 @@ public final class CdmrFeatureProto {
      * <code>required int32 calendar = 3;</code>
      *
      * <pre>
-     * calendar ordinal
+     * ucar.nc2.time.Calendar ordinal
      * </pre>
      */
     public int getCalendar() {
@@ -6180,7 +6554,7 @@ public final class CdmrFeatureProto {
        * <code>required int32 calendar = 3;</code>
        *
        * <pre>
-       * calendar ordinal
+       * ucar.nc2.time.Calendar ordinal
        * </pre>
        */
       public boolean hasCalendar() {
@@ -6190,7 +6564,7 @@ public final class CdmrFeatureProto {
        * <code>required int32 calendar = 3;</code>
        *
        * <pre>
-       * calendar ordinal
+       * ucar.nc2.time.Calendar ordinal
        * </pre>
        */
       public int getCalendar() {
@@ -6200,7 +6574,7 @@ public final class CdmrFeatureProto {
        * <code>required int32 calendar = 3;</code>
        *
        * <pre>
-       * calendar ordinal
+       * ucar.nc2.time.Calendar ordinal
        * </pre>
        */
       public Builder setCalendar(int value) {
@@ -6213,7 +6587,7 @@ public final class CdmrFeatureProto {
        * <code>required int32 calendar = 3;</code>
        *
        * <pre>
-       * calendar ordinal
+       * ucar.nc2.time.Calendar ordinal
        * </pre>
        */
       public Builder clearCalendar() {
@@ -9921,31 +10295,32 @@ public final class CdmrFeatureProto {
       "\n%ucar/nc2/ft2/remote/cdmrfeature.proto\032" +
       "\036ucar/nc2/stream/ncStream.proto\"K\n\016Coord" +
       "Transform\022\017\n\007isHoriz\030\001 \002(\010\022\014\n\004name\030\002 \002(\t" +
-      "\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\330\001\n\tCoordAx" +
+      "\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\362\001\n\tCoordAx" +
       "is\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.Dat" +
-      "aType\022\020\n\010axisType\030\003 \002(\005\022\r\n\005units\030\004 \002(\t\022\023" +
-      "\n\013description\030\005 \001(\t\022\017\n\007nvalues\030\006 \002(\003\022\017\n\007" +
-      "spacing\030\007 \002(\005\022\022\n\nstartValue\030\010 \002(\001\022\020\n\010end" +
-      "Value\030\t \002(\001\022\022\n\nresolution\030\n \001(\001\022\016\n\006value" +
-      "s\030\013 \001(\014\"b\n\010CoordSys\022\014\n\004name\030\001 \002(\t\022\021\n\taxi",
-      "sNames\030\002 \003(\t\022\026\n\016transformNames\030\003 \003(\t\022\035\n\n" +
-      "components\030\004 \003(\0132\t.CoordSys\"\242\001\n\014GridCove" +
-      "rage\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.D" +
-      "ataType\022\027\n\010unsigned\030\003 \001(\010:\005false\022\030\n\004atts" +
-      "\030\004 \003(\0132\n.Attribute\022\020\n\010coordSys\030\005 \002(\t\022\r\n\005" +
-      "units\030\006 \001(\t\022\023\n\013description\030\007 \001(\t\"A\n\021Cale" +
-      "ndarDateRange\022\r\n\005start\030\001 \002(\003\022\013\n\003end\030\002 \002(" +
-      "\003\022\020\n\010calendar\030\003 \002(\005\"G\n\tRectangle\022\016\n\006star" +
-      "tx\030\001 \002(\001\022\016\n\006starty\030\002 \002(\001\022\014\n\004incx\030\003 \002(\001\022\014" +
-      "\n\004incy\030\004 \002(\001\"\246\002\n\023GridCoverageDataset\022\014\n\004",
-      "name\030\001 \002(\t\022\030\n\004atts\030\002 \003(\0132\n.Attribute\022\036\n\n" +
-      "latlonRect\030\003 \002(\0132\n.Rectangle\022\034\n\010projRect" +
-      "\030\004 \001(\0132\n.Rectangle\022%\n\tdateRange\030\005 \002(\0132\022." +
-      "CalendarDateRange\022\033\n\010coordSys\030\006 \003(\0132\t.Co" +
-      "ordSys\022(\n\017coordTransforms\030\007 \003(\0132\017.CoordT" +
-      "ransform\022\035\n\tcoordAxes\030\010 \003(\0132\n.CoordAxis\022" +
-      "\034\n\005grids\030\t \003(\0132\r.GridCoverageB\'\n\023ucar.nc" +
-      "2.ft2.remoteB\020CdmrFeatureProto"
+      "aType\022\030\n\004atts\030\003 \003(\0132\n.Attribute\022\020\n\010axisT" +
+      "ype\030\004 \002(\005\022\r\n\005units\030\005 \002(\t\022\023\n\013description\030" +
+      "\006 \001(\t\022\017\n\007nvalues\030\n \002(\003\022\017\n\007spacing\030\013 \002(\005\022" +
+      "\022\n\nstartValue\030\014 \002(\001\022\020\n\010endValue\030\r \002(\001\022\022\n" +
+      "\nresolution\030\016 \001(\001\022\016\n\006values\030\017 \001(\014\"b\n\010Coo",
+      "rdSys\022\014\n\004name\030\001 \002(\t\022\021\n\taxisNames\030\002 \003(\t\022\026" +
+      "\n\016transformNames\030\003 \003(\t\022\035\n\ncomponents\030\004 \003" +
+      "(\0132\t.CoordSys\"\242\001\n\014GridCoverage\022\014\n\004name\030\001" +
+      " \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.DataType\022\027\n\010uns" +
+      "igned\030\003 \001(\010:\005false\022\030\n\004atts\030\004 \003(\0132\n.Attri" +
+      "bute\022\020\n\010coordSys\030\005 \002(\t\022\r\n\005units\030\006 \001(\t\022\023\n" +
+      "\013description\030\007 \001(\t\"A\n\021CalendarDateRange\022" +
+      "\r\n\005start\030\001 \002(\003\022\013\n\003end\030\002 \002(\003\022\020\n\010calendar\030" +
+      "\003 \002(\005\"G\n\tRectangle\022\016\n\006startx\030\001 \002(\001\022\016\n\006st" +
+      "arty\030\002 \002(\001\022\014\n\004incx\030\003 \002(\001\022\014\n\004incy\030\004 \002(\001\"\246",
+      "\002\n\023GridCoverageDataset\022\014\n\004name\030\001 \002(\t\022\030\n\004" +
+      "atts\030\002 \003(\0132\n.Attribute\022\036\n\nlatlonRect\030\003 \002" +
+      "(\0132\n.Rectangle\022\034\n\010projRect\030\004 \001(\0132\n.Recta" +
+      "ngle\022%\n\tdateRange\030\005 \002(\0132\022.CalendarDateRa" +
+      "nge\022\033\n\010coordSys\030\006 \003(\0132\t.CoordSys\022(\n\017coor" +
+      "dTransforms\030\007 \003(\0132\017.CoordTransform\022\035\n\tco" +
+      "ordAxes\030\010 \003(\0132\n.CoordAxis\022\034\n\005grids\030\t \003(\013" +
+      "2\r.GridCoverageB\'\n\023ucar.nc2.ft2.remoteB\020" +
+      "CdmrFeatureProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -9963,7 +10338,7 @@ public final class CdmrFeatureProto {
           internal_static_CoordAxis_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_CoordAxis_descriptor,
-              new java.lang.String[] { "Name", "DataType", "AxisType", "Units", "Description", "Nvalues", "Spacing", "StartValue", "EndValue", "Resolution", "Values", });
+              new java.lang.String[] { "Name", "DataType", "Atts", "AxisType", "Units", "Description", "Nvalues", "Spacing", "StartValue", "EndValue", "Resolution", "Values", });
           internal_static_CoordSys_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_CoordSys_fieldAccessorTable = new

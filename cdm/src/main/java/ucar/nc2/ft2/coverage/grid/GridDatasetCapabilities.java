@@ -96,7 +96,7 @@ public class GridDatasetCapabilities {
  		// gridSets
     GridDatasetHelper helper = new GridDatasetHelper(gds);
  		for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
- 			rootElem.addContent(writeGridSet(gridset.coordSys, gridset.grids, gds.getProjBoundingBox()));
+ 			rootElem.addContent(writeGridSet(gridset.gcs, gridset.grids, gds.getProjBoundingBox()));
  		}
 
  		// coordinate transforms

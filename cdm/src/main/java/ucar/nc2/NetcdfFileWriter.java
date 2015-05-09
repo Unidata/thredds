@@ -68,6 +68,7 @@ import java.util.*;
   *   <li>ucar.nc2.FileWriter2()</li>
   *   <li>ucar.nc2.dt.grid.CFGridWriter</li>
   *   <li>ucar.nc2.ft.point.writer.CFPointWriter</li>
+  *   <li>ucar.nc2.ft2.coverage.grid.CFGridCoverageWriter</li>
   * </ul>
  * @author caron
  * @since 7/25/12

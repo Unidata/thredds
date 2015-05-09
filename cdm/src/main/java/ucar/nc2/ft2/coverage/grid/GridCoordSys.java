@@ -1,12 +1,7 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Indent;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.ProjectionPoint;
-
 import java.util.*;
 
 /**
@@ -17,7 +12,6 @@ import java.util.*;
    repeated CoordTransform transforms = 3;
    repeated CoordSys components = 4;        // ??
  }
-  }
  *
  * @author caron
  * @since 5/2/2015

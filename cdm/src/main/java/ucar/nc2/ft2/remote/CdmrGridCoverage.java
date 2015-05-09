@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.zip.InflaterInputStream;
 
 /**
- * Remote Grid
+ * Client side cdmrFeature interface to GridCoverage
  *
  * @author caron
  * @since 5/5/2015

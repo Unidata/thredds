@@ -112,7 +112,7 @@ public class FileWriter2 {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////
-  // might be better to push these next up int NetcdfCFWriter, but we want to use copyVarData
+  // might be better to push these next up into NetcdfCFWriter, but we want to use copyVarData
 
   /**
    * Use this constructor to copy specific variables to new file.

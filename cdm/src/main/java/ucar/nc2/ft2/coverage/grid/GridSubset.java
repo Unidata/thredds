@@ -6,21 +6,16 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Describe
+ * Describes a subset of a GridCoverage.
+ * Coordinate values only, no indices.
  *
  * @author caron
  * @since 5/6/2015
  */
 public class GridSubset {
-  final GridCoordSys gcs;       // needed?
-  Map<String, String> req = new HashMap<>();
+  final Map<String, String> req = new HashMap<>();
 
   public GridSubset() {
-    this.gcs = null;
-  }
-
-  public GridSubset(GridCoordSys gcs) {
-    this.gcs = gcs;
   }
 
   public void set(GridCoordAxis.Type type, String value) {
@@ -30,4 +25,14 @@ public class GridSubset {
   public Set<Map.Entry<String, String>> getEntries() {
     return req.entrySet();
   }
+
+  public String get(GridCoordAxis.Type type) {
+     return req.get(type.name());
+   }
+
+  public String get(String key) {
+     return req.get(key);
+   }
+
+
 }
