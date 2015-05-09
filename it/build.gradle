@@ -40,7 +40,7 @@ gretty {
     // See http://akhikhl.github.io/gretty-doc/Web-app-overlays.html
     overlay ':tds'
 
-    integrationTestTask = 'integrationTest' // The name of an existing gradle task.
+//    integrationTestTask = 'integrationTest' // The name of an existing gradle task.
 
     // By default, this field is 'false', which causes Gretty to start the embedded Tomcat process with a non-blocking
     // entropy source. It is intended to make startup faster.
@@ -55,10 +55,17 @@ gretty {
     // Also, a comment in the bug report mentions that this issue has been fixed as of Tomcat 7.0.53.
     // However, it is actually still present as of 7.0.55
     secureRandom = true
+
+    // Causes the org.akhikhl.gretty.ServerConfig.systemProperties field to be initialized.
+    // We don't actually care about the key-value-pair; we just want that field to be non-null to avoid an NPE.
+    // TODO: Reduce this bug to a minimum test case and submit to Gretty project.
+    systemProperty 'tds.content.root.path', 'Q:/cdmUnitTest/it/content'
+
+//    serverConfigFile = 'C:/Users/cwardgar/dev/tools/apache-tomcat-8.0.21/conf/server.xml'
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
-task integrationTest(type: Test) {
+task integrationTest2(type: Test) {
     // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
     exclude 'thredds/tds/**'
 
@@ -74,7 +81,7 @@ task integrationTest(type: Test) {
     }
 }
 
-task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
+task integrationTestReport(type: JacocoReport/*, dependsOn: "integrationTest"*/) {
     // executionData must be closure, because appBeforeIntegrationTest is not defined yet.
     // We must pass jacoco.destinationFile, not appBeforeIntegrationTest itself,
     // because otherwise JacocoReport would translate task argument to closure and Project.files(...)
