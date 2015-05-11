@@ -100,7 +100,7 @@ public class TestRestrictDataset {
 
     } catch (Exception e) {
       e.printStackTrace();
-      assert false;
+      Assert.fail(e.getMessage());
     }
   }
 
