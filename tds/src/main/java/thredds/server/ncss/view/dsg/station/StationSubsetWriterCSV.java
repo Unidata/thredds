@@ -4,6 +4,7 @@ import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.controller.NcssRequestUtils;
+import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.nc2.VariableSimpleIF;
@@ -25,7 +26,7 @@ import java.io.PrintWriter;
 public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     private final PrintWriter writer;
 
-    public StationSubsetWriterCSV(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
+    public StationSubsetWriterCSV(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, OutputStream out)
             throws NcssException, IOException {
         super(fdPoint, ncssParams);
       this.writer = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));

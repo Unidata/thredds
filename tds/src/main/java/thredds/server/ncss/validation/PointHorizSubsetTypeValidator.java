@@ -35,19 +35,20 @@ package thredds.server.ncss.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import thredds.server.ncss.params.NcssParamsBean;
+import thredds.server.ncss.params.NcssPointParamsBean;
 
 /**
- * @author mhermida
+ * Check ncss point params
+ *  1) does it have a stn parameter?
  *
  */
-public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstraint, NcssParamsBean> {
+public class PointHorizSubsetTypeValidator implements ConstraintValidator<PointHorizSubsetTypeConstraint, NcssPointParamsBean> {
 
 	/* (non-Javadoc)
 	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
 	 */
 	@Override
-	public void initialize(SubsetTypeConstraint arg0) {
+	public void initialize(PointHorizSubsetTypeConstraint arg0) {
 		
 	}
 
@@ -55,7 +56,7 @@ public class SubsetTypeValidator implements ConstraintValidator<SubsetTypeConstr
 	 * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
 	 */
 	@Override
-	public boolean isValid(NcssParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
+	public boolean isValid(NcssPointParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
 
 		constraintValidatorContext.disableDefaultConstraintViolation();
 		boolean isValid =true;

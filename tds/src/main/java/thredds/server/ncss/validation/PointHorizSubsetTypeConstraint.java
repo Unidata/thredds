@@ -51,9 +51,9 @@ import javax.validation.Payload;
  */
 @Target({TYPE, METHOD, FIELD, ANNOTATION_TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy=SubsetTypeValidator.class)
+@Constraint(validatedBy=PointHorizSubsetTypeValidator.class)
 @Documented
-public @interface SubsetTypeConstraint {
+public @interface PointHorizSubsetTypeConstraint {
 	
 	String message() default "{thredds.server.ncSubset.validation.subsettypeerror}";
 	

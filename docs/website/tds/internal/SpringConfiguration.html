@@ -163,20 +163,35 @@
   <li>configured in  WEB-INF/view.xml</li>
 </ul>
 <h3>Validation</h3>
+<ul>
+  <li>Class level constraints are useful if it is necessary to inspect more than a single property of the class to validate it</li>
+</ul>
 <ol>
-  <li>The Validator and the DataBinder make up the validation package, which is primarily used in but not limited to the MVC framework.
-    <ul>
-      <li><a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html">http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html</a></li>
-    </ul>
+  <li>    javax.validation eg <strong>NcssGridController</strong>  </li>
+  <ul>
+    <li>@Valid JSP 303, with hibernate implementation <a href="https://docs.jboss.org/hibernate/validator/4.0.1/reference/en-US/html/validator-usingvalidator.html">https://docs.jboss.org/hibernate/validator/4.0.1/reference/en-US/html/validator-usingvalidator.html</a></li>
+    <li>      @Valid&#32;<strong>NcssGridParamsBean</strong>&#32;params in the controller handler</li>
+    <li>      @NcssGridRequestConstraint public&#32;class&#32;NcssGridParamsBean&#32;extends&#32;NcssParamsBean&#32;{...</li>
+    <li>      @Constraint(validatedBy=NcssGridRequestValidator.class)</li>
+    <li>      public&#32;class&#32;NcssGridRequestValidator&#32;implements&#32;ConstraintValidator&lt;NcssGridRequestConstraint,&#32;NcssGridParamsBean&gt;      <br />
+      <strong><br>
+    </strong></li>
+  </ul>
+  <li>    <strong>org.springframework.validation.Validator</strong> eg  <strong>RemoteCatalogServiceController, CdmRemoteController</strong>:</li>
+  
+  <ul>
+    <li>Spring cover of validation frameworks</li>
+    <li>The Validator and the DataBinder make up the validation package, which is primarily used in but not limited to the MVC framework. </li>
+    <li><a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html">http://docs.spring.io/spring/docs/current/spring-framework-reference/html/validation.html</a></li>
+    <li>dont need DataBinder </li>
+    <li>must put initBinder() into Controller. some question on how to restrict to correct model fields, see <a href="http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model">http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model</a></li>
+  </ul>
+  <br />
+  <li>validation error handling:
   </li>
 </ol>
 <ul>
-  <li>@Valid JSP 303, with hibernate implementation</li>
-  <li><strong>org.springframework.validation.Validator</strong></li>
-  <li>dont need DataBinder </li>
-  <li>must put initBinder() into Controller. some question on how to restrict to correct model fields, see <a href="http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model">http://stackoverflow.com/questions/4715860/why-is-my-spring-3-validator-validating-everything-on-the-model</a></li>
-  <li>see <strong>RemoteCatalogServiceController, CdmRemoteController</strong></li>
-  <li>error handling:
+  <li>
     <pre>if&#32;(validationResult.hasErrors())<br />&#32;&#32;throw&#32;new&#32;BindException(validationResult);</pre>
   </li>
 </ul>

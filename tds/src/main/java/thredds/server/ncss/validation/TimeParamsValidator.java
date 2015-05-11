@@ -48,17 +48,18 @@ import ucar.nc2.units.TimeDuration;
 
 /**
  * Time params validator for a ncss request.
+ *  1) validate time parameter if exists
+ *  2) validate time_window parameter if exists
+ *  3) if any of time range exists, validate its a valid time range
  *
  * @author mhermida
  */
 public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstraint, NcssParamsBean> {
 
   public void initialize(TimeParamsConstraint constraintAnnotation) {
-
   }
 
   public boolean isValid(NcssParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
-
     constraintValidatorContext.disableDefaultConstraintViolation();
 
     String time = params.getTime();
@@ -136,7 +137,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 
     }
 
-    params.setHasValidDateRange(isValid);
+    params.setHasValidDateRange(isValid);  // LOOK set the bloody time range already !
     return isValid;
   }
 
@@ -162,12 +163,9 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
     // misformed range
     //errs.append("Must have 2 of 3 parameters: time_start, time_end, time_duration\n");
     return false;
-
   }
 
   private boolean validateISOString(String isoString, String msg, ConstraintValidatorContext constraintValidatorContext) {
-
-    if ("present".equals(isoString)) return true;
 
     boolean isValid = true;
     Date date = null;
@@ -186,7 +184,6 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
   }
 
   private Date isoString2Date(String isoString) {
-
     if ("present".equals(isoString)) return new Date();
     CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(Calendar.getDefault(), isoString);
     return new Date(cd.getMillis());

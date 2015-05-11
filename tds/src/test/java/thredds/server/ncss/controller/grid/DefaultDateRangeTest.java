@@ -43,8 +43,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncss.controller.AbstractGridResponder;
-import thredds.server.ncss.params.NcssParamsBean;
+import thredds.server.ncss.params.NcssGridParamsBean;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -55,7 +54,7 @@ import ucar.nc2.time.CalendarPeriod;
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
 public class DefaultDateRangeTest {
 
-	private NcssParamsBean requestParams;
+	private NcssGridParamsBean requestParams;
 	
 	private long durationInSeconds;
 	
@@ -83,7 +82,7 @@ public class DefaultDateRangeTest {
 	public DefaultDateRangeTest(long expectedDuration, String time, String time_start, String time_end, String
           time_duration){
 		durationInSeconds = expectedDuration;
-		requestParams = new NcssParamsBean();
+		requestParams = new NcssGridParamsBean();
 		requestParams.setTime(time);
 		requestParams.setTime_start(time_start);
 		requestParams.setTime_end(time_end);
@@ -93,7 +92,7 @@ public class DefaultDateRangeTest {
 
 	@Test
 	public void shouldGetPresent() throws ParseException{
-		CalendarDateRange range= AbstractGridResponder.getRequestedDateRange(requestParams, Calendar.getDefault());
+		CalendarDateRange range= requestParams.getCalendarDateRange(Calendar.getDefault());
 		System.out.printf("range=%s%n", range);
 		System.out.printf(" duration: expected=%d actual=%d%n", durationInSeconds, range.getDurationInSecs());
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );

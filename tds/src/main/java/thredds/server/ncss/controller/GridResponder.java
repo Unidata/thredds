@@ -34,18 +34,16 @@ package thredds.server.ncss.controller;
 
 import thredds.server.exception.RequestTooLargeException;
 import thredds.server.ncss.exception.*;
-import thredds.server.ncss.params.NcssParamsBean;
+import thredds.server.ncss.params.NcssGridParamsBean;
 import thredds.server.config.ThreddsConfig;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.dt.grid.CFGridWriter2;
 import ucar.nc2.ft2.coverage.grid.CFGridCoverageWriter;
 import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
 import ucar.nc2.ft2.coverage.grid.GridCoverage;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -60,7 +58,7 @@ import java.util.Random;
  * Respond to Grid ncss requests
  * 
  */
-class GridResponder extends AbstractGridResponder {
+class GridResponder {
   static private final short ESTIMATED_C0MPRESION_RATE = 5;  // Compression rate used to estimate the filesize of netcdf4 compressed files
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -77,135 +75,17 @@ class GridResponder extends AbstractGridResponder {
 	/**
 	 * Does the actual work.
 	 */
-	File getResponseFile(HttpServletResponse response, NcssParamsBean params, NetcdfFileWriter.Version version)
+	File getResponseFile(HttpServletResponse response, NcssGridParamsBean params, NetcdfFileWriter.Version version)
 			throws NcssException, InvalidRangeException, ParseException, IOException {
 
-		File netcdfResult;
-		if (isSpatialSubset(params)) {
-			netcdfResult = writeLatLonSubset(params, version);
-		} else {
-			netcdfResult = writeCoordinatesSubset(params, version);
-		}
-
+		File netcdfResult = writeGridFile(params.getVar(), params.getBoundingBox(), params.getProjectionBB(), params.getHorizStride(),
+						params.getVertCoord(), params.getCalendarDateRange(gcd.getCalendar()),
+						params.getTimeStride(), params.isAddLatLon(), version);
 		return netcdfResult;
 	}
 
-	private boolean isSpatialSubset(NcssParamsBean params) throws InvalidBBOXException {
-		// LOOK should be in the validator
-		boolean spatialSubset = false;
-		int contValid = 0;
-		if (params.getNorth() != null)
-			contValid++;
-		if (params.getSouth() != null)
-			contValid++;
-		if (params.getEast() != null)
-			contValid++;
-		if (params.getWest() != null)
-			contValid++;
-
-		if (contValid == 4) {
-			if (params.getNorth() < params.getSouth()) {
-				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have north > south");
-			}
-			if (params.getEast() < params.getWest()) {
-				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have east > west; if crossing 180 meridian, use east boundary > 180");
-			}
-			spatialSubset = true;
-
-		} else {
-			if (contValid > 0)
-				throw new InvalidBBOXException("Invalid bbox. All params north, south, east and west must be provided");
-			else { // no bbox provided --> is spatialSubsetting
-				if (params.getMaxx() == null && params.getMinx() == null
-						&& params.getMaxy() == null && params.getMiny() == null)
-					spatialSubset = true;
-			}
-		}
-		return spatialSubset;
-	}
-
-	private File writeLatLonSubset(NcssParamsBean params, NetcdfFileWriter.Version version) throws RequestTooLargeException,
-			OutOfBoundariesException, InvalidRangeException, ParseException,
-			IOException, VariableNotContainedInDatasetException,
-			InvalidBBOXException, TimeOutOfWindowException {
-
-		LatLonRect maxBB = gcd.getLatLonBoundingBox();
-		LatLonRect requestedBB = setBBForRequest(params);
-
-		// LOOK put in the validation code
-		boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint().getLatitude())
-				|| !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLatitude(), maxBB.getLowerLeftPoint().getLatitude())
-				|| !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLongitude(), maxBB.getUpperRightPoint().getLongitude())
-				|| !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLongitude(), maxBB.getLowerLeftPoint().getLongitude());
-
-		// Don't check this...
-		// if (checkBB(maxBB, requestedBB)) {
-
-		Range zRange = null;
-		// Request with zRange --> adds a limitation: only variables with the
-		// same vertical level???
-		if (params.getVertCoord() != null || params.getVertStride() > 1)
-			zRange = getZRange(gcd, params.getVertCoord(), params.getVertStride(), params.getVar());
-
-		// List<CalendarDate> wantedDates = getRequestedDates(gcd, params); LOOK old hideous way WTF?
-		//CalendarDateRange wantedDateRange = null;
-		//if (!wantedDates.isEmpty())
-		//	wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
-
-		// LOOK should be the calendar of the data!
-    return writeGridFile(params.getVar(), hasBB ? requestedBB : null, null, params.getHorizStride(), zRange, params.getCalendarDateRange(null),
-            params.getTimeStride(), params.isAddLatLon(), version);
-	}
-
-	private File writeCoordinatesSubset(NcssParamsBean params, NetcdfFileWriter.Version version)
-			throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException,
-			InvalidBBOXException, TimeOutOfWindowException {
-
-		// Check coordinate params: maxx, maxy, minx, miny
-		Double minx = params.getMinx();
-		Double maxx = params.getMaxx();
-		Double miny = params.getMiny();
-		Double maxy = params.getMaxy();
-
-		int contValid = 0;
-		if (minx != null)
-			contValid++;
-		if (maxx != null)
-			contValid++;
-		if (miny != null)
-			contValid++;
-		if (maxy != null)
-			contValid++;
-
-		if (contValid == 4) {
-			if (minx > maxx) {
-				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have minx < maxx");
-			}
-			if (miny > maxy) {
-				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have miny < maxy");
-			}
-
-		} else {
-			throw new InvalidBBOXException("Invalid bbox. All params minx, maxx. miny, maxy must be provided");
-		}
-
-		ProjectionRect rect = new ProjectionRect(minx, miny, maxx, maxy);
-
-		Range zRange = null;
-		// Request with zRange --> adds a limitation: only variables with the same vertical level???
-		if (params.getVertCoord() != null || params.getVertStride() > 1)
-			zRange = getZRange(gcd, params.getVertCoord(), params.getVertStride(), params.getVar());
-
-		/* old hideous way WTF LOOK
-		List<CalendarDate> wantedDates = getRequestedDates(gcd, params);
-		CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1)); */
-
-		// LOOK should be calendar of the data!
-    return writeGridFile(params.getVar(), null, rect, params.getHorizStride(), zRange, params.getCalendarDateRange(null), 1, params.isAddLatLon(), version);
-	}
-
   private File writeGridFile(List<String> vars, LatLonRect bbox, ProjectionRect projRect, Integer horizStride,
- 			Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version)
+ 			Double vertCoord, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version)
  			throws RequestTooLargeException, InvalidRangeException, IOException {
 
     long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
@@ -229,23 +109,19 @@ class GridResponder extends AbstractGridResponder {
       throw new IllegalStateException("NCSS misconfigured cache = ");
  		String cacheFilename = ncFile.getPath();
 
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, cacheFilename, null); // default chunking - let user control at some point
-		CFGridCoverageWriter.writeFile(gcd, vars, bbox, projRect, horizStride, zRange, dateRange, timeStride, addLatLon, writer);
+		NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, cacheFilename, null); // default chunking - let user control at some point
+		/*
+		 private long writeFile(GridCoverageDataset gdsOrg, List<String> gridNames,
+                               LatLonRect llbb, ProjectionRect projRect, Integer horizStride, Double vertCoord,
+                               CalendarDateRange dateRange, CalendarDate date, Integer timeStride,
+                               boolean addLatLon, boolean testSizeOnly,
+                               NetcdfFileWriter writer) throws IOException, InvalidRangeException
+		 */
+		CFGridCoverageWriter.writeFile(gcd, vars, bbox, projRect, horizStride, vertCoord, dateRange, null, timeStride, addLatLon, writer);
 
  		return new File(cacheFilename);
  	}
 
-	// LOOK in the validation code ??
-	private LatLonRect setBBForRequest(NcssParamsBean params) throws InvalidBBOXException {
-
-		if (params.getNorth() == null && params.getSouth() == null
-				&& params.getWest() == null && params.getEast() == null)
-			return gcd.getLatLonBoundingBox();
-
-		return new LatLonRect(new LatLonPointImpl(params.getSouth(),
-				params.getWest()), params.getNorth() - params.getSouth(),
-				params.getEast() - params.getWest());
-	}
 
 	private Range getZRange(GridCoverageDataset gcd, Double verticalCoord, Integer vertStride, List<String> vars) throws OutOfBoundariesException {
 

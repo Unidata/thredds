@@ -121,7 +121,7 @@ public class TimeDuration {
     text = (text == null) ? "" : text.trim();
     this.text = text;
 
-    // see if its blank
+    // see if its blank   LOOK WTF ?
     if (text.length() == 0) {
       isBlank = true;
       try {

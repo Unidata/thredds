@@ -43,7 +43,7 @@ public class CdmrGridCoverage extends GridCoverage {
     Formatter f = new Formatter();
     f.format("%s?req=data&var=%s", endpoint, getName());  // LOOK full vs short name
 
-    for (Map.Entry<String,String> entry : subset.getEntries()) {
+    for (Map.Entry<String,Object> entry : subset.getEntries()) {
       f.format("&%s=%s", entry.getKey(), entry.getValue());
     }
 

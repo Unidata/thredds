@@ -25,83 +25,55 @@ import java.util.*;
  */
 public class DtGridDatasetAdapter extends GridCoverageDataset {
   private GridDataset proxy;
-  private List<GridCoverage> grids;
 
   public DtGridDatasetAdapter(GridDataset proxy) {
     this.proxy = proxy;
+    setName(proxy.getLocation());
+    setGlobalAttributes(proxy.getGlobalAttributes());
+
     setLatLonBoundingBox(proxy.getBoundingBox());
     setCalendarDateRange(proxy.getCalendarDateRange());
     setProjBoundingBox(proxy.getProjBoundingBox());
 
-    grids = new ArrayList<>();
+    List<GridCoverage> pgrids = new ArrayList<>();
     for (GridDatatype dtGrid : proxy.getGrids())
-      grids.add(new Grid(dtGrid));
+      pgrids.add(new Grid(dtGrid));
+    setGrids(pgrids);
+
+    List<ucar.nc2.ft2.coverage.grid.GridCoordSys> pcoordSys = new ArrayList<>();
+    for (Gridset gset : proxy.getGridsets())
+      pcoordSys.add(new CoordSys(gset.getGeoCoordSystem()));
+    setCoordSys(pcoordSys);
+
+    Set<String> transformNames = new HashSet<>();
+    List<GridCoordTransform> transforms = new ArrayList<>();
+    for (Gridset gset : proxy.getGridsets()) {
+      ucar.nc2.dt.GridCoordSystem gcs = gset.getGeoCoordSystem();
+      for (ucar.nc2.dataset.CoordinateTransform ct : gcs.getCoordinateTransforms())
+        if (!transformNames.contains(ct.getName())) {
+          transforms.add(new Transform(ct));
+          transformNames.add(ct.getName());
+        }
+    }
+    setCoordTransforms(transforms);
+
+    Set<String> axisNames = new HashSet<>();
+    List<GridCoordAxis> axes = new ArrayList<>();
+    for (Gridset gset : proxy.getGridsets()) {
+      ucar.nc2.dt.GridCoordSystem gcs = gset.getGeoCoordSystem();
+      for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordinateAxes())
+        if (!axisNames.contains(axis.getFullName())) {
+          axes.add(new Axis(axis));
+          axisNames.add(axis.getFullName());
+        }
+    }
+    setCoordAxes(axes);
+
   }
 
   @Override
   public void close() throws IOException {
     proxy.close();
-  }
-
-  @Override
-  public String getName() {
-    return proxy.getLocation();
-  }
-
-  @Override
-  public List<GridCoverage> getGrids() {
-    return grids;
-  }
-
-  @Override
-  public GridCoverage findCoverage(String name) {
-    for (GridCoverage grid : grids)
-      if (grid.getName().equalsIgnoreCase(name)) return grid;
-    return null;
-  }
-
-  @Override
-  public List<Attribute> getGlobalAttributes() {
-    return proxy.getGlobalAttributes();
-  }
-
-  @Override
-  public List<ucar.nc2.ft2.coverage.grid.GridCoordSys> getCoordSys() {
-    List<ucar.nc2.ft2.coverage.grid.GridCoordSys> result = new ArrayList<>();
-    for (Gridset gset : proxy.getGridsets()) {
-      result.add(new CoordSys(gset.getGeoCoordSystem()));
-    }
-    return result;
-  }
-
-  @Override
-  public List<GridCoordTransform> getCoordTransforms() {
-    Set<String> transformNames = new HashSet<>();
-    List<ucar.nc2.ft2.coverage.grid.GridCoordTransform> result = new ArrayList<>();
-    for (Gridset gset : proxy.getGridsets()) {
-      ucar.nc2.dt.GridCoordSystem gcs = gset.getGeoCoordSystem();
-      for (ucar.nc2.dataset.CoordinateTransform ct : gcs.getCoordinateTransforms())
-        if (!transformNames.contains(ct.getName())) {
-          result.add(new Transform(ct));
-          transformNames.add(ct.getName());
-        }
-    }
-    return result;
-  }
-
-  @Override
-  public List<GridCoordAxis> getCoordAxes() {
-    Set<String> axisNames = new HashSet<>();
-    List<ucar.nc2.ft2.coverage.grid.GridCoordAxis> result = new ArrayList<>();
-    for (Gridset gset : proxy.getGridsets()) {
-      ucar.nc2.dt.GridCoordSystem gcs = gset.getGeoCoordSystem();
-      for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordinateAxes())
-        if (!axisNames.contains(axis.getFullName())) {
-          result.add(new Axis(axis));
-          axisNames.add(axis.getFullName());
-        }
-    }
-    return result;
   }
 
   private class Grid extends GridCoverage {
@@ -125,9 +97,9 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
       int time = -1;
       int runtime = -1;
 
-      for (Map.Entry<String, String> entry : subset.getEntries()) {
-        double val = Double.parseDouble(entry.getValue());
-        switch (entry.getKey()) {
+      for (String key : subset.getKeys()) {
+        double val = subset.getDouble(key);
+        switch (key) {
           case "E":
             CoordinateAxis1D ensAxis = gcs.getEnsembleAxis();
             if (ensAxis != null) ens = ensAxis.findCoordElement(val);

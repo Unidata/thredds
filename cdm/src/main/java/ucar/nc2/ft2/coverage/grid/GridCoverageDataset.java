@@ -2,7 +2,6 @@
 package ucar.nc2.ft2.coverage.grid;
 
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordTransBuilder;
@@ -73,6 +72,11 @@ public class GridCoverageDataset implements AutoCloseable {
     this.atts = globalAttributes;
   }
 
+  public void setGlobalAttributes(List<Attribute> atts) {
+    this.atts = new AttributeContainerHelper(name);
+    for (Attribute att : atts) this.atts.addAttribute(att);
+  }
+
   public LatLonRect getLatLonBoundingBox() {
     return latLonBoundingBox;
   }
@@ -96,6 +100,8 @@ public class GridCoverageDataset implements AutoCloseable {
   public void setCalendarDateRange(CalendarDateRange calendarDateRange) {
     this.calendarDateRange = calendarDateRange;
   }
+
+  public ucar.nc2.time.Calendar getCalendar() { return calendarDateRange.getStart().getCalendar(); }
 
   public List<GridCoverage> getGrids() {
     return grids;

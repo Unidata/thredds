@@ -35,10 +35,9 @@ package thredds.server.ncss.params;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.validation.NcssRequestConstraint;
+import thredds.server.ncss.validation.NcssGridRequestConstraint;
 import thredds.server.ncss.validation.TimeParamsConstraint;
 import thredds.server.ncss.validation.VarParamConstraint;
-import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -55,76 +54,53 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Ncss Parameters
+ * Ncss Parameters superclass
  *
  * @author caron
  * @since 10/5/13
  */
 
 @TimeParamsConstraint
-@NcssRequestConstraint
 public class NcssParamsBean {
 
-  private String accept;
+  protected String accept;            // LOOK use enum ?
 
   @VarParamConstraint
- 	private List<String> var;
+  protected List<String> var;
 
  	@DateTimeFormat
- 	private String time_start;
+  protected String time_start;        // LOOK can be "present"
 
   @DateTimeFormat
- 	private String time_end;
+  protected String time_end;           // LOOK can be "present"
 
   @DateTimeFormat
- 	private String time_duration;
+  protected String time_duration;      // LOOK not a DateTimeFormat
 
   @DateTimeFormat
- 	private String time_window;  // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
-  								 // but if the dataset does not have up to date data that could be really far from the current time and most
-  								 // likely useless (in particular for observation data).
-  								 // time_window tells the server give me the data if it's within this period otherwise don't bother.
-  							     // time_window must be a valid W3C time duration.
+  protected String time;               // LOOK can be "present" or "all" ??
+
   @DateTimeFormat
- 	private String time;
-
-  private String temporal;  // == all
-
- 	private Double north;
-
- 	private Double south;
-
- 	private Double east;
-
- 	private Double west;
-
-  private Double latitude;
-
- 	private Double longitude;
+  protected String time_window;        // time duration
+    // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
+    // but if the dataset does not have up to date data that could be really far from the current time and most likely useless (esp for observation data).
+    // time_window tells the server give me the data if it's within this period otherwise don't bother. time_window must be a valid W3C time duration.
 
 
-  //// grid only
+  protected String temporal;  // == all  // LOOK get rid of
 
-  private Double minx;
+  protected Double north;
 
- 	private Double maxx;
+  protected Double south;
 
- 	private Double miny;
+  protected Double east;
 
- 	private Double maxy;
+  protected Double west;
 
- 	private boolean addLatLon;
+  protected Double latitude;
 
- 	private Integer horizStride = 1;
+  protected Double longitude;
 
- 	private Integer timeStride = 1;
-
-  private Double vertCoord;
-
- 	private Integer vertStride=1;
-
-  //// station only
-	private List<String> stns;
 
   /////////////////////////////////////////////////////
 
@@ -148,6 +124,7 @@ public class NcssParamsBean {
     return time_start;
   }
 
+  // time
   public void setTime_start(String time_start) {
     this.time_start = time_start;
   }
@@ -184,14 +161,7 @@ public class NcssParamsBean {
     this.time = time;
   }
 
-  public Double getVertCoord() {
-    return vertCoord;
-  }
-
-  public void setVertCoord(Double vertCoord) {
-    this.vertCoord = vertCoord;
-  }
-
+  // latlon
   public Double getNorth() {
     return north;
   }
@@ -240,78 +210,6 @@ public class NcssParamsBean {
     this.longitude = longitude;
   }
 
-  public Double getMinx() {
-    return minx;
-  }
-
-  public void setMinx(Double minx) {
-    this.minx = minx;
-  }
-
-  public Double getMaxx() {
-    return maxx;
-  }
-
-  public void setMaxx(Double maxx) {
-    this.maxx = maxx;
-  }
-
-  public Double getMiny() {
-    return miny;
-  }
-
-  public void setMiny(Double miny) {
-    this.miny = miny;
-  }
-
-  public Double getMaxy() {
-    return maxy;
-  }
-
-  public void setMaxy(Double maxy) {
-    this.maxy = maxy;
-  }
-
-  public boolean isAddLatLon() {
-    return addLatLon;
-  }
-
-  public void setAddLatLon(boolean addLatLon) {
-    this.addLatLon = addLatLon;
-  }
-
-  public Integer getHorizStride() {
-    return horizStride;
-  }
-
-  public void setHorizStride(Integer horizStride) {
-    this.horizStride = horizStride;
-  }
-
-  public Integer getTimeStride() {
-    return timeStride;
-  }
-
-  public void setTimeStride(Integer timeStride) {
-    this.timeStride = timeStride;
-  }
-
-  public Integer getVertStride() {
-    return vertStride;
-  }
-
-  public void setVertStride(Integer vertStride) {
-    this.vertStride = vertStride;
-  }
-
-  public List<String> getStns() {
-    return stns;
-  }
-
-  public void setStns(List<String> stns) {
-    this.stns = stns;
-  }
-
   public boolean hasLatLonPoint() {
     return latitude != null && longitude != null;
   }
@@ -320,14 +218,7 @@ public class NcssParamsBean {
     return east != null && west != null && north != null && south != null;
   }
 
-  public boolean hasProjectionBB() { // need to validate
-    return minx != null && miny != null && maxx != null && maxy != null;
-  }
-
-  public boolean hasStations() {
-    return stns != null && !stns.isEmpty();
-  }
-
+  // old
   public String getTemporal() {
     return temporal;
   }
@@ -339,6 +230,9 @@ public class NcssParamsBean {
   public boolean isAllTimes() {
     return temporal != null && temporal.equalsIgnoreCase("all");
   }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // used ??
 
   public TimeDuration parseTimeDuration() throws NcssException {
     if (getTime_duration() == null) return null;
@@ -370,41 +264,51 @@ public class NcssParamsBean {
     this.hasValidDateRange = hasValidDateRange;
   }
 
+  // return requested CalendarDateRange.
   public CalendarDateRange getCalendarDateRange(Calendar cal) throws ParseException {
-    if (!hasValidDateRange) return null;
 
-		DateRange dr;
-		if (time == null)
-			dr = new DateRange( new DateType(time_start, null, null, cal), new DateType(time_end, null, null, cal), new TimeDuration(time_duration), null );
-		else{
-			//DateType dtDate = new DateType(time, null, null, cal);
-			dr = new DateRange( new DateType(time, null, null, cal), new DateType(time, null, null, cal), new TimeDuration(time_duration), null );
-		}
+    if (hasValidDateRange) {
+      DateRange dr;
+      if (time == null)
+        dr = new DateRange(new DateType(time_start, null, null, cal), new DateType(time_end, null, null, cal), new TimeDuration(time_duration), null);
+      else {
+        //DateType dtDate = new DateType(time, null, null, cal);
+        dr = new DateRange(new DateType(time, null, null, cal), new DateType(time, null, null, cal), new TimeDuration(time_duration), null);
+      }
+      return CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate());
+    }
 
-		//return CalendarDateRange.of(dr );
-		return CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate() );
+    if (getTime() != null) {
+      CalendarDate date;
+      if (getTime().equalsIgnoreCase("present")) {
+        date = CalendarDate.present();
+
+      } else if (getTime().equalsIgnoreCase("all")) {
+        return null;
+
+      } else {
+        date = CalendarDateFormatter.isoStringToCalendarDate(cal, getTime());
+      }
+      return CalendarDateRange.of(date, date);
+    }
+
+    // default is pressent
+    return CalendarDateRange.of(CalendarDate.present(), CalendarDate.present());
 	}
 
   public CalendarDate getRequestedTime( Calendar cal ) throws ParseException {
     if (!hasValidTime) return null;
 
- 			CalendarDate date=null;
  			if( getTime().equalsIgnoreCase("present") ){
  				 java.util.Calendar c = java.util.Calendar.getInstance();
  				 c.setTime( new Date()  );
  				 return CalendarDate.of( cal, c.getTimeInMillis()  );
  			}
 
-    // default calendar (!)
     return CalendarDateFormatter.isoStringToCalendarDate(cal, getTime());
  	}
 
-  public boolean isValidGridRequest() {
-    return true;
-  }
-
-  public boolean intersectsTime(FeatureDataset fd, Formatter errs) throws ParseException {
-    CalendarDateRange have =  fd.getCalendarDateRange();
+  public boolean intersectsTime(CalendarDateRange have, Formatter errs) throws ParseException {
     if (have == null) return true;
     Calendar dataCal = have.getStart().getCalendar(); // use the same calendar as the dataset
 

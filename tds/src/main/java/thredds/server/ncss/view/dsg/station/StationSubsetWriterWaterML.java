@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.controller.NcssRequestUtils;
+import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.util.ContentType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -27,7 +28,7 @@ public class StationSubsetWriterWaterML extends AbstractStationSubsetWriter {
     private final CollectionDocument collectionDoc;
     private final CollectionType collection;
 
-    public StationSubsetWriterWaterML(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
+    public StationSubsetWriterWaterML(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, OutputStream out)
             throws XMLStreamException, NcssException, IOException {
         super(fdPoint, ncssParams);
 

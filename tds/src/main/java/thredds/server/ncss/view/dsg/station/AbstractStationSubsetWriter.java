@@ -2,7 +2,7 @@ package thredds.server.ncss.view.dsg.station;
 
 import thredds.server.ncss.exception.FeaturesNotFoundException;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.params.NcssParamsBean;
+import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.server.ncss.view.dsg.AbstractDsgSubsetWriter;
 import thredds.server.ncss.view.dsg.FilteredPointFeatureIterator;
 import ucar.ma2.StructureData;
@@ -34,7 +34,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
     protected final List<StationFeature> wantedStations;
     protected boolean headerDone = false;
 
-    public AbstractStationSubsetWriter(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams)
+    public AbstractStationSubsetWriter(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams)
             throws NcssException, IOException {
         super(fdPoint, ncssParams);
 
@@ -170,7 +170,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
 
     // LOOK could do better : "all", and maybe HashSet<Name>
     public static List<StationFeature> getStationsInSubset(
-            StationTimeSeriesFeatureCollection stationFeatCol, NcssParamsBean ncssParams) throws IOException {
+            StationTimeSeriesFeatureCollection stationFeatCol, NcssPointParamsBean ncssParams) throws IOException {
         List<StationFeature> wantedStations;
 
         // verify SpatialSelection has some stations

@@ -5,12 +5,12 @@ option java_outer_classname = "CdmrFeatureProto";
 
 message CoordTransform {
   required bool isHoriz = 1;
-  required string name = 2;          // must be unique in dataset
+  required string name = 2;          // must be unique in dataset's CoordTransform
   repeated Attribute params = 3;
 }
 
 message CoordAxis {
-  required string name = 1;          // must be unique in dataset
+  required string name = 1;          // must be unique in dataset's CoordAxis
   required DataType dataType = 2;
   repeated Attribute atts = 3;
   required int32 axisType = 4;       // ucar.nc2.constants.AxisType ordinal
@@ -26,14 +26,14 @@ message CoordAxis {
 }
 
 message CoordSys {
-  required string name = 1;               // must be unique in dataset
+  required string name = 1;               // must be unique in dataset's CoordSys
   repeated string axisNames = 2;
   repeated string transformNames = 3;
-  repeated CoordSys components = 4;        // ??
+  repeated CoordSys components = 4;        // factor out Horiz ??
 }
 
 message GridCoverage {
-  required string name = 1;               // must be unique in dataset
+  required string name = 1;               // must be unique in dataset's GridCoverage
   required DataType dataType = 2;
   optional bool unsigned = 3 [default = false];
   repeated Attribute atts = 4;

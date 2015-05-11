@@ -12,7 +12,6 @@ import thredds.core.TdsRequestedDataset;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
-import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.server.ncss.view.dsg.DsgSubsetWriter;
 import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
@@ -56,7 +55,7 @@ public class NcssPointController extends AbstractNcssController {
       if (fd == null) return;
 
       Formatter errs = new Formatter();
-      if (!params.intersectsTime(fd, errs)) {
+      if (!params.intersectsTime(fd.getCalendarDateRange(), errs)) {
         handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, errs.toString());
         return;
       }
@@ -72,7 +71,7 @@ public class NcssPointController extends AbstractNcssController {
     }
   }
 
-  void handleRequestDsg(HttpServletResponse res, NcssParamsBean params, String datasetPath,
+  void handleRequestDsg(HttpServletResponse res, NcssPointParamsBean params, String datasetPath,
                         FeatureDataset fd) throws Exception {
     SupportedOperation supportedOp;
     switch (fd.getFeatureType()) {
@@ -109,7 +108,7 @@ public class NcssPointController extends AbstractNcssController {
   }
 
    @RequestMapping(value = {"**/station.xml"})
-   ModelAndView getStations(HttpServletRequest req, HttpServletResponse res, NcssParamsBean params) throws IOException {
+   ModelAndView getStations(HttpServletRequest req, HttpServletResponse res, NcssPointParamsBean params) throws IOException {
 
      String datasetPath = getDatasetPath(req);
      try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {

@@ -122,11 +122,11 @@ public class GridDatasetHelper {
       case GeoZ:
       case Pressure:
       case Height:
-        String val = subset.get(GridCoordAxis.Type.Z);
+        Object val = (subset == null) ? null : subset.get(GridCoordAxis.Type.Z);
         if (val == null) return orgAxis;
-          val = subset.get("vertCoord");  // ncss using this
-        if (val == null) return orgAxis;
-        double dval = Double.parseDouble(val);
+
+        Double dval = subset.getDouble("vertCoord");  // ncss using this
+        if (dval == null) return orgAxis;
         return orgAxis.subset(dval, dval);
     }
 

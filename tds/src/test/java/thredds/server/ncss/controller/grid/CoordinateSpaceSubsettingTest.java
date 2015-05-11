@@ -128,7 +128,8 @@ public class CoordinateSpaceSubsettingTest {
 				.param("miny", Double.valueOf(projectionRectParams[1]).toString())
 				.param("maxx", Double.valueOf(projectionRectParams[2]).toString())
 				.param("maxy", Double.valueOf(projectionRectParams[3]).toString());
-		System.out.printf("%s vars=%s%n", pathInfo, varParamVal);
+
+		System.out.printf("%n%s vars=%s%n", pathInfo, varParamVal);
 
 		MvcResult mvc = this.mockMvc.perform(requestBuilder).andReturn();
 		assertEquals(200, mvc.getResponse().getStatus());
@@ -147,7 +148,7 @@ public class CoordinateSpaceSubsettingTest {
 			shapes[cont] = var.getShape();
 			cont++;
 		}
-		
+
 		assertArrayEquals(expectedShapes, shapes);
 	}
 		

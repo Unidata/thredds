@@ -33,26 +33,31 @@
 
 package thredds.server.ncss.validation;
 
-import thredds.server.ncss.params.NcssParamsBean;
+import thredds.server.ncss.exception.InvalidBBOXException;
+import thredds.server.ncss.params.NcssGridParamsBean;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Describe
+ * Validator for ncss GridRequest
+ * 1) if has either latitude or longitude, has both
+ * 2) if has any of latlon bb, has all. north > south, east > west
+ * 3) if has any of projection bb, has all. min < max
+ *
+ * Messages in WEB-INF/classes/ValidationMessages.properties
  *
  * @author caron
  * @since 10/9/13
  */
-public class NcssRequestValidator implements ConstraintValidator<NcssRequestConstraint, NcssParamsBean> {
+public class NcssGridRequestValidator implements ConstraintValidator<NcssGridRequestConstraint, NcssGridParamsBean> {
 
 	/* (non-Javadoc)
 	 * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
 	 */
 	@Override
-	public void initialize(NcssRequestConstraint arg0) {
+	public void initialize(NcssGridRequestConstraint arg0) {
 		// TODO Auto-generated method stub
-
 	}
 
 	/*
@@ -60,18 +65,16 @@ public class NcssRequestValidator implements ConstraintValidator<NcssRequestCons
 	 * @see "http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html"
 	 */
 	@Override
-	public boolean isValid(NcssParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
+	public boolean isValid(NcssGridParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
 
 		constraintValidatorContext.disableDefaultConstraintViolation();
-    boolean isValid =true;
+    boolean isValid = true;
 
     // lat/lon point
 		if( params.getLatitude() != null || params.getLongitude() != null) {
 			if ( !params.hasLatLonPoint()){
 				isValid = false;
-				constraintValidatorContext
-				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.lat_or_lon_missing}")
-				.addConstraintViolation();
+				constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.lat_or_lon_missing}").addConstraintViolation();
 			}
 		}
 
@@ -79,24 +82,36 @@ public class NcssRequestValidator implements ConstraintValidator<NcssRequestCons
 		if( params.getNorth() != null || params.getSouth() != null ||  params.getEast() != null || params.getWest() != null){
 			if( !params.hasLatLonBB()){
 				isValid = false;
-				constraintValidatorContext
-				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.wrong_bbox}")
-				.addConstraintViolation();
+				constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.wrong_bbox}").addConstraintViolation();
 			}
 
+			if (params.getNorth() < params.getSouth()) {
+				isValid = false;
+				constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.north_south}").addConstraintViolation();
+			}
+			if (params.getEast() < params.getWest()) {
+				isValid = false;
+				constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.east_west}").addConstraintViolation();
+			}
 		}
 
 		// proj bb
 		if( params.getMaxx() != null || params.getMinx() != null ||  params.getMaxy() != null || params.getMiny() != null){
       if( !params.hasProjectionBB()){
 				isValid = false;
-				constraintValidatorContext
-				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.wrong_pbox}")
-				.addConstraintViolation();
+				constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.wrong_pbox}").addConstraintViolation();
+			}
+
+			if (params.getMaxx() < params.getMinx()) {
+				isValid = false;
+				constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.rangex}").addConstraintViolation();
+			}
+			if (params.getMaxy() < params.getMiny()) {
+				isValid = false;
+				constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.rangey}").addConstraintViolation();
 			}
 		}
 
 		return isValid;
 	}
-
 }

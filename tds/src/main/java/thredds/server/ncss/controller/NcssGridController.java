@@ -64,7 +64,7 @@ public class NcssGridController extends AbstractNcssController {
       if (gcd == null) return;
 
       Formatter errs = new Formatter();
-      if (!params.intersectsTime(gcd, errs)) {
+      if (!params.intersectsTime(gcd.getCalendarDateRange(), errs)) {
         handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, errs.toString());
         return;
       }
@@ -80,7 +80,7 @@ public class NcssGridController extends AbstractNcssController {
     }
   }
 
-  private void handleRequestGrid(HttpServletResponse res, NcssParamsBean params, String datasetPath, GridCoverageDataset gcd)
+  private void handleRequestGrid(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, GridCoverageDataset gcd)
           throws IOException, NcssException, ParseException, InvalidRangeException {
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
@@ -218,7 +218,7 @@ public class NcssGridController extends AbstractNcssController {
    * Checks that all the requested vars exist. If "all", fills out the param.vars with all grid names
    * Throws exception if some of the variables in the request are not contained in the dataset
    */
-  private void checkRequestedVars(GridCoverageDataset gcd, NcssParamsBean params) throws VariableNotContainedInDatasetException {
+  private void checkRequestedVars(GridCoverageDataset gcd, NcssGridParamsBean params) throws VariableNotContainedInDatasetException {
 
     // if var == all --> all variables requested
     if (params.getVar().get(0).equalsIgnoreCase("all")) {
@@ -226,7 +226,7 @@ public class NcssGridController extends AbstractNcssController {
       return;
     }
 
-    // Check not all vars are contained in the grid
+    // Check vars are contained in the grid
     for (String gridName : params.getVar()) {
       GridCoverage grid = gcd.findCoverage(gridName);
       if (grid == null)
@@ -245,7 +245,7 @@ public class NcssGridController extends AbstractNcssController {
    * Returns true if all the variables have the same vertical axis (if they have an axis).
    * Could be broadened to allow all with same coordinate unites? coordinate value??
    */
-  protected boolean checkVarsHaveSameVertAxis(GridCoverageDataset gcd, NcssParamsBean params) throws VariableNotContainedInDatasetException {
+  protected boolean checkVarsHaveSameVertAxis(GridCoverageDataset gcd, NcssGridParamsBean params) throws VariableNotContainedInDatasetException {
     String zaxisName = null;
     for (String gridName : params.getVar()) {
       GridCoverage grid = gcd.findCoverage(gridName);

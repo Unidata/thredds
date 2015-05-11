@@ -3,7 +3,6 @@ package ucar.nc2.ft2.coverage.grid;
 
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.time.CalendarDate;
@@ -40,49 +39,66 @@ public class CFGridCoverageWriter {
    * @return total bytes written
    * @throws IOException
    * @throws InvalidRangeException
-   */
+   *
   static public long makeSizeEstimate(GridCoverageDataset gds, List<String> gridList,
                                       LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
                                       CalendarDateRange dateRange, int stride_time, boolean addLatLon) throws IOException, InvalidRangeException {
 
     CFGridCoverageWriter writer2 = new CFGridCoverageWriter();
     return writer2.writeOrTestSize(gds, gridList, llbb, projRect, horizStride, zRange, dateRange, stride_time, addLatLon, true, null);
-  }
+  } */
 
   /**
    * Write a netcdf/CF file from a GridDataset
-   *
-   * @param gds         the GridDataset
-   * @param gridList    the list of variables to be written, or null for all
-   * @param llbb        the lat/lon bounding box, or null for all
-   * @param projRect    the projection bounding box, or null for all
-   * @param horizStride the x and y stride
-   * @param zRange      the z stride
-   * @param dateRange   date range, or null for all
-   * @param stride_time the time stride
-   * @param addLatLon   add 2D lat/lon coordinates if needed
-   * @param writer      this does the actual writing
+
+   * @param gdsOrg       the GridCoverageDataset
+   * @param gridNames    the list of variables to be written, or null for all
+   * @param llbb         the lat/lon bounding box, or null for all
+   * @param projRect     the projection bounding box, or null for all
+   * @param horizStride  the x and y stride, or null
+   * @param vertCoord    the vertical coordinate, or null
+   * @param dateRange    date range, or null
+   * @param date         single date, or null
+   * @param timeStride   the time stride, or null
+   * @param addLatLon    add 2D lat/lon coordinates if needed
+   * @param writer       this does the actual writing
    * @return total bytes written
    * @throws IOException
    * @throws InvalidRangeException
    */
-  static public long writeFile(GridCoverageDataset gds, List<String> gridList,
-                               LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
-                               CalendarDateRange dateRange, int stride_time, boolean addLatLon, NetcdfFileWriter writer) throws IOException, InvalidRangeException {
+  public static long writeFile(GridCoverageDataset gdsOrg, List<String> gridNames,
+                               LatLonRect llbb, ProjectionRect projRect, Integer horizStride, Double vertCoord,
+                               CalendarDateRange dateRange, CalendarDate date, Integer timeStride,
+                               boolean addLatLon,
+                               NetcdfFileWriter writer) throws IOException, InvalidRangeException {
+   // construct the subset
+    GridSubset subset = new GridSubset();
+    if (llbb != null)
+      subset.set("LatLonRect", llbb);
+    else if (projRect != null)
+      subset.set("ProjectionRect", projRect);
+    if (horizStride != null)
+      subset.set("HorizStride", horizStride);
+
+    if (vertCoord != null)
+      subset.set(GridCoordAxis.Type.Z, vertCoord);
+
+    if (dateRange != null) {
+      subset.set("CalendarDateRange", dateRange);
+      if (timeStride != null)
+        subset.set("TimeStride", timeStride);
+    } else if (date != null)
+      subset.set("CalendarDate", date);
 
     CFGridCoverageWriter writer2 = new CFGridCoverageWriter();
-    return writer2.writeOrTestSize(gds, gridList, llbb, projRect, horizStride, zRange, dateRange, stride_time, addLatLon, false, writer);
+    return writer2.writeOrTestSize(gdsOrg, gridNames, subset, addLatLon, false, writer);
   }
 
 
   /**
-   * @param gridNames     the list of variables to be written, or null for all
-   * @param llbb         the lat/lon bounding box, or null for all
-   * @param projRect     the projection bounding box, or null for all
-   * @param horizStride  the x and y stride
-   * @param zRange       the z stride
-   * @param dateRange    date range, or null for all
-   * @param stride_time  the time stride
+   * @param gdsOrg       the GridCoverageDataset
+   * @param gridNames    the list of variables to be written, or null for all
+   * @param subset       the desired subset
    * @param addLatLon    add 2D lat/lon coordinates if needed
    * @param testSizeOnly dont write, just return size
    * @param writer       this does the actual writing
@@ -91,16 +107,16 @@ public class CFGridCoverageWriter {
    * @throws InvalidRangeException
    */
   private long writeOrTestSize(GridCoverageDataset gdsOrg, List<String> gridNames,
-                               LatLonRect llbb, ProjectionRect projRect, int horizStride, Range zRange,
-                               CalendarDateRange dateRange, int stride_time,
+                               GridSubset subset,
                                boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
 
-    GridDatasetHelper helper = new GridDatasetHelper(gdsOrg, gridNames);
-    GridCoverageDataset subsetDataset = helper.subset(null); // LOOK need ssubset
 
-    LatLonRect resultBB = null;
+    // construct the subsetted dataset
+    GridDatasetHelper helper = new GridDatasetHelper(gdsOrg, gridNames);
+    GridCoverageDataset subsetDataset = helper.subset(subset);
+
     long total_size = 0;
     for (GridCoverage grid : subsetDataset.getGrids()) {
       total_size += subsetDataset.getSizeInBytes(grid);
@@ -111,11 +127,11 @@ public class CFGridCoverageWriter {
 
     ////////////////////////////////////////////////////////////////////
 
-        // check size is ok
+    // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
     writer.setLargeFile(isLargeFile);
 
-    addGlobalAttributes(subsetDataset, writer, resultBB);
+    addGlobalAttributes(subsetDataset, writer);
 
     // dimensions and axes
     Map<String, Dimension> dimHash = new HashMap<>();
@@ -145,7 +161,7 @@ public class CFGridCoverageWriter {
 
     addCFAnnotations(subsetDataset, writer, addLatLon);
 
-     // finish define mode
+    // finish define mode
     writer.create();
 
     // write the data to the new file.
@@ -217,7 +233,7 @@ public class CFGridCoverageWriter {
     yxRanges.add(1, xRange);
   }    */
 
-  private void addGlobalAttributes(GridCoverageDataset gds, NetcdfFileWriter writer, LatLonRect llbb) {
+  private void addGlobalAttributes(GridCoverageDataset gds, NetcdfFileWriter writer) {
     // global attributes
     for (Attribute att : gds.getGlobalAttributes()) {
       if (att.getShortName().equals(CDM.FILE_FORMAT)) continue;
@@ -233,11 +249,14 @@ public class CFGridCoverageWriter {
             "Translated to CF-1.0 Conventions by Netcdf-Java CDM (CFGridCoverageWriter)\n" +
                     "Original Dataset = " + gds.getName() + "; Translation Date = " + CalendarDate.present()));
 
-    // this will replace any existing
-    writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
-    writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getLatMax()));
-    writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLonMin()));
-    writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getLonMax()));
+    if (gds.getLatLonBoundingBox() != null) {
+      LatLonRect llbb = gds.getLatLonBoundingBox();
+      // this will replace any existing
+      writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MIN, llbb.getLatMin()));
+      writer.addGroupAttribute(null, new Attribute(ACDD.LAT_MAX, llbb.getLatMax()));
+      writer.addGroupAttribute(null, new Attribute(ACDD.LON_MIN, llbb.getLonMin()));
+      writer.addGroupAttribute(null, new Attribute(ACDD.LON_MAX, llbb.getLonMax()));
+    }
   }
 
   private void addCFAnnotations(GridCoverageDataset gds, NetcdfFileWriter writer, boolean addLatLon) {
@@ -246,7 +265,7 @@ public class CFGridCoverageWriter {
     for (GridCoverage grid : gds.getGrids()) {
       GridCoordSys gcs = gds.findCoordSys(grid.getCoordSysName());
 
-      Variable newV = writer.findVariable( grid.getName());
+      Variable newV = writer.findVariable(grid.getName());
       if (newV == null) {
         log.debug("NetcdfCFWriter cant find " + grid.getName() + " in gds " + gds.getName());
         continue;

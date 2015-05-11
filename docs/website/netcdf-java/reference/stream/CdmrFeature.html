@@ -44,9 +44,148 @@ where:
 <pre>req=(header|data)
 var=vars
 coordname=value
-coordname=minvalue:maxvalue
-</pre>
-<p>Example service requests are:</p>
+coordname=minvalue:maxvalue</pre>
+<h2><strong>Subsetting Parameters for Grid</strong> </h2>
+<table>
+  <tr>
+    <th width="144">Parameter Name</th>
+    <th width="62">Required</th>
+    <th width="512">Description / possible values</th>
+    <th width="460">Constraints</th>
+    <th width="219">default</th>
+  </tr>
+  <tr>
+    <td>var</td>
+    <td>yes</td>
+    <td><span>Name of <strong>variables</strong>, separated by ',' (comma), or &quot;all&quot;.</span></td>
+    <td>Variables must be in the dataset description. </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><p>latitude, longitude</p></td>
+    <td>no</td>
+    <td><span>Point location. units of degrees_east, degrees_north</span></td>
+    <td><span>Must be within the dataset bounding box.</span></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>north, south, east, west</td>
+    <td>no</td>
+    <td>Lat/lon bounding box, units of degrees_east, degrees_north</td>
+    <td>north &gt; south,  if crossing 180 meridian, use east boundary &gt; 180</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>minx, miny, maxx, maxy</td>
+    <td>no</td>
+    <td>Projection bounding box, in projection coordinate units.</td>
+    <td> min &lt; max</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>horizStride</td>
+    <td>no</td>
+    <td>Take only every nth point (both x and y)</td>
+    <td>&nbsp;</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>time</td>
+    <td>no</td>
+    <td>Time as a <a rel="nofollow"
+                         href="#W3Cdate">W3C
+      date</a> or &quot;present&quot;. The time slice closest to the requested time is
+      returned. Or &quot;all&quot;: all times are returned.</td>
+    <td>Must be a time within the dataset time range</td>
+    <td><em>present</em></td>
+  </tr>
+  <tr>
+    <td>time_start, time_end, time_duration</td>
+    <td>no</td>
+    <td>Used to specify a time range. Time as
+      a <a rel="nofollow"
+                 href="#W3Cdate">W3C
+        date</a> or &quot;present&quot;.  Duration as a <a rel="nofollow" href="#W3Cduration">W3C time duration</a>. Two of these must be present.</td>
+    <td>The provided time range must intersect the
+      dataset time
+      range </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>timeStride</td>
+    <td>no</td>
+    <td>Take only every nth time in the available series</td>
+    <td>&nbsp;</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>runtime</td>
+    <td>no</td>
+    <td>Restrict to specified runtime coordinate. <a rel="nofollow"
+                 href="#W3Cdate">W3C
+    date</a></td>
+    <td>Used only if Grid has a runtime coordinate.</td>
+    <td>All runtimes will be returned </td>
+  </tr>
+  <tr>
+    <td>offset</td>
+    <td>no</td>
+    <td>Restrict to specified offset.<a rel="nofollow"
+                 href="#W3Cdate"></a></td>
+    <td>Used only if Grid has a runtime coordinate.</td>
+    <td>&nbsp;</td>
+  </tr>
+    <tr>
+    <td>vertCoord</td>
+    <td>no</td>
+    <td>Restrict to specified vertical level.</td>
+    <td>Used only if Grid has a vertical coordinate.</td>
+    <td>All the
+      vertical levels will be returned </td>
+  </tr>
+    <tr>
+    <td>ensCoord</td>
+    <td>no</td>
+    <td>Restrict to specified ensemble coordinate.</td>
+    <td>Used only if Grid has an ensemble coordinate.</td>
+    <td>All the
+      ensembles will be returned </td>
+  </tr>
+  <tr>
+    <td>accept</td>
+    <td>no</td>
+    <td>Specify the response format.
+   </td>
+    <td><p>Grid: <em>ncremote</em>, <em>netCDF</em> or <em>netCDF4</em>. </p>
+      <p>Point: <em>ncremote</em>, <em>netCDF</em>, <em>netCDF4</em>, <em>XML</em>, <em>CSV</em>, <em>WaterML2</em>.</p></td>
+    <td> <em>ncremote</em></td>
+  </tr>
+</table>
+<h4><strong>Variable subsetting:</strong></h4>
+<ul>
+  <li>You <strong>must</strong> specify a list of valid variable names, or &quot;all&quot;.</li>
+</ul>
+<h4><strong> Horizontal spatial subsetting:</strong></h4>
+<ul>
+  <li>grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire
+    horizontal grid. </li>
+  <li>grids as point: you <strong>must</strong> specify a point location with the<em> latitude, longitude</em> parameters. </li>
+</ul>
+<h4><strong>Vertical spatial subsetting:</strong></h4>
+<ul>
+  <li>You may specify a vertical coordinate. If none, return all vertical levels</li>
+</ul>
+<h4><strong>Temporal subsetting:</strong></h4>
+<ul>
+  <li>You may specify a time range or a specific time. If none, return the time closest to the
+    present. </li>
+  <li>A time range will request all features that intersect the range.</li>
+  <li>A time point will request the feature that is closest to that time.</li>
+  <li>If you include <em>time=all</em>, then return all times.</li>
+  <li>time duration: 1)   udunit&#32;time&#32;unit&#32;string,&#32;2)&#32;xsd:duration&#32;syntax  </li>
+  <li>datetime: isoString or &quot;present&quot;</li>
+</ul>
+<p>&nbsp;</p>
 <h3>PointDataset</h3>
 <p>Possible requests are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form</strong>)</pre>

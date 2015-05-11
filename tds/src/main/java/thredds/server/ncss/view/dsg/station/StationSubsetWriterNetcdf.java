@@ -5,6 +5,7 @@ import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.controller.NcssRequestUtils;
+import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFileWriter;
@@ -37,7 +38,7 @@ public class StationSubsetWriterNetcdf extends AbstractStationSubsetWriter {
     private final WriterCFStationCollection cfWriter;
     private final NcssDiskCache ncssDiskCache;
 
-    public StationSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, NcssDiskCache ncssDiskCache,
+    public StationSubsetWriterNetcdf(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, NcssDiskCache ncssDiskCache,
                                      OutputStream out, NetcdfFileWriter.Version version) throws NcssException, IOException {
         super(fdPoint, ncssParams);
 

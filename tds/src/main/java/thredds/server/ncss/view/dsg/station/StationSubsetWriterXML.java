@@ -4,6 +4,7 @@ import org.springframework.http.HttpHeaders;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.controller.NcssRequestUtils;
+import thredds.server.ncss.params.NcssPointParamsBean;
 import thredds.util.ContentType;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
@@ -27,7 +28,7 @@ import java.io.OutputStream;
 public class StationSubsetWriterXML extends AbstractStationSubsetWriter {
     private final XMLStreamWriter staxWriter;
 
-    public StationSubsetWriterXML(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
+    public StationSubsetWriterXML(FeatureDatasetPoint fdPoint, NcssPointParamsBean ncssParams, OutputStream out)
             throws XMLStreamException, NcssException, IOException {
         super(fdPoint, ncssParams);
 

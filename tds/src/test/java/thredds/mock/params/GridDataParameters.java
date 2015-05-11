@@ -52,7 +52,7 @@ public class GridDataParameters {
 	static{
 		
 
-		vars = new ArrayList<List<String>>();			
+		vars = new ArrayList<>();
 		//Variables with no vertical level
 		vars.add(Arrays.asList("Pressure", "Pressure_reduced_to_MSL"));
 		//Variables with one vertical level
@@ -64,7 +64,7 @@ public class GridDataParameters {
 		//Different vert levels
 		vars.add(Arrays.asList("Relative_humidity_height_above_ground", "Temperature"));
 		
-		projectionRect = new ArrayList<double[]>();
+		projectionRect = new ArrayList<>();
 		
 		projectionRect.add(new double[]{-4226.106971141345, -832.6983183345455, -4126.106971141345, -732.6983183345455 }); //2x2
 		projectionRect.add(new double[]{-600, -600, 600, 600 });//15x16
@@ -75,7 +75,7 @@ public class GridDataParameters {
 		
 		//projectionRect.add(new double[]{-6464.248291015625, -1892.8428344726562, -4064.248291015625, -972.8428344726562 }); //DOES NOT INTERSECT
 		
-		latlonRect = new ArrayList<double[]>();
+		latlonRect = new ArrayList<>();
 		latlonRect.add(new double[]{-153.5889, 11.7476, -48.5984,57.4843 });
 		latlonRect.add(new double[]{-160.5889, 40.7476, -106.93, 64.65 });
 		latlonRect.add(new double[]{-99.171226, 57.659579, -94.967505, 61.196857 }); //Intersects the Grid but not the declared bounding box
