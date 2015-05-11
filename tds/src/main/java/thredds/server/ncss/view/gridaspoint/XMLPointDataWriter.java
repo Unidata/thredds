@@ -93,45 +93,6 @@ class XMLPointDataWriter implements PointDataWriter {
 		return headerWritten;
 	}
 
-
-	private boolean write(List<String> groupsKeys,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) throws InvalidRangeException {
-
-		boolean allDone = true;
-
-		//List<String> keys =new ArrayList<String>(groupedVars.keySet());
-		//loop over variable groups
-		//for(String key : keys){
-		for(String key : groupsKeys){
-			//get wanted vertCoords for group (all if vertCoord==null just one otherwise)
-			List<String> varsGroup = allVars.get(key);
-			//GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset,	varsGroup);
-			GridAsPointDataset gap = gridAsPointDatasets.get(key);
-			CoordinateAxis1D verticalAxisForGroup = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();
-			if(verticalAxisForGroup ==null){
-				//Read and write vars--> time, point
-				allDone = allDone && write(varsGroup, gridDataset, gap, date, point);
-			}else{
-				//read and write time, verCoord for each variable in group
-				if(targetLevel != null){
-					Double vertCoord = NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, targetLevel);
-					allDone = write(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString() );
-				}else{//All levels
-					for(Double vertCoord : verticalAxisForGroup.getCoordValues() ){
-						/////Fix axis!!!!
-						if(verticalAxisForGroup.getCoordValues().length ==1  )
-							vertCoord =NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, vertCoord);
-
-						allDone = allDone && write(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString() );
-
-					}
-				}				
-
-			}			
-
-		}
-		return allDone;
-	}	
-
 	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord) throws InvalidRangeException{
 
 		//loop over wDates
@@ -142,19 +103,18 @@ class XMLPointDataWriter implements PointDataWriter {
 		//Check wDates -> Could be empty (dataset with not time axis)
 		if( wDates.isEmpty() ){
 			//pointRead = write(groupedVars, gds, point, vertCoord);
-			pointRead = write(keysAsList, gds, point, vertCoord);
+			pointRead = writeNoTimeAxis(keysAsList, gds, point, vertCoord);
 		}else{
 			while( pointRead && it.hasNext() ){
 				date = it.next();
 				//pointRead = write(groupedVars, gds, date, point, vertCoord);
-				pointRead = write(keysAsList , gds, date, point, vertCoord);
+				pointRead = writeOneDate(keysAsList, gds, date, point, vertCoord);
 			}		
 		}
 		return pointRead;
 	}	
 
-	//private boolean write(Map<String, List<String>> groupedVars, GridDataset gds, LatLonPoint point, Double targetLevel) {
-	private boolean write(List<String> groupsKeys, GridDataset gds, LatLonPoint point, Double targetLevel) {
+	private boolean writeNoTimeAxis(List<String> groupsKeys, GridDataset gds, LatLonPoint point, Double targetLevel) {
 
 		boolean allDone = true;
 
@@ -169,19 +129,20 @@ class XMLPointDataWriter implements PointDataWriter {
 			CoordinateAxis1D verticalAxisForGroup = gds.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();
 			if(verticalAxisForGroup ==null){
 				//Read and write vars--> time, point
-				allDone = allDone && write(varsGroup, gds, gap, point);
+				allDone = allDone && writeNoTimeNoVert(varsGroup, gds, gap, point);
+
 			}else{
 				//read and write time, verCoord for each variable in group
 				if(targetLevel != null){
 					Double vertCoord = NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, targetLevel);
-					allDone = write(varsGroup, gds, gap, point, vertCoord, verticalAxisForGroup.getUnitsString() );
+					allDone = writeVertNoTime(varsGroup, gds, gap, point, vertCoord, verticalAxisForGroup.getUnitsString());
 				}else{//All levels
 					for(Double vertCoord : verticalAxisForGroup.getCoordValues() ){
 						/////Fix axis!!!!
-						if(verticalAxisForGroup.getCoordValues().length ==1  )
+						if(verticalAxisForGroup.getCoordValues().length == 1  )
 							vertCoord =NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, vertCoord);
 
-						allDone = allDone && write(varsGroup, gds, gap, point, vertCoord, verticalAxisForGroup.getUnitsString() );
+						allDone = allDone && writeVertNoTime(varsGroup, gds, gap, point, vertCoord, verticalAxisForGroup.getUnitsString());
 
 					}
 				}				
@@ -193,7 +154,46 @@ class XMLPointDataWriter implements PointDataWriter {
 
 	}
 
-	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits) throws InvalidRangeException {
+
+	private boolean writeOneDate(List<String> groupsKeys, GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) throws InvalidRangeException {
+
+		boolean allDone = true;
+
+		//List<String> keys =new ArrayList<String>(groupedVars.keySet());
+		//loop over variable groups
+		//for(String key : keys){
+		for(String key : groupsKeys){
+			//get wanted vertCoords for group (all if vertCoord==null just one otherwise)
+			List<String> varsGroup = allVars.get(key);
+			//GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset,	varsGroup);
+			GridAsPointDataset gap = gridAsPointDatasets.get(key);
+			CoordinateAxis1D verticalAxisForGroup = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();
+			if(verticalAxisForGroup ==null){
+				//Read and write vars--> time, point
+				allDone = allDone && writeTimeNoVert(varsGroup, gridDataset, gap, date, point);
+			}else{
+				//read and write time, verCoord for each variable in group
+				if(targetLevel != null){
+					Double vertCoord = NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, targetLevel);
+					allDone = writeTimeAndVert(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString());
+				}else{//All levels
+					for(Double vertCoord : verticalAxisForGroup.getCoordValues() ){
+						/////Fix axis!!!!
+						if(verticalAxisForGroup.getCoordValues().length ==1  )
+							vertCoord =NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, vertCoord);
+
+						allDone = allDone && writeTimeAndVert(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString());
+
+					}
+				}
+
+			}
+
+		}
+		return allDone;
+	}
+
+	private boolean writeTimeAndVert(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits) throws InvalidRangeException {
 
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
@@ -279,7 +279,7 @@ class XMLPointDataWriter implements PointDataWriter {
 	 * 
 	 * Write method when the grid has no time axis but has vertical axis
 	 */
-	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap,  LatLonPoint point, Double targetLevel, String zUnits) {
+	private boolean writeVertNoTime(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, LatLonPoint point, Double targetLevel, String zUnits) {
 
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
@@ -336,7 +336,7 @@ class XMLPointDataWriter implements PointDataWriter {
 	 * 
 	 * Write method when the grid has no time axis and no vertical axis
 	 */
-	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, LatLonPoint point){
+	private boolean writeNoTimeNoVert(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, LatLonPoint point){
 
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
@@ -378,7 +378,7 @@ class XMLPointDataWriter implements PointDataWriter {
 	 * 
 	 * Write method for grids with time axis but not vertical level
 	 */
-	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point){
+	private boolean writeTimeNoVert(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point){
 
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
