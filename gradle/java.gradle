@@ -8,11 +8,6 @@ configure(javaProjects) {
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
 
-    // Unlike Maven, Gradle places CLASS files and resources in different directories by default.
-    // This is a problem for IntelliJ: when running an application from the IDE, it expects everything to be in the
-    // same directory. To fix, we're configuring resources to be copied to the same directory as CLASS files.
-    processResources.destinationDir = compileJava.destinationDir
-
 
     // These will only run when we execute the "publish" task, NOT "assemble".
     // That'll save us from a lot of unnecessary build time in the common case.
