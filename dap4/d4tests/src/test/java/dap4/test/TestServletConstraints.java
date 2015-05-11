@@ -20,6 +20,7 @@ import java.util.*;
  * constraint processing.
  */
 
+@Ignore
 public class TestServletConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
@@ -100,9 +101,12 @@ public class TestServletConstraints extends DapTestCommon
             this.xfail = xfail;
             this.extensions = extensions.split(",");
             this.template = template;
-            this.testinputpath = canonjoin(this.inputroot,dataset) + "." + id;
-            this.baselinepath = canonjoin(this.baselineroot,dataset) + "." + id;
-            this.generatepath = canonjoin(this.generateroot,dataset) + "." + id;
+            this.testinputpath
+                    = this.inputroot + "/" + dataset + "." + id;
+            this.baselinepath
+                    = this.baselineroot + "/" + dataset + "." + id;
+            this.generatepath
+                    = this.generateroot + "/" + dataset + "." + id;
             alltests[id] = this;
         }
 
@@ -154,9 +158,7 @@ public class TestServletConstraints extends DapTestCommon
     public TestServletConstraints(String name, String[] argv)
     {
         super(name);
-        ConstraintTest.setRoots(canonjoin(getResourceDir(),TESTINPUTDIR),
-                canonjoin(getResourceDir(),BASELINEDIR),
-                canonjoin(getResourceDir(),GENERATEDIR));
+        ConstraintTest.setRoots(getResourceDir() + "/" + TESTINPUTDIR, getResourceDir() + BASELINEDIR, getResourceDir() + GENERATEDIR);
         defineAllTestcases();
         chooseTestcases();
     }
@@ -308,6 +310,7 @@ public class TestServletConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Ignore
     public void testServletConstraints()
             throws Exception
     {

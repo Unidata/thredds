@@ -25,6 +25,7 @@ import org.junit.*;
  * test client side deserialization.
  */
 
+@Ignore
 public class TestServlet extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
@@ -92,14 +93,17 @@ public class TestServlet extends DapTestCommon
             this.template = template;
             this.xfail = xfail;
             this.checksumming = checksumming;
-            this.testinputpath = canonjoin(this.inputroot,dataset);
-            this.baselinepath = canonjoin(this.baselineroot,dataset);
-            this.generatepath = canonjoin(this.generateroot,dataset);
+            this.testinputpath
+                = this.inputroot + "/" + dataset;
+            this.baselinepath
+                = this.baselineroot + "/" + dataset;
+            this.generatepath
+                = this.generateroot + "/" + dataset;
         }
 
         String makeurl(RequestMode ext)
         {
-            return canonjoin(FAKEURLPREFIX,dataset) + "." + ext.toString();
+            return FAKEURLPREFIX + "/" + dataset + "." + ext.toString();
         }
 
         public String toString()
@@ -164,9 +168,7 @@ public class TestServlet extends DapTestCommon
         super(name);
         if(prop_ascii)
             Generator.setASCII(true);
-        ServletTest.setRoots(canonjoin(getResourceDir(),TESTINPUTDIR),
-                             canonjoin(getResourceDir(),BASELINEDIR),
-                             canonjoin(getResourceDir(),GENERATEDIR));
+        ServletTest.setRoots(getResourceDir() + "/" + TESTINPUTDIR, getResourceDir() + BASELINEDIR, getResourceDir() + GENERATEDIR);
         defineAllTestcases();
         chooseTestcases();
     }
@@ -190,36 +192,6 @@ public class TestServlet extends DapTestCommon
     protected void
     defineAllTestcases()
     {
-        this.alltestcases.add(
-            new ServletTest("tst_fills.nc", "dmr,dap", true,  //0
-                // S4
-                 new Dump.Commands()
-                 {
-                     public void run(Dump printer) throws IOException
-                     {
-                        printer.printvalue('U', 1);
-                        printer.printchecksum();
-                        printer.printvalue('S', 2);
-                        printer.printchecksum();
-                        printer.printvalue('U', 4);
-                        printer.printchecksum();
-                     }
-                 }));
-        this.alltestcases.add(
-            new ServletTest("test_fill.nc", "dmr,dap", true,  //0
-                // S4
-                 new Dump.Commands()
-                 {
-                     public void run(Dump printer) throws IOException
-                     {
-                        printer.printvalue('U', 1);
-                        printer.printchecksum();
-                        printer.printvalue('S', 2);
-                        printer.printchecksum();
-                        printer.printvalue('U', 4);
-                        printer.printchecksum();
-                     }
-                 }));
         this.alltestcases.add(
             new ServletTest("test_sequence_1.syn", "dmr,dap", true,  //0
                 // S4
@@ -694,6 +666,7 @@ public class TestServlet extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Ignore
     public void testServlet()
         throws Exception
     {
