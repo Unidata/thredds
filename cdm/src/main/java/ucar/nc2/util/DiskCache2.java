@@ -215,8 +215,10 @@ public class DiskCache2 {
 
     if (cachePathPolicy == CachePathPolicy.NestedDirectory) {
       File dir = f.getParentFile();
-      boolean ret = dir.mkdirs();
-      if (!ret) cacheLog.warn("Error creating dir: " + dir);
+      if (!dir.exists()) {
+        boolean ret = dir.mkdirs();
+        if (!ret) cacheLog.warn("Error creating dir: " + dir);
+      }
     }
 
     return f;
