@@ -1,10 +1,8 @@
 package dap4.test;
 
 import dap4.test.util.DapTestCommon;
-import org.junit.Test;
-import org.junit.Ignore;
-import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.IOException;
 import java.io.StringWriter;
