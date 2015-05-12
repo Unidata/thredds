@@ -26,7 +26,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 2;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordTransform
      * </pre>
      */
     boolean hasName();
@@ -34,7 +34,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 2;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordTransform
      * </pre>
      */
     java.lang.String getName();
@@ -42,7 +42,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 2;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordTransform
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -208,7 +208,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 2;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordTransform
      * </pre>
      */
     public boolean hasName() {
@@ -218,7 +218,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 2;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordTransform
      * </pre>
      */
     public java.lang.String getName() {
@@ -239,7 +239,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 2;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordTransform
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -655,7 +655,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 2;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordTransform
        * </pre>
        */
       public boolean hasName() {
@@ -665,7 +665,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 2;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordTransform
        * </pre>
        */
       public java.lang.String getName() {
@@ -683,7 +683,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 2;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordTransform
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -703,7 +703,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 2;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordTransform
        * </pre>
        */
       public Builder setName(
@@ -720,7 +720,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 2;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordTransform
        * </pre>
        */
       public Builder clearName() {
@@ -733,7 +733,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 2;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordTransform
        * </pre>
        */
       public Builder setNameBytes(
@@ -1006,7 +1006,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordAxis
      * </pre>
      */
     boolean hasName();
@@ -1014,7 +1014,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordAxis
      * </pre>
      */
     java.lang.String getName();
@@ -1022,7 +1022,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordAxis
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -1110,6 +1110,24 @@ public final class CdmrFeatureProto {
      */
     com.google.protobuf.ByteString
         getDescriptionBytes();
+
+    // required bool isIndependent = 7;
+    /**
+     * <code>required bool isIndependent = 7;</code>
+     *
+     * <pre>
+     * has its own dimension, is a coordinate variable, eg x(x)
+     * </pre>
+     */
+    boolean hasIsIndependent();
+    /**
+     * <code>required bool isIndependent = 7;</code>
+     *
+     * <pre>
+     * has its own dimension, is a coordinate variable, eg x(x)
+     * </pre>
+     */
+    boolean getIsIndependent();
 
     // required int64 nvalues = 10;
     /**
@@ -1285,33 +1303,38 @@ public final class CdmrFeatureProto {
               description_ = input.readBytes();
               break;
             }
-            case 80: {
+            case 56: {
               bitField0_ |= 0x00000020;
+              isIndependent_ = input.readBool();
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000040;
               nvalues_ = input.readInt64();
               break;
             }
             case 88: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000080;
               spacing_ = input.readInt32();
               break;
             }
             case 97: {
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000100;
               startValue_ = input.readDouble();
               break;
             }
             case 105: {
-              bitField0_ |= 0x00000100;
+              bitField0_ |= 0x00000200;
               endValue_ = input.readDouble();
               break;
             }
             case 113: {
-              bitField0_ |= 0x00000200;
+              bitField0_ |= 0x00000400;
               resolution_ = input.readDouble();
               break;
             }
             case 122: {
-              bitField0_ |= 0x00000400;
+              bitField0_ |= 0x00000800;
               values_ = input.readBytes();
               break;
             }
@@ -1365,7 +1388,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordAxis
      * </pre>
      */
     public boolean hasName() {
@@ -1375,7 +1398,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordAxis
      * </pre>
      */
     public java.lang.String getName() {
@@ -1396,7 +1419,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordAxis
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -1575,6 +1598,30 @@ public final class CdmrFeatureProto {
       }
     }
 
+    // required bool isIndependent = 7;
+    public static final int ISINDEPENDENT_FIELD_NUMBER = 7;
+    private boolean isIndependent_;
+    /**
+     * <code>required bool isIndependent = 7;</code>
+     *
+     * <pre>
+     * has its own dimension, is a coordinate variable, eg x(x)
+     * </pre>
+     */
+    public boolean hasIsIndependent() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>required bool isIndependent = 7;</code>
+     *
+     * <pre>
+     * has its own dimension, is a coordinate variable, eg x(x)
+     * </pre>
+     */
+    public boolean getIsIndependent() {
+      return isIndependent_;
+    }
+
     // required int64 nvalues = 10;
     public static final int NVALUES_FIELD_NUMBER = 10;
     private long nvalues_;
@@ -1582,7 +1629,7 @@ public final class CdmrFeatureProto {
      * <code>required int64 nvalues = 10;</code>
      */
     public boolean hasNvalues() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
      * <code>required int64 nvalues = 10;</code>
@@ -1602,7 +1649,7 @@ public final class CdmrFeatureProto {
      * </pre>
      */
     public boolean hasSpacing() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
      * <code>required int32 spacing = 11;</code>
@@ -1622,7 +1669,7 @@ public final class CdmrFeatureProto {
      * <code>required double startValue = 12;</code>
      */
     public boolean hasStartValue() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
      * <code>required double startValue = 12;</code>
@@ -1638,7 +1685,7 @@ public final class CdmrFeatureProto {
      * <code>required double endValue = 13;</code>
      */
     public boolean hasEndValue() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     /**
      * <code>required double endValue = 13;</code>
@@ -1658,7 +1705,7 @@ public final class CdmrFeatureProto {
      * </pre>
      */
     public boolean hasResolution() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
+      return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     /**
      * <code>optional double resolution = 14;</code>
@@ -1682,7 +1729,7 @@ public final class CdmrFeatureProto {
      * </pre>
      */
     public boolean hasValues() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
+      return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     /**
      * <code>optional bytes values = 15;</code>
@@ -1702,6 +1749,7 @@ public final class CdmrFeatureProto {
       axisType_ = 0;
       units_ = "";
       description_ = "";
+      isIndependent_ = false;
       nvalues_ = 0L;
       spacing_ = 0;
       startValue_ = 0D;
@@ -1727,6 +1775,10 @@ public final class CdmrFeatureProto {
         return false;
       }
       if (!hasUnits()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasIsIndependent()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -1778,21 +1830,24 @@ public final class CdmrFeatureProto {
         output.writeBytes(6, getDescriptionBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeInt64(10, nvalues_);
+        output.writeBool(7, isIndependent_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt32(11, spacing_);
+        output.writeInt64(10, nvalues_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeDouble(12, startValue_);
+        output.writeInt32(11, spacing_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeDouble(13, endValue_);
+        output.writeDouble(12, startValue_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeDouble(14, resolution_);
+        output.writeDouble(13, endValue_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeDouble(14, resolution_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeBytes(15, values_);
       }
       getUnknownFields().writeTo(output);
@@ -1830,25 +1885,29 @@ public final class CdmrFeatureProto {
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(10, nvalues_);
+          .computeBoolSize(7, isIndependent_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(11, spacing_);
+          .computeInt64Size(10, nvalues_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(12, startValue_);
+          .computeInt32Size(11, spacing_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(13, endValue_);
+          .computeDoubleSize(12, startValue_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(14, resolution_);
+          .computeDoubleSize(13, endValue_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(14, resolution_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(15, values_);
       }
@@ -1985,18 +2044,20 @@ public final class CdmrFeatureProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         description_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
-        nvalues_ = 0L;
+        isIndependent_ = false;
         bitField0_ = (bitField0_ & ~0x00000040);
-        spacing_ = 0;
+        nvalues_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000080);
-        startValue_ = 0D;
+        spacing_ = 0;
         bitField0_ = (bitField0_ & ~0x00000100);
-        endValue_ = 0D;
+        startValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000200);
-        resolution_ = 0D;
+        endValue_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000400);
-        values_ = com.google.protobuf.ByteString.EMPTY;
+        resolution_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000800);
+        values_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00001000);
         return this;
       }
 
@@ -2057,25 +2118,29 @@ public final class CdmrFeatureProto {
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.nvalues_ = nvalues_;
+        result.isIndependent_ = isIndependent_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.spacing_ = spacing_;
+        result.nvalues_ = nvalues_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000080;
         }
-        result.startValue_ = startValue_;
+        result.spacing_ = spacing_;
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000100;
         }
-        result.endValue_ = endValue_;
+        result.startValue_ = startValue_;
         if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
           to_bitField0_ |= 0x00000200;
         }
-        result.resolution_ = resolution_;
+        result.endValue_ = endValue_;
         if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
           to_bitField0_ |= 0x00000400;
+        }
+        result.resolution_ = resolution_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00000800;
         }
         result.values_ = values_;
         result.bitField0_ = to_bitField0_;
@@ -2141,6 +2206,9 @@ public final class CdmrFeatureProto {
           description_ = other.description_;
           onChanged();
         }
+        if (other.hasIsIndependent()) {
+          setIsIndependent(other.getIsIndependent());
+        }
         if (other.hasNvalues()) {
           setNvalues(other.getNvalues());
         }
@@ -2177,6 +2245,10 @@ public final class CdmrFeatureProto {
           return false;
         }
         if (!hasUnits()) {
+          
+          return false;
+        }
+        if (!hasIsIndependent()) {
           
           return false;
         }
@@ -2230,7 +2302,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordAxis
        * </pre>
        */
       public boolean hasName() {
@@ -2240,7 +2312,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordAxis
        * </pre>
        */
       public java.lang.String getName() {
@@ -2258,7 +2330,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordAxis
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -2278,7 +2350,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordAxis
        * </pre>
        */
       public Builder setName(
@@ -2295,7 +2367,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordAxis
        * </pre>
        */
       public Builder clearName() {
@@ -2308,7 +2380,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordAxis
        * </pre>
        */
       public Builder setNameBytes(
@@ -2795,13 +2867,62 @@ public final class CdmrFeatureProto {
         return this;
       }
 
+      // required bool isIndependent = 7;
+      private boolean isIndependent_ ;
+      /**
+       * <code>required bool isIndependent = 7;</code>
+       *
+       * <pre>
+       * has its own dimension, is a coordinate variable, eg x(x)
+       * </pre>
+       */
+      public boolean hasIsIndependent() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>required bool isIndependent = 7;</code>
+       *
+       * <pre>
+       * has its own dimension, is a coordinate variable, eg x(x)
+       * </pre>
+       */
+      public boolean getIsIndependent() {
+        return isIndependent_;
+      }
+      /**
+       * <code>required bool isIndependent = 7;</code>
+       *
+       * <pre>
+       * has its own dimension, is a coordinate variable, eg x(x)
+       * </pre>
+       */
+      public Builder setIsIndependent(boolean value) {
+        bitField0_ |= 0x00000040;
+        isIndependent_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bool isIndependent = 7;</code>
+       *
+       * <pre>
+       * has its own dimension, is a coordinate variable, eg x(x)
+       * </pre>
+       */
+      public Builder clearIsIndependent() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        isIndependent_ = false;
+        onChanged();
+        return this;
+      }
+
       // required int64 nvalues = 10;
       private long nvalues_ ;
       /**
        * <code>required int64 nvalues = 10;</code>
        */
       public boolean hasNvalues() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
        * <code>required int64 nvalues = 10;</code>
@@ -2813,7 +2934,7 @@ public final class CdmrFeatureProto {
        * <code>required int64 nvalues = 10;</code>
        */
       public Builder setNvalues(long value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         nvalues_ = value;
         onChanged();
         return this;
@@ -2822,7 +2943,7 @@ public final class CdmrFeatureProto {
        * <code>required int64 nvalues = 10;</code>
        */
       public Builder clearNvalues() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         nvalues_ = 0L;
         onChanged();
         return this;
@@ -2838,7 +2959,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public boolean hasSpacing() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
        * <code>required int32 spacing = 11;</code>
@@ -2858,7 +2979,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public Builder setSpacing(int value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000100;
         spacing_ = value;
         onChanged();
         return this;
@@ -2871,7 +2992,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public Builder clearSpacing() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000100);
         spacing_ = 0;
         onChanged();
         return this;
@@ -2883,7 +3004,7 @@ public final class CdmrFeatureProto {
        * <code>required double startValue = 12;</code>
        */
       public boolean hasStartValue() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       /**
        * <code>required double startValue = 12;</code>
@@ -2895,7 +3016,7 @@ public final class CdmrFeatureProto {
        * <code>required double startValue = 12;</code>
        */
       public Builder setStartValue(double value) {
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000200;
         startValue_ = value;
         onChanged();
         return this;
@@ -2904,7 +3025,7 @@ public final class CdmrFeatureProto {
        * <code>required double startValue = 12;</code>
        */
       public Builder clearStartValue() {
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000200);
         startValue_ = 0D;
         onChanged();
         return this;
@@ -2916,7 +3037,7 @@ public final class CdmrFeatureProto {
        * <code>required double endValue = 13;</code>
        */
       public boolean hasEndValue() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       /**
        * <code>required double endValue = 13;</code>
@@ -2928,7 +3049,7 @@ public final class CdmrFeatureProto {
        * <code>required double endValue = 13;</code>
        */
       public Builder setEndValue(double value) {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000400;
         endValue_ = value;
         onChanged();
         return this;
@@ -2937,7 +3058,7 @@ public final class CdmrFeatureProto {
        * <code>required double endValue = 13;</code>
        */
       public Builder clearEndValue() {
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000400);
         endValue_ = 0D;
         onChanged();
         return this;
@@ -2953,7 +3074,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public boolean hasResolution() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
+        return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
        * <code>optional double resolution = 14;</code>
@@ -2973,7 +3094,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public Builder setResolution(double value) {
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000800;
         resolution_ = value;
         onChanged();
         return this;
@@ -2986,7 +3107,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public Builder clearResolution() {
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000800);
         resolution_ = 0D;
         onChanged();
         return this;
@@ -3002,7 +3123,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public boolean hasValues() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
+        return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
        * <code>optional bytes values = 15;</code>
@@ -3025,7 +3146,7 @@ public final class CdmrFeatureProto {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000800;
+  bitField0_ |= 0x00001000;
         values_ = value;
         onChanged();
         return this;
@@ -3038,7 +3159,7 @@ public final class CdmrFeatureProto {
        * </pre>
        */
       public Builder clearValues() {
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00001000);
         values_ = getDefaultInstance().getValues();
         onChanged();
         return this;
@@ -3063,7 +3184,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordSys
      * </pre>
      */
     boolean hasName();
@@ -3071,7 +3192,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordSys
      * </pre>
      */
     java.lang.String getName();
@@ -3079,7 +3200,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordSys
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -3130,7 +3251,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     java.util.List<ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys> 
@@ -3139,7 +3260,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys getComponents(int index);
@@ -3147,7 +3268,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     int getComponentsCount();
@@ -3155,7 +3276,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     java.util.List<? extends ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSysOrBuilder> 
@@ -3164,7 +3285,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSysOrBuilder getComponentsOrBuilder(
@@ -3306,7 +3427,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordSys
      * </pre>
      */
     public boolean hasName() {
@@ -3316,7 +3437,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordSys
      * </pre>
      */
     public java.lang.String getName() {
@@ -3337,7 +3458,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's CoordSys
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -3421,7 +3542,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     public java.util.List<ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys> getComponentsList() {
@@ -3431,7 +3552,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     public java.util.List<? extends ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSysOrBuilder> 
@@ -3442,7 +3563,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     public int getComponentsCount() {
@@ -3452,7 +3573,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     public ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys getComponents(int index) {
@@ -3462,7 +3583,7 @@ public final class CdmrFeatureProto {
      * <code>repeated .CoordSys components = 4;</code>
      *
      * <pre>
-     * ??
+     * factor out Horiz ??
      * </pre>
      */
     public ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSysOrBuilder getComponentsOrBuilder(
@@ -3837,7 +3958,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordSys
        * </pre>
        */
       public boolean hasName() {
@@ -3847,7 +3968,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordSys
        * </pre>
        */
       public java.lang.String getName() {
@@ -3865,7 +3986,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordSys
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -3885,7 +4006,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordSys
        * </pre>
        */
       public Builder setName(
@@ -3902,7 +4023,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordSys
        * </pre>
        */
       public Builder clearName() {
@@ -3915,7 +4036,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's CoordSys
        * </pre>
        */
       public Builder setNameBytes(
@@ -4132,7 +4253,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public java.util.List<ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys> getComponentsList() {
@@ -4146,7 +4267,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public int getComponentsCount() {
@@ -4160,7 +4281,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys getComponents(int index) {
@@ -4174,7 +4295,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder setComponents(
@@ -4195,7 +4316,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder setComponents(
@@ -4213,7 +4334,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder addComponents(ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys value) {
@@ -4233,7 +4354,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder addComponents(
@@ -4254,7 +4375,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder addComponents(
@@ -4272,7 +4393,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder addComponents(
@@ -4290,7 +4411,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder addAllComponents(
@@ -4308,7 +4429,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder clearComponents() {
@@ -4325,7 +4446,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public Builder removeComponents(int index) {
@@ -4342,7 +4463,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys.Builder getComponentsBuilder(
@@ -4353,7 +4474,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSysOrBuilder getComponentsOrBuilder(
@@ -4367,7 +4488,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public java.util.List<? extends ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSysOrBuilder> 
@@ -4382,7 +4503,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys.Builder addComponentsBuilder() {
@@ -4393,7 +4514,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys.Builder addComponentsBuilder(
@@ -4405,7 +4526,7 @@ public final class CdmrFeatureProto {
        * <code>repeated .CoordSys components = 4;</code>
        *
        * <pre>
-       * ??
+       * factor out Horiz ??
        * </pre>
        */
       public java.util.List<ucar.nc2.ft2.remote.CdmrFeatureProto.CoordSys.Builder> 
@@ -4446,7 +4567,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's GridCoverage
      * </pre>
      */
     boolean hasName();
@@ -4454,7 +4575,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's GridCoverage
      * </pre>
      */
     java.lang.String getName();
@@ -4462,7 +4583,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's GridCoverage
      * </pre>
      */
     com.google.protobuf.ByteString
@@ -4703,7 +4824,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's GridCoverage
      * </pre>
      */
     public boolean hasName() {
@@ -4713,7 +4834,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's GridCoverage
      * </pre>
      */
     public java.lang.String getName() {
@@ -4734,7 +4855,7 @@ public final class CdmrFeatureProto {
      * <code>required string name = 1;</code>
      *
      * <pre>
-     * must be unique in dataset
+     * must be unique in dataset's GridCoverage
      * </pre>
      */
     public com.google.protobuf.ByteString
@@ -5360,7 +5481,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's GridCoverage
        * </pre>
        */
       public boolean hasName() {
@@ -5370,7 +5491,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's GridCoverage
        * </pre>
        */
       public java.lang.String getName() {
@@ -5388,7 +5509,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's GridCoverage
        * </pre>
        */
       public com.google.protobuf.ByteString
@@ -5408,7 +5529,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's GridCoverage
        * </pre>
        */
       public Builder setName(
@@ -5425,7 +5546,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's GridCoverage
        * </pre>
        */
       public Builder clearName() {
@@ -5438,7 +5559,7 @@ public final class CdmrFeatureProto {
        * <code>required string name = 1;</code>
        *
        * <pre>
-       * must be unique in dataset
+       * must be unique in dataset's GridCoverage
        * </pre>
        */
       public Builder setNameBytes(
@@ -10295,32 +10416,32 @@ public final class CdmrFeatureProto {
       "\n%ucar/nc2/ft2/remote/cdmrfeature.proto\032" +
       "\036ucar/nc2/stream/ncStream.proto\"K\n\016Coord" +
       "Transform\022\017\n\007isHoriz\030\001 \002(\010\022\014\n\004name\030\002 \002(\t" +
-      "\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\362\001\n\tCoordAx" +
+      "\022\032\n\006params\030\003 \003(\0132\n.Attribute\"\211\002\n\tCoordAx" +
       "is\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.Dat" +
       "aType\022\030\n\004atts\030\003 \003(\0132\n.Attribute\022\020\n\010axisT" +
       "ype\030\004 \002(\005\022\r\n\005units\030\005 \002(\t\022\023\n\013description\030" +
-      "\006 \001(\t\022\017\n\007nvalues\030\n \002(\003\022\017\n\007spacing\030\013 \002(\005\022" +
-      "\022\n\nstartValue\030\014 \002(\001\022\020\n\010endValue\030\r \002(\001\022\022\n" +
-      "\nresolution\030\016 \001(\001\022\016\n\006values\030\017 \001(\014\"b\n\010Coo",
-      "rdSys\022\014\n\004name\030\001 \002(\t\022\021\n\taxisNames\030\002 \003(\t\022\026" +
-      "\n\016transformNames\030\003 \003(\t\022\035\n\ncomponents\030\004 \003" +
-      "(\0132\t.CoordSys\"\242\001\n\014GridCoverage\022\014\n\004name\030\001" +
-      " \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.DataType\022\027\n\010uns" +
-      "igned\030\003 \001(\010:\005false\022\030\n\004atts\030\004 \003(\0132\n.Attri" +
-      "bute\022\020\n\010coordSys\030\005 \002(\t\022\r\n\005units\030\006 \001(\t\022\023\n" +
-      "\013description\030\007 \001(\t\"A\n\021CalendarDateRange\022" +
-      "\r\n\005start\030\001 \002(\003\022\013\n\003end\030\002 \002(\003\022\020\n\010calendar\030" +
-      "\003 \002(\005\"G\n\tRectangle\022\016\n\006startx\030\001 \002(\001\022\016\n\006st" +
-      "arty\030\002 \002(\001\022\014\n\004incx\030\003 \002(\001\022\014\n\004incy\030\004 \002(\001\"\246",
-      "\002\n\023GridCoverageDataset\022\014\n\004name\030\001 \002(\t\022\030\n\004" +
-      "atts\030\002 \003(\0132\n.Attribute\022\036\n\nlatlonRect\030\003 \002" +
-      "(\0132\n.Rectangle\022\034\n\010projRect\030\004 \001(\0132\n.Recta" +
-      "ngle\022%\n\tdateRange\030\005 \002(\0132\022.CalendarDateRa" +
-      "nge\022\033\n\010coordSys\030\006 \003(\0132\t.CoordSys\022(\n\017coor" +
-      "dTransforms\030\007 \003(\0132\017.CoordTransform\022\035\n\tco" +
-      "ordAxes\030\010 \003(\0132\n.CoordAxis\022\034\n\005grids\030\t \003(\013" +
-      "2\r.GridCoverageB\'\n\023ucar.nc2.ft2.remoteB\020" +
-      "CdmrFeatureProto"
+      "\006 \001(\t\022\025\n\risIndependent\030\007 \002(\010\022\017\n\007nvalues\030" +
+      "\n \002(\003\022\017\n\007spacing\030\013 \002(\005\022\022\n\nstartValue\030\014 \002" +
+      "(\001\022\020\n\010endValue\030\r \002(\001\022\022\n\nresolution\030\016 \001(\001",
+      "\022\016\n\006values\030\017 \001(\014\"b\n\010CoordSys\022\014\n\004name\030\001 \002" +
+      "(\t\022\021\n\taxisNames\030\002 \003(\t\022\026\n\016transformNames\030" +
+      "\003 \003(\t\022\035\n\ncomponents\030\004 \003(\0132\t.CoordSys\"\242\001\n" +
+      "\014GridCoverage\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030" +
+      "\002 \002(\0162\t.DataType\022\027\n\010unsigned\030\003 \001(\010:\005fals" +
+      "e\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\020\n\010coordSys\030" +
+      "\005 \002(\t\022\r\n\005units\030\006 \001(\t\022\023\n\013description\030\007 \001(" +
+      "\t\"A\n\021CalendarDateRange\022\r\n\005start\030\001 \002(\003\022\013\n" +
+      "\003end\030\002 \002(\003\022\020\n\010calendar\030\003 \002(\005\"G\n\tRectangl" +
+      "e\022\016\n\006startx\030\001 \002(\001\022\016\n\006starty\030\002 \002(\001\022\014\n\004inc",
+      "x\030\003 \002(\001\022\014\n\004incy\030\004 \002(\001\"\246\002\n\023GridCoverageDa" +
+      "taset\022\014\n\004name\030\001 \002(\t\022\030\n\004atts\030\002 \003(\0132\n.Attr" +
+      "ibute\022\036\n\nlatlonRect\030\003 \002(\0132\n.Rectangle\022\034\n" +
+      "\010projRect\030\004 \001(\0132\n.Rectangle\022%\n\tdateRange" +
+      "\030\005 \002(\0132\022.CalendarDateRange\022\033\n\010coordSys\030\006" +
+      " \003(\0132\t.CoordSys\022(\n\017coordTransforms\030\007 \003(\013" +
+      "2\017.CoordTransform\022\035\n\tcoordAxes\030\010 \003(\0132\n.C" +
+      "oordAxis\022\034\n\005grids\030\t \003(\0132\r.GridCoverageB\'" +
+      "\n\023ucar.nc2.ft2.remoteB\020CdmrFeatureProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -10338,7 +10459,7 @@ public final class CdmrFeatureProto {
           internal_static_CoordAxis_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_CoordAxis_descriptor,
-              new java.lang.String[] { "Name", "DataType", "Atts", "AxisType", "Units", "Description", "Nvalues", "Spacing", "StartValue", "EndValue", "Resolution", "Values", });
+              new java.lang.String[] { "Name", "DataType", "Atts", "AxisType", "Units", "Description", "IsIndependent", "Nvalues", "Spacing", "StartValue", "EndValue", "Resolution", "Values", });
           internal_static_CoordSys_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_CoordSys_fieldAccessorTable = new

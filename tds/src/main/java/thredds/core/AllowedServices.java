@@ -114,7 +114,7 @@ public class AllowedServices {
 
   public boolean isAllowed(StandardService type) {
     AllowedService s = allowed.get(type);
-    return s == null || s.allowed;
+    return s != null && s.allowed;
   }
 
   // may return null

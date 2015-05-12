@@ -216,6 +216,7 @@ public class CdmrfWriter {
     builder.setNvalues(axis.getNvalues());
     if (axis.getUnits() != null) builder.setUnits(axis.getUnits());
     if (axis.getDescription() != null) builder.setDescription(axis.getDescription());
+    builder.setIsIndependent(axis.isIndependent());
 
     for (Attribute att : axis.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
@@ -226,17 +227,11 @@ public class CdmrfWriter {
     builder.setResolution(axis.getResolution());
 
     if (!axis.isRegular() && axis.getNvalues() < MAX_INLINE_NVALUES) {
-      try {
-        double[] values = axis.readValues();
-        ByteBuffer bb = ByteBuffer.allocate(8 * values.length);
-        DoubleBuffer db = bb.asDoubleBuffer();
-        db.put(values);
-        builder.setValues(ByteString.copyFrom(bb.array()));
-
-      } catch (IOException e) {
-        e.printStackTrace();
-        logger.error("failed to read data", e);
-      }
+      double[] values = axis.getValues();
+      ByteBuffer bb = ByteBuffer.allocate(8 * values.length);
+      DoubleBuffer db = bb.asDoubleBuffer();
+      db.put(values);
+      builder.setValues(ByteString.copyFrom(bb.array()));
     }
 
     /* for (Attribute att : axis.getParameters())

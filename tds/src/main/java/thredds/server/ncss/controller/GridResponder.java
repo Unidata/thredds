@@ -39,15 +39,7 @@ import thredds.server.config.ThreddsConfig;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.ft2.coverage.grid.CFGridCoverageWriter;
-import ucar.nc2.ft2.coverage.grid.GridCoordAxis;
-import ucar.nc2.ft2.coverage.grid.GridCoverage;
-import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionRect;
-
-import javax.servlet.http.HttpServletResponse;
+import ucar.nc2.ft2.coverage.grid.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -75,18 +67,9 @@ class GridResponder {
 	/**
 	 * Does the actual work.
 	 */
-	File getResponseFile(HttpServletResponse response, NcssGridParamsBean params, NetcdfFileWriter.Version version)
+	File getResponseFile(NcssGridParamsBean params, NetcdfFileWriter.Version version)
 			throws NcssException, InvalidRangeException, ParseException, IOException {
 
-		File netcdfResult = writeGridFile(params.getVar(), params.getBoundingBox(), params.getProjectionBB(), params.getHorizStride(),
-						params.getVertCoord(), params.getCalendarDateRange(gcd.getCalendar()),
-						params.getTimeStride(), params.isAddLatLon(), version);
-		return netcdfResult;
-	}
-
-  private File writeGridFile(List<String> vars, LatLonRect bbox, ProjectionRect projRect, Integer horizStride,
- 			Double vertCoord, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version)
- 			throws RequestTooLargeException, InvalidRangeException, IOException {
 
     long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
     if (maxFileDownloadSize > 0) {
@@ -110,14 +93,8 @@ class GridResponder {
  		String cacheFilename = ncFile.getPath();
 
 		NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, cacheFilename, null); // default chunking - let user control at some point
-		/*
-		 private long writeFile(GridCoverageDataset gdsOrg, List<String> gridNames,
-                               LatLonRect llbb, ProjectionRect projRect, Integer horizStride, Double vertCoord,
-                               CalendarDateRange dateRange, CalendarDate date, Integer timeStride,
-                               boolean addLatLon, boolean testSizeOnly,
-                               NetcdfFileWriter writer) throws IOException, InvalidRangeException
-		 */
-		CFGridCoverageWriter.writeFile(gcd, vars, bbox, projRect, horizStride, vertCoord, dateRange, null, timeStride, addLatLon, writer);
+		GridSubset subset = params.makeSubset(gcd.getCalendar());
+		CFGridCoverageWriter.writeFile(gcd, params.getVar(), subset, params.isAddLatLon(), writer);
 
  		return new File(cacheFilename);
  	}

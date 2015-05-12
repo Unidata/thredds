@@ -33,6 +33,10 @@ public class CalendarDate implements Comparable<CalendarDate> {
      return new CalendarDate(null, new DateTime());
   }
 
+  static public CalendarDate present(Calendar cal) {
+     return new CalendarDate(cal, new DateTime());
+  }
+
   /**
    * Get Calendar date from fields. Uses UTZ time zone
    * @param cal calendar to use, or null for default

@@ -7,7 +7,7 @@
 </head>
 <body>
 <h2>Spring Configuration - 5.0</h2>
-<p><em>May 1, 2015</em></p>
+<p><em>May 11, 2015</em></p>
 <h2>Notes</h2>
 <ol>
   <li>Be careful of trusting IntelliJ too much. It sometimes show problems in Spring that arent there. </li>
@@ -460,6 +460,11 @@
    </tbody>
   </table>
 </div>
+<h3>Unit Testing</h3>
+<ul>
+  <li>    <strong>com.eclipsesource.restfuse</strong> is limited and appears to be abandoned, phase it out of our tests</li>
+</ul>
+<p>&nbsp;</p>
 <h3>Debugging  </h3>
 <p>1) Look in serverStartup.log and search for messages with &quot;RequestMappingHandlerMapping: Mapped&quot; :</p>
 <pre>712013-10-23T13:54:40.342-0600 [     17458][        ] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: Mapped &quot;{[/admin/collection || /admin/collection/trigger],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}&quot; onto protected org.springframework.web.servlet.ModelAndView thredds.server.admin.CollectionController.handleCollectionTriggers(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) throws java.lang.Exception 

@@ -43,6 +43,8 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.LastModified;
+import thredds.core.AllowedServices;
+import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
 import thredds.server.exception.ServiceNotAllowed;
@@ -78,11 +80,8 @@ public class CdmrFeatureController implements LastModified {
   @Autowired
   TdsContext tdsContext;
 
-  private boolean allow = true;
-
-  public void setAllow(boolean allow) {
-    this.allow = allow;
-  }
+  @Autowired
+  private AllowedServices allowedServices;
 
   @Override
   public long getLastModified(HttpServletRequest req) {
@@ -104,8 +103,8 @@ public class CdmrFeatureController implements LastModified {
     if (showReq)
       System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
 
-    if (!allow)
-      throw new ServiceNotAllowed("cdmrfeature");
+    if (!allowedServices.isAllowed(StandardService.cdmrFeature))
+      throw new ServiceNotAllowed(StandardService.cdmrFeature.toString());
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmrfeature");
 
@@ -137,8 +136,8 @@ public class CdmrFeatureController implements LastModified {
     if (showReq)
       System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
 
-    if (!allow)
-      throw new ServiceNotAllowed("cdmrfeature");
+    if (!allowedServices.isAllowed(StandardService.cdmrFeature))
+      throw new ServiceNotAllowed(StandardService.cdmrFeature.toString());
 
     if (validationResult.hasErrors())
       throw new BindException(validationResult);
@@ -165,7 +164,7 @@ public class CdmrFeatureController implements LastModified {
 
   private GridSubset makeSubset(CdmrFeatureQueryBean qb) {
     GridSubset subset = new GridSubset();
-    if (qb.getZ() != null) subset.set(GridCoordAxis.Type.Z, qb.getZ());
+    if (qb.getZ() != null) subset.set(GridSubset.vertCoord, qb.getZ());
     return subset;
   }
 

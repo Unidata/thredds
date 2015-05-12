@@ -1,17 +1,22 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
-import ucar.nc2.Attribute;
-import ucar.nc2.ft.cover.CoverageCS;
-import ucar.nc2.ft2.remote.CdmrFeatureProto;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
+import ucar.unidata.geoloc.projection.sat.Geostationary;
+import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 
 import java.util.*;
 
 /**
- * Describe
+ * Helper class for  GridCoverageDataset.
+ *  1) groups GridCoverage by GridCoordSys into a Gridsets
+ *  2) subsets GridCoverageDataset
  *
  * @author caron
  * @since 5/8/2015
@@ -20,17 +25,22 @@ public class GridDatasetHelper {
   GridCoverageDataset gds;
   List<String> gridNames;   // null nmeans all grids
   List<Gridset> gridsets;
+  HorizCoordSys horizCoordSys;
 
   GridDatasetHelper(GridCoverageDataset gds) {
     this.gds = gds;
     this.gridsets = makeGridsets();
+    this.horizCoordSys = makeHorizCoordSys();
   }
 
   GridDatasetHelper(GridCoverageDataset gds, List<String> gridNames) {
     this.gds = gds;
     this.gridNames = gridNames;
     this.gridsets = makeGridsets();
+    this.horizCoordSys = makeHorizCoordSys();
   }
+
+  ////////////////////////////////////////////////////////////////////
 
   public static class Gridset {
     public GridCoordSys gcs;
@@ -46,7 +56,7 @@ public class GridDatasetHelper {
     return gridsets;
   }
 
-  // these are just the grids which are asked for; grouped by coordinate system into a "Gridset
+  // these are just the grids which are asked for in gridNames; grouped by coordinate system into a "Gridset"
   private List<Gridset> makeGridsets() {
     Map<String, Gridset> map = new HashMap<>();
 
@@ -71,9 +81,54 @@ public class GridDatasetHelper {
     return result;
   }
 
+    /////////////////////////////////////////////////////
+
+  public static class HorizCoordSys {
+    public GridCoordAxis xaxis;
+    public GridCoordAxis yaxis;
+    public GridCoordTransform transform;
+
+    public HorizCoordSys(GridCoordAxis xaxis, GridCoordAxis yaxis, GridCoordTransform transform) {
+      this.xaxis = xaxis;
+      this.yaxis = yaxis;
+      this.transform = transform;
+    }
+
+    // just match on names
+    public boolean same(HorizCoordSys that) {
+      if (this == that) return true;
+
+      if (!xaxis.getName().equals(that.xaxis.getName())) return false;
+      if (!yaxis.getName().equals(that.yaxis.getName())) return false;
+      return !(transform != null ? !transform.getName().equals(that.transform.getName()) : that.transform != null);
+    }
+
+  }
+
+  private HorizCoordSys makeHorizCoordSys() {
+    HorizCoordSys result = null;
+    for (Gridset gridset : gridsets) {
+      GridCoordAxis xaxis = gds.getXAxis(gridset.gcs);
+      GridCoordAxis yaxis = gds.getYAxis(gridset.gcs);
+      GridCoordTransform hct = null;
+
+      for (String ctName : gridset.gcs.getTransformNames()) {
+        GridCoordTransform ct = gds.findCoordTransform(ctName);
+        if (ct.isHoriz) hct = ct;
+      }
+
+      HorizCoordSys hcs = new HorizCoordSys(xaxis, yaxis, hct);
+      if (result == null) result = hcs;
+      else assert result.same(hcs);
+    }
+    return result;
+  }
+
+  /////////////////////////////////////////////////////
+
   // make a subsetted GridCoverageDataset
   // the cool thing is we only have to subset the CoordAxes !!
-  public GridCoverageDataset subset(GridSubset subset) {
+  public GridCoverageDataset subset(GridSubset subset) throws InvalidRangeException {
     GridCoverageDataset result = new GridCoverageDataset();
 
     result.setName(gds.getName());
@@ -105,8 +160,11 @@ public class GridDatasetHelper {
     List<GridCoordAxis> axes = new ArrayList<>();
     for (String axisName : axisNames) {
       GridCoordAxis orgAxis = gds.findCoordAxis(axisName);
-      axes.add( subset(orgAxis, subset));
+      GridCoordAxis subAxis = subset(orgAxis, subset);
+      if (subAxis != null)
+        axes.add( subAxis);
     }
+    subsetHorizAxes(subset, axes);
     result.setCoordAxes(axes);
 
     // LOOK TODO
@@ -122,14 +180,70 @@ public class GridDatasetHelper {
       case GeoZ:
       case Pressure:
       case Height:
-        Object val = (subset == null) ? null : subset.get(GridCoordAxis.Type.Z);
-        if (val == null) return orgAxis;
-
-        Double dval = subset.getDouble("vertCoord");  // ncss using this
+        Double dval = (subset == null) ? null : subset.getDouble(GridSubset.vertCoord);
         if (dval == null) return orgAxis;
+
+        // LOOK problems when vertCoord doesnt match any coordinates in the axes
         return orgAxis.subset(dval, dval);
+
+      case RunTime:
+        return orgAxis;
+
+      case Time:
+        if (subset.isTrue(GridSubset.allTimes))
+          return orgAxis;
+        if (subset.isTrue(GridSubset.latestTime))
+          return orgAxis.subsetLatest();
     }
 
-    return orgAxis;
+    return null;
   }
+
+  /**
+   *     if (hasProjectionBB())
+         subset.set(GridSubset.projBB, getProjectionBB());
+       else if (hasLatLonBB())
+         subset.set(GridSubset.latlonBB, getLatLonBoundingBox());
+       if (horizStride != null)
+         subset.set(GridSubset.horizStride, horizStride);
+
+   */
+  private void subsetHorizAxes(GridSubset subset, List<GridCoordAxis> result) throws InvalidRangeException {
+    LatLonRect llbb = (LatLonRect) subset.get(GridSubset.latlonBB);
+    ProjectionRect projbb = (ProjectionRect) subset.get(GridSubset.projBB);
+
+    if (projbb != null) {
+      result.add(horizCoordSys.xaxis.subset(projbb.getMinX(), projbb.getMaxX()));
+      result.add(horizCoordSys.yaxis.subset(projbb.getMinY(), projbb.getMaxY()));
+      return;
+    }
+
+    if (llbb != null) {
+      if (horizCoordSys.transform == null) { // this means its a latlon
+        result.add(horizCoordSys.xaxis.subset(llbb.getLonMin(), llbb.getLonMax()));  // heres where to deal with crossing seam
+        result.add(horizCoordSys.yaxis.subset(llbb.getLatMin(), llbb.getLatMax()));
+        return;
+      }
+
+      // we have to transform latlon to projection coordinates
+      ProjectionImpl proj = gds.makeProjection(horizCoordSys.transform);
+      if (!(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation) && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
+        LatLonRect bb = gds.getLatLonBoundingBox(); // first clip the request rectangle to the bounding box of the grid
+        LatLonRect rect2 = bb.intersect(llbb);
+        if (null == rect2)
+          throw new InvalidRangeException("Request Bounding box does not intersect Grid ");
+        llbb = rect2;
+      }
+
+      ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
+      result.add(horizCoordSys.xaxis.subset(prect.getMinX(), prect.getMaxX()));
+      result.add(horizCoordSys.yaxis.subset(prect.getMinY(), prect.getMaxY()));
+      return;
+     }
+
+    // otherwise leave originals
+    result.add(horizCoordSys.xaxis);
+    result.add(horizCoordSys.yaxis);
+  }
+
 }

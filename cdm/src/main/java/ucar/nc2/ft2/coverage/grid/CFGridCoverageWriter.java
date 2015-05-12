@@ -53,13 +53,7 @@ public class CFGridCoverageWriter {
 
    * @param gdsOrg       the GridCoverageDataset
    * @param gridNames    the list of variables to be written, or null for all
-   * @param llbb         the lat/lon bounding box, or null for all
-   * @param projRect     the projection bounding box, or null for all
-   * @param horizStride  the x and y stride, or null
-   * @param vertCoord    the vertical coordinate, or null
-   * @param dateRange    date range, or null
-   * @param date         single date, or null
-   * @param timeStride   the time stride, or null
+   * @param subset       defines the requested subset
    * @param addLatLon    add 2D lat/lon coordinates if needed
    * @param writer       this does the actual writing
    * @return total bytes written
@@ -67,28 +61,9 @@ public class CFGridCoverageWriter {
    * @throws InvalidRangeException
    */
   public static long writeFile(GridCoverageDataset gdsOrg, List<String> gridNames,
-                               LatLonRect llbb, ProjectionRect projRect, Integer horizStride, Double vertCoord,
-                               CalendarDateRange dateRange, CalendarDate date, Integer timeStride,
+                               GridSubset subset,
                                boolean addLatLon,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
-   // construct the subset
-    GridSubset subset = new GridSubset();
-    if (llbb != null)
-      subset.set("LatLonRect", llbb);
-    else if (projRect != null)
-      subset.set("ProjectionRect", projRect);
-    if (horizStride != null)
-      subset.set("HorizStride", horizStride);
-
-    if (vertCoord != null)
-      subset.set(GridCoordAxis.Type.Z, vertCoord);
-
-    if (dateRange != null) {
-      subset.set("CalendarDateRange", dateRange);
-      if (timeStride != null)
-        subset.set("TimeStride", timeStride);
-    } else if (date != null)
-      subset.set("CalendarDate", date);
 
     CFGridCoverageWriter writer2 = new CFGridCoverageWriter();
     return writer2.writeOrTestSize(gdsOrg, gridNames, subset, addLatLon, false, writer);
@@ -106,12 +81,8 @@ public class CFGridCoverageWriter {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  private long writeOrTestSize(GridCoverageDataset gdsOrg, List<String> gridNames,
-                               GridSubset subset,
-                               boolean addLatLon, boolean testSizeOnly,
+  private long writeOrTestSize(GridCoverageDataset gdsOrg, List<String> gridNames, GridSubset subset, boolean addLatLon, boolean testSizeOnly,
                                NetcdfFileWriter writer) throws IOException, InvalidRangeException {
-
-
 
     // construct the subsetted dataset
     GridDatasetHelper helper = new GridDatasetHelper(gdsOrg, gridNames);
@@ -133,9 +104,10 @@ public class CFGridCoverageWriter {
 
     addGlobalAttributes(subsetDataset, writer);
 
-    // dimensions and axes
+    // dimensions and independent axes
     Map<String, Dimension> dimHash = new HashMap<>();
     for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
+      if (!axis.isIndependent()) continue;
       Dimension d = writer.addDimension(null, axis.getName(), (int) axis.getNvalues());
       dimHash.put(axis.getName(), d);
 
@@ -145,8 +117,8 @@ public class CFGridCoverageWriter {
     }
 
     // grids
-    for (GridCoverage grid : subsetDataset.getGrids()) {
-      Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), subsetDataset.getAxisNames(grid));
+    for (GridCoverage grid : subsetDataset.getGrids()) {                        // LOOK need to deal with runtime(time), runtime(runtime, time)
+      Variable v = writer.addVariable(null, grid.getName(), grid.getDataType(), subsetDataset.getIndependentAxisNames(grid));
       for (Attribute att : grid.getAttributes())
         v.addAttribute(att);
     }

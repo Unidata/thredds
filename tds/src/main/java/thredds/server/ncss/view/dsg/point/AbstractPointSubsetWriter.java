@@ -38,7 +38,7 @@ public abstract class AbstractPointSubsetWriter extends AbstractDsgSubsetWriter 
 
         // Perform spatial and temporal subset.
         PointFeatureCollection subsettedPointFeatColl =
-                pointFeatureCollection.subset(ncssParams.getBoundingBox(), wantedRange);
+                pointFeatureCollection.subset(ncssParams.getLatLonBoundingBox(), wantedRange);
 
         subsettedPointFeatColl.resetIteration();
         try {

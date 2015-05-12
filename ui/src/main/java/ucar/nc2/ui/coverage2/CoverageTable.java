@@ -462,6 +462,7 @@ public class CoverageTable extends JPanel {
     AxisType axisType;
     long nvalues;
     double resolution;
+    boolean indepenent;
 
     // no-arg constructor
     public AxisBean() {
@@ -550,6 +551,10 @@ public class CoverageTable extends JPanel {
 
     public boolean getHasData() {
       return axis.getValues() != null;
+    }
+
+    public boolean isIndepenent() {
+      return indepenent;
     }
 
     String showCoordValueDiffs() {

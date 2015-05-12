@@ -10,7 +10,6 @@ import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -29,8 +28,6 @@ import java.util.List;
  * @since 5/4/2015
  */
 public class GridCoordAxis {
-  public enum Type {X, Y, Z, T, E, RT}
-
   public enum Spacing {regular, irregularPoint, contiguousInterval, discontiguousInterval} // see Spacing below
 
   /*
@@ -52,6 +49,7 @@ public class GridCoordAxis {
   private DataType dataType;
   private AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
   private String units, description;
+  private boolean independent;
   private AttributeContainer attributes;
 
   private long nvalues;
@@ -62,15 +60,27 @@ public class GridCoordAxis {
   private double[] values;     // null if isRegular,
 
   public GridCoordAxis subset(double minValue, double maxValue) {
+    GridCoordAxis result = copy();
+    subsetValues(result, minValue, maxValue);
+    return result;
+  }
+
+  public GridCoordAxis subsetLatest() {
+    GridCoordAxis result = copy();
+    subsetValuesLatest(result);
+    return result;
+  }
+
+  private GridCoordAxis copy() {
     GridCoordAxis result = new GridCoordAxis();
     result.setName(name);
     result.setDataType(dataType);
     result.setUnits(units);
     result.setDescription(description);
+    result.setAttributes(attributes);
     result.setSpacing(spacing);
     result.setResolution(resolution);
-    subsetValues(result, minValue, maxValue);
-
+    result.setIndependent(independent);
     return result;
   }
 
@@ -176,12 +186,21 @@ public class GridCoordAxis {
     this.description = description;
   }
 
+  public boolean isIndependent() {
+    return independent;
+  }
+
+  public void setIndependent(boolean independent) {
+    this.independent = independent;
+  }
+
   // to override
-  public double[] readValues() throws IOException {
-    return values;
+  protected double[] readValues() {
+    return null;
   }
 
   public double[] getValues() {
+    if (values == null) values = readValues();
     return values;
   }
 
@@ -327,6 +346,7 @@ public class GridCoordAxis {
   private void subsetValues(GridCoordAxis result, double minValue, double maxValue) {
     int count = 0, count2 = 0;
     double[] subsetValues;
+    double resolution = getResolution();
 
     switch (spacing) {
       case regular:
@@ -416,6 +436,33 @@ public class GridCoordAxis {
         result.setValues(subsetValues);
         result.setStartValue(subsetValues[0]);
         result.setEndValue(subsetValues[subsetValues.length-1]);
+        break;
+    }
+
+  }
+
+  private void subsetValuesLatest(GridCoordAxis result) {
+    double[] subsetValues;
+
+    result.setStartValue(endValue);
+    result.setEndValue(endValue);
+    result.setNvalues(1);
+
+    switch (spacing) {
+      case irregularPoint:
+        subsetValues = new double[1];
+        double[] values = getValues();
+        subsetValues[0] = values[values.length-1];
+        result.setValues(subsetValues);
+        break;
+
+      case discontiguousInterval:
+      case contiguousInterval:
+        subsetValues = new double[2];
+        values = getValues();
+        subsetValues[0] = values[values.length-2];
+        subsetValues[1] = values[values.length - 1];
+        result.setValues(subsetValues);
         break;
     }
 

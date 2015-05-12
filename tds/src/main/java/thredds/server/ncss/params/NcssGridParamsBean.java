@@ -1,8 +1,11 @@
 /* Copyright */
 package thredds.server.ncss.params;
 
-import thredds.server.ncss.exception.InvalidBBOXException;
 import thredds.server.ncss.validation.NcssGridRequestConstraint;
+import ucar.nc2.ft2.coverage.grid.GridSubset;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.ProjectionRect;
 
 /**
@@ -102,6 +105,43 @@ public class NcssGridParamsBean extends NcssParamsBean {
 
   public void setVertCoord(Double vertCoord) {
     this.vertCoord = vertCoord;
+  }
+
+  public GridSubset makeSubset(Calendar cal) {
+    // construct the subset
+    GridSubset subset = new GridSubset();
+    if (hasProjectionBB())
+      subset.set(GridSubset.projBB, getProjectionBB());
+    else if (hasLatLonBB())
+      subset.set(GridSubset.latlonBB, getLatLonBoundingBox());
+    if (horizStride != null)
+      subset.set(GridSubset.horizStride, horizStride);
+
+    if (vertCoord != null)
+      subset.set(GridSubset.vertCoord, vertCoord);
+
+    CalendarDate date = getRequestedDate(cal);
+    CalendarDateRange dateRange = getCalendarDateRange(cal);
+    if (isAllTimes()) {
+      subset.set(GridSubset.allTimes, true);
+      if (timeStride != null)
+        subset.set(GridSubset.timeStride, timeStride);
+
+    } else if (date != null) {
+      subset.set(GridSubset.date, date);
+      if (timeWindow != null)
+        subset.set(GridSubset.timeWindow, timeWindow);
+
+    } else if (dateRange != null) {
+      subset.set(GridSubset.dateRange, dateRange);
+      if (timeStride != null)
+        subset.set(GridSubset.latlonBB, timeStride);
+
+    } else {
+      subset.set(GridSubset.latestTime, true);
+    }
+
+    return subset;
   }
 
 }

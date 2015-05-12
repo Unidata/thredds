@@ -240,6 +240,18 @@ public class GridCoverageDataset implements AutoCloseable {
     return sb.toString();
   }
 
+  public String getIndependentAxisNames(GridCoverage grid) {
+    GridCoordSys gcs = findCoordSys(grid.getCoordSysName());
+    StringBuilder sb = new StringBuilder();
+    for (String axisName : gcs.getAxisNames()) {
+      GridCoordAxis axis = findCoordAxis(axisName);
+      if (!axis.isIndependent()) continue;
+      sb.append(axisName);
+      sb.append(" ");
+    }
+    return sb.toString();
+  }
+
   ///////////////////////////////////////////////////////////////
 
   public ProjectionImpl getProjection(GridCoverage coverage) {
@@ -267,7 +279,8 @@ public class GridCoverageDataset implements AutoCloseable {
     GridCoordSys gcs = findCoordSys(grid.getCoordSysName());
     for (String axisName : gcs.getAxisNames()) {
       GridCoordAxis axis = findCoordAxis(axisName);
-      total *= axis.getNvalues();
+      if (axis != null)   // LOOK
+        total *= axis.getNvalues();
     }
     total *= grid.getDataType().getSize();
     return total;

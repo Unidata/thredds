@@ -33,9 +33,7 @@
 
 package thredds.server.ncss.params;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import thredds.server.ncss.exception.NcssException;
-import thredds.server.ncss.validation.NcssGridRequestConstraint;
 import thredds.server.ncss.validation.TimeParamsConstraint;
 import thredds.server.ncss.validation.VarParamConstraint;
 import ucar.nc2.time.Calendar;
@@ -49,12 +47,11 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 
 /**
- * Ncss Parameters superclass
+ * Ncss Parameters superclass, have common parameters for grid and point
  *
  * @author caron
  * @since 10/5/13
@@ -68,26 +65,20 @@ public class NcssParamsBean {
   @VarParamConstraint
   protected List<String> var;
 
- 	@DateTimeFormat
-  protected String time_start;        // LOOK can be "present"
+  protected String time_start;
 
-  @DateTimeFormat
-  protected String time_end;           // LOOK can be "present"
+  protected String time_end;
 
-  @DateTimeFormat
-  protected String time_duration;      // LOOK not a DateTimeFormat
+  protected String time_duration;
 
-  @DateTimeFormat
-  protected String time;               // LOOK can be "present" or "all" ??
+  protected String time;
 
-  @DateTimeFormat
-  protected String time_window;        // time duration
-    // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
-    // but if the dataset does not have up to date data that could be really far from the current time and most likely useless (esp for observation data).
-    // time_window tells the server give me the data if it's within this period otherwise don't bother. time_window must be a valid W3C time duration.
+  protected String time_window;        // time duration LOOK not integrated yet
+  // time_window is meant to be used with time=present. When time=present it returns the closest time to current in the dataset
+  // but if the dataset does not have up to date data that could be really far from the current time and most likely useless (esp for observation data).
+  // time_window tells the server give me the data if it's within this period otherwise don't bother. time_window must be a valid W3C time duration.
 
-
-  protected String temporal;  // == all  // LOOK get rid of
+  protected String temporal;  // ="all"  deprecated, use time="all"
 
   protected Double north;
 
@@ -100,7 +91,6 @@ public class NcssParamsBean {
   protected Double latitude;
 
   protected Double longitude;
-
 
   /////////////////////////////////////////////////////
 
@@ -156,10 +146,17 @@ public class NcssParamsBean {
   public String getTime() {
     return time;
   }
-
   public void setTime(String time) {
     this.time = time;
   }
+
+  public String getTemporal() {
+    return temporal;
+  }        // old
+  public void setTemporal(String temporal) {
+    this.temporal = temporal;
+  }
+
 
   // latlon
   public Double getNorth() {
@@ -214,36 +211,11 @@ public class NcssParamsBean {
     return latitude != null && longitude != null;
   }
 
-  public boolean hasLatLonBB() { // need to validate
+  public boolean hasLatLonBB() {
     return east != null && west != null && north != null && south != null;
   }
 
-  // old
-  public String getTemporal() {
-    return temporal;
-  }
-
-  public void setTemporal(String temporal) {
-    this.temporal = temporal;
-  }
-
-  public boolean isAllTimes() {
-    return temporal != null && temporal.equalsIgnoreCase("all");
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // used ??
-
-  public TimeDuration parseTimeDuration() throws NcssException {
-    if (getTime_duration() == null) return null;
-    try {
-      return TimeDuration.parseW3CDuration(getTime_duration());
-    } catch (ParseException e) {
-      throw new NcssException("invalid time duration");
-    }
-  }
-
-  public LatLonRect getBoundingBox() {
+  public LatLonRect getLatLonBoundingBox() {
     if (!hasLatLonBB()) {
       return null;
     } else {
@@ -253,62 +225,62 @@ public class NcssParamsBean {
     }
   }
 
-  private boolean hasValidTime;
-  private boolean hasValidDateRange;
+  //////////////////////////////////////////////////
+  // time methods
 
-  public void setHasValidTime(boolean hasValidTime) {
-    this.hasValidTime = hasValidTime;
+  // problem is we dont know the Calendar until we open the dataset
+  protected CalendarDate date;
+  protected CalendarDateRange dateRange;
+  protected TimeDuration timeWindow;
+
+  public void setDate(CalendarDate date) {
+    this.date = date;
   }
 
-  public void setHasValidDateRange(boolean hasValidDateRange) {
-    this.hasValidDateRange = hasValidDateRange;
+  public TimeDuration getTimeWindow() {
+    return timeWindow;
+  }
+
+  public void setTimeWindow(TimeDuration timeWindow) {
+    this.timeWindow = timeWindow;
+  }
+
+  public void setDateRange(CalendarDateRange dateRange) {
+    this.dateRange = dateRange;
+  }
+
+  public boolean isAllTimes() {
+    return (temporal != null && temporal.equalsIgnoreCase("all")) || (time != null && time.equalsIgnoreCase("all"));
   }
 
   // return requested CalendarDateRange.
-  public CalendarDateRange getCalendarDateRange(Calendar cal) throws ParseException {
+  public CalendarDateRange getCalendarDateRange(Calendar cal) {
+    if (dateRange == null) return null;
+    if (cal.equals(Calendar.getDefault())) return dateRange;
 
-    if (hasValidDateRange) {
-      DateRange dr;
-      if (time == null)
-        dr = new DateRange(new DateType(time_start, null, null, cal), new DateType(time_end, null, null, cal), new TimeDuration(time_duration), null);
-      else {
-        //DateType dtDate = new DateType(time, null, null, cal);
-        dr = new DateRange(new DateType(time, null, null, cal), new DateType(time, null, null, cal), new TimeDuration(time_duration), null);
-      }
+    // otherwise must reparse
+    try {
+      // this handles "present"
+      DateRange dr = new DateRange(new DateType(time_start, null, null, cal), new DateType(time_end, null, null, cal), new TimeDuration(time_duration), null);
       return CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate());
+    } catch (ParseException pe) {
+      return null; // ??
     }
+  }
 
-    if (getTime() != null) {
-      CalendarDate date;
-      if (getTime().equalsIgnoreCase("present")) {
-        date = CalendarDate.present();
+  public CalendarDate getRequestedDate(Calendar cal) {
+    if (date == null) return null;
+    if (cal.equals(Calendar.getDefault())) return date;
 
-      } else if (getTime().equalsIgnoreCase("all")) {
-        return null;
-
-      } else {
-        date = CalendarDateFormatter.isoStringToCalendarDate(cal, getTime());
-      }
-      return CalendarDateRange.of(date, date);
+     // otherwise must reparse
+    if (getTime().equalsIgnoreCase("present")) {
+      return CalendarDate.present(cal);
     }
-
-    // default is pressent
-    return CalendarDateRange.of(CalendarDate.present(), CalendarDate.present());
-	}
-
-  public CalendarDate getRequestedTime( Calendar cal ) throws ParseException {
-    if (!hasValidTime) return null;
-
- 			if( getTime().equalsIgnoreCase("present") ){
- 				 java.util.Calendar c = java.util.Calendar.getInstance();
- 				 c.setTime( new Date()  );
- 				 return CalendarDate.of( cal, c.getTimeInMillis()  );
- 			}
 
     return CalendarDateFormatter.isoStringToCalendarDate(cal, getTime());
- 	}
+  }
 
-  public boolean intersectsTime(CalendarDateRange have, Formatter errs) throws ParseException {
+  public boolean intersectsTime(CalendarDateRange have, Formatter errs) {
     if (have == null) return true;
     Calendar dataCal = have.getStart().getCalendar(); // use the same calendar as the dataset
 
@@ -322,7 +294,7 @@ public class NcssParamsBean {
       }
     }
 
-    CalendarDate wantTime = getRequestedTime(dataCal);
+    CalendarDate wantTime = getRequestedDate(dataCal);
     if (wantTime == null) return true;
     if (!have.includes(wantTime)) {
       errs.format("Requested time %s does not intersect actual time range %s", wantTime, have);
@@ -331,5 +303,12 @@ public class NcssParamsBean {
     return true;
   }
 
-
+  public TimeDuration parseTimeDuration() throws NcssException {
+    if (getTime_duration() == null) return null;
+    try {
+      return TimeDuration.parseW3CDuration(getTime_duration());
+    } catch (ParseException e) {
+      throw new NcssException("invalid time duration");
+    }
+  }
 }

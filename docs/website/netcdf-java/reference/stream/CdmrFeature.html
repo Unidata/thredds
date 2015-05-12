@@ -177,13 +177,13 @@ coordname=minvalue:maxvalue</pre>
 </ul>
 <h4><strong>Temporal subsetting:</strong></h4>
 <ul>
-  <li>You may specify a time range or a specific time. If none, return the time closest to the
-    present. </li>
-  <li>A time range will request all features that intersect the range.</li>
-  <li>A time point will request the feature that is closest to that time.</li>
-  <li>If you include <em>time=all</em>, then return all times.</li>
-  <li>time duration: 1)   udunit&#32;time&#32;unit&#32;string,&#32;2)&#32;xsd:duration&#32;syntax  </li>
+  <li>You may specify a time range, or a  time point (<em>time</em>). If both, only the time point is used. If neither, return the latest time.</li>
+  <li>A time range <em>(time_start, time_end, time_duration</em>) will request all times that intersect the range (<em>timeStride</em> is used if present).</li>
+  <li>A time point will request the time that is closest to that time.</li>
+  <li>If you set <em>time</em>=&quot;all&quot;, then  all times are returned (<em>timeStride</em> is used if present). All other time parameters are ignored.</li>
+  <li>time duration: 1)   udunit&#32;time&#32;unit&#32;string or&#32;2) <a rel="nofollow" href="#W3Cduration">W3C time duration</a></li>
   <li>datetime: isoString or &quot;present&quot;</li>
+  <li>The dataset determines what Calendar is used.</li>
 </ul>
 <p>&nbsp;</p>
 <h3>PointDataset</h3>

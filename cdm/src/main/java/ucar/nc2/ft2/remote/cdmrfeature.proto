@@ -16,6 +16,7 @@ message CoordAxis {
   required int32 axisType = 4;       // ucar.nc2.constants.AxisType ordinal
   required string units = 5;
   optional string description = 6;
+  required bool isIndependent = 7;   // has its own dimension, is a coordinate variable, eg x(x)
 
   required int64 nvalues = 10;
   required int32 spacing = 11;         // GridCoordAxis.Spacing ordinal

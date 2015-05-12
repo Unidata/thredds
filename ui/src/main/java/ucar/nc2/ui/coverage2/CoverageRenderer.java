@@ -467,7 +467,7 @@ public class CoverageRenderer {
     GridSubset subset = new GridSubset();
     if (level >= 0 && dataState.zaxis != null) {
       double levelVal = dataState.zaxis.getCoord(level);
-      subset.set(GridCoordAxis.Type.Z, Double.toString(levelVal));
+      subset.set(GridSubset.vertCoord, levelVal);
     }
 
     try {

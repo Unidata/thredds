@@ -33,7 +33,6 @@
 
 package thredds.server.ncss.validation;
 
-import thredds.server.ncss.exception.InvalidBBOXException;
 import thredds.server.ncss.params.NcssGridParamsBean;
 
 import javax.validation.ConstraintValidator;

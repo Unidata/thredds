@@ -30,7 +30,6 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
     this.proxy = proxy;
     setName(proxy.getLocation());
     setGlobalAttributes(proxy.getGlobalAttributes());
-
     setLatLonBoundingBox(proxy.getBoundingBox());
     setCalendarDateRange(proxy.getCalendarDateRange());
     setProjBoundingBox(proxy.getProjBoundingBox());
@@ -68,7 +67,6 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
         }
     }
     setCoordAxes(axes);
-
   }
 
   @Override
@@ -162,6 +160,7 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
       setAxisType(dtCoordAxis.getAxisType());
       setUnits(dtCoordAxis.getUnitsString());
       setDescription(dtCoordAxis.getDescription());
+      setIndependent(dtCoordAxis.isCoordinateVariable());
 
       AttributeContainerHelper atts = new AttributeContainerHelper("dtCoordAxis");
       for (Attribute patt : dtCoordAxis.getAttributes())
@@ -191,7 +190,7 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
    * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts
    */
     @Override
-    public double[] readValues() throws IOException {
+    public double[] readValues() {
       switch (spacing) {
         case irregularPoint:
           return dtCoordAxis.getCoordValues();

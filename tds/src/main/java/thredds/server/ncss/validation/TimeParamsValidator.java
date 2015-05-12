@@ -34,7 +34,6 @@
 package thredds.server.ncss.validation;
 
 import java.text.ParseException;
-import java.util.Date;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -43,14 +42,19 @@ import thredds.server.ncss.params.NcssParamsBean;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 
 
 /**
  * Time params validator for a ncss request.
- *  1) validate time parameter if exists
- *  2) validate time_window parameter if exists
- *  3) if any of time range exists, validate its a valid time range
+ * 1) validate time parameter if exists
+ * 2) validate time_window parameter if exists
+ * 3) if any of time range exists, validate its a valid time range
+ * <p/>
+ * Create the CalendarDate, CalendarDateRange with default Calendar.
  *
  * @author mhermida
  */
@@ -62,82 +66,84 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
   public boolean isValid(NcssParamsBean params, ConstraintValidatorContext constraintValidatorContext) {
     constraintValidatorContext.disableDefaultConstraintViolation();
 
+    // time point with optional window
     String time = params.getTime();
     String time_window = params.getTime_window();
-
     if (time != null) {
-      boolean isValid = validateISOString(time, "{thredds.server.ncSubset.validation.param.time}", constraintValidatorContext);
+      if ("all".equals(time)) return true;
+
+      CalendarDate cd = validateISOString(time, "{thredds.server.ncSubset.validation.param.time}", constraintValidatorContext);
+      if (cd != null)
+        params.setDate(cd);
 
       if (time_window != null) {  // LOOK
         try {
-          new TimeDuration(time_window);
-
+          params.setTimeWindow(new TimeDuration(time_window));
         } catch (ParseException pe) {
-          isValid = false;
-          constraintValidatorContext
-                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.param.time_window}")
-                  .addConstraintViolation();
+          constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.param.time_window}").addConstraintViolation();
+          return false;
         }
       }
-
-      params.setHasValidTime(isValid);
-      return isValid;
+      return true;
     }
 
+    // time range
     String time_start = params.getTime_start();
     String time_end = params.getTime_end();
     String time_duration = params.getTime_duration();
 
-    //if all of them are null --> returns the whole time series
-    //so all null are valid parameters
+    // all null are valid parameters
     if (time_start == null && time_end == null && time_duration == null) return true;
-    boolean isValid = true;
 
     // has 2 of 3
     if (!hasValidDateRange(time_start, time_end, time_duration)) {
-      constraintValidatorContext
-              .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.time.range}")
-              .addConstraintViolation();
-      isValid = false;
-
-    } else {
-      //check the formats
-      if (time_start != null) {
-        isValid = validateISOString(time_start, "{thredds.server.ncSubset.validation.param.time_start}", constraintValidatorContext);
-      }
-
-      if (time_end != null) {
-        isValid &= validateISOString(time_end, "{thredds.server.ncSubset.validation.param.time_end}", constraintValidatorContext) && isValid;
-      }
-
-      if (time_duration != null) {
-        try {
-          new TimeDuration(time_duration);
-
-        } catch (ParseException pe) {
-          isValid = false;
-          constraintValidatorContext
-                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.param.time_duration}")
-                  .addConstraintViolation();
-        }
-      }
-
-      //check time_start < time_end
-      if (isValid && time_start != null && time_end != null) {
-        Date start = isoString2Date(time_start);
-        Date end = isoString2Date(time_end);
-
-        if (start.after(end)) {
-          isValid = false;
-          constraintValidatorContext
-                  .buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.start_gt_end}")
-                  .addConstraintViolation();
-        }
-      }
-
+      constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.time.2of3}").addConstraintViolation();
+      return false;
     }
 
-    params.setHasValidDateRange(isValid);  // LOOK set the bloody time range already !
+    //check the formats
+    boolean isValid = true;
+    if (time_start != null) {
+      isValid = (null != validateISOString(time_start, "{thredds.server.ncSubset.validation.param.time_start}", constraintValidatorContext));
+    }
+
+    if (time_end != null) {
+      isValid &= (null != validateISOString(time_end, "{thredds.server.ncSubset.validation.param.time_end}", constraintValidatorContext));
+    }
+
+    if (time_duration != null) {
+      try {
+        new TimeDuration(time_duration);
+
+      } catch (ParseException pe) {
+        isValid = false;
+        constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.param.time_duration}").addConstraintViolation();
+      }
+    }
+
+    //check time_start < time_end
+    if (isValid && time_start != null && time_end != null) {
+      CalendarDate start = isoString2Date(time_start);
+      CalendarDate end = isoString2Date(time_end);
+
+      if (start.isAfter(end)) {
+        isValid = false;
+        constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.time.start_gt_end}").addConstraintViolation();
+      }
+    }
+
+    // make calendar range with default calendar
+    try {
+      Calendar cal = Calendar.getDefault();
+      DateRange dr = new DateRange(new DateType(time_start, null, null, cal), new DateType(time_end, null, null, cal), new TimeDuration(time_duration), null);
+      CalendarDateRange cdr = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate());
+      params.setDateRange(cdr);
+
+    } catch (ParseException pe) {
+      isValid = false;
+      constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.time}").addConstraintViolation();
+    }
+
     return isValid;
   }
 
@@ -165,27 +171,17 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
     return false;
   }
 
-  private boolean validateISOString(String isoString, String msg, ConstraintValidatorContext constraintValidatorContext) {
-
-    boolean isValid = true;
-    Date date = null;
-
+  private CalendarDate validateISOString(String isoString, String msg, ConstraintValidatorContext constraintValidatorContext) {
     try {
-      date = isoString2Date(isoString);
-
+      return isoString2Date(isoString);
     } catch (IllegalArgumentException iea) {
-      //Invalid format for param time!!!
-      isValid = false;
-      constraintValidatorContext
-              .buildConstraintViolationWithTemplate(msg)
-              .addConstraintViolation();
+      constraintValidatorContext.buildConstraintViolationWithTemplate(msg).addConstraintViolation();
     }
-    return isValid;
+    return null;
   }
 
-  private Date isoString2Date(String isoString) {
-    if ("present".equals(isoString)) return new Date();
-    CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(Calendar.getDefault(), isoString);
-    return new Date(cd.getMillis());
+  private CalendarDate isoString2Date(String isoString) {
+    if ("present".equals(isoString)) return CalendarDate.present();
+    return CalendarDateFormatter.isoStringToCalendarDate(Calendar.getDefault(), isoString);
   }
 }

@@ -172,7 +172,7 @@ public class TestRestrictDataset {
 
     } catch (ucar.httpservices.HTTPException e) {
 
-      System.out.printf("Should return 401 err=%s%n", e.getMessage());
+      System.out.printf("Should return 200 err=%s%n", e.getMessage());
       assert false;
 
     } catch (Exception e) {

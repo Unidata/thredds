@@ -221,6 +221,7 @@ public class CdmrfReader {
     result.setNvalues(proto.getNvalues());
     result.setUnits(proto.getUnits());
     result.setDescription(proto.getDescription());
+    result.setIndependent(proto.getIsIndependent());
 
     AttributeContainerHelper atts = new AttributeContainerHelper("axis atts");
     for (ucar.nc2.stream.NcStreamProto.Attribute patt : proto.getAttsList())

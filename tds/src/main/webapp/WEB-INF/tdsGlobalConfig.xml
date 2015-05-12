@@ -6,15 +6,14 @@
   <bean id="allowedServices" class="thredds.core.AllowedServices">
     <property name="allow">
       <map>
-        <entry key="CdmRemote" value="true"/>
-        <entry key="CdmrFeature" value="true"/>
+        <entry key="cdmRemote" value="true"/>
+        <entry key="cdmrFeature" value="true"/>
         <entry key="dap4" value="true"/>
-        <entry key="HTTPServer" value="true"/>
-        <entry key="Resolver" value="true"/>
-        <entry key="NetcdfSubset" value="true"/>
+        <entry key="httpServer" value="true"/>
+        <entry key="resolver" value="true"/>
+        <entry key="netcdfSubsetGrid" value="true"/>
         <entry key="opendap" value="true"/>
         <entry key="wcs" value="true"/>
-
         <entry key="wms" value="true"/>
         <entry key="iso" value="true"/>
         <entry key="ncml" value="true"/>
@@ -25,10 +24,10 @@
     <property name="gridServices">
       <list>
         <value>opendap</value>
-        <value>CdmRemote</value>
-        <value>CdmrFeature</value>
+        <value>cdmRemote</value>
+        <value>cdmrFeature</value>
         <value>dap4</value>
-        <value>NetcdfSubset</value>
+        <value>netcdfSubsetGrid</value>
         <value>wms</value>
         <value>wcs</value>
         <value>iso</value>

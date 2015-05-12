@@ -183,7 +183,7 @@ public abstract class AbstractStationSubsetWriter extends AbstractDsgSubsetWrite
                 wantedStations = stationFeatCol.getStationFeatures(stnNames);
             }
         } else if (ncssParams.hasLatLonBB()) {
-            LatLonRect llrect = ncssParams.getBoundingBox();
+            LatLonRect llrect = ncssParams.getLatLonBoundingBox();
             wantedStations = stationFeatCol.getStationFeatures(llrect);
         } else if (ncssParams.hasLatLonPoint()) {
             Station closestStation = findClosestStation(

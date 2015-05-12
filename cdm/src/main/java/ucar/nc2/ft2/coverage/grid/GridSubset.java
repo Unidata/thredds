@@ -8,11 +8,26 @@ import java.util.Set;
 /**
  * Describes a subset of a GridCoverage.
  * Coordinate values only, no indices.
+ * key        value
+ *  latlonBB
+ *
+ * values: Double (single value) or a
  *
  * @author caron
  * @since 5/6/2015
  */
 public class GridSubset {
+  public static final String latlonBB = "latlonBB";     // value = LatLonRect
+  public static final String projBB = "projBB";         // value = ProjRect
+  public static final String horizStride = "horizStride";  // value = Integer
+  public static final String vertCoord = "vertCoord";   // value = double
+  public static final String dateRange = "dateRange";   // value = CalendarDateRange
+  public static final String date = "date";             // value = CalendarDate
+  public static final String timeWindow = "timeWindow"; // value = TimeDuration
+  public static final String timeStride = "timeStride"; // value = Integer
+  public static final String allTimes = "allTimes";     // value = Boolean
+  public static final String latestTime = "latestTime";     // value = Boolean
+
   private final Map<String, Object> req = new HashMap<>();
 
   public Set<Map.Entry<String, Object>> getEntries() {
@@ -26,16 +41,13 @@ public class GridSubset {
     req.put(key, value);
   }
 
-  public void set(GridCoordAxis.Type type, Object value) {
-    req.put(type.name(), value);
-  }
-
-  public Object get(GridCoordAxis.Type type) {
-     return req.get(type.name());
-   }
-
   public Object get(String key) {
      return req.get(key);
+   }
+
+  public boolean isTrue(String key) {
+     Boolean val = (Boolean) req.get(key);
+    return (val != null) && val;
    }
 
   public Double getDouble(String key) {

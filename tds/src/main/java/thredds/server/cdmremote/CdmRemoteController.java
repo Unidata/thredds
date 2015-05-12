@@ -44,6 +44,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.ModelAndView;
+import thredds.core.AllowedServices;
+import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.exception.ServiceNotAllowed;
 import thredds.util.ContentType;
@@ -84,11 +86,8 @@ public class CdmRemoteController implements LastModified {
   @Autowired
   TdsContext tdsContext;
 
-  private boolean allow = true;
-
-  public void setAllow(boolean allow) {
-    this.allow = allow;
-  }
+  @Autowired
+  private AllowedServices allowedServices;
 
   @Override
   public long getLastModified(HttpServletRequest req) {
@@ -105,8 +104,8 @@ public class CdmRemoteController implements LastModified {
   @RequestMapping(value = "/**", method = RequestMethod.GET)
   public ResponseEntity<String> handleCapabilitiesRequest(HttpServletRequest request, HttpServletResponse response, @RequestParam String req) throws IOException {
 
-    if (!allow)
-      throw new ServiceNotAllowed("cdmremote");
+    if (!allowedServices.isAllowed(StandardService.cdmRemote))
+      throw new ServiceNotAllowed(StandardService.cdmRemote.toString());
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);
@@ -146,8 +145,8 @@ public class CdmRemoteController implements LastModified {
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=capabilities")
   public ModelAndView handleCapabilitiesRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    if (!allow)
-      throw new ServiceNotAllowed("cdmremote");
+    if (!allowedServices.isAllowed(StandardService.cdmRemote))
+      throw new ServiceNotAllowed(StandardService.cdmRemote.toString());
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);
@@ -173,8 +172,8 @@ public class CdmRemoteController implements LastModified {
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=header")
   public void handleHeaderRequest(HttpServletRequest request, HttpServletResponse response, OutputStream out) throws IOException {
 
-    if (!allow)
-      throw new ServiceNotAllowed("cdmremote");
+    if (!allowedServices.isAllowed(StandardService.cdmRemote))
+      throw new ServiceNotAllowed(StandardService.cdmRemote.toString());
 
     String datasetPath = TdsPathUtils.extractPath(request, "/cdmremote");
     String absPath = getAbsolutePath(request);
@@ -203,8 +202,8 @@ public class CdmRemoteController implements LastModified {
   public void handleRequest(HttpServletRequest request, HttpServletResponse response,
                             @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException {
 
-    if (!allow)
-      throw new ServiceNotAllowed("cdmremote");
+    if (!allowedServices.isAllowed(StandardService.cdmRemote))
+      throw new ServiceNotAllowed(StandardService.cdmRemote.toString());
 
     if (validationResult.hasErrors())
       throw new BindException(validationResult);

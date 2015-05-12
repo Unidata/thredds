@@ -1,14 +1,17 @@
 /* Copyright */
 package thredds.server.ncss.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import thredds.core.AllowedServices;
 import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
+import thredds.server.exception.ServiceNotAllowed;
 import thredds.server.ncss.exception.*;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
@@ -48,6 +51,9 @@ import java.util.List;
 @RequestMapping("/ncss/grid")
 public class NcssGridController extends AbstractNcssController {
 
+  @Autowired
+  private AllowedServices allowedServices;
+
   protected String getBase() {
     return StandardService.netcdfSubsetGrid.getBase();
   }
@@ -55,6 +61,9 @@ public class NcssGridController extends AbstractNcssController {
   @RequestMapping("**")
   public void handleRequest(HttpServletRequest req, HttpServletResponse res, @Valid NcssGridParamsBean params, BindingResult validationResult)
           throws BindException, IOException, ParseException, NcssException, InvalidRangeException {
+
+    if (!allowedServices.isAllowed(StandardService.netcdfSubsetGrid))
+      throw new ServiceNotAllowed(StandardService.netcdfSubsetGrid.toString());
 
     if (validationResult.hasErrors())
       throw new BindException(validationResult);
@@ -102,7 +111,7 @@ public class NcssGridController extends AbstractNcssController {
       }
 
     GridResponder gds = new GridResponder(gcd, datasetPath, ncssDiskCache);
-    File netcdfResult = gds.getResponseFile(res, params, version);
+    File netcdfResult = gds.getResponseFile(params, version);
 
     // filename download attachment
     String suffix = (version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc";
@@ -148,6 +157,10 @@ public class NcssGridController extends AbstractNcssController {
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
   public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException {
+
+    if (!allowedServices.isAllowed(StandardService.netcdfSubsetGrid))
+      throw new ServiceNotAllowed(StandardService.netcdfSubsetGrid.toString());
+
     if (!req.getParameterMap().isEmpty())
       throw new NcssException("Invalid info request.");
 
@@ -260,68 +273,5 @@ public class NcssGridController extends AbstractNcssController {
     }
     return true;
   }
-
-   /* @RequestMapping(value = "**", params = {"!latitude", "!longitude", "!subset", "!req"})
-   void getGridSubset(@Valid GridDataRequestParamsBean params,
-                      BindingResult validationResult, HttpServletResponse response,
-                      HttpServletRequest request) throws NcssException, IOException,
-           InvalidRangeException, ParseException {
-
-     if (validationResult.hasErrors()) {
-       handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult);
-
-     } else {
-       String pathInfo = getDatasetPath(request);
-       FeatureDataset fd = null;
-       try {
-         fd = datasetService.findDatasetByPath(request, response, pathInfo);
-         if (fd == null)
-           throw new UnsupportedOperationException("Feature Type not supported");
-
-         if (fd.getFeatureType() == FeatureType.GRID) {
-           // Supported formats are netcdf3 (default) and netcdf4 (if available)
-           SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(),
-           SupportedOperation.GRID_REQUEST);
-
-           NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
-           if (sf.equals(SupportedFormat.NETCDF4)) {
-             version = NetcdfFileWriter.Version.netcdf4;
-           }
-
-           GridDataset gridDataset = (GridDataset) fd;
-           GridDataStream gds = GridDataStream.valueOf(gridDataset, pathInfo);
-           File netcdfResult = gds.getResponseFile(request, response, params, version);
-
-           // Headers...
-           HttpHeaders httpHeaders = new HttpHeaders();
-           httpHeaders.set("Content-Type", sf.getResponseContentType());
-           setResponseHeaders(response, httpHeaders);
-           IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);
-           response.flushBuffer();
-           response.getOutputStream().close();
-           response.setStatus(HttpServletResponse.SC_OK);
-
-           gridDataset.close();
-
-         } else if (fd.getFeatureType() == FeatureType.STATION) {
-
-           SupportedFormat sf = SupportedOperation.isSupportedFormat(params.getAccept(),
-           SupportedOperation.POINT_REQUEST);
-
-           PointDataRequestParamsBean pdr = RequestParamsAdapter.adaptGridParamsToPointParams(params);
-
-           NCSSPointDataStream pds = NCSSPointDataStreamFactory.getDataStreamer(fd, pdr, sf, response.getOutputStream());
-
-           setResponseHeaders(response, pds.getResponseHeaders(fd, sf, pathInfo));
-           pds.pointDataStream(response, fd, pathInfo, pdr, sf);
-
-         }
-
-       } finally {
-         if (fd != null) fd.close();
-       }
-     }
-
-   }  */
 
 }
