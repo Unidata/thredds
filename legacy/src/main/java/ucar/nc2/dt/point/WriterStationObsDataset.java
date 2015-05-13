@@ -294,12 +294,12 @@ public class WriterStationObsDataset {
   }
 
   private void writeDataFinish() throws IOException {
-    ArrayInt.D1 nextChildArray = new ArrayInt.D1(recno);
+    ArrayInt.D1 nextChildArray = new ArrayInt.D1(recno, false);
 
     int nstns = stnList.size();
-    ArrayInt.D1 firstArray = new ArrayInt.D1(nstns);
-    ArrayInt.D1 lastArray = new ArrayInt.D1(nstns);
-    ArrayInt.D1 numArray = new ArrayInt.D1(nstns);
+    ArrayInt.D1 firstArray = new ArrayInt.D1(nstns, false);
+    ArrayInt.D1 lastArray = new ArrayInt.D1(nstns, false);
+    ArrayInt.D1 numArray = new ArrayInt.D1(nstns, false);
 
     for (int i = 0; i < stnList.size(); i++) {
       ucar.unidata.geoloc.Station stn = stnList.get(i);
@@ -346,8 +346,8 @@ public class WriterStationObsDataset {
 
   private int recno = 0;
   private ArrayObject.D1 timeArray = new ArrayObject.D1(String.class, 1);
-  private ArrayInt.D1 prevArray = new ArrayInt.D1(1);
-  private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
+  private ArrayInt.D1 prevArray = new ArrayInt.D1(1, false);
+  private ArrayInt.D1 parentArray = new ArrayInt.D1(1, false);
   private int[] origin = new int[1];
   private int[] originTime = new int[2];
 

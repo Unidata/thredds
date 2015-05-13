@@ -108,7 +108,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     raf.readFully(data);
 
     if (levels == null) {
-      Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
+      Array array = Array.factory(DataType.BYTE, v2.getShape(), data);
 
       return array.sectionNoReduce(origin, shape, stride);
     } else {
@@ -142,7 +142,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
           fdata[i] = 0;
 
       }
-      Array array = Array.factory(DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
+      Array array = Array.factory(DataType.FLOAT, v2.getShape(), fdata);
 
       return array.sectionNoReduce(origin, shape, stride);
     }
@@ -178,7 +178,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     }
 
     int Len = shape[1]; // length of pixels read each line
-    ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]});
+    ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]}, false);
     Index indx = adata.getIndex();
     long doff = dataPos + start_p;
     // initially no data conversion is needed.
@@ -215,7 +215,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
       byte[] udata = dbb.getData();
 
       if (levels == null) {
-        Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), udata);
+        Array array = Array.factory(DataType.BYTE, v2.getShape(), udata);
         v2.setCachedData(array, false);
         return array.sectionNoReduce(origin, shape, stride);
       } else {
@@ -250,7 +250,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
             fdata[i] = 0;
 
         }
-        Array array = Array.factory(DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
+        Array array = Array.factory(DataType.FLOAT, v2.getShape(), fdata);
 
         return array.sectionNoReduce(origin, shape, stride);
       }
@@ -318,7 +318,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
     inflater.end();
 
     if (levels == null) {
-      Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), uncomp);
+      Array array = Array.factory(DataType.BYTE, v2.getShape(), uncomp);
       if (array.getSize() < Variable.defaultSizeToCache)
         v2.setCachedData(array, false);
       return array.sectionNoReduce(origin, shape, stride);
@@ -354,7 +354,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
           fdata[i] = 0;
 
       }
-      Array array = Array.factory(DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
+      Array array = Array.factory(DataType.FLOAT, v2.getShape(), fdata);
 
       return array.sectionNoReduce(origin, shape, stride);
     }

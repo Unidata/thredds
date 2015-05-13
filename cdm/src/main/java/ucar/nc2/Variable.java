@@ -231,22 +231,22 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return isVariableLength;
   }
 
-  /**
+  /*
    * Is this Variable unsigned?. Only meaningful for byte, short, int, long types.
    * Looks for attribute "_Unsigned", case insensitive
    *
    * @return true if Variable is unsigned
-   */
+   *
   public boolean isUnsigned() {
     Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
     return (att != null) && att.getStringValue().equalsIgnoreCase("true");
   }
 
-  /**
+  /*
    * Say if this Variable is unsigned.
    *
    * @param b unsigned iff b is true
-   */
+   *
   public void setUnsigned(boolean b) {
     Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
     if (att == null && !b)
@@ -254,7 +254,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     att = new Attribute(CDM.UNSIGNED, b ? "true" : "false");
     this.addAttribute(att);
-  }
+  }  */
 
   /**
    * Can this variable's size grow?.
@@ -1628,7 +1628,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
    */
   public void setValues(List<String> values) throws IllegalArgumentException {
-    Array data = Array.makeArray(getDataType(), isUnsigned(),  values);
+    Array data = Array.makeArray(getDataType(),  values);
 
     if (data.getSize() != getSize())
       throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + getFullName() +

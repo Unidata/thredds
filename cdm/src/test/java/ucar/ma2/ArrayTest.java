@@ -20,7 +20,7 @@ public class ArrayTest {
 
   @Test
   public void testFactory() throws Exception {
-    zeroRank = Array.factory(int.class, new int[0]);
+    zeroRank = Array.factory(DataType.INT, new int[0]);
     iter = zeroRank.getIndexIterator();
     currentCounter = iter.getCurrentCounter();
     assert currentCounter.length == 0;
@@ -38,8 +38,7 @@ public class ArrayTest {
     for (int i = 0; i < size; i++)
       vals[i] = (short) i;
 
-    Array data = Array.factory(DataType.SHORT, new int[]{nz, ny, nx}, vals);
-    data.setUnsigned(true);
+    Array data = Array.factory(DataType.USHORT, new int[]{nz, ny, nx}, vals);
     double sum = MAMath.sumDouble(data);
     double sumReduce = MAMath.sumDouble(data.reduce(0));
     assert Misc.closeEnough(sum, sumReduce);

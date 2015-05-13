@@ -220,7 +220,7 @@ map_proj =  1: Lambert Conformal
 
       VariableDS v = new VariableDS(ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);
       v.addAttribute(new Attribute(_Coordinate.Axes, "GLAT GLON Time"));
-      Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[]{}, new char[]{' '});
+      Array data = Array.factory(DataType.CHAR, new int[]{}, new char[]{' '});
       v.setCachedData(data, true);
       ds.addVariable(null, v);
 
@@ -723,7 +723,7 @@ map_proj =  1: Lambert Conformal
       return null;
 
     WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
-    return (VerticalCT) builder.makeCoordinateTransform(ds, null);
+    return builder.makeCoordinateTransform(ds, null);
   }
 
   public static void main(String args[]) throws IOException, InvalidRangeException {

@@ -331,9 +331,10 @@ public class CompareNetcdf {
 
   static private void compareData(Array data1, Array data2, double tol, boolean checkType) {
     assert data1.getSize() == data2.getSize();
+    assert data1.isUnsigned() == data2.isUnsigned();
     if (checkType)
       assert data1.getElementType() == data2.getElementType() : data1.getElementType() + "!=" + data2.getElementType();
-    DataType dt = DataType.getType(data1.getElementType());
+    DataType dt = DataType.getType(data1);
 
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();
@@ -352,22 +353,28 @@ public class CompareNetcdf {
         if (!Float.isNaN(v1) || !Float.isNaN(v2))
           assert closeEnough(v1, v2, (float) tol) : v1 + " != " + v2 + " count=" + iter1;
       }
-    } else if (dt == DataType.INT) {
+    } else if (dt == DataType.INT || dt == DataType.UINT) {
       while (iter1.hasNext() && iter2.hasNext()) {
         int v1 = iter1.getIntNext();
         int v2 = iter2.getIntNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
-    } else if (dt == DataType.SHORT) {
+    } else if (dt == DataType.SHORT || dt == DataType.USHORT) {
       while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
-    } else if (dt == DataType.BYTE) {
+    } else if (dt == DataType.BYTE || dt == DataType.UBYTE) {
       while (iter1.hasNext() && iter2.hasNext()) {
         byte v1 = iter1.getByteNext();
         byte v2 = iter2.getByteNext();
+        assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
+      }
+    } else if (dt == DataType.LONG || dt == DataType.ULONG) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        long v1 = iter1.getLongNext();
+        long v2 = iter2.getLongNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
     } else if (dt == DataType.STRUCTURE) {

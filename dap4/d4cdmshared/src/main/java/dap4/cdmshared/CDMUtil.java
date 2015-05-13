@@ -255,20 +255,28 @@ abstract public class CDMUtil
 
 
     static public DapType
-    cdmtype2daptype(DataType datatype, boolean unsigned)
+    cdmtype2daptype(DataType datatype)
     {
         switch (datatype) {
         case CHAR:
             return DapType.CHAR;
         case BYTE:
-            return (unsigned ? DapType.UINT8 : DapType.INT8);
+            return DapType.INT8;
         case SHORT:
-            return (unsigned ? DapType.UINT16 : DapType.INT16);
+            return DapType.INT16;
         case INT:
-            return (unsigned ? DapType.UINT32 : DapType.INT32);
+            return DapType.INT32;
         case LONG:
-            return (unsigned ? DapType.UINT64 : DapType.INT64);
-        case FLOAT:
+            return DapType.INT64;
+        case UBYTE:
+             return DapType.UINT8;
+         case USHORT:
+             return DapType.UINT16;
+         case UINT:
+             return DapType.UINT32;
+         case ULONG:
+             return DapType.UINT64;
+         case FLOAT:
             return DapType.FLOAT32;
         case DOUBLE:
             return DapType.FLOAT64;
@@ -302,17 +310,21 @@ abstract public class CDMUtil
         case Char:
             return DataType.CHAR;
         case UInt8:
+            return DataType.UBYTE;
         case Int8:
             return DataType.BYTE;
         case Int16:
-        case UInt16:
             return DataType.SHORT;
+        case UInt16:
+            return DataType.USHORT;
         case Int32:
-        case UInt32:
             return DataType.INT;
+        case UInt32:
+            return DataType.UINT;
         case Int64:
-        case UInt64:
             return DataType.LONG;
+        case UInt64:
+            return DataType.ULONG;
         case Float32:
             return DataType.FLOAT;
         case Float64:

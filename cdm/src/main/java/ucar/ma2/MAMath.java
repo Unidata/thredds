@@ -54,7 +54,7 @@ public class MAMath {
    */
   public static Array add(Array a, Array b) throws IllegalArgumentException {
 
-    Array result = Array.factory(a.getElementType(), a.getShape());
+    Array result = Array.factory(a.getDataType(), a.getShape());
 
     if (a.getElementType() == double.class) {
       addDouble(result, a, b);
@@ -701,7 +701,8 @@ public class MAMath {
 
   public static boolean isEqual(Array data1, Array data2) {
     if (data1.getSize() != data2.getSize()) return false;
-    DataType dt = DataType.getType(data1.getElementType());
+    if (data1.isUnsigned() != data2.isUnsigned()) return false;
+    DataType dt = DataType.getType(data1);
 
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();

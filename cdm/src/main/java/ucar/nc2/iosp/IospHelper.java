@@ -830,8 +830,6 @@ public class IospHelper {
     Structure outerSubset = outer.select(cer.child.v.getShortName()); // allows IOSPs to optimize for  this case
     ArrayStructure outerData = (ArrayStructure) outerSubset.read(cer.section);
     extractSection(cer.child, outerData, result.getIndexIterator());
-
-    result.setUnsigned(cer.v.isUnsigned());
     return result;
   }
 

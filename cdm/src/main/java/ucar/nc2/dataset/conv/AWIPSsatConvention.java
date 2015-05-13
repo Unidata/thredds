@@ -111,11 +111,11 @@ public class AWIPSsatConvention extends CoordSysBuilder {
       datav.addAttribute( new Attribute(CDM.LONG_NAME, long_name));
 
     // missing values
-    ArrayByte.D1 missing_values = new ArrayByte.D1(2);
+    ArrayByte.D1 missing_values = new ArrayByte.D1(2, true);
     missing_values.set(0, (byte) 0);
     missing_values.set(1, (byte) -127);
     datav.addAttribute( new Attribute("missing_values", missing_values));
-    datav.setUnsigned(true);
+    // datav.setUnsigned(true);  // LOOK we want to change the datatype !!
 
     if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);

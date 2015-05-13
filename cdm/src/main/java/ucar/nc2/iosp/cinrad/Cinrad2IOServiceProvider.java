@@ -198,7 +198,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
       ct.addAttribute( new Attribute(_Coordinate.TransformType, "Radial"));
       ct.addAttribute( new Attribute(_Coordinate.AxisTypes, "RadialElevation RadialAzimuth RadialDistance"));
 
-      Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[0], new char[] {' '});
+      Array data = Array.factory(DataType.CHAR, new int[0], new char[] {' '});
       ct.setCachedData(data, true);
       ncfile.addVariable(null, ct);
     }
@@ -271,7 +271,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     byte[] b = new byte[2];
     b[0] = Cinrad2Record.MISSING_DATA;
     b[1] = Cinrad2Record.BELOW_THRESHOLD;
-    Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
+    Array missingArray = Array.factory(DataType.BYTE, new int[] {2}, b);
 
     v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
@@ -395,7 +395,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     byte[] b = new byte[2];
     b[0] = Cinrad2Record.MISSING_DATA;
     b[1] = Cinrad2Record.BELOW_THRESHOLD;
-    Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
+    Array missingArray = Array.factory(DataType.BYTE, new int[] {2}, b);
 
     v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
@@ -414,19 +414,19 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   private void makeCoordinateData(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
                                   Variable ngatesVar, List groups) {
 
-    Array timeData = Array.factory( time.getDataType().getPrimitiveClassType(), time.getShape());
+    Array timeData = Array.factory( time.getDataType(), time.getShape());
     IndexIterator timeDataIter = timeData.getIndexIterator();
 
-    Array elevData = Array.factory( elev.getDataType().getPrimitiveClassType(), elev.getShape());
+    Array elevData = Array.factory( elev.getDataType(), elev.getShape());
     IndexIterator elevDataIter = elevData.getIndexIterator();
 
-    Array aziData = Array.factory( azi.getDataType().getPrimitiveClassType(), azi.getShape());
+    Array aziData = Array.factory( azi.getDataType(), azi.getShape());
     IndexIterator aziDataIter = aziData.getIndexIterator();
 
-    Array nradialsData = Array.factory( nradialsVar.getDataType().getPrimitiveClassType(), nradialsVar.getShape());
+    Array nradialsData = Array.factory( nradialsVar.getDataType(), nradialsVar.getShape());
     IndexIterator nradialsIter = nradialsData.getIndexIterator();
 
-    Array ngatesData = Array.factory( ngatesVar.getDataType().getPrimitiveClassType(), ngatesVar.getShape());
+    Array ngatesData = Array.factory( ngatesVar.getDataType(), ngatesVar.getShape());
     IndexIterator ngatesIter = ngatesData.getIndexIterator();
 
 
@@ -472,19 +472,19 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   private void makeCoordinateDataWithMissing(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
                                   Variable ngatesVar, List groups) {
 
-    Array timeData = Array.factory( time.getDataType().getPrimitiveClassType(), time.getShape());
+    Array timeData = Array.factory( time.getDataType(), time.getShape());
     Index timeIndex = timeData.getIndex();
 
-    Array elevData = Array.factory( elev.getDataType().getPrimitiveClassType(), elev.getShape());
+    Array elevData = Array.factory( elev.getDataType(), elev.getShape());
     Index elevIndex = elevData.getIndex();
 
-    Array aziData = Array.factory( azi.getDataType().getPrimitiveClassType(), azi.getShape());
+    Array aziData = Array.factory( azi.getDataType(), azi.getShape());
     Index aziIndex = aziData.getIndex();
 
-    Array nradialsData = Array.factory( nradialsVar.getDataType().getPrimitiveClassType(), nradialsVar.getShape());
+    Array nradialsData = Array.factory( nradialsVar.getDataType(), nradialsVar.getShape());
     IndexIterator nradialsIter = nradialsData.getIndexIterator();
 
-    Array ngatesData = Array.factory( ngatesVar.getDataType().getPrimitiveClassType(), ngatesVar.getShape());
+    Array ngatesData = Array.factory( ngatesVar.getDataType(), ngatesVar.getShape());
     IndexIterator ngatesIter = ngatesData.getIndexIterator();
 
     // first fill with missing data
@@ -544,7 +544,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     Range radialRange = section.getRange(1);
     Range gateRange = section.getRange(2);
 
-    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
+    Array data = Array.factory(v2.getDataType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
 
     for (int i=scanRange.first(); i<=scanRange.last(); i+= scanRange.stride()) {

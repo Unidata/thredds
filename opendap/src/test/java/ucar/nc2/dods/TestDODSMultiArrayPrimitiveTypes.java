@@ -56,7 +56,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
-    assert v.getDataType() == DataType.BYTE;
+    assert v.getDataType() == DataType.UBYTE;
     a = v.read();
     assert a.getElementType() == byte.class;
     assert a instanceof ArrayByte.D3;
@@ -106,8 +106,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     assert v.getShortName().equals("ui16");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
-    assert v.getDataType() == DataType.SHORT;
-    assert v.isUnsigned();
+    assert v.getDataType() == DataType.USHORT;
 
     a = v.read();
     assert a.getElementType() == short.class;
@@ -125,8 +124,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     assert v.getShortName().equals("ui32");
     assert v.getRank() == 5;
     assert v.getSize() == 16 * 9;
-    assert v.getDataType() == DataType.INT : v.getDataType();
-    assert v.isUnsigned();
+    assert v.getDataType() == DataType.UINT : v.getDataType();
     a = v.read();
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D5;
@@ -227,7 +225,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
-    assert v.getDataType() == DataType.BYTE;
+    assert v.getDataType() == DataType.UBYTE;
 
     // Byte b[2][3][4];
     a = v.read( "0:1:2, 0:2:1, 0:3:2" );
@@ -265,7 +263,7 @@ public class TestDODSMultiArrayPrimitiveTypes {
     assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
-    assert v.getDataType() == DataType.BYTE;
+    assert v.getDataType() == DataType.UBYTE;
     v.setCaching(false);
 
     // Byte b[2][3][4];

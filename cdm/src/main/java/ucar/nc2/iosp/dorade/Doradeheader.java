@@ -269,7 +269,7 @@ public class Doradeheader {
   public MAMath.MinMax getMinMaxData(float[] data) {
     int[] shape = new int[1];
     shape[0] = data.length;
-    Array a = Array.factory(DataType.FLOAT.getPrimitiveClassType(), shape, data);
+    Array a = Array.factory(DataType.FLOAT, shape, data);
     return MAMath.getMinMax(a);
   }
 
@@ -290,8 +290,8 @@ public class Doradeheader {
     Object ele =  mySweep.getElevations();
     Object azi =  mySweep.getAzimuths();
 
-    Array elevData = Array.factory(elev.getDataType().getPrimitiveClassType(), elev.getShape(), ele);
-    Array aziData = Array.factory(azim.getDataType().getPrimitiveClassType(), azim.getShape(), azi);
+    Array elevData = Array.factory(elev.getDataType(), elev.getShape(), ele);
+    Array aziData = Array.factory(azim.getDataType(), azim.getShape(), azi);
 
     elev.setCachedData(elevData, false);
     azim.setCachedData(aziData, false);

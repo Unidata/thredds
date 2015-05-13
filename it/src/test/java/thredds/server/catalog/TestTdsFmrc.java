@@ -55,7 +55,7 @@ public class TestTdsFmrc {
       assert time.getSize() == 8;
       double[] want = new double[]{3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0};
       CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", time.read(), Array.factory(want), false);
+      assert cn.compareData("time", time.read(), Array.makeFromJavaArray(want), false);
 
       Attribute att = gds.findGlobalAttributeIgnoreCase("ncmlAdded");
       assert att != null;

@@ -57,7 +57,7 @@ public class TestUnsigned {
 
     Variable v = null;
     assert(null != (v = ncfile.findVariable("bvar")));
-    assert !v.isUnsigned();
+    assert !v.getDataType().isUnsigned();
     assert v.getDataType() == DataType.BYTE;
 
     boolean hasSigned = false;

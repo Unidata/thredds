@@ -9,8 +9,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
@@ -56,7 +54,7 @@ public class TestNc4Misc {
 
     writer.create();
 
-    Array data = Array.factory(new double[]{0, 1, 2, 3});
+    Array data = Array.makeFromJavaArray(new double[]{0, 1, 2, 3});
     writer.write(time, data);
     writer.close();
 

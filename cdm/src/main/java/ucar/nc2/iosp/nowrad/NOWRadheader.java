@@ -420,7 +420,7 @@ public class NOWRadheader {
 
         tdata[0] = dd.getTime();
 
-        Array dataT = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { 1 }, tdata);
+        Array dataT = Array.factory(DataType.DOUBLE, new int[] { 1 }, tdata);
 
         taxis.setCachedData(dataT, false);
 
@@ -477,7 +477,7 @@ public class NOWRadheader {
             data1[i] = startX + i*dx;
         }
 
-        Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numX }, data1);
+        Array dataA = Array.factory(DataType.DOUBLE, new int[] { numX }, data1);
 
         xaxis.setCachedData(dataA, false);
         ncfile.addVariable(null, xaxis);
@@ -496,7 +496,7 @@ public class NOWRadheader {
             data1[i] = startY + i*dy;
         }
 
-        dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numY }, data1);
+        dataA = Array.factory(DataType.DOUBLE, new int[] { numY }, data1);
         yaxis.setCachedData(dataA, false);
         ncfile.addVariable(null, yaxis);
 
@@ -518,7 +518,7 @@ public class NOWRadheader {
         //ct.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
         ct.addAttribute( new Attribute(_Coordinate.Axes, "x y "));
         // fake data
-        dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
+        dataA = Array.factory(DataType.CHAR, new int[] {});
         dataA.setChar(dataA.getIndex(), ' ');
         ct.setCachedData(dataA, false);
         ncfile.addVariable(null, ct);
@@ -549,7 +549,7 @@ public class NOWRadheader {
 
         tdata[0] = dd.getTime();
 
-        Array dataT = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { 1 }, tdata);
+        Array dataT = Array.factory(DataType.DOUBLE, new int[] { 1 }, tdata);
 
         taxis.setCachedData(dataT, false);
 
@@ -595,7 +595,7 @@ public class NOWRadheader {
             data1[i] = (double) (rlon1 + i * dlon);
         }
 
-        Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numX }, data1);
+        Array dataA = Array.factory(DataType.DOUBLE, new int[] { numX }, data1);
 
         xaxis.setCachedData(dataA, false);
         ncfile.addVariable(null, xaxis);
@@ -612,7 +612,7 @@ public class NOWRadheader {
             data1[i] = rlat1 + i * dlat;
         }
 
-        dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { numY }, data1);
+        dataA = Array.factory(DataType.DOUBLE, new int[] { numY }, data1);
         yaxis.setCachedData(dataA, false);
         ncfile.addVariable(null, yaxis);
 
@@ -638,7 +638,7 @@ public class NOWRadheader {
         ct.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
 
         // fake data
-        dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
+        dataA = Array.factory(DataType.CHAR, new int[] {});
         dataA.setChar(dataA.getIndex(), ' ');
         ct.setCachedData(dataA, false);
         ncfile.addVariable(null, ct);

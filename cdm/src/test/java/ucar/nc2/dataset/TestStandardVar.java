@@ -107,7 +107,7 @@ public class TestStandardVar extends TestCase {
     ncfile.write("t1", origin, A);
 
     // write t2
-    ArrayByte Ab = new ArrayByte.D2(latDim.getLength(), lonDim.getLength());
+    ArrayByte Ab = new ArrayByte.D2(latDim.getLength(), lonDim.getLength(), false);
     ima = Ab.getIndex();
     for (i=0; i<latDim.getLength(); i++)
       for (j=0; j<lonDim.getLength(); j++)
@@ -119,7 +119,7 @@ public class TestStandardVar extends TestCase {
 
 
      // write t4
-    Array As = new ArrayShort.D2(latDim.getLength(), lonDim.getLength());
+    Array As = new ArrayShort.D2(latDim.getLength(), lonDim.getLength(), false);
     ima = As.getIndex();
     for (i=0; i<latDim.getLength(); i++)
       for (j=0; j<lonDim.getLength(); j++)

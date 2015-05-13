@@ -69,6 +69,22 @@ public final class NcStreamProto {
      * <code>OPAQUE = 13;</code>
      */
     OPAQUE(13, 13),
+    /**
+     * <code>UBYTE = 14;</code>
+     */
+    UBYTE(14, 14),
+    /**
+     * <code>USHORT = 15;</code>
+     */
+    USHORT(15, 15),
+    /**
+     * <code>UINT = 16;</code>
+     */
+    UINT(16, 16),
+    /**
+     * <code>ULONG = 17;</code>
+     */
+    ULONG(17, 17),
     ;
 
     /**
@@ -127,6 +143,22 @@ public final class NcStreamProto {
      * <code>OPAQUE = 13;</code>
      */
     public static final int OPAQUE_VALUE = 13;
+    /**
+     * <code>UBYTE = 14;</code>
+     */
+    public static final int UBYTE_VALUE = 14;
+    /**
+     * <code>USHORT = 15;</code>
+     */
+    public static final int USHORT_VALUE = 15;
+    /**
+     * <code>UINT = 16;</code>
+     */
+    public static final int UINT_VALUE = 16;
+    /**
+     * <code>ULONG = 17;</code>
+     */
+    public static final int ULONG_VALUE = 17;
 
 
     public final int getNumber() { return value; }
@@ -147,6 +179,10 @@ public final class NcStreamProto {
         case 11: return ENUM2;
         case 12: return ENUM4;
         case 13: return OPAQUE;
+        case 14: return UBYTE;
+        case 15: return USHORT;
+        case 16: return UINT;
+        case 17: return ULONG;
         default: return null;
       }
     }
@@ -298,15 +334,23 @@ public final class NcStreamProto {
     com.google.protobuf.ByteString
         getNameBytes();
 
-    // required .Attribute.Type type = 2;
+    // required .DataType dataType = 2;
     /**
-     * <code>required .Attribute.Type type = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
+     *
+     * <pre>
+     * cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+     * </pre>
      */
-    boolean hasType();
+    boolean hasDataType();
     /**
-     * <code>required .Attribute.Type type = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
+     *
+     * <pre>
+     * cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+     * </pre>
      */
-    ucar.nc2.stream.NcStreamProto.Attribute.Type getType();
+    ucar.nc2.stream.NcStreamProto.DataType getDataType();
 
     // required uint32 len = 3;
     /**
@@ -371,16 +415,6 @@ public final class NcStreamProto {
      */
     com.google.protobuf.ByteString
         getSdataBytes(int index);
-
-    // optional bool unsigned = 6 [default = false];
-    /**
-     * <code>optional bool unsigned = 6 [default = false];</code>
-     */
-    boolean hasUnsigned();
-    /**
-     * <code>optional bool unsigned = 6 [default = false];</code>
-     */
-    boolean getUnsigned();
   }
   /**
    * Protobuf type {@code Attribute}
@@ -440,12 +474,12 @@ public final class NcStreamProto {
             }
             case 16: {
               int rawValue = input.readEnum();
-              ucar.nc2.stream.NcStreamProto.Attribute.Type value = ucar.nc2.stream.NcStreamProto.Attribute.Type.valueOf(rawValue);
+              ucar.nc2.stream.NcStreamProto.DataType value = ucar.nc2.stream.NcStreamProto.DataType.valueOf(rawValue);
               if (value == null) {
                 unknownFields.mergeVarintField(2, rawValue);
               } else {
                 bitField0_ |= 0x00000002;
-                type_ = value;
+                dataType_ = value;
               }
               break;
             }
@@ -465,11 +499,6 @@ public final class NcStreamProto {
                 mutable_bitField0_ |= 0x00000010;
               }
               sdata_.add(input.readBytes());
-              break;
-            }
-            case 48: {
-              bitField0_ |= 0x00000010;
-              unsigned_ = input.readBool();
               break;
             }
           }
@@ -512,133 +541,6 @@ public final class NcStreamProto {
     @java.lang.Override
     public com.google.protobuf.Parser<Attribute> getParserForType() {
       return PARSER;
-    }
-
-    /**
-     * Protobuf enum {@code Attribute.Type}
-     */
-    public enum Type
-        implements com.google.protobuf.ProtocolMessageEnum {
-      /**
-       * <code>STRING = 0;</code>
-       */
-      STRING(0, 0),
-      /**
-       * <code>BYTE = 1;</code>
-       */
-      BYTE(1, 1),
-      /**
-       * <code>SHORT = 2;</code>
-       */
-      SHORT(2, 2),
-      /**
-       * <code>INT = 3;</code>
-       */
-      INT(3, 3),
-      /**
-       * <code>LONG = 4;</code>
-       */
-      LONG(4, 4),
-      /**
-       * <code>FLOAT = 5;</code>
-       */
-      FLOAT(5, 5),
-      /**
-       * <code>DOUBLE = 6;</code>
-       */
-      DOUBLE(6, 6),
-      ;
-
-      /**
-       * <code>STRING = 0;</code>
-       */
-      public static final int STRING_VALUE = 0;
-      /**
-       * <code>BYTE = 1;</code>
-       */
-      public static final int BYTE_VALUE = 1;
-      /**
-       * <code>SHORT = 2;</code>
-       */
-      public static final int SHORT_VALUE = 2;
-      /**
-       * <code>INT = 3;</code>
-       */
-      public static final int INT_VALUE = 3;
-      /**
-       * <code>LONG = 4;</code>
-       */
-      public static final int LONG_VALUE = 4;
-      /**
-       * <code>FLOAT = 5;</code>
-       */
-      public static final int FLOAT_VALUE = 5;
-      /**
-       * <code>DOUBLE = 6;</code>
-       */
-      public static final int DOUBLE_VALUE = 6;
-
-
-      public final int getNumber() { return value; }
-
-      public static Type valueOf(int value) {
-        switch (value) {
-          case 0: return STRING;
-          case 1: return BYTE;
-          case 2: return SHORT;
-          case 3: return INT;
-          case 4: return LONG;
-          case 5: return FLOAT;
-          case 6: return DOUBLE;
-          default: return null;
-        }
-      }
-
-      public static com.google.protobuf.Internal.EnumLiteMap<Type>
-          internalGetValueMap() {
-        return internalValueMap;
-      }
-      private static com.google.protobuf.Internal.EnumLiteMap<Type>
-          internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<Type>() {
-              public Type findValueByNumber(int number) {
-                return Type.valueOf(number);
-              }
-            };
-
-      public final com.google.protobuf.Descriptors.EnumValueDescriptor
-          getValueDescriptor() {
-        return getDescriptor().getValues().get(index);
-      }
-      public final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptorForType() {
-        return getDescriptor();
-      }
-      public static final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptor() {
-        return ucar.nc2.stream.NcStreamProto.Attribute.getDescriptor().getEnumTypes().get(0);
-      }
-
-      private static final Type[] VALUES = values();
-
-      public static Type valueOf(
-          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-        if (desc.getType() != getDescriptor()) {
-          throw new java.lang.IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
-        }
-        return VALUES[desc.getIndex()];
-      }
-
-      private final int index;
-      private final int value;
-
-      private Type(int index, int value) {
-        this.index = index;
-        this.value = value;
-      }
-
-      // @@protoc_insertion_point(enum_scope:Attribute.Type)
     }
 
     private int bitField0_;
@@ -685,20 +587,28 @@ public final class NcStreamProto {
       }
     }
 
-    // required .Attribute.Type type = 2;
-    public static final int TYPE_FIELD_NUMBER = 2;
-    private ucar.nc2.stream.NcStreamProto.Attribute.Type type_;
+    // required .DataType dataType = 2;
+    public static final int DATATYPE_FIELD_NUMBER = 2;
+    private ucar.nc2.stream.NcStreamProto.DataType dataType_;
     /**
-     * <code>required .Attribute.Type type = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
+     *
+     * <pre>
+     * cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+     * </pre>
      */
-    public boolean hasType() {
+    public boolean hasDataType() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required .Attribute.Type type = 2;</code>
+     * <code>required .DataType dataType = 2;</code>
+     *
+     * <pre>
+     * cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+     * </pre>
      */
-    public ucar.nc2.stream.NcStreamProto.Attribute.Type getType() {
-      return type_;
+    public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+      return dataType_;
     }
 
     // required uint32 len = 3;
@@ -787,29 +697,12 @@ public final class NcStreamProto {
       return sdata_.getByteString(index);
     }
 
-    // optional bool unsigned = 6 [default = false];
-    public static final int UNSIGNED_FIELD_NUMBER = 6;
-    private boolean unsigned_;
-    /**
-     * <code>optional bool unsigned = 6 [default = false];</code>
-     */
-    public boolean hasUnsigned() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional bool unsigned = 6 [default = false];</code>
-     */
-    public boolean getUnsigned() {
-      return unsigned_;
-    }
-
     private void initFields() {
       name_ = "";
-      type_ = ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING;
+      dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       len_ = 0;
       data_ = com.google.protobuf.ByteString.EMPTY;
       sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      unsigned_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -820,7 +713,7 @@ public final class NcStreamProto {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasType()) {
+      if (!hasDataType()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -839,7 +732,7 @@ public final class NcStreamProto {
         output.writeBytes(1, getNameBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeEnum(2, type_.getNumber());
+        output.writeEnum(2, dataType_.getNumber());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeUInt32(3, len_);
@@ -849,9 +742,6 @@ public final class NcStreamProto {
       }
       for (int i = 0; i < sdata_.size(); i++) {
         output.writeBytes(5, sdata_.getByteString(i));
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBool(6, unsigned_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -868,7 +758,7 @@ public final class NcStreamProto {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(2, type_.getNumber());
+          .computeEnumSize(2, dataType_.getNumber());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -886,10 +776,6 @@ public final class NcStreamProto {
         }
         size += dataSize;
         size += 1 * getSdataList().size();
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(6, unsigned_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1009,7 +895,7 @@ public final class NcStreamProto {
         super.clear();
         name_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        type_ = ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING;
+        dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
         bitField0_ = (bitField0_ & ~0x00000002);
         len_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -1017,8 +903,6 @@ public final class NcStreamProto {
         bitField0_ = (bitField0_ & ~0x00000008);
         sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000010);
-        unsigned_ = false;
-        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -1054,7 +938,7 @@ public final class NcStreamProto {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.type_ = type_;
+        result.dataType_ = dataType_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
@@ -1069,10 +953,6 @@ public final class NcStreamProto {
           bitField0_ = (bitField0_ & ~0x00000010);
         }
         result.sdata_ = sdata_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.unsigned_ = unsigned_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1094,8 +974,8 @@ public final class NcStreamProto {
           name_ = other.name_;
           onChanged();
         }
-        if (other.hasType()) {
-          setType(other.getType());
+        if (other.hasDataType()) {
+          setDataType(other.getDataType());
         }
         if (other.hasLen()) {
           setLen(other.getLen());
@@ -1113,9 +993,6 @@ public final class NcStreamProto {
           }
           onChanged();
         }
-        if (other.hasUnsigned()) {
-          setUnsigned(other.getUnsigned());
-        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -1125,7 +1002,7 @@ public final class NcStreamProto {
           
           return false;
         }
-        if (!hasType()) {
+        if (!hasDataType()) {
           
           return false;
         }
@@ -1229,38 +1106,54 @@ public final class NcStreamProto {
         return this;
       }
 
-      // required .Attribute.Type type = 2;
-      private ucar.nc2.stream.NcStreamProto.Attribute.Type type_ = ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING;
+      // required .DataType dataType = 2;
+      private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       /**
-       * <code>required .Attribute.Type type = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
+       *
+       * <pre>
+       * cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+       * </pre>
        */
-      public boolean hasType() {
+      public boolean hasDataType() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required .Attribute.Type type = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
+       *
+       * <pre>
+       * cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+       * </pre>
        */
-      public ucar.nc2.stream.NcStreamProto.Attribute.Type getType() {
-        return type_;
+      public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        return dataType_;
       }
       /**
-       * <code>required .Attribute.Type type = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
+       *
+       * <pre>
+       * cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+       * </pre>
        */
-      public Builder setType(ucar.nc2.stream.NcStreamProto.Attribute.Type value) {
+      public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
         if (value == null) {
           throw new NullPointerException();
         }
         bitField0_ |= 0x00000002;
-        type_ = value;
+        dataType_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required .Attribute.Type type = 2;</code>
+       * <code>required .DataType dataType = 2;</code>
+       *
+       * <pre>
+       * cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+       * </pre>
        */
-      public Builder clearType() {
+      public Builder clearDataType() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        type_ = ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING;
+        dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
         onChanged();
         return this;
       }
@@ -1475,39 +1368,6 @@ public final class NcStreamProto {
   }
   ensureSdataIsMutable();
         sdata_.add(value);
-        onChanged();
-        return this;
-      }
-
-      // optional bool unsigned = 6 [default = false];
-      private boolean unsigned_ ;
-      /**
-       * <code>optional bool unsigned = 6 [default = false];</code>
-       */
-      public boolean hasUnsigned() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
-      }
-      /**
-       * <code>optional bool unsigned = 6 [default = false];</code>
-       */
-      public boolean getUnsigned() {
-        return unsigned_;
-      }
-      /**
-       * <code>optional bool unsigned = 6 [default = false];</code>
-       */
-      public Builder setUnsigned(boolean value) {
-        bitField0_ |= 0x00000020;
-        unsigned_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bool unsigned = 6 [default = false];</code>
-       */
-      public Builder clearUnsigned() {
-        bitField0_ = (bitField0_ & ~0x00000020);
-        unsigned_ = false;
         onChanged();
         return this;
       }
@@ -2475,7 +2335,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> 
@@ -2484,7 +2344,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     ucar.nc2.stream.NcStreamProto.Dimension getShape(int index);
@@ -2492,7 +2352,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     int getShapeCount();
@@ -2500,7 +2360,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
@@ -2509,7 +2369,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
@@ -2539,16 +2399,6 @@ public final class NcStreamProto {
      */
     ucar.nc2.stream.NcStreamProto.AttributeOrBuilder getAttsOrBuilder(
         int index);
-
-    // optional bool unsigned = 5 [default = false];
-    /**
-     * <code>optional bool unsigned = 5 [default = false];</code>
-     */
-    boolean hasUnsigned();
-    /**
-     * <code>optional bool unsigned = 5 [default = false];</code>
-     */
-    boolean getUnsigned();
 
     // optional bytes data = 6;
     /**
@@ -2678,18 +2528,13 @@ public final class NcStreamProto {
               atts_.add(input.readMessage(ucar.nc2.stream.NcStreamProto.Attribute.PARSER, extensionRegistry));
               break;
             }
-            case 40: {
-              bitField0_ |= 0x00000004;
-              unsigned_ = input.readBool();
-              break;
-            }
             case 50: {
-              bitField0_ |= 0x00000008;
+              bitField0_ |= 0x00000004;
               data_ = input.readBytes();
               break;
             }
             case 58: {
-              bitField0_ |= 0x00000010;
+              bitField0_ |= 0x00000008;
               enumType_ = input.readBytes();
               break;
             }
@@ -2817,7 +2662,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
@@ -2827,7 +2672,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
@@ -2838,7 +2683,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     public int getShapeCount() {
@@ -2848,7 +2693,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     public ucar.nc2.stream.NcStreamProto.Dimension getShape(int index) {
@@ -2858,7 +2703,7 @@ public final class NcStreamProto {
      * <code>repeated .Dimension shape = 3;</code>
      *
      * <pre>
-     * actual dimension instead of reference; could use hash id
+     * actual dimension instead of reference; could use hash id; maybe use name
      * </pre>
      */
     public ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
@@ -2902,22 +2747,6 @@ public final class NcStreamProto {
       return atts_.get(index);
     }
 
-    // optional bool unsigned = 5 [default = false];
-    public static final int UNSIGNED_FIELD_NUMBER = 5;
-    private boolean unsigned_;
-    /**
-     * <code>optional bool unsigned = 5 [default = false];</code>
-     */
-    public boolean hasUnsigned() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>optional bool unsigned = 5 [default = false];</code>
-     */
-    public boolean getUnsigned() {
-      return unsigned_;
-    }
-
     // optional bytes data = 6;
     public static final int DATA_FIELD_NUMBER = 6;
     private com.google.protobuf.ByteString data_;
@@ -2929,7 +2758,7 @@ public final class NcStreamProto {
      * </pre>
      */
     public boolean hasData() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
      * <code>optional bytes data = 6;</code>
@@ -2953,7 +2782,7 @@ public final class NcStreamProto {
      * </pre>
      */
     public boolean hasEnumType() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
      * <code>optional string enumType = 7;</code>
@@ -3002,7 +2831,6 @@ public final class NcStreamProto {
       dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       shape_ = java.util.Collections.emptyList();
       atts_ = java.util.Collections.emptyList();
-      unsigned_ = false;
       data_ = com.google.protobuf.ByteString.EMPTY;
       enumType_ = "";
     }
@@ -3045,12 +2873,9 @@ public final class NcStreamProto {
         output.writeMessage(4, atts_.get(i));
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBool(5, unsigned_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(6, data_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(7, getEnumTypeBytes());
       }
       getUnknownFields().writeTo(output);
@@ -3080,13 +2905,9 @@ public final class NcStreamProto {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(5, unsigned_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(6, data_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(7, getEnumTypeBytes());
       }
@@ -3224,12 +3045,10 @@ public final class NcStreamProto {
         } else {
           attsBuilder_.clear();
         }
-        unsigned_ = false;
-        bitField0_ = (bitField0_ & ~0x00000010);
         data_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         enumType_ = "";
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -3287,13 +3106,9 @@ public final class NcStreamProto {
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.unsigned_ = unsigned_;
+        result.data_ = data_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000008;
-        }
-        result.data_ = data_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000010;
         }
         result.enumType_ = enumType_;
         result.bitField0_ = to_bitField0_;
@@ -3372,14 +3187,11 @@ public final class NcStreamProto {
             }
           }
         }
-        if (other.hasUnsigned()) {
-          setUnsigned(other.getUnsigned());
-        }
         if (other.hasData()) {
           setData(other.getData());
         }
         if (other.hasEnumType()) {
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000020;
           enumType_ = other.enumType_;
           onChanged();
         }
@@ -3575,7 +3387,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension> getShapeList() {
@@ -3589,7 +3401,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public int getShapeCount() {
@@ -3603,7 +3415,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension getShape(int index) {
@@ -3617,7 +3429,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder setShape(
@@ -3638,7 +3450,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder setShape(
@@ -3656,7 +3468,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder addShape(ucar.nc2.stream.NcStreamProto.Dimension value) {
@@ -3676,7 +3488,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder addShape(
@@ -3697,7 +3509,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder addShape(
@@ -3715,7 +3527,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder addShape(
@@ -3733,7 +3545,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder addAllShape(
@@ -3751,7 +3563,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder clearShape() {
@@ -3768,7 +3580,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public Builder removeShape(int index) {
@@ -3785,7 +3597,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder getShapeBuilder(
@@ -3796,7 +3608,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.DimensionOrBuilder getShapeOrBuilder(
@@ -3810,7 +3622,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public java.util.List<? extends ucar.nc2.stream.NcStreamProto.DimensionOrBuilder> 
@@ -3825,7 +3637,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder addShapeBuilder() {
@@ -3836,7 +3648,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Dimension.Builder addShapeBuilder(
@@ -3848,7 +3660,7 @@ public final class NcStreamProto {
        * <code>repeated .Dimension shape = 3;</code>
        *
        * <pre>
-       * actual dimension instead of reference; could use hash id
+       * actual dimension instead of reference; could use hash id; maybe use name
        * </pre>
        */
       public java.util.List<ucar.nc2.stream.NcStreamProto.Dimension.Builder> 
@@ -4110,39 +3922,6 @@ public final class NcStreamProto {
         return attsBuilder_;
       }
 
-      // optional bool unsigned = 5 [default = false];
-      private boolean unsigned_ ;
-      /**
-       * <code>optional bool unsigned = 5 [default = false];</code>
-       */
-      public boolean hasUnsigned() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional bool unsigned = 5 [default = false];</code>
-       */
-      public boolean getUnsigned() {
-        return unsigned_;
-      }
-      /**
-       * <code>optional bool unsigned = 5 [default = false];</code>
-       */
-      public Builder setUnsigned(boolean value) {
-        bitField0_ |= 0x00000010;
-        unsigned_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bool unsigned = 5 [default = false];</code>
-       */
-      public Builder clearUnsigned() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        unsigned_ = false;
-        onChanged();
-        return this;
-      }
-
       // optional bytes data = 6;
       private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
       /**
@@ -4153,7 +3932,7 @@ public final class NcStreamProto {
        * </pre>
        */
       public boolean hasData() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <code>optional bytes data = 6;</code>
@@ -4176,7 +3955,7 @@ public final class NcStreamProto {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  bitField0_ |= 0x00000010;
         data_ = value;
         onChanged();
         return this;
@@ -4189,7 +3968,7 @@ public final class NcStreamProto {
        * </pre>
        */
       public Builder clearData() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         data_ = getDefaultInstance().getData();
         onChanged();
         return this;
@@ -4205,7 +3984,7 @@ public final class NcStreamProto {
        * </pre>
        */
       public boolean hasEnumType() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
        * <code>optional string enumType = 7;</code>
@@ -4257,7 +4036,7 @@ public final class NcStreamProto {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000040;
+  bitField0_ |= 0x00000020;
         enumType_ = value;
         onChanged();
         return this;
@@ -4270,7 +4049,7 @@ public final class NcStreamProto {
        * </pre>
        */
       public Builder clearEnumType() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         enumType_ = getDefaultInstance().getEnumType();
         onChanged();
         return this;
@@ -4287,7 +4066,7 @@ public final class NcStreamProto {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000040;
+  bitField0_ |= 0x00000020;
         enumType_ = value;
         onChanged();
         return this;
@@ -4339,7 +4118,7 @@ public final class NcStreamProto {
      * <code>required .DataType dataType = 2;</code>
      *
      * <pre>
-     * struct or seq
+     * STRUCTURE or SEQUENCE
      * </pre>
      */
     boolean hasDataType();
@@ -4347,7 +4126,7 @@ public final class NcStreamProto {
      * <code>required .DataType dataType = 2;</code>
      *
      * <pre>
-     * struct or seq
+     * STRUCTURE or SEQUENCE
      * </pre>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
@@ -4685,7 +4464,7 @@ public final class NcStreamProto {
      * <code>required .DataType dataType = 2;</code>
      *
      * <pre>
-     * struct or seq
+     * STRUCTURE or SEQUENCE
      * </pre>
      */
     public boolean hasDataType() {
@@ -4695,7 +4474,7 @@ public final class NcStreamProto {
      * <code>required .DataType dataType = 2;</code>
      *
      * <pre>
-     * struct or seq
+     * STRUCTURE or SEQUENCE
      * </pre>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
@@ -5468,7 +5247,7 @@ public final class NcStreamProto {
        * <code>required .DataType dataType = 2;</code>
        *
        * <pre>
-       * struct or seq
+       * STRUCTURE or SEQUENCE
        * </pre>
        */
       public boolean hasDataType() {
@@ -5478,7 +5257,7 @@ public final class NcStreamProto {
        * <code>required .DataType dataType = 2;</code>
        *
        * <pre>
-       * struct or seq
+       * STRUCTURE or SEQUENCE
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
@@ -5488,7 +5267,7 @@ public final class NcStreamProto {
        * <code>required .DataType dataType = 2;</code>
        *
        * <pre>
-       * struct or seq
+       * STRUCTURE or SEQUENCE
        * </pre>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
@@ -5504,7 +5283,7 @@ public final class NcStreamProto {
        * <code>required .DataType dataType = 2;</code>
        *
        * <pre>
-       * struct or seq
+       * STRUCTURE or SEQUENCE
        * </pre>
        */
       public Builder clearDataType() {
@@ -7984,14 +7763,26 @@ public final class NcStreamProto {
     // required string name = 1;
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * short name
+     * </pre>
      */
     boolean hasName();
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * short name
+     * </pre>
      */
     java.lang.String getName();
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * short name
+     * </pre>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -8313,12 +8104,20 @@ public final class NcStreamProto {
     private java.lang.Object name_;
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * short name
+     * </pre>
      */
     public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * short name
+     * </pre>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -8336,6 +8135,10 @@ public final class NcStreamProto {
     }
     /**
      * <code>required string name = 1;</code>
+     *
+     * <pre>
+     * short name
+     * </pre>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -9168,12 +8971,20 @@ public final class NcStreamProto {
       private java.lang.Object name_ = "";
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * short name
+       * </pre>
        */
       public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * short name
+       * </pre>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -9188,6 +8999,10 @@ public final class NcStreamProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * short name
+       * </pre>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -9204,6 +9019,10 @@ public final class NcStreamProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * short name
+       * </pre>
        */
       public Builder setName(
           java.lang.String value) {
@@ -9217,6 +9036,10 @@ public final class NcStreamProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * short name
+       * </pre>
        */
       public Builder clearName() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -9226,6 +9049,10 @@ public final class NcStreamProto {
       }
       /**
        * <code>required string name = 1;</code>
+       *
+       * <pre>
+       * short name
+       * </pre>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -11902,7 +11729,7 @@ public final class NcStreamProto {
      * <code>optional .Section section = 3;</code>
      *
      * <pre>
-     * not required for Sequence
+     * not required for SEQUENCE
      * </pre>
      */
     boolean hasSection();
@@ -11910,7 +11737,7 @@ public final class NcStreamProto {
      * <code>optional .Section section = 3;</code>
      *
      * <pre>
-     * not required for Sequence
+     * not required for SEQUENCE
      * </pre>
      */
     ucar.nc2.stream.NcStreamProto.Section getSection();
@@ -11918,7 +11745,7 @@ public final class NcStreamProto {
      * <code>optional .Section section = 3;</code>
      *
      * <pre>
-     * not required for Sequence
+     * not required for SEQUENCE
      * </pre>
      */
     ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder();
@@ -12202,7 +12029,7 @@ public final class NcStreamProto {
      * <code>optional .Section section = 3;</code>
      *
      * <pre>
-     * not required for Sequence
+     * not required for SEQUENCE
      * </pre>
      */
     public boolean hasSection() {
@@ -12212,7 +12039,7 @@ public final class NcStreamProto {
      * <code>optional .Section section = 3;</code>
      *
      * <pre>
-     * not required for Sequence
+     * not required for SEQUENCE
      * </pre>
      */
     public ucar.nc2.stream.NcStreamProto.Section getSection() {
@@ -12222,7 +12049,7 @@ public final class NcStreamProto {
      * <code>optional .Section section = 3;</code>
      *
      * <pre>
-     * not required for Sequence
+     * not required for SEQUENCE
      * </pre>
      */
     public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
@@ -12836,7 +12663,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       public boolean hasSection() {
@@ -12846,7 +12673,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Section getSection() {
@@ -12860,7 +12687,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       public Builder setSection(ucar.nc2.stream.NcStreamProto.Section value) {
@@ -12880,7 +12707,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       public Builder setSection(
@@ -12898,7 +12725,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       public Builder mergeSection(ucar.nc2.stream.NcStreamProto.Section value) {
@@ -12921,7 +12748,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       public Builder clearSection() {
@@ -12938,7 +12765,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.Section.Builder getSectionBuilder() {
@@ -12950,7 +12777,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.SectionOrBuilder getSectionOrBuilder() {
@@ -12964,7 +12791,7 @@ public final class NcStreamProto {
        * <code>optional .Section section = 3;</code>
        *
        * <pre>
-       * not required for Sequence
+       * not required for SEQUENCE
        * </pre>
        */
       private com.google.protobuf.SingleFieldBuilder<
@@ -16156,50 +15983,48 @@ public final class NcStreamProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\036ucar/nc2/stream/ncStream.proto\"\316\001\n\tAtt" +
-      "ribute\022\014\n\004name\030\001 \002(\t\022\035\n\004type\030\002 \002(\0162\017.Att" +
-      "ribute.Type\022\013\n\003len\030\003 \002(\r\022\014\n\004data\030\004 \001(\014\022\r" +
-      "\n\005sdata\030\005 \003(\t\022\027\n\010unsigned\030\006 \001(\010:\005false\"Q" +
-      "\n\004Type\022\n\n\006STRING\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022" +
-      "\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020" +
-      "\006\"v\n\tDimension\022\014\n\004name\030\001 \001(\t\022\016\n\006length\030\002" +
-      " \001(\004\022\032\n\013isUnlimited\030\003 \001(\010:\005false\022\025\n\006isVl" +
-      "en\030\004 \001(\010:\005false\022\030\n\tisPrivate\030\005 \001(\010:\005fals" +
-      "e\"\243\001\n\010Variable\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType",
-      "\030\002 \002(\0162\t.DataType\022\031\n\005shape\030\003 \003(\0132\n.Dimen" +
-      "sion\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\027\n\010unsign" +
-      "ed\030\005 \001(\010:\005false\022\014\n\004data\030\006 \001(\014\022\020\n\010enumTyp" +
-      "e\030\007 \001(\t\"\241\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022\033\n\010d" +
-      "ataType\030\002 \002(\0162\t.DataType\022\031\n\005shape\030\003 \003(\0132" +
-      "\n.Dimension\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022\027\n" +
-      "\004vars\030\005 \003(\0132\t.Variable\022\033\n\007structs\030\006 \003(\0132" +
-      "\n.Structure\"h\n\013EnumTypedef\022\014\n\004name\030\001 \002(\t" +
-      "\022\"\n\003map\030\002 \003(\0132\025.EnumTypedef.EnumType\032\'\n\010" +
-      "EnumType\022\014\n\004code\030\001 \002(\r\022\r\n\005value\030\002 \002(\t\"\270\001",
-      "\n\005Group\022\014\n\004name\030\001 \002(\t\022\030\n\004dims\030\002 \003(\0132\n.Di" +
-      "mension\022\027\n\004vars\030\003 \003(\0132\t.Variable\022\033\n\007stru" +
-      "cts\030\004 \003(\0132\n.Structure\022\030\n\004atts\030\005 \003(\0132\n.At" +
-      "tribute\022\026\n\006groups\030\006 \003(\0132\006.Group\022\037\n\tenumT" +
-      "ypes\030\007 \003(\0132\014.EnumTypedef\"_\n\006Header\022\020\n\010lo" +
-      "cation\030\001 \001(\t\022\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022" +
-      "\024\n\004root\030\004 \002(\0132\006.Group\022\022\n\007version\030\005 \001(\r:\001" +
-      "0\"\314\001\n\004Data\022\017\n\007varName\030\001 \002(\t\022\033\n\010dataType\030" +
-      "\002 \002(\0162\t.DataType\022\031\n\007section\030\003 \001(\0132\010.Sect" +
-      "ion\022\024\n\006bigend\030\004 \001(\010:\004true\022\022\n\007version\030\005 \001",
-      "(\r:\0010\022!\n\010compress\030\006 \001(\0162\t.Compress:\004NONE" +
-      "\022\024\n\005vdata\030\007 \001(\010:\005false\022\030\n\020uncompressedSi" +
-      "ze\030\010 \001(\r\":\n\005Range\022\020\n\005start\030\001 \001(\004:\0010\022\014\n\004s" +
-      "ize\030\002 \002(\004\022\021\n\006stride\030\003 \001(\004:\0011\" \n\007Section\022" +
-      "\025\n\005range\030\001 \003(\0132\006.Range\"a\n\rStructureData\022" +
-      "\016\n\006member\030\001 \003(\r\022\014\n\004data\030\002 \002(\014\022\021\n\theapCou" +
-      "nt\030\003 \003(\r\022\r\n\005sdata\030\004 \003(\t\022\020\n\005nrows\030\005 \001(\004:\001" +
-      "1\"\030\n\005Error\022\017\n\007message\030\001 \002(\t*\251\001\n\010DataType" +
-      "\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003" +
-      "\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STR",
-      "ING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005EN" +
-      "UM1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\r*" +
-      "!\n\010Compress\022\010\n\004NONE\020\000\022\013\n\007DEFLATE\020\001B \n\017uc" +
-      "ar.nc2.streamB\rNcStreamProto"
+      "\n\036ucar/nc2/stream/ncStream.proto\"`\n\tAttr" +
+      "ibute\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t." +
+      "DataType\022\013\n\003len\030\003 \002(\r\022\014\n\004data\030\004 \001(\014\022\r\n\005s" +
+      "data\030\005 \003(\t\"v\n\tDimension\022\014\n\004name\030\001 \001(\t\022\016\n" +
+      "\006length\030\002 \001(\004\022\032\n\013isUnlimited\030\003 \001(\010:\005fals" +
+      "e\022\025\n\006isVlen\030\004 \001(\010:\005false\022\030\n\tisPrivate\030\005 " +
+      "\001(\010:\005false\"\212\001\n\010Variable\022\014\n\004name\030\001 \002(\t\022\033\n" +
+      "\010dataType\030\002 \002(\0162\t.DataType\022\031\n\005shape\030\003 \003(" +
+      "\0132\n.Dimension\022\030\n\004atts\030\004 \003(\0132\n.Attribute\022" +
+      "\014\n\004data\030\006 \001(\014\022\020\n\010enumType\030\007 \001(\t\"\241\001\n\tStru",
+      "cture\022\014\n\004name\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t." +
+      "DataType\022\031\n\005shape\030\003 \003(\0132\n.Dimension\022\030\n\004a" +
+      "tts\030\004 \003(\0132\n.Attribute\022\027\n\004vars\030\005 \003(\0132\t.Va" +
+      "riable\022\033\n\007structs\030\006 \003(\0132\n.Structure\"h\n\013E" +
+      "numTypedef\022\014\n\004name\030\001 \002(\t\022\"\n\003map\030\002 \003(\0132\025." +
+      "EnumTypedef.EnumType\032\'\n\010EnumType\022\014\n\004code" +
+      "\030\001 \002(\r\022\r\n\005value\030\002 \002(\t\"\270\001\n\005Group\022\014\n\004name\030" +
+      "\001 \002(\t\022\030\n\004dims\030\002 \003(\0132\n.Dimension\022\027\n\004vars\030" +
+      "\003 \003(\0132\t.Variable\022\033\n\007structs\030\004 \003(\0132\n.Stru" +
+      "cture\022\030\n\004atts\030\005 \003(\0132\n.Attribute\022\026\n\006group",
+      "s\030\006 \003(\0132\006.Group\022\037\n\tenumTypes\030\007 \003(\0132\014.Enu" +
+      "mTypedef\"_\n\006Header\022\020\n\010location\030\001 \001(\t\022\r\n\005" +
+      "title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\024\n\004root\030\004 \002(\0132\006." +
+      "Group\022\022\n\007version\030\005 \001(\r:\0010\"\314\001\n\004Data\022\017\n\007va" +
+      "rName\030\001 \002(\t\022\033\n\010dataType\030\002 \002(\0162\t.DataType" +
+      "\022\031\n\007section\030\003 \001(\0132\010.Section\022\024\n\006bigend\030\004 " +
+      "\001(\010:\004true\022\022\n\007version\030\005 \001(\r:\0010\022!\n\010compres" +
+      "s\030\006 \001(\0162\t.Compress:\004NONE\022\024\n\005vdata\030\007 \001(\010:" +
+      "\005false\022\030\n\020uncompressedSize\030\010 \001(\r\":\n\005Rang" +
+      "e\022\020\n\005start\030\001 \001(\004:\0010\022\014\n\004size\030\002 \002(\004\022\021\n\006str",
+      "ide\030\003 \001(\004:\0011\" \n\007Section\022\025\n\005range\030\001 \003(\0132\006" +
+      ".Range\"a\n\rStructureData\022\016\n\006member\030\001 \003(\r\022" +
+      "\014\n\004data\030\002 \002(\014\022\021\n\theapCount\030\003 \003(\r\022\r\n\005sdat" +
+      "a\030\004 \003(\t\022\020\n\005nrows\030\005 \001(\004:\0011\"\030\n\005Error\022\017\n\007me" +
+      "ssage\030\001 \002(\t*\325\001\n\010DataType\022\010\n\004CHAR\020\000\022\010\n\004BY" +
+      "TE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FL" +
+      "OAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tSTRUCTU" +
+      "RE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENUM2\020\013" +
+      "\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\r\022\t\n\005UBYTE\020\016\022\n\n\006US" +
+      "HORT\020\017\022\010\n\004UINT\020\020\022\t\n\005ULONG\020\021*!\n\010Compress\022",
+      "\010\n\004NONE\020\000\022\013\n\007DEFLATE\020\001B \n\017ucar.nc2.strea" +
+      "mB\rNcStreamProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -16211,7 +16036,7 @@ public final class NcStreamProto {
           internal_static_Attribute_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Attribute_descriptor,
-              new java.lang.String[] { "Name", "Type", "Len", "Data", "Sdata", "Unsigned", });
+              new java.lang.String[] { "Name", "DataType", "Len", "Data", "Sdata", });
           internal_static_Dimension_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_Dimension_fieldAccessorTable = new
@@ -16223,7 +16048,7 @@ public final class NcStreamProto {
           internal_static_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Variable_descriptor,
-              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", "EnumType", });
+              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Data", "EnumType", });
           internal_static_Structure_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_Structure_fieldAccessorTable = new

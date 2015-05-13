@@ -753,7 +753,7 @@ channel.close();
     // Range radialRange = section.getRange(1);
     // Range gateRange = section.getRange(2);
 
-    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
+    Array data = Array.factory(v2.getDataType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
 
     List<List<Ray>> groups;
@@ -816,16 +816,14 @@ channel.close();
    * @param v2    Variable has INTEGER data type.
    * @return Array of data which will be read from Variable through this call.
    */
-  public Array readIntData(LayoutRegular index, Variable v2)
-          throws IOException {
-    int[] var = (int[]) (v2.read().get1DJavaArray(v2.getDataType().getPrimitiveClassType()));
+  public Array readIntData(LayoutRegular index, Variable v2) throws IOException {
+    int[] var = (int[]) (v2.read().get1DJavaArray(v2.getDataType()));
     int[] data = new int[(int) index.getTotalNelems()];
     while (index.hasNext()) {
       Layout.Chunk chunk = index.next();
-      System.arraycopy(var, (int) chunk.getSrcPos() / 4, data,
-              (int) chunk.getDestElem(), chunk.getNelems());
+      System.arraycopy(var, (int) chunk.getSrcPos() / 4, data, (int) chunk.getDestElem(), chunk.getNelems());
     }
-    return Array.factory(data);
+    return Array.factory(v2.getDataType(), new int[] {(int) index.getTotalNelems()}, data);
   }
 
   /**
@@ -844,7 +842,7 @@ channel.close();
       System.arraycopy(var, (int) chunk.getSrcPos() / 4, data,
               (int) chunk.getDestElem(), chunk.getNelems());
     }
-    return Array.factory(data);
+    return Array.factory(v2.getDataType(), new int[]{(int) index.getTotalNelems()}, data);
   }
   //----------------------------------------------------------------------------------
 

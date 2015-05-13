@@ -294,7 +294,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     Variable rowVar = new Variable(ncfile, null, null, ROW);
     rowVar.setDataType(DataType.INT);
     rowVar.setDimensions(ROW);
-    varArray = new ArrayInt.D1(nr);
+    varArray = new ArrayInt.D1(nr, false);
     for (int i = 0; i < nr; i++) {
       ((ArrayInt.D1) varArray).set(i, i);
     }
@@ -304,7 +304,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
     Variable colVar = new Variable(ncfile, null, null, COLUMN);
     colVar.setDataType(DataType.INT);
     colVar.setDimensions(COLUMN);
-    varArray = new ArrayInt.D1(nc);
+    varArray = new ArrayInt.D1(nc, false);
     for (int i = 0; i < nc; i++) {
       ((ArrayInt.D1) varArray).set(i, i);
     }

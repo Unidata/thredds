@@ -896,7 +896,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public Variable addVariable(String varName, Class componentType, Dimension[] dims) {
     List<Dimension> list = new ArrayList<Dimension>();
     list.addAll(Arrays.asList(dims));
-    return addVariable(varName, DataType.getType(componentType), list);
+    return addVariable(varName, DataType.getType(componentType, false), list);   // LOOK unsigned
   }
 
 }

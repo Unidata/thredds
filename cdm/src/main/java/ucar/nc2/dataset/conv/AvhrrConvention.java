@@ -142,7 +142,7 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
       time.addAttribute( new Attribute("IsoDate", new DateFormatter().toDateTimeStringISO(d)));
       CoordinateAxis1D timeAxis = new CoordinateAxis1D(ds, time);
       ds.addVariable(vhrr, timeAxis);
-      ArrayLong.D0 timeData = new ArrayLong.D0();
+      ArrayLong.D0 timeData = new ArrayLong.D0(false);
       timeData.set(d.getTime() / 1000);
       time.setCachedData(timeData, true);
 

@@ -176,7 +176,6 @@ public class DSPToCDM
             if(cdmbasetype == null)
                 throw new DapException("Unknown basetype:"+basetype);
             cdmvar.setDataType(cdmbasetype);
-            cdmvar.setUnsigned(basetype.isUnsigned());
             if(basetype.isEnumType()) {
                 EnumTypedef cdmenum = (EnumTypedef) nodemap.get(basetype);
                 if(cdmenum == null)

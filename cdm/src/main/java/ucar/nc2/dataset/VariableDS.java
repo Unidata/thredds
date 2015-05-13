@@ -572,7 +572,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    */
   public Array getMissingDataArray(int[] shape) {
     Object data = scaleMissingProxy.getFillValue( getDataType());
-    return Array.factoryConstant( dataType.getPrimitiveClassType(), shape, data);
+    return Array.factoryConstant( dataType, shape, data);
   }
 
   /**
@@ -609,7 +609,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   protected Array convertEnums(Array values) {
-    DataType dt = DataType.getType(values.getElementType());
+    DataType dt = DataType.getType(values);
     if (!dt.isNumeric())
       System.out.println("HEY !dt.isNumeric()");
 

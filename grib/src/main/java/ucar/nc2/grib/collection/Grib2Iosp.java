@@ -420,7 +420,7 @@ public class Grib2Iosp extends GribIosp {
 
     v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
     int[] param = new int[]{vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
-    v.addAttribute(new Attribute("Grib2_Parameter", Array.factory(param)));
+    v.addAttribute(new Attribute("Grib2_Parameter", Array.makeFromJavaArray(param, false)));
     String disc = cust.getTableValue("0.0", vindex.getDiscipline());
     if (disc != null) v.addAttribute(new Attribute("Grib2_Parameter_Discipline", disc));
     String cat = cust.getCategory(vindex.getDiscipline(), vindex.getCategory());

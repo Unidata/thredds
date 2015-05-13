@@ -100,7 +100,7 @@ public class ConvertD2N {
       ArrayStructure as = (ArrayStructure) data;
 
       // make list of names
-      List<String> names = new ArrayList<String>();
+      List<String> names = new ArrayList<>();
       Variable nested = v;
       while (nested.isMemberOfStructure()) {
         names.add( 0, nested.getShortName());
@@ -108,7 +108,7 @@ public class ConvertD2N {
       }
 
       StructureMembers.Member m = findNested(as, names, v.getShortName());
-      Array mdata = (Array) m.getDataArray();
+      Array mdata = m.getDataArray();
       if (mdata instanceof ArraySequenceNested) {
         // gotta unroll
         ArraySequenceNested arraySeq = (ArraySequenceNested) mdata;
@@ -144,7 +144,6 @@ public class ConvertD2N {
    */
   public Array convertTopVariable(ucar.nc2.Variable v, List<Range> section, DodsV dataV) throws IOException, DAP2Exception {
     Array data = convert(dataV);
-    data.setUnsigned(v.isUnsigned()); // HT to Ghansham Sangar ; note that this really should be done in the convert function
 
     // arrays
     if ((dataV.darray != null) && (dataV.bt instanceof DString)) {
@@ -231,7 +230,7 @@ public class ConvertD2N {
         opendap.dap.PrimitiveVector pv = dataV.darray.getPrimitiveVector();
         Object storage = pv.getInternalStorage();
         DataType dtype = DODSNetcdfFile.convertToNCType( dataV.elemType);
-        return Array.factory( dtype.getPrimitiveClassType(), makeShape( dataV.darray), storage);
+        return Array.factory( dtype, makeShape( dataV.darray), storage);
       }
     }
 
@@ -292,7 +291,7 @@ public class ConvertD2N {
     // ArraySequence makes the inner data arrays; now make iterators for them
     List<StructureMembers.Member> memberList = members.getMembers();
     for (StructureMembers.Member m : memberList) {
-      Array data = (Array) m.getDataArray();
+      Array data = m.getDataArray();
       m.setDataObject(data.getIndexIterator()); // for setting values
     }
 
@@ -547,7 +546,7 @@ public class ConvertD2N {
       DString bb = (DString) btpv.getValue(i);
       storage[i] = bb.getValue();
     }
-    return Array.factory( DataType.STRING.getPrimitiveClassType(), makeShape( dv), storage);
+    return Array.factory( DataType.STRING, makeShape( dv), storage);
   }
 
   // deal with length=1 barfalloney
@@ -573,7 +572,7 @@ public class ConvertD2N {
     ncVar.setDataType( DataType.CHAR);
 
     // return data thats been changed to chars
-    return Array.factory( DataType.CHAR.getPrimitiveClassType(), data.getShape(), charStorage);
+    return Array.factory( DataType.CHAR, data.getShape(), charStorage);
 
     /* if (section == null)
       section = ncVar.getRanges();
@@ -632,7 +631,7 @@ public class ConvertD2N {
         charStorage[i] =  (val.length() > 0) ? val.charAt(0) : 0;
       }
       // return data thats been changed to chars
-      return Array.factory( DataType.CHAR.getPrimitiveClassType(), shape, charStorage);
+      return Array.factory( DataType.CHAR, shape, charStorage);
     }
 
     //// this is the "normal case", where String[rank] converted to char[rank+1]
@@ -651,7 +650,7 @@ public class ConvertD2N {
       pos += strLen;
     }
 
-    return Array.factory( DataType.CHAR.getPrimitiveClassType(), shape, storage);
+    return Array.factory( DataType.CHAR, shape, storage);
 
         /* add the strLen dimension back to the array
     ArrayList fullSection = (section == null) ? (ArrayList) ncVar.getRanges() : new ArrayList( section);
@@ -673,7 +672,7 @@ public class ConvertD2N {
     for (int k=0; k<len; k++)
       storage[k] = s.charAt(k);
 
-    return Array.factory( DataType.CHAR.getPrimitiveClassType(), ncVar.getShape(), storage);
+    return Array.factory( DataType.CHAR, ncVar.getShape(), storage);
   }
 
   private int[] makeShape( opendap.dap.DArray dodsArray) {

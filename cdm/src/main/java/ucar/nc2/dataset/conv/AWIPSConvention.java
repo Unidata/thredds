@@ -600,7 +600,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       return null;
     }
     // construct the values array - make it a double to be safe
-    Array dvals = Array.factory(double.class, vals.getShape());
+    Array dvals = Array.factory(DataType.DOUBLE, vals.getShape());
     IndexIterator diter = dvals.getIndexIterator();
     IndexIterator iiter = vals.getIndexIterator();
     while (iiter.hasNext())

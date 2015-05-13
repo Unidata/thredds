@@ -33,10 +33,7 @@
 
 package ucar.unidata.geoloc.vertical;
 
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
+import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
 
 import ucar.nc2.Dimension;
@@ -85,7 +82,7 @@ public class VTfromExistingData extends VerticalTransformImpl {
 
     // copy for now - better to just return Array, with promise its rank 3
     int[] shape = data.getShape();
-    ArrayDouble.D3 ddata = (ArrayDouble.D3) Array.factory(double.class, shape);
+    ArrayDouble.D3 ddata = (ArrayDouble.D3) Array.factory(DataType.DOUBLE, shape);
     MAMath.copyDouble(ddata, data);
     return ddata;
   }

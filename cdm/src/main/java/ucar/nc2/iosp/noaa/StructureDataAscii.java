@@ -78,7 +78,7 @@ public class StructureDataAscii extends StructureData {
     if (m.getDataType() == DataType.CHAR)
       return new ArrayChar((String) result);
     else
-      return new ArrayScalar(result);
+      return new ArrayScalar(result, m.getDataType().isUnsigned());
   }
 
   @Override

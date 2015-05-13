@@ -193,7 +193,7 @@ public class N3header {
       long velems = 1;
       boolean isRecord = false;
       int rank = raf.readInt();
-      List<Dimension> dims = new ArrayList<Dimension>();
+      List<Dimension> dims = new ArrayList<>();
       for (int j = 0; j < rank; j++) {
         int dimIndex = raf.readInt();
         Dimension dim = ncfile.getRootGroup().getDimensions().get(dimIndex); // note relies on ordering
@@ -450,11 +450,11 @@ public class N3header {
         DataType dtype = getDataType(type);
 
         if (nelems == 0) {
-          att = new Attribute(name, dtype, false); // empty - no values
+          att = new Attribute(name, dtype); // empty - no values
 
         } else {
           int[] shape = {nelems};
-          Array arr = Array.factory(dtype.getPrimitiveClassType(), shape);
+          Array arr = Array.factory(dtype, shape);
           IndexIterator ii = arr.getIndexIterator();
           int nbytes = 0;
           for (int j = 0; j < nelems; j++)
@@ -898,8 +898,7 @@ public class N3header {
       raf.writeInt(n);
     }
 
-    for (int i = 0; i < n; i++) {
-      Variable var = vars.get(i);
+    for (Variable var : vars) {
       writeString(var.getShortName());
 
       // dimensions
@@ -938,8 +937,8 @@ public class N3header {
       //     Note on padding: In the special case of only a single record variable of character,
       //     byte, or short type, no padding is used between data values.
       // 2/15/2011: we will continue to write the (incorrect) padded vsize into the header, but we will use the unpadded size to read/write
-      if ( uvars.size() == 1 && uvars.get(0) == var )
-        if ( ( dtype == DataType.CHAR ) || ( dtype == DataType.BYTE ) || ( dtype == DataType.SHORT ) )
+      if (uvars.size() == 1 && uvars.get(0) == var)
+        if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT))
           vsize = unpaddedVsize;
 
       var.setSPobject(new Vinfo(vsize, pos, var.isUnlimited(), varAttsPos));
@@ -1088,7 +1087,7 @@ public class N3header {
         int nelems = raf.readInt();
         DataType dtype = getDataType(type);
         int[] shape = {nelems};
-        Array arr = Array.factory(dtype.getPrimitiveClassType(), shape);
+        Array arr = Array.factory(dtype, shape);
         IndexIterator ii = arr.getIndexIterator();
         int nbytes = 0;
         for (int j = 0; j < nelems; j++)

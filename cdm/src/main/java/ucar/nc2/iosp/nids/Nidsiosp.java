@@ -182,34 +182,34 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
          data = readOneScanGenericData(bos, vinfo, v2.getShortName());
       else
          data = readRadialDataAzi(bos, vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("gate")) {
       data = readRadialDataGate(vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("elevation")) {
       data = readRadialDataEle(bos, vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("latitude")) {
       double lat = ncfile.findGlobalAttribute("RadarLatitude").getNumericValue().doubleValue();
       data = readRadialDataLatLonAlt(lat, vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("longitude")) {
       double lon = ncfile.findGlobalAttribute("RadarLongitude").getNumericValue().doubleValue();
       data = readRadialDataLatLonAlt(lon, vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("altitude")) {
       double alt = ncfile.findGlobalAttribute("RadarAltitude").getNumericValue().doubleValue();
       data = readRadialDataLatLonAlt(alt, vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("distance")) {
       data = readDistance(vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("rays_time")) {
       String rt = ncfile.findGlobalAttribute("time_coverage_start").getStringValue();
@@ -219,20 +219,20 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       for (int radial = 0; radial < vinfo.yt; radial++) {
         dd[radial] = (float) lt;
       }
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), dd);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), dd);
 
     } else if (v2.getShortName().startsWith("EchoTop") || v2.getShortName().startsWith("VertLiquid")
             || v2.getShortName().startsWith("BaseReflectivityComp") || v2.getShortName().startsWith("LayerCompReflect")) {
       data = readOneArrayData(bos, vinfo, v2.getShortName());
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().startsWith("PrecipArray")) {
       data = readOneArrayData1(bos, vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().startsWith("Precip") && !vinfo.isRadial) {
       data = readOneArrayData(bos, vinfo, v2.getShortName());
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("unlinkedVectorStruct")) {
       outputData = readUnlinkedVectorData(v2.getShortName(), bos, vinfo);
@@ -246,17 +246,17 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       outputData = readVectorArrowData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().startsWith("TabMessagePage")) {
       data = readTabAlphaNumData(bos, vinfo);
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
     } else if (v2.getShortName().startsWith("circleStruct")) {
       outputData = readCircleStructData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().startsWith("hail") || v2.getShortName().startsWith("TVS")) {
       outputData = readGraphicSymbolData(v2.getShortName(), bos, vinfo);
     } else if (v2.getShortName().startsWith("DigitalInstantaneousPrecipitationRate") ) {
         data = readOneScanGenericData(bos, vinfo, v2.getShortName());
-        outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+        outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
     } else {
       data = readOneScanData(bos, vinfo, v2.getShortName());
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
     }
 
     return outputData.sectionNoReduce(ranges);
@@ -285,7 +285,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       pa[i] = ma.getScalarShort(i, m);
     }
 
-    Array ay = Array.factory(short.class, pdata.getShape(), pa);
+    Array ay = Array.factory(DataType.SHORT, pdata.getShape(), pa);
     return ay.sectionNoReduce(section);
   }
 
@@ -364,7 +364,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       pa[i] = ma.getScalarShort(i, m);
     }
 
-    Array ay = Array.factory(short.class, pdata.getShape(), pa);
+    Array ay = Array.factory(DataType.SHORT, pdata.getShape(), pa);
     return ay.sectionNoReduce(section);
 
   }
@@ -425,19 +425,19 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     ArrayStructureMA asma = new ArrayStructureMA(members, new int[]{vlen});
     Array data;
     // these are the offsets into the record
-    data = Array.factory(short.class, new int[]{vlen}, sArray[0]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[0]);
     StructureMembers.Member m = members.findMember("sValue");
     if (m != null) m.setDataArray(data);
-    data = Array.factory(short.class, new int[]{vlen}, sArray[1]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[1]);
     m = members.findMember("x_start");
     m.setDataArray(data);
-    data = Array.factory(short.class, new int[]{vlen}, sArray[2]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[2]);
     m = members.findMember("y_start");
     m.setDataArray(data);
-    data = Array.factory(short.class, new int[]{vlen}, sArray[3]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[3]);
     m = members.findMember("x_end");
     m.setDataArray(data);
-    data = Array.factory(short.class, new int[]{vlen}, sArray[4]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[4]);
     m = members.findMember("y_end");
     m.setDataArray(data);
     return asma;
@@ -467,7 +467,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       pa[i] = ma.getScalarShort(i, m);
     }
 
-    Array ay = Array.factory(short.class, pdata.getShape(), pa);
+    Array ay = Array.factory(DataType.SHORT, pdata.getShape(), pa);
     return ay.sectionNoReduce(section);
 
   }
@@ -949,7 +949,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       pa[i] = ma.getScalarShort(i, m);
     }
 
-    Array ay = Array.factory(short.class, pdata.getShape(), pa);
+    Array ay = Array.factory(DataType.SHORT, pdata.getShape(), pa);
     return ay.sectionNoReduce(section);
 
     //return asbb;
@@ -1024,7 +1024,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       pa[i] = ma.getScalarShort(i, m);
     }
 
-    Array ay = Array.factory(short.class, pdata.getShape(), pa);
+    Array ay = Array.factory(DataType.SHORT, pdata.getShape(), pa);
     return ay.sectionNoReduce(section);
 
   }
@@ -1105,7 +1105,7 @@ short arrowHeadValue = 0;    */
        ArrayStructureW.StructureDataW sdata = asw.new StructureDataW();
        Iterator memberIter = sdata.getMembers().iterator();
 
-       ArrayObject.D0 sArray = new ArrayObject.D0(Short.class);
+       ArrayObject.D0 sArray = new ArrayObject.D0(DataType.SHORT);
        sArray.set(new Short(istart));
        sdata.setMemberData( (StructureMembers.Member) memberIter.next(), sArray);
 
@@ -1159,14 +1159,14 @@ short arrowHeadValue = 0;    */
         ps[i] = ma.getScalarString(i, m);
       }
 
-      ay = Array.factory(String.class, pdata.getShape(), ps);
+      ay = Array.factory(DataType.STRING, pdata.getShape(), ps);
 
     } else {
       for (int i = 0; i < size; i++) {
         pa[i] = ma.getScalarShort(i, m);
       }
 
-      ay = Array.factory(short.class, pdata.getShape(), pa);
+      ay = Array.factory(DataType.SHORT, pdata.getShape(), pa);
     }
     return ay.sectionNoReduce(section);
   }
@@ -1330,7 +1330,7 @@ short arrowHeadValue = 0;    */
       pa[i] = ma.getScalarShort(i, m);
     }
 
-    Array ay = Array.factory(short.class, pdata.getShape(), pa);
+    Array ay = Array.factory(DataType.SHORT, pdata.getShape(), pa);
     return ay.sectionNoReduce(section);
   }
 
@@ -1388,19 +1388,19 @@ short arrowHeadValue = 0;    */
 
     Array data;
     // these are the offsets into the record
-    data = Array.factory(short.class, new int[]{vlen}, sArray[0]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[0]);
     StructureMembers.Member m = members.findMember("iValue");
     m.setDataArray(data);
-    data = Array.factory(short.class, new int[]{vlen}, sArray[1]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[1]);
     m = members.findMember("x_start");
     m.setDataArray(data);
-    data = Array.factory(short.class, new int[]{vlen}, sArray[2]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[2]);
     m = members.findMember("y_start");
     m.setDataArray(data);
-    data = Array.factory(short.class, new int[]{vlen}, sArray[3]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[3]);
     m = members.findMember("x_end");
     m.setDataArray(data);
-    data = Array.factory(short.class, new int[]{vlen}, sArray[4]);
+    data = Array.factory(DataType.SHORT, new int[]{vlen}, sArray[4]);
     m = members.findMember("y_end");
     m.setDataArray(data);
     return asma;
@@ -1600,7 +1600,7 @@ short arrowHeadValue = 0;    */
     return bdata;
   }
 
-  /**
+  /*
    * read radail elevation array
    *
    * @param bos

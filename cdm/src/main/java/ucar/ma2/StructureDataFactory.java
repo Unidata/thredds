@@ -52,7 +52,7 @@ public class StructureDataFactory {
 
   static public StructureData make(String name, Object value) {
     StructureMembers members = new StructureMembers("");
-    DataType dtype = DataType.getType(value.getClass());
+    DataType dtype = DataType.getType(value.getClass(), false);  // LOOK unsigned
     StructureMembers.Member m = members.addMember(name, null, null, dtype, new int[]{1});
     StructureDataW sw = new StructureDataW(members);
     Array dataArray = Array.factory(dtype, new int[]{1});

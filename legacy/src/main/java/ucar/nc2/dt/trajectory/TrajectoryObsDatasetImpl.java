@@ -1032,9 +1032,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
                  pa[i] = (double)startDate.getTime();
             }
 
-            Array ay = Array.factory(double.class, array.getShape(), pa);
-
-            return ay;
+            return Array.factory(DataType.DOUBLE, array.getShape(), pa);
         }
 
         // @todo Make sure units are degrees_north

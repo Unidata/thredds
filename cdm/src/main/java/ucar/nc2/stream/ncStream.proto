@@ -1,24 +1,6 @@
 option java_package = "ucar.nc2.stream";
 option java_outer_classname = "NcStreamProto";
 
-message Attribute {
-  required string name = 1;
-  enum Type {
-    STRING = 0;
-    BYTE = 1;
-    SHORT = 2;
-    INT = 3;
-    LONG = 4;
-    FLOAT = 5;
-    DOUBLE = 6;
-  }
-  required Type type = 2;
-  required uint32 len = 3;
-  optional bytes data = 4; // not needed if len == 0
-  repeated string sdata = 5; // used for string data
-  optional bool unsigned = 6 [default = false];
-}
-
 enum DataType {
   CHAR = 0;
   BYTE = 1;
@@ -34,6 +16,19 @@ enum DataType {
   ENUM2 = 11;
   ENUM4 = 12;
   OPAQUE = 13;
+
+  UBYTE = 14;
+  USHORT = 15;
+  UINT = 16;
+  ULONG = 17;
+}
+
+message Attribute {
+  required string name = 1;
+  required DataType dataType = 2; // cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+  required uint32 len = 3;
+  optional bytes data = 4;        // not needed if len == 0
+  repeated string sdata = 5;      // used for string data
 }
 
 message Dimension {
@@ -47,17 +42,16 @@ message Dimension {
 message Variable {
   required string name = 1; // short name
   required DataType dataType = 2;
-  repeated Dimension shape = 3;  // actual dimension instead of reference; could use hash id
+  repeated Dimension shape = 3;   // actual dimension instead of reference; could use hash id; maybe use name
   repeated Attribute atts = 4;
-  optional bool unsigned = 5 [default = false];
-  optional bytes data = 6;    // "immediate" - store small data in header
-  optional string enumType = 7;  // only for enum types
+  optional bytes data = 6;        // "immediate" - store small data in header
+  optional string enumType = 7;   // only for enum types
 }
 
 message Structure {
-  required string name = 1;   // short name
-  required DataType dataType = 2;  // struct or seq
-  repeated Dimension shape = 3; // actual dimension instead of reference
+  required string name = 1;         // short name
+  required DataType dataType = 2;   // STRUCTURE or SEQUENCE
+  repeated Dimension shape = 3;     // actual dimension instead of reference
   repeated Attribute atts = 4;
   repeated Variable vars = 5;
   repeated Structure structs = 6;
@@ -73,7 +67,7 @@ message EnumTypedef {
 }
 
 message Group {
-  required string name = 1;
+  required string name = 1;         // short name
   repeated Dimension dims = 2;
   repeated Variable vars = 3;
   repeated Structure structs = 4;
@@ -98,9 +92,9 @@ enum Compress {
 }
 
 message Data {
-  required string varName = 1; // full escaped name. change to hash or index to save space ??
+  required string varName = 1;          // full escaped name. change to hash or index to save space ??
   required DataType dataType = 2;
-  optional Section section = 3; // not required for Sequence
+  optional Section section = 3;         // not required for SEQUENCE
   optional bool bigend = 4 [default = true];
   optional uint32 version = 5 [default = 0];
   optional Compress compress = 6 [default = NONE];

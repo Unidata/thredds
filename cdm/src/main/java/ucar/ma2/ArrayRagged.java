@@ -40,7 +40,7 @@ package ucar.ma2;
 public class ArrayRagged extends Array {
 
   protected ArrayRagged(int[] shape) {
-    super(shape);
+    super(DataType.OBJECT, shape);
   }
 
 

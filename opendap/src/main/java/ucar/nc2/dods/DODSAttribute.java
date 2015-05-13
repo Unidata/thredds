@@ -36,7 +36,6 @@ import ucar.ma2.*;
 
 import java.util.*;
 
-import net.jcip.annotations.Immutable;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -97,13 +96,13 @@ public class DODSAttribute extends ucar.nc2.Attribute
       vals[count++] = (String) iter.next();
     }
 
-    Array data = null;
+    Array data;
     if (ncType == DataType.STRING)
-      data = Array.factory( ncType.getPrimitiveClassType(), new int[] { nvals}, vals);
+      data = Array.factory( ncType, new int[] { nvals}, vals);
     else {
       try {
         // create an Array of the correct type
-        data = Array.factory(ncType.getPrimitiveClassType(), new int[] {nvals});
+        data = Array.factory(ncType, new int[] {nvals});
         Index ima = data.getIndex();
         for (int i = 0; i < nvals; i++) {
           double dval = Double.parseDouble(vals[i]);

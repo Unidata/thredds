@@ -160,8 +160,12 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
       setAxisType(dtCoordAxis.getAxisType());
       setUnits(dtCoordAxis.getUnitsString());
       setDescription(dtCoordAxis.getDescription());
-      setIndependent(dtCoordAxis.isCoordinateVariable());
-
+      if (dtCoordAxis.isCoordinateVariable())
+        setDependenceType(DependenceType.independent);
+      else {
+        setDependenceType(DependenceType.dependent);
+        setDependsOn(dtCoordAxis.getDimension(0).toString());
+      }
       AttributeContainerHelper atts = new AttributeContainerHelper("dtCoordAxis");
       for (Attribute patt : dtCoordAxis.getAttributes())
         atts.addAttribute(patt);
@@ -180,7 +184,7 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
         spacing = Spacing.contiguousInterval;
       else
         spacing = Spacing.discontiguousInterval;
-      setSpacing(spacing.ordinal());
+      setSpacing(spacing);
     }
 
     /*

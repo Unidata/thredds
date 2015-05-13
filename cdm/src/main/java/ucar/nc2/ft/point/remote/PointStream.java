@@ -132,7 +132,7 @@ public class PointStream {
         mbuilder.setDesc(m.getDescription());
       if (null != m.getUnitsString())
         mbuilder.setUnits(m.getUnitsString());
-      mbuilder.setDataType(NcStream.encodeDataType(m.getDataType()));
+      mbuilder.setDataType(NcStream.convertDataType(m.getDataType()));
       mbuilder.setSection(NcStream.encodeSection(new ucar.ma2.Section(m.getShape())));
       builder.addMembers(mbuilder);
     }
@@ -218,7 +218,7 @@ public class PointStream {
       sm = new StructureMembers(pfc.getName());
       for (PointStreamProto.Member m : pfc.getMembersList()) {
         sm.addMember(m.getName(), m.getDesc(), m.getUnits(),
-                NcStream.decodeDataType(m.getDataType()),
+                NcStream.convertDataType(m.getDataType()),
                 NcStream.decodeSection(m.getSection()).getShape());
       }
       ArrayStructureBB.setOffsets(sm);

@@ -2,7 +2,6 @@ package ucar.nc2;
 
 import java.io.IOException;
 
-import ucar.nc2.*;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 
@@ -114,8 +113,8 @@ public class TestLargeGeneration {
     for (int i = 0; i < longitudes.length; i++) {
       longitudes[i] = (float) i;
     }
-    writeableFile.write(lonVar, ucar.ma2.Array.factory(longitudes));
-    writeableFile.write(timeVar, ucar.ma2.Array.factory(times));
+    writeableFile.write(lonVar, ucar.ma2.Array.makeFromJavaArray(longitudes, false));
+    writeableFile.write(timeVar, ucar.ma2.Array.makeFromJavaArray(times, false));
     return writeableFile;
   }
 

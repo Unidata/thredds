@@ -138,7 +138,7 @@ public class NOWRadiosp extends AbstractIOServiceProvider {
 
     bos = ByteBuffer.wrap(vdata);
     data = readOneScanData(bos, vinfo, v2.getShortName());
-    outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+    outputData = Array.factory(v2.getDataType(), v2.getShape(), data);
     outputData = outputData.flip(1);
 
     // outputData = outputData.flip(2);

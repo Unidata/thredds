@@ -525,32 +525,40 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         Attribute att;
         switch (type) {
           case Nc4prototypes.NC_BYTE:
+            att = new Attribute(attname, DataType.BYTE);
+            break;
           case Nc4prototypes.NC_UBYTE:
-            att = new Attribute(attname, DataType.BYTE, type == Nc4prototypes.NC_UBYTE);
+            att = new Attribute(attname, DataType.UBYTE);
             break;
           case Nc4prototypes.NC_CHAR: // a zero length char is considered to be an empty string
             att = new Attribute(attname, "");
             break;
           case Nc4prototypes.NC_DOUBLE:
-            att = new Attribute(attname, DataType.DOUBLE, false);
+            att = new Attribute(attname, DataType.DOUBLE);
             break;
           case Nc4prototypes.NC_FLOAT:
-            att = new Attribute(attname, DataType.FLOAT, false);
+            att = new Attribute(attname, DataType.FLOAT);
             break;
           case Nc4prototypes.NC_INT:
+            att = new Attribute(attname, DataType.INT);
+            break;
           case Nc4prototypes.NC_UINT:
-            att = new Attribute(attname, DataType.INT, type == Nc4prototypes.NC_UINT);
+            att = new Attribute(attname, DataType.UINT);
             break;
           case Nc4prototypes.NC_UINT64:
+            att = new Attribute(attname, DataType.ULONG);
+            break;
           case Nc4prototypes.NC_INT64:
-            att = new Attribute(attname, DataType.LONG, type == Nc4prototypes.NC_UINT64);
+            att = new Attribute(attname, DataType.LONG);
             break;
           case Nc4prototypes.NC_USHORT:
+            att = new Attribute(attname, DataType.USHORT);
+            break;
           case Nc4prototypes.NC_SHORT:
-            att = new Attribute(attname, DataType.SHORT, type == Nc4prototypes.NC_USHORT);
+            att = new Attribute(attname, DataType.SHORT);
             break;
           case Nc4prototypes.NC_STRING:
-            att = new Attribute(attname, DataType.STRING, false);
+            att = new Attribute(attname, DataType.STRING);
             break;
           default:
             log.warn("Unsupported attribute data type == " + type);
@@ -570,7 +578,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_uchar(grpid, varid, attname, valbu);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[]{len}, valbu);
+          values = Array.factory(DataType.BYTE, new int[]{len}, valbu);
           break;
 
         case Nc4prototypes.NC_BYTE:
@@ -578,7 +586,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_schar(grpid, varid, attname, valb);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[]{len}, valb);
+          values = Array.factory(DataType.BYTE, new int[]{len}, valb);
           break;
 
         case Nc4prototypes.NC_CHAR:
@@ -595,7 +603,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_double(grpid, varid, attname, vald);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{len}, vald);
+          values = Array.factory(DataType.DOUBLE, new int[]{len}, vald);
           break;
 
         case Nc4prototypes.NC_FLOAT:
@@ -603,7 +611,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_float(grpid, varid, attname, valf);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.FLOAT.getPrimitiveClassType(), new int[]{len}, valf);
+          values = Array.factory(DataType.FLOAT, new int[]{len}, valf);
           break;
 
         case Nc4prototypes.NC_UINT:
@@ -611,7 +619,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_uint(grpid, varid, attname, valiu);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.INT.getPrimitiveClassType(), new int[]{len}, valiu);
+          values = Array.factory(DataType.INT, new int[]{len}, valiu);
           break;
 
         case Nc4prototypes.NC_INT:
@@ -619,7 +627,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_int(grpid, varid, attname, vali);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.INT.getPrimitiveClassType(), new int[]{len}, vali);
+          values = Array.factory(DataType.INT, new int[]{len}, vali);
           break;
 
         case Nc4prototypes.NC_UINT64:
@@ -627,7 +635,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_ulonglong(grpid, varid, attname, vallu);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.LONG.getPrimitiveClassType(), new int[]{len}, vallu);
+          values = Array.factory(DataType.LONG, new int[]{len}, vallu);
           break;
 
         case Nc4prototypes.NC_INT64:
@@ -635,7 +643,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_longlong(grpid, varid, attname, vall);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.LONG.getPrimitiveClassType(), new int[]{len}, vall);
+          values = Array.factory(DataType.LONG, new int[]{len}, vall);
           break;
 
         case Nc4prototypes.NC_USHORT:
@@ -643,7 +651,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_ushort(grpid, varid, attname, valsu);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[]{len}, valsu);
+          values = Array.factory(DataType.SHORT, new int[]{len}, valsu);
           break;
 
         case Nc4prototypes.NC_SHORT:
@@ -651,7 +659,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_short(grpid, varid, attname, vals);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[]{len}, vals);
+          values = Array.factory(DataType.SHORT, new int[]{len}, vals);
           break;
 
         case Nc4prototypes.NC_STRING:
@@ -661,7 +669,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           ret = nc4.nc_get_att_string(grpid, varid, attname, valss);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Array.factory(String.class, new int[]{len}, valss);
+          values = Array.factory(DataType.STRING, new int[]{len}, valss);
           break;
 
         default:
@@ -837,7 +845,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       } else {
         fld.data = Array.factory(ct.dt, new int[]{len});
       }
-      if (ct.isUnsigned) fld.data.setUnsigned(true);
     }
 
     for (int i = 0; i < len; i++) {
@@ -1497,7 +1504,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
                 : nc4.nc_get_vars_schar(grpid, varid, origin, shape, stride, valb);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Array.factory(DataType.BYTE.getPrimitiveClassType(), section.getShape(), valb);
+        values = Array.factory(DataType.BYTE, section.getShape(), valb);
         break;
 
       case Nc4prototypes.NC_CHAR:
@@ -1505,7 +1512,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_vars_text(grpid, varid, origin, shape, stride, valc);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Array.factory(DataType.CHAR.getPrimitiveClassType(), section.getShape(), IospHelper.convertByteToChar(valc));
+        values = Array.factory(DataType.CHAR, section.getShape(), IospHelper.convertByteToChar(valc));
         break;
 
       case Nc4prototypes.NC_DOUBLE:
@@ -1513,7 +1520,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_vars_double(grpid, varid, origin, shape, stride, vald);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), section.getShape(), vald);
+        values = Array.factory(DataType.DOUBLE, section.getShape(), vald);
         break;
 
       case Nc4prototypes.NC_FLOAT:
@@ -1521,7 +1528,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Array.factory(DataType.FLOAT.getPrimitiveClassType(), section.getShape(), valf);
+        values = Array.factory(DataType.FLOAT, section.getShape(), valf);
         break;
 
       case Nc4prototypes.NC_INT:
@@ -1531,7 +1538,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
                 : nc4.nc_get_vars_int(grpid, varid, origin, shape, stride, vali);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Array.factory(DataType.INT.getPrimitiveClassType(), section.getShape(), vali);
+        values = Array.factory(DataType.INT, section.getShape(), vali);
         break;
 
       case Nc4prototypes.NC_INT64:
@@ -1540,7 +1547,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
                 : nc4.nc_get_vars_longlong(grpid, varid, origin, shape, stride, vall);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Array.factory(DataType.LONG.getPrimitiveClassType(), section.getShape(), vall);
+        values = Array.factory(DataType.LONG, section.getShape(), vall);
         break;
 
       case Nc4prototypes.NC_SHORT:
@@ -1549,7 +1556,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
                 : nc4.nc_get_vars_short(grpid, varid, origin, shape, stride, vals);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Array.factory(DataType.SHORT.getPrimitiveClassType(), section.getShape(), vals);
+        values = Array.factory(DataType.SHORT, section.getShape(), vals);
         break;
 
       case Nc4prototypes.NC_STRING:
@@ -1557,7 +1564,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_vars_string(grpid, varid, origin, shape, stride, valss);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.STRING.getPrimitiveClassType(), section.getShape(), valss);
+        return Array.factory(DataType.STRING, section.getShape(), valss);
 
       default:
         UserType userType = userTypes.get(typeid);
@@ -1591,14 +1598,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_var_ubyte(grpid, varid, valbu);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.BYTE.getPrimitiveClassType(), shape, valbu);
+        return Array.factory(DataType.BYTE, shape, valbu);
 
       case Nc4prototypes.NC_BYTE:
         byte[] valb = new byte[len];
         ret = nc4.nc_get_var_schar(grpid, varid, valb);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.BYTE.getPrimitiveClassType(), shape, valb);
+        return Array.factory(DataType.BYTE, shape, valb);
 
       case Nc4prototypes.NC_CHAR:
         byte[] valc = new byte[len];
@@ -1606,70 +1613,70 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         char[] cvals = IospHelper.convertByteToChar(valc);
-        return Array.factory(DataType.CHAR.getPrimitiveClassType(), shape, cvals);
+        return Array.factory(DataType.CHAR, shape, cvals);
 
       case Nc4prototypes.NC_DOUBLE:
         double[] vald = new double[len];
         ret = nc4.nc_get_var_double(grpid, varid, vald);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.DOUBLE.getPrimitiveClassType(), shape, vald);
+        return Array.factory(DataType.DOUBLE, shape, vald);
 
       case Nc4prototypes.NC_FLOAT:
         float[] valf = new float[len];
         ret = nc4.nc_get_var_float(grpid, varid, valf);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.FLOAT.getPrimitiveClassType(), shape, valf);
+        return Array.factory(DataType.FLOAT, shape, valf);
 
       case Nc4prototypes.NC_INT:
         int[] vali = new int[len];
         ret = nc4.nc_get_var_int(grpid, varid, vali);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.INT.getPrimitiveClassType(), shape, vali);
+        return Array.factory(DataType.INT, shape, vali);
 
       case Nc4prototypes.NC_INT64:
         long[] vall = new long[len];
         ret = nc4.nc_get_var_longlong(grpid, varid, vall);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.LONG.getPrimitiveClassType(), shape, vall);
+        return Array.factory(DataType.LONG, shape, vall);
 
       case Nc4prototypes.NC_UINT64:
         long[] vallu = new long[len];
         ret = nc4.nc_get_var_ulonglong(grpid, varid, vallu);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.LONG.getPrimitiveClassType(), shape, vallu);
+        return Array.factory(DataType.LONG, shape, vallu);
 
       case Nc4prototypes.NC_SHORT:
         short[] vals = new short[len];
         ret = nc4.nc_get_var_short(grpid, varid, vals);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.SHORT.getPrimitiveClassType(), shape, vals);
+        return Array.factory(DataType.SHORT, shape, vals);
 
       case Nc4prototypes.NC_USHORT:
         short[] valsu = new short[len];
         ret = nc4.nc_get_var_ushort(grpid, varid, valsu);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.SHORT.getPrimitiveClassType(), shape, valsu);
+        return Array.factory(DataType.SHORT, shape, valsu);
 
       case Nc4prototypes.NC_UINT:
         int[] valiu = new int[len];
         ret = nc4.nc_get_var_uint(grpid, varid, valiu);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.INT.getPrimitiveClassType(), shape, valiu);
+        return Array.factory(DataType.INT, shape, valiu);
 
       case Nc4prototypes.NC_STRING:
         String[] valss = new String[len];
         ret = nc4.nc_get_var_string(grpid, varid, valss);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.STRING.getPrimitiveClassType(), shape, valss);
+        return Array.factory(DataType.STRING, shape, valss);
 
       default:
         UserType userType = userTypes.get(typeid);
@@ -1808,7 +1815,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           // Otherwise create and fill in an n-dimensional Array Of Arrays
           int[] newshape = new int[prefixrank];
           System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
-          Array ndimarray = Array.factory(Array.class, newshape);
+          Array ndimarray = Array.factory(Array.class, false, newshape);
           // Transfer the elements of data into the n-dim arrays
           IndexIterator iter = ndimarray.getIndexIterator();
           for (int i = 0; iter.hasNext(); i++) {
@@ -1830,7 +1837,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ConvertedType cvt = convertDataType(userType.baseTypeid);
     Array array = decodeVlen(cvt.dt, pos, bbuff);
     fld.data.setObject(idx, array);
-    if (cvt.isUnsigned) fld.data.setUnsigned(true);
   }
 
   private Array
@@ -1908,7 +1914,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     //DataType dtype = convertDataType(userType.baseTypeid);
-    //ArrayObject.D1 vlenArray = new ArrayObject.D1( dtype.getPrimitiveClassType(), len);
+    //ArrayObject.D1 vlenArray = new ArrayObject.D1( dtype, len);
 
     // Collect the vlen's data arrays
     Object[] data = new Object[len];
@@ -1952,7 +1958,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     for (int i = 0; i < prefixrank; i++)
       shape[i] = section.getRange(i).length();
 
-    Array ndimarray = Array.factory(Array.class, shape);
+    Array ndimarray = Array.factory(Array.class, false, shape);
     // Transfer the elements of data into the n-dim arrays
     IndexIterator iter = ndimarray.getIndexIterator();
     for (int i = 0; iter.hasNext(); i++) {
@@ -2014,17 +2020,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   switch (baseType) {
       case NCLibrary.NC_BYTE:
       case NCLibrary.NC_UBYTE:
-  return Array.factory( DataType.BYTE.getPrimitiveClassType(), shape, bb.array());
+  return Array.factory( DataType.BYTE, shape, bb.array());
 
       case NCLibrary.NC_SHORT:
       case NCLibrary.NC_USHORT:
   ShortBuffer sb = bb.asShortBuffer();
-  return Array.factory( DataType.BYTE.getPrimitiveClassType(), shape, sb.array());
+  return Array.factory( DataType.BYTE, shape, sb.array());
 
       case NCLibrary.NC_INT:
       case NCLibrary.NC_UINT:
   IntBuffer ib = bb.asIntBuffer();
-  return Array.factory( DataType.BYTE.getPrimitiveClassType(), shape, ib.array());
+  return Array.factory( DataType.BYTE, shape, ib.array());
   }
 
   return null;
@@ -2076,10 +2082,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
   }
 
-  private int convertDataType(DataType dt, boolean isUnsigned) {
+  private int convertDataType(DataType dt) {
     switch (dt) {
       case BYTE:
-        return isUnsigned ? Nc4prototypes.NC_UBYTE : Nc4prototypes.NC_BYTE;
+        return Nc4prototypes.NC_BYTE;
+      case UBYTE:
+        return Nc4prototypes.NC_UBYTE;
       case CHAR:
         return Nc4prototypes.NC_CHAR;
       case DOUBLE:
@@ -2087,11 +2095,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case FLOAT:
         return Nc4prototypes.NC_FLOAT;
       case INT:
-        return isUnsigned ? Nc4prototypes.NC_UINT : Nc4prototypes.NC_INT;
+        return Nc4prototypes.NC_INT;
+      case UINT:
+        return Nc4prototypes.NC_UINT;
       case LONG:
-        return isUnsigned ? Nc4prototypes.NC_UINT64 : Nc4prototypes.NC_INT64;
+        return Nc4prototypes.NC_INT64;
+      case ULONG:
+        return Nc4prototypes.NC_UINT64;
       case SHORT:
-        return isUnsigned ? Nc4prototypes.NC_USHORT : Nc4prototypes.NC_SHORT;
+        return Nc4prototypes.NC_SHORT;
+      case USHORT:
+        return Nc4prototypes.NC_USHORT;
       case STRING:
         return Nc4prototypes.NC_STRING;
       case ENUM1:
@@ -2376,7 +2390,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       typid = vinfo.typeid;
 
     } else {
-      typid = convertDataType(v.getDataType(), v.isUnsigned());
+      typid = convertDataType(v.getDataType());
       if (typid < 0) return; // not implemented yet
       vinfo = new Vinfo(g4, -1, typid);
     }
@@ -2470,7 +2484,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     for (Variable v : s.getVariables()) {
       if (v.getDataType() == DataType.STRING) continue;
 
-      int field_typeid = convertDataType(v.getDataType(), v.isUnsigned());
+      int field_typeid = convertDataType(v.getDataType());
       if (v.isScalar())
         ret = nc4.nc_insert_compound(g4.grpid, typeid, v.getShortName(), new SizeT(offset), field_typeid);
       else
@@ -2530,7 +2544,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       for (Attribute att : m.getAttributes()) {
         // add the fields to the member_atts_t
         String memberName = m.getShortName()+":"+att.getShortName();
-        int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getDataType(), att.isUnsigned());   // LOOK override String with CHAR
+        int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getDataType());   // LOOK override String with CHAR
 
         if (att.isString()) {  // String gets turned into array of char; otherwise no way to pass in
           String val = att.getStringValue();
@@ -2639,8 +2653,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         log.warn("_FillValue type must agree with var = " + v.getFullName() + " type " + att.getDataType() + "!=" + v.getDataType());
         return;
       }
-      if (att.isUnsigned() != v.isUnsigned()) {
-        log.warn("_FillValue isUnsigned must agree with var = " + v.getFullName() + " isUnsigned " + att.isUnsigned() + "!=" + v.isUnsigned());
+      if (att.isUnsigned() != v.getDataType().isUnsigned()) {
+        log.warn("_FillValue isUnsigned must agree with var = " + v.getFullName() + " isUnsigned " + att.isUnsigned() + "!=" + v.getDataType().isUnsigned());
         return;
       }
     }

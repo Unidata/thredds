@@ -60,7 +60,7 @@ public class TestWrite {
     dims.add(lonDim);
     Variable t = writer.addVariable(null, "temperature", DataType.DOUBLE, dims);
     t.addAttribute(new Attribute("units", "K"));   // add a 1D attribute of length 3
-    Array data = Array.factory(int.class, new int[]{3}, new int[]{1, 2, 3});
+    Array data = Array.factory(DataType.INT, new int[]{3}, new int[]{1, 2, 3});
     t.addAttribute(new Attribute("scale", data));
 
     // add a string-valued variable: char svar(80)
@@ -89,7 +89,7 @@ public class TestWrite {
 
         // test some errors
     try {
-      Array bad = Array.factory(ArrayList.class, new int[]{1});
+      Array bad = Array.factory(ArrayList.class, false, new int[]{1});
       writer.addGroupAttribute(null, new Attribute("versionB", bad));
       assert (false);
     } catch (IllegalArgumentException e) {
@@ -148,7 +148,7 @@ public class TestWrite {
     }
 
     // write char variable
-    ArrayByte.D1 barray = new ArrayByte.D1(latDim.getLength());
+    ArrayByte.D1 barray = new ArrayByte.D1(latDim.getLength(), false);
     int start = -latDim.getLength() / 2;
     for (j = 0; j < latDim.getLength(); j++)
       barray.setByte(j, (byte) (start + j));
@@ -408,7 +408,7 @@ public class TestWrite {
     v = writer.findVariable("bvar");
     shape = v.getShape();
     int len = shape[0];
-    ArrayByte.D1 barray = new ArrayByte.D1(len);
+    ArrayByte.D1 barray = new ArrayByte.D1(len, false);
     int start = -len / 2;
     for (j = 0; j < len; j++)
       barray.setByte(j, (byte) (start + j));
@@ -649,13 +649,13 @@ public class TestWrite {
     writer.create();
 
     // write out the non-record variables
-    writer.write(lat, Array.factory(new float[]{41, 40, 39}));
-    writer.write(lon, Array.factory(new float[]{-109, -107, -105, -103}));
+    writer.write(lat, Array.makeFromJavaArray(new float[]{41, 40, 39}, false));
+    writer.write(lon, Array.makeFromJavaArray(new float[]{-109, -107, -105, -103}, false));
 
     //// heres where we write the record variables
     // different ways to create the data arrays.
     // Note the outer dimension has shape 1, since we will write one record at a time
-    ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength());
+    ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength(), false);
     ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
     Array timeData = Array.factory(DataType.INT, new int[]{1});
     Index ima = rhData.getIndex();
@@ -706,7 +706,7 @@ public class TestWrite {
     ncfile.addVariable("temperature", DataType.DOUBLE, dims);
     ncfile.addVariableAttribute("temperature", "units", "K");
 
-    Array data = Array.factory(int.class, new int[]{3}, new int[]{1, 2, 3});
+    Array data = Array.factory(DataType.INT, new int[]{3}, new int[]{1, 2, 3});
     ncfile.addVariableAttribute("temperature", "scale", data);
     ncfile.addVariableAttribute("temperature", "versionD", new Double(1.2));
     ncfile.addVariableAttribute("temperature", "versionF", new Float(1.2));
@@ -748,7 +748,7 @@ public class TestWrite {
 
     // test some errors
     try {
-      Array bad = Array.factory(ArrayList.class, new int[]{1});
+      Array bad = Array.factory(ArrayList.class, false, new int[]{1});
       ncfile.addGlobalAttribute("versionC", bad);
       assert (false);
     } catch (IllegalArgumentException e) {
@@ -805,7 +805,7 @@ public class TestWrite {
     }
 
     // write char variable
-    ArrayByte.D1 barray = new ArrayByte.D1(latDim.getLength());
+    ArrayByte.D1 barray = new ArrayByte.D1(latDim.getLength(), false);
     int start = -latDim.getLength() / 2;
     for (j = 0; j < latDim.getLength(); j++)
       barray.setByte(j, (byte) (start + j));

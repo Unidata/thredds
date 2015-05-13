@@ -119,12 +119,12 @@ public class TestWriteRecord extends TestCase  {
     ncfile.addVariableAttribute("rh", "units", "percent");
 
     // test attribute array
-    ArrayInt.D1 valid_range = new ArrayInt.D1(2);
+    ArrayInt.D1 valid_range = new ArrayInt.D1(2, false);
     valid_range.set(0, 0);
     valid_range.set(1,100);
     ncfile.addVariableAttribute("rh", "range", valid_range);
 
-    ncfile.addVariableAttribute( "rh", CDM.VALID_RANGE, Array.factory(new  double[] {0d, 100d}) );
+    ncfile.addVariableAttribute( "rh", CDM.VALID_RANGE, Array.makeFromJavaArray(new double[]{0d, 100d}, false) );
 
     // double T(time, lat, lon) ;
     //   T:long_name="surface temperature" ;
@@ -171,7 +171,7 @@ public class TestWriteRecord extends TestCase  {
     int[][][] rhData = {{{ 1,  2,  3,  4}, { 5,  6,  7,  8}, { 9, 10, 11, 12}},
                         {{21, 22, 23, 24}, {25, 26, 27, 28}, {29, 30, 31, 32}}};
 
-    ArrayInt rhA = new ArrayInt.D3(2, latDim.getLength(), lonDim.getLength());
+    ArrayInt rhA = new ArrayInt.D3(2, latDim.getLength(), lonDim.getLength(), false);
     Index ima = rhA.getIndex();
     // write
     for (int i=0; i<2; i++)
@@ -197,7 +197,7 @@ public class TestWriteRecord extends TestCase  {
         {{2.5, 5, 7.5, 10}, {5., 10, 15, 20}, {7.5, 15, 22.5, 30}}
     };
     try {
-      ncfile.write("T", Array.factory(tData));
+      ncfile.write("T", Array.makeFromJavaArray(tData, false));
     } catch (IOException e) {
       System.err.println("ERROR writing file");
       assert(false);
@@ -208,9 +208,9 @@ public class TestWriteRecord extends TestCase  {
 
     // Store the rest of variable values
    try {
-     ncfile.write("lat", Array.factory(new float[] {41, 40, 39}));
-     ncfile.write("lon", Array.factory(new float[] {-109, -107, -105, -103}));
-     ncfile.write("time", Array.factory(new int[] {6, 18}));
+     ncfile.write("lat", Array.makeFromJavaArray(new float[]{41, 40, 39}, false));
+     ncfile.write("lon", Array.makeFromJavaArray(new float[]{-109, -107, -105, -103}, false));
+     ncfile.write("time", Array.makeFromJavaArray(new int[]{6, 18}, false));
    } catch (IOException e) {
      System.err.println("ERROR writing file");
      assert(false);
@@ -383,7 +383,7 @@ public class TestWriteRecord extends TestCase  {
     // now write one record at a time
     Variable v = ncfile.findVariable("T");
     ArrayDouble data = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
-    ArrayInt timeData = new ArrayInt.D1(1);
+    ArrayInt timeData = new ArrayInt.D1(1, false);
     int[] origin = new int[v.getRank()];
     int[] timeOrigin = new int[1];
 

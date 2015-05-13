@@ -5,6 +5,7 @@ import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.grid.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.Calendar;
@@ -136,7 +137,7 @@ public class CdmrfWriter {
     builder.setStart(dateRange.getStart().getMillis());
     builder.setEnd(dateRange.getEnd().getMillis());
     Calendar cal = dateRange.getStart().getCalendar();
-    builder.setCalendar(cal.ordinal());
+    builder.setCalendar(convertCalendar(cal));
     return builder;
   }
 
@@ -152,7 +153,7 @@ public class CdmrfWriter {
   CdmrFeatureProto.GridCoverage.Builder encodeGrid(GridCoverage grid) {
     CdmrFeatureProto.GridCoverage.Builder builder = CdmrFeatureProto.GridCoverage.newBuilder();
     builder.setName(grid.getName());
-    builder.setDataType(NcStream.encodeDataType(grid.getDataType()));
+    builder.setDataType(NcStream.convertDataType(grid.getDataType()));
 
     for (Attribute att : grid.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
@@ -211,17 +212,19 @@ public class CdmrfWriter {
   CdmrFeatureProto.CoordAxis.Builder encodeCoordAxis(GridCoordAxis axis) {
     CdmrFeatureProto.CoordAxis.Builder builder = CdmrFeatureProto.CoordAxis.newBuilder();
     builder.setName(axis.getName());
-    builder.setDataType(NcStream.encodeDataType(axis.getDataType()));
-    builder.setAxisType(axis.getAxisType().ordinal());
+    builder.setDataType(NcStream.convertDataType(axis.getDataType()));
+    builder.setAxisType( convertAxisType(axis.getAxisType()));
     builder.setNvalues(axis.getNvalues());
     if (axis.getUnits() != null) builder.setUnits(axis.getUnits());
     if (axis.getDescription() != null) builder.setDescription(axis.getDescription());
-    builder.setIsIndependent(axis.isIndependent());
+    builder.setDepend( convertDependenceType(axis.getDependenceType()));
+    if (axis.getDependsOn() != null)
+      builder.setDependsOn( axis.getDependsOn());
 
     for (Attribute att : axis.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
 
-    builder.setSpacing(axis.getSpacing().ordinal());
+    builder.setSpacing( convertSpacing(axis.getSpacing()));
     builder.setStartValue(axis.getStartValue());
     builder.setEndValue(axis.getEndValue());
     builder.setResolution(axis.getResolution());
@@ -237,5 +240,89 @@ public class CdmrfWriter {
     /* for (Attribute att : axis.getParameters())
       builder.addParams(NcStream.encodeAtt(att)); */
     return builder;
+  }
+
+
+  static public CdmrFeatureProto.AxisType convertAxisType(AxisType dtype) {
+    switch (dtype) {
+      case RunTime:
+        return CdmrFeatureProto.AxisType.RunTime;
+      case Ensemble:
+        return CdmrFeatureProto.AxisType.Ensemble;
+      case Time:
+        return CdmrFeatureProto.AxisType.Time;
+      case GeoX:
+        return CdmrFeatureProto.AxisType.GeoX;
+      case GeoY:
+        return CdmrFeatureProto.AxisType.GeoY;
+      case GeoZ:
+        return CdmrFeatureProto.AxisType.GeoZ;
+      case Lat:
+        return CdmrFeatureProto.AxisType.Lat;
+      case Lon:
+        return CdmrFeatureProto.AxisType.Lon;
+      case Height:
+        return CdmrFeatureProto.AxisType.Height;
+      case Pressure:
+        return CdmrFeatureProto.AxisType.Pressure;
+      case RadialAzimuth:
+        return CdmrFeatureProto.AxisType.RadialAzimuth;
+      case RadialDistance:
+        return CdmrFeatureProto.AxisType.RadialDistance;
+      case RadialElevation:
+        return CdmrFeatureProto.AxisType.RadialElevation;
+      case Spectral:
+        return CdmrFeatureProto.AxisType.Spectral;
+    }
+    throw new IllegalStateException("illegal data type " + dtype);
+  }
+
+
+  static public CdmrFeatureProto.Calendar convertCalendar(Calendar type) {
+    switch (type) {
+      case gregorian:
+        return CdmrFeatureProto.Calendar.gregorian;
+      case proleptic_gregorian:
+        return CdmrFeatureProto.Calendar.proleptic_gregorian;
+      case noleap:
+        return CdmrFeatureProto.Calendar.noleap;
+      case all_leap:
+        return CdmrFeatureProto.Calendar.all_leap;
+      case uniform30day:
+        return CdmrFeatureProto.Calendar.uniform30day;
+      case julian:
+        return CdmrFeatureProto.Calendar.julian;
+      case none:
+        return CdmrFeatureProto.Calendar.none;
+    }
+    throw new IllegalStateException("illegal data type " + type);
+  }
+
+
+  static public CdmrFeatureProto.DependenceType convertDependenceType(GridCoordAxis.DependenceType type) {
+    switch (type) {
+      case independent:
+        return CdmrFeatureProto.DependenceType.independent;
+      case dependent:
+        return CdmrFeatureProto.DependenceType.dependent;
+      case twoD:
+        return CdmrFeatureProto.DependenceType.twoD;
+    }
+    throw new IllegalStateException("illegal data type " + type);
+  }
+
+
+  static public CdmrFeatureProto.AxisSpacing convertSpacing(GridCoordAxis.Spacing type) {
+    switch (type) {
+      case regular:
+        return CdmrFeatureProto.AxisSpacing.regular;
+      case irregularPoint:
+        return CdmrFeatureProto.AxisSpacing.irregularPoint;
+      case contiguousInterval:
+        return CdmrFeatureProto.AxisSpacing.contiguousInterval;
+      case discontiguousInterval:
+        return CdmrFeatureProto.AxisSpacing.discontiguousInterval;
+    }
+    throw new IllegalStateException("illegal data type " + type);
   }
 }

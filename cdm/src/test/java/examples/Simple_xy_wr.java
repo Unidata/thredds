@@ -54,7 +54,7 @@ public class Simple_xy_wr {
 
       // This is the data array we will write. It will just be filled
       // with a progression of numbers for this example.
-      ArrayInt.D2 dataOut = new ArrayInt.D2(xDim.getLength(), yDim.getLength());
+      ArrayInt.D2 dataOut = new ArrayInt.D2(xDim.getLength(), yDim.getLength(), false);
 
       // Create some pretend data. If this wasn't an example program, we
       // would have some real data to write, for example, model output.

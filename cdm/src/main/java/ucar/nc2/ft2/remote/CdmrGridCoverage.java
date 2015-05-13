@@ -76,7 +76,7 @@ public class CdmrGridCoverage extends GridCoverage {
       NcStream.readFully(is, dp);
       NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
       if (debug) System.out.println(" readData proto = " + dproto);
-      DataType dataType = NcStream.decodeDataType(dproto.getDataType());
+      DataType dataType = NcStream.convertDataType(dproto.getDataType());
       Section section = NcStream.decodeSection(dproto.getSection());
 
       // read data message

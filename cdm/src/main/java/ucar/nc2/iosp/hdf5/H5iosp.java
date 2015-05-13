@@ -151,7 +151,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       Object pa = IospHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
       if (dataType == DataType.CHAR)
         pa = IospHelper.convertByteToChar((byte[]) pa);
-      return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), pa);
+      return Array.factory(dataType, wantSection.getShape(), pa);
     }
 
     if (vinfo.mfp != null) { // filtered
@@ -203,7 +203,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     else if (dataType == DataType.STRUCTURE)
       return convertStructure((Structure) v2, layout, wantSection.getShape(), (byte[]) data);  // LOOK
     else
-      return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), data);
+      return Array.factory(dataType, wantSection.getShape(), data);
   }
 
   /*
@@ -226,7 +226,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     // special processing
     if (typeInfo.hdfType == 2) { // time
       Object data = IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
-      Array timeArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
+      Array timeArray = Array.factory(dataType, shape, data);
 
       // now transform into an ISO Date String
       String[] stringData = new String[(int) timeArray.getSize()];
@@ -235,12 +235,12 @@ public class H5iosp extends AbstractIOServiceProvider {
         long time = timeArray.nextLong();
         stringData[count++] = CalendarDate.of(time).toString();
       }
-      return Array.factory(String.class, shape, stringData);
+      return Array.factory(DataType.STRING, shape, stringData);
     }
 
     if (typeInfo.hdfType == 8) { // enum
       Object data = IospHelper.readDataFill(raf, layout, dataType, fillValue, endian);
-      return Array.factory(dataType.getPrimitiveClassType(), shape, data);
+      return Array.factory(dataType, shape, data);
     }
 
     if ((typeInfo.hdfType == 9) && !typeInfo.isVString) { // vlen (not string)
@@ -266,7 +266,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
       int prefixrank = 0;
       for(int i=0;i<shape.length;i++) {if(shape[i] < 0) {prefixrank = i; break;}}
-      Array result = null;
+      Array result;
       if(prefixrank == 0) // if scalar, return just the singleton vlen array
         result = data[0];
       else if(prefixrank == 1)
@@ -275,7 +275,7 @@ public class H5iosp extends AbstractIOServiceProvider {
           // Otherwise create and fill in an n-dimensional Array Of Arrays
           int[] newshape = new int[prefixrank];
           System.arraycopy(shape, 0, newshape, 0, prefixrank);
-          Array ndimarray = Array.factory(Array.class, newshape);
+          Array ndimarray = Array.factory(Array.class, false, newshape);
           // Transfer the elements of data into the n-dim arrays
           IndexIterator iter = ndimarray.getIndexIterator();
           for(int i = 0;iter.hasNext();i++) {
@@ -320,7 +320,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       result[i] = name != null ? name : Long.toString(reference);
       if (debugVlen) System.out.printf(" convertReference 0x%x to %s %n", reference, result[i]);
     }
-    return Array.factory(String.class, new int[]{nelems}, result);
+    return Array.factory(DataType.STRING, new int[]{nelems}, result);
   }
 
   private ArrayStructure convertStructure(Structure s, Layout layout, int[] shape, byte[] byteArray) throws IOException, InvalidRangeException {
@@ -441,7 +441,7 @@ public class H5iosp extends AbstractIOServiceProvider {
           fieldarray[i] = vlenArray;
           destPos += VLEN_T_SIZE;  // Apparentlly no way to compute VLEN_T_SIZE on the fly
         }
-        Array result = null;
+        Array result;
         if(prefixrank == 0) // if scalar, return just the singleton vlen array
           result = fieldarray[0];
         else if(prefixrank == 1)
@@ -450,7 +450,7 @@ public class H5iosp extends AbstractIOServiceProvider {
           // Otherwise create and fill in an n-dimensional Array Of Arrays
           int[] newshape = new int[prefixrank];
           System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
-          Array ndimarray = Array.factory(Array.class, newshape);
+          Array ndimarray = Array.factory(Array.class, false, newshape);
           // Transfer the elements of data into the n-dim arrays
           IndexIterator iter = ndimarray.getIndexIterator();
           for(int i = 0;iter.hasNext();i++) {
