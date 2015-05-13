@@ -73,10 +73,10 @@
       <artifactId>guava</artifactId>
     </dependency>
 
-    <dependency>
+    <!-- dependency>
       <groupId>org.itadaki</groupId>
       <artifactId>bzip2</artifactId>
-    </dependency>
+    </dependency -->
 
     <!-- Command line argument parsing in CFPointWriter -->
     <dependency>
@@ -148,6 +148,7 @@
               <includes>
                 <include>ucar/unidata/test/**</include>
                 <include>ucar/nc2/util/**</include>
+                <include>ucar/nc2/test/util/**</include>
                 <!-- makes the nc2/util/memory/build.xml ant tasks redundant -->
                 <include>ucar/nc2/TestLocal.*</include>
               </includes>

@@ -298,7 +298,7 @@ public class GribData {
     f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     //////////////////////////////////////////////////////////////
-    f.format("%nbzip2 (floats)%n");
+    /* f.format("%nbzip2 (floats)%n");
     try (ByteArrayOutputStream out = new ByteArrayOutputStream(2 * compressedSize)) {
       org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
       InputStream fin = new ByteArrayInputStream(bdata);
@@ -329,7 +329,7 @@ public class GribData {
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
-    }
+    } */
 
     return scaledData;
   }
@@ -379,7 +379,7 @@ public class GribData {
       }
     }
 
-    byte[] scaledData = bb.array();
+    /* byte[] scaledData = bb.array();
     try (ByteArrayOutputStream out = new ByteArrayOutputStream(4 * npoints + 24)) {
       org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
       InputStream fin = new ByteArrayInputStream(scaledData);
@@ -390,12 +390,15 @@ public class GribData {
     } catch (IOException ioe) {
       ioe.printStackTrace();
       return null;
-    }
+    } */
+    return null;
   }
 
   // only used by test code
   private static byte[] buffer;  // LOOK optimize
   static public float[] uncompressScaled(byte[] bdata) throws IOException {
+    return null;
+    /*
     if (buffer == null)
       buffer = new byte[524288];
 
@@ -433,7 +436,7 @@ public class GribData {
       else result[count++] = (float) (scale_factor * packed_data + add_offset);
     }
 
-    return result;
+    return result; */
   }
 
 

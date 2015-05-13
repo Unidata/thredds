@@ -8,7 +8,7 @@ dependencies {
     compile libraries["jsoup"]
     compile libraries["jcip-annotations"]
     compile libraries["jj2000"]
-    compile libraries["bzip2"]
+    //compile libraries["bzip2"]
     compile libraries["guava"]
     compile libraries["slf4j-api"]
 }

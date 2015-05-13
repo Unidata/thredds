@@ -80,10 +80,10 @@
 	  <artifactId>jj2000</artifactId>
     </dependency>
 
-    <dependency>
+    <!-- dependency>
       <groupId>org.itadaki</groupId>
       <artifactId>bzip2</artifactId>
-    </dependency>
+    </dependency -->
 
     <dependency>
       <groupId>com.google.guava</groupId>

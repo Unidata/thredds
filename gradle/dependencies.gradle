@@ -149,7 +149,7 @@ libraries["guava"] = "com.google.guava:guava:18.0"
 
 libraries["jj2000"] = "edu.ucar:jj2000:5.2"
 
-libraries["bzip2"] = "org.itadaki:bzip2:0.9.1"
+// libraries["bzip2"] = "org.itadaki:bzip2:0.9.1"
 
 libraries["xz"] = "org.tukaani:xz:1.0"
 

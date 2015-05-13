@@ -94,7 +94,7 @@ public class TestGribCompressByBit {
       switch (want) {
         case deflate: runAlg.add( new JavaDeflate()); break;
         case bzip2: runAlg.add( new ApacheBzip2()); break;
-        case bzip2T: runAlg.add( new ItadakiBzip2()); break;
+        //case bzip2T: runAlg.add( new ItadakiBzip2()); break;
         case bzipScaled: runAlg.add( new ScaleAndOffset()); break;
         case xy: runAlg.add( new TukaaniLZMA2()); break;
         case zip7: runAlg.add(new Zip7()); break;
@@ -628,7 +628,7 @@ public class TestGribCompressByBit {
   }
 
   private static byte[] buffer = new byte [524288];  // LOOK optimize
-  class ItadakiBzip2 extends CompressAlgo {
+  /* class ItadakiBzip2 extends CompressAlgo {
     Algorithm getAlgo() {
       return Algorithm.bzip2T;
     }
@@ -664,7 +664,7 @@ public class TestGribCompressByBit {
        return out.toByteArray();
      }
 
-  }
+  } */
 
   class ScaleAndOffset extends CompressAlgo {
     @Override

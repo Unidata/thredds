@@ -1,7 +1,5 @@
 package ucar.nc2.ui.grib;
 
-import org.itadaki.bzip2.BZip2OutputStream;
-import org.itadaki.bzip2.BZip2BitOutputStream;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -229,7 +227,7 @@ public class Grib2ReportPanel extends ReportPanel {
     // unpacked_data_value = packed_data_value * scale_factor + add_offset
     // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
 
-    BZip2OutputStream zipper = new BZip2OutputStream(out);
+    /* BZip2OutputStream zipper = new BZip2OutputStream(out);
     BZip2BitOutputStream bitOut = new BZip2BitOutputStream(zipper);
     float diffMax = -Float.MAX_VALUE;
     for (float fd : data) {
@@ -244,17 +242,17 @@ public class Grib2ReportPanel extends ReportPanel {
         f.format("     scale_factor=%f add_offset=%f data=[%f,%f]%n", scale_factor, add_offset, dataMin, dataMax);
         count++;
         //if (count > 10) return;
-      } */
+      }
 
       diffMax = Math.max(diffMax, diff);
     }
     /*if (diffMax > interval) {
       System.out.printf("   diffMax=%f interval=%f n=%d%n", diffMax, interval, nbits);
       System.out.printf("     scale_factor=%f add_offset=%f data=[%f,%f]%n%n", scale_factor, add_offset, dataMin, dataMax);
-    } */
+    } *
 
     bitOut.flush();
-    zipper.finish();
+    zipper.finish(); */
       /* compressedSize = out.size();
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));

@@ -96,10 +96,10 @@
       <artifactId>imgscalr-lib</artifactId>
     </dependency>
 
-    <dependency>
+    <!-- dependency>
       <groupId>org.itadaki</groupId>
       <artifactId>bzip2</artifactId>
-    </dependency>
+    </dependency -->
 
     <dependency>
       <groupId>org.apache.commons</groupId>
