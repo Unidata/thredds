@@ -1,6 +1,25 @@
 option java_package = "ucar.nc2.stream";
 option java_outer_classname = "NcStreamProto";
 
+message Attribute {
+  enum Type {                      // < 5.0
+    STRING = 0;
+    BYTE = 1;
+    SHORT = 2;
+    INT = 3;
+    LONG = 4;
+    FLOAT = 5;
+    DOUBLE = 6;
+  }
+  required string name = 1;
+  required Type type = 2;           // < 5.0
+  required uint32 len = 3;
+  optional bytes data = 4;          // not needed if len == 0
+  repeated string sdata = 5;        // used for string data
+  optional bool unsigned = 6 [default = false];  // not used
+  optional DataType dataType = 7;   // 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+}
+
 enum DataType {
   CHAR = 0;
   BYTE = 1;
@@ -23,13 +42,6 @@ enum DataType {
   ULONG = 17;
 }
 
-message Attribute {
-  required string name = 1;
-  required DataType dataType = 2; // cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
-  required uint32 len = 3;
-  optional bytes data = 4;        // not needed if len == 0
-  repeated string sdata = 5;      // used for string data
-}
 
 message Dimension {
   optional string name = 1;   // short name - optional when private
@@ -44,6 +56,7 @@ message Variable {
   required DataType dataType = 2;
   repeated Dimension shape = 3;   // actual dimension instead of reference; could use hash id; maybe use name
   repeated Attribute atts = 4;
+  optional bool unsigned = 5 [default = false];
   optional bytes data = 6;        // "immediate" - store small data in header
   optional string enumType = 7;   // only for enum types
 }

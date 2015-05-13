@@ -556,7 +556,7 @@ public class HdfEos {
           values.add(Double.parseDouble(valueS));
         } catch (NumberFormatException e) {  }
         }
-      Attribute att = new Attribute(name, values);
+      Attribute att = new Attribute(name, values, false);
       v.addAttribute(att);
     } else {
       String value = child.getText().trim();

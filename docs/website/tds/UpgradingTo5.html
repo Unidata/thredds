@@ -44,6 +44,16 @@
 <ul>
   <li> <strong>ucar.nc2.dt.TypedDatasetFactory </strong>has been removed. Use <strong>ucar.nc2.ft.FeatureDatasetFactoryManager.</strong></li>
 </ul>
+<h3>Core Classes</h3>
+<ul>
+  <li><strong>DataType</strong> now has unsigned types: UBYTE, USHORT, UINT, ULONG</li>
+  <li>Array,    ArrayScalar,  ArrayByte, ArrayInt, ArrayShort, ArrayLong factory and constructor methods now require isUnsigned parameter. </li>
+  <li>Array.factory(class, shape) -&gt; Array.factory(DataType, shape);</li>
+  <li>Array.get1DJavaArray(Class) -&gt; Array.get1DJavaArray(DataType)</li>
+  <li>remove Array.setUnsigned(), Variable.setUnsigned() </li>
+  <li>Variable.getUnsigned() -&gt; Variable.getDataType().getUnsigned() </li>
+  <li>    Attribute(String&#32;name,&#32;List&#32;values) -&gt; Attribute(String&#32;name,&#32;List&#32;values,&#32;boolean&#32;isUnsigned) </li>
+</ul>
 <h2>Catalog Schema changes</h2>
 <h3>Client Catalogs</h3>
 <ul>

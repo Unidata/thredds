@@ -229,11 +229,9 @@ public class TestReadandCount {
 
     // count vertical axes
     int countVertCooordAxes = 0;
-    List axes = gridDs.getNetcdfDataset().getCoordinateAxes();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis =  (CoordinateAxis) axes.get(i);
+    for (CoordinateAxis axis : gridDs.getNetcdfDataset().getCoordinateAxes()) {
       AxisType t = axis.getAxisType();
-      if ((t == AxisType.GeoZ) || (t == AxisType.Height) || (t == AxisType.Pressure) )
+      if ((t == AxisType.GeoZ) || (t == AxisType.Height) || (t == AxisType.Pressure))
         countVertCooordAxes++;
     }
 

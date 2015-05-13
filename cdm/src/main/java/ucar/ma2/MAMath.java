@@ -645,13 +645,12 @@ public class MAMath {
    * @param a array to convert (not changed)
    * @param missingValue skip these
    * @param nbits map into this many bits
-   * @param isUnsigned use signed or unsigned packed values
    * @return ScaleOffset, calculated as above.
    */
-  public static MAMath.ScaleOffset calcScaleOffsetSkipMissingData(Array a, double missingValue, int nbits, boolean isUnsigned) {
+  public static MAMath.ScaleOffset calcScaleOffsetSkipMissingData(Array a, double missingValue, int nbits) {
     MAMath.MinMax minmax = getMinMaxSkipMissingData(a, missingValue);
 
-    if (isUnsigned) {
+    if (a.isUnsigned()) {
       long size = (1L << nbits) - 1;
       double offset = minmax.min;
       double scale =(minmax.max - minmax.min) / size;
@@ -665,8 +664,8 @@ public class MAMath {
     }
   }
 
-  public static Array convert2packed(Array unpacked, double missingValue, int nbits, boolean isUnsigned, DataType packedType) {
-    MAMath.ScaleOffset scaleOffset = calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits, isUnsigned);
+  public static Array convert2packed(Array unpacked, double missingValue, int nbits, DataType packedType) {
+    MAMath.ScaleOffset scaleOffset = calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
     Array result = Array.factory(packedType, unpacked.getShape());
     IndexIterator riter = result.getIndexIterator();
     while (unpacked.hasNext()) {
@@ -678,7 +677,6 @@ public class MAMath {
   }
 
   public static Array convert2Unpacked(Array packed, ScaleOffset scaleOffset) {
-    //boolean isUnsigned = packed.isUnsigned();
     Array result = Array.factory(DataType.DOUBLE, packed.getShape());
     IndexIterator riter = result.getIndexIterator();
     while (packed.hasNext())  {

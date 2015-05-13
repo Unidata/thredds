@@ -548,7 +548,13 @@ public class NcStream {
 
   static public Attribute decodeAtt(NcStreamProto.Attribute attp) {
     int len = attp.getLen();
-    DataType dt = convertDataType(attp.getDataType());
+    DataType dt;
+    if (attp.getType() != null)
+      dt = decodeAttributeType(attp.getType());
+    else if (attp.getDataType() != null)
+      dt = convertDataType(attp.getDataType());
+    else
+      throw new IllegalArgumentException("Attribute must type or dataType");
 
     if (len == 0) // deal with empty attribute
       return new Attribute(attp.getName(), dt);
@@ -741,6 +747,29 @@ public class NcStream {
         return DataType.ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
+  }
+
+  /////////////////////
+  // < 5.0
+
+  static DataType decodeAttributeType(ucar.nc2.stream.NcStreamProto.Attribute.Type dtype) {
+    switch (dtype) {
+      case STRING:
+        return DataType.STRING;
+      case BYTE:
+        return DataType.BYTE;
+      case SHORT:
+        return DataType.SHORT;
+      case INT:
+        return DataType.INT;
+      case LONG:
+        return DataType.LONG;
+      case FLOAT:
+        return DataType.FLOAT;
+      case DOUBLE:
+        return DataType.DOUBLE;
+    }
+    throw new IllegalStateException("illegal att type " + dtype);
   }
 
 }

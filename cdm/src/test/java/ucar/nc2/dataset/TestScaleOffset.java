@@ -59,17 +59,16 @@ public class TestScaleOffset {
       for (int j=0; j<lonDim.getLength(); j++)
         unpacked.setDouble(ima.set(i,j), (i*n+j)+30.0);
 
-    boolean isUnsigned = true;
+    //boolean isUnsigned = true;
     double missingValue = -9999;
     int nbits = 16;
 
     // convert to packed form
-    MAMath.ScaleOffset so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits, isUnsigned);
-    System.out.println("scale/offset = "+so.scale+" "+so.offset+ " isUnsigned=" +isUnsigned);
+    MAMath.ScaleOffset so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
+    System.out.println("scale/offset = "+so.scale+" "+so.offset);
     ncfile.addVariable("unpacked", DataType.DOUBLE, "lat lon");
 
     ncfile.addVariable("packed", DataType.SHORT, "lat lon");
-    if (isUnsigned) ncfile.addVariableAttribute("packed", CDM.UNSIGNED, "true");
     //ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, new Short( (short) -9999));
     ncfile.addVariableAttribute("packed", CDM.SCALE_FACTOR, so.scale);
     ncfile.addVariableAttribute("packed", "add_offset", so.offset);
@@ -79,7 +78,7 @@ public class TestScaleOffset {
 
     ncfile.write("unpacked", unpacked);
 
-    Array packed = MAMath.convert2packed(unpacked, missingValue, nbits, isUnsigned, DataType.SHORT);
+    Array packed = MAMath.convert2packed(unpacked, missingValue, nbits, DataType.SHORT);
     ncfile.write("packed", packed);
 
         // all done

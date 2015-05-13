@@ -103,14 +103,14 @@ public class TestReadAndCountDods {
     this.nVertCooordAxes = nVertCooordAxes;
   }
 
-  @org.junit.Test
+  // @org.junit.Test
   public void readAndCount() throws Exception {
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
-  public void utestProblem() throws Exception {
-    TestReadandCount.doOne("thredds:resolve:http://thredds-dev.ucar.edu/thredds/",
-            "catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
+  @org.junit.Test
+  public void testProblem() throws Exception {
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
   }
 
 }

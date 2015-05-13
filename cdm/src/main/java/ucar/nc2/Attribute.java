@@ -370,18 +370,23 @@ public class Attribute extends CDMNode {
     setImmutable(true);
   }
 
+  public Attribute(String name, List values) {
+    this(name, values, false);
+  }
+
   /**
    * Construct attribute with list of String or Number values.
    *
    * @param name   name of attribute
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    */
-  public Attribute(String name, List values) {
+  public Attribute(String name, List values, boolean isUnsigned) {
     this(name);
     int n = values.size();
     Object pa;
 
     Class c = values.get(0).getClass();
+    dataType = DataType.getType(c, isUnsigned);
     if (c == String.class) {
       String[] va = new String[n];
       pa = va;
@@ -500,9 +505,6 @@ public class Attribute extends CDMNode {
       return;
     }
 
-    if (DataType.getType(arr) == null)
-      throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
-
     if (arr.getElementType() == char.class) { // turn CHAR into STRING
       ArrayChar carr = (ArrayChar) arr;
       if (carr.getRank() == 1) { // common case
@@ -533,6 +535,9 @@ public class Attribute extends CDMNode {
       }
       arr = Array.factory(DataType.BYTE, new int[]{totalLen}, ba);
     }
+
+    if (DataType.getType(arr) == DataType.OBJECT)
+      throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
 
     if (arr.getRank() > 1)
       arr = arr.reshape(new int[]{(int) arr.getSize()}); // make sure 1D
