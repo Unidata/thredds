@@ -208,7 +208,7 @@ public class BufrDataProcess {
     mdata.resetLocalIterator();
     while (mdata.hasNext()) {
       count.nvals++;
-      if (v.isUnsigned()) {
+      if (v.getDataType().isUnsigned()) {
         if (isMissingUnsigned(v, mdata, bitWidth)) count.nmiss++;
       } else {
         if (isMissing(v, mdata, bitWidth)) count.nmiss++;

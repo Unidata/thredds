@@ -234,7 +234,7 @@ public class RadialDatasetTable extends JPanel {
       dataType = v.getDataType().toString();
 
             // collect dimensions
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       int[] shape = v.getShape();
       for (int j=0; j<shape.length; j++) {
         if (j>0) buff.append(",");
@@ -339,7 +339,7 @@ public class RadialDatasetTable extends JPanel {
     try {
       data = bean.sweep.readData();
       int[] shape = new int[] {bean.getNumRadial(), bean.getNumGates()};
-      Array arrData = Array.factory( DataType.FLOAT.getPrimitiveClassType(), shape, data);
+      Array arrData = Array.factory( DataType.FLOAT, shape, data);
 
       imageView.setImage( ImageArrayAdapter.makeGrayscaleImage(arrData));
       imageWindow.show();
@@ -347,6 +347,5 @@ public class RadialDatasetTable extends JPanel {
     } catch (IOException e) {
       logger.warn("sweep read data failed", e);
     }
-
   }
 }

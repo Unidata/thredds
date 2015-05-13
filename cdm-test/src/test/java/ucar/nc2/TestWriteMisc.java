@@ -155,7 +155,7 @@ public class TestWriteMisc {
 
     int[] shape = new int[]{1, 1, lonSize};
     float[] floatStorage = new float[lonSize];
-    Array floatArray = Array.factory(float.class, shape, floatStorage);
+    Array floatArray = Array.factory(DataType.FLOAT, shape, floatStorage);
     for (int t = 0; t < timeSize; t++) {
       for (int i = 0; i < latSize; i++) {
         int[] origin = new int[]{t, i, 0};
