@@ -117,14 +117,17 @@ public abstract class Array {
         result = ArrayBoolean.factory(index, (boolean[]) storage);
         break;
 
+      case ENUM4:
       case UINT:
       case INT:
         result = ArrayInt.factory(index, dtype.isUnsigned(), (int[]) storage);
         break;
+      case ENUM2:
       case USHORT:
       case SHORT:
         result = ArrayShort.factory(index, dtype.isUnsigned(), (short[]) storage);
         break;
+      case ENUM1:
       case UBYTE:
       case BYTE:
         result = ArrayByte.factory(index, dtype.isUnsigned(), (byte[]) storage);
@@ -148,7 +151,7 @@ public abstract class Array {
         break;
 
       default:
-        throw new IllegalArgumentException(dtype.toString());
+        return ArrayObject.factory(Object.class, index, (Object[]) storage);  // LOOK dont know the object class
     }
 
     return result;
@@ -203,7 +206,48 @@ public abstract class Array {
    */
   static public Array factoryConstant(DataType dtype, int[] shape, Object storage) {
     Index index = new IndexConstant(shape);
-    return Array.factory(dtype, index, storage);
+    // cant go though the factory, must call the general constructor
+    switch (dtype) {
+      case BOOLEAN:
+        return new ArrayBoolean(index, (boolean[]) storage);
+      case BYTE:
+        return new ArrayByte(index, false, (byte[]) storage);
+      case CHAR:
+        return new ArrayChar(index, (char[]) storage);
+      case SHORT:
+        return new ArrayShort(index, false, (short[]) storage);
+      case INT:
+        return new ArrayInt(index, false, (int[]) storage);
+      case LONG:
+        return new ArrayLong(index, false, (long[]) storage);
+      case FLOAT:
+        return new ArrayFloat(index, (float[]) storage);
+      case DOUBLE:
+        return new ArrayDouble(index, (double[]) storage);
+      case ENUM1:
+      case UBYTE:
+        return new ArrayByte(index, true, (byte[]) storage);
+      case ENUM2:
+      case USHORT:
+        return new ArrayShort(index, true, (short[]) storage);
+      case ENUM4:
+      case UINT:
+        return new ArrayInt(index, true, (int[]) storage);
+      case ULONG:
+        return new ArrayLong(index, true, (long[]) storage);
+
+      case STRING:
+        return new ArrayObject(String.class, index, (Object[]) storage);
+      case STRUCTURE:
+        return new ArrayObject(StructureData.class, index, (Object[]) storage);
+      case SEQUENCE:
+        return new ArrayObject(StructureDataIterator.class, index, (Object[]) storage);
+      case OPAQUE:
+        return new ArrayObject(ByteBuffer.class, index, (Object[]) storage);
+
+      default:
+        return ArrayObject.factory(Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+    }
   }
 
   static public Array makeFromJavaArray(Object javaArray) {

@@ -119,6 +119,13 @@ public class ArrayObject extends Array {
     }
   }
 
+  @Override
+  public Array copy() {
+    Array newA = factory(getElementType(), false, getShape());
+    MAMath.copy(newA, this);
+    return newA;
+  }
+
   /** Get underlying primitive array storage. CAUTION! You may invalidate your warrentee! */
   public Object getStorage() { return storage; }
 
