@@ -259,11 +259,6 @@ public class CompareNetcdf2 {
       ok = false;
     }
 
-    if (org.isUnsigned() != copy.isUnsigned()) {
-      f.format(" %s isUnsigned differs %s != %s%n", org.getFullName(), org.isUnsigned(), copy.isUnsigned());
-      ok = false;
-    }
-
     // dimensions
     ok &= checkDimensions(org.getDimensions(), copy.getDimensions());
     ok &= checkDimensions(copy.getDimensions(), org.getDimensions());
@@ -519,7 +514,7 @@ public class CompareNetcdf2 {
 
     if (!ok) return false;
 
-    DataType dt = DataType.getType(data1.getElementType());
+    DataType dt = DataType.getType(data1);
 
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();

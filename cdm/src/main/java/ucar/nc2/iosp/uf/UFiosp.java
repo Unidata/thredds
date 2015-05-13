@@ -276,19 +276,19 @@ public class UFiosp extends AbstractIOServiceProvider {
   private void makeCoordinateDataWithMissing(String abbrev, Variable time, Variable elev, Variable azi, Variable nradialsVar,
                                              Variable ngatesVar, List<List<Ray>> groups) {
 
-    Array timeData = Array.factory(time.getDataType().getPrimitiveClassType(), time.getShape());
+    Array timeData = Array.factory(time.getDataType(), time.getShape());
     Index timeIndex = timeData.getIndex();
 
-    Array elevData = Array.factory(elev.getDataType().getPrimitiveClassType(), elev.getShape());
+    Array elevData = Array.factory(elev.getDataType(), elev.getShape());
     Index elevIndex = elevData.getIndex();
 
-    Array aziData = Array.factory(azi.getDataType().getPrimitiveClassType(), azi.getShape());
+    Array aziData = Array.factory(azi.getDataType(), azi.getShape());
     Index aziIndex = aziData.getIndex();
 
-    Array nradialsData = Array.factory(nradialsVar.getDataType().getPrimitiveClassType(), nradialsVar.getShape());
+    Array nradialsData = Array.factory(nradialsVar.getDataType(), nradialsVar.getShape());
     IndexIterator nradialsIter = nradialsData.getIndexIterator();
 
-    Array ngatesData = Array.factory(ngatesVar.getDataType().getPrimitiveClassType(), ngatesVar.getShape());
+    Array ngatesData = Array.factory(ngatesVar.getDataType(), ngatesVar.getShape());
     IndexIterator ngatesIter = ngatesData.getIndexIterator();
 
     // first fill with missing data
@@ -356,7 +356,7 @@ public class UFiosp extends AbstractIOServiceProvider {
     Range radialRange = section.getRange(1);
     Range gateRange = section.getRange(2);
 
-    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
+    Array data = Array.factory(v2.getDataType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
 
     for (int i = scanRange.first(); i <= scanRange.last(); i += scanRange.stride()) {

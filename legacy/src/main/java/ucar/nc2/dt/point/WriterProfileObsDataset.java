@@ -355,7 +355,7 @@ public class WriterProfileObsDataset {
 
   private void writeDataFinish() throws IOException {
     // finish global variables
-    ArrayInt.D0 totalArray = new ArrayInt.D0();
+    ArrayInt.D0 totalArray = new ArrayInt.D0(false);
     totalArray.set(profileIndex);
     try {
       ncfile.write(numProfilesTotalName, totalArray);
@@ -366,9 +366,9 @@ public class WriterProfileObsDataset {
 
     // finish the station data
     int nstns = stnList.size();
-    ArrayInt.D1 firstProfileArray = new ArrayInt.D1(nstns);
-    ArrayInt.D1 numProfileArray = new ArrayInt.D1(nstns);
-    ArrayInt.D1 nextProfileArray = new ArrayInt.D1(nprofiles);
+    ArrayInt.D1 firstProfileArray = new ArrayInt.D1(nstns, false);
+    ArrayInt.D1 numProfileArray = new ArrayInt.D1(nstns, false);
+    ArrayInt.D1 nextProfileArray = new ArrayInt.D1(nprofiles, false);
 
     for (int i = 0; i < stnList.size(); i++) {
       ucar.unidata.geoloc.Station stn = stnList.get(i);
@@ -403,9 +403,9 @@ public class WriterProfileObsDataset {
     }
 
     // finish the profile data
-    ArrayInt.D1 nextObsArray = new ArrayInt.D1(recno);
-    ArrayInt.D1 firstObsArray = new ArrayInt.D1(nprofiles);
-    ArrayInt.D1 numObsArray = new ArrayInt.D1(nprofiles);
+    ArrayInt.D1 nextObsArray = new ArrayInt.D1(recno, false);
+    ArrayInt.D1 firstObsArray = new ArrayInt.D1(nprofiles, false);
+    ArrayInt.D1 numObsArray = new ArrayInt.D1(nprofiles, false);
 
     for (int i = 0; i < stnList.size(); i++) {
       ucar.unidata.geoloc.Station stn = stnList.get(i);
@@ -452,8 +452,8 @@ public class WriterProfileObsDataset {
 
   private int recno = 0;
   private ArrayObject.D1 timeArray = new ArrayObject.D1(String.class, 1);
-  private ArrayInt.D1 prevArray = new ArrayInt.D1(1);
-  private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
+  private ArrayInt.D1 prevArray = new ArrayInt.D1(1, false);
+  private ArrayInt.D1 parentArray = new ArrayInt.D1(1, false);
   private int[] origin = new int[1];
   private int[] originTime = new int[2];
 

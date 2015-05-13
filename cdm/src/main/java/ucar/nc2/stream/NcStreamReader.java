@@ -122,7 +122,7 @@ public class NcStreamReader {
     NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
     // if (debug) System.out.println(" readData proto = " + dproto);
 
-    DataType dataType = NcStream.decodeDataType(dproto.getDataType());
+    DataType dataType = NcStream.convertDataType(dproto.getDataType());
     Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
 
     // special cases

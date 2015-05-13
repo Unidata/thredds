@@ -1331,7 +1331,7 @@ if(OLDGROUPCODE) {
         String unescaped = EscapeStrings.unescapeDAPIdentifier(name);
         int index = unescaped.lastIndexOf('/');
         if(index < 0) index = -1;
-        return unescaped.substring(index+1, unescaped.length());
+        return unescaped.substring(index + 1, unescaped.length());
     }
 
     static String
@@ -1425,7 +1425,6 @@ if(OLDGROUPCODE) {
      */
     static public DataType convertToNCType(opendap.dap.BaseType dtype)
     {
-
         if (dtype instanceof DString)
             return DataType.STRING;
         else if ((dtype instanceof DStructure) || (dtype instanceof DSequence) || (dtype instanceof DGrid))
@@ -1435,15 +1434,15 @@ if(OLDGROUPCODE) {
         else if (dtype instanceof DFloat64)
             return DataType.DOUBLE;
         else if (dtype instanceof DUInt32)
-            return DataType.INT;
-        else if (dtype instanceof DUInt16)
-            return DataType.SHORT;
+            return DataType.UINT;
         else if (dtype instanceof DInt32)
             return DataType.INT;
+        else if (dtype instanceof DUInt16)
+            return DataType.USHORT;
         else if (dtype instanceof DInt16)
-            return DataType.SHORT;
+             return DataType.SHORT;
         else if (dtype instanceof DByte)
-            return DataType.BYTE;
+            return DataType.UBYTE;
         else
             throw new IllegalArgumentException("DODSVariable illegal type = " + dtype.getTypeName());
     }

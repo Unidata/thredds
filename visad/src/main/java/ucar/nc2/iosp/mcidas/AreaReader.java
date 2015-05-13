@@ -219,7 +219,7 @@ public class AreaReader {
             "seconds since "
                     + df.toDateTimeString(nomTime)));
     timeVar.addAttribute(new Attribute("long_name", "time"));
-    varArray = new ArrayInt.D1(1);
+    varArray = new ArrayInt.D1(1, false);
     ((ArrayInt.D1) varArray).set(0, 0);
     timeVar.setCachedData(varArray, false);
     ncfile.addVariable(null, timeVar);
@@ -232,7 +232,7 @@ public class AreaReader {
     //lineVar.addAttribute(new Attribute(CDM.UNITS, "km"));
     lineVar.addAttribute(new Attribute("standard_name",
             "projection_y_coordinate"));
-    varArray = new ArrayInt.D1(numLines);
+    varArray = new ArrayInt.D1(numLines, false);
     for (int i = 0; i < numLines; i++) {
       int pos = nav.isFlippedLineCoordinates()
               ? i
@@ -248,7 +248,7 @@ public class AreaReader {
     //elementVar.addAttribute(new Attribute(CDM.UNITS, "km"));
     elementVar.addAttribute(new Attribute("standard_name",
             "projection_x_coordinate"));
-    varArray = new ArrayInt.D1(numElements);
+    varArray = new ArrayInt.D1(numElements, false);
     for (int i = 0; i < numElements; i++) {
       ((ArrayInt.D1) varArray).set(i, i);
     }
@@ -263,7 +263,7 @@ public class AreaReader {
     bandVar.addAttribute(new Attribute("long_name",
             "spectral band number"));
     bandVar.addAttribute(new Attribute("axis", "Z"));
-    Array bandArray = new ArrayInt.D1(numBands);
+    Array bandArray = new ArrayInt.D1(numBands, false);
     for (int i = 0; i < numBands; i++) {
       ((ArrayInt.D1) bandArray).set(i, bandMap[i]);
     }
@@ -286,7 +286,7 @@ public class AreaReader {
     dirVar.setDataType(DataType.INT);
     dirVar.setDimensions("dirSize");
     setAreaDirectoryAttributes(dirVar);
-    ArrayInt.D1 dirArray = new ArrayInt.D1(AreaFile.AD_DIRSIZE);
+    ArrayInt.D1 dirArray = new ArrayInt.D1(AreaFile.AD_DIRSIZE, false);
     for (int i = 0; i < AreaFile.AD_DIRSIZE; i++) {
       dirArray.set(i, dirBlock[i]);
     }
@@ -297,7 +297,7 @@ public class AreaReader {
     navVar.setDataType(DataType.INT);
     navVar.setDimensions("navSize");
     setNavBlockAttributes(navVar);
-    ArrayInt.D1 navArray = new ArrayInt.D1(navBlock.length);
+    ArrayInt.D1 navArray = new ArrayInt.D1(navBlock.length, false);
     for (int i = 0; i < navBlock.length; i++) {
       navArray.set(i, navBlock[i]);
     }
@@ -382,7 +382,7 @@ public class AreaReader {
     Array dataArray;
 
     if (section == null) {
-      dataArray = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape());
+      dataArray = Array.factory(v2.getDataType(), v2.getShape());
 
     } else if (section.getRank() > 0) {
       if (section.getRank() > 3) {
@@ -399,7 +399,7 @@ public class AreaReader {
         geoXRange = section.getRange(1);
       }
 
-      dataArray = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
+      dataArray = Array.factory(v2.getDataType(), section.getShape());
 
     } else {
       String strRank = Integer.toString(section.getRank());

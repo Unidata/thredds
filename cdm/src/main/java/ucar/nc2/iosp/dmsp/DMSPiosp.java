@@ -186,21 +186,21 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         this.cachedYear = (int[]) this.readIntArray1D(VariableInfo.YEAR.getByteOffsetInRecord());
       }
       data = this.cachedYear;
-      dataArray = Array.factory(int.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.INT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     } else if (v2.getShortName().equals(VariableInfo.DAY_OF_YEAR.getName())) {
       if (this.cachedDayOfYear == null) {
         this.cachedDayOfYear = (int[]) this.readIntArray1D(VariableInfo.DAY_OF_YEAR.getByteOffsetInRecord());
       }
       data = this.cachedDayOfYear;
-      dataArray = Array.factory(int.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.INT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     } else if (v2.getShortName().equals(VariableInfo.SECONDS_OF_DAY.getName())) {
       if (this.cachedSecondsOfDay == null) {
         this.cachedSecondsOfDay = (double[]) this.readDoubleArray1D(VariableInfo.SECONDS_OF_DAY.getByteOffsetInRecord());
       }
       data = this.cachedSecondsOfDay;
-      dataArray = Array.factory(double.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.DOUBLE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     } else if (v2.getShortName().equals(VariableInfo.TIME.getName())) {
       if (this.calculatedTime == null) {
@@ -242,7 +242,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
           this.calculatedTime[i] = (calendar.getTimeInMillis() - this.startDate.getTime()) / 1000.0F;
         }
 
-        dataArray = Array.factory(float.class, v2.getShape(), this.calculatedTime);
+        dataArray = Array.factory(DataType.FLOAT, v2.getShape(), this.calculatedTime);
         return (dataArray.sectionNoReduce(ranges).copy());
       }
     }
@@ -254,28 +254,28 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         this.cachedSatEphemLatitude = (float[]) this.readFloatArray1D(VariableInfo.SAT_EPHEM_LATITUDE.getByteOffsetInRecord());
       }
       data = this.cachedSatEphemLatitude;
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     } else if (v2.getShortName().equals(VariableInfo.SAT_EPHEM_LONGITUDE.getName())) {
       if (this.cachedSatEphemLongitude == null) {
         this.cachedSatEphemLongitude = (float[]) this.readFloatArray1D(VariableInfo.SAT_EPHEM_LONGITUDE.getByteOffsetInRecord());
       }
       data = this.cachedSatEphemLongitude;
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     } else if (v2.getShortName().equals(VariableInfo.SAT_EPHEM_ALTITUDE.getName())) {
       if (this.cachedSatEphemAltitude == null) {
         this.cachedSatEphemAltitude = (float[]) this.readFloatArray1D(VariableInfo.SAT_EPHEM_ALTITUDE.getByteOffsetInRecord());
       }
       data = this.cachedSatEphemAltitude;
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     } else if (v2.getShortName().equals(VariableInfo.SAT_EPHEM_HEADING.getName())) {
       if (this.cachedSatEphemHeading == null) {
         this.cachedSatEphemHeading = (float[]) this.readFloatArray1D(VariableInfo.SAT_EPHEM_HEADING.getByteOffsetInRecord());
       }
       data = this.cachedSatEphemHeading;
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     }
 
@@ -285,14 +285,14 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         this.cachedScannerOffset = (float[]) this.readFloatArray1D(VariableInfo.SCANNER_OFFSET.getByteOffsetInRecord());
       }
       data = this.cachedScannerOffset;
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     } else if (v2.getShortName().equals(VariableInfo.SCAN_DIRECTION.getName())) {
       if (this.cachedScanDirection == null) {
         this.cachedScanDirection = (byte[]) this.readUCharArray1D(VariableInfo.SCAN_DIRECTION.getByteOffsetInRecord());
       }
       data = this.cachedScanDirection;
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     }
 
@@ -300,23 +300,23 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     // solarAzimuth, lunarElevation, lunarAzimuth, and lunarPhase).
     else if (v2.getShortName().equals(VariableInfo.SOLAR_ELEVATION.getName())) {
       data = this.readFloatArray1D(VariableInfo.SOLAR_ELEVATION.getByteOffsetInRecord());
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.SOLAR_AZIMUTH.getName())) {
       data = this.readFloatArray1D(VariableInfo.SOLAR_AZIMUTH.getByteOffsetInRecord());
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.LUNAR_ELEVATION.getName())) {
       data = this.readFloatArray1D(VariableInfo.LUNAR_ELEVATION.getByteOffsetInRecord());
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.LUNAR_AZIMUTH.getName())) {
       data = this.readFloatArray1D(VariableInfo.LUNAR_AZIMUTH.getByteOffsetInRecord());
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.LUNAR_PHASE.getName())) {
       data = this.readFloatArray1D(VariableInfo.LUNAR_PHASE.getByteOffsetInRecord());
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     }
 
@@ -324,19 +324,19 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     // gainSubMode, and tChannelGain).
     else if (v2.getShortName().equals(VariableInfo.GAIN_CODE.getName())) {
       data = this.readFloatArray1D(VariableInfo.GAIN_CODE.getByteOffsetInRecord());
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.GAIN_MODE.getName())) {
       data = this.readUCharArray1D(VariableInfo.GAIN_MODE.getByteOffsetInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.GAIN_SUB_MODE.getName())) {
       data = this.readUCharArray1D(VariableInfo.GAIN_SUB_MODE.getByteOffsetInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.T_CHANNEL_GAIN.getName())) {
       data = this.readFloatArray1D(VariableInfo.T_CHANNEL_GAIN.getByteOffsetInRecord());
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     }
 
@@ -344,34 +344,34 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     // coldTCalSegmentID, hotTCal, coldTCal, PMTCal).
     else if (v2.getShortName().equals(VariableInfo.HOT_T_CAL_SEGMENT_ID.getName())) {
       data = this.readUCharArray1D(VariableInfo.HOT_T_CAL_SEGMENT_ID.getByteOffsetInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.COLD_T_CAL_SEGMENT_ID.getName())) {
       data = this.readUCharArray1D(VariableInfo.COLD_T_CAL_SEGMENT_ID.getByteOffsetInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.HOT_T_CAL.getName())) {
       data = this.readUCharArray1D(VariableInfo.HOT_T_CAL.getByteOffsetInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.COLD_T_CAL.getName())) {
       data = this.readUCharArray1D(VariableInfo.COLD_T_CAL.getByteOffsetInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.PMT_CAL.getName())) {
       data = this.readUCharArray1D(VariableInfo.PMT_CAL.getByteOffsetInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     }
 
     // Read in scan quality flag variables (visibleScanQualityFlag and thermalScanQualityFlag).
     else if (v2.getShortName().equals(VariableInfo.VISIBLE_SCAN_QUALITY_FLAG.getName())) {
       data = this.readIntArray1D(VariableInfo.VISIBLE_SCAN_QUALITY_FLAG.getByteOffsetInRecord());
-      dataArray = Array.factory(int.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.INT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.THERMAL_SCAN_QUALITY_FLAG.getName())) {
       data = this.readIntArray1D(VariableInfo.THERMAL_SCAN_QUALITY_FLAG.getByteOffsetInRecord());
-      dataArray = Array.factory(int.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.INT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     }
 
@@ -380,13 +380,13 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       // @todo Scan alternates direction, flip every other array (see ScanDirection variable) [Not with OIS data]
       data = this.readByteArray2D(VariableInfo.VISIBLE_SCAN.getByteOffsetInRecord(),
               VariableInfo.VISIBLE_SCAN.getNumElementsInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.THERMAL_SCAN.getName())) {
       // @todo Scan alternates direction, flip every other array (see ScanDirection variable) [Not with OIS data]
       data = this.readByteArray2D(VariableInfo.THERMAL_SCAN.getByteOffsetInRecord(),
               VariableInfo.THERMAL_SCAN.getNumElementsInRecord());
-      dataArray = Array.factory(byte.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.BYTE, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges));
     } else if (v2.getShortName().equals(VariableInfo.LATITUDE.getName()) ||
             v2.getShortName().equals(VariableInfo.LONGITUDE.getName())) {
@@ -426,7 +426,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         data = this.calculatedLongitude;
       }
 
-      dataArray = Array.factory(float.class, v2.getShape(), data);
+      dataArray = Array.factory(DataType.FLOAT, v2.getShape(), data);
       return (dataArray.sectionNoReduce(ranges).copy());
     } else {
       // This shouldn't happen.
@@ -521,8 +521,8 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     // @todo Each of these items should BE a ucar.nc2.Variable with additional info.
     // That way it would be easier to add additional variable attributes to a particular variable.
     // Currently need to change some here and others in open().
-    private static java.util.List<VariableInfo> list = new java.util.ArrayList<VariableInfo>(30);
-    private static java.util.Map<String, VariableInfo> hash = new java.util.HashMap<String, VariableInfo>(30);
+    private static java.util.List<VariableInfo> list = new java.util.ArrayList<>(30);
+    private static java.util.Map<String, VariableInfo> hash = new java.util.HashMap<>(30);
 
     public final static VariableInfo YEAR = new VariableInfo(
             "year", "year at time of scan", "year", DataType.INT, 0, 1);
@@ -1215,16 +1215,14 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         throw new IllegalArgumentException("Argument not a 3-D vector <dim=" + vector.length + ">.");
       double magnitude = vectorMagnitude(vector);
 
-      double[] resultingVector = {vector[0] / magnitude, vector[1] / magnitude, vector[2] / magnitude};
-      return (resultingVector);
+      return (new double[]{vector[0] / magnitude, vector[1] / magnitude, vector[2] / magnitude});
     }
 
     static double[] vectorScalarMultiplication(double[] vector, double scalar) {
       if (vector.length != 3)
         throw new IllegalArgumentException("Argument not a 3-D vector <dim=" + vector.length + ">.");
 
-      double[] resultingVector = {scalar * vector[0], scalar * vector[1], scalar * vector[2]};
-      return (resultingVector);
+      return (new double[]{scalar * vector[0], scalar * vector[1], scalar * vector[2]});
     }
 
     static double vectorDotProduct(double[] vectorA, double[] vectorB) {

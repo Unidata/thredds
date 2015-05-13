@@ -243,10 +243,14 @@ public class NcDDS extends ServerDDS {
     else if (dt == DataType.FLOAT)
       return new NcSDFloat32(v);
     else if (dt == DataType.INT)
-      return v.isUnsigned() ? new NcSDUInt32(v) : new NcSDInt32(v);
+      return new NcSDInt32(v);
+    else if (dt == DataType.UINT)
+      return new NcSDUInt32(v);
     else if (dt == DataType.SHORT)
-      return v.isUnsigned() ? new NcSDUInt16(v) : new NcSDInt16(v);
-    else if (dt == DataType.BYTE)
+      return new NcSDInt16(v);
+    else if (dt == DataType.USHORT)
+      return new NcSDUInt16(v);
+    else if ((dt == DataType.BYTE) || (dt == DataType.UBYTE))
       return new NcSDByte(v);
     else if (dt == DataType.CHAR)
       return new NcSDString(v);

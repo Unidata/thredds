@@ -46,7 +46,7 @@ public class TestImage {
           index.set(y, x);
 
           byte bval = array.getByte(index);
-          double dval = v.isUnsigned() ? (double) DataType.unsignedByteToShort(bval) : (double) bval;
+          double dval = v.getDataType().isUnsigned() ? (double) DataType.unsignedByteToShort(bval) : (double) bval;
 
           //double dval = array.getDouble(index);
           // Fix for NetCDF returning all values larger than 127 as (value - 256):

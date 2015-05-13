@@ -943,13 +943,12 @@ public class H5header {
       if (dtype == DataType.CHAR)
         return new Attribute(matt.name, ""); // empty char considered to be a 0 length string
       else
-        return new Attribute(matt.name, dtype, vinfo.typeInfo.unsigned);
+        return new Attribute(matt.name, dtype);
     }
 
     Array attData;
     try {
       attData = readAttributeData(matt, vinfo, dtype);
-      attData.setUnsigned(matt.mdt.unsigned);
 
     } catch (InvalidRangeException e) {
       log.warn("failed to read Attribute " + matt.name + " HDF5 file=" + raf.getLocation());
@@ -997,11 +996,11 @@ public class H5header {
             dim = new int[]{1};
             break;
           case 10: // ARRAY
-            dt = getNCtype(h5sm.mdt.base.type, h5sm.mdt.base.byteSize);
+            dt = getNCtype(h5sm.mdt.base.type, h5sm.mdt.base.byteSize, h5sm.mdt.unsigned);
             dim = h5sm.mdt.dim;
             break;
           default: // PRIMITIVE
-            dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
+            dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize, h5sm.mdt.unsigned);
             dim = new int[]{1};
             break;
         }
@@ -1087,7 +1086,7 @@ public class H5header {
             data[count++] = vlenArray;
         }
       }
-      return (scalar) ? data[0] : Array.factory(Array.class, shape, data);
+      return (scalar) ? data[0] : Array.factory(Array.class, false, shape, data);
     } // vlen case
 
     // NON-STRUCTURE CASE
@@ -1795,16 +1794,17 @@ public class H5header {
       int hdfType = mdt.type;
       int byteSize = mdt.byteSize;
       byte[] flags = mdt.flags;
+      // boolean unsigned = mdt.unsigned;
 
       TypeInfo tinfo = new TypeInfo(hdfType, byteSize);
 
       if (hdfType == 0) { // int, long, short, byte
-        tinfo.dataType = getNCtype(hdfType, byteSize);
+        tinfo.dataType = getNCtype(hdfType, byteSize, mdt.unsigned);
         tinfo.endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
         tinfo.unsigned = ((flags[0] & 8) == 0);
 
       } else if (hdfType == 1) { // floats, doubles
-        tinfo.dataType = getNCtype(hdfType, byteSize);
+        tinfo.dataType = getNCtype(hdfType, byteSize, mdt.unsigned);
         tinfo.endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       } else if (hdfType == 2) { // time
@@ -1818,7 +1818,7 @@ public class H5header {
         // eg char cr(2); has a storage_size of [1,1].
 
       } else if (hdfType == 4) { // bit field
-        tinfo.dataType = getNCtype(hdfType, byteSize);
+        tinfo.dataType = getNCtype(hdfType, byteSize, mdt.unsigned);
 
       } else if (hdfType == 5) { // opaque
         tinfo.dataType = DataType.OPAQUE;
@@ -1852,7 +1852,7 @@ public class H5header {
           tinfo.vpad = ((flags[0] >> 4) & 0xf);
           tinfo.dataType = DataType.STRING;
         } else {
-          tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
+          tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize(), mdt.unsigned);
           tinfo.endian = mdt.base.endian;
           tinfo.unsigned = mdt.base.unsigned;
         }
@@ -1862,7 +1862,7 @@ public class H5header {
           tinfo.dataType = DataType.STRING;
         } else {
           int basetype = mdt.getBaseType();
-          tinfo.dataType = getNCtype(basetype, mdt.getBaseSize());
+          tinfo.dataType = getNCtype(basetype, mdt.getBaseSize(), mdt.unsigned);
         }
       } else if (warnings) {
         if (debugOut != null) debugOut.println("WARNING not handling hdf dataType = " + hdfType + " size= " + byteSize);
@@ -2000,16 +2000,16 @@ public class H5header {
 
   }
 
-  private DataType getNCtype(int hdfType, int size) {
+  private DataType getNCtype(int hdfType, int size, boolean unsigned) {
     if ((hdfType == 0) || (hdfType == 4)) { // integer, bit field
       if (size == 1)
-        return DataType.BYTE;
+        return DataType.BYTE.withSign(unsigned);
       else if (size == 2)
-        return DataType.SHORT;
+        return DataType.SHORT.withSign(unsigned);
       else if (size == 4)
-        return DataType.INT;
+        return DataType.INT.withSign(unsigned);
       else if (size == 8)
-        return DataType.LONG;
+        return DataType.LONG.withSign(unsigned);
       else if (warnings) {
         if (debugOut != null) debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
         log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
@@ -2034,7 +2034,7 @@ public class H5header {
       return DataType.STRUCTURE;
 
     } else if (hdfType == 7) { // reference
-      return DataType.LONG;
+      return DataType.ULONG;
 
     } else if (warnings) {
       if (debugOut != null) debugOut.println("WARNING not handling hdf type = " + hdfType + " size= " + size);
@@ -3128,7 +3128,7 @@ public class H5header {
       Formatter f = new Formatter();
       f.format(" datatype= %d", type);
       f.format(" byteSize= %d", byteSize);
-      DataType dtype = getNCtype(type, byteSize);
+      DataType dtype = getNCtype(type, byteSize, unsigned);
       f.format(" NCtype= %s %s", dtype, unsigned ? "(unsigned)" : "");
       f.format(" flags= ");
       for (int i = 0; i < 3; i++) f.format(" %d", flags[i]);
@@ -3152,7 +3152,7 @@ public class H5header {
     }
 
     public String getName() {
-      DataType dtype = getNCtype(type, byteSize);
+      DataType dtype = getNCtype(type, byteSize, unsigned);
       if (dtype != null)
         return dtype.toString() + " size= " + byteSize;
       else
@@ -3160,7 +3160,7 @@ public class H5header {
     }
 
     public String getType() {
-      DataType dtype = getNCtype(type, byteSize);
+      DataType dtype = getNCtype(type, byteSize, unsigned);
       if (dtype != null)
         return dtype.toString();
       else
@@ -4302,37 +4302,37 @@ public class H5header {
       float[] pa = new float[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFloat(pa, 0, pa.length);
-      return Array.factory(dataType.getPrimitiveClassType(), new int[]{pa.length}, pa);
+      return Array.factory(dataType, new int[]{pa.length}, pa);
 
     } else if (DataType.DOUBLE == dataType) {
       double[] pa = new double[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readDouble(pa, 0, pa.length);
-      return Array.factory(dataType.getPrimitiveClassType(), new int[]{pa.length}, pa);
+      return Array.factory(dataType, new int[]{pa.length}, pa);
 
     } else if (DataType.BYTE == dataType) {
       byte[] pa = new byte[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFully(pa, 0, pa.length);
-      return Array.factory(dataType.getPrimitiveClassType(), new int[]{pa.length}, pa);
+      return Array.factory(dataType, new int[]{pa.length}, pa);
 
     } else if (DataType.SHORT == dataType) {
       short[] pa = new short[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readShort(pa, 0, pa.length);
-      return Array.factory(dataType.getPrimitiveClassType(), new int[]{pa.length}, pa);
+      return Array.factory(dataType, new int[]{pa.length}, pa);
 
     } else if (DataType.INT == dataType) {
       int[] pa = new int[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readInt(pa, 0, pa.length);
-      return Array.factory(dataType.getPrimitiveClassType(), new int[]{pa.length}, pa);
+      return Array.factory(dataType, new int[]{pa.length}, pa);
 
     } else if (DataType.LONG == dataType) {
       long[] pa = new long[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readLong(pa, 0, pa.length);
-      return Array.factory(dataType.getPrimitiveClassType(), new int[]{pa.length}, pa);
+      return Array.factory(dataType, new int[]{pa.length}, pa);
     }
 
     throw new UnsupportedOperationException("getHeapDataAsArray dataType=" + dataType);

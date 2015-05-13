@@ -163,7 +163,7 @@ public class NcDAS extends opendap.dap.DAS {
     // always indicate if byte is signed or not ; see JIRA issue TDS-334
     if (isVbyte)
       try {
-        table.appendAttribute(CDM.UNSIGNED, opendap.dap.Attribute.STRING, v.isUnsigned() ? "true" : "false");
+        table.appendAttribute(CDM.UNSIGNED, opendap.dap.Attribute.STRING, v.getDataType().isUnsigned() ? "true" : "false");
       } catch (DASException e) {
         log.error("Error appending unsigned attribute ", e);
       }

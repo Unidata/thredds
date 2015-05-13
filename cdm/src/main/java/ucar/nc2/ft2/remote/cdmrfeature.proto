@@ -5,21 +5,53 @@ option java_outer_classname = "CdmrFeatureProto";
 
 message CoordTransform {
   required bool isHoriz = 1;
-  required string name = 2;          // must be unique in dataset's CoordTransform
+  required string name = 2;          // short name, unique within dataset
   repeated Attribute params = 3;
 }
 
+enum AxisType {
+  RunTime=1;
+  Ensemble=2;
+  Time=3;
+  GeoX=4;
+  GeoY=5;
+  GeoZ=6;
+  Lat=7;
+  Lon=8;
+  Height=9;
+  Pressure=10;
+  RadialAzimuth=11;
+  RadialDistance=12;
+  RadialElevation=13;
+  Spectral=14;
+}
+
+enum AxisSpacing {
+  regular=1;
+  irregularPoint=2;
+  contiguousInterval=3;
+  discontiguousInterval=4;
+}
+
+enum DependenceType {
+  independent=1;     // has its own dimension, is a coordinate variable, eg x(x)
+  dependent=2;       // aux coordinate, reftime(time) or time_bounds(time);
+  twoD=3;            // lat(x,y), time(reftime, time)
+}
+
 message CoordAxis {
-  required string name = 1;          // must be unique in dataset's CoordAxis
+  required string name = 1;          // short name, unique within dataset
   required DataType dataType = 2;
   repeated Attribute atts = 3;
-  required int32 axisType = 4;       // ucar.nc2.constants.AxisType ordinal
+  required AxisType axisType = 4;
   required string units = 5;
   optional string description = 6;
-  required bool isIndependent = 7;   // has its own dimension, is a coordinate variable, eg x(x)
+
+  required DependenceType depend = 7;
+  optional string dependsOn = 8;    // depends on this axis
 
   required int64 nvalues = 10;
-  required int32 spacing = 11;         // GridCoordAxis.Spacing ordinal
+  required AxisSpacing spacing = 11;
   required double startValue = 12;
   required double endValue = 13;
   optional double resolution = 14;     // resolution = (max-min) / (nvalues-1)
@@ -30,23 +62,32 @@ message CoordSys {
   required string name = 1;               // must be unique in dataset's CoordSys
   repeated string axisNames = 2;
   repeated string transformNames = 3;
-  repeated CoordSys components = 4;        // factor out Horiz ??
+  repeated CoordSys components = 4;        // factor out Horiz, Time ??
 }
 
 message GridCoverage {
-  required string name = 1;               // must be unique in dataset's GridCoverage
+  required string name = 1;               // short name, unique within dataset
   required DataType dataType = 2;
-  optional bool unsigned = 3 [default = false];
   repeated Attribute atts = 4;
   required string coordSys = 5;
   optional string units = 6;
   optional string description = 7;
 }
 
+enum Calendar {
+  gregorian=1;
+  proleptic_gregorian=2;
+  noleap=3;
+  all_leap=4;
+  uniform30day=5;
+  julian=6;
+  none=7;
+}
+
 message CalendarDateRange {
   required int64 start = 1;
   required int64 end = 2;
-  required int32 calendar = 3; // ucar.nc2.time.Calendar ordinal
+  required Calendar calendar = 3;
 }
 
 message Rectangle {

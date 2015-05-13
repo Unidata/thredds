@@ -271,7 +271,8 @@ public class ADASConvention extends CoordSysBuilder {
     Variable stagV = ds.findVariable(axisName + "_stag");
     Array data_stag = stagV.read();
     int n = (int) data_stag.getSize() - 1;
-    Array data = Array.factory(data_stag.getElementType(), new int[]{n});
+    DataType dt = DataType.getType(data_stag);
+    Array data = Array.factory(dt, new int[]{n});
     Index stagIndex = data_stag.getIndex();
     Index dataIndex = data.getIndex();
     for (int i = 0; i < n; i++) {
@@ -279,7 +280,7 @@ public class ADASConvention extends CoordSysBuilder {
       data.setDouble(dataIndex.set(i), 0.5 * val);
     }
 
-    DataType dtype = DataType.getType(data.getElementType());
+    DataType dtype = DataType.getType(data);
     String units = ds.findAttValueIgnoreCase(stagV, CDM.UNITS, "m");
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, dtype, axisName, units, "synthesized non-staggered " + axisName + " coordinate");
     v.setCachedData(data, true);
@@ -351,7 +352,7 @@ public class ADASConvention extends CoordSysBuilder {
       return null;
 
     WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
-    return (VerticalCT) builder.makeCoordinateTransform(ds, null);
+    return builder.makeCoordinateTransform(ds, null);
   }
 
 }

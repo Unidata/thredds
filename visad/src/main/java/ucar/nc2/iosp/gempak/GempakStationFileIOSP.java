@@ -433,7 +433,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
     } else if (type.equals(DataType.DOUBLE)) {
       varArray = new ArrayDouble.D1(len);
     } else if (type.equals(DataType.INT)) {
-      varArray = new ArrayInt.D1(len);
+      varArray = new ArrayInt.D1(len, false);
     }
     return varArray;
   }

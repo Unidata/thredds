@@ -50,7 +50,7 @@ public class MAVector {
    * Create an MAVector out of a double array
    */
   public MAVector( double[] values) {
-    this( Array.factory( values));
+    this( Array.makeFromJavaArray(values, false));
   }
 
   /**

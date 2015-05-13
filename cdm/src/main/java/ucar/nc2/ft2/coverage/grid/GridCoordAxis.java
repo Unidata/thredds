@@ -29,6 +29,7 @@ import java.util.List;
  */
 public class GridCoordAxis {
   public enum Spacing {regular, irregularPoint, contiguousInterval, discontiguousInterval} // see Spacing below
+  public enum DependenceType {independent, dependent, twoD}
 
   /*
   message CoordAxis {
@@ -49,8 +50,9 @@ public class GridCoordAxis {
   private DataType dataType;
   private AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
   private String units, description;
-  private boolean independent;
   private AttributeContainer attributes;
+  private DependenceType dependenceType;
+  private String dependsOn;
 
   private long nvalues;
   private Spacing spacing;
@@ -80,7 +82,8 @@ public class GridCoordAxis {
     result.setAttributes(attributes);
     result.setSpacing(spacing);
     result.setResolution(resolution);
-    result.setIndependent(independent);
+    result.setDependenceType(dependenceType);
+    result.setDependsOn(dependsOn);
     return result;
   }
 
@@ -102,10 +105,6 @@ public class GridCoordAxis {
 
   public AxisType getAxisType() {
     return axisType;
-  }
-
-  public void setAxisType(int axisTypeOrdinal) {
-    this.axisType = AxisType.values()[axisTypeOrdinal];
   }
 
   public void setAxisType(AxisType type) {
@@ -134,10 +133,6 @@ public class GridCoordAxis {
 
   public void setSpacing(Spacing spacing) {
     this.spacing = spacing;
-  }
-
-  public void setSpacing(int spacingOrdinal) {
-    this.spacing = Spacing.values()[spacingOrdinal];
   }
 
   public boolean isRegular() {
@@ -186,12 +181,20 @@ public class GridCoordAxis {
     this.description = description;
   }
 
-  public boolean isIndependent() {
-    return independent;
+  public DependenceType getDependenceType() {
+    return dependenceType;
   }
 
-  public void setIndependent(boolean independent) {
-    this.independent = independent;
+  public void setDependenceType(DependenceType dependenceType) {
+    this.dependenceType = dependenceType;
+  }
+
+  public String getDependsOn() {
+    return dependsOn;
+  }
+
+  public void setDependsOn(String dependsOn) {
+    this.dependsOn = dependsOn;
   }
 
   // to override

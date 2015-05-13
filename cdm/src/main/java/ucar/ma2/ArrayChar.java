@@ -91,7 +91,7 @@ public class ArrayChar extends Array {
    * @param dimensions the shape of the Array.
    */
   public ArrayChar(int[] dimensions) {
-    super(dimensions);
+    super(DataType.CHAR, dimensions);
     storage = new char[(int) indexCalc.getSize()];
   }
 
@@ -103,7 +103,7 @@ public class ArrayChar extends Array {
    * @param data use this as the backing store
    */
   ArrayChar(Index ima, char[] data) {
-    super(ima);
+    super(DataType.CHAR, ima);
     /* replace by something better
     if (ima.getSize() != data.length)
       throw new IllegalArgumentException("bad data length"); */
@@ -114,7 +114,7 @@ public class ArrayChar extends Array {
   }
 
   public ArrayChar(String s) {
-    super(new int[] {s.length()});
+    super(DataType.CHAR, new int[] {s.length()});
     storage = new char[s.length()];
     for (int i=0; i<s.length(); i++)
       storage[i] = s.charAt(i);
@@ -843,7 +843,7 @@ public class ArrayChar extends Array {
    */
   public ArrayObject make1DStringArray() {
     int nelems = (getRank() == 0) ? 1 : (int) getSize() / indexCalc.getShape(getRank()-1);
-    Array sarr = Array.factory(String.class, new int[]{nelems});
+    Array sarr = Array.factory(DataType.STRING, new int[]{nelems});
     IndexIterator newsiter = sarr.getIndexIterator();
 
     ArrayChar.StringIterator siter = getStringIterator();
@@ -916,7 +916,7 @@ public class ArrayChar extends Array {
       }
 
       // ready to create the char Array
-      Array carr = Array.factory(char.class, shape, cdata);
+      Array carr = Array.factory(DataType.CHAR, shape, cdata);
       return (ArrayChar) carr;
     } catch (InvalidRangeException e) {
       e.printStackTrace();  // cant happen.

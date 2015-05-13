@@ -124,8 +124,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
     // the other possibility is that you want to apply scale and offset to a signed value, then declare the result unsigned
     // this.isUnsigned = (orgVar != null) ? orgVar.isUnsigned() : forVar.isUnsigned();
-    this.isUnsigned = forVar.isUnsigned();
-    this.convertedDataType = forVar.getDataType();
+    this.isUnsigned = isUnsigned(forVar);  // LOOK switch to unsigned var
+    this.convertedDataType = forVar.getDataType().withSign(this.isUnsigned);  // only for netcDF !!??
 
     DataType scaleType = null, missType = null, validType = null, fillType = null;
     if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getFullName());
@@ -300,6 +300,11 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (hasMissing && ((convertedDataType == DataType.DOUBLE) || (convertedDataType == DataType.FLOAT)))
       this.useNaNs = useNaNs;
     if (debug) System.out.println("this.useNaNs = " + this.useNaNs);
+  }
+
+  public boolean isUnsigned(Variable var) {
+    Attribute att = var.findAttributeIgnoreCase(CDM.UNSIGNED);
+    return (att != null) && att.getStringValue().equalsIgnoreCase("true");
   }
 
   private double[] getValueAsDouble(Attribute att) {
@@ -631,7 +636,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (!hasScaleOffset) return in;
     if (debugRead) System.out.println("convertScaleOffset ");
 
-    Array out = Array.factory(convertedDataType.getPrimitiveClassType(), in.getShape());
+    Array out = Array.factory(convertedDataType, in.getShape());
     IndexIterator iterIn = in.getIndexIterator();
     IndexIterator iterOut = out.getIndexIterator();
 

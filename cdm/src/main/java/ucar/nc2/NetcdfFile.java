@@ -1993,7 +1993,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
       throw new IOException("spi is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
     }
     Array result = spi.readData(v, ranges);
-    result.setUnsigned(v.isUnsigned());
 
     if (showRequest) {
       long took = System.currentTimeMillis() - start;
@@ -2019,9 +2018,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, AutoClosea
 
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     if (cer.child == null) {
-      Array result = cer.v.read(cer.section);
-      result.setUnsigned(cer.v.isUnsigned());
-      return result;
+      return cer.v.read(cer.section);
     }
 
     if (spi == null)

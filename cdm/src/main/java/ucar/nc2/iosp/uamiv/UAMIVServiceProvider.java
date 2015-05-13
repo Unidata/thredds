@@ -343,7 +343,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     }
     int[] size = new int[1];
     size[0] = nz + 1;
-    Array sigma_arr = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), size, sigma);
+    Array sigma_arr = Array.factory(DataType.DOUBLE, size, sigma);
 
     /*
     * Add meta-data according to the IOAPI conventions
@@ -628,7 +628,7 @@ public class UAMIVServiceProvider extends AbstractIOServiceProvider {
     }
 
     // Convert java float[] to ma2.Array
-    Array data = Array.factory(DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), arr);
+    Array data = Array.factory(DataType.FLOAT, v2.getShape(), arr);
 
     // Subset the data based on the wantSection and return a 4D variable
     return data.sectionNoReduce(wantSection.getRanges());

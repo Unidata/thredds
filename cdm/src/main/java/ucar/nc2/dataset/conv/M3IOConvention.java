@@ -246,7 +246,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
     Dimension dimt = ds.findDimension(timeName);
     int nt = dimt.getLength();
-    ArrayInt.D1 data = new ArrayInt.D1(nt);
+    ArrayInt.D1 data = new ArrayInt.D1(nt, false);
     for (int i = 0; i < nt; i++) {
       data.set(i, i * time_step);
     }

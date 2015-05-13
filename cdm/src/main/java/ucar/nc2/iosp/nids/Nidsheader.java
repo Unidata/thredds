@@ -1396,7 +1396,7 @@ class Nidsheader{
             double[] data1 = new double[numX];
             for (int i = 0; i < numX; i++)
               data1[i] = numX0 + i*ddx;
-            Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numX}, data1);
+            Array dataA = Array.factory(DataType.DOUBLE, new int[] {numX}, data1);
             xaxis.setCachedData( dataA, false);
             ncfile.addVariable(null, xaxis);
 
@@ -1409,7 +1409,7 @@ class Nidsheader{
             data1 = new double[numY];
             for (int i = 0; i < numY; i++)
               data1[i] = numY0 + i*ddx;
-            dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numY}, data1);
+            dataA = Array.factory(DataType.DOUBLE, new int[] {numY}, data1);
             yaxis.setCachedData( dataA, false);
             ncfile.addVariable(null, yaxis);
 
@@ -1427,7 +1427,7 @@ class Nidsheader{
             ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
             ct.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
             // fake data
-            dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
+            dataA = Array.factory(DataType.CHAR, new int[] {});
             dataA.setChar(dataA.getIndex(), ' ');
             ct.setCachedData(dataA, false);
 
@@ -1549,7 +1549,7 @@ class Nidsheader{
         double[] data1 = new double[numX];
         for (int i = 0; i < numX; i++)
           data1[i] = numX0 + i*ddx;
-        Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numX}, data1);
+        Array dataA = Array.factory(DataType.DOUBLE, new int[] {numX}, data1);
         xaxis.setCachedData( dataA, false);
         ncfile.addVariable(null, xaxis);
 
@@ -1562,7 +1562,7 @@ class Nidsheader{
         data1 = new double[numY];
         for (int i = 0; i < numY; i++)
           data1[i] = numY0 + i*ddx;
-        dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {numY}, data1);
+        dataA = Array.factory(DataType.DOUBLE, new int[] {numY}, data1);
         yaxis.setCachedData( dataA, false);
         ncfile.addVariable(null, yaxis);
 
@@ -1580,7 +1580,7 @@ class Nidsheader{
         ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
         ct.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
         // fake data
-        dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
+        dataA = Array.factory(DataType.CHAR, new int[] {});
         dataA.setChar(dataA.getIndex(), ' ');
         ct.setCachedData(dataA, false);
 

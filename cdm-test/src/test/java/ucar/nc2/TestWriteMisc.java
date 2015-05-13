@@ -155,7 +155,7 @@ public class TestWriteMisc {
 
     int[] shape = new int[]{1, 1, lonSize};
     float[] floatStorage = new float[lonSize];
-    Array floatArray = Array.factory(float.class, shape, floatStorage);
+    Array floatArray = Array.factory(DataType.FLOAT, shape, floatStorage);
     for (int t = 0; t < timeSize; t++) {
       for (int i = 0; i < latSize; i++) {
         int[] origin = new int[]{t, i, 0};
@@ -246,7 +246,7 @@ public class TestWriteMisc {
     writer.addVariableAttribute(time, new Attribute(CDM.VALID_RANGE, a));
     writer.create();
 
-    Array data = Array.factory(new double[]{0, 1, 2, 3});
+    Array data = Array.makeFromJavaArray(new double[]{0, 1, 2, 3});
     writer.write(time, data);
 
     writer.close();
@@ -262,7 +262,7 @@ public class TestWriteMisc {
     Variable time2 = writer2.findVariable("time");
     assert time2 != null;
 
-    data = Array.factory(new double[]{4, 5, 6});
+    data = Array.makeFromJavaArray(new double[]{4, 5, 6});
     int[] origin = new int[1];
     origin[0] = (int) time2.getSize();
     writer2.write(time2, origin, data);
@@ -270,7 +270,7 @@ public class TestWriteMisc {
 
     NetcdfFileWriter writer3 = NetcdfFileWriter.openExisting(filename);
     Variable time3 = writer3.findVariable("time");
-    data = Array.factory(new double[]{8, 9});
+    data = Array.makeFromJavaArray(new double[]{8, 9});
     origin[0] = (int) time3.getSize();
     writer3.write(time3, origin, data);
     writer3.close();

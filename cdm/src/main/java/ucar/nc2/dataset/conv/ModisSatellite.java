@@ -99,7 +99,7 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
       // LOOK : cant handle scalar coordinates yet
       // var.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
       ds.addVariable(null, var);
-      ArrayLong.D0 data = new ArrayLong.D0();
+      ArrayLong.D0 data = new ArrayLong.D0(false);
       data.set(cal.getTime().getTime()/1000);
       var.setCachedData(data, true);
     }

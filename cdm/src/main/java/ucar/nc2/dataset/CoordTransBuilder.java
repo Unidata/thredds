@@ -34,7 +34,6 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -217,7 +216,7 @@ public class CoordTransBuilder {
       return null;
     }
 
-    CoordinateTransform ct = null;
+    CoordinateTransform ct;
     if (builderObject instanceof VertTransformBuilderIF){
       VertTransformBuilderIF vertBuilder = (VertTransformBuilderIF) builderObject;
       vertBuilder.setErrorBuffer(errInfo);
@@ -258,14 +257,14 @@ public class CoordTransBuilder {
         v.addAttribute(new Attribute(p.getName(), p.getStringValue()));
       else {
         double[] data = p.getNumericValues();
-        Array dataA = Array.factory(double.class, new int[]{data.length}, data);
+        Array dataA = Array.factory(DataType.DOUBLE, new int[]{data.length}, data);
         v.addAttribute(new Attribute(p.getName(), dataA));
       }
     }
     v.addAttribute( new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 
     // fake data
-    Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {}, new char[] {' '});
+    Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] {' '});
     v.setCachedData(data, true);
 
     return v;
@@ -302,7 +301,7 @@ public class CoordTransBuilder {
     }
 
       // get an instance of that class
-    HorizTransformBuilderIF builder = null;
+    HorizTransformBuilderIF builder;
     try {
       builder = (HorizTransformBuilderIF) builderClass.newInstance();
     } catch (InstantiationException | IllegalAccessException e) {

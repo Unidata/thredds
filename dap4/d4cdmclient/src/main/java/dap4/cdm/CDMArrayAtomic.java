@@ -63,7 +63,8 @@ public class CDMArrayAtomic extends Array implements CDMArray
      */
     CDMArrayAtomic(D4DSP dsp, CDMDataset root, D4DataAtomic d4data)
     {
-        super(CDMUtil.computeEffectiveShape(((DapVariable) d4data.getTemplate()).getDimensions()));
+        super( CDMUtil.daptype2cdmtype(((DapVariable) d4data.getTemplate()).getBaseType()),
+                CDMUtil.computeEffectiveShape(((DapVariable) d4data.getTemplate()).getDimensions()));
         this.dsp = dsp;
         this.root = root;
         this.d4data = d4data;
@@ -72,7 +73,6 @@ public class CDMArrayAtomic extends Array implements CDMArray
         this.primitivetype = this.basetype.getPrimitiveType();
 
         this.isbytestring = (primitivetype.isStringType() || primitivetype.isOpaqueType());
-        super.setUnsigned(basetype.isUnsigned());
         this.dimsize = DapUtil.dimProduct(this.template.getDimensions());
         this.elementsize = Dap4Util.daptypeSize(this.primitivetype);
 

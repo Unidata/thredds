@@ -250,7 +250,7 @@ public class CF1Convention extends CSMConvention {
     try { // p(k) = p0 * exp(-lev(k))
       double p0 = p0Var.readScalarDouble();
       Array levelData = levelVar.read();
-      Array pressureData = Array.factory(double.class, levelData.getShape());
+      Array pressureData = Array.factory(DataType.DOUBLE, levelData.getShape());
       IndexIterator ii = levelData.getIndexIterator();
       IndexIterator iip = pressureData.getIndexIterator();
       while (ii.hasNext()) {

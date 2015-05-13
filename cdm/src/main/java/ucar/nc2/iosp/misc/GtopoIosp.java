@@ -151,7 +151,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
       raf.readShort(arr, (int) chunk.getDestElem(), chunk.getNelems()); // copy into primitive array
     }
 
-    return Array.factory(v2.getDataType().getPrimitiveClassType(), wantSection.getShape(), arr);
+    return Array.factory(v2.getDataType(), wantSection.getShape(), arr);
   }
 
 }

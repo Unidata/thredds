@@ -213,8 +213,8 @@ public class WriterCFStationObsDataset {
 
   }
 
-  private ArrayInt.D1 timeArray = new ArrayInt.D1(1);
-  private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
+  private ArrayInt.D1 timeArray = new ArrayInt.D1(1, false);
+  private ArrayInt.D1 parentArray = new ArrayInt.D1(1, false);
 
 
   private void createRecordVariables(List<VariableSimpleIF> dataVars) {

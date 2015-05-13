@@ -172,12 +172,12 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       }
       float[] dd = new float[1];
       dd[0] = d;
-      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), dd);
+      outputData = Array.factory(v2.getDataType(), v2.getShape(), dd);
     } else {
       Range radialRange = section.getRange(0);
       Range gateRange = section.getRange(1);
 
-      Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
+      Array data = Array.factory(v2.getDataType(), section.getShape());
       IndexIterator ii = data.getIndexIterator();
 
       DoradePARM dp = mySweep.lookupParamIgnoreCase(v2.getShortName());
@@ -207,7 +207,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
 
       }
       return data;
-      //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), allValues);
+      //outputData = Array.factory( v2.getDataType(), v2.getShape(), allValues);
     }
 
     return outputData;
@@ -216,7 +216,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   }
 
   public Array readData1(Variable v2, Section section, float[] values) {
-    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
+    Array data = Array.factory(v2.getDataType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
     Range radialRange = section.getRange(0);     // radial range can also be gate range
 
@@ -228,7 +228,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   }
 
   public Array readData2(Variable v2, Section section, double[] values) {
-    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
+    Array data = Array.factory(v2.getDataType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
     Range radialRange = section.getRange(0);
 

@@ -130,7 +130,7 @@ public class IFPSConvention extends CoordSysBuilder {
     }
 
     // make sure it matches the dimension
-    DataType dtype = DataType.getType( timesArray.getElementType());
+    DataType dtype = DataType.getType( timesArray);
     int nTimesAtt = (int) timesArray.getSize();
 
     // create a special dimension and coordinate variable
@@ -207,8 +207,8 @@ public class IFPSConvention extends CoordSysBuilder {
     Dimension y_dim = latVar.getDimension(0);
     Dimension x_dim = latVar.getDimension(1);
 
-    Array xData = Array.factory( float.class, new int[] {x_dim.getLength()});
-    Array yData = Array.factory( float.class, new int[] {y_dim.getLength()});
+    Array xData = Array.factory( DataType.FLOAT, new int[] {x_dim.getLength()});
+    Array yData = Array.factory( DataType.FLOAT, new int[] {y_dim.getLength()});
 
     LatLonPointImpl latlon = new LatLonPointImpl();
     ProjectionPointImpl pp = new ProjectionPointImpl();

@@ -289,7 +289,7 @@ class Giniheader {
     taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     double[] tdata = new double[1];
     tdata[0] = cal.getTimeInMillis();
-    Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{1}, tdata);
+    Array dataA = Array.factory(DataType.DOUBLE, new int[]{1}, tdata);
     taxis.setCachedData(dataA, false);
     DateFormatter formatter = new DateFormatter();
     taxis.addAttribute(new Attribute(CDM.UNITS, "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
@@ -667,7 +667,7 @@ class Giniheader {
         data[i] = startx + i * dxKm;
     }
 
-    dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{nx}, data);
+    dataA = Array.factory(DataType.DOUBLE, new int[]{nx}, data);
     xaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, xaxis);
 
@@ -690,7 +690,7 @@ class Giniheader {
       for (int i = 0; i < data.length; i++)
         data[i] = endy - i * dyKm;
     }
-    dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{ny}, data);
+    dataA = Array.factory(DataType.DOUBLE, new int[]{ny}, data);
     yaxis.setCachedData(dataA, false);
     ncfile.addVariable(null, yaxis);
 
@@ -704,7 +704,7 @@ class Giniheader {
     ct.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
     ct.addAttribute(new Attribute(_Coordinate.Axes, "x y "));
     // fake data
-    dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[]{});
+    dataA = Array.factory(DataType.CHAR, new int[]{});
     dataA.setChar(dataA.getIndex(), ' ');
     ct.setCachedData(dataA, false);
 

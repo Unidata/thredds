@@ -45,36 +45,43 @@ import java.nio.ByteBuffer;
 
 public enum DataType {
 
-  BOOLEAN("boolean", 1, boolean.class),
-  BYTE("byte", 1, byte.class),
-  CHAR("char", 1, char.class),
-  SHORT("short", 2, short.class),
-  INT("int", 4, int.class),
-  LONG("long", 8, long.class),
-  FLOAT("float", 4, float.class),
-  DOUBLE("double", 8, double.class),
+  BOOLEAN("boolean", 1, boolean.class, false),
+  BYTE("byte", 1, byte.class, false),
+  CHAR("char", 1, char.class, false),
+  SHORT("short", 2, short.class, false),
+  INT("int", 4, int.class, false),
+  LONG("long", 8, long.class, false),
+  FLOAT("float", 4, float.class, false),
+  DOUBLE("double", 8, double.class, false),
 
   // object types
-  SEQUENCE("Sequence", 4, StructureDataIterator.class), // 32-bit index
-  STRING("String", 4, String.class),     // 32-bit index
-  STRUCTURE("Structure", 1, StructureData.class), // size meaningless
+  SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
+  STRING("String", 4, String.class, false),     // 32-bit index
+  STRUCTURE("Structure", 1, StructureData.class, false), // size meaningless
 
-  ENUM1("enum1", 1, byte.class), // byte
-  ENUM2("enum2", 2, short.class), // short
-  ENUM4("enum4", 4, int.class), // int
+  ENUM1("enum1", 1, byte.class, false), // byte
+  ENUM2("enum2", 2, short.class, false), // short
+  ENUM4("enum4", 4, int.class, false), // int
 
-  OPAQUE("opaque", 1, ByteBuffer.class), // byte blobs
+  OPAQUE("opaque", 1, ByteBuffer.class, false), // byte blobs
 
-  OBJECT("object", 1, Object.class); // added for use with Array
+  OBJECT("object", 1, Object.class, false), // added for use with Array
+
+  UBYTE("byte", 1, byte.class, true),
+  USHORT("short", 2, short.class, true),
+  UINT("int", 4, int.class, true),
+  ULONG("long", 8, long.class, true);
 
   private final String niceName;
   private final int size;
   private final Class primitiveClass;
+  private final boolean isUnsigned;
 
-  private DataType(String s, int size, Class primitiveClass) {
+  DataType(String s, int size, Class primitiveClass, boolean isUnsigned) {
     this.niceName = s;
     this.size = size;
     this.primitiveClass = primitiveClass;
+    this.isUnsigned = isUnsigned;
   }
 
   /**
@@ -95,18 +102,9 @@ public enum DataType {
     return size;
   }
 
-  /*
-  * The Object class type: Character, Byte, Float, Double, Short, Integer, Boolean, Long, String, StructureData.
-  * @deprecated use getPrimitiveClassType()
-  * @return the primitive class type
-  */
-  public Class getClassType() {
-    return getPrimitiveClassType();
-  }
-
   /**
    * The primitive class type: char, byte, float, double, short, int, long, boolean, String, StructureData, StructureDataIterator,
-   *   ByteBuffer.
+   * ByteBuffer.
    *
    * @return the primitive class type
    */
@@ -114,6 +112,9 @@ public enum DataType {
     return primitiveClass;
   }
 
+  public boolean isUnsigned() {
+    return isUnsigned;
+  }
 
   /**
    * Is String or Char
@@ -140,7 +141,7 @@ public enum DataType {
    * @return true if integral
    */
   public boolean isIntegral() {
-    return (this == DataType.BYTE) || (this == DataType.INT) ||(this == DataType.SHORT) || (this == DataType.LONG);
+    return (this == DataType.BYTE) || (this == DataType.INT) || (this == DataType.SHORT) || (this == DataType.LONG);
   }
 
   /**
@@ -161,7 +162,27 @@ public enum DataType {
     return (this == DataType.ENUM1) || (this == DataType.ENUM2) || (this == DataType.ENUM4);
   }
 
+  public DataType withSign(boolean isUnsigned) {
+    switch (this) {
+      case BYTE:
+      case UBYTE:
+        return isUnsigned ? UBYTE : BYTE;
+      case SHORT:
+      case USHORT:
+        return isUnsigned ? USHORT : SHORT;
+      case INT:
+      case UINT:
+        return isUnsigned ? UINT : INT;
+      case LONG:
+      case ULONG:
+        return isUnsigned ? ULONG : LONG;
+    }
+    return this;
+  }
+
+
   ///////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Find the DataType that matches this name.
    *
@@ -177,26 +198,30 @@ public enum DataType {
     }
   }
 
+  public static DataType getType(Array arr) {
+    return getType(arr.getElementType(), arr.isUnsigned());
+  }
+
   /**
    * Find the DataType that matches this class.
    *
    * @param c primitive or object class, eg float.class or Float.class
    * @return DataType or null if no match.
    */
-  public static DataType getType(Class c) {
+  public static DataType getType(Class c, boolean isUnsigned) {
     if ((c == float.class) || (c == Float.class)) return DataType.FLOAT;
     if ((c == double.class) || (c == Double.class)) return DataType.DOUBLE;
-    if ((c == short.class) || (c == Short.class)) return DataType.SHORT;
-    if ((c == int.class) || (c == Integer.class)) return DataType.INT;
-    if ((c == byte.class) || (c == Byte.class)) return DataType.BYTE;
+    if ((c == short.class) || (c == Short.class)) return isUnsigned ? DataType.USHORT : DataType.SHORT;
+    if ((c == int.class) || (c == Integer.class)) return isUnsigned ? DataType.UINT : DataType.INT;
+    if ((c == byte.class) || (c == Byte.class)) return isUnsigned ? DataType.UBYTE : DataType.BYTE;
     if ((c == char.class) || (c == Character.class)) return DataType.CHAR;
     if ((c == boolean.class) || (c == Boolean.class)) return DataType.BOOLEAN;
-    if ((c == long.class) || (c == Long.class)) return DataType.LONG;
+    if ((c == long.class) || (c == Long.class)) return isUnsigned ? DataType.ULONG : DataType.LONG;
     if (c == String.class) return DataType.STRING;
     if (c == StructureData.class) return DataType.STRUCTURE;
     if (c == StructureDataIterator.class) return DataType.SEQUENCE;
     if (c == ByteBuffer.class) return DataType.OPAQUE;
-    return null;
+    return DataType.OBJECT;
   }
 
   /**
@@ -210,16 +235,14 @@ public enum DataType {
 
     // else do the hard part - see http://technologicaloddity.com/2010/09/22/biginteger-as-unsigned-long-in-java/
     byte[] val = new byte[8];
-    for (int i=0; i<8; i++) {
-      val[7-i] = (byte) ((li) & 0xFF);
+    for (int i = 0; i < 8; i++) {
+      val[7 - i] = (byte) ((li) & 0xFF);
       li = li >>> 8;
     }
 
     BigInteger biggy = new BigInteger(1, val);
     return biggy.toString();
   }
-
-
 
   /**
    * widen an unsigned int to a long
@@ -254,7 +277,7 @@ public enum DataType {
 
 
   public static void main(String[] args) {
-    for (int i=0; i<260; i++) {
+    for (int i = 0; i < 260; i++) {
       byte b = (byte) i;
       System.out.printf("%4d = %4d%n", b, unsignedByteToShort(b));
     }

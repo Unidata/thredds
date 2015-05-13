@@ -107,8 +107,7 @@ public class TestDODSArrayPrimitiveTypes {
     assert v.getShortName().equals("ui16");
     assert v.getRank() == 1;
     assert v.getSize() == 25;
-    assert v.getDataType() == DataType.SHORT;
-    assert v.isUnsigned();
+    assert v.getDataType() == DataType.USHORT;
 
     a = v.read();
     assert a.getRank() == 1;
@@ -126,8 +125,7 @@ public class TestDODSArrayPrimitiveTypes {
     assert v.getShortName().equals("ui32");
     assert v.getRank() == 1;
     assert v.getSize() == 25;
-    assert v.getDataType() == DataType.INT : v.getDataType();
-    assert v.isUnsigned();
+    assert v.getDataType() == DataType.UINT : v.getDataType();
     a = v.read();
     assert a.getRank() == 1;
     assert a.getSize() == 25;

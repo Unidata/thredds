@@ -87,13 +87,13 @@ public class TestWriteRecordStructure extends TestCase  {
     writeableFile.create();
 
     // write out the non-record variables
-    writeableFile.write("lat", Array.factory(new float[] {41, 40, 39}));
-    writeableFile.write("lon", Array.factory(new float[] {-109, -107, -105, -103}));
+    writeableFile.write("lat", Array.makeFromJavaArray(new float[]{41, 40, 39}, false));
+    writeableFile.write("lon", Array.makeFromJavaArray(new float[]{-109, -107, -105, -103}, false));
 
     //// heres where we write the record variables
 
     // different ways to create the data arrays. Note the outer dimension has shape 1.
-    ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength());
+    ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength(), false);
     ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
     Array timeData = Array.factory( DataType.INT, new int[] {1});
 

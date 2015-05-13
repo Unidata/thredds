@@ -8,8 +8,6 @@ import thredds.client.catalog.Catalog;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.*;
-import ucar.nc2.util.CancelTask;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -219,12 +217,12 @@ public class NcmlConstructor {
       for (int i = 0; i < min; i++) {
         data[i] = values.charAt(i);
       }
-      Array dataArray = Array.factory(DataType.CHAR.getPrimitiveClassType(), v.getShape(), data);
+      Array dataArray = Array.factory(DataType.CHAR, v.getShape(), data);
       v.setCachedData(dataArray, true);
 
     } else {
       // or a list of values
-      List<String> valList = new ArrayList<String>();
+      List<String> valList = new ArrayList<>();
       StringTokenizer tokn = new StringTokenizer(values, sep);
       while (tokn.hasMoreTokens())
         valList.add(tokn.nextToken());

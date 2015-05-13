@@ -109,9 +109,8 @@ public class TestDODSArrayOfStructureNested {
     assert v != null;
     assert v.getRank() == 1;
     assert v.getSize() == 10;
-    assert v.getDataType() == DataType.SHORT : v.getDataType();
-    assert v.isUnsigned();
-    
+    assert v.getDataType() == DataType.USHORT : v.getDataType();
+
     Array a = v.read();
     Index ima = a.getIndex();
     assert a.getRank() == 2;

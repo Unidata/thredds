@@ -99,7 +99,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (debug)
       System.out.printf("Coordinate2D read%n");
 
-    coords = (ArrayDouble.D2) Array.factory(double.class, data.getShape(), data.get1DJavaArray(double.class));
+    coords = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, data.getShape(), data.get1DJavaArray(double.class));
 
     if (this.axisType == AxisType.Lon)
       makeConnectedLon(coords);

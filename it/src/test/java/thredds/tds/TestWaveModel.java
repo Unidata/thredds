@@ -105,14 +105,14 @@ public class TestWaveModel extends TestCase {
     assert time.getSize() == 2;
     double[] want = new double[] {21, 45};
     CompareNetcdf2 cn = new CompareNetcdf2();
-    assert cn.compareData("time", time.read(), Array.factory(want), false);
+    assert cn.compareData("time", time.read(), Array.makeFromJavaArray(want), false);
 
     CoordinateAxis1D runtime = gcs.getRunTimeAxis();
     assert runtime != null;
     assert runtime.getSize() == 2;
     want = new double[] {0, 24};
     cn = new CompareNetcdf2();
-    assert cn.compareData("runtime", runtime.read(), Array.factory(want), false);
+    assert cn.compareData("runtime", runtime.read(), Array.makeFromJavaArray(want), false);
 
     gds.close();
   }

@@ -57,6 +57,7 @@ public class Attribute extends CDMNode {
 
   /**
    * Turn a list into a map
+   *
    * @param atts list of attributes
    * @return map of attributes by name
    */
@@ -104,7 +105,7 @@ public class Attribute extends CDMNode {
    * @return true if the data is unsigned integer type.
    */
   public boolean isUnsigned() {
-    return isUnsigned || (values != null) && values.isUnsigned();
+    return dataType.isUnsigned();
   }
 
   /**
@@ -114,7 +115,7 @@ public class Attribute extends CDMNode {
    */
   public Array getValues() {
     if (values == null && svalue != null) {
-      values = Array.factory(String.class, new int[]{1});
+      values = Array.factory(DataType.STRING, new int[]{1});
       values.setObject(values.getIndex(), svalue);
     }
 
@@ -187,54 +188,57 @@ public class Attribute extends CDMNode {
    *
    * @param index the index into the value array.
    * @return Number <code>value[index]</code>, or null if its a non-parsable String or
-   *         the index is out of range.
+   * the index is out of range.
    */
   public Number getNumericValue(int index) {
     if ((index < 0) || (index >= nelems))
       return null;
 
-    if (dataType == DataType.STRING) {
-      try {
-        return new Double(getStringValue(index));
-      }
-      catch (NumberFormatException e) {
-        return null;
-      }
-    }
-
     // LOOK can attributes be enum valued? for now, no
-    if (dataType == DataType.BYTE)
-      return values.getByte(index);
-    else if (dataType == DataType.SHORT)
-      return values.getShort(index);
-    else if (dataType == DataType.INT)
-      return values.getInt(index);
-    else if (dataType == DataType.FLOAT)
-      return values.getFloat(index);
-    else if (dataType == DataType.DOUBLE)
-      return values.getDouble(index);
-    else if (dataType == DataType.LONG)
-      return values.getLong(index);
-
+    switch (dataType) {
+      case STRING:
+        try {
+          return new Double(getStringValue(index));
+        } catch (NumberFormatException e) {
+          return null;
+        }
+      case BYTE:
+      case UBYTE:
+        return values.getByte(index);
+      case SHORT:
+      case USHORT:
+        return values.getShort(index);
+      case INT:
+      case UINT:
+        return values.getInt(index);
+      case FLOAT:
+        return values.getFloat(index);
+      case DOUBLE:
+        return values.getDouble(index);
+      case LONG:
+      case ULONG:
+        return values.getLong(index);
+    }
     return null;
   }
 
-  /**
-   * CDL representation, not strict
-   *
-   * @return CDL representation
-   */
-  @Override
-  public String toString() {
-    return toString(false);
-  }
+    /**
+     * CDL representation, not strict
+     *
+     * @return CDL representation
+     */
+    @Override
+    public String toString () {
+      return toString(false);
+    }
 
-  /**
-   * CDL representation, may be strict
-   * @param strict if true, create strict CDL, escaping names
-   * @return CDL representation
-   */
-  public String toString( boolean strict) {
+    /**
+     * CDL representation, may be strict
+     * @param strict if true, create strict CDL, escaping names
+     * @return CDL representation
+     */
+
+  public String toString(boolean strict) {
     Formatter f = new Formatter();
     writeCDL(f, strict);
     return f.toString();
@@ -243,7 +247,7 @@ public class Attribute extends CDMNode {
   /**
    * Write CDL representation into f
    *
-   * @param f write into this
+   * @param f      write into this
    * @param strict if true, create strict CDL, escaping names
    */
   protected void writeCDL(Formatter f, boolean strict) {
@@ -286,7 +290,7 @@ public class Attribute extends CDMNode {
   private DataType dataType;
   private int nelems; // can be 0 or greater
   private Array values;
-  private boolean isUnsigned;
+  // private boolean isUnsigned;
 
   /**
    * Copy constructor
@@ -296,12 +300,11 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, Attribute from) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
+    if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
     this.dataType = from.dataType;
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
-    this.isUnsigned = from.isUnsigned;
     setImmutable(true);
   }
 
@@ -313,7 +316,7 @@ public class Attribute extends CDMNode {
    */
   public Attribute(String name, String val) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
+    if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
     setStringValue(val);
     setImmutable(true);
   }
@@ -330,17 +333,15 @@ public class Attribute extends CDMNode {
 
   public Attribute(String name, Number val, boolean isUnsigned) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
+    if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
 
     int[] shape = new int[1];
     shape[0] = 1;
-    DataType dt = DataType.getType(val.getClass());
-    Array vala = Array.factory(dt.getPrimitiveClassType(), shape);
+    DataType dt = DataType.getType(val.getClass(), isUnsigned);
+    Array vala = Array.factory(dt, shape);
     Index ima = vala.getIndex();
     vala.setDouble(ima.set0(0), val.doubleValue());
     setValues(vala);
-    this.isUnsigned = isUnsigned;
-    if (isUnsigned) vala.setUnsigned(true);
     setImmutable(true);
   }
 
@@ -362,11 +363,10 @@ public class Attribute extends CDMNode {
    * @param name     name of attribute
    * @param dataType type of Attribute.
    */
-  public Attribute(String name, DataType dataType, boolean isUnsigned) {
+  public Attribute(String name, DataType dataType) {
     this(name);
     this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
     this.nelems = 0;
-    this.isUnsigned = isUnsigned;
     setImmutable(true);
   }
 
@@ -421,7 +421,7 @@ public class Attribute extends CDMNode {
       throw new IllegalArgumentException("unknown type for Attribute = " + c.getName());
     }
 
-    setValues(Array.factory(c, new int[]{n}, pa));
+    setValues(Array.factory(dataType, new int[]{n}, pa));
     setImmutable(true);
   }
 
@@ -441,7 +441,7 @@ public class Attribute extends CDMNode {
     } else {
       double[] values = param.getNumericValues();
       int n = values.length;
-      Array vala = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{n}, values);
+      Array vala = Array.factory(DataType.DOUBLE, new int[]{n}, values);
       setValues(vala);
     }
     setImmutable(true);
@@ -484,7 +484,7 @@ public class Attribute extends CDMNode {
    */
   protected Attribute(String name) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set name to null on "+this);
+    if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
   }
 
   /**
@@ -499,8 +499,8 @@ public class Attribute extends CDMNode {
       dataType = DataType.STRING;
       return;
     }
-    
-    if (DataType.getType(arr.getElementType()) == null)
+
+    if (DataType.getType(arr) == null)
       throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
 
     if (arr.getElementType() == char.class) { // turn CHAR into STRING
@@ -539,15 +539,15 @@ public class Attribute extends CDMNode {
 
     this.values = arr;
     this.nelems = (int) arr.getSize();
-    this.dataType = DataType.getType(arr.getElementType());
+    this.dataType = DataType.getType(arr);
   }
 
   /**
-    * Set the name of this Attribute.
-    * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
-    *
-    * @param name name of attribute
-    */
+   * Set the name of this Attribute.
+   * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
+   *
+   * @param name name of attribute
+   */
   public synchronized void setName(String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
     setShortName(name);

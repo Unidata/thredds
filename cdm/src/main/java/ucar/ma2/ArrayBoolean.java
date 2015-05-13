@@ -77,7 +77,7 @@ public class ArrayBoolean extends Array {
   * @param dimensions the shape of the Array.
   */
   public ArrayBoolean(int [] dimensions) {
-    super(dimensions);
+    super(DataType.BOOLEAN, dimensions);
     storage = new boolean[(int)indexCalc.getSize()];
   }
 
@@ -88,7 +88,7 @@ public class ArrayBoolean extends Array {
   * @param data use this as the backing store
   */
   ArrayBoolean(Index ima, boolean [] data) {
-    super(ima);
+    super(DataType.BOOLEAN, ima);
     /* replace by something better
     if (ima.getSize() != data.length)
       throw new IllegalArgumentException("bad data length"); */

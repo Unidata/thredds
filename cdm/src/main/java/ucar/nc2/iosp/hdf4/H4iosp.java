@@ -95,25 +95,25 @@ public class H4iosp extends AbstractIOServiceProvider {
         IospHelper.makePrimitiveArray((int) section.computeSize(), dataType, vinfo.fillValue);
       if (dataType == DataType.CHAR)
         arr = IospHelper.convertByteToChar((byte[]) arr);
-      return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), arr);
+      return Array.factory(dataType, section.getShape(), arr);
     }
 
     if (!vinfo.isCompressed) {
       if (!vinfo.isLinked && !vinfo.isChunked) {
         Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
         Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
-        return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
+        return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isLinked) {
         Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
         Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
-        return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
+        return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isChunked) {
         H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
         Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
         Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
-        return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
+        return Array.factory(dataType, section.getShape(), data);
       }
 
     } else {
@@ -123,7 +123,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         InputStream is = getCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
         Object data = IospHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
-        return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
+        return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isLinked) {
         if (showLayoutTypes) System.out.println("***Linked, compressed");
@@ -131,13 +131,13 @@ public class H4iosp extends AbstractIOServiceProvider {
         InputStream is = getLinkedCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
         Object data = IospHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
-        return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
+        return Array.factory(dataType, section.getShape(), data);
 
       } else if (vinfo.isChunked) {
         LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator(vinfo);
         LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
         Object data = IospHelper.readDataFill(layout, dataType, vinfo.fillValue);
-        return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
+        return Array.factory(dataType, section.getShape(), data);
       }
     }
 

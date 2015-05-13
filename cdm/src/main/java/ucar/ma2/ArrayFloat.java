@@ -79,7 +79,7 @@ public class ArrayFloat extends Array {
   * @param dimensions the shape of the Array.
   */
   public ArrayFloat(int [] dimensions) {
-    super(dimensions);
+    super(DataType.FLOAT, dimensions);
     storage = new float[(int) indexCalc.getSize()];
   }
 
@@ -90,7 +90,7 @@ public class ArrayFloat extends Array {
   * @param data use this as the backing store
   */
   ArrayFloat(Index ima, float [] data) {
-    super(ima);
+    super(DataType.FLOAT, ima);
     /* replace by something better
     if (ima.getSize() != data.length)
       throw new IllegalArgumentException("bad data length");  */
@@ -124,7 +124,7 @@ public class ArrayFloat extends Array {
   public ByteBuffer getDataAsByteBuffer() {
     ByteBuffer bb = ByteBuffer.allocate((int)(4*getSize()));
     FloatBuffer ib = bb.asFloatBuffer();
-    ib.put( (float[]) get1DJavaArray(float.class)); // make sure its in canonical order
+    ib.put( (float[]) get1DJavaArray(DataType.FLOAT)); // make sure its in canonical order
     return bb;
   }
 

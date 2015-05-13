@@ -107,7 +107,7 @@ public class CFGridCoverageWriter {
     // dimensions and independent axes
     Map<String, Dimension> dimHash = new HashMap<>();
     for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
-      if (!axis.isIndependent()) continue;
+      if (!(axis.getDependenceType() == GridCoordAxis.DependenceType.independent)) continue;
       Dimension d = writer.addDimension(null, axis.getName(), (int) axis.getNvalues());
       dimHash.put(axis.getName(), d);
 
@@ -162,48 +162,6 @@ public class CFGridCoverageWriter {
     return isLargeFile;
   }
 
-  /* private void makeHorizRange(GridCoordSys gcsOrg, ProjectionRect projRect, int horizStride, List<Range> yxRanges) throws InvalidRangeException, IOException {
-    if (gcsOrg.getXHorizAxis().getRank() > 1 || gcsOrg.getYHorizAxis().getRank() > 1) {
-      throw new IllegalArgumentException("Coordinate systems with 2D horizontal axis are not supported");
-    }
-
-    GridCoordAxis xAxis = gcsOrg.getXHorizAxis();
-    double[] xCoords = xAxis.readValues();
-
-    GridCoordAxis yAxis = gcsOrg.getYHorizAxis();
-    double[] yCoords = yAxis.readValues();
-
-
-    ProjectionRect fullBB = new ProjectionRect(xCoords[0], yCoords[0], xCoords[xCoords.length - 1], yCoords[yCoords.length - 1]);
-
-    if (!projRect.intersects(fullBB)) {
-      throw new InvalidRangeException("BBOX must intersect grid BBOX, minx=" + xCoords[0] + ", miny=" + yCoords[0] + ", maxx=" + xCoords[xCoords.length - 1] + ", maxy=" + yCoords[yCoords.length - 1]);
-    }
-
-    ProjectionRect.intersect(fullBB, projRect, projRect);
-
-    ProjectionPoint lowerLeft = projRect.getLowerLeftPoint();
-    ProjectionPoint upperRigth = projRect.getUpperRightPoint();
-    double minX = lowerLeft.getX();
-    double minY = lowerLeft.getY();
-    double maxX = upperRigth.getX();
-    double maxY = upperRigth.getY();
-
-    int minY_idx = yAxis.findCoordElement(minY);
-    int maxY_idx = yAxis.findCoordElement(maxY);
-
-    // When yAxis is increasing, "minY_idx < maxY_idx == true".
-    // When yAxis is decreasing, "minY_idx > maxY_idx == true".
-    // To handle both cases, we need to use the min() and max() functions.
-    Range yRange = new Range(Math.min(minY_idx, maxY_idx), Math.max(minY_idx, maxY_idx), horizStride);
-
-    int minX_idx = xAxis.findCoordElement(minX);
-    int maxX_idx = xAxis.findCoordElement(maxX);
-    Range xRange = new Range(Math.min(minX_idx, maxX_idx), Math.max(minX_idx, maxX_idx), horizStride);
-
-    yxRanges.add(0, yRange);
-    yxRanges.add(1, xRange);
-  }    */
 
   private void addGlobalAttributes(GridCoverageDataset gds, NetcdfFileWriter writer) {
     // global attributes

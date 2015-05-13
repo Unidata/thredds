@@ -69,7 +69,7 @@ import java.nio.ByteBuffer;
  * <pre>
  * StructureData getScalarStructure(int recnum, Member m)
  * ArrayStructure getArrayStructure(int recnum, Member m) </pre>
- * <p/>
+ *
  * These will return any compatible type as a double or float, but will have extra overhead when the types dont match:
  * <pre>
  * convertScalarXXX(int recnum, Member m)
@@ -101,14 +101,14 @@ public abstract class ArrayStructure extends Array {
    * @param shape   the shape of the Array.
    */
   protected ArrayStructure(StructureMembers members, int[] shape) {
-    super(shape);
+    super(DataType.STRUCTURE, shape);
     this.members = members;
     this.nelems = (int) indexCalc.getSize();
   }
 
   // for subclasses to create views
   protected ArrayStructure(StructureMembers members, Index ima) {
-    super(ima);
+    super(DataType.STRUCTURE, ima);
     this.members = members;
     this.nelems = (int) indexCalc.getSize();
   }
@@ -133,6 +133,7 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Get the StructureMembers object.
+   *
    * @return the StructureMembers object.
    */
   public StructureMembers getStructureMembers() {
@@ -141,6 +142,7 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Get a list of structure members.
+   *
    * @return the structure members.
    */
   public List<StructureMembers.Member> getMembers() {
@@ -149,6 +151,7 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Get a list structure member names.
+   *
    * @return the structure members.
    */
   public List<String> getStructureMemberNames() {
@@ -286,7 +289,7 @@ public abstract class ArrayStructure extends Array {
 
     @Override
     public int getCurrentRecno() {
-      return count-1;
+      return count - 1;
     }
 
     @Override
@@ -294,7 +297,9 @@ public abstract class ArrayStructure extends Array {
     }
 
     // debugging
-    public ArrayStructure getArrayStructure() { return ArrayStructure.this; }
+    public ArrayStructure getArrayStructure() {
+      return ArrayStructure.this;
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -310,50 +315,60 @@ public abstract class ArrayStructure extends Array {
    */
   public Array getArray(int recno, StructureMembers.Member m) {
     DataType dataType = m.getDataType();
+    switch (dataType) {
 
-    if (dataType == DataType.DOUBLE) {
-      double[] pa = getJavaArrayDouble(recno, m);
-      return Array.factory(double.class, m.getShape(), pa);
+      case DOUBLE:
+        double[] da = getJavaArrayDouble(recno, m);
+        return Array.factory(dataType, m.getShape(), da);
 
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa = getJavaArrayFloat(recno, m);
-      return Array.factory(float.class, m.getShape(), pa);
+      case FLOAT:
+        float[] fa = getJavaArrayFloat(recno, m);
+        return Array.factory(dataType, m.getShape(), fa);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
-      byte[] pa = getJavaArrayByte(recno, m);
-      return Array.factory(byte.class, m.getShape(), pa);
+      case BYTE:
+      case UBYTE:
+      case ENUM1:
+        byte[] ba = getJavaArrayByte(recno, m);
+        return Array.factory(dataType, m.getShape(), ba);
 
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
-      short[] pa = getJavaArrayShort(recno, m);
-      return Array.factory(short.class, m.getShape(), pa);
+      case SHORT:
+      case USHORT:
+      case ENUM2:
+        short[] sa = getJavaArrayShort(recno, m);
+        return Array.factory(dataType, m.getShape(), sa);
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
-      int[] pa = getJavaArrayInt(recno, m);
-      return Array.factory(int.class, m.getShape(), pa);
+      case INT:
+      case UINT:
+      case ENUM4:
+        int[] ia = getJavaArrayInt(recno, m);
+        return Array.factory(dataType, m.getShape(), ia);
 
-    } else if (dataType == DataType.LONG) {
-      long[] pa = getJavaArrayLong(recno, m);
-      return Array.factory(long.class, m.getShape(), pa);
+      case ULONG:
+      case LONG:
+        long[] la = getJavaArrayLong(recno, m);
+        return Array.factory(dataType, m.getShape(), la);
 
-    } else if (dataType == DataType.CHAR) {
-      char[] pa = getJavaArrayChar(recno, m);
-      return Array.factory(char.class, m.getShape(), pa);
+      case CHAR:
+        char[] ca = getJavaArrayChar(recno, m);
+        return Array.factory(dataType, m.getShape(), ca);
 
-    } else if (dataType == DataType.STRING) {
-      String[] pa = getJavaArrayString(recno, m);
-      return Array.factory(String.class, m.getShape(), pa);
+      case STRING:
+        String[] str = getJavaArrayString(recno, m);
+        return Array.factory(dataType, m.getShape(), str);
 
-    } else if (dataType == DataType.STRUCTURE) {
-      return getArrayStructure(recno, m);
+      case STRUCTURE:
+        return getArrayStructure(recno, m);
 
-    } else if (dataType == DataType.SEQUENCE) {
-      return getArraySequence(recno, m);
+      case SEQUENCE:
+        return getArraySequence(recno, m);
 
-    } else if (dataType == DataType.OPAQUE) {
-      return getArrayObject(recno, m);
+      case OPAQUE:
+        return getArrayObject(recno, m);
     }
 
     throw new RuntimeException("Dont have implemenation for " + dataType);
+
+
   }
 
   /**
@@ -367,7 +382,7 @@ public abstract class ArrayStructure extends Array {
     m.setDataArray(memberArray);
     if (memberArray instanceof ArrayStructure) {  // LOOK
       ArrayStructure as = (ArrayStructure) memberArray;
-      m.setStructureMembers( as.getStructureMembers());
+      m.setStructureMembers(as.getStructureMembers());
     }
   }
 
@@ -412,10 +427,10 @@ public abstract class ArrayStructure extends Array {
       result = new ArrayStructureW(membersw, rshape);
 
     } else if (dataType == DataType.OPAQUE) {
-        result = new ArrayObject(ByteBuffer.class, rshape);
+      result = new ArrayObject(ByteBuffer.class, rshape);
 
     } else {
-      result = Array.factory(dataType.getPrimitiveClassType(), rshape);
+      result = Array.factory(dataType, rshape);
     }
 
     IndexIterator resultIter = result.getIndexIterator();
@@ -518,13 +533,13 @@ public abstract class ArrayStructure extends Array {
     Array data = getArray(recnum, m);
     IndexIterator dataIter = data.getIndexIterator();
     while (dataIter.hasNext())
-      result.setObjectNext( dataIter.getObjectNext());
+      result.setObjectNext(dataIter.getObjectNext());
   }
 
   protected void copySequences(int recnum, StructureMembers.Member m, IndexIterator result) {
     // there can only be one sequence, not an array; copy to an ArrayObject
     Array data = getArray(recnum, m);
-    result.setObjectNext( data);
+    result.setObjectNext(data);
   }
 
   /**
@@ -546,10 +561,10 @@ public abstract class ArrayStructure extends Array {
     } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
       return getScalarByte(recno, m);
 
-    } else if ((dataType == DataType.SHORT)|| (dataType == DataType.ENUM2)) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       return getScalarShort(recno, m);
 
-    } else if ((dataType == DataType.INT)|| (dataType == DataType.ENUM4)) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       return getScalarInt(recno, m);
 
     } else if (dataType == DataType.LONG) {
@@ -567,7 +582,7 @@ public abstract class ArrayStructure extends Array {
     } else if (dataType == DataType.OPAQUE) {
       ArrayObject data = (ArrayObject) m.getDataArray();
       return data.getObject(recno * m.getSize()); // LOOK ?? 
-     }
+    }
 
     throw new RuntimeException("Dont have implementation for " + dataType);
   }
@@ -912,11 +927,12 @@ public abstract class ArrayStructure extends Array {
   }
 
   /**
-  * Get member data of type Structure.
-  * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-  * @param m get data from this StructureMembers.Member. Must be of type Structure.
-  * @return scalar StructureData
-  */
+   * Get member data of type Structure.
+   *
+   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
+   * @param m      get data from this StructureMembers.Member. Must be of type Structure.
+   * @return scalar StructureData
+   */
   public StructureData getScalarStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.STRUCTURE)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Structure");
@@ -1006,19 +1022,19 @@ public abstract class ArrayStructure extends Array {
 
   @Override
   public Array sectionNoReduce(List<Range> ranges) throws InvalidRangeException {
-      Section viewSection = new Section(ranges);
-      ArrayStructureW result = new ArrayStructureW(this.members, viewSection.getShape());
-      int count = 0;
-      Section.Iterator iter = viewSection.getIterator(getShape());
-      while (iter.hasNext()) {
-          int recno = iter.next(null);
-          StructureData sd = getStructureData(recno);
-          result.setStructureData(sd, count++);
-      }
-      return result;
+    Section viewSection = new Section(ranges);
+    ArrayStructureW result = new ArrayStructureW(this.members, viewSection.getShape());
+    int count = 0;
+    Section.Iterator iter = viewSection.getIterator(getShape());
+    while (iter.hasNext()) {
+      int recno = iter.next(null);
+      StructureData sd = getStructureData(recno);
+      result.setStructureData(sd, count++);
+    }
+    return result;
   }
 
-    /**
+  /**
    * DO NOT USE, throws UnsupportedOperationException
    */
   public Array copy() {

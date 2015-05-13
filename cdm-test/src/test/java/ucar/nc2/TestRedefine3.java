@@ -60,14 +60,14 @@ public class TestRedefine3 extends TestCase {
 
     int[] start = new int[] {0};
     int[] count = new int[] {100};
-    ncFile.write ("jack", start, Array.factory (double.class, count, jackData));
+    ncFile.write ("jack", start, Array.factory (DataType.DOUBLE, count, jackData));
 
     ncFile.setRedefineMode (true);
     ncFile.addVariable ("jill", DataType.DOUBLE, dims);
     ncFile.addVariableAttribute ("jill", "where", "up the hill");
     ncFile.setRedefineMode (false);
 
-    Array jillArray = Array.factory (double.class, count, jillData);
+    Array jillArray = Array.factory (DataType.DOUBLE, count, jillData);
     ncFile.write ("jill", start, jillArray);
 
     ncFile.flush();

@@ -77,7 +77,7 @@ public class ArrayObject extends Array {
   * @param shape the shape of the Array.
   */
   public ArrayObject(Class elementType, int [] shape) {
-    super(shape);
+    super(DataType.OBJECT, shape);
     this.elementType = elementType;
     storage = new Object[(int) indexCalc.getSize()];
   }
@@ -90,7 +90,7 @@ public class ArrayObject extends Array {
   * @param shape the shape of the Array.
   */
   public ArrayObject(Class elementType, int [] shape, Object[] storage) {
-    super(shape);
+    super(DataType.OBJECT, shape);
     this.elementType = elementType;
     this.storage = storage;
   }
@@ -109,7 +109,7 @@ public class ArrayObject extends Array {
   * @param data use this as the backing store. if null, allocate
   */
   ArrayObject(Class elementType, Index ima, Object[] data) {
-    super(ima);
+    super(DataType.OBJECT, ima);
     this.elementType = elementType;
 
     if (data != null) {
@@ -117,6 +117,13 @@ public class ArrayObject extends Array {
     } else {
       storage = new Object[(int) indexCalc.getSize()];
     }
+  }
+
+  @Override
+  public Array copy() {
+    Array newA = factory(getElementType(), false, getShape());
+    MAMath.copy(newA, this);
+    return newA;
   }
 
   /** Get underlying primitive array storage. CAUTION! You may invalidate your warrentee! */

@@ -197,7 +197,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       NcStreamReader.DataResult result = reader.readData(is, this);
 
       assert v.getFullNameEscaped().equals(result.varNameFullEsc);
-      result.data.setUnsigned(v.isUnsigned());
       return result.data;
 
     } finally {

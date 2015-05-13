@@ -45,7 +45,7 @@ public class TestJavaArray extends TestCase {
   public void test1Dim() {
     Array aa;
     try {
-      aa = Array.factory( new double [] {1.0, 2.0, 3.0} );
+      aa = Array.makeFromJavaArray(new double[]{1.0, 2.0, 3.0}, false);
     } catch (Exception e) {
       System.out.println("TestJavaArray 1D: "+e);
       assert(false);
@@ -87,7 +87,7 @@ public class TestJavaArray extends TestCase {
 
     Array aa;
     try {
-      aa = Array.factory( tData);
+      aa = Array.makeFromJavaArray(tData, false);
     } catch (Exception e) {
       System.out.println("TestJavaArray: "+e);
       assert(false);
@@ -134,7 +134,7 @@ public class TestJavaArray extends TestCase {
     System.out.println("typeSpecifics: "+javaArray);
     Array aa;
     try {
-      aa = Array.factory( javaArray);
+      aa = Array.makeFromJavaArray(javaArray, false);
     } catch (Exception e) {
       System.out.println("TestJavaArray: "+e);
       assert(false);

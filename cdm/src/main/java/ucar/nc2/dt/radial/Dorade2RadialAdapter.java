@@ -374,7 +374,7 @@ public class Dorade2RadialAdapter extends AbstractRadialAdapter {
         int[] shapeRadial = new int[1];
         shapeRadial[0] = nrays;
 
-        Array data = Array.factory(Float.class, shapeRadial, elev);
+        Array data = Array.factory(DataType.FLOAT, shapeRadial, elev);
         meanElevation = MAMath.sumDouble(data) / data.getSize();
 
         return (float) meanElevation;

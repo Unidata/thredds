@@ -97,7 +97,7 @@ public class TestNcMLValues {
 
         expectedIntLength = 3;
         expectedIntShape = new int[]{expectedIntLength};
-        expectedIntValues = new ArrayInt(expectedIntShape);
+        expectedIntValues = new ArrayInt(expectedIntShape, false);
         intVarNames = new String[]{"singleWs","multiWs","tabs","mixedTabSpace","mixedTabSpaces",
         "mixedSpace", "customSep"};
         Index idx = expectedIntValues.getIndex();

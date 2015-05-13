@@ -169,7 +169,7 @@ public class TestGridRanks extends TestCase {
     int[] w = getWeights( v);
 
     int[] shape = v.getShape();
-    Array aa = Array.factory(v.getDataType().getPrimitiveClassType(), shape);
+    Array aa = Array.factory(v.getDataType(), shape);
     Index ima = aa.getIndex();
     for (int i=0; i<shape[0]; i++) {
       for (int j=0; j<shape[1]; j++) {
@@ -189,7 +189,7 @@ public class TestGridRanks extends TestCase {
     int[] w = getWeights( v);
 
     int[] shape = v.getShape();
-    Array aa = Array.factory(v.getDataType().getPrimitiveClassType(), shape);
+    Array aa = Array.factory(v.getDataType(), shape);
     Index ima = aa.getIndex();
     for (int i=0; i<shape[0]; i++) {
       for (int j=0; j<shape[1]; j++) {

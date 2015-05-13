@@ -176,7 +176,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       if (data == null)
         throw new IOException("cant read "+typicalDataset);
 
-      pv.dtype = DataType.getType(data.getElementType());
+      pv.dtype = DataType.getType(data);
       VariableDS promotedVar = new VariableDS(ncDataset, null, null, pv.varName, pv.dtype, dimName, null, null);
       /* if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not delat with
         Dimension outer = ncDataset.getRootGroup().findDimension(dimName);
@@ -861,7 +861,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
         // may not know the data type until now
         if (dtype == null)
-          dtype = DataType.getType(varData.getElementType());
+          dtype = DataType.getType(varData);
         if (allData == null) {
           allData = Array.factory(dtype, section.getShape());
           if (debugStride) System.out.printf("total result section = %s (%d)%n", section, Index.computeSize(section.getShape()));
@@ -1041,7 +1041,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
         throw new IllegalArgumentException("Unknown attribute name= " + gattName);
       data = att.getValues();
       if (dtype == null)
-        dtype = DataType.getType(data.getElementType());
+        dtype = DataType.getType(data);
 
       if (dset.ncoord == 1) // LOOK ??
         putData(dset.getId(), data);

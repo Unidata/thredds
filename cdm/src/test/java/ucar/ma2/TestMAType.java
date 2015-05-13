@@ -200,19 +200,19 @@ public class TestMAType extends TestCase {
     convert(A, false);
     //castObject(A);
 
-    A = new ArrayLong(shape);
+    A = new ArrayLong(shape, false);
     convert(A, false);
     //castObject(A);
 
-    A = new ArrayInt(shape);
+    A = new ArrayInt(shape, false);
     convert(A, false);
     //castObject(A);
 
-    A = new ArrayShort(shape);
+    A = new ArrayShort(shape, false);
     convert(A, false);
     //castObject(A);
 
-    A = new ArrayByte(shape);
+    A = new ArrayByte(shape, false);
     convert(A, false);
     //castObject(A);
 

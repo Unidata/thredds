@@ -463,11 +463,11 @@ public String NC_check_name(String name) {
       new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
 
     if (layout.getTotalNelems() == 0) {
-      return Array.factory(dataType.getPrimitiveClassType(), section.getShape());
+      return Array.factory(dataType, section.getShape());
     }
 
     Object data = readData(layout, dataType);
-    return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
+    return Array.factory(dataType, section.getShape(), data);
   }
 
   /**
@@ -593,7 +593,7 @@ public String NC_check_name(String name) {
 
     Layout layout = new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, fullShape, section);
     Object dataObject = readData(layout, dataType);
-    return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
+    return Array.factory(dataType, section.getShape(), dataObject);
   }
 
   @Override
@@ -881,7 +881,7 @@ public String NC_check_name(String name) {
       storage = storageP;
     }
 
-    return Array.factoryConstant(classType, v.getShape(), storage);
+    return Array.factoryConstant(v.getDataType(), v.getShape(), storage);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

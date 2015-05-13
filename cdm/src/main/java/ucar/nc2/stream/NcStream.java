@@ -36,20 +36,14 @@ import ucar.nc2.*;
 import ucar.ma2.*;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.channels.WritableByteChannel;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.iosp.IospHelper;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
@@ -105,7 +99,7 @@ public class NcStream {
   static public NcStreamProto.Attribute.Builder encodeAtt(Attribute att) {
     NcStreamProto.Attribute.Builder attBuilder = NcStreamProto.Attribute.newBuilder();
     attBuilder.setName(att.getShortName());
-    attBuilder.setType(encodeAttributeType(att.getDataType()));
+    attBuilder.setDataType(convertDataType(att.getDataType()));
     attBuilder.setLen(att.getLength());
 
     // values
@@ -155,9 +149,7 @@ public class NcStream {
   static NcStreamProto.Variable.Builder encodeVar(Variable var, int sizeToCache) throws IOException {
     NcStreamProto.Variable.Builder builder = NcStreamProto.Variable.newBuilder();
     builder.setName(var.getShortName());
-    builder.setDataType(encodeDataType(var.getDataType()));
-    if (var.isUnsigned())
-      builder.setUnsigned(true);
+    builder.setDataType(convertDataType(var.getDataType()));
     if (var.getDataType().isEnum()) {
       EnumTypedef enumType = var.getEnumTypedef();
       if (enumType != null)
@@ -187,7 +179,7 @@ public class NcStream {
   static NcStreamProto.Structure.Builder encodeStructure(Structure s) throws IOException {
     NcStreamProto.Structure.Builder builder = NcStreamProto.Structure.newBuilder();
     builder.setName(s.getShortName());
-    builder.setDataType(encodeDataType(s.getDataType()));
+    builder.setDataType(convertDataType(s.getDataType()));
 
     for (Dimension dim : s.getDimensions())
       builder.addShape(encodeDim(dim));
@@ -214,7 +206,7 @@ public class NcStream {
   static NcStreamProto.Data encodeDataProto(Variable var, Section section, boolean deflate, int uncompressedLength) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getFullNameEscaped());
-    builder.setDataType(encodeDataType(var.getDataType()));
+    builder.setDataType(convertDataType(var.getDataType()));
     builder.setSection(encodeSection(section));
     if (deflate) {
       builder.setCompress(NcStreamProto.Compress.DEFLATE);
@@ -228,7 +220,7 @@ public class NcStream {
   static public NcStreamProto.Data encodeDataProto(String varname, DataType datatype, Section section, boolean deflate, int uncompressedLength) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(varname);
-    builder.setDataType(encodeDataType(datatype));
+    builder.setDataType(convertDataType(datatype));
     builder.setSection(encodeSection(section));
     if (deflate) {
       builder.setCompress(NcStreamProto.Compress.DEFLATE);
@@ -256,9 +248,9 @@ public class NcStream {
     long size = 0;
 
     ArrayStructureBB dataBB = StructureDataDeep.copyToArrayBB(as, null); // LOOK what should the bo be ??
-    List<String> ss = new ArrayList<String>();
+    List<String> ss = new ArrayList<>();
     List<Object> heap = dataBB.getHeap();
-    List<Integer> count = new ArrayList<Integer>();
+    List<Integer> count = new ArrayList<>();
     if (heap != null) {
       for (Object ho : heap) {
         if (ho instanceof String) {
@@ -267,8 +259,7 @@ public class NcStream {
         } else if (ho instanceof String[]) {
           String[] hos = (String[]) ho;
           count.add(hos.length);
-          for (String s : hos)
-            ss.add(s);
+          Collections.addAll(ss, hos);
         }
       }
     }
@@ -297,7 +288,6 @@ public class NcStream {
   public static ArrayStructureBB decodeArrayStructure(StructureMembers sm, int shape[], byte[] proto) throws java.io.IOException {
     NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
     builder.mergeFrom(proto);
-    long size = 0;
 
     ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
     ArrayStructureBB dataBB = new ArrayStructureBB(sm, shape, bb, 0);
@@ -323,7 +313,6 @@ public class NcStream {
   public static StructureData decodeStructureData(StructureMembers sm, byte[] proto) throws java.io.IOException {
     NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
     builder.mergeFrom(proto);
-    long size = 0;
 
     ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
     ArrayStructureBB dataBB = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
@@ -550,7 +539,7 @@ public class NcStream {
 
   static EnumTypedef decodeEnumTypedef(NcStreamProto.EnumTypedef enumType) {
     List<NcStreamProto.EnumTypedef.EnumType> list = enumType.getMapList();
-    Map<Integer, String> map = new HashMap<Integer, String>(2 * list.size());
+    Map<Integer, String> map = new HashMap<>(2 * list.size());
     for (NcStreamProto.EnumTypedef.EnumType et : list) {
       map.put(et.getCode(), et.getValue());
     }
@@ -559,10 +548,10 @@ public class NcStream {
 
   static public Attribute decodeAtt(NcStreamProto.Attribute attp) {
     int len = attp.getLen();
-    if (len == 0) // deal with empty attribute
-      return new Attribute(attp.getName(), decodeAttributeType(attp.getType()), false);  // LOOK unsigned
+    DataType dt = convertDataType(attp.getDataType());
 
-    DataType dt = decodeAttributeType(attp.getType());
+    if (len == 0) // deal with empty attribute
+      return new Attribute(attp.getName(), dt);
 
     if (dt == DataType.STRING) {
       int lenp = attp.getSdataCount();
@@ -578,14 +567,14 @@ public class NcStream {
     } else {
       ByteString bs = attp.getData();
       ByteBuffer bb = ByteBuffer.wrap(bs.toByteArray());
-      return new Attribute(attp.getName(), Array.factory(decodeAttributeType(attp.getType()), null, bb));
+      return new Attribute(attp.getName(), Array.factory(dt, null, bb)); // if null, then use int[]{bb.limit()}
     }
   }
 
   static Variable decodeVar(NetcdfFile ncfile, Group g, Structure parent, NcStreamProto.Variable var) {
     Variable ncvar = new Variable(ncfile, g, parent, var.getName());
-    DataType varType = decodeDataType(var.getDataType());
-    ncvar.setDataType(decodeDataType(var.getDataType()));
+    DataType varType = convertDataType(var.getDataType());
+    ncvar.setDataType(convertDataType(var.getDataType()));
 
     if (varType.isEnum()) {
       String enumName = var.getEnumType();
@@ -594,7 +583,7 @@ public class NcStream {
         ncvar.setEnumTypedef(enumType);
     }
 
-    List<Dimension> dims = new ArrayList<Dimension>(6);
+    List<Dimension> dims = new ArrayList<>(6);
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : var.getShapeList()) {
       Dimension ncdim = decodeDim(dim);
       if (!ncdim.isShared())
@@ -611,9 +600,6 @@ public class NcStream {
     for (ucar.nc2.stream.NcStreamProto.Attribute att : var.getAttsList())
       ncvar.addAttribute(decodeAtt(att));
 
-    if (var.getUnsigned())
-      ncvar.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
-
     if (var.hasData()) {
       // LOOK may mess with ability to change var size later.
       ByteBuffer bb = ByteBuffer.wrap(var.getData().toByteArray());
@@ -628,9 +614,9 @@ public class NcStream {
     Structure ncvar = (s.getDataType() == ucar.nc2.stream.NcStreamProto.DataType.SEQUENCE) ?
             new Sequence(ncfile, g, parent, s.getName()) : new Structure(ncfile, g, parent, s.getName());
 
-    ncvar.setDataType(decodeDataType(s.getDataType()));
+    ncvar.setDataType(convertDataType(s.getDataType()));
 
-    List<Dimension> dims = new ArrayList<Dimension>(6);
+    List<Dimension> dims = new ArrayList<>(6);
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : s.getShapeList()) {
       Dimension ncdim = decodeDim(dim);
       if (!ncdim.isShared())
@@ -673,28 +659,7 @@ public class NcStream {
 
   ////////////////////////////////////////////////////////////////
 
-  static ucar.nc2.stream.NcStreamProto.Attribute.Type encodeAttributeType(DataType dtype) {
-    switch (dtype) {
-      case CHAR:
-      case STRING:
-        return ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING;
-      case BYTE:
-        return ucar.nc2.stream.NcStreamProto.Attribute.Type.BYTE;
-      case SHORT:
-        return ucar.nc2.stream.NcStreamProto.Attribute.Type.SHORT;
-      case INT:
-        return ucar.nc2.stream.NcStreamProto.Attribute.Type.INT;
-      case LONG:
-        return ucar.nc2.stream.NcStreamProto.Attribute.Type.LONG;
-      case FLOAT:
-        return ucar.nc2.stream.NcStreamProto.Attribute.Type.FLOAT;
-      case DOUBLE:
-        return ucar.nc2.stream.NcStreamProto.Attribute.Type.DOUBLE;
-    }
-    throw new IllegalStateException("illegal att type " + dtype);
-  }
-
-  static public ucar.nc2.stream.NcStreamProto.DataType encodeDataType(DataType dtype) {
+  static public ucar.nc2.stream.NcStreamProto.DataType convertDataType(DataType dtype) {
     switch (dtype) {
       case CHAR:
         return ucar.nc2.stream.NcStreamProto.DataType.CHAR;
@@ -724,31 +689,19 @@ public class NcStream {
         return ucar.nc2.stream.NcStreamProto.DataType.ENUM4;
       case OPAQUE:
         return ucar.nc2.stream.NcStreamProto.DataType.OPAQUE;
+      case UBYTE:
+        return ucar.nc2.stream.NcStreamProto.DataType.UBYTE;
+      case USHORT:
+        return ucar.nc2.stream.NcStreamProto.DataType.USHORT;
+      case UINT:
+        return ucar.nc2.stream.NcStreamProto.DataType.UINT;
+      case ULONG:
+        return ucar.nc2.stream.NcStreamProto.DataType.ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  static DataType decodeAttributeType(ucar.nc2.stream.NcStreamProto.Attribute.Type dtype) {
-    switch (dtype) {
-      case STRING:
-        return DataType.STRING;
-      case BYTE:
-        return DataType.BYTE;
-      case SHORT:
-        return DataType.SHORT;
-      case INT:
-        return DataType.INT;
-      case LONG:
-        return DataType.LONG;
-      case FLOAT:
-        return DataType.FLOAT;
-      case DOUBLE:
-        return DataType.DOUBLE;
-    }
-    throw new IllegalStateException("illegal att type " + dtype);
-  }
-
-  static public DataType decodeDataType(ucar.nc2.stream.NcStreamProto.DataType dtype) {
+  static public DataType convertDataType(ucar.nc2.stream.NcStreamProto.DataType dtype) {
     switch (dtype) {
       case CHAR:
         return DataType.CHAR;
@@ -778,6 +731,14 @@ public class NcStream {
         return DataType.ENUM4;
       case OPAQUE:
         return DataType.OPAQUE;
+      case UBYTE:
+        return DataType.UBYTE;
+      case USHORT:
+        return DataType.USHORT;
+      case UINT:
+        return DataType.UINT;
+      case ULONG:
+        return DataType.ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }

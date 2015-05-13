@@ -116,18 +116,18 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     Array array;
     if (vi.classType == DataType.BYTE.getPrimitiveClassType()) {
 
-      array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
+      array = Array.factory(DataType.BYTE, v2.getShape(), data);
     } else if (vi.classType == DataType.SHORT.getPrimitiveClassType()) {
       EndianByteBuffer byteBuff = new EndianByteBuffer(data, vi.byteOrder);
       short[] sdata = byteBuff.getShortArray();
       //for(int i=0; i<sdata.length; i++){
       //	System.out.println(sdata[i]);
       //}
-      array = Array.factory(DataType.SHORT.getPrimitiveClassType(), v2.getShape(), sdata);
+      array = Array.factory(DataType.SHORT, v2.getShape(), sdata);
     } else if (vi.classType == DataType.INT.getPrimitiveClassType()) {
       EndianByteBuffer byteBuff = new EndianByteBuffer(data, vi.byteOrder);
       short[] idata = byteBuff.getShortArray();
-      array = Array.factory(DataType.INT.getPrimitiveClassType(), v2.getShape(), idata);
+      array = Array.factory(DataType.INT, v2.getShape(), idata);
 
     } else {
       throw new UnsupportedEncodingException();
@@ -168,7 +168,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     }
 
     int Len = shape[1]; // length of pixels read each line
-    ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]});
+    ArrayByte adata = new ArrayByte(new int[]{shape[0], shape[1]}, false); // LOOK unsigned ??
     Index indx = adata.getIndex();
     long doff = dataPos + start_p;
     // initially no data conversion is needed.
@@ -206,7 +206,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
       DataBufferByte dbb = (DataBufferByte) db;
       byte[] udata = dbb.getData();
 
-      Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), udata);
+      Array array = Array.factory(DataType.BYTE, v2.getShape(), udata);
       v2.setCachedData(array, false);
       return array.sectionNoReduce(origin, shape, stride);
     }
@@ -274,7 +274,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
 
     byte[] inflateData = new byte[nx * ny];
     System.arraycopy(uncomp, 0, inflateData, 0, nx * ny);
-    Array array = Array.factory(DataType.BYTE.getPrimitiveClassType(), v2.getShape(), inflateData);
+    Array array = Array.factory(DataType.BYTE, v2.getShape(), inflateData);
     if (array.getSize() < Variable.defaultSizeToCache)
       v2.setCachedData(array, false);
     return array.sectionNoReduce(origin, shape, stride);

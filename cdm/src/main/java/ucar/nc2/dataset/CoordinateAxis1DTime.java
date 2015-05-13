@@ -319,7 +319,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       setDimension(0, localDim);
 
       // set the shortened values
-      Array shortData = Array.factory(data.getElementType(), new int[]{count});
+      Array shortData = Array.factory(data.getDataType(), new int[]{count});
       Index ima = shortData.getIndex();
       int count2 = 0;
       ii = data.getIndexIterator();

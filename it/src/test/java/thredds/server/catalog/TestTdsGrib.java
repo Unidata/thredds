@@ -9,7 +9,6 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Array;
-import ucar.nc2.Attribute;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
@@ -59,7 +58,7 @@ public class TestTdsGrib {
       assert time.getSize() == 4;
       double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
       CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", time.read(), Array.factory(want), false);
+      assert cn.compareData("time", time.read(), Array.makeFromJavaArray(want), false);
     }
   }
 

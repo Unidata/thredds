@@ -456,7 +456,7 @@ public class H4header {
           String[] vals = new String[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readStringMax(size);
-          att = new Attribute(name, Array.factory(DataType.STRING.getPrimitiveClassType(), new int[]{nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.STRING, new int[]{nelems}, vals));
         }
         break;
       case 5:
@@ -466,7 +466,7 @@ public class H4header {
           float[] vals = new float[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readFloat();
-          att = new Attribute(name, Array.factory(DataType.FLOAT.getPrimitiveClassType(), new int[]{nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.FLOAT, new int[]{nelems}, vals));
         }
         break;
       case 6:
@@ -476,7 +476,7 @@ public class H4header {
           double[] vals = new double[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readDouble();
-          att = new Attribute(name, Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.DOUBLE, new int[]{nelems}, vals));
         }
         break;
       case 20:
@@ -487,7 +487,7 @@ public class H4header {
           byte[] vals = new byte[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readByte();
-          att = new Attribute(name, Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[]{nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.BYTE, new int[]{nelems}, vals));
         }
         break;
       case 22:
@@ -498,7 +498,7 @@ public class H4header {
           short[] vals = new short[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readShort();
-          att = new Attribute(name, Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[]{nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.SHORT, new int[]{nelems}, vals));
         }
         break;
       case 24:
@@ -509,7 +509,7 @@ public class H4header {
           int[] vals = new int[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readInt();
-          att = new Attribute(name, Array.factory(DataType.INT.getPrimitiveClassType(), new int[]{nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.INT, new int[]{nelems}, vals));
         }
         break;
       case 26:
@@ -520,7 +520,7 @@ public class H4header {
           long[] vals = new long[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readLong();
-          att = new Attribute(name, Array.factory(DataType.LONG.getPrimitiveClassType(), new int[]{nelems}, vals));
+          att = new Attribute(name, Array.factory(DataType.LONG, new int[]{nelems}, vals));
         }
         break;
     }
