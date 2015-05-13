@@ -3,6 +3,7 @@ apply from: "$rootDir/gradle/java.gradle"
 
 dependencies {
     compile project(":cdm")
+    compile project(":opendap")
     runtime project(":bufr")
     runtime project(":grib")
     runtime project(":netcdf4")
