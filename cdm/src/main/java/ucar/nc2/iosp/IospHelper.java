@@ -102,7 +102,7 @@ public class IospHelper {
   static public Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, int byteOrder, boolean convertChar) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***RAF LayoutType=" + layout.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
+    if (dataType.getPrimitiveClassType() == byte.class || dataType == DataType.CHAR) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -110,11 +110,10 @@ public class IospHelper {
         raf.seek(chunk.getSrcPos());
         raf.readFully(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
-      //return (convertChar && dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
       if (convertChar && dataType == DataType.CHAR) return convertByteToChar(pa);
       else return pa; // javac ternary compile error
 
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       short[] pa = (short[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -124,7 +123,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
+    } else if (dataType.getPrimitiveClassType() == int.class) {
       int[] pa = (int[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -154,7 +153,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if (dataType == DataType.LONG) {
+    } else if (dataType.getPrimitiveClassType() == long.class) {
       long[] pa = (long[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -211,7 +210,7 @@ public class IospHelper {
   static public Object readData(PositioningDataInputStream raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***PositioningDataInputStream LayoutType=" + index.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
+    if (dataType.getPrimitiveClassType() == byte.class || dataType == DataType.CHAR) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -221,7 +220,7 @@ public class IospHelper {
       if (dataType == DataType.CHAR) return convertByteToChar(pa);
       else return pa;
 
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       short[] pa = (short[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -229,7 +228,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
+    } else if (dataType.getPrimitiveClassType() == int.class) {
       int[] pa = (int[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -253,7 +252,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if (dataType == DataType.LONG) {
+    } else if (dataType.getPrimitiveClassType() == long.class) {
       long[] pa = (long[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -305,7 +304,7 @@ public class IospHelper {
   static public Object readData(LayoutBB layout, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***BB LayoutType=" + layout.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
+    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR)) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -319,7 +318,7 @@ public class IospHelper {
       if (dataType == DataType.CHAR) return convertByteToChar(pa);
       else return pa;
 
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       short[] pa = (short[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -331,7 +330,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
+    } else if (dataType.getPrimitiveClassType() == int.class) {
       int[] pa = (int[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -367,7 +366,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if (dataType == DataType.LONG) {
+    } else if (dataType.getPrimitiveClassType() == long.class) {
       long[] pa = (long[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -629,8 +628,7 @@ public class IospHelper {
   static public Object makePrimitiveArray(int size, DataType dataType) {
     Object arr = null;
 
-    if ((dataType.getPrimitiveClassType() == byte.class)
-            || (dataType == DataType.OPAQUE) || (dataType == DataType.STRUCTURE)) {
+    if ((dataType.getPrimitiveClassType() == byte.class) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.STRUCTURE)) {
       arr = new byte[size];
 
     } else if (dataType.getPrimitiveClassType() == short.class) {
@@ -663,31 +661,32 @@ public class IospHelper {
    */
   static public Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
+    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR)) {
       byte[] pa = new byte[size];
       byte val = (Byte) fillValue;
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
+      // if (dataType == DataType.CHAR) return convertByteToChar(pa);
       return pa;
 
     } else if (dataType == DataType.OPAQUE) {
       return new byte[size];
 
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       short[] pa = new short[size];
       short val = (Short) fillValue;
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
+    } else if (dataType.getPrimitiveClassType() == int.class) {
       int[] pa = new int[size];
       int val = (Integer) fillValue;
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
-    } else if (dataType == DataType.LONG) {
+    } else if (dataType.getPrimitiveClassType() == long.class) {
       long[] pa = new long[size];
       long val = (Long) fillValue;
       if (val != 0)
