@@ -4,9 +4,7 @@ import dap4.dap4shared.ChunkInputStream;
 import dap4.core.util.*;
 import dap4.dap4shared.RequestMode;
 import dap4.servlet.Generator;
-import dap4.test.servlet.*;
-import dap4.test.util.DapTestCommon;
-import dap4.test.util.Dump;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -214,7 +212,7 @@ public class TestFilters extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Junit test methods
-
+    @Test
     public void testFilters()
         throws Exception
     {
@@ -248,25 +246,16 @@ public class TestFilters extends DapTestCommon
         RequestMode mode = RequestMode.DAP;
         String methodurl = testcase.makeurl(mode);
 
-        // Create request and response objects
-        FakeServlet servlet = new FakeServlet(this.datasetpath);
-        FakeServletRequest req = new FakeServletRequest(methodurl, servlet);
-        FakeServletResponse resp = new FakeServletResponse();
+	Mocker mocker = new Mocker("dap4",methodurl,this);
+	byte[] byteresult = null;
 
-        servlet.init();
-
-        // See if the servlet can process this
         try {
-            servlet.doGet(req, resp);
+	    byteresult = mocker.execute();
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
         }
 
-        // Collect the output
-        FakeServletOutputStream fakestream
-            = (FakeServletOutputStream) resp.getOutputStream();
-        byte[] byteresult = fakestream.toArray();
         if(prop_debug) {
             ByteOrder order = (isbigendian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
             DapDump.dumpbytes(ByteBuffer.wrap(byteresult).order(order), true);

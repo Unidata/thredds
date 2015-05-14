@@ -6,7 +6,6 @@ package dap4.servlet;
 
 import dap4.core.util.*;
 import dap4.dap4shared.*;
-import sun.nio.cs.Surrogate;
 
 import java.io.*;
 import java.nio.ByteBuffer;

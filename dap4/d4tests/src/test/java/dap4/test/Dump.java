@@ -3,7 +3,7 @@
 */
 
 
-package dap4.test.util;
+package dap4.test;
 
 import dap4.core.util.DapUtil;
 import dap4.core.util.Escape;

@@ -6,7 +6,7 @@ package dap4.d4ts;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.servlet.DapLog;
-import dap4.servlet.ServletInfo;
+import dap4.servlet.DapRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +66,7 @@ public class FrontPage
 
     protected List<FileSource> activesources;
 
-    protected ServletInfo svcinfo = null;
+    protected DapRequest drq = null;
     protected String root = null; // root path to the displayed files
 
     //////////////////////////////////////////////////
@@ -76,10 +76,10 @@ public class FrontPage
      * @param root the file directory root
      * @throws DapException
      */
-    public FrontPage(String root, ServletInfo svcinfo)
+    public FrontPage(String root, DapRequest req)
             throws DapException
     {
-        this.svcinfo = svcinfo;
+        this.drq = req;
         this.root = DapUtil.canonicalpath(root);
         // Construct the list of usable files
         activesources = getFileList(root);
@@ -154,7 +154,7 @@ public class FrontPage
                 if(!absname.startsWith(this.root))
                     throw new DapException("Malformed file name: " + absname);
                 String datasetname = DapUtil.denullify(absname.substring(this.root.length()));
-                String urlpath = this.svcinfo.getServer() + "/" + this.svcinfo.getServletname() + datasetname; // append remainder not used by mappath
+                String urlpath = this.drq.getServer() + "/" + this.drq.getControllerPath() + datasetname; // append remainder not used by mappath
                 String line = String.format(HTML_FORMAT, name, urlpath, urlpath, urlpath, urlpath);
                 html.append(line);
             }

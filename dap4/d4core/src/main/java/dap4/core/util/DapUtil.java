@@ -83,7 +83,7 @@ abstract public class DapUtil // Should only contain static methods
      * @param s   The string to split
      * @param sep The character on which to split
      * @return a List of strings (all with escaping still intact)
-     *         representing s split at unescaped instances of sep.
+     * representing s split at unescaped instances of sep.
      */
     static public List<String>
     backslashSplit(String s, char sep)
@@ -367,7 +367,7 @@ abstract public class DapUtil // Should only contain static methods
     static public String
     denullify(String path)
     {
-        return (path == null  ? "" : path);
+        return (path == null ? "" : path);
     }
 
     /**
@@ -610,8 +610,19 @@ abstract public class DapUtil // Should only contain static methods
      */
     static public void checkruntime(Exception e)
     {
-	if(e instanceof RuntimeException)
-	    throw (RuntimeException)e;
+        if(e instanceof RuntimeException)
+            throw (RuntimeException) e;
+    }
+
+    static public String canonjoin(String prefix, String suffix)
+    {
+        StringBuilder result = new StringBuilder(prefix);
+        if(prefix == null) prefix = "";
+        if(suffix == null) suffix = "";
+        if(!prefix.endsWith("/"))
+            result.append("/");
+        result.append(suffix.startsWith("/") ? suffix.substring(1) : suffix);
+        return result.toString();
     }
 
 } // class DapUtil

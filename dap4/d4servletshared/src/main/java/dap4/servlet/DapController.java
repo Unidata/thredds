@@ -13,19 +13,20 @@ import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.ErrorResponse;
 import dap4.core.util.*;
 import dap4.dap4shared.*;
-import net.jcip.annotations.NotThreadSafe;
-import org.xml.sax.SAXException;
+import org.springframework.web.context.ServletContextAware;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.*;
+import java.net.MalformedURLException;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
-@NotThreadSafe
-abstract public class DapServlet extends javax.servlet.http.HttpServlet
+abstract public class DapController implements ServletContextAware
 {
 
     //////////////////////////////////////////////////
@@ -44,10 +45,11 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     static protected final String DMREXT = ".dmr";
     static protected final String DATAEXT = ".dap";
     static protected final String DSREXT = ".dsr";
+    static protected final String[] ENDINGS = {DMREXT, DATAEXT, DSREXT};
 
     static protected final String FAVICON = "favicon.ico"; // relative to resource dir
 
-    static public final long DEFAULTBINARYWRITELIMIT = 100*1000000; // in bytes
+    static public final long DEFAULTBINARYWRITELIMIT = 100 * 1000000; // in bytes
 
     //////////////////////////////////////////////////
     // static variables
@@ -68,13 +70,13 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     static protected void
     setCache(DapCache cache)
     {
-        DapServlet.cache = cache;
+        DapController.cache = cache;
     }
 
     static protected DapCache
     getCache()
     {
-        return DapServlet.cache;
+        return DapController.cache;
     }
 
     static public void setBinaryWritelimit(long limit)
@@ -91,13 +93,27 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
 
     transient protected DapDSR dsrbuilder = new DapDSR();
 
-    transient protected ServletInfo svcinfo;
+    transient protected String controllerpath = null;
+
+    transient protected String resourcepath = null;
+
+    //////////////////////////////////////////////////
+    // ServletContextAware
+
+    transient protected ServletContext servletcontext = null;
+
+    public void setServletContext(ServletContext servletContext)
+    {
+        this.servletcontext = servletcontext;
+    }
+
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public DapServlet()
+    public DapController(String controllerpath)
     {
+        this.controllerpath = DapUtil.canonjoin("",controllerpath);
     }
 
     //////////////////////////////////////////////////////////
@@ -109,7 +125,7 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
      * @param drq The merged dap state
      */
 
-    abstract protected void doFavicon(DapRequest drq) throws IOException;
+    abstract protected void doFavicon(DapRequest drq, String icopath) throws IOException;
 
     /**
      * Process a capabilities request.
@@ -126,38 +142,26 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
      * @param drq The wrapped request info
      */
 
-    abstract protected String getResourcePath(DapRequest drq) throws IOException;
+    abstract protected String getResourcePath(DapRequest drq, String relpath) throws IOException;
 
     /**
-     * Set the limit of the max amount of binary data to return to caller.
-     * @return limit to the max amount to write
+     * Get the maximum # of bytes per request
+     *
+     * @return size
      */
     abstract protected long getBinaryWriteLimit();
 
     //////////////////////////////////////////////////////////
     // Accessors
 
-    public ServletInfo
-    getInfo()
-    {
-        return this.svcinfo;
-    }
-
     //////////////////////////////////////////////////////////
-    // Servlet init
 
-    @Override
+    @PostConstruct
     public void init()
             throws ServletException
     {
-        super.init();
         org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
         logServerStartup.info(getClass().getName() + " initialization start");
-        try {
-            this.svcinfo = new ServletInfo(this);
-        } catch (Exception ioe) {
-            throw new ServletException(ioe);
-        }
         try {
             System.setProperty("file.encoding", "UTF-8");
             Field charset = Charset.class.getDeclaredField("defaultCharset");
@@ -169,42 +173,35 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
         setBinaryWritelimit(getBinaryWriteLimit());
     }
 
-
     //////////////////////////////////////////////////////////
-    // doXXX Methods
+    // Primary Controller Entry Point
 
-    public void  // Make public so TestServlet can access
-    doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException
+    public void handleRequest(HttpServletRequest req, HttpServletResponse res)
+            throws IOException
     {
         DapLog.debug("doGet(): User-Agent = " + req.getHeader("User-Agent"));
-        String url = req.getRequestURL().toString();
-
-        // This may be a tomcat under intellij thing,
-        // but for some reason, tomcat invokes this servlet
-        // both with and without the d4ts path
-        // E.g. it gets invokes with url=http://localhost:8080/
-        // and with url=http://localhost:8080/d4ts.
-        //
-
-        synchronized (this) {
-            this.svcinfo.setServer(url);
-        }
-
+        if(this.servletcontext == null)
+            this.servletcontext = req.getServletContext();
+        DapRequest drq = getRequestState(req, res);
+        String url = req.getRequestURI().toString(); // warning: do not use getRequestURL
         String query = req.getQueryString();
-        DapLog.debug("doGet(): url = " + url + (query == null || query.length() == 0 ? "" : "?" + query));
-
-        DapRequest drq = getRequestState(svcinfo, req, resp);
-
+        StringBuilder info = new StringBuilder("doGet():");
+        info.append(" dataset = ");
+        info.append(this.resourcepath);
+        info.append(" url = ");
+        info.append(url);
+        if(query != null && query.length() >= 0) {
+            info.append("?");
+            info.append(query);
+            DapLog.debug(info.toString());
+        }
         if(DEBUG) {
             System.err.println("DAP4 Servlet: processing url: " + drq.getOriginalURL());
         }
-
         if(url.endsWith(FAVICON)) {
-            doFavicon(drq);
+            doFavicon(drq,FAVICON);
             return;
         }
-
         String datasetpath = DapUtil.nullify(drq.getDataset());
         try {
             if(datasetpath == null) {
@@ -232,7 +229,6 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
                             .setCode(HttpServletResponse.SC_BAD_REQUEST);
                 }
             }
-
         } catch (Throwable t) {
             t.printStackTrace();
             int code = HttpServletResponse.SC_BAD_REQUEST;
@@ -252,15 +248,13 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
                 code = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
             senderror(drq, code, t);
         }//catch
-    } // doGet
+    }
 
     //////////////////////////////////////////////////////////
     // Extension processors
 
     /**
      * Process a DSR request.
-     *
-     * @param drq The merged dap state
      */
 
     protected void
@@ -291,11 +285,7 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     doDMR(DapRequest drq)
             throws IOException
     {
-
-        String datasetpath = getResourcePath(drq);
-        if(datasetpath == null)
-            throw new DapException("Not such dataset: " + drq.getOriginalURL());
-        DSP dsp = DapCache.open(datasetpath);
+        DSP dsp = DapCache.open(drq.getResourcePath());
         DapDataset dmr = dsp.getDMR();
 
         // Process any constraint view
@@ -340,12 +330,9 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     doData(DapRequest drq)
             throws IOException
     {
-        String datasetpath = getResourcePath(drq); // dataset path is relative to resource path
-        if(datasetpath == null)
-            throw new DapException("Not such dataset: " + drq.getOriginalURL());
-        DSP dsp = DapCache.open(datasetpath);
+        DSP dsp = DapCache.open(drq.getResourcePath());
         if(dsp == null)
-            throw new IOException("No such file: " + datasetpath);
+            throw new IOException("No such file: " + drq.getResourcePath());
         DapDataset dmr = dsp.getDMR();
 
         // Process any constraint
@@ -411,36 +398,21 @@ abstract public class DapServlet extends javax.servlet.http.HttpServlet
     }
 
     /**
-     * Extract the servlet specific info
-     *
-     * @param svc A Servlet object
-     * @return the extracted servlet info
-     */
-/*
-    protected ServletInfo
-    getRequestState(HttpServlet svc)
-        throws IOException
-    {
-        return new ServletInfo(svc);
-    }
-    */
-
-    /**
      * Merge the servlet inputs into a single object
      * for easier transport as well as adding value.
      *
      * @param rq  A Servlet request object
      * @param rsp A Servlet response object
      * @return the union of the
-     *         servlet request and servlet response arguments
-     *         from the servlet engine.
+     * servlet request and servlet response arguments
+     * from the servlet engine.
      */
 
     protected DapRequest
-    getRequestState(ServletInfo info, HttpServletRequest rq, HttpServletResponse rsp)
+    getRequestState(HttpServletRequest rq, HttpServletResponse rsp)
             throws IOException
     {
-        return new DapRequest(info, rq, rsp);
+        return new DapRequest(this, rq, rsp);
     }
 
     //////////////////////////////////////////////////////////

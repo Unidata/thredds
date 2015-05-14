@@ -6,11 +6,9 @@ package dap4.dap4shared;
 
 import dap4.core.util.*;
 import dap4.dap4shared.*;
-import sun.nio.cs.Surrogate;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**

@@ -1,6 +1,5 @@
 package dap4.test;
 
-import dap4.test.util.DapTestCommon;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.ThreddsServer;
 
@@ -160,8 +159,6 @@ public class TestConstraints extends DapTestCommon
     public void testConstraints()
             throws Exception
     {
-        ThreddsServer.REMOTETEST.assumeIsAvailable();
-
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) {
                 assertTrue(false);

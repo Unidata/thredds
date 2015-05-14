@@ -12,6 +12,7 @@ import dap4.cdmshared.*;
 import dap4.servlet.CDMDSP;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import thredds.server.dataset.TdsRequestedDataset;
 import thredds.servlet.DatasetHandler;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -64,8 +65,7 @@ public class ThreddsDSP extends CDMDSP
     {
         try {
             path = DapUtil.canonicalpath(location);
-            NetcdfFile ncfile = DatasetHandler.getNetcdfFile(this.request, this.response);
-//            NetcdfFile ncfile = DatasetHandler.getNetcdfFile(this.request, this.response,location);
+            NetcdfFile ncfile = DatasetHandler.getNetcdfFile( request, response, path );
             return ncfile;
         } catch (Exception e) {
             return null;

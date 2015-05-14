@@ -1,9 +1,11 @@
 package dap4.test;
 
-import dap4.test.util.DapTestCommon;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+import org.junit.Ignore;
+import org.junit.Test;
 
+@Ignore
 public class TestDap4All extends DapTestCommon
 {
 
@@ -56,9 +58,10 @@ TestSerial.java
 
     //////////////////////////////////////////////////
 
-
+    @Test
     public void testAll()
     {
+	    org.junit.Assume.assumeTrue(usingIntellij);
         for(int i = 0; i < testmax; i++) {
             tests[i] = new TestSuite(testclasses[i]);
             results[i] = new TestResult();

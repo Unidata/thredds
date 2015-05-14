@@ -7,9 +7,11 @@ dependencies {
     testCompile project(':dap4:d4servletshared')
     testCompile project(':dap4:d4ts')
     testCompile project(':cdm')
+    testCompile project(':tds')
     testCompile project(':httpservices')
 
     testCompile libraries["javax.servlet-api"]
+    testCompile libraries["spring-test"]
     testCompile libraries["slf4j-api"]
 }
 

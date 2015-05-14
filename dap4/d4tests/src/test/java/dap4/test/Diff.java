@@ -1,6 +1,3 @@
-package dap4.test.util;
-
-
 // Diff -- text file difference utility.
 // See full docu-comment at beginning of Diff class.
 
@@ -37,6 +34,8 @@ package dap4.test.util;
  * The pioneering role of Dennis Ritchie and Bjarne Stroustrup, of AT&T, for
  * inventing predecessor languages C and C+is also gratefully acknowledged.
  */
+
+package dap4.test;
 
 import java.io.*;
 

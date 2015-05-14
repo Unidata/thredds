@@ -8,7 +8,6 @@ import dap4.core.dmr.*;
 import dap4.core.dmr.parser.Dap4Parser;
 import dap4.core.dmr.parser.ParseUtil;
 import dap4.servlet.DMRPrint;
-import dap4.test.util.DapTestCommon;
 
 import java.io.*;
 import java.util.ArrayList;

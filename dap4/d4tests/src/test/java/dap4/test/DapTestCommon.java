@@ -2,11 +2,18 @@
    See the LICENSE file for more information.
 */
 
-package dap4.test.util;
+
+package dap4.test;
 
 import dap4.core.util.DapException;
-import junit.framework.TestCase;
 import dap4.core.util.DapUtil;
+import junit.framework.TestCase;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import thredds.server.dap4.Dap4Controller;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -14,9 +21,14 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Set;
 
+@ContextConfiguration
+@WebAppConfiguration("file:src/test/data")
 public class DapTestCommon extends TestCase
 {
     //////////////////////////////////////////////////
@@ -38,13 +50,108 @@ public class DapTestCommon extends TestCase
     static public final String CONSTRAINTTAG = "dap4.ce";
 
     // Equivalent to the path to the webapp/d4ts for testing purposes
-    static protected final String PSEUDOWEBAPPPATH = "/d4tests/src/test/data";
-    static protected final String RESOURCEPATH = "/resources";
+    static protected final String RESOURCEPATH = "/d4tests/src/test/data/resources";
+    static protected final String TESTFILES = "/d4tests/src/test/data/resources/testfiles";
+
+    //////////////////////////////////////////////////
+    // Type decls
+
+    static public class Mocker
+    {
+        public MockHttpServletRequest req = null;
+        public MockHttpServletResponse resp = null;
+        public MockServletContext context = null;
+        public Dap4Controller controller = null;
+        public String url = null;
+        public String servletname = null;
+        public DapTestCommon parent = null;
+
+        public Mocker(String servletname, String url, DapTestCommon parent)
+                throws Exception
+        {
+            this.parent = parent;
+            this.url = url;
+            this.servletname = servletname;
+            String resdir = parent.getResourceDir();
+            // There appears to be bug in the spring core.io code
+            // such that it assumes absolute paths start with '/'.
+            // So, check for windows drive and prepend 'file:/' as a hack.
+            if(System.getProperty("os.name").toLowerCase().startsWith("windows")
+                    && resdir.matches("[a-zA-Z][:].*"))
+                resdir = "/" + resdir;
+            resdir = "file:" + resdir;
+            this.context = new MockServletContext(resdir);
+            this.req = new MockHttpServletRequest(this.context, "GET", url);
+            this.resp = new MockHttpServletResponse();
+            req.setMethod("GET");
+            setup();
+            this.controller = new Dap4Controller();
+            controller.init();
+        }
+
+        /**
+         * The spring mocker is not very smart.
+         * Given the url it should be possible
+         * to initialize a lot of its fields.
+         * Instead, it requires the user to so do.
+         */
+        protected void setup()
+                throws MalformedURLException
+        {
+            this.req.setCharacterEncoding("UTF-8");
+            this.req.setServletPath("/" + this.servletname);
+            URL url = new URL(this.url);
+            this.req.setProtocol(url.getProtocol());
+            this.req.setQueryString(url.getQuery());
+            this.req.setServerName(url.getHost());
+            this.req.setServerPort(url.getPort());
+            String path = url.getPath();
+            if(path != null) {// probably more complex than it needs to be
+                String prefix = null;
+                String suffix = null;
+                String spiece = "/" + servletname;
+                if(path.equals(spiece) || path.equals(spiece + "/")) {
+                    // path is just spiece
+                    prefix = spiece;
+                    suffix = "/";
+                } else {
+                    String[] pieces = path.split(spiece + "/"); // try this first
+                    if(pieces.length == 1 && path.endsWith(spiece))
+                        pieces = path.split(spiece);  // try this
+                    switch (pieces.length) {
+                    case 0:
+                        throw new IllegalArgumentException("DapTestCommon");
+                    case 1:
+                        prefix = pieces[0] + spiece;
+                        suffix = "";
+                        break;
+                    default: // > 1
+                        prefix = pieces[0] + spiece;
+                        suffix = path.substring(prefix.length());
+                        break;
+                    }
+                }
+                this.req.setContextPath(prefix);
+                this.req.setPathInfo(suffix);
+            }
+        }
+
+        public byte[] execute()
+                throws Exception
+        {
+            this.controller.handleRequest(this.req, this.resp);
+            return this.resp.getContentAsByteArray();
+        }
+    }
 
     //////////////////////////////////////////////////
     // Static Variables
 
     static public org.slf4j.Logger log;
+
+    static public boolean usingJenkins = (System.getenv("JENKINS_URL") != null);
+    static public boolean usingTravis = (System.getenv("TRAVIS") != null);
+    static public boolean usingIntellij = !(usingJenkins | usingTravis);
 
     //////////////////////////////////////////////////
     // Static methods
@@ -147,7 +254,6 @@ public class DapTestCommon extends TestCase
     protected String threddsroot = null;
     protected String dap4root = null;
     protected String d4tsServer = null;
-    protected String webapproot = null;
     protected String resourcedir = null;
 
     protected String title = "Testing";
@@ -175,8 +281,7 @@ public class DapTestCommon extends TestCase
         this.dap4root = locateDAP4Root(this.threddsroot);
         if(this.dap4root == null)
             System.err.println("Cannot locate /dap4 parent dir");
-        this.webapproot = this.dap4root + PSEUDOWEBAPPPATH;
-        this.resourcedir = this.webapproot + RESOURCEPATH;
+        this.resourcedir = this.dap4root + RESOURCEPATH;
         // Compute the set of SOURCES
         this.d4tsServer = TestDir.dap4TestServer;
         if(DEBUG)
@@ -188,6 +293,16 @@ public class DapTestCommon extends TestCase
      */
     protected void setSystemProperties()
     {
+        String testargs = System.getProperty("testargs");
+        if(testargs != null && testargs.length() > 0) {
+            String[] pairs = testargs.split("[  ]*[,][  ]*");
+            for(String pair: pairs) {
+                String[] tuple = pair.split("[  ]*[=][  ]*");
+                String value = (tuple.length == 1 ? "" : tuple[1]);
+                if(tuple[0].length() > 0)
+                    System.setProperty(tuple[0],value);
+            }
+        }
         if(System.getProperty("nodiff") != null)
             prop_diff = false;
         if(System.getProperty("baseline") != null)
@@ -351,7 +466,6 @@ public class DapTestCommon extends TestCase
     readbinaryfile(String filename)
             throws IOException
     {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         FileInputStream file = new FileInputStream(filename);
         return DapUtil.readbinaryfile(file);
     }
@@ -382,6 +496,17 @@ public class DapTestCommon extends TestCase
     {
         System.err.println(t);
         System.err.flush();
+    }
+
+    static public String canonjoin(String prefix, String suffix)
+    {
+        if(prefix == null) prefix = "";
+        if(suffix == null) suffix = "";
+        StringBuilder result = new StringBuilder(prefix);
+        if(!prefix.endsWith("/"))
+            result.append("/");
+        result.append(suffix.startsWith("/") ? suffix.substring(1) : suffix);
+        return result.toString();
     }
 
 }
