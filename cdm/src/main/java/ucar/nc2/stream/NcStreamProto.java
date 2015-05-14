@@ -421,7 +421,7 @@ public final class NcStreamProto {
      * <code>optional bool unsigned = 6 [default = false];</code>
      *
      * <pre>
-     * &lt; 5.0
+     * not used
      * </pre>
      */
     boolean hasUnsigned();
@@ -429,7 +429,7 @@ public final class NcStreamProto {
      * <code>optional bool unsigned = 6 [default = false];</code>
      *
      * <pre>
-     * &lt; 5.0
+     * not used
      * </pre>
      */
     boolean getUnsigned();
@@ -439,7 +439,7 @@ public final class NcStreamProto {
      * <code>optional .DataType dataType = 7;</code>
      *
      * <pre>
-     * 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+     * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
      * </pre>
      */
     boolean hasDataType();
@@ -447,7 +447,7 @@ public final class NcStreamProto {
      * <code>optional .DataType dataType = 7;</code>
      *
      * <pre>
-     * 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+     * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
      * </pre>
      */
     ucar.nc2.stream.NcStreamProto.DataType getDataType();
@@ -597,6 +597,10 @@ public final class NcStreamProto {
 
     /**
      * Protobuf enum {@code Attribute.Type}
+     *
+     * <pre>
+     * &lt; 5.0
+     * </pre>
      */
     public enum Type
         implements com.google.protobuf.ProtocolMessageEnum {
@@ -883,7 +887,7 @@ public final class NcStreamProto {
      * <code>optional bool unsigned = 6 [default = false];</code>
      *
      * <pre>
-     * &lt; 5.0
+     * not used
      * </pre>
      */
     public boolean hasUnsigned() {
@@ -893,7 +897,7 @@ public final class NcStreamProto {
      * <code>optional bool unsigned = 6 [default = false];</code>
      *
      * <pre>
-     * &lt; 5.0
+     * not used
      * </pre>
      */
     public boolean getUnsigned() {
@@ -907,7 +911,7 @@ public final class NcStreamProto {
      * <code>optional .DataType dataType = 7;</code>
      *
      * <pre>
-     * 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+     * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
      * </pre>
      */
     public boolean hasDataType() {
@@ -917,7 +921,7 @@ public final class NcStreamProto {
      * <code>optional .DataType dataType = 7;</code>
      *
      * <pre>
-     * 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+     * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
      * </pre>
      */
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
@@ -1631,7 +1635,7 @@ public final class NcStreamProto {
        * <code>optional bool unsigned = 6 [default = false];</code>
        *
        * <pre>
-       * &lt; 5.0
+       * not used
        * </pre>
        */
       public boolean hasUnsigned() {
@@ -1641,7 +1645,7 @@ public final class NcStreamProto {
        * <code>optional bool unsigned = 6 [default = false];</code>
        *
        * <pre>
-       * &lt; 5.0
+       * not used
        * </pre>
        */
       public boolean getUnsigned() {
@@ -1651,7 +1655,7 @@ public final class NcStreamProto {
        * <code>optional bool unsigned = 6 [default = false];</code>
        *
        * <pre>
-       * &lt; 5.0
+       * not used
        * </pre>
        */
       public Builder setUnsigned(boolean value) {
@@ -1664,7 +1668,7 @@ public final class NcStreamProto {
        * <code>optional bool unsigned = 6 [default = false];</code>
        *
        * <pre>
-       * &lt; 5.0
+       * not used
        * </pre>
        */
       public Builder clearUnsigned() {
@@ -1680,7 +1684,7 @@ public final class NcStreamProto {
        * <code>optional .DataType dataType = 7;</code>
        *
        * <pre>
-       * 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+       * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
        * </pre>
        */
       public boolean hasDataType() {
@@ -1690,7 +1694,7 @@ public final class NcStreamProto {
        * <code>optional .DataType dataType = 7;</code>
        *
        * <pre>
-       * 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+       * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
        * </pre>
        */
       public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
@@ -1700,7 +1704,7 @@ public final class NcStreamProto {
        * <code>optional .DataType dataType = 7;</code>
        *
        * <pre>
-       * 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+       * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
        * </pre>
        */
       public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
@@ -1716,7 +1720,7 @@ public final class NcStreamProto {
        * <code>optional .DataType dataType = 7;</code>
        *
        * <pre>
-       * 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+       * 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
        * </pre>
        */
       public Builder clearDataType() {

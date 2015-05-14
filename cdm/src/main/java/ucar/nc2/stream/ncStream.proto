@@ -12,7 +12,7 @@ message Attribute {
     DOUBLE = 6;
   }
   required string name = 1;
-  required Type type = 2;           // < 5.0
+  optional Type type = 2;           // < 5.0
   required uint32 len = 3;
   optional bytes data = 4;          // not needed if len == 0
   repeated string sdata = 5;        // used for string data

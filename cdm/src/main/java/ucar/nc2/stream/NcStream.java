@@ -547,33 +547,34 @@ public class NcStream {
   }
 
   static public Attribute decodeAtt(NcStreamProto.Attribute attp) {
+    // BARF LOOK
+    DataType dtOld = decodeAttributeType(attp.getType());
+    DataType dtNew = convertDataType(attp.getDataType());
+    DataType dtUse;
+    if (dtNew != DataType.CHAR) dtUse = dtNew;
+    else if (dtOld != DataType.STRING) dtUse = dtOld;
+    else if (attp.getSdataCount() > 0) dtUse = DataType.STRING;
+    else dtUse = DataType.CHAR;
+
     int len = attp.getLen();
-    DataType dt;
-    if (attp.getType() != null)
-      dt = decodeAttributeType(attp.getType());
-    else if (attp.getDataType() != null)
-      dt = convertDataType(attp.getDataType());
-    else
-      throw new IllegalArgumentException("Attribute must type or dataType");
-
     if (len == 0) // deal with empty attribute
-      return new Attribute(attp.getName(), dt);
+      return new Attribute(attp.getName(), dtUse);
 
-    if (dt == DataType.STRING) {
+    if (dtUse == DataType.STRING) {
       int lenp = attp.getSdataCount();
       if (lenp != len)
         System.out.println("HEY lenp != len");
       if (lenp == 1)
         return new Attribute(attp.getName(), attp.getSdata(0));
       else {
-        Array data = Array.factory(dt, new int[]{lenp});
+        Array data = Array.factory(dtUse, new int[]{lenp});
         for (int i = 0; i < lenp; i++) data.setObject(i, attp.getSdata(i));
         return new Attribute(attp.getName(), data);
       }
     } else {
       ByteString bs = attp.getData();
       ByteBuffer bb = ByteBuffer.wrap(bs.toByteArray());
-      return new Attribute(attp.getName(), Array.factory(dt, null, bb)); // if null, then use int[]{bb.limit()}
+      return new Attribute(attp.getName(), Array.factory(dtUse, null, bb)); // if null, then use int[]{bb.limit()}
     }
   }
 
