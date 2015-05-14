@@ -188,16 +188,16 @@ abstract public class StructureData {
     } else if (dataType == DataType.FLOAT) {
       return getScalarFloat(m);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.UBYTE) || (dataType == DataType.ENUM1)) {
       return getScalarByte(m);
 
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)){
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.USHORT) || (dataType == DataType.ENUM2)){
       return getScalarShort(m);
 
-    } else if ((dataType == DataType.INT)|| (dataType == DataType.ENUM4)) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.UINT) || (dataType == DataType.ENUM4)) {
       return getScalarInt(m);
 
-    } else if (dataType == DataType.LONG) {
+    } else if (dataType == DataType.LONG || (dataType == DataType.ULONG) ) {
       return getScalarLong(m);
 
     } else if (dataType == DataType.CHAR) {

@@ -629,17 +629,17 @@ public class IospHelper {
   static public Object makePrimitiveArray(int size, DataType dataType) {
     Object arr = null;
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)
+    if ((dataType.getPrimitiveClassType() == byte.class)
             || (dataType == DataType.OPAQUE) || (dataType == DataType.STRUCTURE)) {
       arr = new byte[size];
 
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       arr = new short[size];
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
+    } else if (dataType.getPrimitiveClassType() == int.class) {
       arr = new int[size];
 
-    } else if (dataType == DataType.LONG) {
+    } else if (dataType.getPrimitiveClassType() == long.class) {
       arr = new long[size];
 
     } else if (dataType == DataType.FLOAT) {

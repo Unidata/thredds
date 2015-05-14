@@ -133,7 +133,7 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
 
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
     profileCoords.addMemberString(trajIdName, null, null, profile.getName().trim(), id_strlen);
-    profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
+    profileCoords.addMember(numberOfObsName, null, null, DataType.INT, nobs);
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(profileCoords);
@@ -149,10 +149,10 @@ public class WriterCFTrajectoryCollection extends CFPointWriter {
     trackBB(loc.getLatLon(), timeUnit.makeCalendarDate(pf.getObservationTime()));
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
-    coords.addMember(timeName, null, null, DataType.DOUBLE, false, pf.getObservationTime());
-    coords.addMember(latName,  null, null, DataType.DOUBLE, false, loc.getLatitude());
-    coords.addMember(lonName,  null, null, DataType.DOUBLE, false, loc.getLongitude());
-    if (altUnits != null) coords.addMember(altName, null, null, DataType.DOUBLE, false, loc.getAltitude());
+    coords.addMember(timeName, null, null, DataType.DOUBLE, pf.getObservationTime());
+    coords.addMember(latName,  null, null, DataType.DOUBLE, loc.getLatitude());
+    coords.addMember(lonName,  null, null, DataType.DOUBLE, loc.getLongitude());
+    if (altUnits != null) coords.addMember(altName, null, null, DataType.DOUBLE, loc.getAltitude());
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(coords); // coords first so it takes precedence

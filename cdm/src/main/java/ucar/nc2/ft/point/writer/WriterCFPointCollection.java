@@ -99,10 +99,10 @@ public class WriterCFPointCollection extends CFPointWriter {
     trackBB(loc.getLatLon(), obsDate);
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
-    coords.addMember(timeName, null, null, DataType.DOUBLE, false, timeCoordValue);
-    coords.addMember(latName,  null, null, DataType.DOUBLE, false, loc.getLatitude());
-    coords.addMember(lonName,  null, null, DataType.DOUBLE, false, loc.getLongitude());
-    if (altUnits != null) coords.addMember(altName, null, null, DataType.DOUBLE, false, loc.getAltitude());
+    coords.addMember(timeName, null, null, DataType.DOUBLE, timeCoordValue);
+    coords.addMember(latName,  null, null, DataType.DOUBLE, loc.getLatitude());
+    coords.addMember(lonName,  null, null, DataType.DOUBLE, loc.getLongitude());
+    if (altUnits != null) coords.addMember(altName, null, null, DataType.DOUBLE, loc.getAltitude());
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(coords); // coords first so it takes precedence

@@ -202,19 +202,19 @@ public class MAMath {
     } else if (dataType == DataType.FLOAT) {
       while (from.hasNext())
         to.setFloatNext(from.getFloatNext());
-    } else if (dataType == DataType.LONG) {
+    } else if (dataType.getPrimitiveClassType() == long.class) {
       while (from.hasNext())
         to.setLongNext(from.getLongNext());
-    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
+    } else if (dataType.getPrimitiveClassType() == int.class) {
       while (from.hasNext())
         to.setIntNext(from.getIntNext());
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       while (from.hasNext())
         to.setShortNext(from.getShortNext());
     } else if (dataType == DataType.CHAR) {
       while (from.hasNext())
         to.setCharNext(from.getCharNext());
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
+    } else if (dataType.getPrimitiveClassType() == byte.class) {
       while (from.hasNext())
         to.setByteNext(from.getByteNext());
     } else if (dataType == DataType.BOOLEAN) {
@@ -697,6 +697,7 @@ public class MAMath {
     }
   }
 
+  // LOOK Not handling unsigned
   public static boolean isEqual(Array data1, Array data2) {
     if (data1.getSize() != data2.getSize()) return false;
     if (data1.isUnsigned() != data2.isUnsigned()) return false;

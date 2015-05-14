@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 
 import java.util.EnumSet;
@@ -48,12 +49,12 @@ import java.util.EnumSet;
 class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   // Default fill values, used unless _FillValue variable attribute is set.
   // duplicated from N3iosp, used in getFillValue.
-  static private final byte NC_FILL_BYTE = -127;
+  /* static private final byte NC_FILL_BYTE = -127;
   static private final char NC_FILL_CHAR = 0;
   static private final short NC_FILL_SHORT = (short) -32767;
   static private final int NC_FILL_INT = -2147483647;
-  static private final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
-  static private final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
+  static private final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119
+  static private final double NC_FILL_DOUBLE = 9.9692099683868690e+36;  */
 
   static private final boolean debug = false, debugRead = false, debugMissing = false;
 
@@ -93,7 +94,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    */
   EnhanceScaleMissingImpl(VariableDS forVar) {
     this(forVar, NetcdfDataset.useNaNs, NetcdfDataset.fillValueIsMissing,
-        NetcdfDataset.invalidDataIsMissing, NetcdfDataset.missingDataIsMissing);
+            NetcdfDataset.invalidDataIsMissing, NetcdfDataset.missingDataIsMissing);
   }
 
   /**
@@ -107,7 +108,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * @param missingDataIsMissing use missing_value for isMissing()
    */
   EnhanceScaleMissingImpl(VariableDS forVar, boolean useNaNs, boolean fillValueIsMissing,
-                                 boolean invalidDataIsMissing, boolean missingDataIsMissing) {
+                          boolean invalidDataIsMissing, boolean missingDataIsMissing) {
 
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
@@ -242,8 +243,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
     // missing
     boolean hasMissing = (invalidDataIsMissing && hasValidData) ||
-        (fillValueIsMissing && hasFillValue) ||
-        (missingDataIsMissing && hasMissingValue);
+            (fillValueIsMissing && hasFillValue) ||
+            (missingDataIsMissing && hasMissingValue);
 
     /// assign convertedDataType if needed
     if (hasScaleOffset) {
@@ -312,13 +313,13 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     double[] value = new double[n];
 
     if (debugMissing) System.out.printf("missing_data: ");
-    for (int i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
       if (isUnsigned && att.getDataType() == DataType.BYTE)
-        value[i] = convertScaleOffsetMissing( att.getNumericValue(i).byteValue());
+        value[i] = convertScaleOffsetMissing(att.getNumericValue(i).byteValue());
       else if (isUnsigned && att.getDataType() == DataType.SHORT)
-        value[i] = convertScaleOffsetMissing( att.getNumericValue(i).shortValue());
+        value[i] = convertScaleOffsetMissing(att.getNumericValue(i).shortValue());
       else if (isUnsigned && att.getDataType() == DataType.INT)
-        value[i] = convertScaleOffsetMissing( att.getNumericValue(i).intValue());
+        value[i] = convertScaleOffsetMissing(att.getNumericValue(i).intValue());
       else
         value[i] = scale * att.getNumericValue(i).doubleValue() + offset;
       if (debugMissing) System.out.print(" " + value[i]);
@@ -473,12 +474,13 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    */
   public boolean hasMissing() {
     return (invalidDataIsMissing && hasInvalidData()) ||
-        (fillValueIsMissing && hasFillValue()) ||
-        (missingDataIsMissing && hasMissingValue());
+            (fillValueIsMissing && hasFillValue()) ||
+            (missingDataIsMissing && hasMissingValue());
   }
 
   /**
    * Is this a missing value ?
+   *
    * @param val check this value
    * @return true if missing
    */
@@ -487,12 +489,13 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     return hasMissing() && isMissing_(val);
   }
 
-   /**
+  /**
    * Optimize "Is this a missing value"? Assumes NaNs have already been set if its missing.
+   *
    * @param val check this value
    * @return true if missing
    */
-  public boolean isMissingFast( double val) {
+  public boolean isMissingFast(double val) {
     if (useNaNs) return Double.isNaN(val); // no need to check again
     if (Double.isNaN(val)) return true;
     return hasMissing() && isMissing_(val);
@@ -518,43 +521,52 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
   /**
    * Get FillValue. Check if set, use default value if not
+   *
    * @param dt the variable datatype
    * @return java primitive array of length 1, or a String.
    */
   public Object getFillValue(DataType dt) {
     DataType useType = convertedDataType == null ? dt : convertedDataType;
-    if ((useType == DataType.BYTE) || (useType == DataType.ENUM1)) {
+    if (useType == DataType.BYTE || useType == DataType.UBYTE || useType == DataType.ENUM1) {
       byte[] result = new byte[1];
-      result[0] = hasFillValue ? (byte) fillValue : NC_FILL_BYTE;
+      result[0] = hasFillValue ? (byte) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UBYTE : N3iosp.NC_FILL_BYTE);
       return result;
+
     } else if (useType == DataType.BOOLEAN) {
       boolean[] result = new boolean[1];
       result[0] = false;
       return result;
+
     } else if (useType == DataType.CHAR) {
       char[] result = new char[1];
-      result[0] = hasFillValue ? (char) fillValue : NC_FILL_CHAR;
+      result[0] = hasFillValue ? (char) fillValue : N3iosp.NC_FILL_CHAR;
       return result;
-    } else if ((useType == DataType.SHORT) || (useType == DataType.ENUM2)) {
+
+    } else if ((useType == DataType.SHORT) || (useType == DataType.USHORT) || (useType == DataType.ENUM2)) {
       short[] result = new short[1];
-      result[0] = hasFillValue ? (short) fillValue : NC_FILL_SHORT;
+      result[0] = hasFillValue ? (short) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_USHORT : N3iosp.NC_FILL_SHORT);
       return result;
-    } else if ((useType == DataType.INT) || (useType == DataType.ENUM4)) {
+
+    } else if ((useType == DataType.INT) || (useType == DataType.UINT) || (useType == DataType.ENUM4)) {
       int[] result = new int[1];
-      result[0] = hasFillValue ? (int) fillValue : NC_FILL_INT;
+      result[0] = hasFillValue ? (int) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UINT : N3iosp.NC_FILL_INT);
       return result;
-    } else if (useType == DataType.LONG) {
+
+    } else if (useType == DataType.LONG || useType == DataType.ULONG) {
       long[] result = new long[1];
-      result[0] = hasFillValue ? (long) fillValue : NC_FILL_INT;
+      result[0] = hasFillValue ? (long) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UINT64 : N3iosp.NC_FILL_INT64);
       return result;
+
     } else if (useType == DataType.FLOAT) {
       float[] result = new float[1];
-      result[0] = hasFillValue ? (float) fillValue : NC_FILL_FLOAT;
+      result[0] = hasFillValue ? (float) fillValue : N3iosp.NC_FILL_FLOAT;
       return result;
+
     } else if (useType == DataType.DOUBLE) {
       double[] result = new double[1];
-      result[0] = hasFillValue ? fillValue : NC_FILL_DOUBLE;
+      result[0] = hasFillValue ? fillValue : N3iosp.NC_FILL_DOUBLE;
       return result;
+
     } else {
       String[] result = new String[1];
       result[0] = CDM.FILL_VALUE;

@@ -541,7 +541,7 @@ public class CompareNetcdf2 {
             if (justOne) break;
           }
       }
-    } else if (dt == DataType.INT) {
+    } else if (dt.getPrimitiveClassType() == int.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         int v1 = iter1.getIntNext();
         int v2 = iter2.getIntNext();
@@ -551,7 +551,7 @@ public class CompareNetcdf2 {
           if (justOne) break;
         }
       }
-    } else if (dt == DataType.SHORT) {
+    } else if (dt.getPrimitiveClassType() == short.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
@@ -561,7 +561,7 @@ public class CompareNetcdf2 {
           if (justOne) break;
         }
       }
-    } else if (dt == DataType.BYTE) {
+    } else if (dt.getPrimitiveClassType() == byte.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         byte v1 = iter1.getByteNext();
         byte v2 = iter2.getByteNext();

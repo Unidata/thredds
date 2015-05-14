@@ -143,12 +143,12 @@ public class WriterCFProfileCollection extends CFPointWriter {
     trackBB(profile.getLatLon(), CalendarDate.of(profile.getTime()));
 
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
-    profileCoords.addMember(latName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLatitude());
-    profileCoords.addMember(lonName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLongitude());
+    profileCoords.addMember(latName, null, null, DataType.DOUBLE, profile.getLatLon().getLatitude());
+    profileCoords.addMember(lonName, null, null, DataType.DOUBLE, profile.getLatLon().getLongitude());
     if (profile.getTime() != null)
-      profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false,  timeUnit.makeValue(profile.getTime()));  // LOOK time not always part of profile
+      profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE,  timeUnit.makeValue(profile.getTime()));  // LOOK time not always part of profile
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
-    profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
+    profileCoords.addMember(numberOfObsName, null, null, DataType.INT, nobs);
 
     StructureData profileData = profile.getFeatureData();
     StructureDataComposite sdall = new StructureDataComposite();
@@ -163,7 +163,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
   public void writeObsData(PointFeature pf) throws IOException {
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
-    if (useAlt) coords.addMember(altitudeCoordinateName, null, null, DataType.DOUBLE, false, pf.getLocation().getAltitude());
+    if (useAlt) coords.addMember(altitudeCoordinateName, null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(coords); // coords first so it takes precedence

@@ -44,15 +44,16 @@
 <ul>
   <li> <strong>ucar.nc2.dt.TypedDatasetFactory </strong>has been removed. Use <strong>ucar.nc2.ft.FeatureDatasetFactoryManager.</strong></li>
 </ul>
-<h3>Core Classes</h3>
+<h3>Unsigned Types</h3>
 <ul>
   <li><strong>DataType</strong> now has unsigned types: UBYTE, USHORT, UINT, ULONG</li>
   <li>Array,    ArrayScalar,  ArrayByte, ArrayInt, ArrayShort, ArrayLong factory and constructor methods now require isUnsigned parameter. </li>
-  <li>Array.factory(class, shape) -&gt; Array.factory(DataType, shape);</li>
-  <li>Array.get1DJavaArray(Class) -&gt; Array.get1DJavaArray(DataType)</li>
+  <li>Array.factory(class, shape) -&gt; Array.factory(DataType, shape) or Array.factory(class, isUnsigned, shape)</li>
+  <li>Array.get1DJavaArray(Class) -&gt; Array.get1DJavaArray(DataType) or Array.get1DJavaArray(Class, isUnsigned)</li>
   <li>remove Array.setUnsigned(), Variable.setUnsigned() </li>
   <li>Variable.getUnsigned() -&gt; Variable.getDataType().getUnsigned() </li>
   <li>    Attribute(String&#32;name,&#32;List&#32;values) -&gt; Attribute(String&#32;name,&#32;List&#32;values,&#32;boolean&#32;isUnsigned) </li>
+  <li>StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;boolean isUnsigned, Number&#32;val  ) -&gt; StructureDataScalar.addMember(    String&#32;name,&#32;String&#32;desc,&#32;String&#32;units,&#32;DataType&#32;dtype,&#32;Number&#32;val  ) -&gt; </li>
 </ul>
 <h2>Catalog Schema changes</h2>
 <h3>Client Catalogs</h3>

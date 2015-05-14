@@ -179,13 +179,15 @@ public class ArraySequenceNested extends ArrayStructure {
   }
 
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
-    if ((m.getDataType() != DataType.BYTE) && (m.getDataType() != DataType.ENUM1)) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be byte");
+    if (!(m.getDataType().getPrimitiveClassType() == byte.class))
+      throw new IllegalArgumentException("Type is "+m.getDataType()+", must be byte");
     Array data = m.getDataArray();
     return data.getByte( recnum * m.getSize()); // gets first one in the array
   }
 
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
-    if ((m.getDataType() != DataType.BYTE) && (m.getDataType() != DataType.ENUM1)) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be byte");
+    if (!(m.getDataType().getPrimitiveClassType() == byte.class))
+      throw new IllegalArgumentException("Type is "+m.getDataType()+", must be byte");
     int count = m.getSize();
     Array data = m.getDataArray();
     byte[] pa = new byte[count];
@@ -195,13 +197,15 @@ public class ArraySequenceNested extends ArrayStructure {
   }
 
   public short getScalarShort(int recnum, StructureMembers.Member m) {
-    if ((m.getDataType() != DataType.SHORT) && (m.getDataType() != DataType.ENUM2)) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be short");
+    if (!(m.getDataType().getPrimitiveClassType() == short.class))
+      throw new IllegalArgumentException("Type is "+m.getDataType()+", must be short");
     Array data = m.getDataArray();
     return data.getShort( recnum * m.getSize()); // gets first one in the array
   }
 
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
-    if ((m.getDataType() != DataType.SHORT) && (m.getDataType() != DataType.ENUM2)) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be short");
+    if (!(m.getDataType().getPrimitiveClassType() == short.class))
+      throw new IllegalArgumentException("Type is "+m.getDataType()+", must be short");
     int count = m.getSize();
     Array data = m.getDataArray();
     short[] pa = new short[count];
@@ -211,13 +215,15 @@ public class ArraySequenceNested extends ArrayStructure {
   }
 
   public int getScalarInt(int recnum, StructureMembers.Member m) {
-    if ((m.getDataType() != DataType.INT) && (m.getDataType() != DataType.ENUM4)) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be int");
+    if (!(m.getDataType().getPrimitiveClassType() == int.class))
+      throw new IllegalArgumentException("Type is "+m.getDataType()+", must be int");
     Array data = m.getDataArray();
     return data.getInt( recnum * m.getSize()); // gets first one in the array
   }
 
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
-    if ((m.getDataType() != DataType.INT) && (m.getDataType() != DataType.ENUM4)) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be int");
+    if (!(m.getDataType().getPrimitiveClassType() == int.class))
+      throw new IllegalArgumentException("Type is "+m.getDataType()+", must be int");
     int count = m.getSize();
     Array data = m.getDataArray();
     int[] pa = new int[count];
@@ -227,13 +233,13 @@ public class ArraySequenceNested extends ArrayStructure {
   }
 
   public long getScalarLong(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.LONG) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be long");
+    if (!(m.getDataType().getPrimitiveClassType() == long.class)) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be long");
     Array data = m.getDataArray();
     return data.getLong( recnum * m.getSize()); // gets first one in the array
   }
 
   public long[] getJavaArrayLong(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.LONG) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be long");
+    if (!(m.getDataType().getPrimitiveClassType() == long.class)) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be long");
     int count = m.getSize();
     Array data = m.getDataArray();
     long[] pa = new long[count];

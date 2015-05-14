@@ -169,9 +169,9 @@ public class WriterCFStationCollection extends CFPointWriter {
   private void writeStationData(StationFeature stn) throws IOException {
 
     StructureDataScalar stnCoords = new StructureDataScalar("Coords");
-    stnCoords.addMember(latName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLatitude());
-    stnCoords.addMember(lonName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLongitude());
-    stnCoords.addMember(stationAltName, null, null, DataType.DOUBLE, false, stn.getAltitude());
+    stnCoords.addMember(latName, null, null, DataType.DOUBLE, stn.getLatLon().getLatitude());
+    stnCoords.addMember(lonName, null, null, DataType.DOUBLE, stn.getLatLon().getLongitude());
+    stnCoords.addMember(stationAltName, null, null, DataType.DOUBLE, stn.getAltitude());
     stnCoords.addMemberString(stationIdName, null, null, stn.getName().trim(), id_strlen);
     if (useDesc) stnCoords.addMemberString(descName, null, null, stn.getDescription().trim(), desc_strlen);
     if (useWmoId) stnCoords.addMemberString(wmoName, null, null, stn.getWmoId().trim(), wmo_strlen);
@@ -196,8 +196,8 @@ public class WriterCFStationCollection extends CFPointWriter {
       throw new RuntimeException("Cant find station " + stnName);
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
-    coords.addMember(timeName, null, null, DataType.DOUBLE, false, timeCoordValue);
-    coords.addMember(stationIndexName, null, null, DataType.INT, false, parentIndex);
+    coords.addMember(timeName, null, null, DataType.DOUBLE, timeCoordValue);
+    coords.addMember(stationIndexName, null, null, DataType.INT, parentIndex);
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(coords); // coords first so it takes precedence

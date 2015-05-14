@@ -176,14 +176,17 @@ public class StructureDataDeep extends StructureDataA {
             bb.putDouble(sdata.getScalarDouble(m));
             break;
           case INT:
+          case UINT:
           case ENUM4:
             bb.putInt(sdata.getScalarInt(m));
             break;
           case SHORT:
+          case USHORT:
           case ENUM2:
             bb.putShort(sdata.getScalarShort(m));
             break;
           case BYTE:
+          case UBYTE:
           case ENUM1:
             bb.put(sdata.getScalarByte(m));
             break;
@@ -191,6 +194,7 @@ public class StructureDataDeep extends StructureDataA {
             bb.put((byte) sdata.getScalarChar(m));
             break;
           case LONG:
+          case ULONG:
             bb.putLong(sdata.getScalarLong(m));
             break;
           default:

@@ -353,25 +353,25 @@ public class CompareNetcdf {
         if (!Float.isNaN(v1) || !Float.isNaN(v2))
           assert closeEnough(v1, v2, (float) tol) : v1 + " != " + v2 + " count=" + iter1;
       }
-    } else if (dt == DataType.INT || dt == DataType.UINT) {
+    } else if (dt.getPrimitiveClassType() == int.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         int v1 = iter1.getIntNext();
         int v2 = iter2.getIntNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
-    } else if (dt == DataType.SHORT || dt == DataType.USHORT) {
+    } else if (dt.getPrimitiveClassType() == short.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
-    } else if (dt == DataType.BYTE || dt == DataType.UBYTE) {
+    } else if (dt.getPrimitiveClassType() == byte.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         byte v1 = iter1.getByteNext();
         byte v2 = iter2.getByteNext();
         assert v1 == v2 : v1 + " != " + v2 + " count=" + iter1;
       }
-    } else if (dt == DataType.LONG || dt == DataType.ULONG) {
+    } else if (dt.getPrimitiveClassType() == long.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         long v1 = iter1.getLongNext();
         long v2 = iter2.getLongNext();

@@ -45,24 +45,31 @@ public class StructureDataScalar extends StructureDataW {
     super(new StructureMembers(name));
   }
 
-  public void addMember(String name, String desc, String units, DataType dtype, boolean isUnsigned, Number val) {
+  public void addMember(String name, String desc, String units, DataType dtype, Number val) {
     StructureMembers.Member m = members.addMember(name, desc, units, dtype,  new int[0]);
     Array data = null;
     switch (dtype) {
+      case UBYTE:
       case BYTE:
-        data = new ArrayByte.D0(isUnsigned);
+      case ENUM1:
+        data = new ArrayByte.D0(dtype.isUnsigned());
         data.setByte(0, val.byteValue());
         break;
       case SHORT:
-        data = new ArrayShort.D0(isUnsigned);
+      case USHORT:
+      case ENUM2:
+        data = new ArrayShort.D0(dtype.isUnsigned());
         data.setShort(0, val.shortValue());
         break;
       case INT:
-        data = new ArrayInt.D0(isUnsigned);
+      case UINT:
+      case ENUM4:
+        data = new ArrayInt.D0(dtype.isUnsigned());
         data.setInt(0, val.intValue());
         break;
       case LONG:
-        data = new ArrayLong.D0(isUnsigned);
+      case ULONG:
+        data = new ArrayLong.D0(dtype.isUnsigned());
         data.setDouble(0, val.longValue());
         break;
       case FLOAT:

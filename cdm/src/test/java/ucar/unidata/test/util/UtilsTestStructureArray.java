@@ -136,19 +136,19 @@ public class UtilsTestStructureArray {
       assert a.getElementType() == float.class;
       data = as.getJavaArrayFloat(recno, m);
 
-    } else if (dtype == DataType.LONG) {
+    } else if (dtype.getPrimitiveClassType() == long.class) {
       assert a.getElementType() == long.class;
       data = as.getJavaArrayLong(recno, m);
 
-    } else if (dtype == DataType.INT) {
+    } else if (dtype.getPrimitiveClassType() == int.class) {
       assert a.getElementType() == int.class;
       data = as.getJavaArrayInt(recno, m);
 
-    } else if (dtype == DataType.SHORT) {
+    } else if (dtype.getPrimitiveClassType() == short.class) {
       assert a.getElementType() == short.class;
       data = as.getJavaArrayShort(recno, m);
 
-    } else if (dtype == DataType.BYTE) {
+    } else if (dtype.getPrimitiveClassType() == byte.class) {
       assert a.getElementType() == byte.class;
       data = as.getJavaArrayByte(recno, m);
 
@@ -197,19 +197,19 @@ public class UtilsTestStructureArray {
       assert a.getElementType() == float.class;
       data = sdata.getJavaArrayFloat(m);
 
-    } else if (dtype == DataType.LONG) {
+    } else if (dtype.getPrimitiveClassType() == long.class) {
       assert a.getElementType() == long.class;
       data = sdata.getJavaArrayLong(m);
 
-    } else if (dtype == DataType.INT) {
+    } else if (dtype.getPrimitiveClassType() == int.class) {
       assert a.getElementType() == int.class;
       data = sdata.getJavaArrayInt(m);
 
-    } else if (dtype == DataType.SHORT) {
+    } else if (dtype.getPrimitiveClassType() == short.class) {
       assert a.getElementType() == short.class;
       data = sdata.getJavaArrayShort(m);
 
-    } else if (dtype == DataType.BYTE) {
+    } else if (dtype.getPrimitiveClassType() == byte.class) {
       assert a.getElementType() == byte.class;
       data = sdata.getJavaArrayByte(m);
 

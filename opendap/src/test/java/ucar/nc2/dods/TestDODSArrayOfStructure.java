@@ -91,7 +91,7 @@ public class TestDODSArrayOfStructure  {
     assert v.getShortName().equals("b");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.BYTE;
+    assert v.getDataType() == DataType.UBYTE;
 
     // note this reads all 10 bytes
     a = v.read();

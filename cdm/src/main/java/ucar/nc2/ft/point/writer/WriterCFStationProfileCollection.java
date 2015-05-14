@@ -216,9 +216,9 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   private void writeStationData(StationFeature stn) throws IOException {
 
     StructureDataScalar stnCoords = new StructureDataScalar("Coords");
-    stnCoords.addMember(latName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLatitude());
-    stnCoords.addMember(lonName, null, null, DataType.DOUBLE, false, stn.getLatLon().getLongitude());
-    if (useAlt) stnCoords.addMember(stationAltName, null, null, DataType.DOUBLE, false, stn.getAltitude());
+    stnCoords.addMember(latName, null, null, DataType.DOUBLE, stn.getLatLon().getLatitude());
+    stnCoords.addMember(lonName, null, null, DataType.DOUBLE, stn.getLatLon().getLongitude());
+    if (useAlt) stnCoords.addMember(stationAltName, null, null, DataType.DOUBLE, stn.getAltitude());
     stnCoords.addMemberString(stationIdName, null, null, stn.getName().trim(), id_strlen);
     if (useDesc) stnCoords.addMemberString(descName, null, null, stn.getDescription().trim(), desc_strlen);
     if (useWmoId) stnCoords.addMemberString(wmoName, null, null, stn.getWmoId().trim(), wmo_strlen);
@@ -268,14 +268,14 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
     trackBB(profile.getLatLon(), CalendarDate.of(profile.getTime()));
 
     StructureDataScalar profileCoords = new StructureDataScalar("Coords");
-    profileCoords.addMember(latName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLatitude());
-    profileCoords.addMember(lonName, null, null, DataType.DOUBLE, false, profile.getLatLon().getLongitude());
+    profileCoords.addMember(latName, null, null, DataType.DOUBLE, profile.getLatLon().getLatitude());
+    profileCoords.addMember(lonName, null, null, DataType.DOUBLE, profile.getLatLon().getLongitude());
     //Date date = (profile.getTime() != null) ? (double) profile.getTime().getTime() : 0.0;   // LOOK (profile.getTime() != null) ???
     double timeInMyUnits = timeUnit.makeValue(profile.getTime());
-    profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, false, timeInMyUnits);  // LOOK time not always part of profile
+    profileCoords.addMember(profileTimeName, null, null, DataType.DOUBLE, timeInMyUnits);  // LOOK time not always part of profile
     profileCoords.addMemberString(profileIdName, null, null, profile.getName().trim(), id_strlen);
-    profileCoords.addMember(numberOfObsName, null, null, DataType.INT, false, nobs);
-    profileCoords.addMember(stationIndexName, null, null, DataType.INT, false, stnIndex);
+    profileCoords.addMember(numberOfObsName, null, null, DataType.INT, nobs);
+    profileCoords.addMember(stationIndexName, null, null, DataType.INT, stnIndex);
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(profileCoords); // coords first so it takes precedence
@@ -289,7 +289,7 @@ public class WriterCFStationProfileCollection extends CFPointWriter {
   public void writeObsData(PointFeature pf) throws IOException {
 
     StructureDataScalar coords = new StructureDataScalar("Coords");
-    coords.addMember(altitudeCoordinateName, null, null, DataType.DOUBLE, false, pf.getLocation().getAltitude());
+    coords.addMember(altitudeCoordinateName, null, null, DataType.DOUBLE, pf.getLocation().getAltitude());
 
     StructureDataComposite sdall = new StructureDataComposite();
     sdall.add(coords); // coords first so it takes precedence

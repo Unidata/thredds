@@ -67,10 +67,10 @@ public enum DataType {
 
   OBJECT("object", 1, Object.class, false), // added for use with Array
 
-  UBYTE("byte", 1, byte.class, true),
-  USHORT("short", 2, short.class, true),
-  UINT("int", 4, int.class, true),
-  ULONG("long", 8, long.class, true);
+  UBYTE("ubyte", 1, byte.class, true),
+  USHORT("ushort", 2, short.class, true),
+  UINT("uint", 4, int.class, true),
+  ULONG("ulong", 8, long.class, true);
 
   private final String niceName;
   private final int size;

@@ -17,7 +17,7 @@ message Attribute {
   optional bytes data = 4;          // not needed if len == 0
   repeated string sdata = 5;        // used for string data
   optional bool unsigned = 6 [default = false];  // not used
-  optional DataType dataType = 7;   // 5.0 cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
+  optional DataType dataType = 7;   // 5.0: cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM, CHAR deprecated: use STRING
 }
 
 enum DataType {
@@ -41,7 +41,6 @@ enum DataType {
   UINT = 16;
   ULONG = 17;
 }
-
 
 message Dimension {
   optional string name = 1;   // short name - optional when private
