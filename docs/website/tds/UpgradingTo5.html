@@ -48,7 +48,7 @@
 <ul>
   <li><strong>DataType</strong> now has unsigned types: UBYTE, USHORT, UINT, ULONG</li>
   <li>Array,    ArrayScalar,  ArrayByte, ArrayInt, ArrayShort, ArrayLong factory and constructor methods now require isUnsigned parameter. </li>
-  <li>Array.factory(class, shape) -&gt; Array.factory(DataType, shape) or Array.factory(class, isUnsigned, shape)</li>
+  <li>Array.factory(class, shape) -&gt; Array.factory(DataType, shape) or Array.factory(dataType, class, shape)</li>
   <li>Array.get1DJavaArray(Class) -&gt; Array.get1DJavaArray(DataType) or Array.get1DJavaArray(Class, isUnsigned)</li>
   <li>remove Array.setUnsigned(), Variable.setUnsigned() </li>
   <li>Variable.getUnsigned() -&gt; Variable.getDataType().getUnsigned() </li>

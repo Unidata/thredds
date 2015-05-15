@@ -99,7 +99,7 @@ public class StructureDataRegexp extends StructureData {
 
     if (m.getDataType() == DataType.STRING) {
       String result = matcher.group(f.fldno);
-      return new ArrayObject(String.class, new int[] {},  new Object[] {result.trim()});
+      return Array.factory(DataType.STRING, new int[] {},  new Object[] {result.trim()});
 
     } else if (m.getDataType() == DataType.SEQUENCE) {
       return getArraySequence(m);

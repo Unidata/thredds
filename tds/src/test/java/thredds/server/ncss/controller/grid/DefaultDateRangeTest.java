@@ -44,6 +44,7 @@ import org.springframework.test.context.ContextConfiguration;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.params.NcssGridParamsBean;
+import thredds.server.ncss.validation.TimeParamsValidator;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -51,7 +52,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}, loader = MockTdsContextLoader.class)
 public class DefaultDateRangeTest {
 
 	private NcssGridParamsBean requestParams;
@@ -70,7 +71,7 @@ public class DefaultDateRangeTest {
 		String dayBeforeStr = CalendarDateFormatter.toDateTimeStringISO(dayBefore);
 		
 		return Arrays.asList( new Object[][]{				
-				{0L, "present", null, null, null},
+				{0L, null, "present", "present", null},
 				{86400L, null, "present", dayAfterStr, null},
 				{86400L, null, dayBeforeStr,"present",  null},
 				{86400L*2,null, dayBeforeStr, dayAfterStr,  null},
@@ -79,8 +80,7 @@ public class DefaultDateRangeTest {
 		});
 	}
 	
-	public DefaultDateRangeTest(long expectedDuration, String time, String time_start, String time_end, String
-          time_duration){
+	public DefaultDateRangeTest(long expectedDuration, String time, String time_start, String time_end, String time_duration){
 		durationInSeconds = expectedDuration;
 		requestParams = new NcssGridParamsBean();
 		requestParams.setTime(time);
@@ -92,7 +92,7 @@ public class DefaultDateRangeTest {
 
 	@Test
 	public void shouldGetPresent() throws ParseException{
-		CalendarDateRange range= requestParams.getCalendarDateRange(Calendar.getDefault());
+		CalendarDateRange range= requestParams.makeCalendarDateRange(Calendar.getDefault());
 		System.out.printf("range=%s%n", range);
 		System.out.printf(" duration: expected=%d actual=%d%n", durationInSeconds, range.getDurationInSecs());
 		//assertEquals(durationInSeconds, range.getDurationInSecs() );

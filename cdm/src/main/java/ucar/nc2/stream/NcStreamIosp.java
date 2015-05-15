@@ -236,7 +236,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       Array dataArray = Array.factory(v.getDataType(), null, ByteBuffer.wrap(data));
       result[elem] = dataArray;
     }
-    return new ArrayObject(result[0].getClass(), new int[]{nelems}, result);
+    return Array.makeObjectArray(v.getDataType(), result[0].getClass(), new int[]{nelems}, result);
     //return dataArray.section(section.getRanges());
   }
 

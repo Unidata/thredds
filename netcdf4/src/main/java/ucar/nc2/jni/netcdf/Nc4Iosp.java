@@ -775,21 +775,24 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     switch (baseType) {
       case Nc4prototypes.NC_BYTE:
+        return Array.factory(DataType.BYTE, shape, bb.array());
       case Nc4prototypes.NC_UBYTE:
-        Array sArray = Array.factory(DataType.BYTE, shape, bb.array());
-        return (baseType == Nc4prototypes.NC_BYTE) ? sArray : MAMath.convertUnsigned(sArray);
+        return Array.factory(DataType.UBYTE, shape, bb.array());
 
       case Nc4prototypes.NC_SHORT:
+        return Array.factory(DataType.SHORT, shape, bb.asShortBuffer().array());
       case Nc4prototypes.NC_USHORT:
-        ShortBuffer sb = bb.asShortBuffer();
-        sArray = Array.factory(DataType.SHORT, shape, sb.array());
-        return (baseType == Nc4prototypes.NC_SHORT) ? sArray : MAMath.convertUnsigned(sArray);
+        return Array.factory(DataType.USHORT, shape, bb.asShortBuffer().array());
 
       case Nc4prototypes.NC_INT:
+        return Array.factory(DataType.INT, shape, bb.asIntBuffer().array());
       case Nc4prototypes.NC_UINT:
-        IntBuffer ib = bb.asIntBuffer();
-        sArray = Array.factory(DataType.INT, shape, ib.array());
-        return (baseType == Nc4prototypes.NC_INT) ? sArray : MAMath.convertUnsigned(sArray);
+        return Array.factory(DataType.UINT, shape, bb.asIntBuffer().array());
+
+      case Nc4prototypes.NC_INT64:
+        return Array.factory(DataType.LONG, shape, bb.asLongBuffer().array());
+      case Nc4prototypes.NC_UINT64:
+        return Array.factory(DataType.ULONG, shape, bb.asLongBuffer().array());
     }
     throw new IllegalArgumentException("Illegal type="+baseType);
   }
@@ -840,7 +843,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (fld.fldtypeid == Nc4prototypes.NC_CHAR) {
         fld.data = Array.factory(DataType.STRING, new int[]{len}); // LOOK ??
       } else if (ct.isVlen) {
-        fld.data = new ArrayObject(ct.dt.getPrimitiveClassType(), new int[]{len});
+        fld.data = Array.makeObjectArray(ct.dt, ct.dt.getPrimitiveClassType(), new int[]{len}, null);
         // fld.data = Array.factory( Object.class, new int[] { len});  // object array
       } else {
         fld.data = Array.factory(ct.dt, new int[]{len});
@@ -1042,9 +1045,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IllegalStateException("Dunno what to with " + dtype);
     }
 
-    if (cvttype.isUnsigned)
-      v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
-
     if (dtype.isEnum()) {
       EnumTypedef enumTypedef = g.findEnumeration(utype.name);
       v.setEnumTypedef(enumTypedef);
@@ -1083,7 +1083,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int typeid = xtypep.getValue();
     ConvertedType cvt = convertDataType(typeid);
 
-    f.format("%s %s %s(", cvt.dt, cvt.isUnsigned ? "unsigned" : "", vname);
     for (int i = 0; i < ndimsp.getValue(); i++) {
       f.format("%d ", dimids[i]);
     }
@@ -1300,7 +1299,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       for (int i = 0; dims != null && i < dims.length; ++i)
         sb.append(i == 0 ? "" : ", ").append(dims[i]);
       sb.append(", dtype=").append(ctype.dt);
-      if (ctype.isUnsigned) sb.append("(unsigned)");
       if (ctype.isVlen) sb.append("(vlen)");
       sb.append('}');
       return sb.toString();
@@ -1810,12 +1808,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         if (prefixrank == 0) // if scalar, return just the singleton vlen array
           result = fieldarray[0];
         else if (prefixrank == 1)
-          result = new ArrayObject(fieldarray[0].getClass(), new int[]{size}, fieldarray);
+          result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), new int[]{size}, fieldarray);
         else {
           // Otherwise create and fill in an n-dimensional Array Of Arrays
           int[] newshape = new int[prefixrank];
           System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
-          Array ndimarray = Array.factory(Array.class, false, newshape);
+          Array ndimarray = Array.makeObjectArray(m.getDataType(), Array.class, newshape, null);
           // Transfer the elements of data into the n-dim arrays
           IndexIterator iter = ndimarray.getIndexIterator();
           for (int i = 0; iter.hasNext(); i++) {
@@ -1898,8 +1896,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * Note that this only works for atomic base types;
    * structures will fail.
    */
-  Array readVlen(int grpid, int varid, UserType userType, Section section)
-          throws IOException {
+  Array readVlen(int grpid, int varid, UserType userType, Section section) throws IOException {
     // Read all the vlen pointers
     int len = (int) section.computeSize();
     Nc4prototypes.Vlen_t[] vlen = new Nc4prototypes.Vlen_t[len];
@@ -1907,13 +1904,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    // Compute rank upto the first VLEN
+    // Compute rank up to the first VLEN
     int prefixrank = 0;
     for (; prefixrank < section.getRank(); prefixrank++) {
       if (section.getRange(prefixrank) == Range.VLEN) break;
     }
 
-    //DataType dtype = convertDataType(userType.baseTypeid);
+    ConvertedType ctype = convertDataType(userType.baseTypeid);
     //ArrayObject.D1 vlenArray = new ArrayObject.D1( dtype, len);
 
     // Collect the vlen's data arrays
@@ -1946,19 +1943,20 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
         break;
       default:
-        throw new UnsupportedOperationException("Vlen type " + userType.baseTypeid + " = " + convertDataType(userType.baseTypeid));
+        throw new UnsupportedOperationException("Vlen type " + userType.baseTypeid + " = " + ctype);
     }
+
     if (prefixrank == 0) { // if scalar, return just the len Array
       return (Array) data[0];
     } else if (prefixrank == 1)
-      return new ArrayObject(data[0].getClass(), new int[]{len}, data);
+      return Array.makeObjectArray(ctype.dt, data[0].getClass(), new int[]{len}, data);
 
     // Otherwise create and fill in an n-dimensional Array Of Arrays
     int[] shape = new int[prefixrank];
     for (int i = 0; i < prefixrank; i++)
       shape[i] = section.getRange(i).length();
 
-    Array ndimarray = Array.factory(Array.class, false, shape);
+    Array ndimarray = Array.makeObjectArray(ctype.dt, Array.class, shape, null);
     // Transfer the elements of data into the n-dim arrays
     IndexIterator iter = ndimarray.getIndexIterator();
     for (int i = 0; iter.hasNext(); i++) {
@@ -1993,8 +1991,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
     } else
       intshape = new int[]{1};
-    ArrayObject values = new ArrayObject(ByteBuffer.class, intshape);
 
+    Array values = Array.factory(DataType.OPAQUE, intshape);
     int count = 0;
     IndexIterator ii = values.getIndexIterator();
     while (ii.hasNext()) {
@@ -2073,12 +2071,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   //Coverity[FB.SIC_INNER_SHOULD_BE_STATIC]
   private static class ConvertedType {
     DataType dt;
-    boolean isUnsigned;
+    // boolean isUnsigned;
     boolean isVlen;
 
-    ConvertedType(DataType dt, boolean isUnsigned) {
+    ConvertedType(DataType dt) {
       this.dt = dt;
-      this.isUnsigned = isUnsigned;
     }
   }
 
@@ -2125,43 +2122,43 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private ConvertedType convertDataType(int type) {
     switch (type) {
       case Nc4prototypes.NC_BYTE:
-        return new ConvertedType(DataType.BYTE, false);
+        return new ConvertedType(DataType.BYTE);
 
       case Nc4prototypes.NC_UBYTE:
-        return new ConvertedType(DataType.BYTE, true);
+        return new ConvertedType(DataType.UBYTE);
 
       case Nc4prototypes.NC_CHAR:
-        return new ConvertedType(DataType.CHAR, false);
+        return new ConvertedType(DataType.CHAR);
 
       case Nc4prototypes.NC_SHORT:
-        return new ConvertedType(DataType.SHORT, false);
+        return new ConvertedType(DataType.SHORT);
 
       case Nc4prototypes.NC_USHORT:
-        return new ConvertedType(DataType.SHORT, true);
+        return new ConvertedType(DataType.USHORT);
 
       case Nc4prototypes.NC_INT:
-        return new ConvertedType(DataType.INT, false);
+        return new ConvertedType(DataType.INT);
 
       case Nc4prototypes.NC_UINT:
-        return new ConvertedType(DataType.INT, true);
+        return new ConvertedType(DataType.UINT);
 
       case Nc4prototypes.NC_INT64:
-        return new ConvertedType(DataType.LONG, false);
+        return new ConvertedType(DataType.LONG);
 
       case Nc4prototypes.NC_UINT64:
-        return new ConvertedType(DataType.LONG, true);
+        return new ConvertedType(DataType.ULONG);
 
       case Nc4prototypes.NC_FLOAT:
-        return new ConvertedType(DataType.FLOAT, false);
+        return new ConvertedType(DataType.FLOAT);
 
       case Nc4prototypes.NC_DOUBLE:
-        return new ConvertedType(DataType.DOUBLE, false);
+        return new ConvertedType(DataType.DOUBLE);
 
       case Nc4prototypes.NC_ENUM:
-        return new ConvertedType(DataType.ENUM1, false); // LOOK width ??
+        return new ConvertedType(DataType.ENUM1); // LOOK width ??
 
       case Nc4prototypes.NC_STRING:
-        return new ConvertedType(DataType.STRING, false);
+        return new ConvertedType(DataType.STRING);
 
       default:
         UserType userType = userTypes.get(type);
@@ -2170,13 +2167,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
         switch (userType.typeClass) {
           case Nc4prototypes.NC_ENUM:
-            return new ConvertedType(DataType.ENUM1, false);
+            return new ConvertedType(DataType.ENUM1);
 
           case Nc4prototypes.NC_COMPOUND:
-            return new ConvertedType(DataType.STRUCTURE, false);
+            return new ConvertedType(DataType.STRUCTURE);
 
           case Nc4prototypes.NC_OPAQUE:
-            return new ConvertedType(DataType.OPAQUE, false);
+            return new ConvertedType(DataType.OPAQUE);
 
           case Nc4prototypes.NC_VLEN:
             ConvertedType result = convertDataType(userType.baseTypeid);

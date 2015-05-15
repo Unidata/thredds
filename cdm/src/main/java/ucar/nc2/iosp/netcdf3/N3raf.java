@@ -71,25 +71,25 @@ public class N3raf extends N3iosp  {
    */
   protected long readData( Layout index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
     long count = 0;
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
+    if (dataType.getPrimitiveClassType() == byte.class) {
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         count += raf.readToByteChannel( out, chunk.getSrcPos(), chunk.getNelems());
       }
 
-    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         count += raf.readToByteChannel( out, chunk.getSrcPos(), 2 * chunk.getNelems());
       }
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.FLOAT) || (dataType == DataType.ENUM4)) {
+    } else if (dataType.getPrimitiveClassType() == int.class || (dataType == DataType.FLOAT)) {
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         count += raf.readToByteChannel( out, chunk.getSrcPos(), 4 * chunk.getNelems());
       }
 
-    } else if ((dataType == DataType.DOUBLE) || (dataType == DataType.LONG)) {
+    } else if ((dataType == DataType.DOUBLE) || dataType.getPrimitiveClassType() == long.class) {
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         count += raf.readToByteChannel( out, chunk.getSrcPos(), 8 * chunk.getNelems());

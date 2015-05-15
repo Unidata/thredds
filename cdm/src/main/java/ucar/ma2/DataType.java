@@ -131,8 +131,7 @@ public enum DataType {
    * @return true if numeric
    */
   public boolean isNumeric() {
-    return (this == DataType.BYTE) || (this == DataType.FLOAT) || (this == DataType.DOUBLE) || (this == DataType.INT) ||
-            (this == DataType.SHORT) || (this == DataType.LONG);
+    return (this == DataType.FLOAT) || (this == DataType.DOUBLE) || isIntegral();
   }
 
   /**
@@ -141,7 +140,8 @@ public enum DataType {
    * @return true if integral
    */
   public boolean isIntegral() {
-    return (this == DataType.BYTE) || (this == DataType.INT) || (this == DataType.SHORT) || (this == DataType.LONG);
+    return (this == DataType.BYTE) || (this == DataType.INT) || (this == DataType.SHORT) || (this == DataType.LONG) ||
+            (this == DataType.UBYTE) || (this == DataType.UINT) || (this == DataType.USHORT) || (this == DataType.ULONG);
   }
 
   /**

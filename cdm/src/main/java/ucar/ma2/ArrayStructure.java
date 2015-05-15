@@ -427,7 +427,7 @@ public abstract class ArrayStructure extends Array {
       result = new ArrayStructureW(membersw, rshape);
 
     } else if (dataType == DataType.OPAQUE) {
-      result = new ArrayObject(ByteBuffer.class, rshape);
+      result = Array.factory(DataType.OPAQUE, rshape);
 
     } else {
       result = Array.factory(dataType, rshape);
@@ -442,19 +442,19 @@ public abstract class ArrayStructure extends Array {
       for (int recno = 0; recno < getSize(); recno++)
         copyFloats(recno, m, resultIter);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.UBYTE) || (dataType == DataType.ENUM1)) {
+    } else if (dataType.getPrimitiveClassType() == byte.class) {
       for (int recno = 0; recno < getSize(); recno++)
         copyBytes(recno, m, resultIter);
 
-    } else if ((dataType == DataType.SHORT)  || (dataType == DataType.USHORT) || (dataType == DataType.ENUM2)) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       for (int recno = 0; recno < getSize(); recno++)
         copyShorts(recno, m, resultIter);
 
-    } else if ((dataType == DataType.INT)  || (dataType == DataType.UINT) || (dataType == DataType.ENUM4)) {
+    } else if (dataType.getPrimitiveClassType() == int.class) {
       for (int recno = 0; recno < getSize(); recno++)
         copyInts(recno, m, resultIter);
 
-    } else if (dataType == DataType.LONG  || (dataType == DataType.ULONG)) {
+    } else if (dataType.getPrimitiveClassType() == long.class) {
       for (int recno = 0; recno < getSize(); recno++)
         copyLongs(recno, m, resultIter);
 

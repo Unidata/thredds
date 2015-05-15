@@ -314,7 +314,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
     if (debugMissing) System.out.printf("missing_data: ");
     for (int i = 0; i < n; i++) {
-      if (isUnsigned && att.getDataType() == DataType.BYTE)
+      if (isUnsigned && att.getDataType() == DataType.BYTE)                       // LOOK BYTE or UBYTE ?
         value[i] = convertScaleOffsetMissing(att.getNumericValue(i).byteValue());
       else if (isUnsigned && att.getDataType() == DataType.SHORT)
         value[i] = convertScaleOffsetMissing(att.getNumericValue(i).shortValue());
@@ -329,13 +329,13 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   }
 
   private int rank(DataType c) {
-    if (c == DataType.BYTE)
+    if (c.getPrimitiveClassType() == byte.class)
       return 0;
-    else if (c == DataType.SHORT)
+    else if (c.getPrimitiveClassType() == short.class)
       return 1;
-    else if (c == DataType.INT)
+    else if (c.getPrimitiveClassType() == int.class)
       return 2;
-    else if (c == DataType.LONG)
+    else if (c.getPrimitiveClassType() == long.class)
       return 3;
     else if (c == DataType.FLOAT)
       return 4;
@@ -527,7 +527,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    */
   public Object getFillValue(DataType dt) {
     DataType useType = convertedDataType == null ? dt : convertedDataType;
-    if (useType == DataType.BYTE || useType == DataType.UBYTE || useType == DataType.ENUM1) {
+    if (useType.getPrimitiveClassType() == byte.class) {
       byte[] result = new byte[1];
       result[0] = hasFillValue ? (byte) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UBYTE : N3iosp.NC_FILL_BYTE);
       return result;
@@ -542,17 +542,17 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       result[0] = hasFillValue ? (char) fillValue : N3iosp.NC_FILL_CHAR;
       return result;
 
-    } else if ((useType == DataType.SHORT) || (useType == DataType.USHORT) || (useType == DataType.ENUM2)) {
+    } else if (useType.getPrimitiveClassType() == short.class) {
       short[] result = new short[1];
       result[0] = hasFillValue ? (short) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_USHORT : N3iosp.NC_FILL_SHORT);
       return result;
 
-    } else if ((useType == DataType.INT) || (useType == DataType.UINT) || (useType == DataType.ENUM4)) {
+    } else if (useType.getPrimitiveClassType() == int.class) {
       int[] result = new int[1];
       result[0] = hasFillValue ? (int) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UINT : N3iosp.NC_FILL_INT);
       return result;
 
-    } else if (useType == DataType.LONG || useType == DataType.ULONG) {
+    } else if (useType.getPrimitiveClassType() == long.class) {
       long[] result = new long[1];
       result[0] = hasFillValue ? (long) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UINT64 : N3iosp.NC_FILL_INT64);
       return result;

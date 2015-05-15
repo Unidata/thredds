@@ -10,68 +10,42 @@
 <body>
 <h1>CDM Data Types</h1>
 
-<p>This document explains how CDM data types are mapped into Netcdf-Java objects</p>
+<p>This document explains how CDM data types are mapped into Netcdf-Java objects for version 5.0+.</p>
 <hr width="100%"/>
-<h2>Overview</h2>
+<h2>Reading Data</h2>
 
-<p>An <strong>Array</strong> contains the actual data for a Variable after it is read from the disk or network. Data access can be done in a general way through
-  the method </p>
-<pre><strong> Array data = Variable.read(); </strong></pre>
-<p>The one exception to this is <strong>Sequences</strong>, which musty be accessed through <strong>Sequence.getStructureIterator()</strong> which returns
-  <strong>StructureData</strong> objects. </p>
-
-<p>For Variables that are members of a Structure, data is accessed generally through the method</p>
-<pre>    <strong>Array data = StructureData</strong>.<strong>getArray( memberName);</strong></pre>
-<p>When a Variable has a variable length dimension, <strong>Variable.isVariableLength()</strong> is true and a <strong>ArrayObject</strong> with the appropriate
-  element type is returned. You cannot subset on the variable length dimension, all of it is always read. For example:</p>
-<pre>CDL:
-  short levels(acqtime=10, *);
-
-Java:
-  Variable v = ncfile.findVariable(&quot;levels&quot;);
-  Array data = v.read();
-  NCdumpW.printArray(data, &quot;read()&quot;,  new PrintWriter( System.out), null);
- 
-  // loop over outer dimension
-  while (data.hasNext()) {
-    Array as = (Array) data.next(); // inner variable length array of short
-    NCdumpW.printArray(as, &quot;&quot;,  new PrintWriter( System.out), null);
-  }
-  
-  // subset ok on outer dimension
-  data = v.read(&quot;0:9:2,:&quot;);
-  NCdumpW.printArray(data, &quot;read(0:9:2,:)&quot;,  new PrintWriter( System.out), null); // ok
-    
-  data = v.read(new Section().appendRange(0,9,2).appendRange(null));
-  NCdumpW.printArray(data, &quot;read(Section)&quot;,  new PrintWriter( System.out), null); // ok
- </pre>
-You cannot use the older style <strong>read(origin, shape)</strong> interface:
-<pre>  // fail<br/>  int[] origin = new int[] {0, 0};<br/>  int[] size = new int[] {3, -1};<br/>  data = v.read(origin, size);</pre>
-<p>Otherwise the Array is rectangular, and the following is returned from <strong>Variable.read()</strong> or
-  <strong>StructureData</strong>.<strong>getArray</strong>():</p>
-<table width="452" border="1">
+<p>An <strong>Array</strong> contains the actual data for a Variable after it is read from the disk or network. Data access can be done through
+  these methods (with caveats noted below):</p>
+<pre><strong>Array data = Variable.read(); </strong>
+<strong>Array data = Variable.read(</strong>int[]&#32;origin,&#32;int[]&#32;shape<strong>);</strong>
+<strong>Array data = Variable.read(</strong>ucar.ma2.Section&#32;section<strong>);</strong>
+<strong>Array data = Variable.read(</strong>List&lt;Range&gt;&#32;ranges<strong>);</strong>
+<strong>Array data = Variable.read(</strong>String&#32;sectionSpec<strong>);</strong></pre>
+<p>Typically the data is read into memory  when the read() method is called, and so all of these mehods may throw an IOException.</p>
+<p>The returned Array has the following characteristics:</p>
+<table width="472" border="1">
   <tr>
-    <th width="109" scope="col">DataType</th>
-    <th width="151" scope="col">Array subclass</th>
-    <th width="170" scope="col">Array.getElementType</th>
+    <th width="160" scope="col">DataType</th>
+    <th width="107" scope="col">Array subclass</th>
+    <th width="183" scope="col">Array.getElementType</th>
   </tr>
   <tr>
-    <td>BYTE</td>
+    <td>BYTE, UBYTE, ENUM1</td>
     <td>ArrayByte</td>
     <td>byte.class</td>
   </tr>
   <tr>
-    <td>SHORT</td>
+    <td>SHORT, USHORT, ENUM2</td>
     <td>ArrayShort</td>
     <td>short.class</td>
   </tr>
   <tr>
-    <td>INT</td>
+    <td>INT, UINT, ENUM4</td>
     <td>ArrayInt</td>
     <td>int.class</td>
   </tr>
   <tr>
-    <td>LONG</td>
+    <td>LONG, ULONG</td>
     <td>ArrayLong</td>
     <td>long.class</td>
   </tr>
@@ -103,22 +77,7 @@ You cannot use the older style <strong>read(origin, shape)</strong> interface:
   <tr>
     <td>SEQUENCE</td>
     <td>ArraySequence</td>
-    <td>StructureData.class</td>
-  </tr>
-  <tr>
-    <td>ENUM1</td>
-    <td>ArrayByte</td>
-    <td>byte.class</td>
-  </tr>
-  <tr>
-    <td>ENUM2</td>
-    <td>ArrayShort</td>
-    <td>short.class</td>
-  </tr>
-  <tr>
-    <td>ENUM4</td>
-    <td>ArrayInt</td>
-    <td>int.class</td>
+    <td>StructureDataIterator.class</td>
   </tr>
   <tr>
     <td>OPAQUE</td>
@@ -126,22 +85,71 @@ You cannot use the older style <strong>read(origin, shape)</strong> interface:
     <td>ByteBuffer.class</td>
   </tr>
 </table>
-<p>&nbsp; </p>
+<h3>Structures</h3>
+<p>For Variables that are members of a Structure, after the data has been read into a <strong>StructureData</strong>, the member data may be extracted  through  these methods ( where XXX are the various data types):</p>
+<pre> <strong>Array data = StructureData</strong>.<strong>getArray( memberName);</strong>
+ <strong>XXX data = StructureData</strong>.<strong>getScalarXXX( memberName);</strong>
+ <strong>XXX[] data = StructureData</strong>.<strong>getJavaArrayXXX( memberName);</strong></pre>
+<p>In this case, the data has already been read, so there is no IOException.</p>
+<p>Note that in  general you should use <strong>StructureData</strong>.<strong>getXXX( String memberName)</strong> and not <strong>StructureData</strong>.<strong>getXXX( StructureData.Member member)</strong>.</p>
+<h3>Sequences</h3>
+<p>The usual read() methods cannot be used on Sequences<strong> (DataType.SEQUENCE)</strong>  , but only through <strong>Sequence.getStructureIterator( </strong>int&#32;bufferSize<strong>)</strong> which returns
+  <strong>StructureData</strong> objects:</p>
+<pre>StructureDataIterator&#32;sdataIter&#32;=&#32;obs.getStructureIterator(-1); // use default bufer size<br />
+while&#32;(sdataIter.hasNext())&#32;{<br />&#32;&#32;StructureData&#32;sdata&#32;=&#32;sdataIter.next();
+  ....
+}<br /></pre>
 
+<p>Sequence data thus cannot be subset, but only sequentially traversed. </p>
+<h3>Variable Length Data</h3>
+<p>When a Variable has a variable length dimension, <strong>Variable.isVariableLength()</strong> is true and things are more complicated that with rectangular arrays. </p>
+<ol>
+  <li>The Array DataType always matches the Variable DataType. hmmm this may not be good</li>
+</ol>
+<p>You cannot subset on the variable length dimension, all of it is always read. For example:</p>
+<p>an <strong>ArrayObject</strong> with the
+  element type is returned. You cannot subset on the variable length dimension, all of it is always read. For example:</p>
+<pre>CDL:
+  short levels(acqtime=10, *);
+
+Java:
+  Variable v = ncfile.findVariable(&quot;levels&quot;);
+  Array data = v.read();
+  NCdumpW.printArray(data, &quot;read()&quot;,  new PrintWriter( System.out), null);
+ 
+  // loop over outer dimension
+  while (data.hasNext()) {
+    Array as = (Array) data.next(); // inner variable length array of short
+    NCdumpW.printArray(as, &quot;&quot;,  new PrintWriter( System.out), null);
+  }
+  
+  // subset ok on outer dimension
+  data = v.read(&quot;0:9:2,:&quot;);
+  NCdumpW.printArray(data, &quot;read(0:9:2,:)&quot;,  new PrintWriter( System.out), null); // ok
+    
+  data = v.read(new Section().appendRange(0,9,2).appendRange(null));
+  NCdumpW.printArray(data, &quot;read(Section)&quot;,  new PrintWriter( System.out), null); // ok
+ </pre>
+<p>&nbsp;</p>
+<pre>StructreDS
+ArrayObject.D1&#32;newSeq&#32;=&#32;new&#32;ArrayObject.D1(ArraySequence.class,&#32;(int)&#32;seqArray.getSize());<br />
+H5iosp
+Array&#32;ndimarray&#32;=&#32;Array.makeObjectArray(m.getDataType(),&#32;Array.class,&#32;newshape);<br />
+</pre>
+<hr />
 <h2><a name="integer" id="integer"></a>Integer Types</h2>
 
-<p>The CDM integer types are <strong>byte, short, int, </strong>and<strong> long</strong>. Each are mapped to the corresponding Java primitive type, which are
+<p>The CDM integer types are <strong>BYTE, SHORT, INT, and LONG</strong><strong></strong>. Each are mapped to the corresponding Java primitive type, which are
   1,2,4, and 8 bytes wide, respectively.</p>
 
 <p>When the underlying file format stores data as unsigned integers, an IOSP may decide to widen the type to a signed type, eg </p>
 <ul>
-  <li>unsigned byte &gt; signed short</li>
-  <li>unsigned short &gt; signed int</li>
-  <li>unsigned int &gt; signed long</li>
+  <li>unsigned byte -&gt; signed short</li>
+  <li>unsigned short -&gt; signed int</li>
+  <li>unsigned int -&gt; signed long</li>
 </ul>
-<p>Otherwise, the the variable is kept as an unsigned integer type and the attribute <em><strong>_Unsigned = &quot;true&quot;</strong></em> is added to the
-  variable. Since Java does not have unsigned integer types, handling unsigned values requires some attention. Unsigned integer data are stored in the
-  corresponding signed primitive types. You can detect this by calling <strong>Array.isUnsigned()</strong> or <strong>Variable.isUnsigned().</strong></p>
+<p>Otherwise, the the variable is kept as an unsigned integer type with type <strong>UBYTE, USHORT, UINT </strong>or<strong> ULONG</strong>. Since Java does not have unsigned integer types, handling unsigned values requires some attention. Unsigned integer data are stored in the
+  corresponding signed primitive types. You can detect this by calling <strong>DataType.isUnsigned(), Array.isUnsigned(), Variable.isUnsigned() </strong>or sinply testing the DataType.</p>
 
 <p>You may use static methods in <strong>ucar.ma2.DataType</strong> to convert one value at a time: </p>
 <pre>
@@ -157,14 +165,12 @@ You cannot use the older style <strong>read(origin, shape)</strong> interface:
   example, calling</p>
 <pre>  data.getDouble()
 </pre>
-<p>on an unsigned integer type will return the widened value cast to a double.</p>
-
-<p><br>
+<p>on an unsigned integer type will return the widened value cast to a double.<br>
 </p>
 
 <h2>Floating Point Types</h2>
 
-<p>The CDM integer types are <strong>float and double </strong><strong></strong>. Each are mapped to the corresponding Java primitive type. </p>
+<p>The CDM integer types are <strong>FLOAT </strong>and<strong> DOUBLE </strong>. Each are mapped to the corresponding Java primitive type. </p>
 
 <h2>Char and String Types</h2>
 
@@ -214,15 +220,12 @@ You cannot use the older style <strong>read(origin, shape)</strong> interface:
     Array enumValues = Array.factory(DataType.STRING, rawValues.getShape());
     IndexIterator ii = enumValues.getIndexIterator();
 
-
     // use implicit Array iterator
-
     while (rawValues.hasNext()) {
       String sval = var.<strong>lookupEnumString</strong>(rawValues.nextInt());
       ii.setObjectNext(sval);
     }
-  } 
-</pre>
+  } </pre>
 <p>When wrapping a NetcdfFile with a NetcdfDataset, by default enumerations will be converted to their String values, and the type of the Variable will be
   changed to String. This conversion is controlled by the <strong>enhanceMode</strong> parameter on NetcdfDataset.open:</p>
 <pre><strong> static public NetcdfDataset openDataset(String location, EnumSet&lt;Enhance&gt; enhanceMode, int buffer_size, CancelTask cancelTask, Object
@@ -243,7 +246,7 @@ You cannot use the older style <strong>read(origin, shape)</strong> interface:
 <address>
 </address>
 <address>
-  <img src="../nc.gif" width="64" height="64"/> This document is maintained by John Caron and was last updated July 2009
+  <img src="../nc.gif" width="64" height="64"/> This document is maintained by John Caron and was last updated May 2015
 </address>
 </body>
 </html>

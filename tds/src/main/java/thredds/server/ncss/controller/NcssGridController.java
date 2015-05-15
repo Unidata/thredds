@@ -27,8 +27,6 @@ import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.ft2.coverage.grid.GridCoverage;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.util.IO;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -259,6 +259,10 @@ public class NcssParamsBean {
     if (cal.equals(Calendar.getDefault())) return dateRange;
 
     // otherwise must reparse
+    return makeCalendarDateRange(cal);
+  }
+
+  public CalendarDateRange makeCalendarDateRange(Calendar cal) {
     try {
       // this handles "present"
       DateRange dr = new DateRange(new DateType(time_start, null, null, cal), new DateType(time_end, null, null, cal), new TimeDuration(time_duration), null);

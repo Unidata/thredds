@@ -247,7 +247,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     ArrayChar data = (ArrayChar) org.read();
     ArrayChar.StringIterator ii = data.getStringIterator();
-    ArrayObject.D1 sdata = new ArrayObject.D1(String.class, ncoords);
+    ArrayObject.D1 sdata = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {ncoords});
 
     for (int i = 0; i < ncoords; i++) {
       String coordValue = ii.next();

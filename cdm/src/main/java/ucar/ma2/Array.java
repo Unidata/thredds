@@ -102,73 +102,46 @@ public abstract class Array {
 
   /* generate new Array with given type and shape and zeroed storage */
   static private Array factory(DataType dtype, Index index, Object storage) {
-    Array result;
     switch (dtype) {
       case DOUBLE:
-        result = ArrayDouble.factory(index, (double[]) storage);
-        break;
+        return ArrayDouble.factory(index, (double[]) storage);
       case FLOAT:
-        result = ArrayFloat.factory(index, (float[]) storage);
-        break;
+        return ArrayFloat.factory(index, (float[]) storage);
       case CHAR:
-        result = ArrayChar.factory(index, (char[]) storage);
-        break;
+        return ArrayChar.factory(index, (char[]) storage);
       case BOOLEAN:
-        result = ArrayBoolean.factory(index, (boolean[]) storage);
-        break;
+        return ArrayBoolean.factory(index, (boolean[]) storage);
 
       case ENUM4:
       case UINT:
       case INT:
-        result = ArrayInt.factory(index, dtype.isUnsigned(), (int[]) storage);
-        break;
+        return ArrayInt.factory(index, dtype.isUnsigned(), (int[]) storage);
       case ENUM2:
       case USHORT:
       case SHORT:
-        result = ArrayShort.factory(index, dtype.isUnsigned(), (short[]) storage);
-        break;
+        return ArrayShort.factory(index, dtype.isUnsigned(), (short[]) storage);
       case ENUM1:
       case UBYTE:
       case BYTE:
-        result = ArrayByte.factory(index, dtype.isUnsigned(), (byte[]) storage);
-        break;
+        return ArrayByte.factory(index, dtype.isUnsigned(), (byte[]) storage);
       case ULONG:
       case LONG:
-        result = ArrayLong.factory(index, dtype.isUnsigned(), (long[]) storage);
-        break;
+        return ArrayLong.factory(index, dtype.isUnsigned(), (long[]) storage);
 
       case STRING:
-        result = ArrayObject.factory(String.class, index, (Object[]) storage);
-        break;
+        return ArrayObject.factory(dtype, String.class, index, (Object[]) storage);
       case STRUCTURE:
-        result = ArrayObject.factory(StructureData.class, index, (Object[]) storage);
-        break;
+        return ArrayObject.factory(dtype, StructureData.class, index, (Object[]) storage);
       case SEQUENCE:
-        result = ArrayObject.factory(StructureDataIterator.class, index, (Object[]) storage);
-        break;
+        return ArrayObject.factory(dtype, StructureDataIterator.class, index, (Object[]) storage);
       case OPAQUE:
-        result = ArrayObject.factory(ByteBuffer.class, index, (Object[]) storage);
-        break;
+        return ArrayObject.factory(dtype, ByteBuffer.class, index, (Object[]) storage);
 
+      // LOOK what is this used for ??
       default:
-        return ArrayObject.factory(Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+        return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
     }
-
-    return result;
   }
-
-
-  /**
-   * Generate new Array with given primitive type and shape and zeroed storage.
-   *
-   * @param classType element Class type, eg double.class.
-   * @param shape     shape of the array.
-   * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
-   */
-  static public Array factory(Class classType, boolean isUnsigned, int[] shape) {
-    return factory(classType, isUnsigned, shape, null);
-  }
-
 
   /**
    * Generate new Array with given type, shape, storage.
@@ -187,13 +160,9 @@ public abstract class Array {
    * @throws IllegalArgumentException storage.length != product of shapes
    * @throws ClassCastException       wrong storage type
    */
-  static public Array factory(Class classType, boolean isUnsigned, int[] shape, Object storage) {
+  static public Array makeObjectArray(DataType dtype, Class classType, int[] shape, Object storage) {
     Index index = Index.factory(shape);
-    DataType dtype = DataType.getType(classType, isUnsigned);
-    if (DataType.OBJECT == dtype) {
-      return ArrayObject.factory(classType, index, (Object[]) storage);
-    } else
-      return factory(dtype, index, storage);
+    return ArrayObject.factory(dtype, classType, index, (Object[]) storage);
   }
 
   /**
@@ -237,16 +206,16 @@ public abstract class Array {
         return new ArrayLong(index, true, (long[]) storage);
 
       case STRING:
-        return new ArrayObject(String.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, String.class, index, (Object[]) storage);
       case STRUCTURE:
-        return new ArrayObject(StructureData.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, StructureData.class, index, (Object[]) storage);
       case SEQUENCE:
-        return new ArrayObject(StructureDataIterator.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, StructureDataIterator.class, index, (Object[]) storage);
       case OPAQUE:
-        return new ArrayObject(ByteBuffer.class, index, (Object[]) storage);
+        return new ArrayObject(dtype, ByteBuffer.class, index, (Object[]) storage);
 
       default:
-        return ArrayObject.factory(Object.class, index, (Object[]) storage);  // LOOK dont know the object class
+        return ArrayObject.factory(DataType.OBJECT, Object.class, index, (Object[]) storage);  // LOOK dont know the object class
     }
   }
 
@@ -256,7 +225,7 @@ public abstract class Array {
 
   /**
    * Generate a new Array from a java array of any rank and type.
-   * This makes a COPY of the data values of javaArray.
+   * This makes a COPY of the data values of javaArray of primitive type
    * LOOK: not sure this works for reference types.
    *
    * @param javaArray scalar Object or a java array of any rank and type
@@ -270,10 +239,6 @@ public abstract class Array {
       rank_++;
       componentType = componentType.getComponentType();
     }
-    /* if( rank_ == 0)
-      throw new IllegalArgumentException("Array.factory: not an array");
-    if( !componentType.isPrimitive())
-      throw new UnsupportedOperationException("Array.factory: not a primitive array"); */
 
     // get the shape
     int count = 0;
@@ -287,7 +252,8 @@ public abstract class Array {
     }
 
     // create the Array
-    Array aa = factory(componentType, isUnsigned, shape);
+    DataType dtype = DataType.getType(componentType, isUnsigned);
+    Array aa = factory(dtype, shape);
 
     // copy the original array
     IndexIterator aaIter = aa.getIndexIterator();
@@ -343,7 +309,7 @@ public abstract class Array {
   }
 
   /**
-   * Make a 1D array from a start and inccr.
+   * Make a 1D array from a start and incr.
    *
    * @param dtype data type of result. must be convertible to double.
    * @param npts  number of points
@@ -381,7 +347,7 @@ public abstract class Array {
         if (dtype.isUnsigned()) {
           BigInteger biggy = new BigInteger(s);
           long convert = biggy.longValue(); // > 63 bits will become "negetive".
-          System.out.printf("%s == %d%n", biggy, convert);
+          // System.out.printf("%s == %d%n", biggy, convert);
           dataI.setLongNext(biggy.longValue());
 
         } else {
@@ -389,7 +355,7 @@ public abstract class Array {
           dataI.setLongNext(val);
         }
 
-      } else {
+      } else {   // this works for other numerics (LOOK not unsigned)
         double val = Double.parseDouble(s);
         dataI.setDoubleNext(val);
       }
@@ -410,7 +376,7 @@ public abstract class Array {
   }
 
   /**
-   * Add extra dimension with len = 1.
+   * Add extra outermost dimension with len = 1.
    *
    * @param org original array
    * @return rank1 array of rank + 1
@@ -460,14 +426,14 @@ public abstract class Array {
     return (Index) indexCalc.clone();
   }
 
-  /**
+  /*
    * Get an Index object used for indexed access of this Array.
    *
    * @return an Index for this Array
-   */
+   *
   public Index getIndexPrivate() {
     return indexCalc;
-  }
+  }  */
 
   /**
    * Get an index iterator for traversing the array in canonical order.
@@ -531,17 +497,17 @@ public abstract class Array {
     return section(ranges).getIndexIterator();
   }
 
-  /**
+  /*
    * Get an index iterator for traversing the array in arbitrary order.
    * Use this if you dont care what order the elements are returned, eg if you are summing an Array.
    * To get an iteration in order,  use getIndexIterator(), which returns a fast iterator if possible.
    *
    * @return an IndexIterator for traversing the array in arbitrary order.
    * @deprecated use getIndexIterator
-   */
+   *
   public IndexIterator getIndexIteratorFast() {
     return indexCalc.getIndexIteratorFast(this);
-  }
+  }  */
 
   /**
    * Get the element class type of this Array
@@ -908,7 +874,6 @@ public abstract class Array {
     Array result = factory(this.getDataType(), shape);
     if (result.getSize() != getSize())
       throw new IllegalArgumentException("reshape arrays must have same total size");
-
     Array.arraycopy(this, 0, result, 0, (int) getSize());
     return result;
   }

@@ -1044,7 +1044,7 @@ public class H5header {
     // Strings
     if ((vinfo.typeInfo.hdfType == 9) && (vinfo.typeInfo.isVString)) {
       Layout layout = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new Section(shape));
-      ArrayObject.D1 data = new ArrayObject.D1(String.class, (int) layout.getTotalNelems());
+      ArrayObject.D1 data = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {(int) layout.getTotalNelems()});
       int count = 0;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -1086,7 +1086,7 @@ public class H5header {
             data[count++] = vlenArray;
         }
       }
-      return (scalar) ? data[0] : Array.factory(Array.class, false, shape, data);
+      return (scalar) ? data[0] : Array.makeObjectArray(readType, Array.class, shape, data);
     } // vlen case
 
     // NON-STRUCTURE CASE
@@ -1125,7 +1125,7 @@ public class H5header {
         byte[] bdata = (byte[]) data;
         int strlen = vinfo.mdt.byteSize;
         int n = bdata.length / strlen;
-        ArrayObject.D1 sarray = new ArrayObject.D1(String.class, n);
+        ArrayObject.D1 sarray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {n});
         for (int i = 0; i < n; i++) {
           String sval = convertString(bdata, i * strlen, strlen);
           sarray.set(i, sval);
@@ -1134,7 +1134,7 @@ public class H5header {
 
       } else {
         String sval = convertString((byte[]) data);
-        ArrayObject.D1 sarray = new ArrayObject.D1(String.class, 1);
+        ArrayObject.D1 sarray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {1});
         sarray.set(0, sval);
         dataArray = sarray;
       }

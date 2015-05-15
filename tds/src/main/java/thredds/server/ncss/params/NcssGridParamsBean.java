@@ -34,7 +34,6 @@ public class NcssGridParamsBean extends NcssParamsBean {
 
   private Double vertCoord;
 
-
   public Double getMinx() {
     return minx;
   }

@@ -257,7 +257,7 @@ public class ArrayStructureMA extends ArrayStructure {
     for (Variable v : from.getVariables()) {
       Array data;
       if (v instanceof Sequence) {
-        data = new ArrayObject(ArraySequence.class, shape);  // an array sequence - one for each parent element
+        data = Array.factory(DataType.SEQUENCE, shape);  // an array sequence - one for each parent element
         //Structure s = (Structure) v;
         //StructureMembers smn = s.makeStructureMembers();
         // data = new ArraySequenceNested(smn, (int) Index.computeSize(v.getShapeAll())); // ??

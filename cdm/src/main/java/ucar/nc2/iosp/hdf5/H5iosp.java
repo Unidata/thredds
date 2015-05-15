@@ -245,14 +245,12 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     if ((typeInfo.hdfType == 9) && !typeInfo.isVString) { // vlen (not string)
       DataType readType = dataType;
-      if (typeInfo.isVString) // string
-        readType = DataType.BYTE;
-      else if (typeInfo.base.hdfType == 7) // reference
+      if (typeInfo.base.hdfType == 7) // reference
         readType = DataType.LONG;
 
       // general case is to read an array of vlen objects
       // each vlen generates an Array - so return ArrayObject of Array
-      //boolean scalar = false; // layout.getTotalNelems() == 1; // if scalar, return just the len Array // remove 12/25/10 jcaron
+      // boolean scalar = false; // layout.getTotalNelems() == 1; // if scalar, return just the len Array // remove 12/25/10 jcaron
       Array[] data = new Array[(int) layout.getTotalNelems()];
       int count = 0;
       while (layout.hasNext()) {
@@ -269,13 +267,13 @@ public class H5iosp extends AbstractIOServiceProvider {
       Array result;
       if(prefixrank == 0) // if scalar, return just the singleton vlen array
         result = data[0];
-      else if(prefixrank == 1)
-        result = new ArrayObject(data[0].getClass(), new int[]{count}, data);
+      else if (prefixrank == 1)
+        result = Array.makeObjectArray(readType, data[0].getClass(), new int[]{count}, data);
       else {
           // Otherwise create and fill in an n-dimensional Array Of Arrays
           int[] newshape = new int[prefixrank];
           System.arraycopy(shape, 0, newshape, 0, prefixrank);
-          Array ndimarray = Array.factory(Array.class, false, newshape);
+          Array ndimarray = Array.makeObjectArray(readType, Array.class, newshape, null);
           // Transfer the elements of data into the n-dim arrays
           IndexIterator iter = ndimarray.getIndexIterator();
           for(int i = 0;iter.hasNext();i++) {
@@ -445,12 +443,12 @@ public class H5iosp extends AbstractIOServiceProvider {
         if(prefixrank == 0) // if scalar, return just the singleton vlen array
           result = fieldarray[0];
         else if(prefixrank == 1)
-          result = new ArrayObject(fieldarray[0].getClass(), new int[]{size}, fieldarray);
+          result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), new int[]{size}, fieldarray);
         else {
           // Otherwise create and fill in an n-dimensional Array Of Arrays
           int[] newshape = new int[prefixrank];
           System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
-          Array ndimarray = Array.factory(Array.class, false, newshape);
+          Array ndimarray = Array.makeObjectArray(m.getDataType(), Array.class, newshape, null);
           // Transfer the elements of data into the n-dim arrays
           IndexIterator iter = ndimarray.getIndexIterator();
           for(int i = 0;iter.hasNext();i++) {
@@ -497,7 +495,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (dataType == DataType.OPAQUE) {
-      Array opArray = new ArrayObject(ByteBuffer.class, shape);
+      Array opArray = Array.factory(DataType.OPAQUE, shape);
       assert (new Section(shape).computeSize() == layout.getTotalNelems());
 
       int count = 0;

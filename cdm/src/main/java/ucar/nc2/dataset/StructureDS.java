@@ -323,7 +323,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
           if (innerStruct.getDataType() == DataType.SEQUENCE) {
             ArrayObject.D1 seqArray = (ArrayObject.D1) newAS.extractMemberArray(m);
-            ArrayObject.D1 newSeq = new ArrayObject.D1(ArraySequence.class, (int) seqArray.getSize());
+            ArrayObject.D1 newSeq = (ArrayObject.D1) Array.factory(DataType.SEQUENCE, new int[] {(int) seqArray.getSize()});
             m.setDataArray(newSeq); // put back into member array
 
             // wrap each Sequence
@@ -410,7 +410,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
           if (a instanceof ArrayObject.D1) { // LOOK when does this happen vs ArraySequence?
             ArrayObject.D1 seqArray = (ArrayObject.D1) a;
-            ArrayObject.D1 newSeq = new ArrayObject.D1(ArraySequence.class, (int) seqArray.getSize());
+            ArrayObject.D1 newSeq = (ArrayObject.D1) Array.factory(DataType.SEQUENCE, new int[] {(int) seqArray.getSize()});
             mResult.setDataArray(newSeq); // put into result member array
 
             for (int i = 0; i < seqArray.getSize(); i++) {

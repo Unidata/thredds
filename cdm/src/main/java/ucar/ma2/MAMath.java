@@ -697,7 +697,6 @@ public class MAMath {
     }
   }
 
-  // LOOK Not handling unsigned
   public static boolean isEqual(Array data1, Array data2) {
     if (data1.getSize() != data2.getSize()) return false;
     if (data1.isUnsigned() != data2.isUnsigned()) return false;
@@ -722,25 +721,25 @@ public class MAMath {
           if (!Misc.closeEnough(v1, v2, 1.0e-5))
             return false;
       }
-    } else if (dt == DataType.INT) {
+    } else if (dt.getPrimitiveClassType() == int.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         int v1 = iter1.getIntNext();
         int v2 = iter2.getIntNext();
         if (v1 != v2) return false;
       }
-    } else if (dt == DataType.SHORT) {
+    } else if (dt.getPrimitiveClassType() == byte.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
         if (v1 != v2) return false;
       }
-    } else if (dt == DataType.BYTE) {
+    } else if (dt.getPrimitiveClassType() == short.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         byte v1 = iter1.getByteNext();
         byte v2 = iter2.getByteNext();
         if (v1 != v2) return false;
       }
-    } else if (dt == DataType.LONG) {
+    } else if (dt.getPrimitiveClassType() == long.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         long v1 = iter1.getLongNext();
         long v2 = iter2.getLongNext();

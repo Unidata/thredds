@@ -89,7 +89,7 @@ public class TestWrite {
 
         // test some errors
     try {
-      Array bad = Array.factory(ArrayList.class, false, new int[]{1});
+      Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[]{1}, null);
       writer.addGroupAttribute(null, new Attribute("versionB", bad));
       assert (false);
     } catch (IllegalArgumentException e) {
@@ -748,7 +748,7 @@ public class TestWrite {
 
     // test some errors
     try {
-      Array bad = Array.factory(ArrayList.class, false, new int[]{1});
+      Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[]{1}, null);
       ncfile.addGlobalAttribute("versionC", bad);
       assert (false);
     } catch (IllegalArgumentException e) {

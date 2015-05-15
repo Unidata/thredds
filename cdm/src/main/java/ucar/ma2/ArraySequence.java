@@ -139,16 +139,16 @@ public class ArraySequence extends ArrayStructure {
           else if (dataType == DataType.FLOAT)
             resultIter.setFloatNext(sdata.getScalarFloat(realm));
 
-          else if ((dataType == DataType.BYTE) || (dataType == DataType.UBYTE) || (dataType == DataType.ENUM1))
+          else if (dataType.getPrimitiveClassType() == byte.class)
             resultIter.setByteNext(sdata.getScalarByte(realm));
 
-          else if ((dataType == DataType.SHORT) || (dataType == DataType.USHORT) || (dataType == DataType.ENUM2))
+          else if (dataType.getPrimitiveClassType() == short.class)
             resultIter.setShortNext(sdata.getScalarShort(realm));
 
-          else if ((dataType == DataType.INT) || (dataType == DataType.UINT) || (dataType == DataType.ENUM4))
+          else if (dataType.getPrimitiveClassType() == int.class)
             resultIter.setIntNext(sdata.getScalarInt(realm));
 
-          else if (dataType == DataType.LONG || dataType == DataType.ULONG)
+          else if (dataType.getPrimitiveClassType() == long.class)
             resultIter.setLongNext(sdata.getScalarLong(realm));
 
           else if (dataType == DataType.CHAR)
@@ -172,19 +172,19 @@ public class ArraySequence extends ArrayStructure {
             float[] data = sdata.getJavaArrayFloat(realm);
             for (float aData : data) resultIter.setFloatNext(aData);
 
-          } else if ((dataType == DataType.BYTE) || (dataType == DataType.UBYTE) || (dataType == DataType.ENUM1)) {
+          } else if (dataType.getPrimitiveClassType() == byte.class) {
             byte[] data = sdata.getJavaArrayByte(realm);
             for (byte aData : data) resultIter.setByteNext(aData);
 
-          } else if ((dataType == DataType.SHORT) || (dataType == DataType.USHORT) || (dataType == DataType.ENUM2)) {
+          } else if (dataType.getPrimitiveClassType() == short.class) {
             short[] data = sdata.getJavaArrayShort(realm);
             for (short aData : data) resultIter.setShortNext(aData);
 
-          } else if ((dataType == DataType.INT) || (dataType == DataType.UINT) || (dataType == DataType.ENUM4)) {
+          } else if (dataType.getPrimitiveClassType() == int.class) {
             int[] data = sdata.getJavaArrayInt(realm);
             for (int aData : data) resultIter.setIntNext(aData);
 
-          } else if (dataType == DataType.LONG || (dataType == DataType.ULONG)) {
+          } else if (dataType.getPrimitiveClassType() == long.class) {
             long[] data = sdata.getJavaArrayLong(realm);
             for (long aData : data) resultIter.setLongNext(aData);
 

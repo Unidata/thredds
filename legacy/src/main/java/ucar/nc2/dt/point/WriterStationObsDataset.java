@@ -262,9 +262,9 @@ public class WriterStationObsDataset {
     ArrayDouble.D1 latArray = new ArrayDouble.D1(nstns);
     ArrayDouble.D1 lonArray = new ArrayDouble.D1(nstns);
     ArrayDouble.D1 altArray = new ArrayDouble.D1(nstns);
-    ArrayObject.D1 idArray = new ArrayObject.D1(String.class, nstns);
-    ArrayObject.D1 descArray = new ArrayObject.D1(String.class, nstns);
-    ArrayObject.D1 wmoArray = new ArrayObject.D1(String.class, nstns);
+    ArrayObject.D1 idArray = new ArrayObject.D1(DataType.STRING, String.class, nstns);
+    ArrayObject.D1 descArray = new ArrayObject.D1(DataType.STRING, String.class, nstns);
+    ArrayObject.D1 wmoArray = new ArrayObject.D1(DataType.STRING, String.class, nstns);
 
     for (int i = 0; i < stnList.size(); i++) {
       ucar.unidata.geoloc.Station stn = stnList.get(i);
@@ -345,7 +345,7 @@ public class WriterStationObsDataset {
   }
 
   private int recno = 0;
-  private ArrayObject.D1 timeArray = new ArrayObject.D1(String.class, 1);
+  private ArrayObject.D1 timeArray = new ArrayObject.D1(DataType.STRING, String.class, 1);
   private ArrayInt.D1 prevArray = new ArrayInt.D1(1, false);
   private ArrayInt.D1 parentArray = new ArrayInt.D1(1, false);
   private int[] origin = new int[1];
@@ -442,7 +442,7 @@ public class WriterStationObsDataset {
     int[] originTime = new int[2];
     int recno = 0;
     ArrayStructureW sArray = null;
-    ArrayObject.D1 timeArray = new ArrayObject.D1(String.class, 1);
+    ArrayObject.D1 timeArray = new ArrayObject.D1(DataType.STRING, String.class, 1);
 
     DataIterator diter = sobsDataset.getDataIterator(1000 * 1000);
     while (diter.hasNext()) {
