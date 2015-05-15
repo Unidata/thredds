@@ -433,8 +433,9 @@ public class MAMath {
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
-    while (iterA.hasNext())
-      iterR.setObjectNext(iterA.getObjectNext());
+    while (iterA.hasNext()) {
+      iterR.setObjectNext( iterA.getObjectNext());
+    }
   }
 
   /**

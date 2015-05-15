@@ -119,7 +119,7 @@ public class ArrayObject extends Array {
 
   @Override
   public Array copy() {
-    Array newA = factory(getDataType(), getElementType(), getIndex());
+    Array newA = factory(getDataType(), getElementType(), Index.factory(getShape()));
     MAMath.copy(newA, this);
     return newA;
   }

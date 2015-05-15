@@ -78,7 +78,7 @@ public class TestH5compressed {
     try (NetcdfFile ncfile = TestH5.openH5("msg/MSG1_8bit_HRV.H5")) {
       Variable dset = ncfile.findVariable("image1/image_preview");
       assert dset != null;
-      assert (dset.getDataType() == DataType.BYTE);
+      assert (dset.getDataType() == DataType.UBYTE);
 
       assert (dset.getRank() == 2);
       assert (dset.getShape()[0] == 64);

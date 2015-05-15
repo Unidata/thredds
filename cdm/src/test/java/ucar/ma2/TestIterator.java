@@ -32,15 +32,14 @@
  */
 package ucar.ma2;
 
-import junit.framework.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import ucar.nc2.util.Misc;
 
 /** Test ma2 section methods in the JUnit framework. */
 
-public class TestIterator extends TestCase {
-
-  public TestIterator( String name) {
-    super(name);
-  }
+public class TestIterator {
 
   int m = 4, n = 3, p = 2;
   int [] sA = { m, n, p };
@@ -56,6 +55,7 @@ public class TestIterator extends TestCase {
   int m2 = 3;
   int mlen = (m2 - m1 + 1);
 
+  @Before
   public void setUp() {
     ima = A.getIndex();
 
@@ -73,6 +73,7 @@ public class TestIterator extends TestCase {
 
   }
 
+  @Test
   public void testFastIter() {
 
     int count = 0;
@@ -90,13 +91,41 @@ public class TestIterator extends TestCase {
         for (k=0; k<p; k++) {
           double val = iter.getDoubleNext();
           double myVal = (double) (i*100+j*10+k);
-          assert (val == myVal);
+          Assert.assertEquals(val, myVal, Misc.maxReletiveError);
         }
       }
     }
   }
 
 
+  @Test
+  public void testSlowIter() {
+
+    int count = 0;
+    Index index = A.getIndex();
+    IndexIterator iter = index.getSlowIndexIterator(A);
+
+    //System.out.println(iter);
+    while(iter.hasNext()) {
+      iter.getDoubleNext();
+      count++;
+    }
+    assert(count == n*m*p);
+
+    iter = A.getIndexIterator();
+    for (i=0; i<m; i++) {
+      for (j=0; j<n; j++) {
+        for (k=0; k<p; k++) {
+          double val = iter.getDoubleNext();
+          double myVal = (double) (i*100+j*10+k);
+          Assert.assertEquals(val, myVal, Misc.maxReletiveError);
+        }
+      }
+    }
+  }
+
+
+  @Test
   public void testScalerIter() {
 
     ArrayDouble.D0 scalar = new ArrayDouble.D0();
@@ -115,6 +144,7 @@ public class TestIterator extends TestCase {
     System.out.println(" testScalerIter");
   }
 
+  @Test
   public void testSectionIter() {
 
     try {
@@ -146,24 +176,57 @@ public class TestIterator extends TestCase {
   }
 
 
-  public void testSectionRank2() {
-    ArrayDouble secA2;
-    try {
-      secA2 = (ArrayDouble) A.section( Range.parseSpec("2,:,:") );
-    } catch (InvalidRangeException e) {
-      System.out.println("testMAsectionrank2 failed == "+ e);
-      return;
-    }
+  @Test
+    public void testSectionRank2() {
+      ArrayDouble secA2;
+      try {
+        secA2 = (ArrayDouble) A.section( Range.parseSpec("2,:,:") );
+      } catch (InvalidRangeException e) {
+        System.out.println("testMAsectionrank2 failed == "+ e);
+        return;
+      }
 
-    IndexIterator iter = secA2.getIndexIterator();
-    for (i=0; i<n; i++) {
-      for (j=0; j<p; j++) {
-          double val = iter.getDoubleNext();
-          //double myVal = (double) (i+m1)*100+j*10+k;
-          //System.out.println(val+ " "+myVal);
-          assert (val == 200+i*10+j);
+      IndexIterator iter = secA2.getIndexIterator();
+      for (i=0; i<n; i++) {
+        for (j=0; j<p; j++) {
+            double val = iter.getDoubleNext();
+            //double myVal = (double) (i+m1)*100+j*10+k;
+            //System.out.println(val+ " "+myVal);
+            assert (val == 200+i*10+j);
+        }
       }
     }
+
+  @Test
+  public void testArrayObjectIter() throws InvalidRangeException {
+    Array arrayObject = Array.factory(DataType.OPAQUE, new int[] {30});
+    testArrayObjectIter(arrayObject, 30);
+
+    Array arrayObjectSubset = arrayObject.sectionNoReduce(new Section("1:20").getRanges()); // subset it
+    testArrayObjectIter(arrayObjectSubset, 20);
+
+    Array arrayObjectSubsetCopy = arrayObjectSubset.copy();
+    testArrayObjectIter(arrayObjectSubsetCopy, 20);
   }
+
+  private void testArrayObjectIter(Array a, int expected) {
+    int count = 0;
+    IndexIterator iter = a.getIndexIterator(); // fast iterator
+    while (iter.hasNext()) {
+      Object result = iter.next();
+      count++;
+    }
+    assert (count == expected);
+
+    Index index = a.getIndex();
+    IndexIterator iter2 = index.getSlowIndexIterator(a); // slow iterator
+    count = 0;
+    while (iter2.hasNext()) {
+      Object result = iter2.next();
+      count++;
+    }
+    assert (count == expected);
+  }
+
 
 }

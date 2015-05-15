@@ -481,6 +481,11 @@ public class  Index implements Cloneable {
       return new IteratorImpl(maa);
   }
 
+  // debugging
+  IndexIterator getSlowIndexIterator(Array maa) {
+    return new IteratorImpl(maa);
+  }
+
   IteratorFast getIndexIteratorFast(Array maa) {
     return new IteratorFast(size, maa);
   }
@@ -1084,6 +1089,8 @@ public class  Index implements Cloneable {
     public void setObjectNext(Object val) {
       count++;
       currElement = counter.incr();
+      if (currElement >= maa.getSize())
+        System.out.println("HEY");
       maa.setObject(currElement, val);
     }
   }
