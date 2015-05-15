@@ -44,8 +44,6 @@ import thredds.server.config.TdsContext;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.grid.GridDatasetInfo;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;

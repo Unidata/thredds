@@ -195,7 +195,7 @@ public class NcssGridController extends AbstractNcssController {
   private String getBoundaries(SupportedFormat format, GridCoverageDataset gcd) {
 
     String boundaries = "";
-    GridBoundariesExtractor gbe = GridBoundariesExtractor.valueOf(gcd);   // LOOK
+    GridBoundariesExtractor gbe = GridBoundariesExtractor.valueOf(gcd);
 
     if (format == SupportedFormat.WKT)
       boundaries = gbe.getDatasetBoundariesWKT();

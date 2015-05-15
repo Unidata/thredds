@@ -329,6 +329,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   }
 
   private int rank(DataType c) {
+    if (c == null) return -1;
     if (c.getPrimitiveClassType() == byte.class)
       return 0;
     else if (c.getPrimitiveClassType() == short.class)
