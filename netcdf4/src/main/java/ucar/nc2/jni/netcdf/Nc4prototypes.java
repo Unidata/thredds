@@ -51,78 +51,78 @@ import java.util.ArrayList;
  * @since Oct 30, 2008
  */
 public interface Nc4prototypes extends Library {
-  static public final int NC_MAX_DIMS = 1024;   /* max dimensions per file */
-  static public final int NC_MAX_ATTRS = 8192;   /* max global or per variable attributes */
-  static public final int NC_MAX_VARS = 8192;   /* max variables per file */
-  static public final int NC_MAX_NAME = 256;   /* max length of a name */
-  static public final int NC_MAX_VAR_DIMS = NC_MAX_DIMS; /* max per variable dimensions */
+  int NC_MAX_DIMS = 1024;   /* max dimensions per file */
+  int NC_MAX_ATTRS = 8192;   /* max global or per variable attributes */
+  int NC_MAX_VARS = 8192;   /* max variables per file */
+  int NC_MAX_NAME = 256;   /* max length of a name */
+  int NC_MAX_VAR_DIMS = NC_MAX_DIMS; /* max per variable dimensions */
 
-  static public final int NC_GLOBAL = -1;
-  static public final int NC_UNLIMITED = 0;
+  int NC_GLOBAL = -1;
+  int NC_UNLIMITED = 0;
 
-  static public final int NC_NOWRITE = 0;
-  static public final int NC_WRITE = 1;
+  int NC_NOWRITE = 0;
+  int NC_WRITE = 1;
 
-  static public final int NC_BYTE = 1;	/* signed 1 byte integer */
-  static public final int NC_CHAR =	2;	/* ISO/ASCII character */
-  static public final int NC_SHORT =	3;	/* signed 2 byte integer */
-  static public final int NC_INT = 4;	/* signed 4 byte integer */
-  static public final int NC_FLOAT =	5;	/* single precision floating point number */
-  static public final int NC_DOUBLE =	6;	/* double precision floating point number */
-  static public final int NC_UBYTE =	7;	/* unsigned 1 byte int */
-  static public final int NC_USHORT =	8;	/* unsigned 2-byte int */
-  static public final int NC_UINT =	9;	/* unsigned 4-byte int */
-  static public final int NC_INT64 =	10;	/* signed 8-byte int */
-  static public final int NC_UINT64 =	11;/* unsigned 8-byte int */
-  static public final int NC_STRING =	12;	/* string */
-  static public final int NC_MAX_ATOMIC_TYPE = NC_STRING;
+  int NC_BYTE = 1;	/* signed 1 byte integer */
+  int NC_CHAR =	2;	/* ISO/ASCII character */
+  int NC_SHORT =	3;	/* signed 2 byte integer */
+  int NC_INT = 4;	/* signed 4 byte integer */
+  int NC_FLOAT =	5;	/* single precision floating point number */
+  int NC_DOUBLE =	6;	/* double precision floating point number */
+  int NC_UBYTE =	7;	/* unsigned 1 byte int */
+  int NC_USHORT =	8;	/* unsigned 2-byte int */
+  int NC_UINT =	9;	/* unsigned 4-byte int */
+  int NC_INT64 =	10;	/* signed 8-byte int */
+  int NC_UINT64 =	11;/* unsigned 8-byte int */
+  int NC_STRING =	12;	/* string */
+  int NC_MAX_ATOMIC_TYPE = NC_STRING;
 
   /* The following are use internally in support of user-defines
    * types. They are also the class returned by nc_inq_user_type. */
-  static public final int NC_VLEN =	13;	/* used internally for vlen types */
-  static public final int NC_OPAQUE =	14;	/* used internally for opaque types */
-  static public final int NC_ENUM =	15;	/* used internally for enum types */
-  static public final int NC_COMPOUND =	16;	/* used internally for compound types */
+  int NC_VLEN =	13;	/* used internally for vlen types */
+  int NC_OPAQUE =	14;	/* used internally for opaque types */
+  int NC_ENUM =	15;	/* used internally for enum types */
+  int NC_COMPOUND =	16;	/* used internally for compound types */
 
-  static public final int NC_CLOBBER	     = 0;       /**< Destroy existing file. Mode flag for nc_create(). */
-  static public final int NC_NOCLOBBER	   = 0x0004;	/**< Don't destroy existing file. Mode flag for nc_create(). */
-  static public final int NC_DISKLESS      = 0x0008;  /**< Create a diskless file. Mode flag for nc_create(). */
-  static public final int NC_MMAP          = 0x0010;  /**< Use diskless file with mmap. Mode flag for nc_open() or nc_create(). */
-  static public final int NC_CLASSIC_MODEL = 0x0100; /**< Enforce classic model. Mode flag for nc_create(). */
-  static public final int NC_64BIT_OFFSET  = 0x0200;  /**< Use large (64-bit) file offsets. Mode flag for nc_create(). */
-  static public final int NC_NETCDF4       = 0x1000;  /**< Use netCDF-4/HDF5 format. Mode flag for nc_create(). */
+  int NC_CLOBBER	     = 0;       /**< Destroy existing file. Mode flag for nc_create(). */
+  int NC_NOCLOBBER	   = 0x0004;	/**< Don't destroy existing file. Mode flag for nc_create(). */
+  int NC_DISKLESS      = 0x0008;  /**< Create a diskless file. Mode flag for nc_create(). */
+  int NC_MMAP          = 0x0010;  /**< Use diskless file with mmap. Mode flag for nc_open() or nc_create(). */
+  int NC_CLASSIC_MODEL = 0x0100; /**< Enforce classic model. Mode flag for nc_create(). */
+  int NC_64BIT_OFFSET  = 0x0200;  /**< Use large (64-bit) file offsets. Mode flag for nc_create(). */
+  int NC_NETCDF4       = 0x1000;  /**< Use netCDF-4/HDF5 format. Mode flag for nc_create(). */
   /** Turn on MPI I/O.
       Use this in mode flags for both nc_create() and nc_open(). */
-  static public final int NC_MPIIO =         0x2000;
+  int NC_MPIIO =         0x2000;
   /** Turn on MPI POSIX I/O.
       Use this in mode flags for both nc_create() and nc_open(). */
-  static public final int NC_MPIPOSIX =      0x4000;
-  static public final int NC_PNETCDF =       0x8000;	/**< Use parallel-netcdf library. Mode flag for nc_open(). */
+  int NC_MPIPOSIX =      0x4000;
+  int NC_PNETCDF =       0x8000;	/**< Use parallel-netcdf library. Mode flag for nc_open(). */
 
 /** Format specifier for nc_set_default_format() and returned
  *  by nc_inq_format. 
  */
-  static public final int NC_FORMAT_CLASSIC = (1);
-  static public final int NC_FORMAT_64BIT = (2);
-  static public final int NC_FORMAT_NETCDF4 = (3);
-  static public final int NC_FORMAT_NETCDF4_CLASSIC = (4);
+  int NC_FORMAT_CLASSIC = (1);
+  int NC_FORMAT_64BIT = (2);
+  int NC_FORMAT_NETCDF4 = (3);
+  int NC_FORMAT_NETCDF4_CLASSIC = (4);
 
 /** Extended format specifier returned by  nc_inq_format_extended() 
  *  Added in version 4.3.1. This returns the true format of the
  *  underlying data.
  */
 
-  static public final int NC_FORMAT_NC3 = (1);
-  static public final int NC_FORMAT_NC_HDF5 = (2) /*cdf 4 subset of HDF5 */;
-  static public final int NC_FORMAT_NC_HDF4 = (3) /* netcdf 4 subset of HDF4 */;
-  static public final int NC_FORMAT_PNETCDF = (4);
-  static public final int NC_FORMAT_DAP2 = (5);
-  static public final int NC_FORMAT_DAP4 = (6);
-  static public final int NC_FORMAT_UNDEFINED = (0);
+  int NC_FORMAT_NC3 = (1);
+  int NC_FORMAT_NC_HDF5 = (2) /*cdf 4 subset of HDF5 */;
+  int NC_FORMAT_NC_HDF4 = (3) /* netcdf 4 subset of HDF4 */;
+  int NC_FORMAT_PNETCDF = (4);
+  int NC_FORMAT_DAP2 = (5);
+  int NC_FORMAT_DAP4 = (6);
+  int NC_FORMAT_UNDEFINED = (0);
 
   //  nc_def_var_chunking()
-  static public final int NC_CHUNKED    = 0;
-  static public final int NC_CONTIGUOUS = 1;
+  int NC_CHUNKED    = 0;
+  int NC_CONTIGUOUS = 1;
 
   static public class Vlen_t extends Structure {
     public static class ByValue extends Vlen_t implements Structure.ByValue { }
@@ -253,8 +253,8 @@ public interface Nc4prototypes extends Library {
   //////////////////////////////////////////////////////////////////////////////////
   //// writing
 
-  static public final int  NC_FILL		= 0;	    /**< Argument to nc_set_fill() to clear NC_NOFILL */
-  static public final int  NC_NOFILL	= 0x100;	/**< Argument to nc_set_fill() to turn off filling of data. */
+  int  NC_FILL		= 0;	    /**< Argument to nc_set_fill() to clear NC_NOFILL */
+  int  NC_NOFILL	= 0x100;	/**< Argument to nc_set_fill() to turn off filling of data. */
 
 
   /* Set the default nc_create format to NC_FORMAT_CLASSIC, NC_FORMAT_64BIT, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC. */

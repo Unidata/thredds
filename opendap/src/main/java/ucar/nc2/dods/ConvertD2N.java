@@ -205,7 +205,7 @@ public class ConvertD2N {
         return structArray;
 
       } else { // scalar
-        DataType dtype = DODSNetcdfFile.convertToNCType( dataV.elemType);
+        DataType dtype = dataV.getDataType();
         Array scalarData = Array.factory(  dtype, new int[0]);
         IndexIterator scalarIndex = scalarData.getIndexIterator();
         iconvertDataPrimitiveScalar( dataV.bt, scalarIndex);
@@ -229,7 +229,7 @@ public class ConvertD2N {
         // create the array, using  DODS internal array so there's no copying
         opendap.dap.PrimitiveVector pv = dataV.darray.getPrimitiveVector();
         Object storage = pv.getInternalStorage();
-        DataType dtype = DODSNetcdfFile.convertToNCType( dataV.elemType);
+        DataType dtype = dataV.getDataType();
         return Array.factory( dtype, makeShape( dataV.darray), storage);
       }
     }

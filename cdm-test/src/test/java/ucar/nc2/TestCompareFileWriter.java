@@ -34,66 +34,55 @@ package ucar.nc2;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /** test FileWriting, then reading back and comparing to original. */
 @Category(NeedsCdmUnitTest.class)
+@RunWith(Parameterized.class)
 public class TestCompareFileWriter {
 
-  public ArrayList files;
+  @Parameterized.Parameters(name="{0}")
+  public static List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
+
+    // Grib files, one from each model
+    result.add(new Object[]{"formats/dmsp/F14200307192230.n.OIS", true});
+    result.add(new Object[]{"formats/gempak/grid/dgex_le.gem", true});
+    result.add(new Object[]{"formats/gempak/surface/19580807_sao.gem", false});
+    result.add(new Object[]{"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", false});
+    result.add(new Object[]{"formats/grib1/radar_national.grib", true});
+    result.add(new Object[]{"formats/grib2/200508041200.ngrid_gfs", true});
+    // result.add(new Object[]{"formats/hdf4/17766010.hdf"});
+
+    return result;
+  }
+
+  String filename;
+  boolean same;
+
+  public TestCompareFileWriter(String filename, boolean same) {
+    this.filename = filename;
+    this.same = same;
+  }
 
   @Test
-  public void testCompare() throws IOException {
-    doOne( new File(TestDir.cdmUnitTestDir, "formats/dmsp/F14200307192230.n.OIS"));
-    doOne( new File(TestDir.cdmUnitTestDir, "formats/gempak/grid/dgex_le.gem"));
-    doOne( new File(TestDir.cdmUnitTestDir, "formats/gempak/surface/19580807_sao.gem"));
-    doOne( new File(TestDir.cdmUnitTestDir, "formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini"));
-    doOne( new File(TestDir.cdmUnitTestDir, "formats/grib1/radar_national.grib"));
-    doOne( new File(TestDir.cdmUnitTestDir, "formats/grib2/200508041200.ngrid_gfs")); // */
-    //doOne( new File(TestDir.cdmUnitTestDir, "formats/hdf4/17766010.hdf"));
-  }
-
-  public void utestCompareAll() throws IOException {
-    readAllDir(TestDir.cdmUnitTestDir +"formats/gini/");
-  }
-
-  @Test
-  public void problem() throws IOException {
-    doOne( new File(TestDir.cdmUnitTestDir, "formats/grib1/radar_national.grib"));
-  }
-
-  void readAllDir(String dirName) throws IOException {
-    System.out.println("---------------Reading directory "+dirName);
-    File allDir = new File( dirName);
-    File[] allFiles = allDir.listFiles();
-
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
-      if (f.isDirectory()) continue;
-      doOne(f);
-    }
-
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
-      if (f.isDirectory())
-        readAllDir(allFiles[i].getAbsolutePath());
-    }
-
-  }
-
-  private void doOne(File fin) throws IOException {
+  public void doOne() throws IOException {
+    File fin = new File(TestDir.cdmUnitTestDir+filename);
     File fout = new File(TestDir.temporaryLocalDataDir+fin.getName()+".nc");
     System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(), fout.getParentFile().exists());
 
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(fin.getPath(), null);
     FileWriter2 fileWriter = new FileWriter2(ncfileIn, fout.getPath(), NetcdfFileWriter.Version.netcdf3, null);
     NetcdfFile ncfileOut = fileWriter.write();
-    ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfileIn, ncfileOut);
+    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfileIn, ncfileOut) == same;
 
     ncfileIn.close();
     ncfileOut.close();

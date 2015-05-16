@@ -109,7 +109,7 @@ public class OpendapServlet extends AbstractServlet {
     logServerStartup.info(getClass().getName() + " version= " + odapVersionString + " ascLimit = " + ascLimit + " binLimit = " + binLimit);
 
     if (tdsContext != null) // LOOK not set in mock testing enviro ?
-      setRootpath( tdsContext.getRootDirectory().getPath());
+      setRootpath(tdsContext.getRootDirectory().getPath());
 
     logServerStartup.info(getClass().getName() + " initialization done");
   }
@@ -157,7 +157,7 @@ public class OpendapServlet extends AbstractServlet {
   /////////////////////////////////////////////////////////////////////////////
 
 
-  @RequestMapping(value="**", method= RequestMethod.GET)
+  @RequestMapping(value = "**", method = RequestMethod.GET)
   public void doGet(HttpServletRequest request, HttpServletResponse response) {
     log.debug("doGet(): User-Agent = " + request.getHeader("User-Agent"));
 
@@ -174,39 +174,39 @@ public class OpendapServlet extends AbstractServlet {
       }
 
 
-        String dataSet = rs.getDataSet();
-        String requestSuffix = rs.getRequestSuffix();
+      String dataSet = rs.getDataSet();
+      String requestSuffix = rs.getRequestSuffix();
 
-        if ((dataSet == null) || dataSet.equals("/") || dataSet.equals("")) {
-          doGetDIR(rs);
-        } else if (requestSuffix.equalsIgnoreCase("blob")) {
-          doGetBLOB(rs);
-        } else if (requestSuffix.equalsIgnoreCase("close")) {
-          doClose(rs);
-        } else if (requestSuffix.equalsIgnoreCase("dds")) {
-          doGetDDS(rs);
-        } else if (requestSuffix.equalsIgnoreCase("das")) {
-          doGetDAS(rs);
-        } else if (requestSuffix.equalsIgnoreCase("ddx")) {
-          doGetDDX(rs);
-        } else if (requestSuffix.equalsIgnoreCase("dods")) {
-          doGetDAP2Data(rs);
-        } else if (requestSuffix.equalsIgnoreCase("asc") || requestSuffix.equalsIgnoreCase("ascii")) {
-          doGetASC(rs);
-        } else if (requestSuffix.equalsIgnoreCase("info")) {
-          doGetINFO(rs);
-        } else if (requestSuffix.equalsIgnoreCase("html") || requestSuffix.equalsIgnoreCase("htm")) {
-          doGetHTML(rs);
-        } else if (requestSuffix.equalsIgnoreCase("ver") || requestSuffix.equalsIgnoreCase("version") ||
-                dataSet.equalsIgnoreCase("/version") || dataSet.equalsIgnoreCase("/version/")) {
-          doGetVER(rs);
-        } else if (dataSet.equalsIgnoreCase("/help") || dataSet.equalsIgnoreCase("/help/") ||
-                dataSet.equalsIgnoreCase("/" + requestSuffix) || requestSuffix.equalsIgnoreCase("help")) {
-          doGetHELP(rs);
-        } else {
-          sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Unrecognized request");
-          return;
-        }
+      if ((dataSet == null) || dataSet.equals("/") || dataSet.equals("")) {
+        doGetDIR(rs);
+      } else if (requestSuffix.equalsIgnoreCase("blob")) {
+        doGetBLOB(rs);
+      } else if (requestSuffix.equalsIgnoreCase("close")) {
+        doClose(rs);
+      } else if (requestSuffix.equalsIgnoreCase("dds")) {
+        doGetDDS(rs);
+      } else if (requestSuffix.equalsIgnoreCase("das")) {
+        doGetDAS(rs);
+      } else if (requestSuffix.equalsIgnoreCase("ddx")) {
+        doGetDDX(rs);
+      } else if (requestSuffix.equalsIgnoreCase("dods")) {
+        doGetDAP2Data(rs);
+      } else if (requestSuffix.equalsIgnoreCase("asc") || requestSuffix.equalsIgnoreCase("ascii")) {
+        doGetASC(rs);
+      } else if (requestSuffix.equalsIgnoreCase("info")) {
+        doGetINFO(rs);
+      } else if (requestSuffix.equalsIgnoreCase("html") || requestSuffix.equalsIgnoreCase("htm")) {
+        doGetHTML(rs);
+      } else if (requestSuffix.equalsIgnoreCase("ver") || requestSuffix.equalsIgnoreCase("version") ||
+              dataSet.equalsIgnoreCase("/version") || dataSet.equalsIgnoreCase("/version/")) {
+        doGetVER(rs);
+      } else if (dataSet.equalsIgnoreCase("/help") || dataSet.equalsIgnoreCase("/help/") ||
+              dataSet.equalsIgnoreCase("/" + requestSuffix) || requestSuffix.equalsIgnoreCase("help")) {
+        doGetHELP(rs);
+      } else {
+        sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Unrecognized request");
+        return;
+      }
 
 
       // plain ol' 404
@@ -794,10 +794,10 @@ public class OpendapServlet extends AbstractServlet {
     if (projectedcount == fieldcount)
       result = projectsize;
     else if (projectedcount == 0)
-      result =  othersize;
+      result = othersize;
     else {
       assert (projectedcount > 0 && projectedcount < fieldcount);
-      result =  projectsize;
+      result = projectsize;
     }
 
     if (debugSize) {
@@ -830,7 +830,7 @@ public class OpendapServlet extends AbstractServlet {
         String v = ((DString) dp).getValue();
         fieldsize = (v == null ? 0 : v.length());
       } else {
-        DataType dtype = DODSNetcdfFile.convertToNCType(bt);
+        DataType dtype = DODSNetcdfFile.convertToNCType(bt, false);
         fieldsize = dtype.getSize();
       }
     } else { // Some kind of problem
@@ -844,7 +844,7 @@ public class OpendapServlet extends AbstractServlet {
           throws Exception {
     assert (da.getContainerVar() instanceof DPrimitive);
     BaseType base = da.getPrimitiveVector().getTemplate();
-    DataType dtype = DODSNetcdfFile.convertToNCType(base);
+    DataType dtype = DODSNetcdfFile.convertToNCType(base, false);
     int elemSize = dtype.getSize();
     int n = da.numDimensions();
     List<Range> ranges = new ArrayList<>(n);

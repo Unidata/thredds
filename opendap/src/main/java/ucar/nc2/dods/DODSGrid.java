@@ -77,7 +77,7 @@ public class DODSGrid extends DODSVariable {
     }
 
     setDimensions( dims);
-    setDataType( DODSNetcdfFile.convertToNCType(array.bt));
+    setDataType( array.getDataType());
     /* if (DODSNetcdfFile.isUnsigned( array.bt)) {
       addAttribute(new Attribute(CDM.UNSIGNED, "true"));
     } */

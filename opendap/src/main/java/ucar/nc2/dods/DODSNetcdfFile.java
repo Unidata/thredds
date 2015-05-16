@@ -59,265 +59,254 @@ import java.nio.channels.WritableByteChannel;
  * @see ucar.nc2.NetcdfFile
  */
 @NotThreadSafe
-public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
-{
-    // temporary flag to control usegroup changes
-    static boolean OLDGROUPCODE = false;
+public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
+  // temporary flag to control usegroup changes
+  static boolean OLDGROUPCODE = false;
 
 
-    static public boolean debugCE = false;
-    static public boolean debugServerCall = false;
-    static public boolean debugOpenResult = false;
-    static public boolean debugDataResult = false;
-    static public boolean debugCharArray = false;
-    static public boolean debugConvertData = false;
-    static public boolean debugConstruct = false;
-    static public boolean debugPreload = false;
-    static public boolean debugTime = false;
-    static public boolean showNCfile = false;
-    static public boolean debugAttributes = false;
-    static public boolean debugCached = false;
-    static public boolean debugOpenTime = false;
+  static public boolean debugCE = false;
+  static public boolean debugServerCall = false;
+  static public boolean debugOpenResult = false;
+  static public boolean debugDataResult = false;
+  static public boolean debugCharArray = false;
+  static public boolean debugConvertData = false;
+  static public boolean debugConstruct = false;
+  static public boolean debugPreload = false;
+  static public boolean debugTime = false;
+  static public boolean showNCfile = false;
+  static public boolean debugAttributes = false;
+  static public boolean debugCached = false;
+  static public boolean debugOpenTime = false;
 
-    // Define a utility class to decompse names
-    private static class NamePieces
-    {
-        String prefix = null; // group part of the path
-        String var = null;    // struct part of the path
-        String name = null;   // last name in a path
+  // Define a utility class to decompse names
+  private static class NamePieces {
+    String prefix = null; // group part of the path
+    String var = null;    // struct part of the path
+    String name = null;   // last name in a path
+  }
+
+  /**
+   * Set whether to allow sessions by allowing cookies. This only affects requests to the TDS.
+   * Setting this to true can eliminate consistency problems for datasets that are being updated.
+   *
+   * @param b true or false. default is false.
+   */
+  static public void setAllowSessions(boolean b) {
+    DConnect2.setAllowSessions(b);
+  }
+
+  static private boolean accept_compress = false;
+
+  /**
+   * Set whether to allow messages to be compressed.
+   *
+   * @param b true or false.
+   * @deprecated use setAllowCompression
+   */
+  static public void setAllowDeflate(boolean b) {
+    accept_compress = b;
+  }
+
+  /**
+   * Set whether to allow messages to be compressed.
+   *
+   * @param b true or false.
+   */
+  static public void setAllowCompression(boolean b) {
+    accept_compress = b;
+  }
+
+  /**
+   * Debugging flags. This is a way to decouple setting flags from particular implementations.
+   *
+   * @param debugFlag set of debug flags.
+   */
+  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+    debugCE = debugFlag.isSet("DODS/constraintExpression");
+    debugServerCall = debugFlag.isSet("DODS/serverCall");
+    debugOpenResult = debugFlag.isSet("DODS/debugOpenResult");
+    debugDataResult = debugFlag.isSet("DODS/debugDataResult");
+    debugCharArray = debugFlag.isSet("DODS/charArray");
+    debugConstruct = debugFlag.isSet("DODS/constructNetcdf");
+    debugPreload = debugFlag.isSet("DODS/preload");
+    debugTime = debugFlag.isSet("DODS/timeCalls");
+    showNCfile = debugFlag.isSet("DODS/showNCfile");
+    debugAttributes = debugFlag.isSet("DODS/attributes");
+    debugCached = debugFlag.isSet("DODS/cache");
+  }
+
+  static private boolean preload = true;
+  static private boolean useGroups = false;
+  static private int preloadCoordVarSize = 50000; // default 50K
+
+  /**
+   * Set whether small variables are preloaded; only turn off for debugging.
+   *
+   * @param b true if small variables are preloaded (default true)
+   */
+  static public void setPreload(boolean b) {
+    preload = b;
+  }
+
+  /**
+   * If preloading, set maximum size of coordinate variables to be preloaded.
+   *
+   * @param size maximum size of coordinate variables to be preloaded.
+   */
+  static public void setCoordinateVariablePreloadSize(int size) {
+    preloadCoordVarSize = size;
+  }
+
+  /**
+   * Create the canonical form of the URL.
+   * If the urlName starts with "http:" or "https:", change it to start with "dods:", otherwise
+   * leave it alone.
+   *
+   * @param urlName the url string
+   * @return canonical form
+   */
+  public static String canonicalURL(String urlName) {
+    if (urlName.startsWith("http:"))
+      return "dods:" + urlName.substring(5);
+    if (urlName.startsWith("https:"))
+      return "dods:" + urlName.substring(6);
+    return urlName;
+  }
+
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
+
+  //////////////////////////////////////////////////////////////////////////////////
+  private ConvertD2N convertD2N = new ConvertD2N();
+  private DConnect2 dodsConnection = null;
+  private DDS dds;
+  private DAS das;
+
+  /**
+   * Open a DODS file.
+   *
+   * @param datasetURL URL of the file. This should start with the protocol "dods:"
+   *                   It may also start with protocol "http:".
+   * @throws IOException                    on io error
+   * @throws java.net.MalformedURLException
+   */
+  public DODSNetcdfFile(String datasetURL) throws IOException {
+    this(datasetURL, null);
+  }
+
+  /**
+   * Open a DODS file, allow user control over preloading string arrays and making structure data
+   * available through netcdf API.
+   *
+   * @param datasetURL URL of the file. This should start with the protocol "dods:" or "http:".
+   * @param cancelTask check if task is cancelled. may be null.
+   * @throws IOException                    on io error
+   * @throws java.net.MalformedURLException
+   */
+  public DODSNetcdfFile(String datasetURL, CancelTask cancelTask) throws IOException {
+    super();
+    long start = System.currentTimeMillis();
+
+    // canonicalize name
+    String urlName = datasetURL; // actual URL uses http:
+    this.location = datasetURL; // canonical name uses "dods:"
+    if (datasetURL.startsWith("dods:")) {
+      urlName = "http:" + datasetURL.substring(5);
+    } else if (datasetURL.startsWith("http:")) {
+      this.location = "dods:" + datasetURL.substring(5);
+    } else if (datasetURL.startsWith("https:")) {
+      this.location = "dods:" + datasetURL.substring(6);
+    } else if (datasetURL.startsWith("file:")) {
+      this.location = datasetURL;
+    } else {
+      throw new java.net.MalformedURLException(datasetURL + " must start with dods: or http: or file:");
     }
 
-    /**
-     * Set whether to allow sessions by allowing cookies. This only affects requests to the TDS.
-     * Setting this to true can eliminate consistency problems for datasets that are being updated.
-     *
-     * @param b true or false. default is false.
-     */
-    static public void setAllowSessions(boolean b)
-    {
-        DConnect2.setAllowSessions(b);
+    if (debugServerCall) System.out.println("DConnect to = <" + urlName + ">");
+    dodsConnection = new DConnect2(urlName, accept_compress);
+    if (cancelTask != null && cancelTask.isCancel()) return;
+
+    // fetch the DDS and DAS
+    try {
+      dds = dodsConnection.getDDS();
+      if (debugServerCall) System.out.println("DODSNetcdfFile readDDS");
+      if (debugOpenResult) {
+        System.out.println("DDS = ");
+        dds.print(System.out);
+      }
+      if (cancelTask != null && cancelTask.isCancel()) return;
+
+      das = dodsConnection.getDAS();
+      if (debugServerCall) System.out.println("DODSNetcdfFile readDAS");
+      if (debugOpenResult) {
+        System.out.println("DAS = ");
+        das.print(System.out);
+      }
+      if (cancelTask != null && cancelTask.isCancel()) return;
+
+      if (debugOpenResult)
+        System.out.println("dodsVersion = " + dodsConnection.getServerVersion());
+
+    } catch (opendap.dap.parsers.ParseException e) {
+      logger.info("DODSNetcdfFile " + datasetURL, e);
+      if (debugOpenResult)
+        System.out.println("open failure = " + e.getMessage());
+      throw new IOException(e.getMessage());
+
+    } catch (opendap.dap.DASException e) {
+      logger.info("DODSNetcdfFile " + datasetURL, e);
+      if (debugOpenResult)
+        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
+      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
+
+    } catch (opendap.dap.DDSException e) {
+      logger.info("DODSNetcdfFile " + datasetURL, e);
+      if (debugOpenResult)
+        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
+      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
+
+    } catch (DAP2Exception dodsE) {
+      //dodsE.printStackTrace();
+      if (dodsE.getErrorCode() == DAP2Exception.NO_SUCH_FILE)
+        throw new FileNotFoundException(dodsE.getMessage());
+      else {
+        dodsE.printStackTrace(System.err);
+        throw new IOException(dodsE);
+      }
+
+    } catch (Exception e) {
+      logger.info("DODSNetcdfFile " + datasetURL, e);
+      if (debugOpenResult)
+        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
+      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
     }
 
-    static private boolean accept_compress = false;
+    // now initialize the DODSNetcdf metadata
+    DodsV rootDodsV = DodsV.parseDDS(dds);
+    rootDodsV.parseDAS(das);
+    if (cancelTask != null && cancelTask.isCancel()) return;
 
-    /**
-     * Set whether to allow messages to be compressed.
-     *
-     * @param b true or false.
-     * @deprecated use setAllowCompression
-     */
-    static public void setAllowDeflate(boolean b)
-    {
-        accept_compress = b;
+    // LOOK why do we want to do the primitives seperate from compounds?
+    constructTopVariables(rootDodsV, cancelTask);
+    if (cancelTask != null && cancelTask.isCancel()) return;
+
+    //preload(dodsVlist, cancelTask); LOOK not using preload yet
+    //if (cancelTask != null && cancelTask.isCancel()) return;
+
+    constructConstructors(rootDodsV, cancelTask);
+    if (cancelTask != null && cancelTask.isCancel()) return;
+    finish();
+
+    parseGlobalAttributes(das, rootDodsV, this);
+    if (cancelTask != null && cancelTask.isCancel()) return;
+
+    if (RC.getUseGroups()) {
+      try {
+        reGroup();
+      } catch (DAP2Exception dodsE) {
+        dodsE.printStackTrace(System.err);
+        throw new IOException(dodsE);
+      }
     }
-
-    /**
-     * Set whether to allow messages to be compressed.
-     *
-     * @param b true or false.
-     */
-    static public void setAllowCompression(boolean b)
-    {
-        accept_compress = b;
-    }
-
-    /**
-     * Debugging flags. This is a way to decouple setting flags from particular implementations.
-     *
-     * @param debugFlag set of debug flags.
-     */
-    static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag)
-    {
-        debugCE = debugFlag.isSet("DODS/constraintExpression");
-        debugServerCall = debugFlag.isSet("DODS/serverCall");
-        debugOpenResult = debugFlag.isSet("DODS/debugOpenResult");
-        debugDataResult = debugFlag.isSet("DODS/debugDataResult");
-        debugCharArray = debugFlag.isSet("DODS/charArray");
-        debugConstruct = debugFlag.isSet("DODS/constructNetcdf");
-        debugPreload = debugFlag.isSet("DODS/preload");
-        debugTime = debugFlag.isSet("DODS/timeCalls");
-        showNCfile = debugFlag.isSet("DODS/showNCfile");
-        debugAttributes = debugFlag.isSet("DODS/attributes");
-        debugCached = debugFlag.isSet("DODS/cache");
-    }
-
-    static private boolean preload = true;
-    static private boolean useGroups = false;
-    static private int preloadCoordVarSize = 50000; // default 50K
-
-    /**
-     * Set whether small variables are preloaded; only turn off for debugging.
-     *
-     * @param b true if small variables are preloaded (default true)
-     */
-    static public void setPreload(boolean b)
-    {
-        preload = b;
-    }
-
-    /**
-     * If preloading, set maximum size of coordinate variables to be preloaded.
-     *
-     * @param size maximum size of coordinate variables to be preloaded.
-     */
-    static public void setCoordinateVariablePreloadSize(int size)
-    {
-        preloadCoordVarSize = size;
-    }
-
-    /**
-     * Create the canonical form of the URL.
-     * If the urlName starts with "http:" or "https:", change it to start with "dods:", otherwise
-     * leave it alone.
-     *
-     * @param urlName the url string
-     * @return canonical form
-     */
-    public static String canonicalURL(String urlName)
-    {
-        if (urlName.startsWith("http:"))
-            return "dods:" + urlName.substring(5);
-        if (urlName.startsWith("https:"))
-            return "dods:" + urlName.substring(6);
-        return urlName;
-    }
-
-    static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
-
-    //////////////////////////////////////////////////////////////////////////////////
-    private ConvertD2N convertD2N = new ConvertD2N();
-    private DConnect2 dodsConnection = null;
-    private DDS dds;
-    private DAS das;
-
-    /**
-     * Open a DODS file.
-     *
-     * @param datasetURL URL of the file. This should start with the protocol "dods:"
-     *                   It may also start with protocol "http:".
-     * @throws IOException                    on io error
-     * @throws java.net.MalformedURLException
-     */
-    public DODSNetcdfFile(String datasetURL) throws IOException
-    {
-        this(datasetURL, null);
-    }
-
-    /**
-     * Open a DODS file, allow user control over preloading string arrays and making structure data
-     * available through netcdf API.
-     *
-     * @param datasetURL URL of the file. This should start with the protocol "dods:" or "http:".
-     * @param cancelTask check if task is cancelled. may be null.
-     * @throws IOException                    on io error
-     * @throws java.net.MalformedURLException
-     */
-    public DODSNetcdfFile(String datasetURL, CancelTask cancelTask) throws IOException
-    {
-        super();
-        long start = System.currentTimeMillis();
-
-        // canonicalize name
-        String urlName = datasetURL; // actual URL uses http:
-        this.location = datasetURL; // canonical name uses "dods:"
-        if (datasetURL.startsWith("dods:")) {
-            urlName = "http:" + datasetURL.substring(5);
-        } else if (datasetURL.startsWith("http:")) {
-            this.location = "dods:" + datasetURL.substring(5);
-        } else if (datasetURL.startsWith("https:")) {
-            this.location = "dods:" + datasetURL.substring(6);
-        } else if (datasetURL.startsWith("file:")) {
-            this.location = datasetURL;
-        } else {
-            throw new java.net.MalformedURLException(datasetURL + " must start with dods: or http: or file:");
-        }
-
-        if (debugServerCall) System.out.println("DConnect to = <" + urlName + ">");
-        dodsConnection = new DConnect2(urlName, accept_compress);
-        if (cancelTask != null && cancelTask.isCancel()) return;
-
-        // fetch the DDS and DAS
-        try {
-            dds = dodsConnection.getDDS();
-            if (debugServerCall) System.out.println("DODSNetcdfFile readDDS");
-            if (debugOpenResult) {
-                System.out.println("DDS = ");
-                dds.print(System.out);
-            }
-            if (cancelTask != null && cancelTask.isCancel()) return;
-
-            das = dodsConnection.getDAS();
-            if (debugServerCall) System.out.println("DODSNetcdfFile readDAS");
-            if (debugOpenResult) {
-                System.out.println("DAS = ");
-                das.print(System.out);
-            }
-            if (cancelTask != null && cancelTask.isCancel()) return;
-
-            if (debugOpenResult)
-                System.out.println("dodsVersion = " + dodsConnection.getServerVersion());
-
-        } catch (opendap.dap.parsers.ParseException e) {
-            logger.info("DODSNetcdfFile " + datasetURL, e);
-            if (debugOpenResult)
-                System.out.println("open failure = " + e.getMessage());
-            throw new IOException(e.getMessage());
-
-        } catch (opendap.dap.DASException e) {
-            logger.info("DODSNetcdfFile " + datasetURL, e);
-            if (debugOpenResult)
-                System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
-            throw new IOException(e.getClass().getName() + ": " + e.getMessage());
-
-        } catch (opendap.dap.DDSException e) {
-            logger.info("DODSNetcdfFile " + datasetURL, e);
-            if (debugOpenResult)
-                System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
-            throw new IOException(e.getClass().getName() + ": " + e.getMessage());
-
-        } catch (DAP2Exception dodsE) {
-            //dodsE.printStackTrace();
-            if (dodsE.getErrorCode() == DAP2Exception.NO_SUCH_FILE)
-                throw new FileNotFoundException(dodsE.getMessage());
-            else {
-                dodsE.printStackTrace(System.err);
-                throw new IOException(dodsE);
-            }
-
-        } catch (Exception e) {
-            logger.info("DODSNetcdfFile " + datasetURL, e);
-            if (debugOpenResult)
-                System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
-            throw new IOException(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        // now initialize the DODSNetcdf metadata
-        DodsV rootDodsV = DodsV.parseDDS(dds);
-        rootDodsV.parseDAS(das);
-        if (cancelTask != null && cancelTask.isCancel()) return;
-
-        // LOOK why do we want to do the primitives seperate from compounds?
-        constructTopVariables(rootDodsV, cancelTask);
-        if (cancelTask != null && cancelTask.isCancel()) return;
-
-        //preload(dodsVlist, cancelTask); LOOK not using preload yet
-        //if (cancelTask != null && cancelTask.isCancel()) return;
-
-        constructConstructors(rootDodsV, cancelTask);
-        if (cancelTask != null && cancelTask.isCancel()) return;
-        finish();
-
-        parseGlobalAttributes(das, rootDodsV, this);
-        if (cancelTask != null && cancelTask.isCancel()) return;
-
-        if (RC.getUseGroups()) {
-            try {
-                reGroup();
-            } catch (DAP2Exception dodsE) {
-                dodsE.printStackTrace(System.err);
-                throw new IOException(dodsE);
-            }
-        }
 
         /* look for coordinate variables
        for (Variable v : variables) {
@@ -325,72 +314,71 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
        ((DODSVariable) v).calcIsCoordinateVariable();
        } */
 
-        // see if theres a CE: if so, we need to reset the dodsConnection without it,
-        // since we are reusing dodsConnection; perhaps this is not needed?
-        // may be true now that weve consolidated metadata reading
-        // no comprende
-        int pos;
-        if (0 <= (pos = urlName.indexOf('?'))) {
-            String datasetName = urlName.substring(0, pos);
-            if (debugServerCall) System.out.println(" reconnect to = <" + datasetName + ">");
-            dodsConnection = new DConnect2(datasetName, accept_compress);
+    // see if theres a CE: if so, we need to reset the dodsConnection without it,
+    // since we are reusing dodsConnection; perhaps this is not needed?
+    // may be true now that weve consolidated metadata reading
+    // no comprende
+    int pos;
+    if (0 <= (pos = urlName.indexOf('?'))) {
+      String datasetName = urlName.substring(0, pos);
+      if (debugServerCall) System.out.println(" reconnect to = <" + datasetName + ">");
+      dodsConnection = new DConnect2(datasetName, accept_compress);
 
-            // parse the CE for projections
-            String CE = urlName.substring(pos + 1);
-            StringTokenizer stoke = new StringTokenizer(CE, " ,");
-            while (stoke.hasMoreTokens()) {
-                String proj = stoke.nextToken();
-                int subsetPos = proj.indexOf('[');
-                if (debugCE) System.out.println(" CE = " + proj + " " + subsetPos);
-                if (subsetPos > 0) {
-                    String vname = proj.substring(0, subsetPos);
-                    String vCE = proj.substring(subsetPos);
-                    if (debugCE) System.out.println(" vCE = <" + vname + "><" + vCE + ">");
-                    DODSVariable dodsVar = (DODSVariable) findVariable(vname);
-                    if (dodsVar == null)
-                        throw new IOException("Variable not found: " + vname);
+      // parse the CE for projections
+      String CE = urlName.substring(pos + 1);
+      StringTokenizer stoke = new StringTokenizer(CE, " ,");
+      while (stoke.hasMoreTokens()) {
+        String proj = stoke.nextToken();
+        int subsetPos = proj.indexOf('[');
+        if (debugCE) System.out.println(" CE = " + proj + " " + subsetPos);
+        if (subsetPos > 0) {
+          String vname = proj.substring(0, subsetPos);
+          String vCE = proj.substring(subsetPos);
+          if (debugCE) System.out.println(" vCE = <" + vname + "><" + vCE + ">");
+          DODSVariable dodsVar = (DODSVariable) findVariable(vname);
+          if (dodsVar == null)
+            throw new IOException("Variable not found: " + vname);
 
-                    dodsVar.setCE(vCE);
-                    dodsVar.setCaching(true);
-                }
-            }
+          dodsVar.setCE(vCE);
+          dodsVar.setCaching(true);
         }
-
-        // preload scalers, coordinate variables, strings, small arrays
-        if (preload) {
-            List<Variable> preloadList = new ArrayList<Variable>();
-            for (Variable dodsVar : variables) {
-                long size = dodsVar.getSize() * dodsVar.getElementSize();
-                if ((dodsVar.isCoordinateVariable() && size < preloadCoordVarSize) || dodsVar.isCaching() || dodsVar.getDataType() == DataType.STRING) {
-                    dodsVar.setCaching(true);
-                    preloadList.add(dodsVar);
-                    if (debugPreload) System.out.printf("  preload (%6d) %s%n", size, dodsVar.getFullName());
-                }
-            }
-            if (cancelTask != null && cancelTask.isCancel()) return;
-            readArrays(preloadList);
-        }
-
-        finish();
-        if (showNCfile)
-            System.out.println("DODS nc file = " + this);
-        long took = System.currentTimeMillis() - start;
-        if (debugOpenTime) System.out.printf(" took %d msecs %n", took);
+      }
     }
 
-    @Override
-    public synchronized void close() throws java.io.IOException
-    {
-      if (cache != null) {
-        if (cache.release(this)) return;
+    // preload scalers, coordinate variables, strings, small arrays
+    if (preload) {
+      List<Variable> preloadList = new ArrayList<Variable>();
+      for (Variable dodsVar : variables) {
+        long size = dodsVar.getSize() * dodsVar.getElementSize();
+        if ((dodsVar.isCoordinateVariable() && size < preloadCoordVarSize) || dodsVar.isCaching() || dodsVar.getDataType() == DataType.STRING) {
+          dodsVar.setCaching(true);
+          preloadList.add(dodsVar);
+          if (debugPreload) System.out.printf("  preload (%6d) %s%n", size, dodsVar.getFullName());
+        }
       }
-
-      if (null != dodsConnection) {
-          dodsConnection.closeSession();
-          dodsConnection = null;
-      }
-
+      if (cancelTask != null && cancelTask.isCancel()) return;
+      readArrays(preloadList);
     }
+
+    finish();
+    if (showNCfile)
+      System.out.println("DODS nc file = " + this);
+    long took = System.currentTimeMillis() - start;
+    if (debugOpenTime) System.out.printf(" took %d msecs %n", took);
+  }
+
+  @Override
+  public synchronized void close() throws java.io.IOException {
+    if (cache != null) {
+      if (cache.release(this)) return;
+    }
+
+    if (null != dodsConnection) {
+      dodsConnection.closeSession();
+      dodsConnection = null;
+    }
+
+  }
 
     /* parse the DDS, creating a tree of DodsV objects
    private ArrayList parseDDS(DDS dds) throws IOException {
@@ -523,21 +511,20 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
      }
    } */
 
-    private void parseGlobalAttributes(DAS das, DodsV root, DODSNetcdfFile dodsfile)
-    {
+  private void parseGlobalAttributes(DAS das, DodsV root, DODSNetcdfFile dodsfile) {
 
-        List<DODSAttribute> atts = root.attributes;
-        for (ucar.nc2.Attribute ncatt : atts) {
-            rootGroup.addAttribute(ncatt);
-        }
+    List<DODSAttribute> atts = root.attributes;
+    for (ucar.nc2.Attribute ncatt : atts) {
+      rootGroup.addAttribute(ncatt);
+    }
 
-        // loop over attribute tables, collect global attributes
-        Enumeration tableNames = das.getNames();
-        while (tableNames.hasMoreElements()) {
-            String tableName = (String) tableNames.nextElement();
-            AttributeTable attTable = das.getAttributeTableN(tableName);
-            if(attTable == null)
-                continue; // should probably never happen
+    // loop over attribute tables, collect global attributes
+    Enumeration tableNames = das.getNames();
+    while (tableNames.hasMoreElements()) {
+      String tableName = (String) tableNames.nextElement();
+      AttributeTable attTable = das.getAttributeTableN(tableName);
+      if (attTable == null)
+        continue; // should probably never happen
 
             /* if (tableName.equals("NC_GLOBAL") || tableName.equals("HDF_GLOBAL")) {
         java.util.Enumeration attNames = attTable.getNames();
@@ -551,200 +538,198 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
 
           } else */
 
-            if (tableName.equals("DODS_EXTRA")) {
-                Enumeration attNames = attTable.getNames();
-                while (attNames.hasMoreElements()) {
-                    String attName = (String) attNames.nextElement();
-                    if (attName.equals("Unlimited_Dimension")) {
-                        opendap.dap.Attribute att = attTable.getAttribute(attName);
-                        DODSAttribute ncatt = new DODSAttribute(attName, att);
-                        setUnlimited(ncatt.getStringValue());
-                    } else
-                        logger.warn(" Unknown DODS_EXTRA attribute = " + attName + " " + location);
-                }
+      if (tableName.equals("DODS_EXTRA")) {
+        Enumeration attNames = attTable.getNames();
+        while (attNames.hasMoreElements()) {
+          String attName = (String) attNames.nextElement();
+          if (attName.equals("Unlimited_Dimension")) {
+            opendap.dap.Attribute att = attTable.getAttribute(attName);
+            DODSAttribute ncatt = new DODSAttribute(attName, att);
+            setUnlimited(ncatt.getStringValue());
+          } else
+            logger.warn(" Unknown DODS_EXTRA attribute = " + attName + " " + location);
+        }
 
-            } else if (tableName.equals("EXTRA_DIMENSION")) {
-                Enumeration attNames = attTable.getNames();
-                while (attNames.hasMoreElements()) {
-                    String attName = (String) attNames.nextElement();
-                    opendap.dap.Attribute att = attTable.getAttribute(attName);
-                    DODSAttribute ncatt = new DODSAttribute(attName, att);
-                    int length = ncatt.getNumericValue().intValue();
-                    Dimension extraDim = new Dimension(attName, length);
-                    addDimension(null, extraDim);
-                }
+      } else if (tableName.equals("EXTRA_DIMENSION")) {
+        Enumeration attNames = attTable.getNames();
+        while (attNames.hasMoreElements()) {
+          String attName = (String) attNames.nextElement();
+          opendap.dap.Attribute att = attTable.getAttribute(attName);
+          DODSAttribute ncatt = new DODSAttribute(attName, att);
+          int length = ncatt.getNumericValue().intValue();
+          Dimension extraDim = new Dimension(attName, length);
+          addDimension(null, extraDim);
+        }
 
-            } /* else if (null == root.findDodsV( tableName, false)) {
-	addAttributes(attTable.getName(), attTable);
+      } /* else if (null == root.findDodsV( tableName, false)) {
+  addAttributes(attTable.getName(), attTable);
       } */
+    }
+  }
+
+  /**
+   * Go thru the variables/structure-variables and their attributes
+   * and move to the proper groups.
+   */
+  protected void reGroup()
+          throws DAP2Exception {
+    assert (RC.getUseGroups());
+    Group rootgroup = this.getRootGroup();
+
+    // Start by moving global attributes
+    // An issue to be addressed is that some attributes that should be attached
+    // to variables, instead get made global with name var.att.
+    Object[] gattlist = rootgroup.getAttributes().toArray();
+    for (Object att : gattlist) {
+      Attribute ncatt = (Attribute) att;
+      String dodsname = ncatt.getDODSName();
+      NamePieces pieces = parseName(dodsname);
+      if (pieces.var != null) {
+        // Figure out which variable to which this attribute should be moved.
+        // In the event that there is no matching
+        // variable, then keep the attribute as is.
+        String searchname = pieces.var;
+        if (pieces.prefix != null) searchname = pieces.prefix + '/' + searchname;
+        Variable v = findVariable(searchname);
+        if (v != null) {
+          // move attribute
+          rootgroup.remove(ncatt);
+          v.addAttribute(ncatt);
+          // change attribute name to remove var.
+          String newname = pieces.name;
+          ncatt.setName(newname);
         }
+      } else if (pieces.prefix != null) {
+        // We have a true group global name to move to proper group
+        // convert prefix to an actual group
+        Group g = rootgroup.makeRelativeGroup(this, dodsname, true);
+        rootgroup.remove(ncatt);
+        g.addAttribute(ncatt);
+        if (OLDGROUPCODE) {
+          ncatt.setName(pieces.name);
+        }
+      }
     }
 
-    /**
-     * Go thru the variables/structure-variables and their attributes
-     * and move to the proper groups.
-     */
-    protected void reGroup()
-            throws DAP2Exception
-    {
-        assert (RC.getUseGroups());
-        Group rootgroup = this.getRootGroup();
+    Object[] varlist = rootgroup.getVariables().toArray();
 
-        // Start by moving global attributes
-        // An issue to be addressed is that some attributes that should be attached
-        // to variables, instead get made global with name var.att.
-        Object[] gattlist = rootgroup.getAttributes().toArray();
-        for (Object att : gattlist) {
-            Attribute ncatt = (Attribute) att;
-            String dodsname = ncatt.getDODSName();
-            NamePieces pieces = parseName(dodsname);
-            if (pieces.var != null) {
-                // Figure out which variable to which this attribute should be moved.
-                // In the event that there is no matching
-                // variable, then keep the attribute as is.
-                String searchname = pieces.var;
-                if (pieces.prefix != null) searchname = pieces.prefix + '/' + searchname;
-                Variable v = findVariable(searchname);
-                if (v != null) {
-                    // move attribute
-                    rootgroup.remove(ncatt);
-                    v.addAttribute(ncatt);
-                    // change attribute name to remove var.
-                    String newname = pieces.name;
-                    ncatt.setName(newname);
-                }
-            } else if (pieces.prefix != null) {
-             // We have a true group global name to move to proper group
-                // convert prefix to an actual group
-                Group g = rootgroup.makeRelativeGroup(this, dodsname, true);
-                rootgroup.remove(ncatt);
-                g.addAttribute(ncatt);
-if(OLDGROUPCODE) {ncatt.setName(pieces.name);}
-            }
-        }
-
-        Object[] varlist = rootgroup.getVariables().toArray();
-
-if(false) {    // This should have been done by computegroup()
-        // Now move variables
-        for (Object var : varlist) {
-            if (var instanceof DODSVariable) {
-                DODSVariable v = (DODSVariable) var;
-                reGroupVariable(rootgroup, v);
-            } else
-                throw new DAP2Exception("regroup: unexpected variable type: "
-                        + var.getClass().getCanonicalName());
-        }
-}
-
-        // In theory, we should be able to fix variable attributes
-        // by just removing the group prefix. However, there is the issue
-        // that attribute names sometimes have as a suffix varname.attname.
-        // So, we should use that to adjust the attribute to attach to that
-        // variable.
-        for (Object var : varlist) {
-            reGroupVariableAttributes(rootgroup, (Variable)var);
-        }
+    if (false) {    // This should have been done by computegroup()
+      // Now move variables
+      for (Object var : varlist) {
+        if (var instanceof DODSVariable) {
+          DODSVariable v = (DODSVariable) var;
+          reGroupVariable(rootgroup, v);
+        } else
+          throw new DAP2Exception("regroup: unexpected variable type: "
+                  + var.getClass().getCanonicalName());
+      }
     }
 
-    @Deprecated
-    protected void reGroupVariable(Group rootgroup, DODSVariable dodsv)
-            throws opendap.dap.DAP2Exception
-    {
-        String dodsname = dodsv.getDODSName();
-        NamePieces pieces = parseName(dodsname);
-        if (pieces.prefix != null) {
-            // convert prefix to an actual group
-            Group gnew = rootgroup.makeRelativeGroup(this, dodsname, true);
-            // Get current group for the variable
-            Group gold = null;
-            gold = dodsv.getParentGroup();
-            if (gnew != gold) {
-                gold.remove(dodsv);
-                dodsv.setParentGroup(gnew);
-                gnew.addVariable(dodsv);
-if(OLDGROUPCODE) {
-                dodsv.setName(pieces.name);
-}
-            }
-        }
+    // In theory, we should be able to fix variable attributes
+    // by just removing the group prefix. However, there is the issue
+    // that attribute names sometimes have as a suffix varname.attname.
+    // So, we should use that to adjust the attribute to attach to that
+    // variable.
+    for (Object var : varlist) {
+      reGroupVariableAttributes(rootgroup, (Variable) var);
     }
+  }
 
-    protected void reGroupVariableAttributes(Group rootgroup, Variable v)
-            throws opendap.dap.DAP2Exception
-    {
-        String vname = v.getShortName();
-        Group vgroup = v.getParentGroup();
-        Object[] attlist = v.getAttributes().toArray();
-        for (Object att : attlist) {
-            Attribute ncatt = (Attribute) att;
-            String adodsname = ncatt.getDODSName();
-            NamePieces pieces = parseName(adodsname);
-            Group agroup = null;
-            if (pieces.prefix != null) {
-                // convert prefix to an actual group
-                agroup = rootgroup.makeRelativeGroup(this, adodsname, true);
-            } else
-                agroup = vgroup;
-
-            // If the attribute group is different from the variable group,
-            // then we have some kind of inconsistency; presumably from
-            // the original dds+das; in any case, use the variable's group
-            if (agroup != vgroup)
-                agroup = vgroup;
-
-            if (pieces.var != null && !pieces.var.equals(vname)) {
-                // move the attribute to the correct variable
-                // (presumably in the same group)
-                Variable newvar = (Variable) agroup.findVariable(pieces.var);
-                if (newvar != null) {// if not found leave the attribute as is
-                    // otherwise, move the attribute and rename
-                    newvar.addAttribute(ncatt);
-                    v.remove(ncatt);
-                    ncatt.setShortName(pieces.name);
-                }
-            }
-if(OLDGROUPCODE) {
-            if (pieces.prefix != null) {// rename the attribute
-                // Rename the attribute to its shortname
-                ncatt.setName(pieces.name);
-            }
-}
+  @Deprecated
+  protected void reGroupVariable(Group rootgroup, DODSVariable dodsv)
+          throws opendap.dap.DAP2Exception {
+    String dodsname = dodsv.getDODSName();
+    NamePieces pieces = parseName(dodsname);
+    if (pieces.prefix != null) {
+      // convert prefix to an actual group
+      Group gnew = rootgroup.makeRelativeGroup(this, dodsname, true);
+      // Get current group for the variable
+      Group gold = null;
+      gold = dodsv.getParentGroup();
+      if (gnew != gold) {
+        gold.remove(dodsv);
+        dodsv.setParentGroup(gnew);
+        gnew.addVariable(dodsv);
+        if (OLDGROUPCODE) {
+          dodsv.setName(pieces.name);
         }
+      }
     }
+  }
 
-    // Utility to decompose a name
-    NamePieces parseName(String name)
-    {
-        NamePieces pieces = new NamePieces();
-        int dotpos = name.lastIndexOf('.');
-        int slashpos = name.lastIndexOf('/');
-        if (slashpos < 0 && dotpos < 0) {
-            pieces.name = name;
-        } else if (slashpos >= 0 && dotpos < 0) {
-            pieces.prefix = name.substring(0, slashpos);
-            pieces.name = name.substring(slashpos + 1, name.length());
-        } else if (slashpos < 0 && dotpos >= 0) {
-            pieces.var = name.substring(0, dotpos);
-            pieces.name = name.substring(dotpos + 1, name.length());
-        } else {//slashpos >= 0 && dotpos >= 0)
-            if (slashpos > dotpos) {
-                pieces.prefix = name.substring(0, slashpos);
-                pieces.name = name.substring(slashpos + 1, name.length());
-            } else {//slashpos < dotpos)
-                pieces.prefix = name.substring(0, slashpos);
-                pieces.var = name.substring(slashpos + 1, dotpos);
-                pieces.name = name.substring(dotpos + 1, name.length());
-            }
+  protected void reGroupVariableAttributes(Group rootgroup, Variable v)
+          throws opendap.dap.DAP2Exception {
+    String vname = v.getShortName();
+    Group vgroup = v.getParentGroup();
+    Object[] attlist = v.getAttributes().toArray();
+    for (Object att : attlist) {
+      Attribute ncatt = (Attribute) att;
+      String adodsname = ncatt.getDODSName();
+      NamePieces pieces = parseName(adodsname);
+      Group agroup = null;
+      if (pieces.prefix != null) {
+        // convert prefix to an actual group
+        agroup = rootgroup.makeRelativeGroup(this, adodsname, true);
+      } else
+        agroup = vgroup;
+
+      // If the attribute group is different from the variable group,
+      // then we have some kind of inconsistency; presumably from
+      // the original dds+das; in any case, use the variable's group
+      if (agroup != vgroup)
+        agroup = vgroup;
+
+      if (pieces.var != null && !pieces.var.equals(vname)) {
+        // move the attribute to the correct variable
+        // (presumably in the same group)
+        Variable newvar = (Variable) agroup.findVariable(pieces.var);
+        if (newvar != null) {// if not found leave the attribute as is
+          // otherwise, move the attribute and rename
+          newvar.addAttribute(ncatt);
+          v.remove(ncatt);
+          ncatt.setShortName(pieces.name);
         }
-        // fixup
-        if (pieces.prefix != null && pieces.prefix.length() == 0) pieces.prefix = null;
-        if (pieces.var != null && pieces.var.length() == 0) pieces.var = null;
-        if (pieces.name.length() == 0) pieces.name = null;
-        return pieces;
+      }
+      if (OLDGROUPCODE) {
+        if (pieces.prefix != null) {// rename the attribute
+          // Rename the attribute to its shortname
+          ncatt.setName(pieces.name);
+        }
+      }
     }
+  }
 
-    ///////////////////////////////////////////////////////////////////
+  // Utility to decompose a name
+  NamePieces parseName(String name) {
+    NamePieces pieces = new NamePieces();
+    int dotpos = name.lastIndexOf('.');
+    int slashpos = name.lastIndexOf('/');
+    if (slashpos < 0 && dotpos < 0) {
+      pieces.name = name;
+    } else if (slashpos >= 0 && dotpos < 0) {
+      pieces.prefix = name.substring(0, slashpos);
+      pieces.name = name.substring(slashpos + 1, name.length());
+    } else if (slashpos < 0 && dotpos >= 0) {
+      pieces.var = name.substring(0, dotpos);
+      pieces.name = name.substring(dotpos + 1, name.length());
+    } else {//slashpos >= 0 && dotpos >= 0)
+      if (slashpos > dotpos) {
+        pieces.prefix = name.substring(0, slashpos);
+        pieces.name = name.substring(slashpos + 1, name.length());
+      } else {//slashpos < dotpos)
+        pieces.prefix = name.substring(0, slashpos);
+        pieces.var = name.substring(slashpos + 1, dotpos);
+        pieces.name = name.substring(dotpos + 1, name.length());
+      }
+    }
+    // fixup
+    if (pieces.prefix != null && pieces.prefix.length() == 0) pieces.prefix = null;
+    if (pieces.var != null && pieces.var.length() == 0) pieces.var = null;
+    if (pieces.name.length() == 0) pieces.name = null;
+    return pieces;
+  }
+
+  ///////////////////////////////////////////////////////////////////
 
     /* private void preload(ArrayList dodsVlist, CancelTask cancelTask) throws IOException {
      //Build up the request
@@ -804,240 +789,233 @@ if(OLDGROUPCODE) {
      return Array.factory( convertToNCType( elemType).getPrimitiveClassType(), makeShape( da), storage);
    } */
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void constructTopVariables(DodsV rootDodsV, CancelTask cancelTask) throws IOException
-    {
-        List<DodsV> topVariables = rootDodsV.children;
-        for (DodsV dodsV : topVariables) {
-            if (dodsV.bt instanceof DConstructor) continue;
-            addVariable(rootGroup, null, dodsV);
-            if (cancelTask != null && cancelTask.isCancel()) return;
-        }
+  private void constructTopVariables(DodsV rootDodsV, CancelTask cancelTask) throws IOException {
+    List<DodsV> topVariables = rootDodsV.children;
+    for (DodsV dodsV : topVariables) {
+      if (dodsV.bt instanceof DConstructor) continue;
+      addVariable(rootGroup, null, dodsV);
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
+  }
+
+  private void constructConstructors(DodsV rootDodsV, CancelTask cancelTask) throws IOException {
+    List<DodsV> topVariables = rootDodsV.children;
+    // do non-grids first
+    for (DodsV dodsV : topVariables) {
+      if (dodsV.isDone) continue;
+      if (dodsV.bt instanceof DGrid) continue;
+      addVariable(rootGroup, null, dodsV);
+      if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
-    private void constructConstructors(DodsV rootDodsV, CancelTask cancelTask) throws IOException
-    {
-        List<DodsV> topVariables = rootDodsV.children;
-        // do non-grids first
-        for (DodsV dodsV : topVariables) {
-            if (dodsV.isDone) continue;
-            if (dodsV.bt instanceof DGrid) continue;
-            addVariable(rootGroup, null, dodsV);
-            if (cancelTask != null && cancelTask.isCancel()) return;
-        }
-
-        // then do the grids
-        for (DodsV dodsV : topVariables) {
-            if (dodsV.isDone) continue;
-            // If using groups, then if the grid does not have a group name
-            // and its array does, then transfer the group name.
-            if (RC.getUseGroups() && dodsV.bt instanceof DGrid) {
-                DodsV array = dodsV.findByIndex(0);
-                if (array != null) {
-                    String arrayname = array.getClearName();
-                    String gridname = dodsV.getClearName();
-                    int ai = arrayname.lastIndexOf('/');
-                    int gi = gridname.lastIndexOf('/');
-                    if (gi >= 0 && ai < 0) {
-                        String gpath = gridname.substring(0, gi);
-                        arrayname = gpath + "/" + arrayname;
-                        array.getBaseType().setClearName(arrayname);
-                    } else if (gi < 0 && ai >= 0) {
-                        String apath = arrayname.substring(0, ai);
-                        gridname = apath + "/" + gridname;
-                        dodsV.getBaseType().setClearName(gridname);
-                    } else if (gi >= 0 && ai >= 0) {
-                        String apath = arrayname.substring(0, ai);
-                        String gpath = gridname.substring(0, gi);
-                        if (!gpath.equals(apath)) {// choose gridpath over the array path
-                            String arraysuffix = arrayname.substring(gi + 1, arrayname.length());
-                            arrayname = gpath + "/" + arraysuffix;
-                            array.getBaseType().setClearName(arrayname);
-                        }
-                    }     // else gi < 0 && ai < 0
-                }
+    // then do the grids
+    for (DodsV dodsV : topVariables) {
+      if (dodsV.isDone) continue;
+      // If using groups, then if the grid does not have a group name
+      // and its array does, then transfer the group name.
+      if (RC.getUseGroups() && dodsV.bt instanceof DGrid) {
+        DodsV array = dodsV.findByIndex(0);
+        if (array != null) {
+          String arrayname = array.getClearName();
+          String gridname = dodsV.getClearName();
+          int ai = arrayname.lastIndexOf('/');
+          int gi = gridname.lastIndexOf('/');
+          if (gi >= 0 && ai < 0) {
+            String gpath = gridname.substring(0, gi);
+            arrayname = gpath + "/" + arrayname;
+            array.getBaseType().setClearName(arrayname);
+          } else if (gi < 0 && ai >= 0) {
+            String apath = arrayname.substring(0, ai);
+            gridname = apath + "/" + gridname;
+            dodsV.getBaseType().setClearName(gridname);
+          } else if (gi >= 0 && ai >= 0) {
+            String apath = arrayname.substring(0, ai);
+            String gpath = gridname.substring(0, gi);
+            if (!gpath.equals(apath)) {// choose gridpath over the array path
+              String arraysuffix = arrayname.substring(gi + 1, arrayname.length());
+              arrayname = gpath + "/" + arraysuffix;
+              array.getBaseType().setClearName(arrayname);
             }
-            addVariable(rootGroup, null, dodsV);
-            if (cancelTask != null && cancelTask.isCancel()) return;
+          }     // else gi < 0 && ai < 0
         }
+      }
+      addVariable(rootGroup, null, dodsV);
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
+  }
+
+  // recursively make new variables: all new variables come through here
+
+  Variable addVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException {
+    Variable v = makeVariable(parentGroup, parentStructure, dodsV);
+    if (v != null) {
+      addAttributes(v, dodsV);
+      if (parentStructure != null)
+        parentStructure.addMemberVariable(v);
+      else {
+        parentGroup = computeGroup(v.getDODSName(), v, parentGroup);
+        parentGroup.addVariable(v);
+      }
+      dodsV.isDone = true;
+    }
+    return v;
+  }
+
+  Group computeGroup(String path, Variable v, Group parentGroup/*Ostensibly*/) {
+    if (parentGroup == null)
+      parentGroup = getRootGroup();
+    if (RC.getUseGroups()) {
+      // If the path has '/' in it, then we need to insert
+      // this variable into the proper group and rename it. However,
+      // if this variable is within a structure, we cannot do it.
+      if (v.getParentStructure() == null) {
+        // HACK: Since only the grid array is used in converting
+        // to netcdf-3, we look for group info on the array.
+        String dodsname = v.getDODSName();
+        int sindex = dodsname.indexOf('/');
+        if (sindex >= 0) {
+          assert (parentGroup != null);
+          Group g = parentGroup.makeRelativeGroup(this, dodsname, true/*ignorelast*/);
+          parentGroup = g;
+          if (OLDGROUPCODE) {
+            // change variable's name
+            dodsname = dodsname.substring(dodsname.lastIndexOf('/') + 1);
+            v.setName(dodsname);   // change name
+          }
+        }
+      }
+    }
+    return parentGroup;
+  }
+
+  private Variable makeVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException {
+    opendap.dap.BaseType dodsBT = dodsV.bt;
+    String dodsShortName = dodsBT.getClearName();
+    if (debugConstruct) System.out.print("DODSNetcdf makeVariable try to init <" + dodsShortName + "> :");
+
+    // Strings
+    if (dodsBT instanceof DString) {
+      if (dodsV.darray == null) {
+        if (debugConstruct) System.out.println("  assigned to DString: name = " + dodsShortName);
+        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT, dodsV);
+      } else {
+        if (debugConstruct) System.out.println("  assigned to Array of Strings: name = " + dodsShortName);
+        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT, dodsV);
+      }
+
+      // primitives
+    } else if ((dodsBT instanceof DByte) ||
+            (dodsBT instanceof DFloat32) || (dodsBT instanceof DFloat64) ||
+            (dodsBT instanceof DInt16) || (dodsBT instanceof DInt32) ||
+            (dodsBT instanceof DUInt16) || (dodsBT instanceof DUInt32)) {
+      if (dodsV.darray == null) {
+        if (debugConstruct)
+          System.out.println("	assigned to scalar " + dodsBT.getTypeName() + ": name = " + dodsShortName);
+        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT, dodsV);
+      } else {
+        if (debugConstruct)
+          System.out.println("	assigned to array of type " + dodsBT.getClass().getName() + ": name = " + dodsShortName);
+        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT, dodsV);
+      }
     }
 
-    // recursively make new variables: all new variables come through here
+    if (dodsBT instanceof DGrid) {
+      if (dodsV.darray == null) {
+        if (debugConstruct) System.out.println(" assigned to DGrid <" + dodsShortName + ">");
 
-    Variable addVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException
-    {
-        Variable v = makeVariable(parentGroup, parentStructure, dodsV);
-        if (v != null) {
-            addAttributes(v, dodsV);
-            if (parentStructure != null)
-                parentStructure.addMemberVariable(v);
-            else {
-                parentGroup = computeGroup(v.getDODSName(), v, parentGroup);
-                parentGroup.addVariable(v);
-            }
-            dodsV.isDone = true;
-        }
-        return v;
-    }
+        //  common case is that the map vectors already exist as top level variables
+        // this is how the netccdf servers do it
+        for (int i = 1; i < dodsV.children.size(); i++) {
+          DodsV map = dodsV.children.get(i);
+          String shortName = DODSNetcdfFile.makeShortName(map.bt.getEncodedName());
+          Variable mapV = parentGroup.findVariable(shortName); // LOOK WRONG
+          if (mapV == null) {         // if not, add it LOOK need to compare values
+            mapV = addVariable(parentGroup, parentStructure, map);
+            makeCoordinateVariable(parentGroup, mapV, map.data);
 
-    Group computeGroup(String path, Variable v, Group parentGroup/*Ostensibly*/)
-    {
-        if (parentGroup == null)
-            parentGroup = getRootGroup();
-        if(RC.getUseGroups()) {
-            // If the path has '/' in it, then we need to insert
-            // this variable into the proper group and rename it. However,
-            // if this variable is within a structure, we cannot do it.
-            if (v.getParentStructure() == null) {
-                // HACK: Since only the grid array is used in converting
-                // to netcdf-3, we look for group info on the array.
-                String dodsname = v.getDODSName();
-                int sindex = dodsname.indexOf('/');
-                if (sindex >= 0) {
-                    assert (parentGroup != null);
-                    Group g = parentGroup.makeRelativeGroup(this, dodsname, true/*ignorelast*/);
-                    parentGroup = g;
-if(OLDGROUPCODE) {
-                    // change variable's name
-                    dodsname = dodsname.substring(dodsname.lastIndexOf('/') + 1);
-                    v.setName(dodsname);   // change name
-                }
-                }
-            }
-        }
-        return parentGroup;
-    }
-
-    private Variable makeVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException
-    {
-        opendap.dap.BaseType dodsBT = dodsV.bt;
-        String dodsShortName = dodsBT.getClearName();
-        if (debugConstruct) System.out.print("DODSNetcdf makeVariable try to init <" + dodsShortName + "> :");
-
-        // Strings
-        if (dodsBT instanceof DString) {
-            if (dodsV.darray == null) {
-                if (debugConstruct) System.out.println("  assigned to DString: name = " + dodsShortName);
-                return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT, dodsV);
-            } else {
-                if (debugConstruct) System.out.println("  assigned to Array of Strings: name = " + dodsShortName);
-                return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT, dodsV);
-            }
-
-            // primitives
-        } else if ((dodsBT instanceof DByte) ||
-                (dodsBT instanceof DFloat32) || (dodsBT instanceof DFloat64) ||
-                (dodsBT instanceof DInt16) || (dodsBT instanceof DInt32) ||
-                (dodsBT instanceof DUInt16) || (dodsBT instanceof DUInt32)) {
-            if (dodsV.darray == null) {
-                if (debugConstruct)
-                    System.out.println("	assigned to scalar " + dodsBT.getTypeName() + ": name = " + dodsShortName);
-                return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT, dodsV);
-            } else {
-                if (debugConstruct)
-                    System.out.println("	assigned to array of type " + dodsBT.getClass().getName() + ": name = " + dodsShortName);
-                return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT, dodsV);
-            }
+          }
+          // else if (!mapV.isCoordinateVariable()) { // workaround for Grid HDF4 wierdness (see note 1 below)
+          //    makeCoordinateVariable(parentGroup, mapV, map.data);
+          // }
         }
 
-        if (dodsBT instanceof DGrid) {
-            if (dodsV.darray == null) {
-                if (debugConstruct) System.out.println(" assigned to DGrid <" + dodsShortName + ">");
+        return new DODSGrid(this, parentGroup, parentStructure, dodsShortName, dodsV);
 
-                //  common case is that the map vectors already exist as top level variables
-                // this is how the netccdf servers do it
-                for (int i = 1; i < dodsV.children.size(); i++) {
-                    DodsV map = dodsV.children.get(i);
-                    String shortName = DODSNetcdfFile.makeShortName(map.bt.getEncodedName());
-                    Variable mapV = parentGroup.findVariable(shortName); // LOOK WRONG
-                    if (mapV == null) {         // if not, add it LOOK need to compare values
-                        mapV = addVariable(parentGroup, parentStructure, map);
-                        makeCoordinateVariable(parentGroup, mapV, map.data);
+      } else {
+        if (debugConstruct) System.out.println(" ERROR! array of DGrid <" + dodsShortName + ">");
+        return null;
+      }
 
-                    }
-                    // else if (!mapV.isCoordinateVariable()) { // workaround for Grid HDF4 wierdness (see note 1 below)
-                    //    makeCoordinateVariable(parentGroup, mapV, map.data);
-                    // }
-                }
+    } else if (dodsBT instanceof DSequence) {
+      if (dodsV.darray == null) {
+        if (debugConstruct) System.out.println(" assigned to DSequence <" + dodsShortName + ">");
+        return new DODSStructure(this, parentGroup, parentStructure, dodsShortName, dodsV);
+      } else {
+        if (debugConstruct) System.out.println(" ERROR! array of DSequence <" + dodsShortName + ">");
+        return null;
+      }
 
-                return new DODSGrid(this, parentGroup, parentStructure, dodsShortName, dodsV);
+    } else if (dodsBT instanceof DStructure) {
+      DStructure dstruct = (DStructure) dodsBT;
+      if (dodsV.darray == null) {
+        if (useGroups && (parentStructure == null) && isGroup(dstruct)) { // turn into a group
+          if (debugConstruct) System.out.println(" assigned to Group <" + dodsShortName + ">");
+          Group g = new Group(this, parentGroup, DODSNetcdfFile.makeShortName(dodsShortName));
+          addAttributes(g, dodsV);
+          parentGroup.addGroup(g);
 
-            } else {
-                if (debugConstruct) System.out.println(" ERROR! array of DGrid <" + dodsShortName + ">");
-                return null;
-            }
-
-        } else if (dodsBT instanceof DSequence) {
-            if (dodsV.darray == null) {
-                if (debugConstruct) System.out.println(" assigned to DSequence <" + dodsShortName + ">");
-                return new DODSStructure(this, parentGroup, parentStructure, dodsShortName, dodsV);
-            } else {
-                if (debugConstruct) System.out.println(" ERROR! array of DSequence <" + dodsShortName + ">");
-                return null;
-            }
-
-        } else if (dodsBT instanceof DStructure) {
-            DStructure dstruct = (DStructure) dodsBT;
-            if (dodsV.darray == null) {
-                if (useGroups && (parentStructure == null) && isGroup(dstruct)) { // turn into a group
-                    if (debugConstruct) System.out.println(" assigned to Group <" + dodsShortName + ">");
-                    Group g = new Group(this, parentGroup, DODSNetcdfFile.makeShortName(dodsShortName));
-                    addAttributes(g, dodsV);
-                    parentGroup.addGroup(g);
-
-                    for (DodsV nested : dodsV.children) {
-                        addVariable(g, null, nested);
-                    }
-                    return null;
-                } else {
-                    if (debugConstruct) System.out.println(" assigned to DStructure <" + dodsShortName + ">");
-                    return new DODSStructure(this, parentGroup, parentStructure, dodsShortName, dodsV);
-                }
-            } else {
-                if (debugConstruct) System.out.println(" assigned to Array of DStructure <" + dodsShortName + "> ");
-                return new DODSStructure(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsV);
-            }
-
+          for (DodsV nested : dodsV.children) {
+            addVariable(g, null, nested);
+          }
+          return null;
         } else {
-            logger.warn("DODSNetcdf " + location + " didnt process basetype <" + dodsBT.getTypeName() + "> variable = " + dodsShortName);
-            return null;
+          if (debugConstruct) System.out.println(" assigned to DStructure <" + dodsShortName + ">");
+          return new DODSStructure(this, parentGroup, parentStructure, dodsShortName, dodsV);
         }
+      } else {
+        if (debugConstruct) System.out.println(" assigned to Array of DStructure <" + dodsShortName + "> ");
+        return new DODSStructure(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsV);
+      }
 
+    } else {
+      logger.warn("DODSNetcdf " + location + " didnt process basetype <" + dodsBT.getTypeName() + "> variable = " + dodsShortName);
+      return null;
     }
 
-    private void makeCoordinateVariable(Group parentGroup, Variable v, Array data)
-    {
-        String name = v.getShortName();
+  }
 
-        // replace in Variable
-        Dimension oldDimension = v.getDimension(0);
-        Dimension newDimension = new Dimension(name, oldDimension.getLength());
-        // newDimension.setCoordinateAxis( v); calcCoordinateVaribale will do this
-        v.setDimension(0, newDimension);
+  private void makeCoordinateVariable(Group parentGroup, Variable v, Array data) {
+    String name = v.getShortName();
 
-        // replace old (if it exists) in Group with shared dimension
-        Dimension old = parentGroup.findDimension(name);
-        parentGroup.remove(old);
-        parentGroup.addDimension(newDimension);
+    // replace in Variable
+    Dimension oldDimension = v.getDimension(0);
+    Dimension newDimension = new Dimension(name, oldDimension.getLength());
+    // newDimension.setCoordinateAxis( v); calcCoordinateVaribale will do this
+    v.setDimension(0, newDimension);
 
-        // might as well cache the data
-        if (data != null) {
-            v.setCachedData(data);
-            if (debugCached) System.out.println(" cache for <" + name + "> length =" + data.getSize());
-        }
+    // replace old (if it exists) in Group with shared dimension
+    Dimension old = parentGroup.findDimension(name);
+    parentGroup.remove(old);
+    parentGroup.addDimension(newDimension);
+
+    // might as well cache the data
+    if (data != null) {
+      v.setCachedData(data);
+      if (debugCached) System.out.println(" cache for <" + name + "> length =" + data.getSize());
     }
+  }
 
-    // make a structure into a group if its scalar and all parents are groups
+  // make a structure into a group if its scalar and all parents are groups
 
-    private boolean isGroup(DStructure dstruct)
-    {
-        BaseType parent = (BaseType) dstruct.getParent();
-        if (parent == null) return true;
-        if (parent instanceof DStructure)
-            return isGroup((DStructure) parent);
-        return true;
-    }
+  private boolean isGroup(DStructure dstruct) {
+    BaseType parent = (BaseType) dstruct.getParent();
+    if (parent == null) return true;
+    if (parent instanceof DStructure)
+      return isGroup((DStructure) parent);
+    return true;
+  }
 
     /* private void addAttributes(String tableName, AttributeTable attTable) {
 
@@ -1093,29 +1071,27 @@ if(OLDGROUPCODE) {
      }
    } */
 
-    private void addAttributes(Variable v, DodsV dodsV)
-    {
-        List<DODSAttribute> atts = dodsV.attributes;
-        for (Attribute ncatt : atts) {
-            v.addAttribute(ncatt);
-        }
-
-        // this is the case where its (probably) a Grid, and so _Coordinate.Axes has been assigned, but if
-        // theres also a coordinates attribute, need to add that info
-        Attribute axes = v.findAttribute(CF.COORDINATES);
-        Attribute _axes = v.findAttribute(_Coordinate.Axes);
-        if ((null != axes) && (null != _axes)) {
-            v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue() + " " + _axes.getStringValue()));
-        }
+  private void addAttributes(Variable v, DodsV dodsV) {
+    List<DODSAttribute> atts = dodsV.attributes;
+    for (Attribute ncatt : atts) {
+      v.addAttribute(ncatt);
     }
 
-    private void addAttributes(Group g, DodsV dodsV)
-    {
-        List<DODSAttribute> atts = dodsV.attributes;
-        for (Attribute ncatt : atts) {
-            g.addAttribute(ncatt);
-        }
+    // this is the case where its (probably) a Grid, and so _Coordinate.Axes has been assigned, but if
+    // theres also a coordinates attribute, need to add that info
+    Attribute axes = v.findAttribute(CF.COORDINATES);
+    Attribute _axes = v.findAttribute(_Coordinate.Axes);
+    if ((null != axes) && (null != _axes)) {
+      v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue() + " " + _axes.getStringValue()));
     }
+  }
+
+  private void addAttributes(Group g, DodsV dodsV) {
+    List<DODSAttribute> atts = dodsV.attributes;
+    for (Attribute ncatt : atts) {
+      g.addAttribute(ncatt);
+    }
+  }
 
     /* an attTable name matches a Group
   private void addAttributes(Group g, AttributeTable attTable) {
@@ -1147,151 +1123,145 @@ if(OLDGROUPCODE) {
   }  */
 
 
-    /**
-     * Checks to see if this is netcdf char array.
-     *
-     * @param v must be type STRING
-     * @return string length dimension, else null
-     */
-    Dimension getNetcdfStrlenDim(DODSVariable v)
-    {
-        AttributeTable table = das.getAttributeTableN(v.getFullName()); // LOOK this probably doesnt work for nested variables
-        if (table == null) return null;
+  /**
+   * Checks to see if this is netcdf char array.
+   *
+   * @param v must be type STRING
+   * @return string length dimension, else null
+   */
+  Dimension getNetcdfStrlenDim(DODSVariable v) {
+    AttributeTable table = das.getAttributeTableN(v.getFullName()); // LOOK this probably doesnt work for nested variables
+    if (table == null) return null;
 
-        opendap.dap.Attribute dodsAtt = table.getAttribute("DODS");
-        if (dodsAtt == null) return null;
+    opendap.dap.Attribute dodsAtt = table.getAttribute("DODS");
+    if (dodsAtt == null) return null;
 
-        AttributeTable dodsTable = dodsAtt.getContainerN();
-        if (dodsTable == null) return null;
+    AttributeTable dodsTable = dodsAtt.getContainerN();
+    if (dodsTable == null) return null;
 
-        opendap.dap.Attribute att = dodsTable.getAttribute("strlen");
-        if (att == null) return null;
-        String strlen = att.getValueAtN(0);
+    opendap.dap.Attribute att = dodsTable.getAttribute("strlen");
+    if (att == null) return null;
+    String strlen = att.getValueAtN(0);
 
-        opendap.dap.Attribute att2 = dodsTable.getAttribute("dimName");
-        String dimName = (att2 == null) ? null : att2.getValueAtN(0);
-        if (debugCharArray) System.out.println(v.getFullName() + " has strlen= " + strlen + " dimName= " + dimName);
+    opendap.dap.Attribute att2 = dodsTable.getAttribute("dimName");
+    String dimName = (att2 == null) ? null : att2.getValueAtN(0);
+    if (debugCharArray) System.out.println(v.getFullName() + " has strlen= " + strlen + " dimName= " + dimName);
 
-        int dimLength;
-        try {
-            dimLength = Integer.parseInt(strlen);
-        } catch (NumberFormatException e) {
-            logger.warn("DODSNetcdfFile " + location + " var = " + v.getFullName() + " error on strlen attribute = " + strlen);
-            return null;
-        }
-
-        if (dimLength <= 0) return null; // LOOK what about unlimited ??
-        return new Dimension(dimName, dimLength, dimName != null);
+    int dimLength;
+    try {
+      dimLength = Integer.parseInt(strlen);
+    } catch (NumberFormatException e) {
+      logger.warn("DODSNetcdfFile " + location + " var = " + v.getFullName() + " error on strlen attribute = " + strlen);
+      return null;
     }
 
-    /**
-     * If an equivilent shared dimension already exists, use it, else add d to shared dimensions.
-     * Equivilent is same name and length.
-     *
-     * @param group from this group, if null, use rootGroup
-     * @param d     find equivilent shared dimension to this one.
-     * @return equivilent shared dimension or d.
-     */
-    Dimension getSharedDimension(Group group, Dimension d)
-    {
-        if (d.getShortName() == null) return d;
+    if (dimLength <= 0) return null; // LOOK what about unlimited ??
+    return new Dimension(dimName, dimLength, dimName != null);
+  }
 
-        if (group == null) group = rootGroup;
-        for (Dimension sd : group.getDimensions()) {
-            if (sd.getShortName().equals(d.getShortName()) && sd.getLength() == d.getLength())
-                return sd;
+  /**
+   * If an equivilent shared dimension already exists, use it, else add d to shared dimensions.
+   * Equivilent is same name and length.
+   *
+   * @param group from this group, if null, use rootGroup
+   * @param d     find equivilent shared dimension to this one.
+   * @return equivilent shared dimension or d.
+   */
+  Dimension getSharedDimension(Group group, Dimension d) {
+    if (d.getShortName() == null) return d;
+
+    if (group == null) group = rootGroup;
+    for (Dimension sd : group.getDimensions()) {
+      if (sd.getShortName().equals(d.getShortName()) && sd.getLength() == d.getLength())
+        return sd;
+    }
+    d.setShared(true);
+    group.addDimension(d);
+    return d;
+  }
+
+  // construct list of dimensions to use
+
+  List<Dimension> constructDimensions(Group group, opendap.dap.DArray dodsArray) {
+    if (group == null) group = rootGroup;
+
+    List<Dimension> dims = new ArrayList<Dimension>();
+    Enumeration enumerate = dodsArray.getDimensions();
+    while (enumerate.hasMoreElements()) {
+      opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
+      String name = dad.getEncodedName();
+      if (name != null)
+        name = StringUtil2.unescape(name);
+
+      Dimension myd;
+
+      if (name == null) { // if no name, make an anonymous dimension
+        myd = new Dimension(null, dad.getSize(), false);
+
+      } else { // see if shared
+        if (RC.getUseGroups()) {
+          if (name.indexOf('/') >= 0) {// place dimension in proper group
+            group = group.makeRelativeGroup(this, name, true);
+            // change our name
+            name = name.substring(name.lastIndexOf('/') + 1);
+          }
         }
-        d.setShared(true);
-        group.addDimension(d);
-        return d;
+        myd = group.findDimension(name);
+        if (myd == null) { // add as shared
+          myd = new Dimension(name, dad.getSize());
+          group.addDimension(myd);
+        } else if (myd.getLength() != dad.getSize()) { // make a non-shared dimension
+          myd = new Dimension(name, dad.getSize(), false);
+        } // else use existing, shared dimension
+      }
+      dims.add(myd); // add it to the list
     }
 
-    // construct list of dimensions to use
+    return dims;
+  }
 
-    List<Dimension> constructDimensions(Group group, opendap.dap.DArray dodsArray)
-    {
-        if (group == null) group = rootGroup;
+  private void setUnlimited(String dimName) {
+    Dimension dim = rootGroup.findDimension(dimName);
+    if (dim != null)
+      dim.setUnlimited(true);
+    else
+      logger.error(" DODS Unlimited_Dimension = " + dimName + " not found on " + location);
+  }
 
-        List<Dimension> dims = new ArrayList<Dimension>();
-        Enumeration enumerate = dodsArray.getDimensions();
-        while (enumerate.hasMoreElements()) {
-            opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
-            String name = dad.getEncodedName();
-            if (name != null)
-                name = StringUtil2.unescape(name);
-
-            Dimension myd;
-
-            if (name == null) { // if no name, make an anonymous dimension
-                myd = new Dimension(null, dad.getSize(), false);
-
-            } else { // see if shared
-                if (RC.getUseGroups()) {
-                    if (name.indexOf('/') >= 0) {// place dimension in proper group
-                        group = group.makeRelativeGroup(this, name, true);
-                        // change our name
-                        name = name.substring(name.lastIndexOf('/') + 1);
-                    }
-                }
-                myd = group.findDimension(name);
-                if (myd == null) { // add as shared
-                    myd = new Dimension(name, dad.getSize());
-                    group.addDimension(myd);
-                } else if (myd.getLength() != dad.getSize()) { // make a non-shared dimension
-                    myd = new Dimension(name, dad.getSize(), false);
-                } // else use existing, shared dimension
-            }
-            dims.add(myd); // add it to the list
-        }
-
-        return dims;
+  protected int[] makeShape(opendap.dap.DArray dodsArray) {
+    int count = 0;
+    Enumeration enumerate = dodsArray.getDimensions();
+    while (enumerate.hasMoreElements()) {
+      count++;
+      enumerate.nextElement();
     }
 
-    private void setUnlimited(String dimName)
-    {
-        Dimension dim = rootGroup.findDimension(dimName);
-        if (dim != null)
-            dim.setUnlimited(true);
-        else
-            logger.error(" DODS Unlimited_Dimension = " + dimName + " not found on " + location);
+    int[] shape = new int[count];
+    enumerate = dodsArray.getDimensions();
+    count = 0;
+    while (enumerate.hasMoreElements()) {
+      opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
+      shape[count++] = dad.getSize();
     }
 
-    protected int[] makeShape(opendap.dap.DArray dodsArray)
-    {
-        int count = 0;
-        Enumeration enumerate = dodsArray.getDimensions();
-        while (enumerate.hasMoreElements()) {
-            count++;
-            enumerate.nextElement();
-        }
+    return shape;
+  }
 
-        int[] shape = new int[count];
-        enumerate = dodsArray.getDimensions();
-        count = 0;
-        while (enumerate.hasMoreElements()) {
-            opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
-            shape[count++] = dad.getSize();
-        }
+  // kludge for single inheritence
 
-        return shape;
-    }
-
-    // kludge for single inheritence
-
-    /**
-     * Return a variable name suitable for use in a DAP constraint expression.
-     * [Original code seemed wrong because structures can be nested and hence
-     *  would have to use the full name just like non-structures]
-     *
-     * @param var The variable whose name will appear in the CE
-     * @return    The name in a form suitable for use in a cE
-     */
-    static public String getDODSConstraintName(Variable var)
-    {
-        String vname = var.getDODSName();
-	// The vname is backslash escaped, so we need to
-	// modify to use DAP %xx escapes.
-        return EscapeStrings.backslashToDAP(vname);
+  /**
+   * Return a variable name suitable for use in a DAP constraint expression.
+   * [Original code seemed wrong because structures can be nested and hence
+   * would have to use the full name just like non-structures]
+   *
+   * @param var The variable whose name will appear in the CE
+   * @return The name in a form suitable for use in a cE
+   */
+  static public String getDODSConstraintName(Variable var) {
+    String vname = var.getDODSName();
+    // The vname is backslash escaped, so we need to
+    // modify to use DAP %xx escapes.
+    return EscapeStrings.backslashToDAP(vname);
 
         /*
         if (var instanceof DODSVariable)
@@ -1301,7 +1271,7 @@ if(OLDGROUPCODE) {
         else
             return null;
         */
-    }
+  }
 
     /* full name
    private String makeDODSname(Variable dodsV) {
@@ -1315,307 +1285,285 @@ if(OLDGROUPCODE) {
        return getDODSConstraintName(dodsV);
    } */
 
-    // full name
+  // full name
 
-    private String makeDODSname(DodsV dodsV)
-    {
-        DodsV parent = dodsV.parent;
-        if (parent.bt != null)
-            return (makeDODSname(parent) + "." + dodsV.bt.getEncodedName());
-        return dodsV.bt.getEncodedName();
+  private String makeDODSname(DodsV dodsV) {
+    DodsV parent = dodsV.parent;
+    if (parent.bt != null)
+      return (makeDODSname(parent) + "." + dodsV.bt.getEncodedName());
+    return dodsV.bt.getEncodedName();
+  }
+
+  static String
+  makeShortName(String name) {
+    String unescaped = EscapeStrings.unescapeDAPIdentifier(name);
+    int index = unescaped.lastIndexOf('/');
+    if (index < 0) index = -1;
+    return unescaped.substring(index + 1, unescaped.length());
+  }
+
+  static String
+  makeDODSName(String name) {
+    return EscapeStrings.unescapeDAPIdentifier(name);
+  }
+
+  /**
+   * Get the DODS data class corresponding to the Netcdf data type.
+   * This is the inverse of convertToNCType().
+   *
+   * @param dataType   Netcdf data type.
+   * @return the corresponding DODS type enum, from opendap.dap.Attribute.XXXX.
+   */
+  static public int convertToDODSType(DataType dataType) {
+    if (dataType == DataType.STRING)
+      return opendap.dap.Attribute.STRING;
+    if (dataType == DataType.BYTE)
+      return opendap.dap.Attribute.BYTE;
+    if (dataType == DataType.FLOAT)
+      return opendap.dap.Attribute.FLOAT32;
+    if (dataType == DataType.DOUBLE)
+      return opendap.dap.Attribute.FLOAT64;
+    if (dataType == DataType.SHORT)
+      return opendap.dap.Attribute.INT16;
+    if (dataType == DataType.USHORT)
+      return opendap.dap.Attribute.UINT16;
+    if (dataType == DataType.INT)
+      return opendap.dap.Attribute.INT32;
+    if (dataType == DataType.UINT)
+      return opendap.dap.Attribute.UINT32;
+    if (dataType == DataType.BOOLEAN)
+      return opendap.dap.Attribute.BYTE;
+    if (dataType == DataType.LONG)
+      return opendap.dap.Attribute.INT32; // LOOK no LONG type!
+
+    // shouldnt happen
+    return opendap.dap.Attribute.STRING;
+  }
+
+  /**
+   * Get the Netcdf data type corresponding to the DODS data type.
+   * This is the inverse of convertToDODSType().
+   *
+   * @param dodsDataType DODS type enum, from dods.dap.Attribute.XXXX.
+   * @return the corresponding netcdf DataType.
+   * @see #isUnsigned
+   */
+  static public DataType convertToNCType(int dodsDataType, boolean isUnsigned) {
+    switch (dodsDataType) {
+      case opendap.dap.Attribute.BYTE:
+        return isUnsigned ? DataType.UBYTE : DataType.BYTE;
+      case opendap.dap.Attribute.FLOAT32:
+        return DataType.FLOAT;
+      case opendap.dap.Attribute.FLOAT64:
+        return DataType.DOUBLE;
+      case opendap.dap.Attribute.INT16:
+        return DataType.SHORT;
+      case opendap.dap.Attribute.UINT16:
+        return DataType.USHORT;
+      case opendap.dap.Attribute.INT32:
+        return DataType.INT;
+      case opendap.dap.Attribute.UINT32:
+        return DataType.UINT;
+      default:
+        return DataType.STRING;
+    }
+  }
+
+  /**
+   * Get the Netcdf data type corresponding to the DODS BaseType class.
+   * This is the inverse of convertToDODSType().
+   *
+   * @param dtype DODS BaseType.
+   * @return the corresponding netcdf DataType.
+   * @see #isUnsigned
+   */
+  static public DataType convertToNCType(opendap.dap.BaseType dtype, boolean isUnsigned) {
+    if (dtype instanceof DString)
+      return DataType.STRING;
+    else if ((dtype instanceof DStructure) || (dtype instanceof DSequence) || (dtype instanceof DGrid))
+      return DataType.STRUCTURE;
+    else if (dtype instanceof DFloat32)
+      return DataType.FLOAT;
+    else if (dtype instanceof DFloat64)
+      return DataType.DOUBLE;
+    else if (dtype instanceof DUInt32)
+      return DataType.UINT;
+    else if (dtype instanceof DInt32)
+      return DataType.INT;
+    else if (dtype instanceof DUInt16)
+      return DataType.USHORT;
+    else if (dtype instanceof DInt16)
+      return DataType.SHORT;
+    else if (dtype instanceof DByte)
+      return isUnsigned ? DataType.UBYTE : DataType.BYTE;
+    else
+      throw new IllegalArgumentException("DODSVariable illegal type = " + dtype.getTypeName());
+  }
+
+  /**
+   * Get whether this is an unsigned type.
+   *
+   * @param dtype DODS BaseType.
+   * @return true if unsigned
+   */
+  static public boolean isUnsigned(opendap.dap.BaseType dtype) {
+    return (dtype instanceof DByte) ||
+            (dtype instanceof DUInt16) ||
+            (dtype instanceof DUInt32);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * This does the actual connection to the opendap server and reading of the data.
+   * All data calls go through here so we can add debugging.
+   *
+   * @param CE constraint expression; use empty string if none
+   * @return DataDDS
+   * @throws java.io.IOException                on io error
+   * @throws opendap.dap.parsers.ParseException if error parsing return
+   * @throws opendap.dap.DAP2Exception          if you have otherwise been bad
+   */
+  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parsers.ParseException, opendap.dap.DAP2Exception {
+    if (debugServerCall) System.out.println("DODSNetcdfFile.readDataDDSfromServer = <" + CE + ">");
+
+    long start = 0;
+    if (debugTime) start = System.currentTimeMillis();
+
+    if (!CE.startsWith("?"))
+      CE = "?" + CE;
+    DataDDS data;
+    synchronized (this) {
+      data = dodsConnection.getData(CE, null);
+    }
+    if (debugTime)
+      System.out.println("DODSNetcdfFile.readDataDDSfromServer took = " + (System.currentTimeMillis() - start) / 1000.0);
+
+    if (debugDataResult) {
+      System.out.println(" dataDDS return:");
+      data.print(System.out);
     }
 
-    static String
-    makeShortName(String name)
-    {
-        String unescaped = EscapeStrings.unescapeDAPIdentifier(name);
-        int index = unescaped.lastIndexOf('/');
-        if(index < 0) index = -1;
-        return unescaped.substring(index + 1, unescaped.length());
+    return data;
+  }
+
+  ///////////////////////////////////////////////////////////////////
+  // ALL the I/O goes through these  routines
+  // called from ucar.nc2.Variable
+
+  /**
+   * Make a single call to the DODS Server to read all the named variable's data
+   * in one client/server roundtrip.
+   *
+   * @param preloadVariables list of type Variable
+   * @return list of type Array, contains the data
+   * @throws IOException on error
+   */
+  @Override
+  public List<Array> readArrays(List<Variable> preloadVariables) throws IOException {
+    //For performance tests:
+    //if (true) return super.readArrays (variables);
+    if (preloadVariables.size() == 0) return new ArrayList<Array>();
+
+    // construct the list of variables, skipping ones with cached data
+    List<DodsV> reqDodsVlist = new ArrayList<DodsV>();
+    DodsV root;
+    for (Variable var : preloadVariables) {
+      if (var.hasCachedData()) continue;
+      reqDodsVlist.add((DodsV) var.getSPobject());
     }
+    Collections.sort(reqDodsVlist); // "depth first" order
 
-    static String
-    makeDODSName(String name)
-    {
-      return EscapeStrings.unescapeDAPIdentifier(name);
-    }
+    // read the data
+    DataDDS dataDDS;
+    Map<DodsV, DodsV> map = new HashMap<DodsV, DodsV>(2 * reqDodsVlist.size() + 1);
+    if (reqDodsVlist.size() > 0) {
 
-    /**
-     * Get the DODS data class corresponding to the Netcdf data type.
-     * This is the inverse of convertToNCType().
-     *
-     * @param dataType   Netcdf data type.
-     * @param isUnsigned if its unsigned
-     * @return the corresponding DODS type enum, from opendap.dap.Attribute.XXXX.
-     */
-    static public int convertToDODSType(DataType dataType, boolean isUnsigned)
-    {
+      // Create the request
+      StringBuilder requestString = new StringBuilder();
+      for (int i = 0; i < reqDodsVlist.size(); i++) {
+        DodsV dodsV = reqDodsVlist.get(i);
+        requestString.append(i == 0 ? "?" : ",");
+        // requestString.append(makeDODSname(dodsV));
+        requestString.append(dodsV.getEncodedName());
+      }
+      String s = requestString.toString();
 
-        if (dataType == DataType.STRING)
-            return opendap.dap.Attribute.STRING;
-        if (dataType == DataType.BYTE)
-            return opendap.dap.Attribute.BYTE;
-        if (dataType == DataType.FLOAT)
-            return opendap.dap.Attribute.FLOAT32;
-        if (dataType == DataType.DOUBLE)
-            return opendap.dap.Attribute.FLOAT64;
-        if (dataType == DataType.SHORT)
-            return isUnsigned ? opendap.dap.Attribute.UINT16 : opendap.dap.Attribute.INT16;
-        if (dataType == DataType.INT)
-            return isUnsigned ? opendap.dap.Attribute.UINT32 : opendap.dap.Attribute.INT32;
-        if (dataType == DataType.BOOLEAN)
-            return opendap.dap.Attribute.BYTE;
-        if (dataType == DataType.LONG)
-            return opendap.dap.Attribute.INT32; // LOOK no LONG type!
+      try {
+        dataDDS = readDataDDSfromServer(requestString.toString());
+        root = DodsV.parseDataDDS(dataDDS);
 
-        // shouldnt happen
-        return opendap.dap.Attribute.STRING;
-    }
+      } catch (Exception exc) {
+        logger.error("ERROR readDataDDSfromServer on " + requestString, exc);
+        throw new IOException(exc.getMessage());
+      }
 
-    /**
-     * Get the Netcdf data type corresponding to the DODS data type.
-     * This is the inverse of convertToDODSType().
-     *
-     * @param dodsDataType DODS type enum, from dods.dap.Attribute.XXXX.
-     * @return the corresponding netcdf DataType.
-     * @see #isUnsigned
-     */
-    static public DataType convertToNCType(int dodsDataType)
-    {
-        switch (dodsDataType) {
-        case opendap.dap.Attribute.BYTE:
-            return DataType.BYTE;
-        case opendap.dap.Attribute.FLOAT32:
-            return DataType.FLOAT;
-        case opendap.dap.Attribute.FLOAT64:
-            return DataType.DOUBLE;
-        case opendap.dap.Attribute.INT16:
-            return DataType.SHORT;
-        case opendap.dap.Attribute.UINT16:
-            return DataType.SHORT;
-        case opendap.dap.Attribute.INT32:
-            return DataType.INT;
-        case opendap.dap.Attribute.UINT32:
-            return DataType.INT;
-        default:
-            return DataType.STRING;
+      // gotta find the corresponding data in "depth first" order
+      for (DodsV ddsV : reqDodsVlist) {
+        DodsV dataV = root.findDataV(ddsV);
+        if (dataV != null) {
+          if (debugConvertData) System.out.println("readArray found dataV= " + makeDODSname(ddsV));
+          dataV.isDone = true;
+          map.put(ddsV, dataV); // thread safe!
+        } else {
+          logger.error("ERROR findDataV cant find " + makeDODSname(ddsV) + " on " + location);
         }
+      }
     }
 
-    /**
-     * Get whether this is an unsigned type.
-     *
-     * @param dodsDataType DODS type enum, from dods.dap.Attribute.XXXX.
-     * @return true if unsigned
-     */
-    static public boolean isUnsigned(int dodsDataType)
-    {
-        return (dodsDataType == opendap.dap.Attribute.BYTE) ||
-                (dodsDataType == opendap.dap.Attribute.UINT16) ||
-                (dodsDataType == opendap.dap.Attribute.UINT32);
-    }
+    // For each variable either extract the data or use cached data.
+    List<Array> result = new ArrayList<Array>();
+    for (Variable var : preloadVariables) {
+      if (var.hasCachedData()) {
+        result.add(var.read());
 
-    /**
-     * Get the Netcdf data type corresponding to the DODS BaseType class.
-     * This is the inverse of convertToDODSType().
-     *
-     * @param dtype DODS BaseType.
-     * @return the corresponding netcdf DataType.
-     * @see #isUnsigned
-     */
-    static public DataType convertToNCType(opendap.dap.BaseType dtype)
-    {
-        if (dtype instanceof DString)
-            return DataType.STRING;
-        else if ((dtype instanceof DStructure) || (dtype instanceof DSequence) || (dtype instanceof DGrid))
-            return DataType.STRUCTURE;
-        else if (dtype instanceof DFloat32)
-            return DataType.FLOAT;
-        else if (dtype instanceof DFloat64)
-            return DataType.DOUBLE;
-        else if (dtype instanceof DUInt32)
-            return DataType.UINT;
-        else if (dtype instanceof DInt32)
-            return DataType.INT;
-        else if (dtype instanceof DUInt16)
-            return DataType.USHORT;
-        else if (dtype instanceof DInt16)
-             return DataType.SHORT;
-        else if (dtype instanceof DByte)
-            return DataType.UBYTE;
-        else
-            throw new IllegalArgumentException("DODSVariable illegal type = " + dtype.getTypeName());
-    }
+      } else {
+        Array data = null;
+        DodsV ddsV = (DodsV) var.getSPobject();
 
-    /**
-     * Get whether this is an unsigned type.
-     *
-     * @param dtype DODS BaseType.
-     * @return true if unsigned
-     */
-    static public boolean isUnsigned(opendap.dap.BaseType dtype)
-    {
-        return (dtype instanceof DByte) ||
-                (dtype instanceof DUInt16) ||
-                (dtype instanceof DUInt32);
-    }
+        DodsV dataV = map.get(ddsV);
+        if (dataV == null) {
+          logger.error("DODSNetcdfFile.readArrays cant find " + makeDODSname(ddsV) + " in dataDDS; " + location);
+          //dataDDS.print( System.out);
+        } else {
+          if (debugConvertData) System.out.println("readArray converting " + makeDODSname(ddsV));
+          dataV.isDone = true;
 
-    /////////////////////////////////////////////////////////////////////////////////////
+          try {
+            if (var.isMemberOfStructure()) {
 
-    /**
-     * This does the actual connection to the opendap server and reading of the data.
-     * All data calls go through here so we can add debugging.
-     *
-     * @param CE constraint expression; use empty string if none
-     * @return DataDDS
-     * @throws java.io.IOException       on io error
-     * @throws opendap.dap.parsers.ParseException
-     *                                   if error parsing return
-     * @throws opendap.dap.DAP2Exception if you have otherwise been bad
-     */
-    DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parsers.ParseException, opendap.dap.DAP2Exception
-    {
-        if (debugServerCall) System.out.println("DODSNetcdfFile.readDataDDSfromServer = <" + CE + ">");
+              // we want the top structure this variable is contained in.
+              while ((dataV.parent != null) && (dataV.parent.bt != null)) {
+                dataV = dataV.parent;
+              }
+              data = convertD2N.convertNestedVariable(var, null, dataV, true);
 
-        long start = 0;
-        if (debugTime) start = System.currentTimeMillis();
+            } else
+              data = convertD2N.convertTopVariable(var, null, dataV);
 
-        if (!CE.startsWith("?"))
-            CE = "?" + CE;
-        DataDDS data;
-        synchronized(this) {
-            data = dodsConnection.getData(CE, null);
+          } catch (DAP2Exception de) {
+            logger.error("ERROR convertVariable on " + var.getFullName(), de);
+            throw new IOException(de.getMessage());
+          }
+
+          if (var.isCaching()) {
+            var.setCachedData(data);
+            if (debugCached)
+              System.out.println(" cache for <" + var.getFullName() + "> length =" + data.getSize());
+          }
         }
-        if (debugTime)
-            System.out.println("DODSNetcdfFile.readDataDDSfromServer took = " + (System.currentTimeMillis() - start) / 1000.0);
-
-        if (debugDataResult) {
-            System.out.println(" dataDDS return:");
-            data.print(System.out);
-        }
-
-        return data;
+        result.add(data);
+      }
     }
+    return result;
+  }
 
-    ///////////////////////////////////////////////////////////////////
-    // ALL the I/O goes through these  routines
-    // called from ucar.nc2.Variable
+  @Override
+  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
 
-    /**
-     * Make a single call to the DODS Server to read all the named variable's data
-     * in one client/server roundtrip.
-     *
-     * @param preloadVariables list of type Variable
-     * @return list of type Array, contains the data
-     * @throws IOException on error
-     */
-    @Override
-    public List<Array> readArrays(List<Variable> preloadVariables) throws IOException
-    {
-        //For performance tests:
-        //if (true) return super.readArrays (variables);
-        if (preloadVariables.size() == 0) return new ArrayList<Array>();
-
-        // construct the list of variables, skipping ones with cached data
-        List<DodsV> reqDodsVlist = new ArrayList<DodsV>();
-        DodsV root;
-        for (Variable var : preloadVariables) {
-            if (var.hasCachedData()) continue;
-            reqDodsVlist.add((DodsV) var.getSPobject());
-        }
-        Collections.sort(reqDodsVlist); // "depth first" order
-
-        // read the data
-        DataDDS dataDDS;
-        Map<DodsV, DodsV> map = new HashMap<DodsV, DodsV>(2 * reqDodsVlist.size() + 1);
-        if (reqDodsVlist.size() > 0) {
-
-            // Create the request
-            StringBuilder requestString = new StringBuilder();
-            for (int i = 0; i < reqDodsVlist.size(); i++) {
-                DodsV dodsV = reqDodsVlist.get(i);
-                requestString.append(i == 0 ? "?" : ",");
-                // requestString.append(makeDODSname(dodsV));
-                requestString.append(dodsV.getEncodedName());
-            }
-            String s = requestString.toString();
-
-            try {
-                dataDDS = readDataDDSfromServer(requestString.toString());
-                root = DodsV.parseDataDDS(dataDDS);
-
-            } catch (Exception exc) {
-                logger.error("ERROR readDataDDSfromServer on " + requestString, exc);
-                throw new IOException(exc.getMessage());
-            }
-
-            // gotta find the corresponding data in "depth first" order
-            for (DodsV ddsV : reqDodsVlist) {
-                DodsV dataV = root.findDataV(ddsV);
-                if (dataV != null) {
-                    if (debugConvertData) System.out.println("readArray found dataV= " + makeDODSname(ddsV));
-                    dataV.isDone = true;
-                    map.put(ddsV, dataV); // thread safe!
-                } else {
-                    logger.error("ERROR findDataV cant find " + makeDODSname(ddsV) + " on " + location);
-                }
-            }
-        }
-
-        // For each variable either extract the data or use cached data.
-        List<Array> result = new ArrayList<Array>();
-        for (Variable var : preloadVariables) {
-            if (var.hasCachedData()) {
-                result.add(var.read());
-
-            } else {
-                Array data = null;
-                DodsV ddsV = (DodsV) var.getSPobject();
-
-                DodsV dataV = map.get(ddsV);
-                if (dataV == null) {
-                    logger.error("DODSNetcdfFile.readArrays cant find " + makeDODSname(ddsV) + " in dataDDS; " + location);
-                    //dataDDS.print( System.out);
-                } else {
-                    if (debugConvertData) System.out.println("readArray converting " + makeDODSname(ddsV));
-                    dataV.isDone = true;
-
-                    try {
-                        if (var.isMemberOfStructure()) {
-
-                            // we want the top structure this variable is contained in.
-                            while ((dataV.parent != null) && (dataV.parent.bt != null)) {
-                                dataV = dataV.parent;
-                            }
-                            data = convertD2N.convertNestedVariable(var, null, dataV, true);
-
-                        } else
-                            data = convertD2N.convertTopVariable(var, null, dataV);
-
-                    } catch (DAP2Exception de) {
-                        logger.error("ERROR convertVariable on " + var.getFullName(), de);
-                        throw new IOException(de.getMessage());
-                    }
-
-                    if (var.isCaching()) {
-                        var.setCachedData(data);
-                        if (debugCached)
-                            System.out.println(" cache for <" + var.getFullName() + "> length =" + data.getSize());
-                    }
-                }
-                result.add(data);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public Array readSection(String variableSection) throws IOException, InvalidRangeException
-    {
-        ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-
-        //if (unlocked)
-        //    throw new IllegalStateException("File is unlocked - cannot use");
+    //if (unlocked)
+    //    throw new IllegalStateException("File is unlocked - cannot use");
 
         /* run it through the variableso to pick up caching
        if (cer.child == null) {
@@ -1624,62 +1572,60 @@ if(OLDGROUPCODE) {
          return result;
        } */
 
-        return readData(cer.v, cer.section);
+    return readData(cer.v, cer.section);
+  }
+
+  @Override
+  protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
+    //if (unlocked)
+    //    throw new IllegalStateException("File is unlocked - cannot use");
+
+    // LOOK: what if theres already a CE !!!!
+    // create the constraint expression
+    StringBuilder buff = new StringBuilder(100);
+    buff.setLength(0);
+    buff.append(getDODSConstraintName(v));
+
+    // add the selector if not a Sequence
+    if (!v.isVariableLength()) {
+      List<Range> dodsSection = section.getRanges();
+      if ((v.getDataType() == DataType.CHAR)) { // CHAR is mapped to DString
+        int n = section.getRank();
+        if (n == v.getRank())  // remove last section if present
+          dodsSection = dodsSection.subList(0, n - 1);
+      }
+      makeSelector(buff, dodsSection);
     }
 
-    @Override
-    protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException
-    {
-        //if (unlocked)
-        //    throw new IllegalStateException("File is unlocked - cannot use");
+    Array dataArray;
+    try {
+      // DodsV root = DodsV.parseDDS( readDataDDSfromServer(buff.toString()));
+      // data = convertD2N( (DodsV) root.children.get(0), v, section, false); // can only be one
 
-        // LOOK: what if theres already a CE !!!!
-        // create the constraint expression
-        StringBuilder buff = new StringBuilder(100);
-        buff.setLength(0);
-        buff.append(getDODSConstraintName(v));
-
-        // add the selector if not a Sequence
-        if (!v.isVariableLength()) {
-            List<Range> dodsSection = section.getRanges();
-            if ((v.getDataType() == DataType.CHAR)) { // CHAR is mapped to DString
-                int n = section.getRank();
-                if (n == v.getRank())  // remove last section if present
-                    dodsSection = dodsSection.subList(0, n - 1);
-            }
-            makeSelector(buff, dodsSection);
-        }
-
-        Array dataArray;
-        try {
-            // DodsV root = DodsV.parseDDS( readDataDDSfromServer(buff.toString()));
-            // data = convertD2N( (DodsV) root.children.get(0), v, section, false); // can only be one
-
-            DataDDS dataDDS = readDataDDSfromServer(buff.toString());
-            DodsV root = DodsV.parseDataDDS(dataDDS);
-            DodsV want = root.children.get(0); // can only be one
-            dataArray = convertD2N.convertTopVariable(v, section.getRanges(), want);
-        } catch (DAP2Exception ex) {
-            ex.printStackTrace();
-            throw new IOException(ex.getMessage()+"; "+v.getShortName()+" -- "+section);
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-            throw new IOException(ex.getMessage());
-        }
-
-        return dataArray;
+      DataDDS dataDDS = readDataDDSfromServer(buff.toString());
+      DodsV root = DodsV.parseDataDDS(dataDDS);
+      DodsV want = root.children.get(0); // can only be one
+      dataArray = convertD2N.convertTopVariable(v, section.getRanges(), want);
+    } catch (DAP2Exception ex) {
+      ex.printStackTrace();
+      throw new IOException(ex.getMessage() + "; " + v.getShortName() + " -- " + section);
+    } catch (ParseException ex) {
+      ex.printStackTrace();
+      throw new IOException(ex.getMessage());
     }
 
-    @Override
-    public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
-            throws java.io.IOException, ucar.ma2.InvalidRangeException
-    {
-        //if (unlocked)
-        //    throw new IllegalStateException("File is unlocked - cannot use");
+    return dataArray;
+  }
 
-        Array result = readData(v, section);
-        return IospHelper.transferData(result, channel);
-    }
+  @Override
+  public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
+          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    //if (unlocked)
+    //    throw new IllegalStateException("File is unlocked - cannot use");
+
+    Array result = readData(v, section);
+    return IospHelper.transferData(result, channel);
+  }
 
     /* this is for reading variables that are members of structures
   protected Array readMemberData(ucar.nc2.Variable v, Section section, boolean flatten) throws IOException, InvalidRangeException {
@@ -1714,63 +1660,60 @@ if(OLDGROUPCODE) {
     return dataArray;
   }  */
 
-    public Array readWithCE(ucar.nc2.Variable v, String CE) throws IOException
-    {
+  public Array readWithCE(ucar.nc2.Variable v, String CE) throws IOException {
 
-        Array dataArray;
-        try {
+    Array dataArray;
+    try {
 
-            DataDDS dataDDS = readDataDDSfromServer(CE);
-            DodsV root = DodsV.parseDataDDS(dataDDS);
-            DodsV want = root.children.get(0); // can only be one
+      DataDDS dataDDS = readDataDDSfromServer(CE);
+      DodsV root = DodsV.parseDataDDS(dataDDS);
+      DodsV want = root.children.get(0); // can only be one
 
-            if (v.isMemberOfStructure())
-                dataArray = convertD2N.convertNestedVariable(v, null, want, true);
-            else
-                dataArray = convertD2N.convertTopVariable(v, null, want);
-        } catch (DAP2Exception ex) {
-            ex.printStackTrace();
-            throw new IOException(ex.getMessage());
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-            throw new IOException(ex.getMessage());
-        }
-
-        return dataArray;
+      if (v.isMemberOfStructure())
+        dataArray = convertD2N.convertNestedVariable(v, null, want, true);
+      else
+        dataArray = convertD2N.convertTopVariable(v, null, want);
+    } catch (DAP2Exception ex) {
+      ex.printStackTrace();
+      throw new IOException(ex.getMessage());
+    } catch (ParseException ex) {
+      ex.printStackTrace();
+      throw new IOException(ex.getMessage());
     }
 
-    private int addParents(StringBuilder buff, Variable s, List<Range> section, int start)
-    {
-        Structure parent = s.getParentStructure();
-        if (parent != null) {
-            start = addParents(buff, parent, section, start);
-            buff.append(".");
-        }
+    return dataArray;
+  }
 
-        List<Range> subSection = section.subList(start, start + s.getRank());
-
-        buff.append(getDODSConstraintName(s));
-
-        if (!s.isVariableLength()) // have to get the whole thing for a sequence !!
-            makeSelector(buff, subSection);
-
-        return start + s.getRank();
+  private int addParents(StringBuilder buff, Variable s, List<Range> section, int start) {
+    Structure parent = s.getParentStructure();
+    if (parent != null) {
+      start = addParents(buff, parent, section, start);
+      buff.append(".");
     }
 
-    private void makeSelector(StringBuilder buff, List<Range> section)
-    {
-        for (Range r : section) {
-            buff.append("[");
-            buff.append(r.first());
-            buff.append(':');
-            buff.append(r.stride());
-            buff.append(':');
-            buff.append(r.last());
-            buff.append("]");
-        }
-    }
+    List<Range> subSection = section.subList(start, start + s.getRank());
 
-    // old way
+    buff.append(getDODSConstraintName(s));
+
+    if (!s.isVariableLength()) // have to get the whole thing for a sequence !!
+      makeSelector(buff, subSection);
+
+    return start + s.getRank();
+  }
+
+  private void makeSelector(StringBuilder buff, List<Range> section) {
+    for (Range r : section) {
+      buff.append("[");
+      buff.append(r.first());
+      buff.append(':');
+      buff.append(r.stride());
+      buff.append(':');
+      buff.append(r.last());
+      buff.append("]");
+    }
+  }
+
+  // old way
     /*   public List readArrays (List preloadVariables) throws IOException {
      //For performance tests:
      //if (true) return super.readArrays (variables);
@@ -1860,8 +1803,8 @@ if(OLDGROUPCODE) {
      return result;
    } */
 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // convert DODS data structures to NetCDF data Structures
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // convert DODS data structures to NetCDF data Structures
 
     /*
    * Covert DODS BaseType into a netCDF Array
@@ -2298,49 +2241,45 @@ if(OLDGROUPCODE) {
     return storage;
   }  */
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // debugging
+  ////////////////////////////////////////////////////////////////////////////////
+  // debugging
 
-    public void getDetailInfo(Formatter f)
-    {
-        super.getDetailInfo(f);
+  public void getDetailInfo(Formatter f) {
+    super.getDetailInfo(f);
 
-        f.format("DDS = %n");
-        ByteArrayOutputStream buffOS = new ByteArrayOutputStream(8000);
-        dds.print(buffOS);
-        f.format("%s%n", new String(buffOS.toByteArray(),Util.UTF8));
+    f.format("DDS = %n");
+    ByteArrayOutputStream buffOS = new ByteArrayOutputStream(8000);
+    dds.print(buffOS);
+    f.format("%s%n", new String(buffOS.toByteArray(), Util.UTF8));
 
-        f.format("%nDAS = %n");
-        buffOS = new ByteArrayOutputStream(8000);
-        das.print(buffOS);
-        f.format("%s%n", new String(buffOS.toByteArray(),Util.UTF8));
+    f.format("%nDAS = %n");
+    buffOS = new ByteArrayOutputStream(8000);
+    das.print(buffOS);
+    f.format("%s%n", new String(buffOS.toByteArray(), Util.UTF8));
+  }
+
+  public String getFileTypeId() {
+    return "OPeNDAP";
+  }
+
+  public String getFileTypeDescription() {
+    return "Open-source Project for a Network Data Access Protocol";
+  }
+
+  public static void main(String arg[]) {
+    //String url = "http://eosdata.gsfc.nasa.gov/daac-bin/nph-hdf/DODS/catalog/health/modis/L3ocean/hdf/MO1DMWD2.sst4.ADD2000297.002.2000366024147.hdf";
+    //String url = (arg.length > 1) ? arg[0] : "http://thredds-test.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2003020200_sst-t.nc";
+    //String url = "http://thredds-test.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/example.nc";
+    String url = "http://localhost:8080/thredds/dodsC/testContent/testData.nc.ascii?reftime[0:1:0]";
+
+    // "http://ingrid.ldeo.columbia.edu/expert/SOURCES/.LEVITUS94/dods";
+    try (DODSNetcdfFile df = new DODSNetcdfFile(url, null)) {
+      System.out.println("dods file = " + url + "\n" + df);
+    } catch (Exception ioe) {
+      System.out.println("error = " + url);
+      ioe.printStackTrace();
     }
-
-    public String getFileTypeId()
-    {
-        return "OPeNDAP";
-    }
-
-    public String getFileTypeDescription()
-    {
-        return "Open-source Project for a Network Data Access Protocol";
-    }
-
-    public static void main(String arg[])
-    {
-        //String url = "http://eosdata.gsfc.nasa.gov/daac-bin/nph-hdf/DODS/catalog/health/modis/L3ocean/hdf/MO1DMWD2.sst4.ADD2000297.002.2000366024147.hdf";
-        //String url = (arg.length > 1) ? arg[0] : "http://thredds-test.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2003020200_sst-t.nc";
-        //String url = "http://thredds-test.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/example.nc";
-        String url = "http://localhost:8080/thredds/dodsC/testContent/testData.nc.ascii?reftime[0:1:0]";
-
-        // "http://ingrid.ldeo.columbia.edu/expert/SOURCES/.LEVITUS94/dods";
-        try (DODSNetcdfFile df = new DODSNetcdfFile(url, null)) {
-            System.out.println("dods file = " + url + "\n" + df);
-        } catch (Exception ioe) {
-            System.out.println("error = " + url);
-            ioe.printStackTrace();
-        }
-    }
+  }
 
 }
 

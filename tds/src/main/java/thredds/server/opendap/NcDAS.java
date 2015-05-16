@@ -173,7 +173,7 @@ public class NcDAS extends opendap.dap.DAS {
       Attribute att = (Attribute) iter.next();
       if (isVbyte && att.getShortName().equalsIgnoreCase(CDM.UNSIGNED)) continue; // got this covered
 
-      int dods_type = DODSNetcdfFile.convertToDODSType(att.getDataType(), false);
+      int dods_type = DODSNetcdfFile.convertToDODSType(att.getDataType());
 
       try {
         // The attribute names as taken from the variable are not escaped, so we need to make sure that happens.

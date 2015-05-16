@@ -78,7 +78,7 @@ public class TestMiscIosp {
 
        Variable v = ncf.findVariable("snow");
        assert v != null;
-       assert v.getDataType() == DataType.SHORT;
+       assert v.getDataType() == DataType.USHORT;
 
        Array data = v.read();
        assert Arrays.equals(data.getShape(), new int[]{1, 91, 181});

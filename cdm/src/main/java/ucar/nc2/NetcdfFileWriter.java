@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.netcdf3.N3header;
@@ -91,7 +92,7 @@ public class NetcdfFileWriter implements AutoCloseable {
 
     private String suffix;
 
-    private Version(String suffix) {
+    Version(String suffix) {
       this.suffix = suffix;
     }
 
@@ -533,8 +534,9 @@ public class NetcdfFileWriter implements AutoCloseable {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
-    shortName = makeValidObjectName(shortName);
-    if (!isValidDataType(dataType))
+    DataType writeType =  version.isExtendedModel() ? dataType : dataType.withSign(false); // use signed type for netcdf3
+    boolean usingSignForUnsign = writeType != dataType;
+    if (!isValidDataType(writeType))
       throw new IllegalArgumentException("illegal dataType: " + dataType + " not supported in netcdf-3");
 
     // check unlimited if classic model
@@ -546,14 +548,17 @@ public class NetcdfFileWriter implements AutoCloseable {
       }
     }
 
+    shortName = makeValidObjectName(shortName);
     Variable v;
     if (dataType == DataType.STRUCTURE) {
       v = new Structure(ncfile, g, parent, shortName);
     } else {
       v = new Variable(ncfile, g, parent, shortName);
     }
-    v.setDataType(dataType);
+    v.setDataType(writeType);
     v.setDimensions(dims);
+    if (usingSignForUnsign)
+      v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
 
     long size = v.getSize() * v.getElementSize();
     if (version == Version.netcdf3 && size > N3iosp.MAX_VARSIZE)

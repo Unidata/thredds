@@ -301,7 +301,7 @@ public class TestDODSStructureScalarsNested {
   void CheckByte( Variable v) throws IOException {
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.BYTE;
+    assert v.getDataType() == DataType.UBYTE;
     CheckByteValue(v.read());
   }
 

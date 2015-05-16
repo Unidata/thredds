@@ -69,7 +69,7 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
     super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeShortName(dodsShortName));
     setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
-    setDataType( DODSNetcdfFile.convertToNCType( dodsScalar));
+    setDataType( dodsV.getDataType());
     /* if (DODSNetcdfFile.isUnsigned( dodsScalar)) {
       addAttribute(new DODSAttribute(CDM.UNSIGNED, "true"));
     } */
@@ -99,7 +99,7 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
     super(dodsfile, parentGroup, parentStructure,dodsShortName);
     setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
-    setDataType( DODSNetcdfFile.convertToNCType( elemType));
+    setDataType( dodsV.getDataType());
     /* if (DODSNetcdfFile.isUnsigned( elemType)) {
       // create _Unsigned attribute; may be overridden when attributes are read
       addAttribute(new DODSAttribute(CDM.UNSIGNED, "true"));
