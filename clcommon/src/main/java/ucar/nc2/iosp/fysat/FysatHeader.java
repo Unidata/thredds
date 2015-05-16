@@ -305,7 +305,7 @@ public final class FysatHeader {
         ncfile.addDimension(null, dimX);
 
         int byteAmountofData = 1;
-        var.setDataType(DataType.BYTE);
+        var.setDataType(DataType.UBYTE);
         Class dataType = DataType.BYTE.getPrimitiveClassType();
         velems = dimX.getLength() * dimY.getLength() * byteAmountofData;
         List<Dimension> dims = new ArrayList<>();
@@ -317,7 +317,7 @@ public final class FysatHeader {
 
         var.addAttribute(new Attribute(CF.COORDINATES, "Lon Lat"));
 
-        var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+        //var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
         var.addAttribute(new Attribute(CDM.UNITS, "percent"));
         // if(var.getDataType() == DataType.BYTE) {
         //     var.addAttribute(new Attribute("_missing_value", new Byte((byte)-1)));
@@ -619,33 +619,33 @@ public final class FysatHeader {
         Class dataType;
         switch (gridprocuctSecondHeader.byteAmountofData) {
           case 1:
-            var.setDataType(DataType.BYTE);
+            var.setDataType(DataType.UBYTE);
             dataType = DataType.BYTE.getPrimitiveClassType();
             break;
           case 2:
-            var.setDataType(DataType.SHORT);
+            var.setDataType(DataType.USHORT);
             dataType = DataType.SHORT.getPrimitiveClassType();
             break;
           case 4:
-            var.setDataType(DataType.INT);
+            var.setDataType(DataType.UINT);
             dataType = DataType.INT.getPrimitiveClassType();
             break;
           default:
             System.out.println("Unsupported Grid Procuct Dataset!");
             throw new UnsupportedDatasetException("Unsupported Grid Procuct Dataset");
-
         }
 
         var.addAttribute(new Attribute(CF.COORDINATES, "lon lat"));
 
-        var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+        //var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
         //var.addAttribute(new Attribute(CDM.UNITS, "percent"));
 
 
-        if (var.getDataType() == DataType.BYTE) {
+        if (var.getDataType() == DataType.UBYTE) {
           var.addAttribute(new Attribute("_missing_value", (byte) -1));
           var.addAttribute(new Attribute(CDM.ADD_OFFSET, gridprocuctSecondHeader.dataBaseValue));
           var.addAttribute(new Attribute(CDM.SCALE_FACTOR, gridprocuctSecondHeader.dataBaseValue));
+
         } else {
           var.addAttribute(new Attribute("_missing_value", (short) -1));
           var.addAttribute(new Attribute(CDM.ADD_OFFSET, gridprocuctSecondHeader.dataBaseValue));

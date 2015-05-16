@@ -55,7 +55,7 @@ public abstract class N3streamWriter {
   protected ucar.nc2.NetcdfFile ncfile;
   protected Map<Variable,Vinfo> vinfoMap = new HashMap<Variable,Vinfo>();
   protected List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
-  protected boolean debug=false, debugPos=false, debugWriteData = false;
+  protected boolean debug=false, debugPos=true, debugWriteData = false;
   protected int recStart, recSize;
   protected boolean usePadding = true;
   protected long filePos = 0;

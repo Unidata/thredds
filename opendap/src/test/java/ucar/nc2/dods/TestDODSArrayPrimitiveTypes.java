@@ -56,7 +56,7 @@ public class TestDODSArrayPrimitiveTypes {
     assert v.getShortName().equals("b");
     assert v.getRank() == 1;
     assert v.getSize() == 25;
-    assert v.getDataType() == DataType.BYTE;
+    assert v.getDataType() == DataType.UBYTE;
     a = v.read();
     assert a.getRank() == 1;
     assert a.getSize() == 25;
@@ -231,7 +231,7 @@ public class TestDODSArrayPrimitiveTypes {
     assert v.getShortName().equals("b");
     assert v.getRank() == 1;
     assert v.getSize() == 25;
-    assert v.getDataType() == DataType.BYTE;
+    assert v.getDataType() == DataType.UBYTE;
 
     try {
       a = v.read( "0:24:3" );

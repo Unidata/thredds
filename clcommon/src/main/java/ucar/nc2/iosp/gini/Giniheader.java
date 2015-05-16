@@ -620,8 +620,8 @@ class Giniheader {
         var.addAttribute( new Attribute("add_offset", new Float(b)));
       */
     } else {
-      var.setDataType(DataType.BYTE);
-      var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+      var.setDataType(DataType.UBYTE);
+      //var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
       // var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
       var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) (1)));
       var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) (0)));

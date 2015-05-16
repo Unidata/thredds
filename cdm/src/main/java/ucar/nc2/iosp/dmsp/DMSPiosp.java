@@ -143,6 +143,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         }
         curVariable.addAttribute(new Attribute(CDM.UNITS, "seconds since " + this.startDateString));
         curVariable.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+
       } else if (curVariable.getShortName().equals("infraredImagery")) {
         curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
         curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
@@ -152,6 +153,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
                 "Infrared pixel values correspond to a temperature range of 190 to 310 " +
                         "Kelvins in 256 equally spaced steps. Onboard calibration is performed " +
                         "during each scan. -- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));
+
       } else if (curVariable.getShortName().equals("visibleImagery")) {
         curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
         curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));

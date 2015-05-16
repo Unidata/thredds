@@ -140,7 +140,7 @@ public class TestDODSSubset {
   void CheckByte( Variable v) throws IOException {
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.BYTE;
+    assert v.getDataType() == DataType.UBYTE;
     CheckByteValue(v.read());
   }
 
@@ -199,7 +199,7 @@ public class TestDODSSubset {
     //assert v.getName().equals("types.integers.ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.INT : v.getDataType();
+    assert v.getDataType() == DataType.UINT : v.getDataType();
     CheckUint32Value(v.read());
   }
 
@@ -219,7 +219,7 @@ public class TestDODSSubset {
     //assert v.getName().equals("types.integers.ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.SHORT : v.getDataType();
+    assert v.getDataType() == DataType.USHORT : v.getDataType();
      CheckUInt16Value(v.read());
   }
 

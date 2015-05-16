@@ -261,7 +261,7 @@ public class TestDODSStructureScalars {
     assert v.getShortName().equals("ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.SHORT : v.getDataType();
+    assert v.getDataType() == DataType.USHORT : v.getDataType();
     a = v.read();
     assert a.getRank() == 0;
     assert a.getSize() == 1;
@@ -275,7 +275,7 @@ public class TestDODSStructureScalars {
     assert v.getShortName().equals("ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.INT : v.getDataType();
+    assert v.getDataType() == DataType.UINT : v.getDataType();
     a = v.read();
     assert a.getRank() == 0;
     assert a.getSize() == 1;

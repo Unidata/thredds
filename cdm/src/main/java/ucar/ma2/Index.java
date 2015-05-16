@@ -1089,8 +1089,6 @@ public class  Index implements Cloneable {
     public void setObjectNext(Object val) {
       count++;
       currElement = counter.incr();
-      if (currElement >= maa.getSize())
-        System.out.println("HEY");
       maa.setObject(currElement, val);
     }
   }

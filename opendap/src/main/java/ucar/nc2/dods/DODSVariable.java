@@ -70,9 +70,9 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
     setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
     setDataType( DODSNetcdfFile.convertToNCType( dodsScalar));
-    if (DODSNetcdfFile.isUnsigned( dodsScalar)) {
+    /* if (DODSNetcdfFile.isUnsigned( dodsScalar)) {
       addAttribute(new DODSAttribute(CDM.UNSIGNED, "true"));
-    }
+    } */
 
     // check for netcdf char array
     Dimension strlenDim;
@@ -100,10 +100,10 @@ public class DODSVariable extends ucar.nc2.Variable implements DODSNode {
     setDODSName(DODSNetcdfFile.makeDODSName(dodsShortName));
     this.dodsfile = dodsfile;
     setDataType( DODSNetcdfFile.convertToNCType( elemType));
-    if (DODSNetcdfFile.isUnsigned( elemType)) {
+    /* if (DODSNetcdfFile.isUnsigned( elemType)) {
       // create _Unsigned attribute; may be overridden when attributes are read
       addAttribute(new DODSAttribute(CDM.UNSIGNED, "true"));
-    }
+    } */
 
     List<Dimension> dims = dodsfile.constructDimensions( parentGroup, dodsArray);
 

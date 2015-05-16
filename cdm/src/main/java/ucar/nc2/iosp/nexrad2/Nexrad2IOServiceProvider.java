@@ -282,9 +282,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     Variable v = new Variable(ncfile, null, null, shortName);
     if(datatype == DIFF_PHASE){
-        v.setDataType(DataType.SHORT);
+        v.setDataType(DataType.USHORT);
     } else {
-        v.setDataType(DataType.BYTE);
+        v.setDataType(DataType.UBYTE);
     }
 
     v.setDimensions(dims);
@@ -303,7 +303,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, firstRecord.getDatatypeScaleFactor(datatype)));
     v.addAttribute( new Attribute(CDM.ADD_OFFSET, firstRecord.getDatatypeAddOffset(datatype)));
-    v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+    // v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
     if(rd == 1) {
        v.addAttribute( new Attribute("SNR_threshold" ,firstRecord.getDatatypeSNRThreshhold(datatype)));
     }
@@ -416,7 +416,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     // get representative record
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.BYTE);
+    v.setDataType(DataType.UBYTE);
     v.setDimensions( from.getDimensions());
     ncfile.addVariable(null, v);
 
@@ -431,7 +431,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, record.getDatatypeScaleFactor(datatype)));
     v.addAttribute( new Attribute(CDM.ADD_OFFSET, record.getDatatypeAddOffset(datatype)));
-    v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+    // v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
     if(datatype == Level2Record.SPECTRUM_WIDTH_HIGH){
        v.addAttribute( new Attribute("SNR_threshold" ,record.getDatatypeSNRThreshhold(datatype)));
     }

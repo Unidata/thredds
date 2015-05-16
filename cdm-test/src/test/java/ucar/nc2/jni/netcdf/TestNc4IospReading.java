@@ -66,6 +66,13 @@ public class TestNc4IospReading {
     doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/testNestedStructure.nc", true, false, true);
   }
 
+  @Test
+  public void cantOpenProblem() throws IOException {
+    try (NetcdfFile jni = openJni(TestDir.cdmUnitTestDir + "formats/netcdf4/testEmptyAtts.nc")) {
+      System.out.printf("%s%n", jni);
+    }
+  }
+
   // @Test
   public void timeRead() throws IOException {
     String location = TestDir.cdmUnitTestDir+"/NARR/narr-TMP-200mb_221_yyyymmdd_hh00_000.grb.grb2.nc4";

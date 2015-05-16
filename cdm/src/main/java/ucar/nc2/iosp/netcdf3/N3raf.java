@@ -71,7 +71,7 @@ public class N3raf extends N3iosp  {
    */
   protected long readData( Layout index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
     long count = 0;
-    if (dataType.getPrimitiveClassType() == byte.class) {
+    if (dataType.getPrimitiveClassType() == byte.class || dataType == DataType.CHAR) {
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         count += raf.readToByteChannel( out, chunk.getSrcPos(), chunk.getNelems());

@@ -32,7 +32,10 @@
  */
 package ucar.nc2.stream;
 
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
@@ -42,31 +45,38 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * test FileWriting, then reading back and comparing to original.
  */
+
 @Category(NeedsCdmUnitTest.class)
+@RunWith(Parameterized.class)
 public class TestStreamWriter {
 
-  @org.junit.Test
-  public void test() throws IOException, InvalidRangeException {
-    test(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
-    test(TestDir.cdmUnitTestDir + "ft/grid/RUC2_CONUS_40km_20070709_1800.nc");
-  }
-    
-  private void test(String filename) throws IOException, InvalidRangeException {
-    long tookWriter = testFileWriter(filename);
-    long tookChannel = testN3channelWriter(filename);
-    long tookStream = testN3outputStreamWriter(filename);
-    System.out.println("testFileWriter took " + tookWriter + " msecs");
-    System.out.println("N3channelWriter took " + tookChannel + " msecs");
-    System.out.println("N3streamWriter took " + tookStream + " msecs");
+  @Parameterized.Parameters(name="{0}")
+  public static List<Object[]> getTestParameters() {
+    List<Object[]> result = new ArrayList<>();
+
+    // Grib files, one from each model
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc"});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/grid/RUC2_CONUS_40km_20070709_1800.nc"});
+
+    return result;
   }
 
-  private long testN3outputStreamWriter(String fileInName) throws IOException {
-    System.out.println("\nFile= " + fileInName + " size=" + new File(fileInName).length());
-    NetcdfFile fileIn = NetcdfFile.open(fileInName);
+  String endpoint;
+
+  public TestStreamWriter(String endpoint) {
+    this.endpoint = endpoint;
+  }
+
+  @Test
+  public void testN3outputStreamWriter() throws IOException {
+    System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
+    NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = TestDir.temporaryLocalDataDir + "/testStream.nc";
@@ -79,12 +89,13 @@ public class TestStreamWriter {
 
     fileIn.close();
     file2.close();
-    return took;
+    System.out.println("testFileWriter took " + took + " msecs");
   }
 
-  private long testN3channelWriter(String fileInName) throws IOException, InvalidRangeException {
-    System.out.println("\nFile= " + fileInName + " size=" + new File(fileInName).length());
-    NetcdfFile fileIn = NetcdfFile.open(fileInName);
+  @Test
+  public void testN3channelWriter() throws IOException, InvalidRangeException {
+    System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
+    NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = TestDir.temporaryLocalDataDir + "/testChannel.nc";
@@ -97,12 +108,13 @@ public class TestStreamWriter {
 
     fileIn.close();
     file2.close();
-    return took;
+    System.out.println("N3channelWriter took " + took + " msecs");
   }
 
-  private long testFileWriter(String fileInName) throws IOException, InvalidRangeException {
-    System.out.println("\nFile= " + fileInName + " size=" + new File(fileInName).length());
-    NetcdfFile fileIn = NetcdfFile.open(fileInName);
+  @Test
+  public void testFileWriter() throws IOException, InvalidRangeException {
+    System.out.println("\nFile= " + endpoint + " size=" + new File(endpoint).length());
+    NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
     String fileOut = TestDir.temporaryLocalDataDir + "/testStream.nc";
@@ -116,7 +128,7 @@ public class TestStreamWriter {
 
     fileIn.close();
     file2.close();
-    return took;
+    System.out.println("N3streamWriter took " + took + " msecs");
   }
 
 }

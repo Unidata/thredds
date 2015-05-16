@@ -157,6 +157,45 @@ public class TestH5Vlength {
   }
 
   // from bsantos@ipfn.ist.utl.pt
+  /*
+  netcdf Q\:/cdmUnitTest/formats/netcdf4/vlenBigEndian {
+  types:
+    uint(*) vlen_t ;
+  dimensions:
+          acqtime = UNLIMITED ; // (10 currently)
+  variables:
+          uint64 acqtime(acqtime) ;
+                  acqtime:long_name = "Acquisition time" ;
+          uint blocknumber(acqtime) ;
+                  blocknumber:long_name = "Number of block" ;
+          uint64 speriod(acqtime) ;
+                  speriod:long_name = "Sample period for this data block" ;
+                  speriod:units = "ns" ;
+          uint64 srate(acqtime) ;
+                  srate:long_name = "Sample rate for this data block" ;
+                  srate:units = "samples/s" ;
+          double scale_factor(acqtime) ;
+                  scale_factor:long_name = "Scale factor for this data block" ;
+          double offset(acqtime) ;
+                  offset:long_name = "Offset value to be added after applying the scale_factor" ;
+          int samplesize(acqtime) ;
+          int nsamples(acqtime) ;
+                  nsamples:long_name = "Number of elements of this data block" ;
+          vlen_t levels(acqtime) ;
+                  levels:long_name = "Acquired values array" ;
+
+  // global attributes:
+                  :sourceID = "test3" ;
+                  :pulseID = "p1" ;
+                  :title = "Acquisition channel data" ;
+                  :version = 1. ;
+                  :time_stamp_reference = "UTC" ;
+                  :time_coverage_duration = 0 ;
+                  :license = "Freely available" ;
+                  :time_stamp_start_secs = 500L ;
+                  :time_stamp_start_nanosecs = 1000 ;
+  }
+   */
   @Test
   public void testVlenEndian() throws IOException {
     testVlenEndian(TestN4reading.testDir+"vlenBigEndian.nc", 10);
@@ -170,7 +209,7 @@ public class TestH5Vlength {
 
       Variable v = ncfile.findVariable("levels");
       assert (null != v);
-      assert (v.getDataType() == DataType.INT);
+      assert (v.getDataType() == DataType.UINT);
       assert (v.getRank() == 2);
       assert (v.getShape()[0] == n) : v.getShape()[0];
 

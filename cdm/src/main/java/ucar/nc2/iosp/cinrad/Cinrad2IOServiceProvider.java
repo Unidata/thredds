@@ -260,7 +260,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     dims.add( gateDim);
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.BYTE);
+    v.setDataType(DataType.UBYTE);
     v.setDimensions(dims);
     ncfile.addVariable(null, v);
 
@@ -277,7 +277,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
     v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
-    v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+    //v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     ArrayList dim2 = new ArrayList();
     dim2.add( scanDim);
@@ -385,7 +385,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   private void makeVariableNoCoords(NetcdfFile ncfile, int datatype, String shortName, String longName, Variable from) {
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.BYTE);
+    v.setDataType(DataType.UBYTE);
     v.setDimensions( from.getDimensions());
     ncfile.addVariable(null, v);
 
@@ -401,7 +401,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
     v.addAttribute( new Attribute(CDM.ADD_OFFSET, new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
-    v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+    //v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
     v.addAttribute( new Attribute(_Coordinate.Axes, fromAtt));

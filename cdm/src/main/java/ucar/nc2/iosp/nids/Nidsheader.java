@@ -1742,15 +1742,14 @@ class Nidsheader{
 
 
         Variable v = new Variable(ncfile, null, null, cname + "_RAW");
-        v.setDataType(DataType.BYTE);
+        v.setDataType(DataType.UBYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
         v.addAttribute( new Attribute(CDM.UNITS, cunit));
         String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
         v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-        v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+        // v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
-
 
         // addVariable(cname + "_Brightness", ctitle + " Brightness", ncfile, dims, coordinates, DataType.FLOAT,
         //                 cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
@@ -2060,13 +2059,13 @@ class Nidsheader{
         }
 
         Variable v = new Variable(ncfile, null, null, cname + "_RAW");
-        v.setDataType(DataType.SHORT);
+        v.setDataType(DataType.USHORT);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
         v.addAttribute( new Attribute(CDM.UNITS, cunit));
         String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
         v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-        v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
+        // v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
 
 

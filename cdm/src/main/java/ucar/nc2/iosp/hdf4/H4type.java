@@ -83,7 +83,7 @@ public class H4type {
     boolean unsigned = false;
     switch (type) {
       case 3:
-        dt = DataType.BYTE;
+        dt = unsigned ? DataType.UBYTE : DataType.BYTE;
         unsigned = true;
         break;
       case 4:
@@ -99,25 +99,25 @@ public class H4type {
         unsigned = true;
         //coverity[missing_break]
       case 20:
-        dt =  DataType.BYTE;
+        dt =  unsigned ? DataType.UBYTE : DataType.BYTE;
         break;
       case 23:
         unsigned = true;
          //coverity[missing_break]
       case 22:
-        dt =  DataType.SHORT;
+        dt =  unsigned ? DataType.USHORT : DataType.SHORT;
         break;
       case 25:
         unsigned = true;
         //coverity[missing_break]
       case 24:
-        dt =  DataType.INT;
+        dt =  unsigned ? DataType.UINT : DataType.INT;
         break;
       case 27:
         unsigned = true;
          //coverity[missing_break]
       case 26:
-        dt =  DataType.LONG;
+        dt =  unsigned ? DataType.ULONG : DataType.LONG;
         break;
       default:
         throw new IllegalStateException("unknown type= " + type);
@@ -125,8 +125,6 @@ public class H4type {
 
     if (v != null) {
       v.setDataType(dt);
-      if (unsigned)
-         v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
     }
 
     return dt;

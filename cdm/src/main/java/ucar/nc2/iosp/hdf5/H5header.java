@@ -183,7 +183,7 @@ public class H5header {
 
     long actualSize = raf.length();
 
-    if (debugTracker) memTracker = new MemTracker(actualSize);  // LOOK WTF ??
+    if (debugTracker) memTracker = new MemTracker(actualSize);
 
     // find the superblock - no limits on how far in
     boolean ok = false;
@@ -1409,8 +1409,8 @@ public class H5header {
       if(fillAttribute != null && v.findAttribute(CDM.FILL_VALUE) == null)
         v.addAttribute(fillAttribute);
     }
-    if (vinfo.typeInfo.unsigned)
-      v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+    //if (vinfo.typeInfo.unsigned)
+    //  v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
     if (facade.dobj.mdt.type == 5) {
       String desc = facade.dobj.mdt.opaque_desc;
       if ((desc != null) && (desc.length() > 0))
@@ -1525,8 +1525,8 @@ public class H5header {
     v.setSPobject(vinfo);
     vinfo.setOwner(v);
 
-    if (vinfo.typeInfo.unsigned)
-      v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+    //if (vinfo.typeInfo.unsigned)
+    //  v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
 
     return v;
   }
@@ -1852,7 +1852,7 @@ public class H5header {
           tinfo.vpad = ((flags[0] >> 4) & 0xf);
           tinfo.dataType = DataType.STRING;
         } else {
-          tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize(), mdt.unsigned);
+          tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize(), mdt.base.unsigned);
           tinfo.endian = mdt.base.endian;
           tinfo.unsigned = mdt.base.unsigned;
         }
@@ -1971,22 +1971,22 @@ public class H5header {
     Object getFillValueNonDefault() {
       if (fillValue == null) return null;
 
-      if ((typeInfo.dataType == DataType.BYTE) || (typeInfo.dataType == DataType.CHAR) || (typeInfo.dataType == DataType.ENUM1))
+      if ((typeInfo.dataType.getPrimitiveClassType() == byte.class) || (typeInfo.dataType == DataType.CHAR))
         return fillValue[0];
 
       ByteBuffer bbuff = ByteBuffer.wrap(fillValue);
       if (typeInfo.endian >= 0)
         bbuff.order(typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
-      if ((typeInfo.dataType == DataType.SHORT) || (typeInfo.dataType == DataType.ENUM2)) {
+      if (typeInfo.dataType.getPrimitiveClassType() == short.class) {
         ShortBuffer tbuff = bbuff.asShortBuffer();
         return tbuff.get();
 
-      } else if ((typeInfo.dataType == DataType.INT) || (typeInfo.dataType == DataType.ENUM4)) {
+      } else if (typeInfo.dataType.getPrimitiveClassType() == int.class) {
         IntBuffer tbuff = bbuff.asIntBuffer();
         return tbuff.get();
 
-      } else if (typeInfo.dataType == DataType.LONG) {
+      } else if (typeInfo.dataType.getPrimitiveClassType() == long.class) {
         LongBuffer tbuff = bbuff.asLongBuffer();
         return tbuff.get();
 
@@ -4314,25 +4314,25 @@ public class H5header {
       raf.readDouble(pa, 0, pa.length);
       return Array.factory(dataType, new int[]{pa.length}, pa);
 
-    } else if (DataType.BYTE == dataType) {
+    } else if (dataType.getPrimitiveClassType() == byte.class) {
       byte[] pa = new byte[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFully(pa, 0, pa.length);
       return Array.factory(dataType, new int[]{pa.length}, pa);
 
-    } else if (DataType.SHORT == dataType) {
+    } else if (dataType.getPrimitiveClassType() == short.class) {
       short[] pa = new short[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readShort(pa, 0, pa.length);
       return Array.factory(dataType, new int[]{pa.length}, pa);
 
-    } else if (DataType.INT == dataType) {
+    } else if (dataType.getPrimitiveClassType() == int.class) {
       int[] pa = new int[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readInt(pa, 0, pa.length);
       return Array.factory(dataType, new int[]{pa.length}, pa);
 
-    } else if (DataType.LONG == dataType) {
+    } else if (dataType.getPrimitiveClassType() == long.class) {
       long[] pa = new long[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readLong(pa, 0, pa.length);
