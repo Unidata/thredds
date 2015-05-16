@@ -84,7 +84,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
           return false;
         }
       }
-      return true;
+      return cd != null;
     }
 
     // time range
@@ -133,16 +133,16 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
     }
 
     // make calendar range with default calendar
-    try {
-      Calendar cal = Calendar.getDefault();
-      DateRange dr = new DateRange(new DateType(time_start, null, null, cal), new DateType(time_end, null, null, cal), new TimeDuration(time_duration), null);
-      CalendarDateRange cdr = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate());
-      params.setDateRange(cdr);
+    if (isValid) try {
+        Calendar cal = Calendar.getDefault();
+        DateRange dr = new DateRange(new DateType(time_start, null, null, cal), new DateType(time_end, null, null, cal), new TimeDuration(time_duration), null);
+        CalendarDateRange cdr = CalendarDateRange.of(dr.getStart().getCalendarDate(), dr.getEnd().getCalendarDate());
+        params.setDateRange(cdr);
 
-    } catch (ParseException pe) {
-      isValid = false;
-      constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.time}").addConstraintViolation();
-    }
+      } catch (ParseException pe) {
+        isValid = false;
+        constraintValidatorContext.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.timeparams}").addConstraintViolation();
+      }
 
     return isValid;
   }

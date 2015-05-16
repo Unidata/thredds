@@ -1,6 +1,7 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
@@ -136,14 +137,22 @@ public class CFGridCoverageWriter {
     // finish define mode
     writer.create();
 
-    // write the data to the new file.
-    List<GridDatasetHelper.Gridset> gridsets = helper.getGridsets();
-    for (GridDatasetHelper.Gridset gridset : gridsets) {
-
-      for (GridCoverage grid : gridset.grids) {
-
-      }
+     // write the coordinates to the new file.
+    for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
+      Variable v = writer.findVariable(axis.getName());
+      //double[] vals = axis.getValues();
+      Array data = Array.makeFromJavaArray(axis.getCoords());
+      writer.write(v, data);
     }
+
+
+    /* write the data to the new file.
+    for (GridCoverage grid : subsetDataset.getGrids()) {
+         Variable v = writer.findVariable(grid.getName());
+         Array data = grid.readData(new GridSubset());
+         Array reshape = data.reshape(v.getShape());
+         writer.write(v, reshape);
+    }  */
 
     //updateGeospatialRanges(writer, llrect );
     writer.close();

@@ -1,6 +1,7 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -322,6 +323,23 @@ public class GridCoordAxis {
         return (values[2 * index] + values[2 * index + 1]) / 2;
     }
     throw new IllegalStateException("Unknown spacing=" + spacing);
+  }
+
+  public Array getCoords() {
+    switch (spacing) {
+      case regular:
+        return Array.makeArray(DataType.DOUBLE, (int) nvalues, startValue, resolution);
+
+      case irregularPoint:
+        return Array.makeFromJavaArray(values);
+
+      case contiguousInterval:
+        return Array.makeFromJavaArray(values);
+
+      case discontiguousInterval:
+        return Array.makeFromJavaArray(values);
+    }
+    return null;
   }
 
   public List<NamedObject> getCoordValueNames() {

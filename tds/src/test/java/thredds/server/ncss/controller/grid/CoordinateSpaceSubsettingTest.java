@@ -60,7 +60,9 @@ import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -114,6 +116,7 @@ public class CoordinateSpaceSubsettingTest {
 
 	@Test
 	public void shouldSubsetGrid() throws Exception{
+		System.out.printf("path=%s x=[%f,%f] y=[%f,%f]%n", pathInfo, projectionRectParams[0], projectionRectParams[2], projectionRectParams[1], projectionRectParams[3]);
 
 		Iterator<String> it = vars.iterator();
 		String varParamVal = it.next();
@@ -135,8 +138,12 @@ public class CoordinateSpaceSubsettingTest {
 		assertEquals(200, mvc.getResponse().getStatus());
 
 		// Open the binary response in memory
-		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", mvc.getResponse().getContentAsByteArray() );	
-		
+		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", mvc.getResponse().getContentAsByteArray());
+		System.out.printf("%s%n", nf);
+		Variable v = nf.findVariable(null, "x");
+		assert v != null;
+		NCdumpW.printArray(v.read());
+
 		ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
 		assertTrue( gdsDataset.getCalendarDateRange().isPoint());		
 		//assertEquals(expectedValue, Integer.valueOf( gdsDataset.getDataVariables().size()));

@@ -88,7 +88,7 @@ public abstract class Array {
   }
 
   /**
-   * /** Generate new Array with given dataType, shape, storage.
+   * Generate new Array with given dataType, shape, storage.
    *
    * @param dataType DataType, eg DataType.DOUBLE.
    * @param shape    shape of the array.
