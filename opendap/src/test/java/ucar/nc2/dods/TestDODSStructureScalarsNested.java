@@ -360,7 +360,7 @@ public class TestDODSStructureScalarsNested {
     //assert v.getName().equals("types.integers.ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.INT : v.getDataType();
+    assert v.getDataType() == DataType.UINT : v.getDataType();
     CheckUInt32Value(v.read());
   }
 
@@ -380,7 +380,7 @@ public class TestDODSStructureScalarsNested {
     //assert v.getName().equals("types.integers.ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.SHORT : v.getDataType();
+    assert v.getDataType() == DataType.USHORT : v.getDataType();
      CheckUInt16Value(v.read());
   }
 
