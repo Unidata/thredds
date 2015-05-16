@@ -1,7 +1,7 @@
 configurations {
     dap4
     ncIdv
-    tdm
+    tdmFat
     netcdfAll
     toolsUI
 }
@@ -16,7 +16,7 @@ dependencies {
     ncIdv project(':opendap')
     ncIdv project(':visadCdm')
 
-    tdm project(':tdm')
+    tdmFat project(':tdm')
 
     netcdfAll project(":cdm")
     netcdfAll project(":clcommon")
@@ -73,9 +73,9 @@ fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
     manifest.attributes 'Implementation-Title': 'ncIdv Module'
 }
 
-fatJarTasks << tasks.create(name: 'buildTdm', type: ShadowJar) {
-    baseName = 'tdm'
-    configurations = [project.configurations.tdm]
+fatJarTasks << tasks.create(name: 'buildTdmFat', type: ShadowJar) {
+    baseName = 'tdmFat'
+    configurations = [project.configurations.tdmFat]
 
     doFirst {
         manifest.attributes project(':tdm').tasks.jar.manifest.attributes
@@ -137,7 +137,7 @@ apply plugin: 'base'
 artifacts {
     archives buildDap4
     archives buildNcIdv
-    archives buildTdm
+    archives buildTdmFat
     archives buildNetcdfAll
     archives buildToolsUI
 }

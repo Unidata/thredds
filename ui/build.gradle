@@ -36,7 +36,7 @@ jar {
     manifest {
         attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
                 // These are security attributes, necessary for Web Start: http://goo.gl/Ob6Wid
-                // netcdfUI.jar is the first jar in the JNLP, so I think its manifest is the only one that needs these.
+                // ui.jar is the first jar in the JNLP, so I think its manifest is the only one that needs these.
                 'Application-Name': project.title,
                 'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
                 'Permissions': 'all-permissions',
@@ -49,14 +49,10 @@ jar {
                 'Class-Path': configurations.runtime.collect { it.name }.join(' ')
     }
 
-    // Add INDEX.LIST to the existing jar. Gradle doesn't have an easy way to create INDEX.LIST, so we're using Ant.
-    doLast {
-        ant.jar(update: true, index: true, indexMetaInf: true, destfile: archivePath) {
-            indexjars {
-                path(path: configurations.runtime.collect { it.path }.join(':'))
-            }
-        }
-    }
+    // I used to create META-INF/INDEX.LIST here to speedup Web Start loading, but it turns out that Spring and
+    // INDEX.LIST don't get along: https://jira.spring.io/browse/SPR-5705
+    // As a result, I don't think that Web Start is loading jars lazily as I intended.
+    // LOOK: Does that make the 'Class-Path' manifest attribute and 'download="lazy"' JNLP attributes pointless?
 }
 
 ext {
@@ -66,19 +62,19 @@ ext {
         webstartDir = webdir + "webstart"
     }
 
-    jarsContainingDuplicateEntries = ['xmlbeans-2.6.0.jar']
+    depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']
 }
 
 // It's possible to test web start files locally before deploying them.
 // 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,
 // such as /thredds/ui/build.
-// 2. Comment-out the 'Codebase' manifest attribute in the top-level build.gradle.
+// 2. Comment-out the 'Codebase' manifest attribute above.
 // 3. Run this task.
 // 4. Open the 2 JNLP files that were copied to webdir. Remove the "codebase" and "href" attributes from the top-level
 // "jnlp" element.
 // 5. You may also need to white-list web starts from the local file system. Go to Java Control Panel->Security->
 // Edit Site List... and add the entry "file:/".
-// 6. Change to webdir and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
+// 6. cd to "webdir" and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
 // but I couldn't get that working (and there was no error feedback).
 // TODO: Use the Sync task for this.
 /* following properties should be in gradle.properties:
@@ -107,13 +103,12 @@ task releaseWebstart(dependsOn: jar) << {
         println "\tkeystoreAlias = $keystoreAlias"
         println "\tkeystorePassword = $keystorePassword"
 
-        ant.signjar(jar: "build/libs/ui-" + version + ".jar", signedjar: webstartWorkingDir + "/netcdfUI.jar",
-                alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
-                preservelastmodified: "true")
+        ant.signjar(jar: "build/libs/ui-" + version + ".jar", destDir: webstartWorkingDir, alias: keystoreAlias,
+                keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
 
         for (file in configurations.runtime.resolve()) {
-            if (jarsContainingDuplicateEntries.contains(file.name)) {
-                println "$file contains duplicate entries. Rejarring."
+            if (depsToRejar.contains(file.name)) {
+                println "$file contains duplicate entries or old signature files. Rejarring."
 
                 File rejarredFile = new File(temporaryDir, file.name)
                 rejar file, rejarredFile
@@ -121,8 +116,8 @@ task releaseWebstart(dependsOn: jar) << {
             }
 
             println "Signing $file"
-            ant.signjar(destDir: webstartWorkingDir, jar: file, alias: keystoreAlias, keystore: keystore,
-                    storepass: keystorePassword, preservelastmodified: true, verbose: true)
+            ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
+                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
         }
 
         ant.delete(dir: webstartDir)
@@ -193,7 +188,8 @@ import org.codehaus.groovy.runtime.NioGroovyMethods
 
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate
- * entries in {@code origJarFile} will be excluded from {@code destJarFile}.
+ * entries in {@code origJarFile} will be excluded from {@code destJarFile}. Also, any old signature files
+ * (i.e. META-INF/*.DSA, META-INF/*.SF, META-INF/*.RSA) will be excluded.
  *
  * @param origJarFile the original JAR file.
  * @param destJarFile the destination JAR file.
@@ -206,13 +202,16 @@ def rejar(File origJarFile, File destJarFile) {
                 new BufferedOutputStream(new FileOutputStream(destJarFile)))
 
         NioGroovyMethods.withCloseable(jarOutStream) {
+            java.util.regex.Pattern signatureFilePattern = ~/META-INF\/.+\.(DSA|SF|RSA)/
             Set<String> entriesWritten = new HashSet<>();
 
             for (JarEntry origJarEntry : origJar.entries()) {
-                if (entriesWritten.add(origJarEntry.getName())) {
-                    writeEntry(origJar, origJarEntry, jarOutStream)
+                if (origJarEntry.name =~ signatureFilePattern) {
+                    logger.debug "Excluding signature file: $origJarEntry.name"
+                } else if (!entriesWritten.add(origJarEntry.getName())) {
+                    logger.debug "Skipping duplicate entry: $origJarEntry.name"
                 } else {
-                    logger.debug("Skipping duplicate entry: $origJarEntry.name")
+                    writeEntry origJar, origJarEntry, jarOutStream
                 }
             }
         }

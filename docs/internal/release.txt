@@ -1,219 +1,130 @@
-Making a release for CDM/TDS with jenkins
-last edited 2015/03/26
+Making a release for CDM/TDS using Gradle
+Last edited 2015/05/15
+
+{release.minor} refers to the full, 3-part version, e.g. "4.6.1"
+{release.major} refers to the truncated, 2-part version, e.g. "4.6"
 
 1. Prepare ncWMS and threddsIso
    - Detailed instructions can be found in threddsIso/docs/internal/release.txt and ncwms/docs/internal/release.txt.
    - The instructions for the two are very similar.
 
-2. tds.properties
-  - In /thredds/tds/src/main/template/thredds/server/tds.properties,
-    the "tds.content.root.path" and "tds.dir.cdmUnitTest" properties must be set to the production release values.
-    Make sure the Spock and local override values are commented out.
+2. Ensure that there are no uncommitted changes.
 
-3. Jenkins
-  - Go to Jenkin project's configuration page
-      - Under "Source Code Management" - "Additional Behaviors" - Add - "Check out to specific local branch"
-      - Enter the branch name for the next version, eg if current is "4.5.3", then use "4.5.4" here
-      - "Save" the changes
-  - Click on "Perform maven release"
-      - Click on "Schedule Maven Release Build"
-  - Build is done
-      - Check logs for success (or any problems)
-      - If the local branch was not specified, you will get the following error
-        "Detecting the current branch failed: fatal: ref HEAD is not a symbolic ref"
+3. Pull all of the latest changes from upstream.
 
-4. Check that all went well:
-    - gitHub has new release tag, eg "v{release}"
-    - gitHub has new branch, eg if current is "4.5.3", then "4.5.4" should now be on gitHub
-    - Check release artifacts are in artifacts.unidata.ucar.edu, eg http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
+4. Make sure the project's version is correct for the release. It shouldn't contain "SNAPSHOT".
 
-5. Jenkins- "Additional Behaviors"
-    - Go back to the CMD/TDS project's configuration page, "Source Code Management"
-    - Update "Branches to build" to new branch, eg "target-{next}"
-    - Delete "Checkout to local branch" (added in the first step of "1. Jenkins")
-    - Check "Branches to build" now refers to the new one
-    - Save
+5. Remove any dependencies on SNAPSHOT libraries. For example, the version of "uk.ac.rdg.resc:ncwms" might
+change from "1.2.tds.4.6.1-SNAPSHOT" to "1.2.tds.4.6.1", assuming that you prepared ncWMS in step 1.
 
-6. Git (ONLY IF THIS IS STABLE RELEASE)
-  - go to github thredds repo, "settings"
-  - change "Default branch" to the released version
-  - ie, default branch == stable release
+6. Publish the artifacts to Nexus.
+   - gradlew clean publish
+   - Check artifacts at http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/
 
-7. put thredds.war on conan ftp  (best to do from ssh)
-  - cd /web/ftp/pub/thredds/{version}
-  - mkdir {release}
-  - from http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release}/
-     download tds-{release}.war tds-{release}.war.md5 tds-{release}.war.sha1 to /web/ftp/pub/thredds/{version}/{release}
-     rename to thredds.war, thredds.war.md5 and thredds.war.sha1
-  - move /web/ftp/pub/thredds/{version}/current to point to /web/ftp/pub/thredds/{version}/{release}
-     rm current
-     ln -s {release} current
+7. Prepare the FTP directory for the new version of TDS and TDM (best to do from SSH)
+  - cd /web/ftp/pub/thredds/{release.major}
+  - mkdir {release.minor}
+  - move /web/ftp/pub/thredds/{release.major}/current to point to /web/ftp/pub/thredds/{release.major}/{release.minor}
+     rm current   (If it exists)
+     ln -s {release.minor} current
 
-8. build thredds locally
-    git fetch
-    git checkout "v{release}"  (note that this is the tagged release)
-    cd {github/thredds}
-    mvn clean install
+8. Copy over the TDS war and its security hashes from Nexus, renaming them in the process.
+     * wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release.minor}/tds-{release.minor}.war -O {release.minor}/thredds.war
+     * wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release.minor}/tds-{release.minor}.war.md5 -O {release.minor}/thredds.war.md5
+     * wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/{release.minor}/tds-{release.minor}.war.sha1 -O {release.minor}/thredds.war.sha1
 
-9. put ncIdv, netcdfAll, toolsUI onto conan ftp
-    cp {github/thredds}/ncIdv/target/ncIdv-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
-    cp {github/thredds}/ui/target/netcdfAll-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
-    cp {github/thredds}/ui/target/toolsUI-{release}.jar to /web/ftp/pub/netcdf-java/v{version}
+9. Copy over the TDM fat jar and its security hashes from Nexus, renaming them in the process.
+   When renaming, "tdmFat" should become "tdm".
+     * wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/{release.minor}/tdmFat-{release.minor}.jar -O {release.minor}/tdm-{release.major}.jar
+     * wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/{release.minor}/tdmFat-{release.minor}.jar.sha1 -O {release.minor}/tdm-{release.major}.jar.sha1
+     * wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/{release.minor}/tdmFat-{release.minor}.jar.md5 -O {release.minor}/tdm-{release.major}.jar.md5
 
-    (from ssh)
-    cd /web/ftp/pub/netcdf-java/{version}
-    rm toolsUI-{version}.jar netcdfAll-{version}.jar ncIdv-{version}.jar
-    ln -s toolsUI-{release}.jar toolsUI-{version}.jar
-    ln -s netcdfAll-{release}.jar netcdfAll-{version}.jar
-    ln -s ncIdv-{release}.jar ncIdv-{version}.jar
+10. Change permissions of the files you just copied.
+    - cd /web/ftp/pub/thredds/{release.major}/{release.minor}
+    - chmod 775 .
+    - chmod 664 *
 
-10. put tdm onto conan ftp (version 4.5 and above)
-    cp {github/thredds}/tdm/build/tdm-{release}.jar /web/ftp/pub/thredds/{version}/current/tdm-{version}.jar
-    also copy over md5 and sha1
-    rename all to remove minor version (eg tdm-4.5.4.jar -> tdm-4.5.jar)
+11. Copy over ncIdv, netcdfAll, toolsUI and their security hashes from Nexus
+    - cd /web/ftp/pub/netcdf-java/v{release.major}
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/{release.minor}/ncIdv-{release.minor}.jar
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/{release.minor}/ncIdv-{release.minor}.jar.md5
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/{release.minor}/ncIdv-{release.minor}.jar.sha1
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/{release.minor}/netcdfAll-{release.minor}.jar
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/{release.minor}/netcdfAll-{release.minor}.jar.md5
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/{release.minor}/netcdfAll-{release.minor}.jar.sha1
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/toolsUI/{release.minor}/toolsUI-{release.minor}.jar
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/toolsUI/{release.minor}/toolsUI-{release.minor}.jar.md5
+    - wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/toolsUI/{release.minor}/toolsUI-{release.minor}.jar.sha1
 
-11. Change permissions of the files you just copied.
-   - cd /web/ftp/pub/thredds/{version}/{release}
-   - chmod 775 .
-   - chmod 664 *
-   - cd /web/ftp/pub/netcdf-java/v{version}
-   - chmod 775 .
-   - chmod 664 *
+12. Remove symlinks to old versions and create ones to new versions
+    - cd /web/ftp/pub/netcdf-java/v{release.major}
+    - rm toolsUI-{release.major}.jar netcdfAll-{release.major}.jar ncIdv-{release.major}.jar
+    - ln -s toolsUI-{release.minor}.jar toolsUI-{release.major}.jar
+    - ln -s netcdfAll-{release.minor}.jar netcdfAll-{release.major}.jar
+    - ln -s ncIdv-{release.minor}.jar ncIdv-{release.major}.jar
 
-12. CDM has additional targets that are handled by gradle builds
-  - modify build.gradle in top directory to use the correct version
-  - make sure you have correct gradle.properties in ~home/.gradle/  [See John or Sean for info]
-  - cd {github/thredds}
-  a. make supporting libraries
-     - gradlew clean build -x test
-     - If this fails but mvn works, make sure that any new dependencies added to the project modules were
-       also added to the build.gradle files.
-  b. release webstart to conan:/content/software/thredds/v{version}/netcdf-java/webstart
-     - Update ~/.gradle/gradle.properties (i.e. webdir and ftpdir)
-     - Update /thredds/ui/netCDFtools.jnlp and /thredds/ui/netCDFtoolsExtraJars.jnlp as needed.
-     - gradlew :ui:releaseWebstart
-  c. release cdm javadocs to conan:/content/software/thredds/v{version}/netcdf-java/javadoc
-     - gradlew :cdm:releaseDocs
-  d. release all javadocs to conan:/content/software/thredds/v{version}/netcdf-java/javadocAll
-     - gradlew :ui:releaseDocs
-  e. Change permissions of the files you just copied.
-     - cd to conan:/content/software/thredds/v{version}/netcdf-java/
-     - Execute:
-         find webstart -type d -exec chmod 775 {} \;
-         find webstart -type f -exec chmod 664 {} \;
-         find javadoc -type d -exec chmod 775 {} \;
-         find javadoc -type f -exec chmod 664 {} \;
-         find javadocAll -type d -exec chmod 775 {} \;
-         find javadocAll -type f -exec chmod 664 {} \;
+13. Change permissions of the files you just copied.
+    - cd /web/ftp/pub/netcdf-java/v{release.major}
+    - chmod 775 .
+    - chmod 664 *
 
-13. update Unidata download page(s)
-  - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
-    modify conan:/content/downloads/thredds/toc.xml as needed
-  - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
-    modify conan:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
+14. Release Web Start to conan:/content/software/thredds/v{release.major}/netcdf-java/webstart
+    - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
+      'keystore', 'keystoreAlias', 'keystorePassword', 'webdir', and 'ftpdir' properties defined.
+    - Rename old directories
+      * cd /content/software/thredds/v{release.major}/netcdf-java/
+      * mv webstart webstartOld
+    - Update /thredds/ui/netCDFtools.jnlp and /thredds/ui/netCDFtoolsExtraJars.jnlp as needed.
+    - Test webstart locally. There are notes above ui/build.gradle/releaseWebstart() about how to do that.
+    - Perform release
+      * gradlew :ui:clean :ui:releaseWebstart
+    - If there were no errors and the new Web Start looks good, delete the old stuff.
+      * rm -r webstartOld
 
-14. if you need to do any changes to web pages, do it on the next branch (eg target-{next})
+15. Release Javadoc to conan:/content/software/thredds/v{release.major}/netcdf-java/javadoc and javadocAll
+    - Rename old directories
+      * cd /content/software/thredds/v{release.major}/netcdf-java/
+      * mv javadoc javadocOld
+      * mv javadocAll javadocAllOld
+    - Perform release
+      * gradlew :cdm:clean :cdm:releaseDocs
+      * gradlew :ui:clean :ui:releaseDocs
+    - If there were no errors and the new Javadoc looks good, delete the old stuff.
+      * rm -r javadocOld
+      * rm -r javadocAllOld
 
-15. To start working with the next branch in IntelliJ
-  - Git Fetch
-  - Checkout <new branch>
+16. Change permissions of the files you just copied.
+    - cd /content/software/thredds/v{release.major}/netcdf-java/
+    - find webstart -type d -exec chmod 775 {} \;
+    - find webstart -type f -exec chmod 664 {} \;
+    - find javadoc -type d -exec chmod 775 {} \;
+    - find javadoc -type f -exec chmod 664 {} \;
+    - find javadocAll -type d -exec chmod 775 {} \;
+    - find javadocAll -type f -exec chmod 664 {} \;
 
+17. Update Unidata download page(s)
+    - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
+      * modify conan:/content/downloads/thredds/toc.xml as needed
+    - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
+      * modify conan:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
 
-==========================
-REVIEW IN PROCESS
+18. Commit the changes you've made.
+    - At the very least, project.version in the root build script should have been modified.
+    - Make the commit message something like "Release {release.minor}".
 
-Building with gradle (4.4+)
+19. Create a tag for the release: "v{release.monor}".
 
-1. checkout from git
+20. Prepare for next round of development.
+    - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
+      * For example, if {release.minor}="4.6.1", the next version will be "4.6.2-SNAPSHOT".
+    - Commit the change.
+      * The commit message should be something like "Starting work on 4.6.2-SNAPSHOT".
 
-2. configure gradle
-
-add a file gradle.properties to $userHome/.gradle  directory, with these properties:
-
-  keystore=/share/idv/.keystore-2012
-  keystoreAlias=<alias>
-  keystorePassword=<password>
-  webdir=W:/content/software/netcdf-java/v4.3/
-  ftpdir=V:/pub/netcdf-java/v4.3
-
-where:
-
- first 3 are for signing jars
- next 2 are locations for releasing cdm jars
- (the values can all be fake until you get to step 4, but keys must be defined)
-
-3. build from command line. this will download current gradle, skipping tests:
-
-    gradlew clean build -x test
-
-   to run tests:
-
-    gradlew test --continue
-
-   optional libraries using shadow:
-
-     gradlew shadow -p cdm (build cdms.jar)
-     gradlew shadow -p ncIdv (build ncIdvs.jar)
-     gradlew shadow -p ui (build toolsUI.jar)
-
-4. build from intellij (problems with 12.1, apparently will be improved in v13)
-
-4.1 upgrade intellij Project
-
-  File > Settings
-  Gradle
-
-  - enter $thredds/build.gradle into box
-  - accept all the defaults
-
-  A JetGradle left side tab will now appear
-
-4.2 new intellij project
-
-  1) File > Import Project
-
-    - navigate entry box to $thredds/build.gradle
-    - accept all the defaults
-    - a .idea directory is added under $thredds
-
-  2) add git root to project
-
-     File > Settings
-     Version Control - add $thredds to git root
+21. Push the commits upstream.
+    - Be sure to include the tag you created.
+      * In IntelliJ, check the "Push Tags" box in the "Push Commits" dialog.
 
 
---------------------------
-08/05/2013
-
-1) install gradle
-
-Download latest gradle from gradle.org. Currently at 1.7-rc-2
-Unzip into your chosen directory.
-Add env variable GRADLE_HOME = gradle top directory
-Add GRADLE_HOME/bin directory to your path
-test from command line: "gradle -version"
-
-2) configure gradle
-
-add a file gradle.properties to $userHome/.gradle  directory, with these properties:
-
-  keystore=/share/idv/.keystore-2012
-  keystoreAlias=<alias>
-  keystorePassword=<password>
-  webdir=W:/content/software/netcdf-java/v4.3/
-  ftpdir=V:/pub/netcdf-java/v4.3
-
-where:
-
-first 3 are for signing jars
-next 2 are locations for releasing cdm jars
-(the values can all be fake until you get to step 4, but keys must be defined)
-
-3) building
-
-cd $THREDDS
-gradle clean install -x test
-
-first time, you will see gradle pull down maven artifacts into its repository in $userHome/.gradle/cache
-
-3) release
+NOTE 1: In the Maven build, the maven-release-plugin roughly handled steps 2-6 and 18-21 for us. In the future, we
+should investigate similar Gradle plugins that offer the same functionality.
+NOTE 2: In the future, we should be performing many (all?) of these steps from Jenkins, not our local machine.
