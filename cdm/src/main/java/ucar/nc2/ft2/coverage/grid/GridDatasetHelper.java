@@ -181,17 +181,17 @@ public class GridDatasetHelper {
       case Pressure:
       case Height:
         Double dval = (subset == null) ? null : subset.getDouble(GridSubset.vertCoord);
-        if (dval == null) return orgAxis;
+        if (dval == null) return orgAxis.finish();
 
         // LOOK problems when vertCoord doesnt match any coordinates in the axes
         return orgAxis.subset(dval, dval);
 
       case RunTime:
-        return orgAxis;
+        return orgAxis.finish();
 
       case Time:
         if (subset.isTrue(GridSubset.allTimes))
-          return orgAxis;
+          return orgAxis.finish();
         if (subset.isTrue(GridSubset.latestTime))
           return orgAxis.subsetLatest();
     }

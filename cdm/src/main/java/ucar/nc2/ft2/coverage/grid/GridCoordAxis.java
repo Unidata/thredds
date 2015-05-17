@@ -65,13 +65,13 @@ public class GridCoordAxis {
   public GridCoordAxis subset(double minValue, double maxValue) {
     GridCoordAxis result = copy();
     subsetValues(result, minValue, maxValue);
-    return result;
+    return result.finish();
   }
 
   public GridCoordAxis subsetLatest() {
     GridCoordAxis result = copy();
     subsetValuesLatest(result);
-    return result;
+    return result.finish();
   }
 
   private GridCoordAxis copy() {
@@ -82,7 +82,7 @@ public class GridCoordAxis {
     result.setDescription(description);
     result.setAttributes(attributes);
     result.setSpacing(spacing);
-    result.setResolution(resolution);
+    result.setResolution( getResolution());
     result.setDependenceType(dependenceType);
     result.setDependsOn(dependsOn);
     return result;
@@ -224,7 +224,7 @@ public class GridCoordAxis {
     indent.incr();
     f.format("%s CoordAxis '%s' axisType=%s dataType=%s", indent, name, axisType, dataType);
     f.format(" npts: %d [%f,%f] '%s' spacing=%s", nvalues, startValue, endValue, units, spacing);
-    if (resolution != 0.0)
+    if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);
     f.format("%n");
 
@@ -249,6 +249,12 @@ public class GridCoordAxis {
     }
 
     indent.decr();
+  }
+
+  GridCoordAxis finish() {
+    getResolution();
+    getValues();
+    return this;
   }
 
   ///////////////////////////////////////////////////////////////////
@@ -326,21 +332,24 @@ public class GridCoordAxis {
   }
 
   public Array getCoords() {
-    return Array.makeArray(DataType.DOUBLE, (int) nvalues, startValue, resolution);
-/*    switch (spacing) {
-      case regular:
-        return Array.makeArray(DataType.DOUBLE, (int) nvalues, startValue, resolution);
+    double[] vals = new double[(int) nvalues];
+    for (int i=0; i<nvalues; i++)
+      vals[i] = getCoord(i);
+    return Array.makeFromJavaArray(vals);
+  }
 
-      case irregularPoint:
-        return Array.makeFromJavaArray(values);
+  public Array getCoordEdge1() {
+    double[] vals = new double[(int) nvalues];
+    for (int i=0; i<nvalues; i++)
+      vals[i] = getCoordEdge1(i);
+    return Array.makeFromJavaArray(vals);
+  }
 
-      case contiguousInterval:
-        return Array.makeFromJavaArray(values);
-
-      case discontiguousInterval:
-        return Array.makeFromJavaArray(values);
-    }
-    return null; */
+  public Array getCoordEdge2() {
+    double[] vals = new double[(int) nvalues];
+    for (int i=0; i<nvalues; i++)
+      vals[i] = getCoordEdge2(i);
+    return Array.makeFromJavaArray(vals);
   }
 
   public List<NamedObject> getCoordValueNames() {
@@ -383,7 +392,7 @@ public class GridCoordAxis {
           minIndex = 0;
           subsetStart = startValue;
         } else {
-          minIndex = (int) ((minValue - startValue) / resolution);
+          minIndex = 1 + (int) ((minValue - startValue) / resolution);
           subsetStart = startValue + minIndex * resolution;
         }
         if (maxValue >= endValue) {

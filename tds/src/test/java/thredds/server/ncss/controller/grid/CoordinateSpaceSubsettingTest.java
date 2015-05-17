@@ -65,6 +65,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.grid.GeoGrid;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 /**
@@ -87,7 +88,7 @@ public class CoordinateSpaceSubsettingTest {
 				
 		return Arrays.asList( new Object[][]{
 				{ new int[][]{ {1,2,2}, {1,2,2} } , GridPathParams.getPathInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getProjectionRect().get(0) }, //No vertical levels
-				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
+				{ new int[][]{ {1,1,15,15}, {1,1,15,15} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
 				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
 				{ new int[][]{ {1,2,93}, {1,29,2,93}, {1,1,2,93} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(2)}, //No vertical levels and vertical levels
 				{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(3)}, //Full extension
@@ -143,19 +144,21 @@ public class CoordinateSpaceSubsettingTest {
 		Variable v = nf.findVariable(null, "x");
 		assert v != null;
 		NCdumpW.printArray(v.read());
+		System.out.printf("%n");
+		v = nf.findVariable(null, "y");
+		assert v != null;
+		NCdumpW.printArray(v.read());
+		System.out.printf("%n");
 
 		ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
-		assertTrue( gdsDataset.getCalendarDateRange().isPoint());		
-		//assertEquals(expectedValue, Integer.valueOf( gdsDataset.getDataVariables().size()));
-		
-		List<VariableSimpleIF> vars = gdsDataset.getDataVariables();
-		int[][] shapes = new int[vars.size()][];
-		int cont = 0;
-		for(VariableSimpleIF var : vars){
-			shapes[cont] = var.getShape();
-			cont++;
-		}
+		assertTrue( gdsDataset.getCalendarDateRange().isPoint());
 
+		int[][] shapes = new int[vars.size()][];
+		int count = 0;
+		for (String varName : vars) {
+			GeoGrid grid = gdsDataset.findGridByShortName(varName);
+			shapes[count++] = grid.getShape();
+		}
 		assertArrayEquals(expectedShapes, shapes);
 	}
 		

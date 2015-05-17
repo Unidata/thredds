@@ -140,9 +140,12 @@ public class CFGridCoverageWriter {
      // write the coordinates to the new file.
     for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
-      //double[] vals = axis.getValues();
-      //Array data = Array.makeFromJavaArray(axis.getCoords());
-      writer.write(v, axis.getCoords());
+      if (v != null) {
+        System.out.printf("write %s%n", v.getNameAndDimensions());
+        writer.write(v, axis.getCoords());
+      } else {
+        System.out.printf("No variable for %s%n", axis.getName());
+      }
     }
 
 
