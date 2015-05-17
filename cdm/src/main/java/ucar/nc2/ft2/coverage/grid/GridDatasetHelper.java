@@ -23,9 +23,9 @@ import java.util.*;
  */
 public class GridDatasetHelper {
   GridCoverageDataset gds;
-  List<String> gridNames;   // null nmeans all grids
-  List<Gridset> gridsets;
-  HorizCoordSys horizCoordSys;
+  List<String> gridNames;     // null means all grids
+  List<Gridset> gridsets;     // only the named grids
+  HorizCoordSys horizCoordSys;    // only one
 
   GridDatasetHelper(GridCoverageDataset gds) {
     this.gds = gds;
@@ -161,7 +161,7 @@ public class GridDatasetHelper {
     for (String axisName : axisNames) {
       GridCoordAxis orgAxis = gds.findCoordAxis(axisName);
       GridCoordAxis subAxis = subset(orgAxis, subset);
-      if (subAxis != null)
+      if (subAxis != null) // leave out x, y
         axes.add( subAxis);
     }
     subsetHorizAxes(subset, axes);
