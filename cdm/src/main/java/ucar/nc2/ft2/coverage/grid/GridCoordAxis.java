@@ -326,7 +326,8 @@ public class GridCoordAxis {
   }
 
   public Array getCoords() {
-    switch (spacing) {
+    return Array.makeArray(DataType.DOUBLE, (int) nvalues, startValue, resolution);
+/*    switch (spacing) {
       case regular:
         return Array.makeArray(DataType.DOUBLE, (int) nvalues, startValue, resolution);
 
@@ -339,7 +340,7 @@ public class GridCoordAxis {
       case discontiguousInterval:
         return Array.makeFromJavaArray(values);
     }
-    return null;
+    return null; */
   }
 
   public List<NamedObject> getCoordValueNames() {

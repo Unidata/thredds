@@ -141,8 +141,8 @@ public class CFGridCoverageWriter {
     for (GridCoordAxis axis : subsetDataset.getCoordAxes()) {
       Variable v = writer.findVariable(axis.getName());
       //double[] vals = axis.getValues();
-      Array data = Array.makeFromJavaArray(axis.getCoords());
-      writer.write(v, data);
+      //Array data = Array.makeFromJavaArray(axis.getCoords());
+      writer.write(v, axis.getCoords());
     }
 
 
