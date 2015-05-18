@@ -4,14 +4,22 @@
 
 package dap4.servlet;
 
-import dap4.core.data.*;
+import dap4.cdmshared.CDMUtil;
+import dap4.cdmshared.NodeMap;
+import dap4.core.data.DataDataset;
+import dap4.core.data.DataException;
+import dap4.core.data.DataVariable;
 import dap4.core.dmr.*;
-import dap4.core.util.*;
-import dap4.dap4shared.*;
-import dap4.cdmshared.*;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import ucar.ma2.*;
+import dap4.core.util.DapContext;
+import dap4.core.util.DapException;
+import dap4.core.util.DapSort;
+import dap4.core.util.DapUtil;
+import dap4.dap4shared.AbstractDSP;
+import dap4.dap4shared.DSP;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
@@ -716,7 +724,7 @@ public class CDMDSP extends AbstractDSP
         dapattr.setBaseType(basetype);
         // Transfer the values
         Array values = attr.getValues();
-        if(!validatecdmtype(attr.getDataType(), attr.isUnsigned(), values.getElementType()))
+        if(!validatecdmtype(attr.getDataType(), values.getElementType()))
             throw new DapException("DapFile: attr type versus attribute data mismatch: " + values.getElementType());
         IndexIterator iter = values.getIndexIterator();
         while(iter.hasNext()) {
@@ -860,31 +868,23 @@ public class CDMDSP extends AbstractDSP
     }
 
     protected boolean
-    validatecdmtype(DataType datatype, boolean unsigned, Class typeclass)
+    validatecdmtype(DataType datatype, Class typeclass)
     {
         switch (datatype) {
         case CHAR:
             return typeclass == char.class;
         case BYTE:
-            if(unsigned)
-                return typeclass == byte.class; //was short.class;
-            else
-                return typeclass == byte.class;
+        case UBYTE:
+            return typeclass == byte.class;
         case SHORT:
-            if(unsigned)
-                return typeclass == short.class; //was int.class;
-            else
-                return typeclass == short.class;
+        case USHORT:
+            return typeclass == short.class;
         case INT:
-            if(unsigned)
-                return typeclass == int.class; // was long.class;
-            else
-                return typeclass == int.class;
+        case UINT:
+            return typeclass == int.class;
         case LONG:
-            if(unsigned)
-                return typeclass == long.class;
-            else
-                return typeclass == long.class;
+        case ULONG:
+            return typeclass == long.class;
         case FLOAT:
             return typeclass == float.class;
         case DOUBLE:
