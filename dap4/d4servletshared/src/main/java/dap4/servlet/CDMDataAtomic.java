@@ -5,20 +5,23 @@
 package dap4.servlet;
 
 import dap4.cdmshared.CDMUtil;
-import dap4.core.data.*;
-import dap4.core.dmr.*;
+import dap4.core.data.DataAtomic;
+import dap4.core.data.DataException;
+import dap4.core.dmr.AtomicType;
+import dap4.core.dmr.DapAtomicVariable;
+import dap4.core.dmr.DapType;
+import dap4.core.dmr.DapVariable;
 import dap4.core.util.*;
-import dap4.dap4shared.*;
-
+import dap4.dap4shared.AbstractDataVariable;
+import dap4.dap4shared.Dap4Util;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.Variable;
 
 import java.util.List;
 
 
 public class CDMDataAtomic extends AbstractDataVariable
-                           implements DataAtomic
+        implements DataAtomic
 {
     //////////////////////////////////////////////////
     // Instance variables
@@ -37,7 +40,7 @@ public class CDMDataAtomic extends AbstractDataVariable
     // Constructors
 
     public CDMDataAtomic(CDMDSP dsp, DapAtomicVariable template, Array array)
-        throws DataException
+            throws DataException
     {
         super(template);
         this.basetype = ((DapVariable) template).getBaseType();
@@ -71,16 +74,16 @@ public class CDMDataAtomic extends AbstractDataVariable
     @Override
     public void
     read(List<Slice> slices, Object data, long offset)
-    //read(long start, long count, Object data, long offset)
-        throws DataException
+        //read(long start, long count, Object data, long offset)
+            throws DataException
     {
-        Array array = (Array)this.data;
+        Array array = (Array) this.data;
         // If content.getDataType returns object, then we
         // really do not know its true datatype. So, as a rule,
         // we will rely on this.basetype.
         DataType datatype = CDMUtil.daptype2cdmtype(this.basetype);
         if(datatype == null)
-            throw new DataException("Unknown basetype: "+this.basetype);
+            throw new DataException("Unknown basetype: " + this.basetype);
         Class elementclass = CDMUtil.cdmElementClass(datatype);
         if(elementclass == null)
             throw new DataException("Attempt to read non-atomic value of type: " + datatype);
@@ -89,7 +92,7 @@ public class CDMDataAtomic extends AbstractDataVariable
             Odometer odom = Odometer.factory(slices, ((DapVariable) this.getTemplate()).getDimensions(), false);
             while(odom.hasNext()) {
                 long index = odom.next();
-                System.arraycopy(content, (int)index, data, (int)offset, 1);
+                System.arraycopy(content, (int) index, data, (int) offset, 1);
                 offset++;
             }
         } catch (DapException de) {
@@ -140,12 +143,13 @@ public class CDMDataAtomic extends AbstractDataVariable
     @Override
     public Object
     read(long index)
-        throws DataException
+            throws DataException
     {
         Object result;
-        int i = (int)index;
-        Array content = (Array)this.data;
+        int i = (int) index;
+        Array content = (Array) this.data;
         DataType datatype = content.getDataType();
+        long tmp = 0;
         switch (datatype) {
         case BOOLEAN:
             result = (Boolean) content.getBoolean(i);
@@ -177,6 +181,21 @@ public class CDMDataAtomic extends AbstractDataVariable
         case OBJECT:
             result = content.getObject(i);
             break;
+        case UBYTE:
+            tmp = content.getByte(i) & 0xFF;
+            result = (Byte) (byte) tmp;
+            break;
+        case USHORT:
+            tmp = content.getShort(i) & 0xFFFF;
+            result = (Short) (short)tmp;
+            break;
+        case UINT:
+            tmp = content.getInt(i) & 0xFFFFFFFF;
+            result = (Integer) (int) tmp;
+            break;
+        case ULONG:
+            result = (Long)content.getLong(i);
+            break;
         case STRUCTURE:
         case SEQUENCE:
         default:
@@ -190,10 +209,10 @@ public class CDMDataAtomic extends AbstractDataVariable
 
     protected DapSort
     computesort(Array array)
-        throws DataException
+            throws DataException
     {
         DapSort sort = null;
-        Array content = (Array)this.data;
+        Array content = (Array) this.data;
         switch (content.getDataType()) {
         case BOOLEAN:
         case BYTE:
@@ -201,6 +220,10 @@ public class CDMDataAtomic extends AbstractDataVariable
         case SHORT:
         case INT:
         case LONG:
+        case UBYTE:
+        case USHORT:
+        case UINT:
+        case ULONG:
         case FLOAT:
         case DOUBLE:
         case STRING:
