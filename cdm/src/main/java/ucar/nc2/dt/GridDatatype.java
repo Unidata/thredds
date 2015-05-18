@@ -40,6 +40,7 @@ import ucar.ma2.IsMissingEvaluator;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -269,6 +270,9 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @throws java.io.IOException on io error
    */
   public Array readDataSlice(int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
+
+  public Array readSubset(List<Range> subset) throws InvalidRangeException, IOException;
+
 
   /**
    * This reads an arbitrary data slice, returning the data in

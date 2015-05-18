@@ -58,7 +58,8 @@ public class GridCoordAxis {
   private DependenceType dependenceType;
   private String dependsOn;
 
-  private long nvalues;
+  private long nvalues, minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
+  private int stride;
   private Spacing spacing;
   private double startValue;
   private double endValue;
@@ -106,6 +107,30 @@ public class GridCoordAxis {
 
   public void setNvalues(long nvalues) {
     this.nvalues = nvalues;
+  }
+
+  public long getMinIndex() {
+    return minIndex;
+  }
+
+  public void setMinIndex(long minIndex) {
+    this.minIndex = minIndex;
+  }
+
+  public long getMaxIndex() {
+    return maxIndex;
+  }
+
+  public void setMaxIndex(long maxIndex) {
+    this.maxIndex = maxIndex;
+  }
+
+  public int getStride() {
+    return stride;
+  }
+
+  public void setStride(int stride) {
+    this.stride = stride;
   }
 
   public Spacing getSpacing() {
@@ -358,15 +383,16 @@ public class GridCoordAxis {
   // subsetting
 
   protected GridCoordAxis(GridCoordAxis from) {
-    setName(from.getName());
-    setDataType(from.getDataType());
-    setUnits(from.getUnits());
-    setDescription(from.getDescription());
     setAttributes(from.attributes);
-    setSpacing(from.getSpacing());
-    setResolution( from.getResolution());
+    setAxisType(from.getAxisType());
+    setDataType(from.getDataType());
     setDependenceType(from.getDependenceType());
     setDependsOn(from.getDependsOn());
+    setDescription(from.getDescription());
+    setName(from.getName());
+    setSpacing(from.getSpacing());
+    setResolution(from.getResolution());
+    setUnits(from.getUnits());
   }
 
   public GridCoordAxis subset(double minValue, double maxValue) {
@@ -397,19 +423,19 @@ public class GridCoordAxis {
    }
 
   private void subsetValues(GridCoordAxis result, double minValue, double maxValue) {
-    int count = 0, count2 = 0;
     double[] subsetValues;
     double resolution = getResolution();
+    int minIndex, maxIndex;
+    double subsetStart, subsetEnd;
+    int count=0, count2=0;
 
     switch (spacing) {
-      case regular:
+      case regular:                     // LOOK need to deal with longitude wrapping, latitude decreasing
         if (minValue > endValue)
           throw new IllegalArgumentException("no points in subset: min > end");
         if (maxValue < startValue)
           throw new IllegalArgumentException("no points in subset: max < start");
 
-        double subsetStart, subsetEnd;
-        int minIndex, maxIndex;
         if (minValue <= startValue) {
           minIndex = 0;
           subsetStart = startValue;
@@ -424,68 +450,86 @@ public class GridCoordAxis {
           maxIndex = (int) ((maxValue - startValue) / resolution);
           subsetEnd = startValue + maxIndex * resolution;
         }
+        result.setNvalues(maxIndex - minIndex + 1);
+        result.setMinIndex(minIndex);
+        result.setMaxIndex(maxIndex);
         result.setStartValue(subsetStart);
         result.setEndValue(subsetEnd);
-        result.setNvalues(maxIndex - minIndex + 1);
         break;
 
       case irregularPoint:
-        for (double val : getValues()) {
+        minIndex = 0;
+        maxIndex = 0;
+        for (double val : getValues()) {  // LOOK linear
           if (val > maxValue) break;
-          if (val >= minValue) count++;
+          if (val < minValue) minIndex++;
+          maxIndex++;
         }
+        count = maxIndex - minIndex;
         if (count == 0)
           throw new IllegalArgumentException("no points in subset: min > end");
 
         subsetValues = new double[count];
-        for (double val : getValues()) {
-          if (val > maxValue) break;
-          if (val >= minValue) subsetValues[count2++] = val;
+        for (int i=minIndex; i<=maxIndex; i++) {
+          subsetValues[i] = getCoord(i);
         }
 
         result.setNvalues(count);
+         result.setMinIndex(minIndex);
+        result.setMaxIndex(maxIndex);
         result.setValues(subsetValues);
         result.setStartValue(subsetValues[0]);
         result.setEndValue(subsetValues[subsetValues.length - 1]);
         break;
 
       case contiguousInterval:
-        int firstIndex = -1;
+        minIndex = -1;
+        count = 0;
         for (int i=0; i<values.length; i++) {                       // these are edges
           if (values[i] <= maxValue && values[i+1] >= minValue) {   // count number of intervals that pass
             count++;
-            if (firstIndex < 0) firstIndex = i;  // record first one that passes
+            if (minIndex < 0) minIndex = i;  // record first one that passes
           }
         }
         if (count == 0)
           throw new IllegalArgumentException("no points in subset: min > end");
+        maxIndex = minIndex+count-1;
 
         subsetValues = new double[count+1];            // need npts+1
-        for (int i=firstIndex; i<=firstIndex+count; i++)
+        for (int i=minIndex; i<=maxIndex; i++)
           subsetValues[count2++] = values[i];
 
         result.setNvalues(count);
+        result.setMinIndex(minIndex);
+        result.setMaxIndex(maxIndex);
         result.setValues(subsetValues);
         result.setStartValue(subsetValues[0]);
         result.setEndValue(subsetValues[subsetValues.length-1]);
         break;
 
       case discontiguousInterval:
+        minIndex = -1;
+        count = 0;
         for (int i=0; i<values.length; i+=2) {                       // these are bounds (low, high)1, (low,high)2, ...
-          if (values[i] <= maxValue && values[i+1] >= minValue) count++;     // count number of intervals that pass
+          if (values[i] <= maxValue && values[i+1] >= minValue) {
+            count++;     // count number of intervals that pass
+            if (minIndex < 0) minIndex = i;  // record first one that passes
+          }
         }
         if (count == 0)
           throw new IllegalArgumentException("no points in subset: min > end");
+        maxIndex = minIndex+count-1;
 
+        count2 = 0;
         subsetValues = new double[2*count];                   // need 2*npts
-        for (int i=0; i<values.length; i+=2) {
-          if (values[i] <= maxValue && values[i+1] >= minValue) {
-            subsetValues[count2++] = values[i];
-            subsetValues[count2++] = values[i+1];
-          }
+        for (int i=minIndex; i<=maxIndex; i+=2) {
+          subsetValues[count2++] = values[i];
+          subsetValues[count2++] = values[i+1];
         }
 
         result.setNvalues(count);
+         result.setMinIndex(minIndex);
+        result.setMaxIndex(maxIndex);
         result.setValues(subsetValues);
         result.setStartValue(subsetValues[0]);
         result.setEndValue(subsetValues[subsetValues.length-1]);
@@ -514,10 +558,12 @@ public class GridCoordAxis {
         else
           want_index = (int) (.5 + (want - startValue) / resolution);
 
+        result.setNvalues(1);
+         result.setMinIndex(want_index);
+        result.setMaxIndex(want_index);
         subsetStart = startValue + want_index * resolution;
         result.setStartValue(subsetStart);
         result.setEndValue(subsetStart);
-        result.setNvalues(1);
         break;
 
       case contiguousInterval:
@@ -552,9 +598,11 @@ public class GridCoordAxis {
         }
         result.setValues(subsetValues);
 
+        result.setNvalues(1);
+        result.setMinIndex(want_index);
+        result.setMaxIndex(want_index);
         result.setStartValue(subsetStart);
         result.setEndValue(subsetStart);
-        result.setNvalues(1);
         break;
 
       case discontiguousInterval:
@@ -576,6 +624,8 @@ public class GridCoordAxis {
         subsetValues[1] = getCoordEdge2(want_index);
 
         result.setNvalues(1);
+        result.setMinIndex(want_index);
+        result.setMaxIndex(want_index);
         result.setValues(subsetValues);
         result.setStartValue(subsetValues[0]);
         result.setEndValue(subsetValues[1]);
@@ -587,9 +637,11 @@ public class GridCoordAxis {
   private void subsetValuesLatest(GridCoordAxis result) {
     double[] subsetValues;
 
+    result.setNvalues(1);
+    result.setMinIndex(nvalues- 1);
+    result.setMaxIndex(nvalues-1);
     result.setStartValue(endValue);
     result.setEndValue(endValue);
-    result.setNvalues(1);
 
     switch (spacing) {
       case irregularPoint:

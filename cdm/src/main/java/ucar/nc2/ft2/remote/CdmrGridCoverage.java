@@ -15,6 +15,7 @@ import ucar.nc2.util.IO;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.InflaterInputStream;
 
@@ -106,6 +107,11 @@ public class CdmrGridCoverage extends GridCoverage {
     }
 
   }
+
+  public Array readSubset(List<Range> subset) throws IOException, InvalidRangeException {
+    return null;
+  }
+
 
   private static String getErrorMessage(HTTPMethod method) {
     String path = method.getURL();

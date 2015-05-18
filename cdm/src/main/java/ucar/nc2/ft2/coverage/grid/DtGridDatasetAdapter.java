@@ -2,6 +2,8 @@
 package ucar.nc2.ft2.coverage.grid;
 
 import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -88,7 +90,7 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
     }
 
     @Override
-    public Array readData(GridSubset subset) throws IOException {
+    public Array readData(GridSubset subset) throws IOException {  // LOOK bogus
       GridCoordSystem gcs = dtGrid.getCoordinateSystem();
       int ens = -1;
       int level = -1;
@@ -121,6 +123,10 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
       }
       //int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index
       return dtGrid.readDataSlice(runtime, ens, time, level, -1, -1);
+    }
+
+    public Array readSubset(List<Range> ranges) throws IOException, InvalidRangeException {
+      return dtGrid.readSubset(ranges);
     }
   }
 

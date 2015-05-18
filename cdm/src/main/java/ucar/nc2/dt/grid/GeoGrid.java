@@ -34,6 +34,7 @@ package ucar.nc2.dt.grid;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.NamedObject;
@@ -41,6 +42,7 @@ import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Format;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -269,7 +271,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return Attribute string value, or default if not found.
    */
   public String findAttValueIgnoreCase(String attName, String defaultValue) {
-    return dataset.getNetcdfDataset().findAttValueIgnoreCase( vs, attName, defaultValue);
+    return dataset.getNetcdfDataset().findAttValueIgnoreCase(vs, attName, defaultValue);
   }
 
   // implementation of GridDatatype interface
@@ -666,6 +668,50 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     return dataVolume;
   }
+
+  @Override
+  public Array readSubset(List<Range> subset) throws InvalidRangeException, IOException {
+
+    // get the ranges list in the order of the variable; a null range means "all" to vs.read()
+    int rank = getRank();
+    Range[] varRange = new Range[rank];
+    for (Range r : subset) {
+      AxisType type = AxisType.valueOf(r.getName());
+      switch (type) {
+        case Lon:
+        case GeoX:
+          varRange[xDimOrgIndex] = r;
+          break;
+        case Lat:
+        case GeoY:
+          varRange[yDimOrgIndex] = r;
+          break;
+        case Height:
+        case Pressure:
+        case GeoZ:
+          varRange[zDimOrgIndex] = r;
+          break;
+        case Time:
+          varRange[tDimOrgIndex] = r;
+          break;
+        case RunTime:
+          varRange[rtDimOrgIndex] = r;
+          break;
+        case Ensemble:
+          varRange[eDimOrgIndex] = r;
+          break;
+      }
+    }
+
+    // read it
+    Array dataVolume = vs.read( Arrays.asList(varRange));
+
+    // LOOK permute to canonical order if needed
+
+
+    return dataVolume;
+  }
+
 
   //////////////////////////////////
 

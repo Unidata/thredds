@@ -33,6 +33,7 @@
 package ucar.unidata.geoloc;
 
 import com.google.common.math.DoubleMath;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.Format;
 
 import java.io.*;
@@ -480,10 +481,15 @@ public class ProjectionRect implements java.io.Serializable {
 
     ProjectionRect that = (ProjectionRect) o;
 
-    if (Double.compare(that.height, height) != 0) return false;
+    if (!Misc.closeEnough(that.height, height)) return false;
+    if (!Misc.closeEnough(that.width, width)) return false;
+    if (!Misc.closeEnough(that.x, x)) return false;
+    if (!Misc.closeEnough(that.y, y)) return false;
+
+    /* if (Double.compare(that.height, height) != 0) return false;
     if (Double.compare(that.width, width) != 0) return false;
     if (Double.compare(that.x, x) != 0) return false;
-    if (Double.compare(that.y, y) != 0) return false;
+    if (Double.compare(that.y, y) != 0) return false;  */
 
     return true;
   }
@@ -502,4 +508,15 @@ public class ProjectionRect implements java.io.Serializable {
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
+
+  public boolean closeEnough(ProjectionRect that) {
+    if (!Misc.closeEnough(that.height, height)) return false;
+    if (!Misc.closeEnough(that.width, width)) return false;
+    if (!Misc.closeEnough(that.x, x)) return false;
+    if (!Misc.closeEnough(that.y, y)) return false;
+
+    return true;
+  }
+
+
 }

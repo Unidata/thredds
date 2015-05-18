@@ -223,6 +223,8 @@ public class CdmrfReader {
     result.setDataType(NcStream.convertDataType(proto.getDataType()));
     result.setAxisType(type);
     result.setNvalues(proto.getNvalues());
+    result.setMinIndex(0);
+    result.setMaxIndex(proto.getNvalues()-1);
     result.setUnits(proto.getUnits());
     result.setDescription(proto.getDescription());
     result.setDependenceType(convertDependenceType(proto.getDepend()));

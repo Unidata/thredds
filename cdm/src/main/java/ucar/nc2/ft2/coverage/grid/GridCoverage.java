@@ -1,9 +1,7 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IsMissingEvaluator;
+import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.util.Indent;
 
@@ -97,6 +95,8 @@ public abstract class GridCoverage implements IsMissingEvaluator {
   }
 
   public abstract Array readData(GridSubset subset) throws IOException;
+
+  public abstract Array readSubset(List<Range> subset) throws IOException, InvalidRangeException;
 
   @Override
   public boolean hasMissing() {

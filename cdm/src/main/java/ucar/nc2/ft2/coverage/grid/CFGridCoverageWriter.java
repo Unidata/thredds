@@ -4,6 +4,7 @@ package ucar.nc2.ft2.coverage.grid;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.time.CalendarDate;
@@ -11,6 +12,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,13 +151,28 @@ public class CFGridCoverageWriter {
     }
 
 
-    /* write the data to the new file.
-    for (GridCoverage grid : subsetDataset.getGrids()) {
-         Variable v = writer.findVariable(grid.getName());
-         Array data = grid.readData(new GridSubset());
-         Array reshape = data.reshape(v.getShape());
-         writer.write(v, reshape);
-    }  */
+    // write the data to the new file.
+    for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
+      List<Range> ranges = new ArrayList<>();
+      for (String axisName : gridset.gcs.getAxisNames()) {
+        GridCoordAxis axis = subsetDataset.findCoordAxis(axisName);
+        if (axis != null) {
+          if (axis.getAxisType() == null)
+            System.out.println("HEY");
+          ranges.add(new Range(axis.getAxisType().name(), (int) axis.getMinIndex(), (int) axis.getMaxIndex()));
+        } else {
+          System.out.printf("No axis found %s%n", axisName);
+        }
+      }
+
+      for (GridCoverage grid : gridset.grids) {
+        Variable v = writer.findVariable(grid.getName());
+        Array data = grid.readSubset(ranges);
+        // Array reshape = data.reshape(v.getShape());
+        writer.write(v, data);
+      }
+
+    }
 
     //updateGeospatialRanges(writer, llrect );
     writer.close();

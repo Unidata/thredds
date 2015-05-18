@@ -1,11 +1,12 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage.grid;
 
+import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Variable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
