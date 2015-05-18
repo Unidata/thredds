@@ -6,6 +6,9 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
@@ -62,30 +65,7 @@ public class GridCoordAxis {
   private double resolution;
   private double[] values;     // null if isRegular,
 
-  public GridCoordAxis subset(double minValue, double maxValue) {
-    GridCoordAxis result = copy();
-    subsetValues(result, minValue, maxValue);
-    return result.finish();
-  }
-
-  public GridCoordAxis subsetLatest() {
-    GridCoordAxis result = copy();
-    subsetValuesLatest(result);
-    return result.finish();
-  }
-
-  private GridCoordAxis copy() {
-    GridCoordAxis result = new GridCoordAxis();
-    result.setName(name);
-    result.setDataType(dataType);
-    result.setUnits(units);
-    result.setDescription(description);
-    result.setAttributes(attributes);
-    result.setSpacing(spacing);
-    result.setResolution( getResolution());
-    result.setDependenceType(dependenceType);
-    result.setDependsOn(dependsOn);
-    return result;
+  public GridCoordAxis() {
   }
 
   public String getName() {
@@ -332,10 +312,10 @@ public class GridCoordAxis {
   }
 
   public Array getCoords() {
-    double[] vals = new double[(int) nvalues];
+    Array arr = Array.factory(getDataType(), new int[] {(int)nvalues});
     for (int i=0; i<nvalues; i++)
-      vals[i] = getCoord(i);
-    return Array.makeFromJavaArray(vals);
+      arr.setDouble(i, getCoord(i));
+    return arr;
   }
 
   public Array getCoordEdge1() {
@@ -373,6 +353,48 @@ public class GridCoordAxis {
 
     return result;
   }
+
+  /////////////////////////////////////////////////////////////////////////
+  // subsetting
+
+  protected GridCoordAxis(GridCoordAxis from) {
+    setName(from.getName());
+    setDataType(from.getDataType());
+    setUnits(from.getUnits());
+    setDescription(from.getDescription());
+    setAttributes(from.attributes);
+    setSpacing(from.getSpacing());
+    setResolution( from.getResolution());
+    setDependenceType(from.getDependenceType());
+    setDependsOn(from.getDependsOn());
+  }
+
+  public GridCoordAxis subset(double minValue, double maxValue) {
+    GridCoordAxis result = new GridCoordAxis(this);
+    subsetValues(result, minValue, maxValue);
+    return result.finish();
+  }
+
+  public GridCoordAxis subsetLatest() {
+    GridCoordAxis result = new GridCoordAxis(this);
+    subsetValuesLatest(result);
+    return result.finish();
+  }
+
+  public GridCoordAxis subset(Calendar cal, CalendarDate date) {
+    GridCoordAxisTime result = new GridCoordAxisTime(this, cal);
+    double want = result.convert(date);
+    subsetValuesClosest(result, want);
+    return result.finish();
+  }
+
+  public GridCoordAxis subset(Calendar cal, CalendarDateRange dateRange) {
+     GridCoordAxisTime result = new GridCoordAxisTime(this, cal);
+     double min  = result.convert(dateRange.getStart());
+     double max  = result.convert(dateRange.getEnd());
+     subsetValues(result, min, max);
+     return result.finish();
+   }
 
   private void subsetValues(GridCoordAxis result, double minValue, double maxValue) {
     int count = 0, count2 = 0;
@@ -424,7 +446,7 @@ public class GridCoordAxis {
         result.setNvalues(count);
         result.setValues(subsetValues);
         result.setStartValue(subsetValues[0]);
-        result.setEndValue(subsetValues[subsetValues.length-1]);
+        result.setEndValue(subsetValues[subsetValues.length - 1]);
         break;
 
       case contiguousInterval:
@@ -469,6 +491,96 @@ public class GridCoordAxis {
         result.setEndValue(subsetValues[subsetValues.length-1]);
         break;
     }
+  }
+
+  /*
+   * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
+   * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
+   * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+   * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
+   */
+  private void subsetValuesClosest(GridCoordAxis result, double want) {
+    double[] subsetValues;
+    double subsetStart;
+    int want_index = -1;
+    double resolution = getResolution();
+
+    switch (spacing) {
+      case regular:
+        if (want >= endValue)
+          want_index = (int) nvalues-1;
+        else if (want <= startValue)
+          want_index = 0;
+        else
+          want_index = (int) (.5 + (want - startValue) / resolution);
+
+        subsetStart = startValue + want_index * resolution;
+        result.setStartValue(subsetStart);
+        result.setEndValue(subsetStart);
+        result.setNvalues(1);
+        break;
+
+      case contiguousInterval:
+      case irregularPoint:
+        if (want > endValue)
+          want_index = (int) nvalues-1;
+        else if (want < startValue)
+          want_index = 0;
+        else {
+          int idx = 0;
+          for (double val : getValues()) {
+            if (val > want) break;
+            idx++;
+          }
+          if (spacing == Spacing.irregularPoint) {
+            double lower = want - getCoord(idx);
+            double upper = getCoord(idx + 1) - want;
+            want_index = (lower < upper) ? idx : idx + 1;
+          } else {
+            want_index = idx;
+          }
+        }
+
+        subsetStart = getCoord(want_index);
+        if (spacing == Spacing.irregularPoint) {
+          subsetValues = new double[1];
+          subsetValues[0] = subsetStart;
+        } else {
+          subsetValues = new double[2];
+          subsetValues[0] = getCoordEdge1(want_index);
+          subsetValues[1] = getCoordEdge2(want_index);
+        }
+        result.setValues(subsetValues);
+
+        result.setStartValue(subsetStart);
+        result.setEndValue(subsetStart);
+        result.setNvalues(1);
+        break;
+
+      case discontiguousInterval:
+        if (want > endValue)
+          want_index = (int) nvalues-1;
+        else if (want < startValue)
+          want_index = 0;
+        else {
+          for (int i = 0; i < values.length; i += 2) {                      // these are bounds (low, high)1, (low,high)2, ...
+            if (values[i] <= want && values[i+1] >= want) {
+              want_index = i;
+              break;
+            }
+          }
+        }
+
+        subsetValues = new double[2];
+        subsetValues[0] = getCoordEdge1(want_index);
+        subsetValues[1] = getCoordEdge2(want_index);
+
+        result.setNvalues(1);
+        result.setValues(subsetValues);
+        result.setStartValue(subsetValues[0]);
+        result.setEndValue(subsetValues[1]);
+        break;
+    }
 
   }
 
@@ -498,6 +610,5 @@ public class GridCoordAxis {
     }
 
   }
-
 
 }

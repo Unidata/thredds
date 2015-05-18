@@ -216,5 +216,4 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
     }
   }
 
-
 }

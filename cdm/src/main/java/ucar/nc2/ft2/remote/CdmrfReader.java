@@ -217,10 +217,11 @@ public class CdmrfReader {
   }
    */
   GridCoordAxis decodeCoordAxis(CdmrFeatureProto.CoordAxis proto) {
+    AxisType type = convertAxisType(proto.getAxisType());
     GridCoordAxis result = new GridCoordAxis();
     result.setName(proto.getName());
     result.setDataType(NcStream.convertDataType(proto.getDataType()));
-    result.setAxisType(convertAxisType(proto.getAxisType()));
+    result.setAxisType(type);
     result.setNvalues(proto.getNvalues());
     result.setUnits(proto.getUnits());
     result.setDescription(proto.getDescription());

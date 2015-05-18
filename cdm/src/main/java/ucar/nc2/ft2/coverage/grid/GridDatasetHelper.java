@@ -2,6 +2,7 @@
 package ucar.nc2.ft2.coverage.grid;
 
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
@@ -160,7 +161,7 @@ public class GridDatasetHelper {
     List<GridCoordAxis> axes = new ArrayList<>();
     for (String axisName : axisNames) {
       GridCoordAxis orgAxis = gds.findCoordAxis(axisName);
-      GridCoordAxis subAxis = subset(orgAxis, subset);
+      GridCoordAxis subAxis = subset(orgAxis, subset, result.getCalendar());
       if (subAxis != null) // leave out x, y
         axes.add( subAxis);
     }
@@ -175,7 +176,7 @@ public class GridDatasetHelper {
     return result;
   }
 
-  private GridCoordAxis subset(GridCoordAxis orgAxis, GridSubset subset) {
+  private GridCoordAxis subset(GridCoordAxis orgAxis, GridSubset subset, ucar.nc2.time.Calendar cal) {
     switch (orgAxis.getAxisType()) {
       case GeoZ:
       case Pressure:
@@ -194,7 +195,16 @@ public class GridDatasetHelper {
           return orgAxis.finish();
         if (subset.isTrue(GridSubset.latestTime))
           return orgAxis.subsetLatest();
-    }
+
+        CalendarDate date = (CalendarDate) subset.get(GridSubset.date);
+        if (date != null)
+          return orgAxis.subset(cal, date);
+
+        CalendarDateRange dateRange = (CalendarDateRange) subset.get(GridSubset.dateRange);
+         if (dateRange != null)
+           return orgAxis.subset(cal, dateRange);
+
+     }
 
     return null;
   }

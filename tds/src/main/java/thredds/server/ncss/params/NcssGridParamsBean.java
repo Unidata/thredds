@@ -134,7 +134,7 @@ public class NcssGridParamsBean extends NcssParamsBean {
     } else if (dateRange != null) {
       subset.set(GridSubset.dateRange, dateRange);
       if (timeStride != null)
-        subset.set(GridSubset.latlonBB, timeStride);
+        subset.set(GridSubset.timeStride, timeStride);
 
     } else {
       subset.set(GridSubset.latestTime, true);

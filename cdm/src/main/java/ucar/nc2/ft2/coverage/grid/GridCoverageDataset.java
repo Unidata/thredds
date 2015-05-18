@@ -101,7 +101,11 @@ public class GridCoverageDataset implements AutoCloseable {
     this.calendarDateRange = calendarDateRange;
   }
 
-  public ucar.nc2.time.Calendar getCalendar() { return calendarDateRange.getStart().getCalendar(); }
+  public ucar.nc2.time.Calendar getCalendar() {
+    if (calendarDateRange != null)
+      return calendarDateRange.getStart().getCalendar();
+    return ucar.nc2.time.Calendar.getDefault();
+  }
 
   public List<GridCoverage> getGrids() {
     return grids;

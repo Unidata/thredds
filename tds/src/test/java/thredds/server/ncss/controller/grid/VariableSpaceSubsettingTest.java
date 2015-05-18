@@ -66,8 +66,8 @@ import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.grid.GeoGrid;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
-
 
 /**
  * @author marcos
@@ -93,7 +93,6 @@ public class VariableSpaceSubsettingTest {
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
 
-
 		return Arrays.asList( new Object[][]{
 				{ SupportedFormat.NETCDF3, new int[][]{ {1,65,93}, {1,65,93} } , GridPathParams.getPathInfo().get(4), GridDataParameters.getVars().get(0)}, //No vertical levels
 				{ SupportedFormat.NETCDF3, new int[][]{ {1,1,65,93}, {1,1,65,93} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(1)}, //Same vertical level (one level)
@@ -106,7 +105,6 @@ public class VariableSpaceSubsettingTest {
 				{ SupportedFormat.NETCDF4, new int[][]{ {1,29,65,93}, {1,29,65,93} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(2)}, //Same vertical level (multiple level)
 				{ SupportedFormat.NETCDF4, new int[][]{ {1,65,93}, {1,29,65,93}, {1,1,65,93} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(3)}, //No vertical levels and vertical levels
 				{ SupportedFormat.NETCDF4, new int[][]{ {1,1,65,93}, {1,29,65,93} }, GridPathParams.getPathInfo().get(3), GridDataParameters.getVars().get(4)}, //Different vertical levels
-
 		});
 	}
 
@@ -132,12 +130,10 @@ public class VariableSpaceSubsettingTest {
 		requestBuilder = MockMvcRequestBuilders.get(servletPath).servletPath(servletPath)
 				.param("accept", accept)
 				.param("var", varParamVal);
-
-
 	}
 
 	@Test
-	public void shoudGetVariablesSubset() throws Exception{
+	public void shouldGetVariablesSubset() throws Exception{
 
 		mockMvc.perform(requestBuilder)
 		.andExpect( MockMvcResultMatchers.status().isOk() )
@@ -148,14 +144,12 @@ public class VariableSpaceSubsettingTest {
 				ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));		
 				assertTrue( gdsDataset.getCalendarDateRange().isPoint());
 
-				List<VariableSimpleIF> vars = gdsDataset.getDataVariables();
 				int[][] shapes = new int[vars.size()][];
-				int cont = 0;
-				for(VariableSimpleIF var : vars){
-					shapes[cont] = var.getShape();
-					cont++;
-
-				}					
+				int count = 0;
+				for (String varName : vars){
+					GeoGrid grid = gdsDataset.findGridByShortName(varName);
+					shapes[count++] = grid.getShape();
+				}
 				assertArrayEquals(expectedShapes, shapes);										
 			}
 		});								
