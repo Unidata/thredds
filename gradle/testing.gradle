@@ -54,19 +54,23 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
 
     // We only want to write these log messages once, which is why we don't have them in the "testTasks*.configure{}"
     // block below.
+    if (isJenkins) {
+        logger.warn "Skipping all NotJenkins tests: detected that we're running in the Jenkins environment."
+    }
+
     if (isTravis) {
         logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
     }
 
     String contentRootKey = "tds.content.root.path"
     boolean isContentRootAvailable = isPropertyValidDirectory(contentRootKey)
-    if (!isContentRootAvailable && !isJenkins) {        // Never skip any tests on Jenkins.
+    if (!isContentRootAvailable && !isJenkins) {        // Don't skip tests on Jenkins, except NotJenkins ones.
         logger.warn "Skipping all NeedsContentRoot tests."
     }
 
     String testdataDirKey = "unidata.testdata.path"
     boolean isCdmUnitTestDirAvailable = isPropertyValidDirectory(testdataDirKey)
-    if (!isCdmUnitTestDirAvailable && !isJenkins) {     // Never skip any tests on Jenkins.
+    if (!isCdmUnitTestDirAvailable && !isJenkins) {     // Don't skip tests on Jenkins, except NotJenkins ones.
         logger.warn "Skipping all NeedsCdmUnitTest tests."
     }
 
@@ -80,18 +84,19 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
                 systemProperty jnaKey, jnaVal
             }
 
+            if (isJenkins) {
+                excludeCategories 'ucar.unidata.test.util.NotJenkins'
+            }
+
             if (isTravis) {
                 ignoreFailures false  // On Travis, abort the build if any tests fail.
-
-                // Temporarily commented out to test JUnit Assume for server reachability.
-                // excludeCategories 'ucar.unidata.test.util.NotTravis'
             } else {
                 ignoreFailures true  // In every other environment, don't let test failures abort the build.
             }
 
             systemProperty contentRootKey, rootProject.property(contentRootKey)  // Propagate to Gradle Test Executor.
 
-            if (!isContentRootAvailable && !isJenkins) {        // Never skip any tests on Jenkins.
+            if (!isContentRootAvailable && !isJenkins) {        // Don't skip tests on Jenkins, except NotJenkins ones.
                 excludeCategories 'ucar.unidata.test.util.NeedsContentRoot'
 
                 if (path == ":it:integrationTest") {
@@ -106,7 +111,7 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
 
             systemProperty testdataDirKey, rootProject.property(testdataDirKey)  // Propagate to Gradle Test Executor.
 
-            if (!isCdmUnitTestDirAvailable && !isJenkins) {     // Never skip any tests on Jenkins.
+            if (!isCdmUnitTestDirAvailable && !isJenkins) {     // Don't skip tests on Jenkins, except NotJenkins ones.
                 excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
             }
         }
@@ -171,4 +176,3 @@ task rootTestReport(type: TestReport, group: 'Reports') {
 }
 
 apply plugin: "base"  // Gives us the "clean" task for removing rootTestReport's output.
-

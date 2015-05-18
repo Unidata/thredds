@@ -11,6 +11,8 @@ allprojects {
 description = "The Unidata THREDDS project includes the netCDF-Java library (aka CDM) " +
         "and the THREDDS Data Server (TDS)."
 
+import java.text.SimpleDateFormat
+
 // These will be inherited by subprojects: http://goo.gl/5mvqf7
 // After declaration, they should NOT be referred to using the "ext" namespace, instead preferring e.g.
 // "project.title" or simply "title": http://stackoverflow.com/questions/14530901
@@ -26,7 +28,7 @@ ext {
     // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
     url = "http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"
 
-    java.text.SimpleDateFormat iso_8601_format = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+    SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
     buildTimestamp = iso_8601_format.format(new Date())
 
     // Project groups:
