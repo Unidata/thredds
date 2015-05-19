@@ -128,10 +128,21 @@ public class RadarServerController {
             RadarDataInventory di = new RadarDataInventory(Paths.get(conf.diskPath));
             di.setName(conf.name);
             di.setDescription(conf.doc);
-            if (!conf.dataFormat.equals("NEXRAD2")) di.addVariableDir();
-            di.addStationDir();
-            di.addDateDir("yyyyMMdd");
-            di.addFileTime(conf.dataFormat.equals("NEXRAD2") ? "yyyyMMdd_HHmm#.ar2v#" : "yyyyMMdd_HHmm#.nids#");
+
+            for (String part: conf.layout.split("/")) {
+                switch (part) {
+                    case "STATION":
+                        di.addStationDir();
+                        break;
+                    case "VARIABLE":
+                        di.addVariableDir();
+                        break;
+                    default: // Assume date format
+                        di.addDateDir(part);
+                }
+            }
+
+            di.addFileTime(conf.dateParseRegex, conf.dateFmt);
             di.setNearestWindow(CalendarPeriod.of(1, CalendarPeriod.Field.Hour));
 
             // TODO: This needs to come from files instead

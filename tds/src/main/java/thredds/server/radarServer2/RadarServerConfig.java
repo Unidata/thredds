@@ -29,6 +29,11 @@ public class RadarServerConfig {
                 RadarConfigEntry conf = new RadarConfigEntry();
                 configs.add(conf);
 
+                Element collection = dataset.getChild("radarCollection", catNS);
+                conf.dateParseRegex = collection.getAttributeValue("dateRegex");
+                conf.dateFmt = collection.getAttributeValue("dateFormat");
+                conf.layout = collection.getAttributeValue("layout");
+
                 Element meta = dataset.getChild("metadata", catNS);
                 conf.name = dataset.getAttributeValue("name");
                 conf.urlPath = dataset.getAttributeValue("path");
@@ -57,6 +62,7 @@ public class RadarServerConfig {
 
     static public class RadarConfigEntry {
         public String name, urlPath, diskPath, dataFormat, stationFile, doc;
+        public String dateParseRegex, dateFmt, layout;
         public List<VarInfo> vars;
 
         static public class VarInfo {
