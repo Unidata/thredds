@@ -553,8 +553,11 @@ public class CoverageTable extends JPanel {
       return axis.getValues() != null;
     }
 
-    public boolean isIndepenent() {
-      return indepenent;
+    public String getDependsOn() {
+      if (axis.getDependenceType() == GridCoordAxis.DependenceType.independent)
+        return GridCoordAxis.DependenceType.independent.toString();
+      else
+        return axis.getDependenceType()+": "+axis.getDependsOn();
     }
 
     String showCoordValueDiffs() {

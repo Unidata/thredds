@@ -185,43 +185,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (z != null)
       testAxis.add(z);
 
-    /*
-    CoordinateAxis t = cs.getTaxis();
-    if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
-      CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
-      if (rt == null) {
-        if (sbuff != null) sbuff.format("%s: T axis must be 1D%n", cs.getName());
-        return false;
-      }
-      if (!(rt instanceof CoordinateAxis1D)) {
-        if (sbuff != null) {
-          sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
-        }
-        return false;
-      }
-
-      if (t.getRank() != 2) {
-        if (sbuff != null) {
-          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
-        }
-        return false;
-      }
-
-      CoordinateAxis1D rt1D = (CoordinateAxis1D) rt;
-      Dimension rtdim = rt1D.getDimension(0);
-      Dimension tdim = t.getDimension(0);
-
-      if (!rtdim.equals(tdim)) {
-        if (sbuff != null) {
-          sbuff.format("%s: Time axis must use RunTime dimension%n", cs.getName());
-        }
-        return false;
-      }
-    }
-    if (t != null)
-      testAxis.add(t);
-    */
-
     // tom margolis 3/2/2010
     // allow runtime independent of time
     CoordinateAxis t = cs.getTaxis();
@@ -229,37 +192,26 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     // A runtime axis must be scalar or one-dimensional
     if (rt != null) {
-      if (rt.isScalar()) // for the moment ignore
-        rt = null;
-      else if (!(rt instanceof CoordinateAxis1D)) {
-        if (sbuff != null) {
-          sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
-        }
-        return false;
+      if (!rt.isScalar() && !(rt instanceof CoordinateAxis1D)) {
+        if (sbuff != null) sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
+          return false;
       }
     }
 
     // If time axis is two-dimensional...
     if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
-      // ... a runtime axis is required
-      if (rt == null) {
-        if (sbuff != null) sbuff.format("%s: T axis must be 1D%n", cs.getName());
-        return false;
-      }
 
-      if (t.getRank() != 2) {
-        if (sbuff != null) {
-          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
+      if (rt != null) {
+        if (rt.getRank() != 1) {
+          if (sbuff != null) sbuff.format("%s: Runtime axis must be 1D%n", cs.getName());
+          return false;
         }
-        return false;
-      }
 
-      CoordinateAxis1D rt1D = (CoordinateAxis1D) rt;
-      if (!rt1D.getDimension(0).equals(t.getDimension(0))) {
-        if (sbuff != null) {
-          sbuff.format("%s: Time axis must use RunTime dimension%n", cs.getName());
+        // time first dimension must agree with runtime
+        if (!rt.getDimension(0).equals(t.getDimension(0))) {
+          if (sbuff != null) sbuff.format("%s: 2D Time axis first dimension must be runtime%n", cs.getName());
+          return false;
         }
-        return false;
       }
     }
 
@@ -432,7 +384,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (null != ensembleAxis) coordAxes.add(ensembleAxis);
 
     CoordinateAxis rtAxis = cs.findAxis(AxisType.RunTime);
-    if (null != rtAxis && !rtAxis.isScalar()) {
+    if (null != rtAxis) {
       try {
         if (rtAxis instanceof CoordinateAxis1DTime)
           runTimeAxis = (CoordinateAxis1DTime) rtAxis;

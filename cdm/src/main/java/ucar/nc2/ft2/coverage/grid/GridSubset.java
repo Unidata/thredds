@@ -8,10 +8,6 @@ import java.util.Set;
 /**
  * Describes a subset of a GridCoverage.
  * Coordinate values only, no indices.
- * key        value
- *  latlonBB
- *
- * values: Double (single value) or a
  *
  * @author caron
  * @since 5/6/2015

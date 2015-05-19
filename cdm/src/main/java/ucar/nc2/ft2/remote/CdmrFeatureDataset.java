@@ -2,6 +2,8 @@
 package ucar.nc2.ft2.remote;
 
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.ft2.coverage.grid.DtGridDatasetAdapter;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 
 import java.io.IOException;
@@ -15,8 +17,6 @@ import java.io.IOException;
 public class CdmrFeatureDataset {
 
   static public GridCoverageDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
-    if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME))
-      endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
 
     if (wantFeatureType == FeatureType.GRID) {
       CdmrFeatureDataset reader = new CdmrFeatureDataset(endpoint);
@@ -26,15 +26,32 @@ public class CdmrFeatureDataset {
     return null;
   }
 
+  boolean isRemote;
   String endpoint;
 
   public CdmrFeatureDataset(String endpoint) {
+    if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
+      endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
+      isRemote = true;
+    } else if (endpoint.startsWith("file:")) {
+          endpoint = endpoint.substring("file:".length());
+    }
+
     this.endpoint = endpoint;
   }
 
   public GridCoverageDataset open() throws IOException {
-    CdmrfReader reader = new CdmrfReader(endpoint);
-    return reader.open();
+    if (isRemote) {
+      CdmrfReader reader = new CdmrfReader(endpoint);
+      return reader.open();
+    }
+
+    ucar.nc2.dt.grid.GridDataset gds = GridDataset.open(endpoint);
+    if (gds.getGrids().size() > 0) {
+      return new DtGridDatasetAdapter(gds);
+    }
+
+    return null;
   }
 
   public static void main(String args[]) throws IOException {
