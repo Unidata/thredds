@@ -479,6 +479,7 @@ public class RadarDataInventory {
             // If only looking for nearest, perform that reduction now
             CalendarDateRange originalRange = (CalendarDateRange) dates.get(0);
             if (originalRange.isPoint()) {
+                filteredFiles.clear();
                 long offset = Long.MAX_VALUE;
                 QueryResultItem bestMatch = null;
                 for (QueryResultItem it: filteredFiles) {
@@ -489,8 +490,8 @@ public class RadarDataInventory {
                         bestMatch = it;
                     }
                 }
-                filteredFiles.clear();
-                filteredFiles.add(bestMatch);
+                if (bestMatch != null)
+                    filteredFiles.add(bestMatch);
             }
 
             return filteredFiles;
