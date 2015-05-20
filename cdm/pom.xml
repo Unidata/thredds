@@ -73,11 +73,6 @@
       <artifactId>guava</artifactId>
     </dependency>
 
-    <!-- dependency>
-      <groupId>org.itadaki</groupId>
-      <artifactId>bzip2</artifactId>
-    </dependency -->
-
     <!-- Command line argument parsing in CFPointWriter -->
     <dependency>
       <groupId>com.beust</groupId>

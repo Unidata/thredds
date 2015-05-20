@@ -1,8 +1,12 @@
+// The log messages in this ext block will be emitted every time we build, even if no Test task is being run.
+// That's a bit spammy, but at least the code is straightforward.
+// The alternative is to use "gradle.taskGraph.whenReady{}" and only do this config if a Test is in the task graph,
+// but it's not worth the extra complication.
 ext {
     // These appear to be the only environment variables that Jenkins defines: http://goo.gl/iCh08k
     // Is there a better way to detect Jenkins?
     jenkinsEnvVar = 'JENKINS_URL'
-    isJenkins = System.env['JENKINS_URL'] as boolean  // We only care if prop is defined, not its actual value.
+    isJenkins = System.env[jenkinsEnvVar] as boolean  // We only care if prop is defined, not its actual value.
 
     if (isJenkins) {
         logger.warn "Skipping all NotJenkins tests: detected that we're running in the Jenkins environment."
@@ -10,7 +14,7 @@ ext {
 
 
     travisEnvVar = 'TRAVIS'
-    isTravis = System.env['TRAVIS'] as boolean        // We only care if prop is defined, not its actual value.
+    isTravis = System.env[travisEnvVar] as boolean        // We only care if prop is defined, not its actual value.
 
     if (isTravis) {
         logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
@@ -33,9 +37,9 @@ ext {
     }
 
 
-    // Do not propagate these properties to the Gradle test executors.
+    // Do not propagate these system properties to the Gradle test executors.
     systemPropertiesBlackList = [
-        // Propagating this causes "java.lang.ClassNotFoundException: org.jacoco.agent.rt.internal_932a715.PreMain"
+        // Passing this causes "java.lang.ClassNotFoundException: org.jacoco.agent.rt.internal_932a715.PreMain"
         // See https://discuss.gradle.org/t/jacoco-related-failure-in-multiproject-build/6216
         'user.dir',
         // Gradle is also using JNA and it sets this property when it runs. However, it is an old, incompatible version
@@ -83,7 +87,7 @@ boolean isSystemPropertyAValidDirectory(String sysPropKey) {
     // However, we must exercise some care in our choice of parent directory for that segment. This is because when we
     // start the embedded TDS server for :it:integrationTest, log4j will attempt to create the directory
     // "${sys:tds.content.root.path}/thredds/logs" (see TDS's log4j.xml). In the event that the user fails to define
-    // that property, the responsible place to create this log directory is under the project build directory.
+    // that property, the responsible place to create this logs directory is under the project build directory.
     String defaultSysPropVal = Paths.get(buildDir.path, "NO", sysPropKey, "FOUND").toAbsolutePath().toString()
 
     logger.info "Setting default system property: $sysPropKey=\"$defaultSysPropVal\""
@@ -151,14 +155,14 @@ configure(javaProjects) {
 boolean testRuntimeHasDepNamed(Project project, String depName) {
     try {
         // Groovy truth: empty collections are coerced to false.
-        project.configurations.getByName('testRuntime').allDependencies.findAll { it.name == depName }
+        project.configurations.testRuntime.allDependencies.findAll { it.name == depName }
     } catch (UnknownConfigurationException e) {  // Project did not have a configuration named 'testRuntime'.
         logger.debug e.message
         false
     }
 }
 
-///////////////////////////////////////////////// Root /////////////////////////////////////////////////
+///////////////////////////////////////////////// Root tasks /////////////////////////////////////////////////
 
 // FIXME: I'm not sure if either of these consider :it:integrationTest. That would make sense, because it hasn't been
 // evaluated yet. How best to fix?

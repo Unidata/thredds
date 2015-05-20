@@ -21,7 +21,6 @@ dependencies {
     compile libraries["httpcore"]
     compile libraries["bounce"]
     compile libraries["imgscalr-lib"]
-    //compile libraries["bzip2"]
     compile libraries["commons-lang3"]
     compile libraries["52n-oxf-xmlbeans"]
     compile libraries["guava"]

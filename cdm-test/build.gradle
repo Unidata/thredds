@@ -17,7 +17,6 @@ dependencies {
     testCompile libraries["httpcore"]
     testCompile libraries["commons-io"]
     testCompile libraries["commons-compress"]
-    //testCompile libraries["bzip2"]
     testCompile libraries["xz"]
     testCompile libraries["jj2000"]
     testCompile libraries["jdom2"]

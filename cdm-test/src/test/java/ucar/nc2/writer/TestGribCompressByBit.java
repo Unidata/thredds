@@ -48,7 +48,6 @@ import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.nc2.grib.grib2.Grib2Variable;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.writer.Grib2NetcdfWriter;
-import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
@@ -626,45 +625,6 @@ public class TestGribCompressByBit {
        return out.toByteArray();
      }
   }
-
-  private static byte[] buffer = new byte [524288];  // LOOK optimize
-  /* class ItadakiBzip2 extends CompressAlgo {
-    Algorithm getAlgo() {
-      return Algorithm.bzip2T;
-    }
-
-    byte[] compress(byte[] bdata) throws IOException {
-      int orgSize = bdata.length;
-      ByteArrayOutputStream out = new ByteArrayOutputStream(2 * orgSize);
-      try (org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out)) {
-        InputStream fin = new ByteArrayInputStream(bdata);
-        IO.copy(fin, zipper);
-
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-
-      return out.toByteArray();
-    }
-
-    byte[] uncompress(byte[] bdata) {
-       ByteArrayOutputStream out = new ByteArrayOutputStream(20 * bdata.length);
-       ByteArrayInputStream in = new ByteArrayInputStream(bdata);
-       try (org.itadaki.bzip2.BZip2InputStream bzIn = new org.itadaki.bzip2.BZip2InputStream(in, false)) {
-         int bytesRead;
-         while ((bytesRead = bzIn.read (buffer)) != -1) {
-           out.write (buffer, 0, bytesRead) ;
-         }
-         out.close();
-
-       } catch (Exception e) {
-         e.printStackTrace();
-       }
-
-       return out.toByteArray();
-     }
-
-  } */
 
   class ScaleAndOffset extends CompressAlgo {
     @Override

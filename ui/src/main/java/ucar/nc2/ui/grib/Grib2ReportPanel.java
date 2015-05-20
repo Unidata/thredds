@@ -227,32 +227,6 @@ public class Grib2ReportPanel extends ReportPanel {
     // unpacked_data_value = packed_data_value * scale_factor + add_offset
     // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
 
-    /* BZip2OutputStream zipper = new BZip2OutputStream(out);
-    BZip2BitOutputStream bitOut = new BZip2BitOutputStream(zipper);
-    float diffMax = -Float.MAX_VALUE;
-    for (float fd : data) {
-      int packed_data = Math.round((fd - add_offset) / scale_factor);
-      bitOut.writeBits(nbits, packed_data);
-
-      // test
-      float unpacked_data = packed_data * scale_factor + add_offset;
-      float diff = Math.abs(fd-unpacked_data);
-      /* if (diff > interval) {
-        f.format("   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
-        f.format("     scale_factor=%f add_offset=%f data=[%f,%f]%n", scale_factor, add_offset, dataMin, dataMax);
-        count++;
-        //if (count > 10) return;
-      }
-
-      diffMax = Math.max(diffMax, diff);
-    }
-    /*if (diffMax > interval) {
-      System.out.printf("   diffMax=%f interval=%f n=%d%n", diffMax, interval, nbits);
-      System.out.printf("     scale_factor=%f add_offset=%f data=[%f,%f]%n%n", scale_factor, add_offset, dataMin, dataMax);
-    } *
-
-    bitOut.flush();
-    zipper.finish(); */
       /* compressedSize = out.size();
       f.format(" compressedSize = %d%n", compressedSize);
       f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
