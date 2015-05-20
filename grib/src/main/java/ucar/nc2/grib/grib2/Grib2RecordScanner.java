@@ -151,7 +151,7 @@ public class Grib2RecordScanner {
       Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
       Grib2SectionData dataSection = new Grib2SectionData(raf);
       if (dataSection.getMsgLength() > is.getMessageLength()) { // presumably corrupt
-        raf.seek(drs.getStartingPosition()); // go back to before the dataSection
+        // raf.seek(drs.getStartingPosition()); // go back to before the dataSection
         throw new IllegalStateException("Illegal Grib2SectionData Message Length");
       }
 
@@ -206,8 +206,9 @@ public class Grib2RecordScanner {
         lastPos = raf.getFilePointer();
         return new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing);
 
-      } else { // skip this record, start scanning again at end of is + 20 bytes
-        lastPos = is.getEndPos() + 20;
+      } else { // skip this record
+        // lastPos = is.getEndPos() + 20;   dont trust is.getEndPos()
+        lastPos += 20;  // skip "GRIB"
         if (hasNext()) // search forward for another one
          return next();
       }
@@ -215,8 +216,8 @@ public class Grib2RecordScanner {
     } catch (Throwable t) {
       long pos = (is == null) ? -1 : is.getStartPos();
       log.warn("Bad GRIB2 record in file {}, skipping pos={} cause={}", raf.getLocation(), pos, t.getMessage());
-      lastPos = raf.getFilePointer();   // start scanning from wherever we are in the file
-      if (hasNext()) // skip forward
+      lastPos += 20;  // skip "GRIB"
+      if (hasNext()) // search forward for another one
         return next();
     }
 

@@ -149,7 +149,7 @@ public class Grib1RecordScanner {
       Grib1SectionBitMap bitmap = pds.bmsExists() ? new Grib1SectionBitMap(raf) : null;
       Grib1SectionBinaryData dataSection = new Grib1SectionBinaryData(raf);
       if (dataSection.getStartingPosition() + dataSection.getLength() > is.getEndPos()) { // presumably corrupt
-        raf.seek(dataSection.getStartingPosition()); // go back to start of the dataSection, in hopes of salvaging
+        // raf.seek(dataSection.getStartingPosition()); // go back to start of the dataSection, in hopes of salvaging
         log.warn("BAD GRIB-1 data message at " + dataSection.getStartingPosition() + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
         throw new IllegalStateException("Illegal Grib1SectionBinaryData Message Length");
       }
@@ -198,8 +198,9 @@ public class Grib1RecordScanner {
         lastPos = raf.getFilePointer();
         return new Grib1Record(header, is, gds, pds, bitmap, dataSection);
 
-      } else { // skip this record, start scanning again at end of is + 20 bytes
-        lastPos = is.getEndPos() + 20;
+      } else { // skip this record
+        // lastPos = is.getEndPos() + 20;  cant use is.getEndPos(), may be bad
+        lastPos += 20;  // skip over the "GRIB" of this message
         if (hasNext()) // search forward for another one
          return next();
       }
