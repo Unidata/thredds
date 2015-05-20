@@ -236,13 +236,6 @@
     <servlet-class>thredds.server.opendap.OpendapServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
-  <!-- NetCDF/Dap4 server -->
-  <servlet>
-    <display-name>Dap4 Server</display-name>
-    <servlet-name>dap4</servlet-name>
-    <servlet-class>thredds.server.dap4.Dap4Servlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet>
 
   <!-- HTTP File server -->
   <!-- servlet>

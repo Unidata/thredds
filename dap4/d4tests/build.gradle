@@ -21,6 +21,8 @@ dependencies {
 }
 
 test {
+    systemProperties['testargs'] = System.getProperty("testargs", "")
+
     include 'dap4/test/TestParserDMR.class'
     include 'dap4/test/TestParserCE.class'
     include 'dap4/test/TestNc4Iosp.class'
