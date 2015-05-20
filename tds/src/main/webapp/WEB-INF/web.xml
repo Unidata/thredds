@@ -128,10 +128,6 @@
     <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
     <servlet-name>Opendap</servlet-name>
   </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
-    <servlet-name>dap4</servlet-name>
-  </filter-mapping>
 
   <!--
   Filter all requests that contain parameters used by CatalogServices
@@ -147,10 +143,6 @@
   <filter-mapping>
     <filter-name>CookieFilter</filter-name>
     <servlet-name>Opendap</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>CookieFilter</filter-name>
-    <servlet-name>dap4</servlet-name>
   </filter-mapping>
 
   <!--
@@ -384,11 +376,6 @@
   <servlet-mapping>
     <servlet-name>Opendap</servlet-name>
     <url-pattern>/dodsC/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>dap4</servlet-name>
-    <url-pattern>/dap4/*</url-pattern>
   </servlet-mapping>
 
   <!-- servlet-mapping>
