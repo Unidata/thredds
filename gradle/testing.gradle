@@ -44,6 +44,13 @@ ext {
         // See http://twall.github.io/jna/4.1.0/overview-summary.html#loading
         'jna.boot.library.path'
     ]
+
+    // Only propagate these system properties from the Gradle process to the test executors.
+    systemPropertiesWhiteList = [
+            contentRootKey,
+            testdataDirKey,
+            'jna.library.path',
+    ]
 }
 
 import java.nio.file.*
@@ -101,8 +108,7 @@ configure(javaProjects) {
     tasks.withType(Test).all {
         // Propagates system properties set on the Gradle process to the test executors.
         System.properties.each { key, value ->
-            if (!systemPropertiesBlackList.contains(key) &&
-                    !systemProperties.containsKey(key)) {  // Don't overrwrite any existing entries.
+            if (key in systemPropertiesWhiteList) {
                 systemProperties[key] = value
             }
         }
