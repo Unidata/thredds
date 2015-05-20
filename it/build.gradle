@@ -59,6 +59,16 @@ gretty {
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test) {
+    // isContentRootAvailable, isJenkins, and contentRootKey are defined on the root project in testing.gradle.
+    if (!isContentRootAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
+        logger.warn "Skipping all integration tests (task \'$path\'): " +
+                "\'$contentRootKey\' property not defined."
+
+        // We can't stand up a functioning TDS test instance without a valid content root,
+        // so disable the integration test task altogether.
+        enabled = false
+    }
+
     // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
     exclude 'thredds/tds/**'
 
@@ -73,6 +83,11 @@ task integrationTest(type: Test) {
         systemProperties.keySet().removeAll { it.startsWith("gretty.") }
     }
 }
+
+// Propagate all of integrationTest's system properties (which were set in testing.gradle) to the embedded Tomcat
+// instance. org.akhikhl.gretty.ServerConfig.systemProperties is null by default.
+// So, we can be sure that we're not trampling over any existing properties by doing this.
+gretty.systemProperties integrationTest.systemProperties
 
 task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
     // executionData must be closure, because appBeforeIntegrationTest is not defined yet.

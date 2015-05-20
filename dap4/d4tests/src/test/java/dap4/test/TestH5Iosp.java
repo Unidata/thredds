@@ -1,13 +1,19 @@
 package dap4.test;
 
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NotJenkins;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Category(NotJenkins.class)
 public class TestH5Iosp extends DapTestCommon
 {
     static protected final boolean DEBUG = false;

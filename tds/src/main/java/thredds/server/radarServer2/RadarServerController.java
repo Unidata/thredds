@@ -55,6 +55,8 @@ public class RadarServerController {
     static final String entryPoint = "radarServer/";
     static final String URLbase = appName + entryPoint;
     static Map<String, List<RadarServerConfig.RadarConfigEntry.VarInfo>> vars;
+    static Map<String, DateRange> timeCoverages;
+    static Map<String, RadarServerConfig.RadarConfigEntry.GeoInfo> geoCoverages;
     boolean enabled = false;
 
     @Autowired
@@ -122,16 +124,29 @@ public class RadarServerController {
 
         data = new TreeMap<>();
         vars = new TreeMap<>();
+        timeCoverages = new TreeMap<>();
+        geoCoverages = new TreeMap<>();
         String contentPath = tdsContext.getContentDirectory().getPath();
         List<RadarServerConfig.RadarConfigEntry> configs = RadarServerConfig.readXML(contentPath + "/radar/radarCollections.xml");
         for (RadarServerConfig.RadarConfigEntry conf : configs) {
             RadarDataInventory di = new RadarDataInventory(Paths.get(conf.diskPath));
             di.setName(conf.name);
             di.setDescription(conf.doc);
-            if (!conf.dataFormat.equals("NEXRAD2")) di.addVariableDir();
-            di.addStationDir();
-            di.addDateDir("yyyyMMdd");
-            di.addFileTime(conf.dataFormat.equals("NEXRAD2") ? "yyyyMMdd_HHmm#.ar2v#" : "yyyyMMdd_HHmm#.nids#");
+
+            for (String part: conf.layout.split("/")) {
+                switch (part) {
+                    case "STATION":
+                        di.addStationDir();
+                        break;
+                    case "VARIABLE":
+                        di.addVariableDir();
+                        break;
+                    default: // Assume date format
+                        di.addDateDir(part);
+                }
+            }
+
+            di.addFileTime(conf.dateParseRegex, conf.dateFmt);
             di.setNearestWindow(CalendarPeriod.of(1, CalendarPeriod.Field.Hour));
 
             // TODO: This needs to come from files instead
@@ -139,6 +154,8 @@ public class RadarServerController {
 
             data.put(conf.urlPath, di);
             vars.put(conf.urlPath, conf.vars);
+            timeCoverages.put(conf.urlPath, conf.timeCoverage);
+            geoCoverages.put(conf.urlPath, conf.spatialCoverage);
             StationList sl = di.getStationList();
             sl.loadFromXmlFile(contentPath + "/" + conf.stationFile);
         }
@@ -248,21 +265,19 @@ public class RadarServerController {
                 "summary", di.getDescription()));
 
         // TODO: Pull from inventory
+        RadarServerConfig.RadarConfigEntry.GeoInfo gi = geoCoverages.get(dataset);
         metadata.put(Dataset.GeospatialCoverage,
                 new ThreddsMetadata.GeospatialCoverage(
-                        new ThreddsMetadata.GeospatialRange(20.0, 40.0, 0.0,
-                                "degrees_north"),
-                        new ThreddsMetadata.GeospatialRange(-135.0, 70.0, 0.0,
-                                "degrees_east"),
-                        new ThreddsMetadata.GeospatialRange(0.0, 70.0, 0.0,
-                                "km"), new ArrayList<ThreddsMetadata.Vocab>(),
-                        null));
+                        new ThreddsMetadata.GeospatialRange(gi.eastWest.start,
+                                gi.eastWest.size, 0.0, gi.eastWest.units),
+                        new ThreddsMetadata.GeospatialRange(gi.northSouth.start,
+                                gi.northSouth.size, 0.0, gi.northSouth.units),
+                        new ThreddsMetadata.GeospatialRange(gi.upDown.start,
+                                gi.upDown.size, 0.0, gi.upDown.units),
+                        new ArrayList<ThreddsMetadata.Vocab>(), null));
 
-        CalendarDate now = CalendarDate.present();
-        CalendarDate start = now.subtract(CalendarPeriod.of(14,
-                CalendarPeriod.Field.Day));
-        metadata.put(Dataset.TimeCoverage, new DateRange(start.toDate(),
-                now.toDate()));
+        // TODO: Should come from inventory
+        metadata.put(Dataset.TimeCoverage, timeCoverages.get(dataset));
 
         // TODO: Need to be able to get this from the inventory
         List<ThreddsMetadata.Variable> catalogVars = new ArrayList<>();

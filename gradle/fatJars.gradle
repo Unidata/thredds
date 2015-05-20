@@ -10,6 +10,7 @@ dependencies {
     dap4 project(':dap4:d4client')
 
     ncIdv project(':cdm')
+    ncIdv project(':clcommon')
     ncIdv project(':bufr')
     ncIdv project(':grib')
     ncIdv project(':netcdf4')
