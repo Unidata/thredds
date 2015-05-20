@@ -45,7 +45,7 @@ import java.net.URLEncoder;
 import java.util.Formatter;
 
 /**
- * A remote CDM dataset (extends NetcdfFile), using cdmremote protocol to communicate.
+ * A remote CDM dataset (extending NetcdfFile), using cdmremote protocol to communicate.
  * Similar to Opendap in that it is a remote access protocol using indexed data acess.
  * Supports full CDM / netcdf-4 data model.
  *
@@ -77,17 +77,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return urlName;
   }
 
-  /* IGNORE
-  static synchronized void initHttpClient() {
-    if (httpClient != null) return;
-    try {
-      httpClient = HTTPFactory.newSession();
-    } catch (HTTPException he) {
-      httpClient = null;
-    }
-  }
-  */
-
   //////////////////////////////////////////////////////
 
   private HTTPSession httpClient;
@@ -105,16 +94,15 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       if (!temp.startsWith("http:"))
         temp = "http:" + temp;
     } catch (Exception e) {
+      throw new IOException(e);
     }
     remoteURI = temp;
 
     httpClient = HTTPFactory.newSession(remoteURI);
 
     // get the header
-    HTTPMethod method = null;
-    try {
-      String url = remoteURI + "?req=header";
-      method = HTTPFactory.Get(httpClient, url);
+    String url = remoteURI + "?req=header";
+    try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
       method.setFollowRedirects(true);
       if (showRequest) System.out.printf("CdmRemote request %s %n", url);
       int statusCode = method.execute();
@@ -129,9 +117,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       NcStreamReader reader = new NcStreamReader();
       reader.readStream(is, this);
       this.location = SCHEME + remoteURI;
-    } finally {
-      if (method != null) method.close();
     }
+
     long took = System.currentTimeMillis() - start;
     if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
@@ -168,9 +155,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest)
       System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " url=" + f);
 
-    HTTPMethod method = null;
-    try {
-      method = HTTPFactory.Get(httpClient, f.toString());
+    try (HTTPMethod method = HTTPFactory.Get(httpClient, f.toString())) {
       int statusCode = method.execute();
 
       if (statusCode == 404)
@@ -198,9 +183,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       assert v.getFullNameEscaped().equals(result.varNameFullEsc);
       return result.data;
-
-    } finally {
-      if (method != null) method.close();
     }
   }
 
@@ -213,7 +195,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     try {
-      InputStream is = sendQuery(remoteURI, s.getFullNameEscaped());
+      InputStream is = sendQuery(httpClient, remoteURI, s.getFullNameEscaped());
       NcStreamReader reader = new NcStreamReader();
       return reader.getStructureIterator(is, this);
 
@@ -223,13 +205,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
   }
 
-  public static InputStream sendQuery(String remoteURI, String query) throws IOException {
+  // session may be null, if so, will be closed on method.close()
+  public static InputStream sendQuery(HTTPSession session, String remoteURI, String query) throws IOException {
     long start = System.currentTimeMillis();
-
-    HTTPSession session = null;
-    HTTPMethod method = null;
-    InputStream stream = null;
-    int statusCode = 0;
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
@@ -238,15 +216,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest)
       System.out.printf(" CdmRemote sendQuery= %s", sbuff);
 
-    try {
-
-      try {
-        session = HTTPFactory.newSession(sbuff.toString());
-        method = HTTPFactory.Get(session);
-        statusCode = method.execute();
-      } catch (HTTPException he) {
-        throw new IOException(he);
-      }
+    try (HTTPMethod method = HTTPFactory.Get(session, sbuff.toString()) ) {
+      int statusCode = method.execute();
 
       if (statusCode == 404)
         throw new FileNotFoundException(getErrorMessage(method));
@@ -254,12 +225,14 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       if (statusCode >= 300)
         throw new IOException(getErrorMessage(method));
 
-      stream = method.getResponseBodyAsStream();
+      InputStream stream = method.getResponseBodyAsStream();
       if (showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
       return stream;
 
+    } catch (HTTPException he) {
+      throw new IOException(he);
+
     } catch (IOException ioe) {
-      if (session != null) session.close();
       throw ioe;
     }
   }
@@ -276,18 +249,15 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   public void writeToFile(String filename) throws IOException {
     File file = new File(filename);
+    String url = remoteURI + "?req=header";
+
     try (FileOutputStream fos = new FileOutputStream(file)) {
-      // WritableByteChannel wbc = fos.getChannel();
 
       long size = 4;
       fos.write(NcStream.MAGIC_START);
 
       // header
-      HTTPMethod method = null;
-      try {
-        // get the header
-        String url = remoteURI + "?req=header";
-        method = HTTPFactory.Get(httpClient, url);
+      try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
         if (showRequest) System.out.printf("CdmRemote request %s %n", url);
         int statusCode = method.execute();
 
@@ -299,9 +269,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
         InputStream is = method.getResponseBodyAsStream();
         size += IO.copyB(is, fos, IO.default_socket_buffersize);
-
-      } finally {
-        if (method != null) method.close();
       }
 
       for (Variable v : getVariables()) {
@@ -312,8 +279,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         if (showRequest)
           System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " url=" + sbuff);
 
-        try {
-          method = HTTPFactory.Get(httpClient, sbuff.toString());
+        try (HTTPMethod method = HTTPFactory.Get(httpClient, sbuff.toString())) {
           int statusCode = method.execute();
 
           if (statusCode == 404)
@@ -333,9 +299,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
           InputStream is = method.getResponseBodyAsStream();
           size += IO.copyB(is, fos, IO.default_socket_buffersize);
-
-        } finally {
-          if (method != null) method.close();
         }
       }
 

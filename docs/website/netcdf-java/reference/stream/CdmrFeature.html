@@ -2,24 +2,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Cdm Remote Feature Datasets</title>
+<title>Cdm Remote Feature</title>
   <link href="../../cdm.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
-<h1>CDM Remote Web Service (Experimental)</h1>
-<p>CDM Remote is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
-  two levels of services: </p>
+<h1>CDM Remote Feature Web Service </h1>
+<p>CDM Remote  is a web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM feature datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the NetcdfFile and FeatureDataset levels of the CDM API, so there are
+two levels of services: </p>
 <ol>
-  <li><em><strong>CdmRemote </strong></em>provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the
+  <li><em><strong><a href="CdmRemote.html">CdmRemote</a></strong></em> provides index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the
     full CDM data model. </li>
-  <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and Unidata's
-    experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.2) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong> Feature Datasets. </li>
+  <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and Unidata's<a href="../../../tds/reference/services/NetcdfSubsetServiceReference.html"> <em>NetCDF Subset Service</em></a><em> (NCSS)</em>. This API and protocol is being redone in version 5.0. </li>
 </ol>
 <p>The CDM Remote services and protocol are experimental and should not be used outside of the CDM stack for now.</p>
 <hr />
 <p></p>
-<h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol</h2>
+<h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol (Coordinate Space access)</h2>
+<p>As of version 5.0, the allowed queries match the NetCDF Subset Service queries. </p>
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>header</strong> | <strong>data</strong> <strong></strong>)
   <strong>time_start,time_end</strong>=time range
@@ -486,7 +486,7 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
 </p>
 <hr width="100%"/>
 <address>
-<img src="../../nc.gif" alt="" width="64" height="64"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last
+<img src="../../nc.gif" alt="" width="64" height="64"/> This document was last
   updated April 2015
 </address>
 <p>&nbsp;</p>

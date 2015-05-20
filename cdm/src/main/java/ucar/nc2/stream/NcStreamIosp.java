@@ -52,7 +52,8 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 /**
- * IOSP to read ncStream file (RandomAccessFile), into a NetcdfFile.
+ * IOSP to read an ncStream that has been written to a file.
+ * Proof of concept for making ncStream-encoded file into a version of the netcdf format.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
   private static final boolean debug = false;

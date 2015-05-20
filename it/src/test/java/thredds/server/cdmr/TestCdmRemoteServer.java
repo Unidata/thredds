@@ -32,6 +32,7 @@
  */
 package thredds.server.cdmr;
 
+import org.junit.Test;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
@@ -49,6 +50,7 @@ import java.io.IOException;
 
 public class TestCdmRemoteServer {
 
+  @Test
   public void testSingleDataset() throws IOException {
     Catalog cat = TestTdsLocal.open(null);
 

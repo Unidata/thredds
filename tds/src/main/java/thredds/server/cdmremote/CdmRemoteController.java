@@ -122,7 +122,7 @@ public class CdmRemoteController implements LastModified {
       if (ncfile == null) return null;  // failed resource control
 
       switch (req.toLowerCase()) {
-        case "form":
+        case "form":    // ol
         case "cdl":
           ncfile.setLocation(datasetPath); // hide where the file is stored  LOOK
           String cdl = ncfile.toString();
@@ -199,7 +199,7 @@ public class CdmRemoteController implements LastModified {
   }
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=data")
-  public void handleRequest(HttpServletRequest request, HttpServletResponse response,
+  public void handleDataRequest(HttpServletRequest request, HttpServletResponse response,
                             @Valid CdmRemoteQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException {
 
     if (!allowedServices.isAllowed(StandardService.cdmRemote))
@@ -241,7 +241,7 @@ public class CdmRemoteController implements LastModified {
       StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
       while (stoke.hasMoreTokens()) {
         ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-        size += ncWriter.sendData(cer.v, cer.section, out, false);
+        size += ncWriter.sendData(cer.v, cer.section, out, true);
       }
       out.flush();
 

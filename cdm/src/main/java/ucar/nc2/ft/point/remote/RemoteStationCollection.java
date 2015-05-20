@@ -42,7 +42,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     // read in all the stations with the "stations" query
     StationHelper stationHelper = new StationHelper();
 
-    try (InputStream in = CdmRemote.sendQuery(uri, "req=stations")) {
+    try (InputStream in = CdmRemote.sendQuery(null, uri, "req=stations")) {
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype != PointStream.MessageType.StationList) {
         throw new RuntimeException("Station Request: bad response");
@@ -186,7 +186,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
       InputStream in = null;
       try {
-        in = CdmRemote.sendQuery(uri, query);
+        in = CdmRemote.sendQuery(null, uri, query);
 
         PointStream.MessageType mtype = PointStream.readMagic(in);
         if (mtype == PointStream.MessageType.End) {  // no obs were found

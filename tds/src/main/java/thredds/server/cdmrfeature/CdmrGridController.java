@@ -48,12 +48,14 @@ import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.config.TdsContext;
 import thredds.server.exception.ServiceNotAllowed;
+import thredds.server.ncss.params.NcssGridParamsBean;
 import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
+import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 
 import thredds.util.ContentType;
@@ -71,9 +73,9 @@ import ucar.nc2.stream.NcStreamProto;
  * @author caron
  */
 @Controller
-@RequestMapping("/cdmrfeature")
-public class CdmrFeatureController implements LastModified {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrFeatureController.class);
+@RequestMapping("/cdmrfeature/grid")
+public class CdmrGridController implements LastModified {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrGridController.class);
   private static final boolean showReq = true;
   private static final boolean showRes = true;
 
@@ -131,7 +133,7 @@ public class CdmrFeatureController implements LastModified {
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=data")
   public void handleDataRequest(HttpServletRequest request, HttpServletResponse response,
-                                @Valid CdmrFeatureQueryBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException {
+                                @Valid NcssGridParamsBean qb, BindingResult validationResult, OutputStream out) throws IOException, BindException, InvalidRangeException {
 
     if (showReq)
       System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
@@ -150,11 +152,21 @@ public class CdmrFeatureController implements LastModified {
       response.setContentType(ContentType.binary.getContentHeader());
       response.setHeader("Content-Description", "ncstream");
 
-      GridCoverage grid = gridCoverageDataset.findCoverage(qb.getVar());
-      GridSubset subset = makeSubset(qb);
+          // construct the subsetted dataset
+      GridSubset subset = qb.makeSubset(gridCoverageDataset.getCalendar());
+      GridDatasetHelper helper = new GridDatasetHelper(gridCoverageDataset, qb.getVar());  // LOOK only one var ??
+      GridCoverageDataset subsetDataset = helper.subset(subset);
 
-      Array data = grid.readData(subset);
-      sendData(grid, data, out, true);
+     // write the data to the new file.
+      for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
+        List<Range> ranges = helper.makeSubset(subsetDataset, gridset);
+
+        for (GridCoverage grid : gridset.grids) {
+          Array data = grid.readSubset(ranges);
+          sendData(grid, data, out, true);
+        }
+      }
+
       out.flush();
 
     } catch (Throwable t) {
@@ -162,13 +174,7 @@ public class CdmrFeatureController implements LastModified {
     }
   }
 
-  private GridSubset makeSubset(CdmrFeatureQueryBean qb) {
-    GridSubset subset = new GridSubset();
-    if (qb.getZ() != null) subset.set(GridSubset.vertCoord, qb.getZ());
-    return subset;
-  }
-
-  public long sendData(GridCoverage grid, Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
+  private long sendData(GridCoverage grid, Array data, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
 
     // length of data uncompressed
     long uncompressedLength = data.getSizeBytes();

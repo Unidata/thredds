@@ -153,17 +153,7 @@ public class CFGridCoverageWriter {
 
     // write the data to the new file.
     for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
-      List<Range> ranges = new ArrayList<>();
-      for (String axisName : gridset.gcs.getAxisNames()) {
-        GridCoordAxis axis = subsetDataset.findCoordAxis(axisName);
-        if (axis != null) {
-          if (axis.getAxisType() == null)
-            System.out.println("HEY");
-          ranges.add(new Range(axis.getAxisType().name(), (int) axis.getMinIndex(), (int) axis.getMaxIndex()));
-        } else {
-          System.out.printf("No axis found %s%n", axisName);
-        }
-      }
+      List<Range> ranges = helper.makeSubset(subsetDataset, gridset);
 
       for (GridCoverage grid : gridset.grids) {
         Variable v = writer.findVariable(grid.getName());

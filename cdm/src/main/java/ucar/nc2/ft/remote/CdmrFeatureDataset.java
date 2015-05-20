@@ -99,7 +99,7 @@ public class CdmrFeatureDataset {
     org.jdom2.Document doc;
     InputStream in = null;
     try {
-      in = CdmRemote.sendQuery(endpoint, "req=capabilities");
+      in = CdmRemote.sendQuery(null, endpoint, "req=capabilities");
       SAXBuilder builder = new SAXBuilder(false);
       doc = builder.build(in);  // closes in when done ??
 

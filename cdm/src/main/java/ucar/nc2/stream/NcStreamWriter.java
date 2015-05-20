@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.util.zip.DeflaterOutputStream;
 
 /**
- * Write a NetcdfFile to a OutputStream using ncstream protocol
+ * Write a NetcdfFile to an OutputStream using ncstream protocol
  *
  * @author caron
  * @since Feb 7, 2009
@@ -144,10 +144,8 @@ public class NcStreamWriter {
       if (show) System.out.printf("  %s proto=%d dataSize=%d len=%d%n", v.getFullName(), datab.length, deflatedSize, uncompressedLength);
 
     }  else {
-
       size += NcStream.writeVInt(out, (int) uncompressedLength); // data len or number of objects
       if (show) System.out.printf("  %s proto=%d data=%d%n", v.getFullName(), datab.length, uncompressedLength);
-
       size += v.readToStream(section, out); // try to do a direct transfer
     }
 

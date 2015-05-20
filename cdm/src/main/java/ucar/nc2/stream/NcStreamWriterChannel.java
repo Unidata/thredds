@@ -44,7 +44,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * Not used
+ * Write a NetcdfFile to a WritableByteChannel using ncstream protocol.
+ * Experimental, checking performance vs OutputStream
  *
  * @author caron
  * @since 7/10/12

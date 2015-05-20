@@ -3,6 +3,7 @@ package ucar.nc2.ft2.coverage.grid;
 
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Variable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -29,13 +30,13 @@ public class GridDatasetHelper {
   List<Gridset> gridsets;     // only the named grids
   HorizCoordSys horizCoordSys;    // only one
 
-  GridDatasetHelper(GridCoverageDataset gds) {
+  public GridDatasetHelper(GridCoverageDataset gds) {
     this.gds = gds;
     this.gridsets = makeGridsets();
     this.horizCoordSys = makeHorizCoordSys();
   }
 
-  GridDatasetHelper(GridCoverageDataset gds, List<String> gridNames) {
+  public GridDatasetHelper(GridCoverageDataset gds, List<String> gridNames) {
     this.gds = gds;
     this.gridNames = gridNames;
     this.gridsets = makeGridsets();
@@ -81,6 +82,21 @@ public class GridDatasetHelper {
     });
 
     return result;
+  }
+
+  public List<Range> makeSubset(GridCoverageDataset subsetDataset, Gridset gridset) throws InvalidRangeException {
+    List<Range> ranges = new ArrayList<>();
+    for (String axisName : gridset.gcs.getAxisNames()) {
+      GridCoordAxis axis = subsetDataset.findCoordAxis(axisName);
+      if (axis != null) {
+        if (axis.getAxisType() == null)
+          System.out.println("HEY");
+        ranges.add(new Range(axis.getAxisType().name(), (int) axis.getMinIndex(), (int) axis.getMaxIndex(), axis.getStride()));
+      } else {
+        System.out.printf("No axis found %s%n", axisName);
+      }
+    }
+    return ranges;
   }
 
     /////////////////////////////////////////////////////

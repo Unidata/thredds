@@ -49,6 +49,7 @@ import java.io.InputStream;
 
 /**
  * PointCollection over cdmRemote protocol
+ * Doesnt work at the moment.
  *
  * @author caron
  * @since Jun 15, 2009
@@ -74,7 +75,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
     String errMessage = null;
 
     try {
-      in = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
+      in = CdmRemote.sendQuery(null, uri, queryMaker.makeQuery());
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype == PointStream.MessageType.PointFeatureCollection) {
