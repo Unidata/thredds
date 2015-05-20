@@ -3,11 +3,13 @@ package ucar.nc2.ft2.coverage.grid;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -23,11 +25,11 @@ import java.util.*;
  * @since 5/7/2015
  */
 public class GridDatasetCapabilities {
-  private GridCoverageDataset gds;
+  private GridCoverageDataset gcd;
  	private String path;
 
  	public GridDatasetCapabilities(GridCoverageDataset gds, String path) {
- 		this.gds = gds;
+ 		this.gcd = gds;
  		this.path = path;
  	}
 
@@ -62,7 +64,7 @@ public class GridDatasetCapabilities {
  	public Document makeDatasetDescription() {
  		Element rootElem = new Element("gridDataset");
  		Document doc = new Document(rootElem);
- 		rootElem.setAttribute("location", gds.getName());
+ 		rootElem.setAttribute("location", gcd.getName());
  		if (null != path)
  			rootElem.setAttribute("path", path);
 
@@ -74,7 +76,7 @@ public class GridDatasetCapabilities {
      } */
 
  		// coordinate axes
- 		for (GridCoordAxis axis : gds.getCoordAxes()) {
+ 		for (GridCoordAxis axis : gcd.getCoordAxes()) {
  			rootElem.addContent(writeAxis(axis));
  		}
 
@@ -94,13 +96,13 @@ public class GridDatasetCapabilities {
      } */
 
  		// gridSets
-    GridDatasetHelper helper = new GridDatasetHelper(gds);
+    GridDatasetHelper helper = new GridDatasetHelper(gcd);
  		for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
- 			rootElem.addContent(writeGridSet(gridset.gcs, gridset.grids, gds.getProjBoundingBox()));
+ 			rootElem.addContent(writeGridSet(gridset.gcs, gridset.grids, gcd.getProjBoundingBox()));
  		}
 
  		// coordinate transforms
- 		for (GridCoordTransform ct : gds.getCoordTransforms()) {
+ 		for (GridCoordTransform ct : gcd.getCoordTransforms()) {
  			rootElem.addContent(writeCoordTransform(ct));
  		}
 
@@ -112,12 +114,12 @@ public class GridDatasetCapabilities {
      } */
 
  		// add lat/lon bounding box
- 		LatLonRect bb = gds.getLatLonBoundingBox();
+ 		LatLonRect bb = gcd.getLatLonBoundingBox();
  		if (bb != null)
  			rootElem.addContent(writeBoundingBox(bb));
 
  		// add date range
- 		CalendarDateRange calDateRange = gds.getCalendarDateRange();
+ 		CalendarDateRange calDateRange = gcd.getCalendarDateRange();
  		if (calDateRange != null) {
  			Element dateRange = new Element("TimeSpan");
  			dateRange.addContent(new Element("begin").addContent(calDateRange.getStart().toString()));
@@ -133,6 +135,88 @@ public class GridDatasetCapabilities {
  		//    elem.addContent(new Element("accept").addContent("netcdf"));
  		return doc;
  	}
+
+  private Element writeAxis(GridCoordAxis axis) {
+
+ 		Element varElem = new Element("axis");
+ 		varElem.setAttribute("name", axis.getName());
+    varElem.setAttribute("shape", Long.toString(axis.getNvalues()));
+
+ 		DataType dt = axis.getDataType();
+ 		varElem.setAttribute("type", dt.toString());
+
+ 		AxisType axisType = axis.getAxisType();
+ 		if (null != axisType)
+ 			varElem.setAttribute("axisType", axisType.toString());
+
+ 		// attributes
+ 		for (Attribute att : axis.getAttributes()) {
+ 			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+ 		}
+
+    Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoords(), null, false);
+    values.setAttribute("npts", Long.toString(axis.getNvalues()));
+    varElem.addContent(values);
+
+ 		return varElem;
+ 	}
+
+  private void addAcceptList(Element rootElement){
+
+ 		// add accept list
+ 		Element elem = new Element("AcceptList");
+ 		//accept list for Grid As Point requests
+ 		Element gridAsPoint = new Element("GridAsPoint");
+
+     // LOOK this is wrong - should be using SupportedOperation class or something
+ 		gridAsPoint.addContent(new Element("accept").addContent("xml").setAttribute("displayName", "xml") );
+ 		gridAsPoint.addContent(new Element("accept").addContent("xml_file").setAttribute("displayName", "xml (file)"));
+ 		gridAsPoint.addContent(new Element("accept").addContent("csv").setAttribute("displayName", "csv"));
+ 		gridAsPoint.addContent(new Element("accept").addContent("csv_file").setAttribute("displayName", "csv (file)"));
+ 		gridAsPoint.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
+
+ 		//accept list for Grid requests
+ 		Element grids = new Element("Grid");
+ 		grids.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
+    /* Check if netcdf4 is available
+    try{
+      if( Nc4Iosp.isClibraryPresent() ){
+        grids.addContent(new Element("accept").addContent("netcdf4"));
+        gridAsPoint.addContent(new Element("accept").addContent("netcdf4"));
+      }
+    }catch(UnsatisfiedLinkError e){
+      //Log this in threddsServlet.log ??
+    } */
+
+ 		elem.addContent(gridAsPoint);
+ 		elem.addContent(grids);
+ 		rootElement.addContent(elem);
+ 	}
+
+  private Element writeAxis2(GridCoordAxis axis, String name) {
+  		if (axis == null) return null;
+
+  		Element varElem = new Element(name);
+  		varElem.setAttribute("name", axis.getName());
+  		varElem.setAttribute("shape", Long.toString(axis.getNvalues()));
+
+  		DataType dt = axis.getDataType();
+  		varElem.setAttribute("type", dt.toString());
+
+  		AxisType axisType = axis.getAxisType();
+  		if (null != axisType)
+  			varElem.setAttribute("axisType", axisType.toString());
+
+  		// attributes
+  		for (Attribute att : axis.getAttributes())
+  			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+
+  		Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis.getCoords(), null, false);
+  		values.setAttribute("npts", Long.toString(axis.getNvalues()));
+  		varElem.addContent(values);
+
+  		return varElem;
+  	}
 
  	/**
  	 * Returns a WKT polygon with the dataset boundaries
@@ -153,12 +237,22 @@ public class GridDatasetCapabilities {
  	public Document makeGridForm() {
  		Element rootElem = new Element("gridForm");
  		Document doc = new Document(rootElem);
- 		rootElem.setAttribute("location", gds.getLocation());
+ 		rootElem.setAttribute("location", gcd.getName());
  		if (null != path)
  			rootElem.setAttribute("path", path);
 
+    for (GridCoordAxis axis : gcd.getCoordAxes()) {
+      Element vertAxisElement = writeAxis2(vert, "vert");
+
+    }
+
+		GridDatasetHelper helper = new GridDatasetHelper(gcd);
+		for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
+
+		}
+
  		// its all about grids
- 		List<GridCoverage> grids = gds.getGrids();
+ 		List<GridCoverage> grids = gcd.getGrids();
  		Collections.sort(grids, new GridComparator()); // sort by time axis, vert axis, grid name
 
  		CoordinateAxis currentTime = null;
@@ -209,7 +303,7 @@ public class GridDatasetCapabilities {
  		}
 
  		// add lat/lon bounding box
- 		LatLonRect bb = gds.getBoundingBox();
+ 		LatLonRect bb = gcd.getBoundingBox();
  		if (bb != null)
  			rootElem.addContent(writeBoundingBox(bb));
 
@@ -234,8 +328,8 @@ public class GridDatasetCapabilities {
  		rootElem.addContent(projBBOX);
 
  		// add date range
- 		CalendarDate start = gds.getCalendarDateStart();
- 		CalendarDate end = gds.getCalendarDateEnd();
+ 		CalendarDate start = gcd.getCalendarDateStart();
+ 		CalendarDate end = gcd.getCalendarDateEnd();
  		if ((start != null) && (end != null)) {
  			Element dateRange = new Element("TimeSpan");
  			dateRange.addContent(new Element("begin").addContent(start.toString()));
@@ -252,66 +346,11 @@ public class GridDatasetCapabilities {
  		//    elem.addContent(new Element("accept").addContent("netcdf"));
  		//    rootElem.addContent(elem);
  		return doc;
- 	}  */
-
- 	private void addAcceptList(Element rootElement){
-
- 		// add accept list
- 		Element elem = new Element("AcceptList");
- 		//accept list for Grid As Point requests
- 		Element gridAsPoint = new Element("GridAsPoint");
-
-     // LOOK this is wrong - should be using SupportedOperation class or something
- 		gridAsPoint.addContent(new Element("accept").addContent("xml").setAttribute("displayName", "xml") );
- 		gridAsPoint.addContent(new Element("accept").addContent("xml_file").setAttribute("displayName", "xml (file)"));
- 		gridAsPoint.addContent(new Element("accept").addContent("csv").setAttribute("displayName", "csv"));
- 		gridAsPoint.addContent(new Element("accept").addContent("csv_file").setAttribute("displayName", "csv (file)"));
- 		gridAsPoint.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
-
- 		//accept list for Grid requests
- 		Element grids = new Element("Grid");
- 		grids.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
- 		//Check if netcdf4 is available
- 		//	    try{
- 		//	    	if( Nc4Iosp.isClibraryPresent() ){
- 		//	    		grids.addContent(new Element("accept").addContent("netcdf4"));
- 		//	    		gridAsPoint.addContent(new Element("accept").addContent("netcdf4"));
- 		//	    	}
- 		//	    }catch(UnsatisfiedLinkError e){
- 		//	    	//Log this in threddsServlet.log ??
- 		//	    }
-
- 		elem.addContent(gridAsPoint);
- 		elem.addContent(grids);
- 		rootElement.addContent(elem);
  	}
 
-/*  	private Element writeAxis2(CoordinateAxis axis, String name) {
- 		if (axis == null) return null;
 
- 		Element varElem = new Element(name);
- 		varElem.setAttribute("name", axis.getFullName());
- 		varElem.setAttribute("shape", getShapeString(axis.getShape())); // axis.getDimensionsString());
 
- 		DataType dt = axis.getDataType();
- 		varElem.setAttribute("type", dt.toString());
-
- 		AxisType axisType = axis.getAxisType();
- 		if (null != axisType)
- 			varElem.setAttribute("axisType", axisType.toString());
-
- 		// attributes
- 		for (Attribute att : axis.getAttributes())
- 			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
-
- 		Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, false);
- 		values.setAttribute("npts", Long.toString(axis.getSize()));
- 		varElem.addContent(values);
-
- 		return varElem;
- 	}
-
- 	private boolean compareAxis(CoordinateAxis axis1, CoordinateAxis axis2) {
+ 	/* private boolean compareAxis(CoordinateAxis axis1, CoordinateAxis axis2) {
  		if (axis1 == axis2)
  			return true;
 
@@ -401,32 +440,6 @@ public class GridDatasetCapabilities {
      return list;
    }  */
 
- 	private Element writeAxis(GridCoordAxis axis) {
-
- 		Element varElem = new Element("axis");
- 		varElem.setAttribute("name", axis.getName());
- 		// varElem.setAttribute("shape", getShapeString(axis.getShape())); // axis.getDimensionsString());
-
- 		DataType dt = axis.getDataType();
- 		varElem.setAttribute("type", dt.toString());
-
- 		AxisType axisType = axis.getAxisType();
- 		if (null != axisType)
- 			varElem.setAttribute("axisType", axisType.toString());
-
- 		/* attributes
- 		for (Attribute att : axis.getAttributes()) {
- 			varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
- 		} */
-
- 		/* if (axis.getRank() == 1) {
- 			Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true);
- 			//values.setAttribute("npts", Long.toString(axis.getSize()));
- 			varElem.addContent(values);
- 		} */
-
- 		return varElem;
- 	}
 
  	// display name plus the dimensions
  	private String getShapeString(int[] shape) {
@@ -525,9 +538,7 @@ public class GridDatasetCapabilities {
  		ctElem.setAttribute("name", ct.getName());
  		ctElem.setAttribute("transformType", ct.isHoriz ? "Projection" : "Vertical");
  		for (Attribute param : ct.getAttributes()) {
- 			Element pElem = new Element("parameter");
- 			pElem.setAttribute("name", param.getName());
- 			pElem.setAttribute("value", param.getStringValue());
+      Element pElem = NcMLWriter.writeAttribute(param, "parameter", null);
  			ctElem.addContent(pElem);
  		}
  		return ctElem;

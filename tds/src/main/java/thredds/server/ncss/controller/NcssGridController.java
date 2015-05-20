@@ -81,9 +81,9 @@ public class NcssGridController extends AbstractNcssController {
 
       if (!params.hasLatLonPoint()) {
         handleRequestGrid(res, params, datasetPath, gcd);
-      } //else {
-        //handleRequestGridAsPoint(res, params, datasetPath, gcd);
-      //}
+      } /* else {
+        handleRequestGridAsPoint(res, params, datasetPath, gcd);
+      } */
     }
   }
 
@@ -151,7 +151,7 @@ public class NcssGridController extends AbstractNcssController {
     GridAsPointResponder pds =  new GridAsPointResponder(gcd, params, ncssDiskCache, format, res.getOutputStream());
     setResponseHeaders(res, pds.getResponseHeaders(gcd, format, datasetPath));
     pds.respond(params);
-  } */
+  }  */
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
   public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException {

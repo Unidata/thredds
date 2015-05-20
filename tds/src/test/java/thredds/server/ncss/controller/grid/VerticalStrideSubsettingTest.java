@@ -70,7 +70,7 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 
 /**
- * @author marcos
+ * not sure we are going to support vertical strides.
  *
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
@@ -146,7 +146,7 @@ public class VerticalStrideSubsettingTest {
 		
 	}
 	
-	@Test
+	// @Test
 	public void shoudGetVerticalStridedSubset() throws Exception{
 				
 		

@@ -59,7 +59,7 @@ public class GridCoordAxis {
   private String dependsOn;
 
   private long nvalues, minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
-  private int stride;
+  private int stride = 1;
   private Spacing spacing;
   private double startValue;
   private double endValue;
@@ -337,6 +337,7 @@ public class GridCoordAxis {
   }
 
   public Array getCoords() {
+    getValues();
     Array arr = Array.factory(getDataType(), new int[] {(int)nvalues});
     for (int i=0; i<nvalues; i++)
       arr.setDouble(i, getCoord(i));
@@ -344,6 +345,7 @@ public class GridCoordAxis {
   }
 
   public Array getCoordEdge1() {
+    getValues();
     double[] vals = new double[(int) nvalues];
     for (int i=0; i<nvalues; i++)
       vals[i] = getCoordEdge1(i);
@@ -351,6 +353,7 @@ public class GridCoordAxis {
   }
 
   public Array getCoordEdge2() {
+    getValues();
     double[] vals = new double[(int) nvalues];
     for (int i=0; i<nvalues; i++)
       vals[i] = getCoordEdge2(i);
@@ -358,6 +361,7 @@ public class GridCoordAxis {
   }
 
   public List<NamedObject> getCoordValueNames() {
+    getValues();
     List<NamedObject> result = new ArrayList<>();
     for (int i = 0; i < nvalues; i++) {
       String valName = "";

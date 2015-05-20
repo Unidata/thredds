@@ -73,7 +73,7 @@ public class DatasetBoundariesTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}
 	
-	@Test
+	//@Test
 	public void getDatasetBoundaries() throws Exception {
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
 				.param("accept", "json");
@@ -81,7 +81,7 @@ public class DatasetBoundariesTest {
 		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk());
 	}
 	
-	@Test
+	//@Test
 	public void defaultContentType() throws Exception {
 		
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path);
@@ -89,7 +89,7 @@ public class DatasetBoundariesTest {
             .andExpect(MockMvcResultMatchers.header().string(ContentType.HEADER, SupportedFormat.WKT.getMimeType() ) );
 	}
 	
-	@Test
+	//@Test
 	public void jsonResponseHasContentType() throws Exception{
 		
 		RequestBuilder rb =MockMvcRequestBuilders.get(path).servletPath(path)

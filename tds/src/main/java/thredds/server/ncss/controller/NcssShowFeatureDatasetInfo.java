@@ -106,22 +106,22 @@ public class NcssShowFeatureDatasetInfo {
   }
 
   public ModelAndView showGridForm(GridCoverageDataset gcd, String datsetUrlPath, boolean wantXml, boolean isPoint) {
-    boolean formatAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
+    boolean netcdf4IsAvailable = FormatsAvailabilityService.isFormatAvailable(SupportedFormat.NETCDF4);
     GridDatasetCapabilities writer = new GridDatasetCapabilities(gcd, "path");
 
     if (wantXml) {
       Document datasetDescription = writer.makeDatasetDescription();
       Element root = datasetDescription.getRootElement();
       root.setAttribute("location", datsetUrlPath);
-      if (formatAvailable)
+      if (netcdf4IsAvailable)
         addNetcdf4Format(datasetDescription, "/gridDataset");
 
       return new ModelAndView("threddsXmlView", "Document", datasetDescription);
 
     } else { // LOOK WTF ??
       String xslt = isPoint ? "ncssGridAsPoint" : "ncssGrid";
-      Document doc = null; // writer.makeGridForm(); LOOK LOOK
-      if (formatAvailable)
+      Document doc = writer.makeDatasetDescription();
+      if (netcdf4IsAvailable)
         addNetcdf4Format(doc, "/gridForm");
 
       Map<String, Object> model = new HashMap<>();
@@ -133,8 +133,7 @@ public class NcssShowFeatureDatasetInfo {
 
   private void addNetcdf4Format(Document datasetDescriptionDoc, String rootElementName) {
     String xPathForGridElement = rootElementName + "/AcceptList/Grid";
-    addElement(datasetDescriptionDoc, xPathForGridElement, new Element("accept").addContent("netcdf4").setAttribute
-            ("displayName", "netcdf4"));
+    addElement(datasetDescriptionDoc, xPathForGridElement, new Element("accept").addContent("netcdf4").setAttribute("displayName", "netcdf4"));
 
     String xPathForGridAsPointElement = rootElementName + "/AcceptList/GridAsPoint";
     addElement(datasetDescriptionDoc, xPathForGridAsPointElement, new Element("accept").addContent("netcdf4")
@@ -145,7 +144,10 @@ public class NcssShowFeatureDatasetInfo {
     try {
       XPath gridXpath = XPath.newInstance(xPath);
       Element acceptListParent = (Element) gridXpath.selectSingleNode(datasetDescriptionDoc);
-      acceptListParent.addContent(element);
+      if (acceptListParent != null)
+        acceptListParent.addContent(element);
+      else
+        System.out.printf("Cant find xPath '%s'%n", xPath);
     } catch (JDOMException je) {
       throw new RuntimeException(je);
     }

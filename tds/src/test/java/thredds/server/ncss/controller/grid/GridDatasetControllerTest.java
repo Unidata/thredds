@@ -97,7 +97,6 @@ public class GridDatasetControllerTest {
 
  		this.mockMvc.perform( rb ).andExpect(MockMvcResultMatchers.status().isOk())
  			.andExpect(MockMvcResultMatchers.content().contentType( SupportedFormat.NETCDF3.getMimeType() )).andReturn() ;
-
  	}
 
   @Test
