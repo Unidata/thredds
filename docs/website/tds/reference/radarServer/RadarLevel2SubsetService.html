@@ -17,46 +17,25 @@
 <p>Some interesting URLs for the radarServer service: </p>
   <ul>
 
-<!--
-    <li>All Radar Collections <a href="http://thredds.ucar.edu/thredds/radarServer/catalog.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/catalog.xml</a></strong></li>
-//-->
-
-
-<!--
-    <li>DQC <a href="http://thredds.ucar.edu/thredds/radarServer/DQC.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/DQC.xml</a></strong></li>
-//-->
-
-    <li>Level2 Radar Collections <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/catalog.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/catalog.xml</a></li>
-
-    <li>Level2 Stations <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/stations.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/stations.xml</a></li>
+    <li>Radar Collections <a href="http://thredds.ucar.edu/thredds/radarServer/catalog.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/catalog.xml</a></li>
 
     <li>Level2 Stations for IDD dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD/stations.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD/stations.xml</a></li>
 
     <li>Level2 Stations for CCS039 dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039/stations.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039/stations.xml</a></li>
-    <li>Level2 Datasets <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/dataset.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/dataset.xml</a></li>
+    <li>Level2 IDD Dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD/dataset.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD/dataset.xml</a></li>
     <li>Level2 CCS039 Dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039/dataset.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039/dataset.xml</a></li>
-<!--
-    <li>Level2 IDD dataset and station KFTG <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present</a></strong></li>
-
-    <li>Level2 Station KDMX for CCS039 dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00</a></strong></li>
-    <li><strong>Level2 Radar Collections <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/catalog.xml">http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/catalog.xml</a></strong></li>
-    <li>An <a href="http://thredds.ucar.edu/thredds/idd/radarLevel2/dataset.html">HTML form</a> for interactive input</li>
-    <li>The <a href="http://thredds.ucar.edu/thredds/idd/radarLevel2/dataset.xml">dataset XML</a> document </li>
-    <li>The <a href="http://thredds.ucar.edu/thredds/idd/radarLevel2/stations.xml">station List XML</a> document </li>
-    <li>The <a href="http://thredds.ucar.edu/thredds/idd/radarLevel2?ds=CCS039&returns=stn">station List CSS039</a> document </li>
-//-->
 
   </ul>
   <h2><strong><a name="Common"></a>Subsetting Parameters </strong></h2>
   <p>Some interesting URLs for the radarServer query service: </p>
   <ul>
-    <li>IDD dataset with Bounding Box and latest time <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.2&east=-100.0&time=present"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.0&east=-100.0&time=present</a></li>
+    <li>IDD dataset with Bounding Box and last hour <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.2&east=-100.0&time=present"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.0&east=-100.0&time_end=present&time_duration=PT1H</a></li>
     <li>IDD dataset and station KFTG latest time <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present</a></li>
     <li>IDD dataset and station KFTG one day <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time_end=present&time_duration=PT24H"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time_end=present&time_duration=PT24H</a></li>
-    <li>IDD dataset and station KFTG all times <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG</a></li>
+    <li>IDD dataset and station KFTG all times <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&temporal=all"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&temporal=all</a></li>
 
-    <li>CCS039 dataset Station KDMX  all times <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX</a></li>
-    <li>CCS039 dataset Station KDMX  2 hour time range <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00</a></li>
+    <li>CCS039 dataset Station KDMX all times <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&temporal=all"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&temporal=all</a></li>
+    <li>CCS039 dataset Station KDMX 2 hour time range <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00</a></li>
 <!--
     <li>CCS039 dataset all stations all times <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=ALL"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=ALL</a></strong></li>
 // -->
@@ -129,6 +108,11 @@
     <li><strong> time=2007-03-29T12:00:00Z</strong></li>
     <li><strong>time=present</strong></li>
   </ul>
+  <h4><strong>3. All Times</strong></h4>
+  <ul>
+    <li><strong>temporal=all</strong></li>
+  </ul>
+  <p> This returns data from all available times.  
   <h3>D. Specify the return format<a name="accept"></a></h3>
 <p>
 The accept parameter default is xml and it is the only legal one at this time.
@@ -139,7 +123,7 @@ The accept parameter default is xml and it is the only legal one at this time.
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../../thread.png" width="110" height="108">This document was last updated on Apr 21, 2015 
+<img src="../../thread.png" width="110" height="108">This document was last updated on May 21, 2015 
 </address>
 <p>&nbsp;
 </p>

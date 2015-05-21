@@ -116,10 +116,6 @@ public class StationList {
             for (Element station: list.getChildren()) {
                 Element loc = station.getChild("location3D");
                 String stid = station.getAttributeValue("value");
-                char leader = stid.charAt(0);
-                if (stid.length() == 4 && (leader == 'K' || leader == 'T')) {
-                    stid = stid.substring(1, 4);
-                }
                 Station newStation = addStation(stid,
                         new LatLonPointImpl(
                                 Double.valueOf(loc.getAttributeValue("latitude")),
