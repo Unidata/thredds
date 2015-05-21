@@ -16,46 +16,19 @@
   <h3><strong>A. Example urls<a name="urls"></a></strong></h3>
 <p>Some interesting URLs for the radarServer service: </p>
   <ul>
-
     <li>All Radar Collections <a href="http://thredds.ucar.edu/thredds/radarServer/catalog.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/catalog.xml</a></li>
-
-
-<!--
-    <li>Level3 Radar Collections <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/catalog.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/catalog.xml</a></strong></li>
-//-->
-
-
-    <li>Level3 Stations <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/stations.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/stations.xml</a></li>
-
-    <li>Level3 Datasets <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/dataset.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/dataset.xml</a></li>
-
     <li>Level3 Stations for IDD dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD/stations.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD/stations.xml</a></li>
-
     <li>Level3 IDD Dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD/dataset.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD/dataset.xml</a></li>
-
     <li>Level3 Stations for CCS039 dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039/stations.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039/stations.xml</a></li>
-
     <li>Level3 CCS039 Dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039/dataset.xml"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039/dataset.xml</a></li>
-
-<!--
-    <li>Level3 IDD dataset and station FTG <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&stn=FTG&time=present"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&stn=FTG&time=present</a></strong></li>
-    <li>Level3 Station DMX for CCS039 dataset <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00</a></strong></li>
-    <li><strong>Level3 Radar Collections <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/catalog.xml">http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/catalog.xml</a></strong></li>
-    <li>An <a href="http://thredds.ucar.edu/thredds/idd/radarLevel3/dataset.html">HTML form</a> for interactive input</li>
-    <li>The <a href="http://thredds.ucar.edu/thredds/idd/radarLevel3/dataset.xml">dataset XML</a> document </li>
-    <li>The <a href="http://thredds.ucar.edu/thredds/idd/radarLevel3/stations.xml">station List XML</a> document </li>
-    <li>The <a href="http://thredds.ucar.edu/thredds/idd/radarLevel3?ds=CCS039&returns=stn">station List CSS039</a> document </li>
-//-->
-
   </ul>
   <h2><strong><a name="Common"></a>Subsetting Parameters </strong></h2>
   <p>Some interesting URLs for the radarServer query service: </p>
   <ul>
     <li>IDD dataset, var N0R, station FTG and time latest <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&stn=FTG&time=present"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&stn=FTG&time=present</a></li>
-    <li>IDD dataset var N0R, with Bounding Box and latest time <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&north=40.00&south=39.00&west=-105.2&east=-100.0&time=present"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&north=40.00&south=39.00&west=-105.0&east=-100.0&time=present</a></li>
-    <li>IDD dataset var N0R, all stations and latest time <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&stn=ALL&time=present"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&stn=ALL&time=present</a></li>
+    <li>IDD dataset var N0R, with Bounding Box and last hour <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&north=40.00&south=39.00&west=-105.2&east=-100.0&time_end=present&time_duration=PT1H"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&north=40.00&south=39.00&west=-105.0&east=-100.0&time_end=present&time_duration=PT1H</a></li>
     <li>IDD dataset var N0R and station FTG for one day <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&stn=FTG&time_end=present&time_duration=PT24H"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/IDD?var=N0R&stn=FTG&time_end=present&time_duration=PT24H</a></li>
-    <li>CCS039 dataset var BREF1, station DMX all times <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX</a></li>
+    <li>CCS039 dataset var BREF1, station DMX all times <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX&temporal=all"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX&temporal=all</a></li>
     <li>CCS039 dataset var BREF1, station DMX time range <a href="http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00"><strong>http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00</a></li>
 
   </ul>
@@ -169,6 +142,11 @@ Variable Descriptions:
     <li><strong> time=2007-03-29T12:00:00Z</strong></li>
     <li><strong>time=present</strong></li>
   </ul>
+  <h4><strong>3. All Times</strong></h4>
+  <ul>
+    <li><strong>temporal=all</strong></li>
+  </ul>
+  <p> This returns data from all available times.  
   <h3>D. Specify the return format<a name="accept"></a></h3>
 <p>
 The accept parameter default is xml and it is the only legal one at this time.
@@ -180,7 +158,7 @@ The accept parameter default is xml and it is the only legal one at this time.
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../../thread.png" width="110" height="108">This document was last updated on Apr 21, 2015 
+<img src="../../thread.png" width="110" height="108">This document was last updated on May 21, 2015 
 </address>
 <p>&nbsp;
 </p>
