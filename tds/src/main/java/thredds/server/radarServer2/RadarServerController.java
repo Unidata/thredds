@@ -555,6 +555,9 @@ public class RadarServerController {
 
     void setStations(RadarDataInventory.Query query, String[] stations)
     {
+        if (stations.length == 0)
+            throw new UnsupportedOperationException("No stations " +
+                    "found for specified coordinates.");
         for (String stid: stations)
             query.addCriteria(RadarDataInventory.DirType.Station, stid);
     }
