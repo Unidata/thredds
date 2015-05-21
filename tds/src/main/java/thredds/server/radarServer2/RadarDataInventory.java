@@ -392,7 +392,7 @@ public class RadarDataInventory {
                     // Loop over results and add subdirs
                     // Add date format to matcher string
                     case Date:
-                        needDateFilter = true;
+                        needDateFilter = queryItem.get(0) != null;
                         for (Path p : results)
                             try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
                                 for (Path sub : dirStream)
@@ -424,7 +424,7 @@ public class RadarDataInventory {
 
             // If we're given a single point for time, signifying we are looking
             // for the file nearest, turn it into a window for query purposes.
-            if (range.isPoint()) {
+            if (range != null && range.isPoint()) {
                 range = CalendarDateRange.of(
                         range.getStart().subtract(nearestWindow),
                         range.getEnd().add(nearestWindow));
@@ -474,7 +474,7 @@ public class RadarDataInventory {
 
             // If only looking for nearest, perform that reduction now
             CalendarDateRange originalRange = (CalendarDateRange) dates.get(0);
-            if (originalRange.isPoint()) {
+            if (originalRange != null && originalRange.isPoint()) {
                 long offset = Long.MAX_VALUE;
                 QueryResultItem bestMatch = null;
                 for (QueryResultItem it: filteredFiles) {
