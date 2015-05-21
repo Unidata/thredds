@@ -422,6 +422,8 @@ public class AggregationExisting extends AggregationOuterDimension {
             //took = .001 * .001 * .001 * (System.nanoTime() - start);
             //if (debugPersist) System.out.println("  makeArray took = " + took + " sec nelems= "+data.getSize());
             pv.putData(id, data);
+            countCacheUse++;
+
           } catch (Exception e) {
             logger.warn("Error reading cached data ",e);
           }
@@ -443,5 +445,9 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (cacheName == null) cacheName = ncDataset.getCacheName();
     return cacheName;
   }
+
+  //////////////////////////////////////////////////
+  // back door for testing
+  static public int countCacheUse = 0;
 
 }

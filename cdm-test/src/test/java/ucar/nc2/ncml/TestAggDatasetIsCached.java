@@ -21,7 +21,7 @@ import java.util.Formatter;
  * @since 9/11/13
  */
 @Category(NeedsCdmUnitTest.class)
-public class TestAggCached {
+public class TestAggDatasetIsCached {
 
   @Test
   public void TestAggCached() throws IOException, InvalidRangeException {
