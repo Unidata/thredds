@@ -379,6 +379,7 @@ public class RadarDataInventory {
 
         private CalendarDateRange rangeFromFormat(SimpleDateFormat fmt,
                                                   CalendarDateRange range) {
+            if (range == null) return null;
             CalendarDate newStart = reparseDate(fmt, range.getStart());
             CalendarDate newEnd = reparseDate(fmt, range.getEnd());
             return CalendarDateRange.of(newStart, newEnd.add(rangeAdjustment));
