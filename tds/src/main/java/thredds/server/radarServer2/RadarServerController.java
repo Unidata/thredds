@@ -460,6 +460,11 @@ public class RadarServerController {
                 "/thredds/dodsC/" + dataset,
                 ServiceType.OPENDAP.toString(), null, null,
                 new ArrayList<Service>(), new ArrayList<Property>()));
+
+        // At least the IDV needs to have the trailing slash included
+        if (!dataset.endsWith("/"))
+            dataset += "/";
+
         cb.setName("Radar " + inv.getName() + " datasets in near real time");
 
         DatasetBuilder mainDB = new DatasetBuilder(null);
