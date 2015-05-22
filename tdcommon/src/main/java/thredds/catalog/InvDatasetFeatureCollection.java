@@ -176,7 +176,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
   protected String topDirectory;
-  protected MCollection datasetCollection; // defines the collection of datasets in this feature collection, actually final NOT USED BY GRIB
+  protected MFileCollectionManager datasetCollection; // defines the collection of datasets in this feature collection, actually final NOT USED BY GRIB
 
   @GuardedBy("lock")
   protected State state;
@@ -198,11 +198,13 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected void makeCollection() {
 
     Formatter errlog = new Formatter();
-    if (config.spec != null && config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
+    datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
+
+    /*if (config.spec != null && config.spec.startsWith(MFileCollectionManager.CATALOG)) { // LOOK CHANGE THIS
       datasetCollection = new CollectionManagerCatalog(config.collectionName, config.spec, null, errlog);
     } else {
       datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
-    }
+    } */
     topDirectory = datasetCollection.getRoot();
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("MFileCollectionManager parse error = {} ", errs);

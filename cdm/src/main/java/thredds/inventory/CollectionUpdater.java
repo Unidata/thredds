@@ -118,10 +118,10 @@ public enum CollectionUpdater {
       if(!scheduler.checkExists(updateJob.getKey())) {
       	scheduler.addJob(updateJob, false);
       } else {
-        if (logger != null) logger.warn("cronExecutor failed to add updateJob for " + updateJob.getKey() +". Another Job exists with that identification." );
+        if (logger != null) logger.warn("scheduler failed to add updateJob for " + updateJob.getKey() +". Another Job exists with that identification." );
       }
     } catch (Throwable e) {
-      if (logger != null)logger.error("cronExecutor failed to add updateJob for " + config, e);
+      if (logger != null)logger.error("scheduler failed to add updateJob for " + config, e);
       return;
     }
 
@@ -139,9 +139,9 @@ public enum CollectionUpdater {
 
       try {
         scheduler.scheduleJob(startupTrigger);
-        if (logger != null) logger.info("Schedule startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.collectionName, runTime);
+        if (logger != null) logger.info("scheduleJob startup scan force={} for '{}' at {}", updateConfig.startupType.toString(), config.collectionName, runTime);
       } catch (Throwable e) {
-        if (logger != null) logger.error("cronExecutor failed to schedule startup Job for " + config, e);
+        if (logger != null) logger.error("scheduleJob failed to schedule startup Job for " + config, e);
         return;
       }
     }
@@ -159,9 +159,9 @@ public enum CollectionUpdater {
 
       try {
     		scheduler.scheduleJob(rescanTrigger);
-        if (logger != null)logger.info("Schedule recurring scan for '{}' cronExpr={}", config.collectionName, updateConfig.rescan);
+        if (logger != null)logger.info("scheduleJob recurring scan for '{}' cronExpr={}", config.collectionName, updateConfig.rescan);
       } catch (Throwable e) {
-        if (logger != null)logger.error("cronExecutor failed to schedule cron Job", e);
+        if (logger != null)logger.error("scheduleJob failed to schedule cron Job", e);
         // e.printStackTrace();
       }
     }
