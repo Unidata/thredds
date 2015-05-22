@@ -41,30 +41,27 @@ import java.io.IOException;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public class PingTdsOnMotherlode8080
-{
-    private String catalogUrl;
+public class PingTdsOnMotherlode8080 {
+  private String catalogUrl;
 
-    public PingTdsOnMotherlode8080( String catalogUrl )
-    {
-        super();
-        this.catalogUrl = catalogUrl;
-    }
+  public PingTdsOnMotherlode8080(String catalogUrl) {
+    super();
+    this.catalogUrl = catalogUrl;
+  }
 
-    @Parameterized.Parameters(name="{0}")
-    public static Collection<Object[]> getCatalogUrls()
-    {
-        Collection<Object[]> catUrls = StandardCatalogUtils.getIddMainCatalogUrlArrayCollection();
-        catUrls.addAll(StandardCatalogUtils.getMlodeMainCatalogUrlArrayCollection());
-        return catUrls;
-    }
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> getCatalogUrls() {
+    Collection<Object[]> catUrls = StandardCatalogUtils.getIddMainCatalogUrlArrayCollection();
+    catUrls.addAll(StandardCatalogUtils.getMlodeMainCatalogUrlArrayCollection());
+    return catUrls;
+  }
 
-    @Test
-    public void ping() throws IOException {
-    {
-        ThreddsServer.LIVE.assumeIsAvailable();
-        String tdsUrl = "http://thredds.ucar.edu/thredds/";
+  @Test
+  public void ping() throws IOException {
+    ThreddsServer.LIVE.assumeIsAvailable();
+    String tdsUrl = "http://thredds.ucar.edu/thredds/";
 
-        CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );
-    }
+    CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired(tdsUrl + catalogUrl);
+  }
+
 }

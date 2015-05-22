@@ -7,16 +7,9 @@ package thredds.server.dap4;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.servlet.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import thredds.server.dataset.TdsRequestedDataset;
-import thredds.servlet.DatasetHandler;
-import thredds.servlet.ThreddsConfig;
-import thredds.util.TdsPathUtils;
-import ucar.nc2.constants.CDM;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;

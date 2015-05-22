@@ -509,15 +509,5 @@ public class DapTestCommon extends TestCase
         return result.toString();
     }
 
-    static public String canonjoin(String prefix, String suffix)
-    {
-        StringBuilder result = new StringBuilder(prefix);
-        if(prefix == null) prefix = "";
-        if(suffix == null) suffix = "";
-        if(!prefix.endsWith("/"))
-            result.append("/");
-        result.append(suffix.startsWith("/") ? suffix.substring(1) : suffix);
-        return result.toString();
-    }
 }
 

@@ -221,7 +221,10 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
         logServerStartup.error("TdsContext.init(): " + msg);
         throw new IllegalStateException(msg);
       }
+    }
 
+    ////////////////////////////////
+    // LOOK check this
     String contentRootPathKey = "tds.content.root.path";
 
     // In applicationContext-tdsConfig.xml, we have ignoreUnresolvablePlaceholders set to "true".

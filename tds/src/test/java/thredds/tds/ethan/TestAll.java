@@ -39,23 +39,27 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
+import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.Attribute;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.test.util.ThreddsServer;
+
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * _more_
