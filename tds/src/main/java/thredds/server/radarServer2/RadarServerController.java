@@ -456,15 +456,23 @@ public class RadarServerController {
     {
         List<RadarDataInventory.Query.QueryResultItem> res = query.results();
         CatalogBuilder cb = new CatalogBuilder();
-        cb.addService(new Service("OPENDAP",
-                "/thredds/dodsC/" + dataset,
-                ServiceType.OPENDAP.toString(), null, null,
-                new ArrayList<Service>(), new ArrayList<Property>()));
 
         // At least the IDV needs to have the trailing slash included
         if (!dataset.endsWith("/"))
             dataset += "/";
 
+        Service dap = new Service("OPENDAP", "/thredds/dodsC/" + dataset,
+                ServiceType.OPENDAP.toString(), null, null,
+                new ArrayList<Service>(), new ArrayList<Property>());
+        Service cdmr = new Service("CDMRemote", "/thredds/cdmremote/" + dataset,
+                ServiceType.CdmRemote.toString(), null, null,
+                new ArrayList<Service>(), new ArrayList<Property>());
+        Service files = new Service("HTTPServer", "/thredds/fileServer/" + dataset,
+                ServiceType.HTTPServer.toString(), null, null,
+                new ArrayList<Service>(), new ArrayList<Property>());
+        cb.addService(new Service("RadarServices", "",
+                ServiceType.Compound.toString(), null, null,
+                Arrays.asList(dap, files, cdmr), new ArrayList<Property>()));
         cb.setName("Radar " + inv.getName() + " datasets in near real time");
 
         DatasetBuilder mainDB = new DatasetBuilder(null);
@@ -477,7 +485,7 @@ public class RadarServerController {
         Map<String, Object> metadata = tmd.getFlds();
         metadata.put(Dataset.DataFormatType, inv.getDataFormat());
         metadata.put(Dataset.FeatureType, inv.getFeatureType().toString());
-        metadata.put(Dataset.ServiceName, "OPENDAP");
+        metadata.put(Dataset.ServiceName, "RadarServices");
         metadata.put(Dataset.Documentation, new Documentation(null, null, null,
                 null, res.size() + " datasets found for query"));
 
