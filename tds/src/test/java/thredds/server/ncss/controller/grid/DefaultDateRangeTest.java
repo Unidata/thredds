@@ -31,28 +31,33 @@
  */
 package thredds.server.ncss.controller.grid;
 
-import static org.junit.Assert.assertTrue;
-
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.params.NcssGridParamsBean;
-import thredds.server.ncss.validation.TimeParamsValidator;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.unidata.test.util.NeedsContentRoot;
 
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+
+/**
+ * @author marcos
+ *
+ */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}, loader = MockTdsContextLoader.class)
+@Category(NeedsContentRoot.class)
 public class DefaultDateRangeTest {
 
 	private NcssGridParamsBean requestParams;

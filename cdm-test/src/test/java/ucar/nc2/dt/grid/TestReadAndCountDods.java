@@ -32,8 +32,10 @@
  */
 package ucar.nc2.dt.grid;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ import java.util.List;
 
 @RunWith(Parameterized.class)
 public class TestReadAndCountDods {
-  static String base = "thredds:resolve:http://thredds-dev.unidata.ucar.edu/thredds/";
+  static String base = "thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/";
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
@@ -103,14 +105,16 @@ public class TestReadAndCountDods {
     this.nVertCooordAxes = nVertCooordAxes;
   }
 
-  // @org.junit.Test
+  @Test
   public void readAndCount() throws Exception {
+    ThreddsServer.TEST.assumeIsAvailable();
     TestReadandCount.doOne(base, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
-  @org.junit.Test
+  @Test
   public void testProblem() throws Exception {
-    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
+    ThreddsServer.TEST.assumeIsAvailable();
+    TestReadandCount.doOne("thredds:resolve:http://thredds-test.unidata.ucar.edu/thredds/",
+            "catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 18, 13);
   }
-
 }

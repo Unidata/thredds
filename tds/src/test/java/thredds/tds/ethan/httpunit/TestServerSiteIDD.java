@@ -35,8 +35,7 @@ package thredds.tds.ethan.httpunit;
 
 import com.meterware.httpunit.WebConversation;
 import junit.framework.TestCase;
-import org.junit.experimental.categories.Category;
-import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.util.Properties;
 
@@ -46,7 +45,6 @@ import java.util.Properties;
  * @author edavis
  * @since 15 July 2005 15:50:59 -0600
  */
-@Category(NotTravis.class)
 public class TestServerSiteIDD extends TestCase
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestServerSiteIDD.class );
@@ -63,8 +61,10 @@ public class TestServerSiteIDD extends TestCase
     super( name );
   }
 
+  @Override
   protected void setUp()
   {
+    ThreddsServer.LIVE.assumeIsAvailable();
     wc = new WebConversation();
 
     Properties env = System.getProperties();

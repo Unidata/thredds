@@ -34,8 +34,10 @@
 package ucar.nc2.iosp.hdf5;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -49,6 +51,7 @@ import java.util.Collection;
  * @since 10/27/2014
  */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestN4readAll {
   public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
 

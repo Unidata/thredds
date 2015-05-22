@@ -32,15 +32,13 @@
 
 package ucar.nc2.util.net;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.net.URI;
 import java.util.List;
@@ -81,7 +79,6 @@ public class TestMisc extends UnitTestCommon
         "http://localhost:8081/%3c%3e%5e/%60/",
     };
 
-    @Test
     public void
     testEscapeStrings() throws Exception
     {
@@ -98,13 +95,11 @@ public class TestMisc extends UnitTestCommon
         assertTrue("TestMisc.testEscapeStrings", pass);
     }
 
-
-    @Test
-    @Category(NotTravis.class)
     public void
     testUTF8Stream()
         throws Exception
     {
+        ThreddsServer.LIVE.assumeIsAvailable();
         pass = true;
 
         String catalogName = "http://thredds.ucar.edu/thredds/catalog.xml";
@@ -150,7 +145,6 @@ public class TestMisc extends UnitTestCommon
         return ok;
     }
 
-    @Test
     public void
     testGetProtocols()
     {

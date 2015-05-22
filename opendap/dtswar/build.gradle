@@ -1,10 +1,13 @@
+description = "DAP server to serve up DAP test cases."
+ext.title = "DAP Test Server (DTS) webapp"
+
 apply plugin: 'war'
 
 dependencies {
     compile project(':cdm')
     compile project(':opendap')
 
-    providedCompile libraries["javax.servlet-api"]
+    provided libraries["javax.servlet-api"]
     runtime libraries["jstl"]
 
     compile libraries["slf4j-api"]

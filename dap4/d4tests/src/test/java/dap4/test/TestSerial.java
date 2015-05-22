@@ -2,7 +2,7 @@ package dap4.test;
 
 import   dap4.cdm.DapNetcdfFile;
 import dap4.dap4shared.HttpDSP;
-import dap4.test.util.DapTestCommon;
+import org.junit.Test;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
@@ -160,9 +160,11 @@ public class TestSerial extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test method
 
+    @Test
     public void testSerial()
         throws Exception
     {
+	org.junit.Assume.assumeTrue(usingIntellij);
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) {
                 assertTrue(false);

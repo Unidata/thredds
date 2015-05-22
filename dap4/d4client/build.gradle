@@ -1,3 +1,5 @@
+description = "A (mostly) stand-alone module for Java clients that want to access dap4 servers directly."
+
 dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4shared')
@@ -5,3 +7,5 @@ dependencies {
     compile libraries["slf4j-api"]
     runtime libraries["slf4j-jdk14"]
 }
+
+jar.manifest.attributes 'Main-Class': 'dap4.dap4.Dap4Print'

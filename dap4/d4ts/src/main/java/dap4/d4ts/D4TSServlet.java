@@ -14,7 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class D4TSServlet extends DapServlet
+public class D4TSServlet extends DapController
 {
 
     //////////////////////////////////////////////////
@@ -56,7 +56,7 @@ public class D4TSServlet extends DapServlet
 
     public D4TSServlet()
     {
-        super();
+        super("d4ts");
     }
 
     //////////////////////////////////////////////////////////
@@ -64,10 +64,10 @@ public class D4TSServlet extends DapServlet
 
     @Override
     protected void
-    doFavicon(DapRequest drq)
+    doFavicon(DapRequest drq, String icopath)
             throws IOException
     {
-        String favfile = getResourcePath(drq);
+        String favfile = getResourcePath(drq,icopath);
         if(favfile != null) {
             try (FileInputStream fav = new FileInputStream(favfile);) {
                 byte[] content = DapUtil.readbinaryfile(fav);
@@ -86,12 +86,12 @@ public class D4TSServlet extends DapServlet
 
         // Figure out the directory containing
         // the files to display.
-        String dir = getResourcePath(drq);
+        String dir = getResourcePath(drq,"");
         if(dir == null)
             throw new DapException("Cannot locate resources directory");
 
         // Generate the front page
-        FrontPage front = new FrontPage(dir, this.svcinfo);
+        FrontPage front = new FrontPage(dir, drq);
         String frontpage = front.buildPage();
 
         if(frontpage == null)
@@ -108,13 +108,13 @@ public class D4TSServlet extends DapServlet
 
     @Override
     protected String
-    getResourcePath(DapRequest drq)
+    getResourcePath(DapRequest drq, String relativepath)
             throws IOException
     {
         // Using context information, we need to
         // construct a file path to the specified dataset
-        String suffix = DapUtil.denullify(drq.getDataset());
-        String datasetfilepath = drq.getRealPath(TESTDATADIR + DapUtil.canonicalpath(suffix));
+        String suffix = DapUtil.denullify(relativepath);
+        String datasetfilepath = drq.getResourcePath(TESTDATADIR + DapUtil.canonicalpath(suffix));
 
         // See if it really exists and is readable and of proper type
         File dataset = new File(datasetfilepath);

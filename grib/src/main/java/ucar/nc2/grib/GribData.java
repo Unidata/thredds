@@ -33,12 +33,8 @@
 package ucar.nc2.grib;
 
 import ucar.ma2.DataType;
-import ucar.nc2.util.IO;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Formatter;
@@ -298,38 +294,6 @@ public class GribData {
     f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
 
     //////////////////////////////////////////////////////////////
-    /* f.format("%nbzip2 (floats)%n");
-    try (ByteArrayOutputStream out = new ByteArrayOutputStream(2 * compressedSize)) {
-      org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
-      InputStream fin = new ByteArrayInputStream(bdata);
-      IO.copy(fin, zipper);
-      zipper.close();
-      compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
-      f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-
-    //////////////////////////////////////////////////////////////
-    f.format("%nbzip2 (scaled ints)%n");
-    try (ByteArrayOutputStream out = new ByteArrayOutputStream(2 * compressedSize)) {
-      org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
-      InputStream fin = new ByteArrayInputStream(scaledData);
-      IO.copy(fin, zipper);
-      zipper.close();
-      compressedSize = out.size();
-      f.format(" compressedSize = %d%n", compressedSize);
-      f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
-      f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
-      f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-    } */
 
     return scaledData;
   }
@@ -379,63 +343,13 @@ public class GribData {
       }
     }
 
-    /* byte[] scaledData = bb.array();
-    try (ByteArrayOutputStream out = new ByteArrayOutputStream(4 * npoints + 24)) {
-      org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
-      InputStream fin = new ByteArrayInputStream(scaledData);
-      IO.copy(fin, zipper);
-      zipper.close();
-      return out.toByteArray();
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      return null;
-    } */
     return null;
   }
 
   // only used by test code
   private static byte[] buffer;  // LOOK optimize
   static public float[] uncompressScaled(byte[] bdata) throws IOException {
-    /* if (buffer == null)
-      buffer = new byte[524288];
-
-    int outLength = Math.max(20 * bdata.length, 8000);
-    ByteArrayOutputStream out = new ByteArrayOutputStream(outLength);
-    ByteArrayInputStream in = new ByteArrayInputStream(bdata);
-    try (org.itadaki.bzip2.BZip2InputStream bzIn = new org.itadaki.bzip2.BZip2InputStream(in, false)) {
-      int bytesRead;
-      while ((bytesRead = bzIn.read(buffer)) != -1) {
-        out.write(buffer, 0, bytesRead);
-      }
-      out.close();
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-
-    ByteBuffer bb = ByteBuffer.wrap(out.toByteArray());
-    double scale_factor = bb.getDouble();
-    double add_offset = bb.getDouble();
-
-    int nbits = bb.getInt();
-    int npoints = bb.getInt();
-    int missing_value = (2 << nbits - 1) - 1;       // all ones - reserved for missing value
-
-    // unpacked_data_value = packed_data_value * scale_factor + add_offset
-    // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
-
-    float[] result = new float[npoints];
-    int count = 0;
-    while (bb.hasRemaining()) {
-      int packed_data = bb.getInt();
-      if (packed_data == missing_value) result[count++] = Float.NaN;
-      else result[count++] = (float) (scale_factor * packed_data + add_offset);
-    }
-
-    return result;  */
-    return null;
+    throw new UnsupportedOperationException("bzip2 compression no longer supported.");
   }
 
 

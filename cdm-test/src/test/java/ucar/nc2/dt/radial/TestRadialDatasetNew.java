@@ -33,6 +33,7 @@
 package ucar.nc2.dt.radial;
 
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -42,6 +43,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -56,6 +58,7 @@ import java.util.Formatter;
  * Test radial datasets in the JUnit framework.
  */
 
+@Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestRadialDatasetNew {
 

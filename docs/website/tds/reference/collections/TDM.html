@@ -170,6 +170,83 @@ bg</pre>
 </ol>
 <p>&nbsp;</p>
 <hr width="100%"/>
+<h2>GCPass1<a name="GCPass1" id="GCPass1"></a></h2>
+<p>This is a utility program to examine the files in a collection before actually indexing them.</p>
+<h4>Example:</h4>
+<pre><strong>java -Xmx2g -classpath tdm-4.6.jar thredds.tdm.GCpass1 -spec &quot;Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1&quot; -useCacheDir &quot;C:/temp/cache/&quot; </strong><strong></strong><strong> &gt; gcpass1</strong><strong>.out</strong></pre>
+<h4>Command line arguments:</h4>
+<pre>Usage: thredds.tdm.GCpass1 [options]<br />  Options:<br />    -h, --help<br />       Display this help and exit<br />       Default: false<br />    -isGrib2<br />       Is Grib2 collection.<br />       Default: false<br />    -partition<br />       Partition type: none, directory, file<br />       Default: directory<br />    -regexp<br />       Collection regexp string, exactly as in the &lt;featureCollection&gt;.<br />    -rootDir<br />       Collection rootDir, exactly as in the &lt;featureCollection&gt;.<br />    -spec<br />       Collection specification string, exactly as in the &lt;featureCollection&gt;.<br />    -useCacheDir<br />       Set the Grib index cache directory.<br />    -useTableVersion<br />       Use Table version to make seperate variables.<br />       Default: false</pre>
+<ul>
+  <li>You must have <strong>spec</strong> or (<strong>regexp</strong> and <strong>rootDir)</strong>.</li>
+  <li>if <strong>useCacheDir</strong> is not set, indexes will be in the data directories</li>
+</ul>
+<h4>Sample Output:</h4>
+<pre>&nbsp;
+                                         									 #files  #records   #vars  #runtimes    #gds
+
+1) Directory Q:\cdmUnitTest\gribCollections\rdavm\ds083.2\PofP
+
+2)  Directory Q:\cdmUnitTest\gribCollections\rdavm\ds083.2\PofP\2004
+3)    Q:\cdmUnitTest\gribCollections\rdavm\ds083.2\PofP\2004\200406 total      24     6816       76       24        1 2004-06-01T00:00:00Z - 2004-06-06T18:00:00Z 
+      Q:\cdmUnitTest\gribCollections\rdavm\ds083.2\PofP\2004 total      		 24     6816       76       24        1 2004-06-01T00:00:00Z - 2004-06-06T18:00:00Z 
+
+2)  Directory Q:\cdmUnitTest\gribCollections\rdavm\ds083.2\PofP\2005
+3)    Q:\cdmUnitTest\gribCollections\rdavm\ds083.2\PofP\2005\200506 total     120    34320       74      120        1 2005-06-01T00:00:00Z - 2005-06-30T18:00:00Z 
+      Q:\cdmUnitTest\gribCollections\rdavm\ds083.2\PofP\2005 total     		120    34320       74      120        1 2005-06-01T00:00:00Z - 2005-06-30T18:00:00Z 
+
+4)  Q:\cdmUnitTest\gribCollections\rdavm\ds083.2\PofP total    			    144    41136       76      144        1 2004-06-01T00:00:00Z - 2005-06-30T18:00:00Z 
+
+                                         #files  #records   #vars  #runtimes    #gds
+5)                          grand total     144    41136       76      144        1 
+
+6)
+referenceDate (144)
+   2004-06-01T00:00:00Z - 2005-06-30T18:00:00Z: count = 144
+
+7)
+table version (1)
+         7-0-2: count = 41136
+
+8)
+variable (76)
+    5-wave_geopotential_height_anomaly_isobaric_10: count = 144
+    5-wave_geopotential_height_isobaric_10: count = 144
+    Absolute_vorticity_isobaric_10: count = 3744
+    ...
+
+9)
+gds (1)
+    1645598069: count = 41136
+
+10)
+gdsTemplate (1)
+             0: count = 41136
+
+11)
+vertCoordInGDS (0)
+
+12)
+predefined (0)
+
+13)
+thin (0)</pre>
+<p>where:</p>
+<ol>
+  <li>The top level directory</li>
+  <li>Subdirectories</li>
+  <li>Partitions - in this case these are directories because this is a &quot;directory partition&quot;.
+    <ol>
+      <li>number of files in the partition</li>
+      <li>number of records in the partition</li>
+      <li>number of seperate variables in the partition</li>
+      <li>number of runtimes in the partition</li>
+      <li>number of horizontal (GDS), which are turned into groups</li>
+      <li>the starting and ending runtime</li>
+    </ol>
+  </li>
+  <li> </li>
+</ol>
+<hr width="100%"/>
 <address>
   <img src="../../thread.png" alt="" width="76" height="67"/> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a>
   and was last updated October 2014

@@ -32,22 +32,10 @@
  */
 package thredds.servlet;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,6 +47,17 @@ import thredds.core.DataRootManager;
 import thredds.mock.web.MockTdsContextLoader;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.test.util.NeedsContentRoot;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Test DataRootHandler. NOT WORKING
@@ -70,6 +69,7 @@ import ucar.unidata.test.util.TestFileDirUtils;
 //@RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+@Category(NeedsContentRoot.class)
 public class TestDataRootHandler
 {
 

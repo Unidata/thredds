@@ -34,14 +34,15 @@ package ucar.nc2.ui.gis;
 
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
-import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.PopupMenu;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import javax.swing.event.EventListenerList;
 import javax.swing.*;
+import javax.swing.event.EventListenerList;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 
 /** Wrap map Renderers as beans.
   *
@@ -152,8 +153,9 @@ public abstract class MapBean {
         // standard maps
     ArrayList standardMaps = new ArrayList();
     standardMaps.add( new WorldMapBean());
-    standardMaps.add( new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", "/resources/nj22/ui/maps/Countries.zip"));
-    standardMaps.add( new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", "/resources/nj22/ui/maps/US.zip"));
+    standardMaps.add( new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap",
+            "/resources/nj22/ui/maps/Countries.shp"));
+    standardMaps.add( new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", "/resources/nj22/ui/maps/us_state.shp"));
     
     for (int i = 0; i < standardMaps.size(); i++) {
       MapBean mb = (MapBean) standardMaps.get(i);
@@ -165,6 +167,3 @@ public abstract class MapBean {
   }
 
 }
-
-
-

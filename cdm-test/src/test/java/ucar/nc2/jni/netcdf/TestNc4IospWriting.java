@@ -1,11 +1,14 @@
 package ucar.nc2.jni.netcdf;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -20,14 +23,16 @@ import java.util.Formatter;
  * @author caron
  * @since 7/27/12
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestNc4IospWriting {
   int countNotOK = 0;
 
   @Before
   public void setLibrary() {
-    //Nc4Iosp.setLibraryAndPath("C:/cdev/lib", "netcdf");
-    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");   // jenkins testing on spock; works locally when netcdf.dll is in pth
-    //FileWriter2.setDebugFlags(new DebugFlagsImpl("ncfileWriter2/debug"));
+    // Ignore this class's tests if NetCDF-4 isn't present.
+    // We're using @Before because it shows these tests as being ignored.
+    // @BeforeClass shows them as *non-existent*, which is not what we want.
+    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
   }
 
   // @Test

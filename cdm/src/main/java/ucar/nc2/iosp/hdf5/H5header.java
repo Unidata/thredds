@@ -1336,24 +1336,23 @@ public class H5header {
 
     Attribute fillAttribute = null;
     if(HDF5FILL) {
-      for(HeaderMessage mess : facade.dobj.messages) {
-        if(mess.mtype == MessageType.FillValue) {
-          MessageFillValue fvm = (MessageFillValue) mess.messData;
-          if(fvm.hasFillValue)
-            vinfo.fillValue = fvm.value;
+      for (HeaderMessage mess : facade.dobj.messages) {
+          if (mess.mtype == MessageType.FillValue) {
+              MessageFillValue fvm = (MessageFillValue) mess.messData;
+              if (fvm.hasFillValue)
+                  vinfo.fillValue = fvm.value;
+          } else if (mess.mtype == MessageType.FillValueOld) {
+              MessageFillValueOld fvm = (MessageFillValueOld) mess.messData;
+              if (fvm.size > 0)
+                  vinfo.fillValue = fvm.value;
+          }
 
-        } else if(mess.mtype == MessageType.FillValueOld) {
-          MessageFillValueOld fvm = (MessageFillValueOld) mess.messData;
-          if(fvm.size > 0)
-            vinfo.fillValue = fvm.value;
-        }
-
-        Object fillValue = vinfo.getFillValueNonDefault();
-        if(fillValue != null) {
-          Object defFillValue = vinfo.getFillValueDefault(vinfo.typeInfo.dataType);
-          if(!fillValue.equals(defFillValue))
-            fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
-        }
+          Object fillValue = vinfo.getFillValueNonDefault();
+          if (fillValue != null) {
+              Object defFillValue = vinfo.getFillValueDefault(vinfo.typeInfo.dataType);
+              if (!fillValue.equals(defFillValue))
+                  fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
+          }
       }
     }
 
@@ -1406,11 +1405,11 @@ public class H5header {
     }
     processSystemAttributes(facade.dobj.messages, v);
     if(HDF5FILL) {
-      if(fillAttribute != null && v.findAttribute(CDM.FILL_VALUE) == null)
-        v.addAttribute(fillAttribute);
+        if (fillAttribute != null && v.findAttribute(CDM.FILL_VALUE) == null)
+            v.addAttribute(fillAttribute);
     }
-    //if (vinfo.typeInfo.unsigned)
-    //  v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+    if (vinfo.typeInfo.unsigned)
+      v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
     if (facade.dobj.mdt.type == 5) {
       String desc = facade.dobj.mdt.opaque_desc;
       if ((desc != null) && (desc.length() > 0))

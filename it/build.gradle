@@ -1,10 +1,16 @@
+description = "TDS - NetCDF-Java library integration Test module. This module contains all classes and settings " +
+        "needed to test the NetCDF-Java library in a servlet container. Starts up a TDS server and then sends " +
+        "requests to it. Relies on having access to cdmUnitTest directory, so can only be run at Unidata."
+ext.title = "Test Integration"
+ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
+
 dependencies {
     testCompile project(":cdm")
     testRuntime project(":clcommon")
     testRuntime project(":grib")
     testCompile project(":httpservices")
     testRuntime project(":opendap")
-    testRuntime project(":visad")
+    testRuntime project(":visadCdm")
 
     testRuntime libraries["jaxen"]
     testCompile libraries["jdom2"]
@@ -49,15 +55,20 @@ gretty {
     // Also, a comment in the bug report mentions that this issue has been fixed as of Tomcat 7.0.53.
     // However, it is actually still present as of 7.0.55
     secureRandom = true
-
-    // Causes the org.akhikhl.gretty.ServerConfig.systemProperties field to be initialized.
-    // We don't actually care about the key-value-pair; we just want that field to be non-null to avoid an NPE.
-    // TODO: Reduce this bug to a minimum test case and submit to Gretty project.
-    systemProperty 'foo', 'bar'
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
 task integrationTest(type: Test) {
+    // isContentRootAvailable, isJenkins, and contentRootKey are defined on the root project in testing.gradle.
+    if (!isContentRootAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
+        logger.warn "Skipping all integration tests (task \'$path\'): " +
+                "\'$contentRootKey\' property not defined."
+
+        // We can't stand up a functioning TDS test instance without a valid content root,
+        // so disable the integration test task altogether.
+        enabled = false
+    }
+
     // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
     exclude 'thredds/tds/**'
 
@@ -72,6 +83,11 @@ task integrationTest(type: Test) {
         systemProperties.keySet().removeAll { it.startsWith("gretty.") }
     }
 }
+
+// Propagate all of integrationTest's system properties (which were set in testing.gradle) to the embedded Tomcat
+// instance. org.akhikhl.gretty.ServerConfig.systemProperties is null by default.
+// So, we can be sure that we're not trampling over any existing properties by doing this.
+gretty.systemProperties integrationTest.systemProperties
 
 task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
     // executionData must be closure, because appBeforeIntegrationTest is not defined yet.
@@ -102,7 +118,7 @@ afterEvaluate {
         // (e.g. one of its onlyIf()s returns false), but those situations are rare.
         onlyIf {
             Task task = tasks.integrationTest
-            if (!task.enabled) {
+            if (!task.enabled) {    // May have been disabled in testing.gradle.
                 return false;
             }
 

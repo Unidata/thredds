@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -30,6 +31,7 @@ import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -77,6 +79,12 @@ public class GridAsPointStreamTest {
 
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
+		if (supportedFormat == SupportedFormat.NETCDF4) {
+      // Ignore this class's tests if NetCDF-4 isn't present.
+      // We're using @Before because it shows these tests as being ignored.
+      // @BeforeClass shows them as *non-existent*, which is not what we want.
+      Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    }
 		
     String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
 		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);

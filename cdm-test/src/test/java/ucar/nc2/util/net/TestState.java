@@ -37,6 +37,7 @@ import ucar.httpservices.*;
 import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.nio.charset.Charset;
 
@@ -76,6 +77,7 @@ public class TestState extends UnitTestCommon
     testState()
         throws Exception
     {
+        ThreddsServer.REMOTETEST.assumeIsAvailable();
         int status = 0;
         HTTPSession session = HTTPFactory.newSession(SESSIONURL);
         assertFalse(session.isClosed());

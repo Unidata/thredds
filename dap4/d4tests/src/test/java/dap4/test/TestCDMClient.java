@@ -5,7 +5,6 @@ import dap4.dap4shared.D4DSP;
 import dap4.dap4shared.DataCompiler;
 import dap4.dap4shared.HttpDSP;
 import dap4.servlet.DapCache;
-import dap4.test.util.DapTestCommon;
 import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
 

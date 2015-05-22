@@ -1,11 +1,14 @@
 package thredds.tds.idd;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.unidata.test.util.ThreddsServer;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.io.IOException;
-import java.util.*;
 
 /**
  * Compare variable names in  "FMRC Run" and "FMRC Raw File" datasets with matching timestamps.
@@ -32,6 +35,10 @@ public class CompareGribVarNamesOnMotherlodeTds
     // return Arrays.asList( IddModelDatasetsUtils.getGfsModelIds());
   }
 
+  @Before
+  public void setUp() {
+    ThreddsServer.LIVE.assumeIsAvailable();
+  }
 
   /**
    * For the given model ID, get the fifth dataset in the "FMRC Run" catalog and compare it to the

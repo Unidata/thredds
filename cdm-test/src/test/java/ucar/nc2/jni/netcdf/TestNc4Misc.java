@@ -1,6 +1,7 @@
 package ucar.nc2.jni.netcdf;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import ucar.ma2.Array;
@@ -30,8 +31,10 @@ public class TestNc4Misc {
 
   @Before
   public void setLibrary() {
-    Nc4Iosp.setLibraryAndPath("/opt/netcdf/lib", "netcdf");
-    System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
+    // Ignore this class's tests if NetCDF-4 isn't present.
+    // We're using @Before because it shows these tests as being ignored.
+    // @BeforeClass shows them as *non-existent*, which is not what we want.
+    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
   }
 
   @Test
@@ -285,11 +288,11 @@ public class TestNc4Misc {
       System.out.println("file.exists() = " + file.exists());
       System.out.println("file.length() = " + file.length());
       System.out.println("file.delete() = " + file.delete());
-
+  
     } // for
-
+  
   }
-
+  
   @Test
   public void testAttributeChangeNc4() throws IOException {
     Path source = Paths.get(TestDir.cdmLocalTestDataDir + "dataset/testRename.nc4");
@@ -297,7 +300,7 @@ public class TestNc4Misc {
     Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
     doRename(target.toString());
   }
-
+  
   @Test
   public void testAttributeChangeNc3() throws IOException {
     Path source = Paths.get(TestDir.cdmLocalTestDataDir + "dataset/testRename.nc3");
@@ -305,7 +308,7 @@ public class TestNc4Misc {
     Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
     doRename(target.toString());
   }
-
+  
   private void doRename(String filename) throws IOException {
     System.out.printf("Rename %s%n", filename);
     // old and new name of variable
@@ -315,7 +318,7 @@ public class TestNc4Misc {
     String attrToChange = "long_name";
     String newAttrValue = "Long name changed!";
     Array orgData;
-
+    
     try (NetcdfFileWriter ncWriter = NetcdfFileWriter.openExisting(filename)) {
       ncWriter.setRedefineMode(true);
       // rename the variable
@@ -330,14 +333,14 @@ public class TestNc4Misc {
       ncWriter.setRedefineMode(false);
       // write the above changes to the file
     }
-
+    
     try (NetcdfFile ncd = NetcdfFile.open(filename)) {
       Variable var = ncd.findVariable(newVarName);
       Assert.assertNotNull(var);
       System.out.printf(" check %s%n", var.getNameAndDimensions());
       String attValue = ncd.findAttValueIgnoreCase(var, attrToChange, "");
       Assert.assertEquals(attValue, newAttrValue);
-
+      
       Array data = var.read();
       System.out.printf("%s%n", data);
       orgData.resetLocalIterator();

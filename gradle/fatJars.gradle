@@ -1,0 +1,144 @@
+configurations {
+    dap4
+    ncIdv
+    tdmFat
+    netcdfAll
+    toolsUI
+}
+
+dependencies {
+    dap4 project(':dap4:d4client')
+
+    ncIdv project(':cdm')
+    ncIdv project(':clcommon')
+    ncIdv project(':bufr')
+    ncIdv project(':grib')
+    ncIdv project(':netcdf4')
+    ncIdv project(':opendap')
+    ncIdv project(':visadCdm')
+
+    tdmFat project(':tdm')
+
+    netcdfAll project(":cdm")
+    netcdfAll project(":clcommon")
+    netcdfAll project(":bufr")
+    netcdfAll project(":grib")
+    netcdfAll project(":netcdf4")
+    netcdfAll project(":opendap")
+    netcdfAll project(":httpservices")
+
+    toolsUI project(':ui')
+}
+
+buildscript {
+    apply from: "$rootDir/gradle/dependencies.gradle"
+
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath libraries["shadow"]
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+def fatJarTasks = []
+
+fatJarTasks << tasks.create(name: 'buildDap4', type: ShadowJar) {
+    baseName = 'dap4'
+    configurations = [project.configurations.dap4]
+
+    doFirst {
+        // This script is evaluated before :dap4:d4client, so we must wait until execution time to get its properties.
+        // This does not affect the incremental build. The main disadvantage is that failure (if any) is delayed.
+        manifest.attributes project(':dap4:d4client').tasks.jar.manifest.attributes
+    }
+}
+
+fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
+    baseName = 'ncIdv'
+    configurations = [project.configurations.ncIdv]
+
+    dependencies {
+        exclude(dependency('c3p0:c3p0'))  // Transitive dependency dragged in by libraries["quartz"]
+    }
+
+    // Filter out crap from libraries["visad"]
+    exclude 'edu/wisc/**'
+    exclude 'nom/**'
+    exclude 'visad/**'
+
+    manifest.attributes 'Implementation-Title': 'ncIdv Module'
+}
+
+fatJarTasks << tasks.create(name: 'buildTdmFat', type: ShadowJar) {
+    baseName = 'tdmFat'
+    configurations = [project.configurations.tdmFat]
+
+    doFirst {
+        manifest.attributes project(':tdm').tasks.jar.manifest.attributes
+    }
+}
+
+fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
+    baseName = 'netcdfAll'
+    configurations = [project.configurations.netcdfAll]
+
+    doFirst {
+        manifest.attributes project(':cdm').tasks.jar.manifest.attributes
+    }
+}
+
+fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
+    baseName = 'toolsUI'
+    configurations = [project.configurations.toolsUI]
+
+    doFirst {
+        manifest.attributes project(':ui').tasks.jar.manifest.attributes
+    }
+}
+
+// Common configuration.
+configure(fatJarTasks) {
+    dependsOn configurations*.buildDependencies
+    group = "shadow"
+
+    // Filter out crap from various other packages.
+    exclude 'AUTHORS'
+    exclude 'DATE'
+    exclude 'LICENCE'
+    exclude 'LICENSE'
+    exclude 'NOTICE'
+    exclude '*.txt'
+    exclude '*.xml'
+    exclude 'META-INF/INDEX.LIST'
+    exclude 'META-INF/DEPENDENCIES'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    exclude 'META-INF/*.txt'
+    exclude 'META-INF/*.xml'
+
+    // Transformations
+    append('META-INF/spring.handlers')
+    append('META-INF/spring.schemas')
+    mergeServiceFiles()
+}
+
+
+// See: http://gradle.org/docs/current/userguide/standard_plugins.html#N11EE8
+apply plugin: 'base'
+
+// The base-plugin's "assemble" task automatically creates all artifacts added to the "archives" configuration.
+artifacts {
+    archives buildDap4
+    archives buildNcIdv
+    archives buildTdmFat
+    archives buildNetcdfAll
+    archives buildToolsUI
+}

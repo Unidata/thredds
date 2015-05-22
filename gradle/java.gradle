@@ -1,16 +1,41 @@
-subprojects {
+import org.gradle.api.internal.java.JavaLibrary
+import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
+
+configure(javaProjects) {
     apply plugin: 'java'
+    apply plugin: 'provided-base'  // Gives us the "provided" configuration.
 
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
 
-    // Unlike Maven, Gradle places CLASS files and resources in different directories by default.
-    // This is a problem for IntelliJ: when running an application from the IDE, it expects everything to be in the
-    // same directory. To fix, we're configuring resources to be copied to the same directory as CLASS files.
-    processResources.destinationDir = compileJava.destinationDir
+
+    // These will only run when we execute the "publish" task, NOT "assemble".
+    // That'll save us from a lot of unnecessary build time in the common case.
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+
+    JavaLibrary java = components.java
+    Set<PublishArtifact> componentArtifacts = java.usages.first().artifacts
+
+    def sourcesArtifact = new DefaultPublishArtifact(tasks.sourcesJar.archiveName, 'jar', 'jar', 'sources', null,
+            tasks.sourcesJar.archivePath, tasks.sourcesJar)
+    componentArtifacts << sourcesArtifact
+
+    def javadocArtifact = new DefaultPublishArtifact(tasks.javadocJar.archiveName, 'jar', 'jar', 'javadoc', null,
+            tasks.javadocJar.archivePath, tasks.javadocJar)
+    componentArtifacts << javadocArtifact
+
 
     // Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).all {
         options.encoding = 'UTF-8'
 
         // Disable warnings about cross-compilation:
@@ -21,26 +46,7 @@ subprojects {
         options.compilerArgs = ['-Xlint:-options']
     }
 
-    // FIXME: Extend these to all Jar subtypes (e.g. War)?
-    // Could I then add additional attributes in subproject build scripts?
-    jar {
-        manifest {
-            attributes 'Implementation-Title': project.name,
-                    'Implementation-Version': project.version,
-                    'Implementation-Vendor-Id': project.group,
-                    'Implementation-Vendor': 'UCAR/Unidata',
-                    // Commented out to avoid unnecessary re-compilation and re-jarring: http://goo.gl/kbVWXR
-                    // I think I can fix this by writing a builtOn.txt file in compileJava,
-                    // and then reading in its value here.
-                    // 'Built-On': new Date(),
-                    'Build-Jdk': JavaVersion.current(),
-                    'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
-                    'Permissions': 'all-permissions',
-                    'Trusted-Only': 'true'
-        }
-    }
-
-    tasks.withType(Javadoc) {
+    tasks.withType(Javadoc).all {
         options.encoding = 'UTF-8'
 
         if (JavaVersion.current().isJava8Compatible()) {

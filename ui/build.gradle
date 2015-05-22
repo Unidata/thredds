@@ -1,3 +1,6 @@
+description = "Provides a graphical interface to much of the functionality in the CDM library."
+ext.title = "ToolsUI"
+
 dependencies {
     compile project(":cdm")
     compile project(":clcommon")
@@ -18,7 +21,6 @@ dependencies {
     compile libraries["httpcore"]
     compile libraries["bounce"]
     compile libraries["imgscalr-lib"]
-    compile libraries["bzip2"]
     compile libraries["commons-lang3"]
     compile libraries["52n-oxf-xmlbeans"]
     compile libraries["guava"]
@@ -29,6 +31,29 @@ dependencies {
 
 //////////////////////////////////////////////////////////
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
+                // These are security attributes, necessary for Web Start: http://goo.gl/Ob6Wid
+                // ui.jar is the first jar in the JNLP, so I think its manifest is the only one that needs these.
+                'Application-Name': project.title,
+                'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
+                'Permissions': 'all-permissions',
+                'Trusted-Only': 'true',
+
+                // MANIFEST.MF is an @Input to the Jar task, so when it changes, Jar will be considered out-of-date.
+                // Here, we're writing an attribute to MANIFEST.MF. When its value changes, MANIFEST.MF will change,
+                // and Jar will be considered out-of-date.
+                // So, indirectly, we've made the "runtime" configuration an @Input to the Jar task.
+                'Class-Path': configurations.runtime.collect { it.name }.join(' ')
+    }
+
+    // I used to create META-INF/INDEX.LIST here to speedup Web Start loading, but it turns out that Spring and
+    // INDEX.LIST don't get along: https://jira.spring.io/browse/SPR-5705
+    // As a result, I don't think that Web Start is loading jars lazily as I intended.
+    // LOOK: Does that make the 'Class-Path' manifest attribute and 'download="lazy"' JNLP attributes pointless?
+}
+
 ext {
     toolsUIjar = 'toolsUI-' + version + '.jar'
     webstartWorkingDir = "build/signed"
@@ -36,71 +61,28 @@ ext {
         webstartDir = webdir + "webstart"
     }
 
-    jarsContainingDuplicateEntries = ['xmlbeans-2.6.0.jar']
-}
-
-apply plugin: 'shadow'
-
-import com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-
-shadow {
-    outputFile = file("${destinationDir}/${toolsUIjar}")
-    stats = true
-
-    exclude 'AUTHORS'    // crap from other packages
-    exclude 'DATE'
-    exclude 'LICENCE'
-    exclude 'LICENSE'
-    exclude 'NOTICE'
-    exclude '*.txt'
-    exclude '*.xml'
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/*.SF'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.txt'
-    exclude 'META-INF/*.xml'
-
-    artifactSet {
-        // ToolsUI won't be run in a web container.
-        // Dragged in by opendap.
-        exclude 'javax.servlet:javax.servlet-api:*'
-    }
-
-    jar {
-        manifest {
-            attributes 'Implementation-Title': 'toolsUI'
-            attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
-        }
-    }
-
-    transformer(ManifestResourceTransformer) {
-        mainClass = 'ucar.nc2.ui.ToolsUI'
-    }
-    transformer(AppendingTransformer) {
-        resource = 'META-INF/spring.handlers'
-    }
-    transformer(AppendingTransformer) {
-        resource = 'META-INF/spring.schemas'
-    }
-    transformer(ServiceFileTransformer) {}
+    depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']
 }
 
 // It's possible to test web start files locally before deploying them.
 // 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,
 // such as /thredds/ui/build.
-// 2. Comment-out the 'Codebase' manifest attribute in the top-level build.gradle.
+// 2. Comment-out the 'Codebase' manifest attribute above.
 // 3. Run this task.
 // 4. Open the 2 JNLP files that were copied to webdir. Remove the "codebase" and "href" attributes from the top-level
 // "jnlp" element.
 // 5. You may also need to white-list web starts from the local file system. Go to Java Control Panel->Security->
 // Edit Site List... and add the entry "file:/".
-// 6. Change to webdir and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
+// 6. cd to "webdir" and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
 // but I couldn't get that working (and there was no error feedback).
+// TODO: Use the Sync task for this.
+/* following properties should be in gradle.properties:
+   keystore=name of keystore file
+   keystoreAlias=idv
+   keystorePassword=password of keystore file
+   webdir:parent of conan content directory
+   ftpdir:ftp directory
+ */
 task releaseWebstart(dependsOn: jar) << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
@@ -120,13 +102,12 @@ task releaseWebstart(dependsOn: jar) << {
         println "\tkeystoreAlias = $keystoreAlias"
         println "\tkeystorePassword = $keystorePassword"
 
-        ant.signjar(jar: "build/libs/ui-" + version + ".jar", signedjar: webstartWorkingDir + "/netcdfUI.jar",
-                alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
-                preservelastmodified: "true")
+        ant.signjar(jar: "build/libs/ui-" + version + ".jar", destDir: webstartWorkingDir, alias: keystoreAlias,
+                keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
 
         for (file in configurations.runtime.resolve()) {
-            if (jarsContainingDuplicateEntries.contains(file.name)) {
-                println "$file contains duplicate entries. Rejarring."
+            if (depsToRejar.contains(file.name)) {
+                println "$file contains duplicate entries or old signature files. Rejarring."
 
                 File rejarredFile = new File(temporaryDir, file.name)
                 rejar file, rejarredFile
@@ -134,8 +115,8 @@ task releaseWebstart(dependsOn: jar) << {
             }
 
             println "Signing $file"
-            ant.signjar(destDir: webstartWorkingDir, jar: file, alias: keystoreAlias, keystore: keystore,
-                    storepass: keystorePassword, preservelastmodified: true, verbose: true)
+            ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
+                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
         }
 
         ant.delete(dir: webstartDir)
@@ -149,25 +130,6 @@ task releaseWebstart(dependsOn: jar) << {
     } else {
         println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
         +"must be defined to run \"releaseWebstart\" task."
-    }
-}
-
-/* following properties should be in gradle.properties:
-   keystore=name of keystore file
-   keystoreAlias=idv
-   keystorePassword=password of keystore file
-   webdir:parent of conan content directory
-   ftpdir:ftp directory
- */
-task releaseCdm(dependsOn: shadowJar) << {
-    if (project.hasProperty("ftpdir")) {
-        println "copy " + toolsUIjar + " to " + ftpdir
-        copy { // does not give error message
-            from 'build/distributions/' + toolsUIjar
-            into ftpdir
-        }
-    } else {
-        println "Property \"ftpdir\" must be defined to run \"releaseCdm\" task."
     }
 }
 
@@ -218,14 +180,15 @@ task showDependencies << {
     }
 }
 
-import org.codehaus.groovy.runtime.NioGroovyMethods
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
+import org.codehaus.groovy.runtime.NioGroovyMethods
 
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate
- * entries in {@code origJarFile} will be excluded from {@code destJarFile}.
+ * entries in {@code origJarFile} will be excluded from {@code destJarFile}. Also, any old signature files
+ * (i.e. META-INF/*.DSA, META-INF/*.SF, META-INF/*.RSA) will be excluded.
  *
  * @param origJarFile the original JAR file.
  * @param destJarFile the destination JAR file.
@@ -238,13 +201,16 @@ def rejar(File origJarFile, File destJarFile) {
                 new BufferedOutputStream(new FileOutputStream(destJarFile)))
 
         NioGroovyMethods.withCloseable(jarOutStream) {
+            java.util.regex.Pattern signatureFilePattern = ~/META-INF\/.+\.(DSA|SF|RSA)/
             Set<String> entriesWritten = new HashSet<>();
 
             for (JarEntry origJarEntry : origJar.entries()) {
-                if (entriesWritten.add(origJarEntry.getName())) {
-                    writeEntry(origJar, origJarEntry, jarOutStream)
+                if (origJarEntry.name =~ signatureFilePattern) {
+                    logger.debug "Excluding signature file: $origJarEntry.name"
+                } else if (!entriesWritten.add(origJarEntry.getName())) {
+                    logger.debug "Skipping duplicate entry: $origJarEntry.name"
                 } else {
-                    logger.debug("Skipping duplicate entry: $origJarEntry.name")
+                    writeEntry origJar, origJarEntry, jarOutStream
                 }
             }
         }

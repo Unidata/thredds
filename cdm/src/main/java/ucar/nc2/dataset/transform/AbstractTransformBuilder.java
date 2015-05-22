@@ -240,7 +240,34 @@ public abstract class AbstractTransformBuilder {
 
 
   //////////////////////////////////////////
+  /*
+    //////////////////////////////////////////
+  static public double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
+    double factor = 1.0;
+    String units = ds.findAttValueIgnoreCase(ctv, CDM.UNITS, null);
+    if (units == null) {
+      List<CoordinateAxis> axes = ds.getCoordinateAxes();
+      for (CoordinateAxis axis : axes) {
+        if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
+          Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
+          units = v.getUnitsString();
+          break;
+        }
+      }
+    }
 
+    if (units != null) {
+      try {
+        SimpleUnit unit = SimpleUnit.factoryWithExceptions(units);
+        factor =  unit.convertTo(1.0, SimpleUnit.kmUnit);
+      } catch (Exception e) {
+        log.error(units + " not convertible to km");
+      }
+    }
+
+    return factor;
+  }
+   */
 
 
 

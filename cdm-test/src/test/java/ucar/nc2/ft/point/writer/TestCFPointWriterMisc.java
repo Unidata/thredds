@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point.writer;
 
+import org.junit.Assume;
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
@@ -40,10 +41,8 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
@@ -121,6 +120,9 @@ public class TestCFPointWriterMisc {
 
   @Test
    public void testAltUnits() throws Exception {
+    // Ignore this test if NetCDF-4 isn't present.
+    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+
      String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
      Formatter buf = new Formatter();
      try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {

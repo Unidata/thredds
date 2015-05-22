@@ -9,8 +9,10 @@
   </parent>
 
   <artifactId>tdcommon</artifactId>
-  <packaging>jar</packaging>
-  <name>server common utilities</name>
+  <name>Server-side common library</name>
+  <description>
+    A collection of utilities needed server-side, including THREDDS catalog handling.
+  </description>
 
   <dependencies>
     <dependency>

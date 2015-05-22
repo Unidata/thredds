@@ -1,5 +1,6 @@
 package ucar.nc2.ft.point.writer;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -9,6 +10,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.TestCFPointDatasets;
 import ucar.nc2.ft.point.TestPointDatasets;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
@@ -73,6 +75,9 @@ public class TestCFPointWriter {
 
   @Test
   public void testWrite4classic() throws IOException {
+    // Ignore this test if NetCDF-4 isn't present.
+    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+
     int count = writeDataset(location, ".nc4c", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4_classic), true);
     System.out.printf("%s netcdf4_classic count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
@@ -80,6 +85,9 @@ public class TestCFPointWriter {
 
   @Test
   public void testWrite4() throws IOException {
+    // Ignore this test if NetCDF-4 isn't present.
+    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+
     int count = writeDataset(location, ".nc4", ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4), true);
     System.out.printf("%s netcdf4 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;

@@ -19,8 +19,7 @@
   <description>
     The THREDDS Data Server (TDS) is a web server that provides catalog and
     data access services for scientific data using OPeNDAP, OGC WCS and WMS,
-    HTTP, and other remote data access protocols scientific data.
-    (The tests rely on having access to cdmUnitTest directory, so can only be run at Unidata)
+    HTTP, and other remote-data-access protocols.
   </description>
   <url>http://www.unidata.ucar.edu/software/tds/</url>
 

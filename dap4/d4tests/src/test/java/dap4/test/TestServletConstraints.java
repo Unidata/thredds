@@ -3,9 +3,7 @@ package dap4.test;
 import dap4.dap4shared.ChunkInputStream;
 import dap4.core.util.*;
 import dap4.dap4shared.RequestMode;
-import dap4.test.servlet.*;
-import dap4.test.util.DapTestCommon;
-import dap4.test.util.Dump;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,6 +16,7 @@ import java.util.*;
  * TestServlet test server side
  * constraint processing.
  */
+
 
 public class TestServletConstraints extends DapTestCommon
 {
@@ -32,7 +31,7 @@ public class TestServletConstraints extends DapTestCommon
 
 
     // constants for Fake Request
-    static String FAKEURLPREFIX = "http://localhost:8080/d4ts";
+    static String FAKEURLPREFIX = "http://localhost:8080/dap4";
 
     static final BigInteger MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
 
@@ -107,7 +106,7 @@ public class TestServletConstraints extends DapTestCommon
 
         String makeurl(RequestMode ext)
         {
-            String url = FAKEURLPREFIX + "/" + dataset;
+            String url = canonjoin(FAKEURLPREFIX,canonjoin(TESTINPUTDIR,dataset));
             if(ext != null) url += "." + ext.toString();
             if(constraint != null) {
                 url += "?" + CONSTRAINTTAG + "=";
@@ -306,7 +305,7 @@ public class TestServletConstraints extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Junit test methods
-
+    @Test
     public void testServletConstraints()
             throws Exception
     {
@@ -341,7 +340,7 @@ public class TestServletConstraints extends DapTestCommon
                 if(!pass) break;
             }
             if(!pass) {
-                System.err.printf("TestServletConstraint: fail: %s ext=%s\n",testcase,extension);
+                System.err.printf("TestServletConstraint: fail: %s ext=%s\n", testcase, extension);
                 System.err.flush();
                 break;
             }
@@ -355,29 +354,20 @@ public class TestServletConstraints extends DapTestCommon
     {
         boolean pass = true;
         String url = testcase.makeurl(RequestMode.DMR);
-
         // Create request and response objects
-        FakeServlet servlet = new FakeServlet(this.webapproot);
-        FakeServletRequest req = new FakeServletRequest(url, servlet);
-        FakeServletResponse resp = new FakeServletResponse();
-
-        servlet.init();
+        Mocker mocker = new Mocker("dap4",url,this);
+        byte[] byteresult = null;
 
         // See if the servlet can process this
         try {
-            servlet.doGet(req, resp);
+            byteresult = mocker.execute();
         } catch (Throwable t) {
             System.out.println(testcase.xfail ? "XFail" : "Fail");
             t.printStackTrace();
             return testcase.xfail;
         }
 
-        // Collect the output
-        FakeServletOutputStream fakestream = (FakeServletOutputStream) resp.getOutputStream();
-        byte[] byteresult = fakestream.toArray();
-
         // Test by converting the raw output to a string
-
         String sdmr = new String(byteresult, UTF8);
         if(prop_visual)
             visual(url, sdmr);
@@ -401,26 +391,16 @@ public class TestServletConstraints extends DapTestCommon
         String baseline;
         RequestMode mode = RequestMode.DAP;
         String methodurl = testcase.makeurl(mode);
-
         // Create request and response objects
-        FakeServlet servlet = new FakeServlet(this.webapproot);
-        FakeServletRequest req = new FakeServletRequest(methodurl, servlet);
-        FakeServletResponse resp = new FakeServletResponse();
+        Mocker mocker = new Mocker("dap4",methodurl,this);
+        byte[] byteresult = null;
 
-        servlet.init();
-
-        // See if the servlet can process this
         try {
-            servlet.doGet(req, resp);
+            byteresult = mocker.execute();
         } catch (Throwable t) {
             t.printStackTrace();
             return false;
         }
-
-        // Collect the output
-        FakeServletOutputStream fakestream
-                = (FakeServletOutputStream) resp.getOutputStream();
-        byte[] byteresult = fakestream.toArray();
         if(DEBUG) {
             DapDump.dumpbytes(ByteBuffer.wrap(byteresult).order(ByteOrder.nativeOrder()), true);
         }

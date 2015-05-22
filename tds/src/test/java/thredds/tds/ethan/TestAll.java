@@ -32,13 +32,9 @@
  */
 package thredds.tds.ethan;
 
-import junit.framework.*;
-
-import java.io.*;
-import java.util.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogCrawler;
@@ -58,6 +54,8 @@ import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.test.util.ThreddsServer;
 
 /**
  * _more_
@@ -65,8 +63,10 @@ import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
  * @author edavis
  * @since Feb 15, 2007 10:10:08 PM
  */
-public class TestAll extends TestCase {
-  public static Test suite() {
+public class TestAll extends TestCase
+{
+  public static Test suite()
+  {
     TestSuite suite = new TestSuite();
 
     String tdsTestLevel = System.getProperty("thredds.tds.test.level", "ping-catalogs");
@@ -118,14 +118,19 @@ public class TestAll extends TestCase {
     super(name);
   }
 
-  protected void setUp() {
-    if (null == System.getProperty("thredds.tds.test.id"))
-      System.setProperty("thredds.tds.test.id", "crawl-newmlode-8080");
-    if (null == System.getProperty("thredds.tds.test.server"))
-      System.setProperty("thredds.tds.test.server", "thredds.ucar.edu");
-    if (null == System.getProperty("thredds.tds.test.level"))
-      System.setProperty("thredds.tds.test.level", "crawl-catalogs");
-    if (null == System.getProperty("thredds.tds.test.catalogs")) {
+  @Override
+  protected void setUp()
+  {
+    ThreddsServer.LIVE.assumeIsAvailable();
+
+    if ( null == System.getProperty( "thredds.tds.test.id"))
+      System.setProperty( "thredds.tds.test.id", "crawl-newmlode-8080" );
+    if ( null == System.getProperty( "thredds.tds.test.server" ) )
+      System.setProperty( "thredds.tds.test.server", "thredds.ucar.edu" );
+    if ( null == System.getProperty( "thredds.tds.test.level" ) )
+      System.setProperty( "thredds.tds.test.level", "crawl-catalogs" );
+    if ( null == System.getProperty( "thredds.tds.test.catalogs" ) )
+    {
       StringBuilder sb = new StringBuilder()
 //              .append( "catalog.xml").append( ",")
 //              .append( "topcatalog.xml").append( "," )

@@ -9,7 +9,6 @@ import dap4.dap4shared.*;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**

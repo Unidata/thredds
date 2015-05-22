@@ -14,8 +14,8 @@
   <!-- groupId>edu.ucar</groupId-->
   <artifactId>ui</artifactId>
   <packaging>jar</packaging>
-  <name>UI Module</name>
-  <description>Package that allows to run the netCDFToolsUI directly from it</description>
+  <name>ToolsUI</name>
+  <description>Provides a graphical interface to much of the functionality in the CDM library.</description>
   <url>http://www.unidata.ucar.edu/software/tds/</url>
 
   <dependencies>
@@ -101,11 +101,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.itadaki</groupId>
-      <artifactId>bzip2</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
@@ -146,6 +141,19 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <!-- Add /META-INF/INDEX.LIST and "Class-Path" manifest attribute, both for Web Start. -->
+        <configuration>
+          <archive>
+            <index>true</index>
+            <manifest>
+              <addClasspath>true</addClasspath>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -171,7 +179,22 @@
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
-                    <exclude>log4j.xml</exclude>
+                    <!-- Filter out crap from various other packages. -->
+                    <excludes>AUTHORS</excludes>
+                    <excludes>DATE</excludes>
+                    <excludes>LICENCE</excludes>
+                    <excludes>LICENSE</excludes>
+                    <excludes>NOTICE</excludes>
+                    <excludes>*.txt</excludes>
+                    <excludes>*.xml</excludes>
+                    <excludes>META-INF/DEPENDENCIES</excludes>
+                    <excludes>META-INF/LICENSE</excludes>
+                    <excludes>META-INF/NOTICE</excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <excludes>META-INF/*.txt</excludes>
+                    <excludes>META-INF/*.xml</excludes>
                   </excludes>
                 </filter>
               </filters>
@@ -202,9 +225,22 @@
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
+                    <!-- Filter out crap from various other packages. -->
+                    <excludes>AUTHORS</excludes>
+                    <excludes>DATE</excludes>
+                    <excludes>LICENCE</excludes>
+                    <excludes>LICENSE</excludes>
+                    <excludes>NOTICE</excludes>
+                    <excludes>*.txt</excludes>
+                    <excludes>*.xml</excludes>
+                    <excludes>META-INF/DEPENDENCIES</excludes>
+                    <excludes>META-INF/LICENSE</excludes>
+                    <excludes>META-INF/NOTICE</excludes>
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
+                    <excludes>META-INF/*.txt</excludes>
+                    <excludes>META-INF/*.xml</excludes>
                   </excludes>
                 </filter>
               </filters>
@@ -215,15 +251,33 @@
                 <excludes>
                   <exclude>edu.ucar:ui</exclude>
                   <exclude>aopalliance:aopalliance</exclude>
-                  <exclude>com.jgoodies:forms</exclude>
+                  <exclude>com.jgoodies:*</exclude>
                   <exclude>commons-logging:commons-logging</exclude>
-                  <exclude>jfree:*</exclude>
+                  <exclude>org.jfree:*</exclude>
                   <exclude>org.springframework:*</exclude>
                   <exclude>org.bounce:*</exclude>
                   <exclude>edu.ucar:d4tswar</exclude>
+                  <exclude>net.sf.ehcache:ehcache-core</exclude>
+                  <exclude>org.apache.commons:commons-lang3</exclude>
+                  <exclude>org.slf4j:slf4j-jdk14</exclude>
+                  <exclude>org.imgscalr:imgscalr-lib</exclude>
+
+                  <exclude>edu.ucar:waterml</exclude>
+                  <exclude>org.apache.xmlbeans:*</exclude>
+                  <exclude>org.n52.sensorweb:*</exclude>
+                  <exclude>net.sf.saxon:*</exclude>
                 </excludes>
               </artifactSet>
 
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.schemas</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
             </configuration>
 
           </execution>

@@ -81,11 +81,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.itadaki</groupId>
-      <artifactId>bzip2</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>

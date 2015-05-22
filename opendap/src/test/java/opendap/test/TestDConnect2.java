@@ -5,6 +5,7 @@ import opendap.util.Getopts;
 import opendap.util.InvalidSwitch;
 import org.junit.Test;
 import ucar.unidata.test.Diff;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.*;
 
@@ -53,7 +54,9 @@ public class TestDConnect2 extends TestSources {
     setTitle("DAP DConnect2 Tests");
   }
 
+  @Override
   protected void setUp() {
+    ThreddsServer.REMOTETEST.assumeIsAvailable();
     passcount = 0;
     xfailcount = 0;
     failcount = 0;

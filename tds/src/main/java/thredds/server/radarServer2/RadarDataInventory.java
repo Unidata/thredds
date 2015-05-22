@@ -4,7 +4,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.time.*;
-import ucar.nc2.units.DateFromString;
 import ucar.unidata.geoloc.EarthLocation;
 
 import java.io.File;
@@ -32,7 +31,7 @@ public class RadarDataInventory {
     private EnumMap<DirType, Set<String>> items;
     private Path collectionDir;
     private DirectoryStructure structure;
-    private String fileTimeFmt, dataFormat;
+    private String fileTimeRegex, fileTimeFmt, dataFormat;
     private boolean dirty;
     private CalendarDate lastUpdate;
     private int maxCrawlItems, maxCrawlDepth;
@@ -115,53 +114,40 @@ public class RadarDataInventory {
             }
         }
 
-        private class DirectoryMatcher {
-            private class Item {
-                String path;
-                boolean inString;
-                Item(String path, boolean inString)
-                {
-                    this.path = path;
-                    this.inString = inString;
+        private class DirectoryDateMatcher {
+            // Map a directory level to a date format
+            List<Integer> levels;
+            String fmt;
+
+            public DirectoryDateMatcher() {
+                levels = new ArrayList<>(4);
+                fmt = "";
+            }
+
+            public void add(int level, String value) {
+                levels.add(level);
+                fmt += value;
+            }
+
+            public SimpleDateFormat getFormat() {
+                SimpleDateFormat sdf = new SimpleDateFormat(fmt);
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return sdf;
+            }
+
+            public Date getDate(Path path) {
+                Path relPath = base.relativize(path);
+                String[] parts = relPath.toString().split(sep);
+                StringBuilder sb = new StringBuilder("");
+                for (Integer l: levels) {
+                    sb.append(parts[l]);
                 }
-            }
-
-            Stack<Item> stack;
-            private boolean inString;
-            String matcher;
-
-            public DirectoryMatcher() {
-                stack = new Stack<>();
-                inString = true;
-                matcher = "'" + base.toString();
-            }
-
-            public void push(DirType type, String value) {
-                stack.push(new Item(matcher, inString));
-                String newSegment;
-                if (inString)
-                    newSegment = sep;
-                else
-                    newSegment = "'" + sep;
-
-                if (type == DirType.Date) {
-                    newSegment += "'";
-                    inString = false;
-                } else {
-                    inString = true;
+                try {
+                    SimpleDateFormat fmt = getFormat();
+                    return fmt.parse(sb.toString());
+                } catch (ParseException e) {
+                    return null;
                 }
-                matcher += newSegment + value;
-            }
-
-            public String matchString()
-            {
-                return matcher;
-            }
-
-            public void pop() {
-                Item it = stack.pop();
-                inString = it.inString;
-                matcher = it.path;
             }
         }
 
@@ -180,7 +166,7 @@ public class RadarDataInventory {
             order.add(new DirEntry(type, fmt));
         }
 
-        public DirectoryMatcher matcher() { return new DirectoryMatcher(); }
+        public DirectoryDateMatcher matcher() { return new DirectoryDateMatcher(); }
     }
 
     public void addStationDir() {
@@ -221,7 +207,8 @@ public class RadarDataInventory {
             return CalendarPeriod.of(366, CalendarPeriod.Field.Day);
     }
 
-    public void addFileTime(String fmt) {
+    public void addFileTime(String regex, String fmt) {
+        fileTimeRegex = regex;
         fileTimeFmt = fmt;
     }
 
@@ -394,8 +381,9 @@ public class RadarDataInventory {
 
         public List<QueryResultItem> results() {
             List<Path> results = new ArrayList<>();
-            DirectoryStructure.DirectoryMatcher matcher = structure.matcher();
+            DirectoryStructure.DirectoryDateMatcher matcher = structure.matcher();
             results.add(structure.base);
+            boolean needDateFilter = false;
             for (int i = 0; i < structure.order.size(); ++i) {
                 DirectoryStructure.DirEntry entry = structure.order.get(i);
                 List<Path> newResults = new ArrayList<>();
@@ -404,6 +392,7 @@ public class RadarDataInventory {
                     // Loop over results and add subdirs
                     // Add date format to matcher string
                     case Date:
+                        needDateFilter = queryItem.get(0) != null;
                         for (Path p : results)
                             try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
                                 for (Path sub : dirStream)
@@ -411,7 +400,7 @@ public class RadarDataInventory {
                             } catch (IOException e) {
                                 System.out.println("results(): Error reading dir: " + p.toString());
                             }
-                        matcher.push(DirType.Date, entry.fmt);
+                        matcher.add(i, entry.fmt);
                         break;
 
                     // Add to results and prune non-existent
@@ -419,43 +408,41 @@ public class RadarDataInventory {
                     case Station:
                     case Variable:
                     default:
-                        String next = queryItem.get(0).toString();
-                        for (Path p : results) {
-                            Path nextPath = p.resolve(next);
-                            if (nextPath.toFile().exists())
-                                newResults.add(nextPath);
+                        for (Object next: queryItem) {
+                            for (Path p : results) {
+                                Path nextPath = p.resolve(next.toString());
+                                if (nextPath.toFile().exists())
+                                    newResults.add(nextPath);
+                            }
                         }
-                        matcher.push(entry.type, next);
                 }
                 results = newResults;
             }
 
-            // Apply filtering of Date to results
-            SimpleDateFormat fmt = new SimpleDateFormat(matcher.matchString());
-            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-            List<Path> filteredResults = new ArrayList<>();
             List<Object> dates = q.get(DirType.Date);
             CalendarDateRange range = (CalendarDateRange) dates.get(0);
 
             // If we're given a single point for time, signifying we are looking
             // for the file nearest, turn it into a window for query purposes.
-            if (range.isPoint()) {
+            if (range != null && range.isPoint()) {
                 range = CalendarDateRange.of(
                         range.getStart().subtract(nearestWindow),
                         range.getEnd().add(nearestWindow));
             }
 
-            CalendarDateRange dirRange = rangeFromFormat(fmt, range);
+            List<Path> filteredResults = new ArrayList<>();
+            if (needDateFilter) {
+                // Apply filtering of Date to results
+                SimpleDateFormat fmt = matcher.getFormat();
+                CalendarDateRange dirRange = rangeFromFormat(fmt, range);
 
-            for(Path p: results) {
-                try {
-                    Date d = fmt.parse(p.toString());
-                    if (checkDate(dirRange, CalendarDate.of(d)))
+                for (Path p : results) {
+                    Date d = matcher.getDate(p);
+                    if (d != null && checkDate(dirRange, CalendarDate.of(d)))
                         filteredResults.add(p);
-                } catch (ParseException e) {
-                    // Ignore directory
                 }
+            } else {
+                filteredResults = results;
             }
 
             // Now get the contents of the remaining directories
@@ -463,12 +450,21 @@ public class RadarDataInventory {
             for(Path p : filteredResults) {
                 try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p)) {
                     for (Path f: dirStream) {
-                        Date d = DateFromString.getDateUsingDemarkatedMatch(
-                                f.toString(), fileTimeFmt, '#');
-                        if (d != null) {
-                            CalendarDate cd = CalendarDate.of(d);
-                            if (checkDate(range, cd))
-                                filteredFiles.add(new QueryResultItem(f, cd));
+                        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(fileTimeRegex);
+                        java.util.regex.Matcher regexMatcher = pattern.matcher(f.toString());
+                        if (!regexMatcher.find()) continue;
+
+                        try {
+                            SimpleDateFormat fmt = new SimpleDateFormat(fileTimeFmt);
+                            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            Date d = fmt.parse(regexMatcher.group());
+                            if (d != null) {
+                                CalendarDate cd = CalendarDate.of(d);
+                                if (checkDate(range, cd))
+                                    filteredFiles.add(new QueryResultItem(f, cd));
+                            }
+                        } catch (ParseException e) {
+                            // Ignore file
                         }
                     }
                 } catch (IOException e) {
@@ -478,7 +474,7 @@ public class RadarDataInventory {
 
             // If only looking for nearest, perform that reduction now
             CalendarDateRange originalRange = (CalendarDateRange) dates.get(0);
-            if (originalRange.isPoint()) {
+            if (originalRange != null && originalRange.isPoint()) {
                 long offset = Long.MAX_VALUE;
                 QueryResultItem bestMatch = null;
                 for (QueryResultItem it: filteredFiles) {
@@ -489,8 +485,11 @@ public class RadarDataInventory {
                         bestMatch = it;
                     }
                 }
+
+                // Clear and only return one file
                 filteredFiles.clear();
-                filteredFiles.add(bestMatch);
+                if (bestMatch != null)
+                    filteredFiles.add(bestMatch);
             }
 
             return filteredFiles;

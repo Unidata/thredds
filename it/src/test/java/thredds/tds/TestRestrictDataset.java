@@ -143,7 +143,9 @@ public class TestRestrictDataset {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      Assert.assertEquals(401, statusCode);
+      if (statusCode != 401 && statusCode != 403)
+        assert false;
+      // Assert.assertEquals(401, statusCode);
 
     } catch (ucar.httpservices.HTTPException e) {
 
@@ -178,7 +180,7 @@ public class TestRestrictDataset {
     } catch (Exception e) {
 
       e.printStackTrace();
-      assert false;
+      Assert.fail(e.getMessage());
     }
   }
 

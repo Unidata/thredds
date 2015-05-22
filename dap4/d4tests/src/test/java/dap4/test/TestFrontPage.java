@@ -1,7 +1,6 @@
 package dap4.test;
 
-import dap4.test.servlet.*;
-import dap4.test.util.DapTestCommon;
+import org.junit.Test;
 
 /**
  * TestFrontPage verifies the front page
@@ -23,7 +22,7 @@ public class TestFrontPage extends DapTestCommon
     static protected String TESTFILE = "test_frontpage.html";
 
     // constants for Fake Request
-    static protected String FAKEURLPREFIX = "http://localhost:8080/d4ts";
+    static protected String FAKEURLPREFIX = "http://localhost:8080/thredds/d4ts";
 
     //////////////////////////////////////////////////
     // Instance variables
@@ -60,28 +59,25 @@ public class TestFrontPage extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
 
+    @Test
     public void testFrontPage()
         throws Exception
     {
+	org.junit.Assume.assumeTrue(usingIntellij);
+
         boolean pass = true;
+        String url = FAKEURLPREFIX; // no file specified
 
         // Create request and response objects
-        FakeServlet servlet = new FakeServlet(this.datasetpath);
-        String url = FAKEURLPREFIX; // no file specified
-        FakeServletRequest req = new FakeServletRequest(url, servlet);
-        FakeServletResponse resp = new FakeServletResponse();
+	    Mocker mocker = new Mocker("d4ts",url,this);
+        byte[] byteresult = null;
 
-        // See if the servlet can process this
         try {
-            servlet.init();
-            servlet.doGet(req, resp);
+            byteresult = mocker.execute();
         } catch (Throwable t) {
             t.printStackTrace();
             assertTrue(false);
         }
-        // Collect the output
-        FakeServletOutputStream fakestream = (FakeServletOutputStream) resp.getOutputStream();
-        byte[] byteresult = fakestream.toArray();
 
         // Convert the raw output to a string
         String html = new String(byteresult,UTF8);

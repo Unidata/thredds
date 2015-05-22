@@ -88,6 +88,9 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   /////////////////
   // Properties from tds.properties
 
+  // The values for these properties all come from tds/src/main/template/thredds/server/tds.properties except for
+  // "tds.content.root.path", which must be defined on the command line.
+
   @Value("${tds.version}")
   private String tdsVersion;
 
@@ -218,7 +221,32 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
         logServerStartup.error("TdsContext.init(): " + msg);
         throw new IllegalStateException(msg);
       }
+
+    String contentRootPathKey = "tds.content.root.path";
+
+    // In applicationContext-tdsConfig.xml, we have ignoreUnresolvablePlaceholders set to "true".
+    // As a result, when properties aren't defined, they will keep their placeholder String.
+    // In this case, that's "${tds.content.root.path}".
+    if (this.contentRootPathProperty.equals("${tds.content.root.path}")) {
+      String message = String.format("\"%s\" property isn't defined.", contentRootPathKey);
+      logServerStartup.error(message);
+      throw new IllegalStateException(message);
     }
+
+    /* from 4.6 duplicate ?
+     File contentRootDir = new File(this.contentRootPathProperty);
+    if (!contentRootDir.isAbsolute()) {
+      contentRootDir = new File(this.rootDirectory, this.contentRootPathProperty);
+    }
+
+    if (contentRootDir.isDirectory()) {
+      this.contentDirectory = new File(contentRootDir, this.contentRootPathProperty);
+    } else {
+      String message = String.format("\"%s\" property doesn't define a directory: %s",
+              contentRootPathKey, contentRootPathProperty);
+      logServerStartup.error(message);
+      throw new IllegalStateException(message);
+    } */
 
     // If content directory exists, make sure it is a directory.
     DescendantFileSource contentDirSource;

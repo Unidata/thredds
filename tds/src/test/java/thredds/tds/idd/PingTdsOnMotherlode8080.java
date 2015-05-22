@@ -32,9 +32,10 @@
 
 package thredds.tds.idd;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.Test;
+import ucar.unidata.test.util.ThreddsServer;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -54,12 +55,14 @@ public class PingTdsOnMotherlode8080
     public static Collection<Object[]> getCatalogUrls()
     {
         Collection<Object[]> catUrls = StandardCatalogUtils.getIddMainCatalogUrlArrayCollection();
-        catUrls.addAll( StandardCatalogUtils.getMlodeMainCatalogUrlArrayCollection() );
+        catUrls.addAll(StandardCatalogUtils.getMlodeMainCatalogUrlArrayCollection());
         return catUrls;
     }
 
     @Test
     public void ping() throws IOException {
+    {
+        ThreddsServer.LIVE.assumeIsAvailable();
         String tdsUrl = "http://thredds.ucar.edu/thredds/";
 
         CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );

@@ -1,5 +1,3 @@
-apply plugin: 'war'
-
 dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4shared')
@@ -7,7 +5,8 @@ dependencies {
     compile project(':netcdf4')
     compile project(':cdm')
 
-    providedCompile libraries["javax.servlet-api"]
-    compile libraries["jcip-annotations"]
+    provided libraries["javax.servlet-api"]
     compile libraries["slf4j-api"]
+    compile libraries["spring-web"]
+    compile libraries["spring-context"]
 }

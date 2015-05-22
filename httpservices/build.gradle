@@ -1,3 +1,5 @@
+ext.title = "HttpClient Wrappers"
+
 dependencies {
     compile libraries["jcip-annotations"]
     compile libraries["httpclient"]

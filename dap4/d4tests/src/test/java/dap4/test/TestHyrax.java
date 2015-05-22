@@ -1,6 +1,6 @@
 package dap4.test;
 
-import dap4.test.util.DapTestCommon;
+import org.junit.Test;
 import ucar.httpservices.*;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -276,9 +276,11 @@ public class TestHyrax extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test method
 
+    @Test
     public void testHyrax()
         throws Exception
     {
+	org.junit.Assume.assumeTrue(usingIntellij);
         boolean pass = true;
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) pass = false;

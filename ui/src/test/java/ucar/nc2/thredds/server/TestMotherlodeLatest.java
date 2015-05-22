@@ -32,24 +32,21 @@
  */
 package ucar.nc2.thredds.server;
 
-import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
-import ucar.nc2.Dimension;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDataset;
 import ucar.ma2.Section;
+import ucar.nc2.Dimension;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.test.util.NotTravis;
 
-import java.util.*;
 import java.io.IOException;
+import java.util.*;
 
-@Category(NotTravis.class)
 public class TestMotherlodeLatest extends TimerTask {
   static private final String server1 = "http://thredds.ucar.edu/";
   //static private final String server1 = "http://thredds.cise-nsf.gov:8080/";

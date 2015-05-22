@@ -1,5 +1,3 @@
-apply plugin: 'war'
-
 dependencies {
     // A lot of these depedencies should be in the testRuntime config, not testCompile.
 
@@ -11,11 +9,20 @@ dependencies {
     testCompile project(':cdm')
     testCompile project(':httpservices')
 
+    def tdsDep = testCompile project(':tds')
+    configure(tdsDep) {
+        // We don't want tds's logger. We'll provide our own (in testing.gradle).
+        exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j-impl'
+    }
+
     testCompile libraries["javax.servlet-api"]
+    testCompile libraries["spring-test"]
     testCompile libraries["slf4j-api"]
 }
 
 test {
+    systemProperties['testargs'] = System.getProperty("testargs", "")
+
     include 'dap4/test/TestParserDMR.class'
     include 'dap4/test/TestParserCE.class'
     include 'dap4/test/TestNc4Iosp.class'
@@ -24,4 +31,5 @@ test {
     include 'dap4/test/TestCDMClient.class'
     include 'dap4/test/TestConstraints.class'
     include 'dap4/test/TestDSR.class'
+    // include 'dap4/test/TestH5Iosp.class'
 }

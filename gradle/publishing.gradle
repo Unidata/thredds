@@ -1,22 +1,90 @@
-subprojects {
+configure(publishedProjects) {
     apply plugin: 'maven-publish'
 
-    // Finds this project's Java software component, if any.
-    // This component is added when the Java plugin is applied.
-    def javaSoftwareComponent = components.findByName("java")
+    // The PublishingExtension is a DeferredConfigurable model element, meaning that extension will be configured as
+    // late as possible in the build. So any 'publishing' configuration blocks are not evaluated until either:
+    //   1. The project is about to execute, or
+    //   2. the publishing extension is referenced as an instance, as opposed to via a configuration closure.
+    // This is why we can reference 'web' software components, even though the subprojects that apply the war plugin
+    // haven't been evaluated yet.
+    publishing {
+        publications {
+            ['java', 'web'].each { String name ->
+                def softwareComponent = components.findByName name
 
-    if (javaSoftwareComponent) {  // Groovy truth! Equivalent to: "javaSoftwareComponent != null"
-        publishing {
-            publications {
-                // Creates a maven publication named after the project. This will also generate several tasks:
-                //   generatePomFileFor$namePublication
-                //   publish$namePublicationToMavenLocal
-                //   publishToMavenLocal
-                //   publish
-                "$name"(MavenPublication) {
-                    from javaSoftwareComponent
+                if (softwareComponent) {
+                    // Creates a Maven publication with the given name. It will also generate several tasks:
+                    //   generatePomFileFor${name}Publication
+                    //   publish${name}PublicationToMavenLocal
+                    //   publishToMavenLocal  (depends on all instances of the above task)
+                    //   publish${name}PublicationTo${repoName}Repository
+                    //   publish  (depends on all instances of the above task)
+                    "$name"(MavenPublication) {
+                        from softwareComponent
+                    }
                 }
             }
         }
+
+        repositories {
+            String version = rootProject.version as String
+            if (version.endsWith('SNAPSHOT')) {
+                maven {
+                    name = 'snapshots'
+                    url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots/'
+                    // Set credentials in taskGraph.whenReady {}
+                }
+            } else {
+                maven {
+                    name = 'releases'
+                    url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/'
+                    // Set credentials in taskGraph.whenReady {}
+                }
+            }
+        }
+    }
+}
+
+///////////////////////////////////////////////// Root /////////////////////////////////////////////////
+
+import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
+
+publishing {
+    publications {
+        // Publish all artifacts we've added to the "archives" configuration of the root project. See fatJars.gradle.
+        rootProject.configurations.archives.allArtifacts.each {
+            if (it instanceof ArchivePublishArtifact) {
+                AbstractArchiveTask task = (it as ArchivePublishArtifact).archiveTask
+
+                "$task.baseName"(MavenPublication) {
+                    artifactId task.baseName
+                    artifact task
+                }
+            }
+        }
+    }
+}
+
+gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+    Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll { it instanceof PublishToMavenRepository }
+    if (!mavenPublishTasks) {
+        return  // We're not running any tasks that publish to a Maven repo.
+    }
+
+    Closure nexusCredentials = {
+        username = getPropertyOrFailBuild 'nexus.username'
+        password = getPropertyOrFailBuild 'nexus.password'
+    }
+
+    mavenPublishTasks.each {
+        it.repository.credentials nexusCredentials
+    }
+}
+
+String getPropertyOrFailBuild(String key) {
+    if (!rootProject.hasProperty(key)) {
+        throw new GradleException("You must define the '$key' property in order to publish to Nexus.")
+    } else {
+        rootProject.property(key) as String
     }
 }

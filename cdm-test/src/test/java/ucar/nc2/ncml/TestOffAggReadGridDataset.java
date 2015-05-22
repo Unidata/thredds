@@ -34,13 +34,15 @@ package ucar.nc2.ncml;
 
 import junit.framework.*;
 
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
 /** Test netcdf dataset in the JUnit framework. */
-
+@Category(NeedsCdmUnitTest.class)
 public class TestOffAggReadGridDataset extends TestCase {
 
   public TestOffAggReadGridDataset( String name) {

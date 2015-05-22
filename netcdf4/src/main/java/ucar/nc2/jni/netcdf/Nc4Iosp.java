@@ -175,10 +175,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
       } catch (Throwable t) {
         String message = String.format("NetCDF-4 C library not present (jna_path='%s', libname='%s').", jnaPath, libName);
-        startupLog.warn(message);
+        startupLog.warn(message, t);
 
         if (debugLoad) {
-          System.out.println(message);
+          System.err.println(message);
+          System.err.println(t.getMessage());
         }
       }
     }
@@ -186,13 +187,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return nc4;
   }
 
+  private static Boolean isClibraryPresent = null;
+
   /**
    * Test if the netcdf C library is present and loaded
    *
    * @return true if present
    */
   public static boolean isClibraryPresent() {
-    return load() != null;
+    if (isClibraryPresent == null) {
+      isClibraryPresent = load() != null;
+    }
+
+    return isClibraryPresent;
   }
 
   /**

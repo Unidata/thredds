@@ -7,9 +7,9 @@ package dap4.dap4shared;
 import dap4.core.util.DapUtil;
 import dap4.core.util.Escape;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URIBuilder;
 
-import java.net.URISyntaxException;
+import java.net.*;
+import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +51,7 @@ public class XURI
     protected String originaluri = null;
     protected List<String> protocols = null;
     protected String trueurl = null;  // without the query or frag and with proper single protocol
-    protected URIBuilder url = null; //applied to trueurl
+    protected URI url = null; //applied to trueurl
     protected boolean isfile = false;
 
     protected String baseprotocol = null;
@@ -63,15 +63,15 @@ public class XURI
 
     // Following are url decoded
     Map<String, String> fields // decomposed query
-            = new HashMap<String, String>();
+        = new HashMap<String, String>();
     Map<String, String> parameters // decomposed fragment
-            = new HashMap<String, String>();
+        = new HashMap<String, String>();
 
     //////////////////////////////////////////////////
     // Constructor
 
     public XURI(String path)
-            throws URISyntaxException
+        throws URISyntaxException
     {
         if(path == null)
             throw new URISyntaxException(path, "Null URI");
@@ -101,7 +101,7 @@ public class XURI
             this.isfile = (theproto.equals("file"));
         } else {//(this.protocols.length > 1
             int prefix = 0;
-            for(int i = 0; i < this.protocols.size() - 1; i++) {
+            for(int i = 0;i < this.protocols.size() - 1;i++) {
                 prefix += (this.protocols.get(i) + ":").length();
             }
             this.trueurl = path.substring(prefix);
@@ -109,12 +109,10 @@ public class XURI
         }
 
         // Make sure it parses
-        // We use the apache URIBuilder instead of URI or URL
-        // because it is more accepting.
         // Note that if the path has a drive letter, this parse
         // will treat it as the host; fix below
         try {
-            this.url = new URIBuilder(this.trueurl);
+            this.url = new URI(this.trueurl);
         } catch (URISyntaxException mue) {
             throw new URISyntaxException(this.trueurl, mue.getMessage());
         }
@@ -124,46 +122,51 @@ public class XURI
 
         if(!lastproto.equals(canonical(this.url.getScheme())))
             throw new URISyntaxException(this.url.toString(),
-                    String.format("malformed url: %s :: %s",
-                            lastproto, this.url.getScheme()));
+                String.format("malformed url: %s :: %s",
+                    lastproto, this.url.getScheme()));
         this.baseprotocol = lastproto;
         this.userinfo = canonical(this.url.getUserInfo());
-        if(this.isfile && DapUtil.hasDriveLetter(this.url.getHost()+":")) {
+        if(this.isfile && DapUtil.hasDriveLetter(this.url.getHost() + ":")) {
             this.host = null;
             this.path = this.url.getHost() + ":";
             this.path = canonical(this.path + this.url.getPath());
         } else {
             this.host = canonical(this.url.getHost());
             if(this.url.getPort() > 0)
-                this.host += (":"+this.url.getPort());
+                this.host += (":" + this.url.getPort());
             this.path = canonical(this.url.getPath());
         }
 
         // Parse the raw query (before decoding)
-        List<NameValuePair> params = this.url.getQueryParams();
-        if(params != null && params.size() > 0) {
+        String query = this.url.getRawQuery();
+        String[] params = null;
+	    if(query != null)
+	        params = this.url.getRawQuery().split(QUERYSEP);
+        if(params != null && params.length > 0) {
             this.query = "";
-            for(NameValuePair pair : params) {
-                String name = Escape.urlDecode(pair.getName());
+            for(String param : params) {
+                String[] pair = param.split("[=]");
+                String name = Escape.urlDecode(pair[0]);
                 name = name.toLowerCase(); // for consistent lookup
-                String value = pair.getValue();
-                if(value == null) value = "";
-                value = Escape.urlDecode(value);
-                this.fields.put(name, value);
-                this.query += name + "=" + value;
+                String value = "";
+                if(pair.length > 1) {
+                    value = Escape.urlDecode(pair[1]);
+                    this.fields.put(name, value);
+                    this.query += name + "=" + value;
+                }
             }
         }
 
         // Parse the raw fragment (before decoding)
         this.frag = canonical(this.url.getFragment());
         if(this.frag != null) {
-            String[] pieces = this.frag.split(FRAGMENTSEP);
-            for(String piece : pieces) {
-                String[] pair = piece.split("=");
+            params = this.frag.split(FRAGMENTSEP);
+            for(String param : params) {
+                String[] pair = param.split("=");
                 String name = Escape.urlDecode(pair[0]);
                 name = name.toLowerCase(); // for consistent lookup
                 String value = (pair.length == 2 ? Escape.urlDecode(pair[1])
-                        : "");
+                    : "");
                 this.parameters.put(name, value);
             }
         }

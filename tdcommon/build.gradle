@@ -1,3 +1,6 @@
+description = "A collection of utilities needed server-side, including THREDDS catalog handling."
+ext.title = "Server-side common library "
+
 dependencies {
     compile project(':cdm')
     compile project(':grib')

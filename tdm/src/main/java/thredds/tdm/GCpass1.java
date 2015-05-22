@@ -1,5 +1,8 @@
 package thredds.tdm;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -29,7 +32,6 @@ import java.util.Formatter;
 
 /**
  * GribCollection Building - pass1 : gather information, optionally make gbx9 files
- * LOOK use
  *
  * @author caron
  * @since 11/15/2014
@@ -37,42 +39,79 @@ import java.util.Formatter;
 public class GCpass1 {
   static private final Logger logger = LoggerFactory.getLogger(GCpass1.class);
 
+  /*
+String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -partition [none|file|directory] -useTableVersion [true|false] "+
+      "-useCacheDir <dir>"; */
+  private static class CommandLine {
+    @Parameter(names = {"-spec"}, description = "Collection specification string, exactly as in the <featureCollection>.", required = false)
+    public String spec;
+
+    @Parameter(names = {"-rootDir"}, description = "Collection rootDir, exactly as in the <featureCollection>.", required = false)
+    public String rootDir;
+
+    @Parameter(names = {"-regexp"}, description = "Collection regexp string, exactly as in the <featureCollection>.", required = false)
+    public String regexp;
+
+    @Parameter(names = {"-isGrib2"}, description = "Is Grib2 collection.", required = false)
+    public boolean isGrib2 = false;
+
+    @Parameter(names = {"-partition"}, description = "Partition type: none, directory, file", required = false)
+    public FeatureCollectionConfig.PartitionType partitionType = FeatureCollectionConfig.PartitionType.directory;
+
+    @Parameter(names = {"-useTableVersion"}, description = "Use Table version to make seperate variables.", required = false)
+    public boolean useTableVersion = false;
+
+    @Parameter(names = {"-useCacheDir"}, description = "Set the Grib index cache directory.", required = false)
+    public String cacheDir;
+
+    @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+    public boolean help = false;
+
+    private final JCommander jc;
+
+    public CommandLine(String progName, String[] args) throws ParameterException {
+      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName);           // Displayed in the usage information.
+    }
+
+    public void printUsage() {
+      jc.usage();
+    }
+
+    FeatureCollectionType getFeatureCollectionType() {
+      return isGrib2 ? FeatureCollectionType.GRIB2 : FeatureCollectionType.GRIB1;
+    }
+  }
+
   public static void main(String[] args) throws IOException {
-    String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -partition [none|file|directory] -useTableVersion [true|false] "+
-            "-useCacheDir <dir>";
-    String def = "default: -isGrib1 -partition directory -useTableVersion false";
-    if (args.length < 2) {
-      System.out.printf("%s%n%s%n", usage, def);
-      System.exit(0);
+    CommandLine cmdLine = new CommandLine("thredds.tdm.GCpass1", args);
+
+    if (cmdLine.help) {
+      cmdLine.printUsage();
+      return;
     }
 
-    // String spec = "Q:/cdmUnitTest/gribCollections/cfsr/.*gbx9";
-    // String spec = "B:/lead/NDFD-CONUS_5km/.*gbx9";
-    // String spec = "B:/motherlode/rfc/kalr/.*gbx9";
-    String spec = null; // "B:/rdavm/ds083.2/grib1/**/.*gbx9";
-    FeatureCollectionType type = FeatureCollectionType.GRIB1;
-    String partition = "directory";
-    String useTableVersionS = null;
-    String cacheDir = null;
-    for (int i = 0; i < args.length; i++) {
-      String s = args[i];
-      if (s.equalsIgnoreCase("-spec")) spec = args[i + 1];
-      if (s.equalsIgnoreCase("-isGrib2")) type = FeatureCollectionType.GRIB2;
-      if (s.equalsIgnoreCase("-partition")) partition = args[i + 1];
-      if (s.equalsIgnoreCase("-useTableVersion")) useTableVersionS = args[i + 1];
-      if (s.equalsIgnoreCase("-useCacheDir")) cacheDir = args[i + 1];
-    }
-    Boolean useTableVersion = (useTableVersionS != null) ? Boolean.parseBoolean(useTableVersionS) : null;  // default true
-
-    if (cacheDir != null) {
+    if (cmdLine.cacheDir != null) {
       DiskCache2 gribCache = DiskCache2.getDefault();
-      gribCache.setRootDirectory(cacheDir);
+      gribCache.setRootDirectory(cmdLine.cacheDir);
       gribCache.setAlwaysUseCache(true);
       GribIndexCache.setDiskCache2(gribCache);
     }
 
+    /*
+      public FeatureCollectionConfig(String name, String path, FeatureCollectionType fcType, String spec, String collectionName,
+                                 String dateFormatMark, String olderThan, String timePartition, Element innerNcml)
+     */
+    FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1", "GCpass1", cmdLine.getFeatureCollectionType(), cmdLine.spec, null,
+            null, null, cmdLine.partitionType.toString(), null);
+    FeatureCollectionConfig.GribConfig gribConfig = config.gribConfig;
+    gribConfig.useTableVersion = cmdLine.useTableVersion;
+
+    if (cmdLine.rootDir != null && cmdLine.regexp != null)
+      config.setFilter(cmdLine.rootDir,cmdLine.regexp);
+
     Formatter fm = new Formatter(System.out);
-    GCpass1 pass1 = new GCpass1(spec, type, partition, useTableVersion, fm);
+    GCpass1 pass1 = new GCpass1(config, fm);
     pass1.scanAndReport();
   }
 
@@ -134,10 +173,9 @@ public class GCpass1 {
   Counters countersAll;
   Accum accumAll = new Accum(2);
 
-  public GCpass1(String spec, FeatureCollectionType fcType, String timePartition, Boolean useTableVersion, Formatter fm) {
-    this.config = new FeatureCollectionConfig("GCpass1", "test/GCpass1", fcType, spec, null, null, null, timePartition, null);
-    this.gribConfig =  this.config.gribConfig;
-    if (useTableVersion != null) this.gribConfig.useTableVersion = useTableVersion;
+  public GCpass1(FeatureCollectionConfig config, Formatter fm) {
+    this.config = config;
+    this.gribConfig = config.gribConfig;
     this.fm = fm;
 
     this.config.show(fm);
@@ -258,6 +296,7 @@ public class GCpass1 {
         }
       } catch (Throwable t) {
         logger.warn("Error making partition " + part.getRoot(), t);
+        dpart.removePartition(part);
       }
     }   // loop over partitions
 
@@ -276,68 +315,68 @@ public class GCpass1 {
    * @throws IOException
    *
   private int scanFilePartition(final boolean isGrib1, final FeatureCollectionConfig config,
-                                final Logger logger, Path dirPath, Formatter fm) throws IOException {
-    long start = System.currentTimeMillis();
+  final Logger logger, Path dirPath, Formatter fm) throws IOException {
+  long start = System.currentTimeMillis();
 
-    final Formatter errlog = new Formatter();
-    CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
-    final CollectionUpdateType updateType = CollectionUpdateType.test;
+  final Formatter errlog = new Formatter();
+  CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
+  final CollectionUpdateType updateType = CollectionUpdateType.test;
 
-    FilePartition partition = new FilePartition(config.name, dirPath, config.olderThan, logger);
-    partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-    if (specp.getFilter() != null)
-      partition.setStreamFilter(new StreamFilter(specp.getFilter()));
+  FilePartition partition = new FilePartition(config.name, dirPath, config.olderThan, logger);
+  partition.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+  if (specp.getFilter() != null)
+  partition.setStreamFilter(new StreamFilter(specp.getFilter()));
 
-    final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
+  final AtomicBoolean anyChange = new AtomicBoolean(false); // just need a mutable boolean we can declare final
 
-    // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
-    if (updateType != CollectionUpdateType.never && updateType != CollectionUpdateType.testIndexOnly) {
-      partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
-        public void consume(MFile mfile) {
-          MCollection dcm = new CollectionSingleFile(mfile, logger);
-          dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+  // redo the child collection here; could also do inside Grib2PartitionBuilder, not sure if advantage
+  if (updateType != CollectionUpdateType.never && updateType != CollectionUpdateType.testIndexOnly) {
+  partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
+  public void consume(MFile mfile) {
+  MCollection dcm = new CollectionSingleFile(mfile, logger);
+  dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
-          if (isGrib1) {
-            Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-            try {
-              boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
-              if (changed) anyChange.set(true);
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
+  if (isGrib1) {
+  Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+  try {
+  boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
+  if (changed) anyChange.set(true);
+  } catch (IOException e) {
+  e.printStackTrace();
+  }
 
-          } else {
-            Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
-            try {
-              boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
-              if (changed) anyChange.set(true);
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
+  } else {
+  Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm.getCollectionName(), dcm, logger);
+  try {
+  boolean changed = (builder.updateNeeded(updateType) && builder.createIndex(errlog));
+  if (changed) anyChange.set(true);
+  } catch (IOException e) {
+  e.printStackTrace();
+  }
 
-          }
-        }
-      });
-    }
+  }
+  }
+  });
+  }
 
-    // redo partition index if needed, will detect if children have changed
-    boolean recreated = false;
-    if (isGrib1) {
-      Grib1PartitionBuilder builder = new Grib1PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
-      if (anyChange.get() || builder.updateNeeded(updateType))
-        recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+  // redo partition index if needed, will detect if children have changed
+  boolean recreated = false;
+  if (isGrib1) {
+  Grib1PartitionBuilder builder = new Grib1PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
+  if (anyChange.get() || builder.updateNeeded(updateType))
+  recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
 
-    } else {
-      Grib2PartitionBuilder builder = new Grib2PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
-      if (anyChange.get() || builder.updateNeeded(updateType))
-        recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
-    }
+  } else {
+  Grib2PartitionBuilder builder = new Grib2PartitionBuilder(partition.getCollectionName(), new File(partition.getRoot()), partition, logger);
+  if (anyChange.get() || builder.updateNeeded(updateType))
+  recreated = builder.createPartitionedIndex(updateType, CollectionUpdateType.never, errlog);
+  }
 
-    long took = System.currentTimeMillis() - start;
-    String collectionName = partition.getCollectionName();
-    if (recreated) logger.info("RewriteFilePartition {} took {} msecs", collectionName, took);
+  long took = System.currentTimeMillis() - start;
+  String collectionName = partition.getCollectionName();
+  if (recreated) logger.info("RewriteFilePartition {} took {} msecs", collectionName, took);
 
-    return 0;
+  return 0;
   } */
 
   /**
@@ -428,7 +467,7 @@ public class GCpass1 {
 
     int gdsHash = gr.getGDS().hashCode();
     int cdmHash = Grib1Variable.cdmVariableHash(cust1, gr, gdsHash, gribConfig.useTableVersion, gribConfig.intvMerge, gribConfig.useCenter);
-    String name =  Grib1Iosp.makeVariableName(cust1, gribConfig, pds);
+    String name = Grib1Iosp.makeVariableName(cust1, gribConfig, pds);
     counters.count("variable", new Variable(cdmHash, name));
     counters.count("gds", gdsHash);
     counters.count("gdsTemplate", gdss.getGridTemplate());
