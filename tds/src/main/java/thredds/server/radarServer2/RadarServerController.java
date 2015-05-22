@@ -211,6 +211,17 @@ public class RadarServerController {
         return sub.toString();
     }
 
+    // Old IDV can't handle all that we put out as a time coverage. This
+    // function forces the DateRange to use fixed times rather than, e.g.,
+    // present and 14 days.
+    private DateRange idvCompatibleRange(DateRange range)
+    {
+        CalendarDate start = range.getStart().getCalendarDate();
+        CalendarDate end = range.getEnd().getCalendarDate();
+        return new DateRange(start.toDate(), end.toDate());
+    }
+
+
     private String parseDatasetFromURL(final HttpServletRequest request)
     {
         String match = (String) request.getAttribute(
@@ -275,6 +286,7 @@ public class RadarServerController {
                         new ArrayList<ThreddsMetadata.Vocab>(), null));
 
         DateRange range = di.getTimeCoverage();
+        if (makeIDVCatalog) range = idvCompatibleRange(range);
         metadata.put(Dataset.TimeCoverage, range);
 
         // TODO: Need to be able to get this from the inventory
