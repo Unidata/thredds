@@ -55,8 +55,6 @@ public class RadarServerController {
     static final String entryPoint = "radarServer/";
     static final String URLbase = appName + entryPoint;
     static Map<String, List<RadarServerConfig.RadarConfigEntry.VarInfo>> vars;
-    static Map<String, DateRange> timeCoverages;
-    static Map<String, RadarServerConfig.RadarConfigEntry.GeoInfo> geoCoverages;
     boolean enabled = false;
 
     @Autowired
@@ -124,8 +122,6 @@ public class RadarServerController {
 
         data = new TreeMap<>();
         vars = new TreeMap<>();
-        timeCoverages = new TreeMap<>();
-        geoCoverages = new TreeMap<>();
         String contentPath = tdsContext.getContentDirectory().getPath();
         List<RadarServerConfig.RadarConfigEntry> configs = RadarServerConfig.readXML(contentPath + "/radar/radarCollections.xml");
         for (RadarServerConfig.RadarConfigEntry conf : configs) {
@@ -149,13 +145,13 @@ public class RadarServerController {
             di.addFileTime(conf.dateParseRegex, conf.dateFmt);
             di.setNearestWindow(CalendarPeriod.of(1, CalendarPeriod.Field.Hour));
 
-            // TODO: This needs to come from files instead
+            // TODO: These needs to come from files instead
             di.setDataFormat(conf.dataFormat);
+            di.setTimeCoverage(conf.timeCoverage);
+            di.setGeoCoverage(conf.spatialCoverage);
 
             data.put(conf.urlPath, di);
             vars.put(conf.urlPath, conf.vars);
-            timeCoverages.put(conf.urlPath, conf.timeCoverage);
-            geoCoverages.put(conf.urlPath, conf.spatialCoverage);
             StationList sl = di.getStationList();
             sl.loadFromXmlFile(contentPath + "/" + conf.stationFile);
         }
@@ -264,8 +260,7 @@ public class RadarServerController {
         metadata.put(Dataset.Documentation, new Documentation(null, null, null,
                 "summary", di.getDescription()));
 
-        // TODO: Pull from inventory
-        RadarServerConfig.RadarConfigEntry.GeoInfo gi = geoCoverages.get(dataset);
+        RadarServerConfig.RadarConfigEntry.GeoInfo gi = di.getGeoCoverage();
         metadata.put(Dataset.GeospatialCoverage,
                 new ThreddsMetadata.GeospatialCoverage(
                         new ThreddsMetadata.GeospatialRange(gi.eastWest.start,
@@ -276,8 +271,8 @@ public class RadarServerController {
                                 gi.upDown.size, 0.0, gi.upDown.units),
                         new ArrayList<ThreddsMetadata.Vocab>(), null));
 
-        // TODO: Should come from inventory
-        metadata.put(Dataset.TimeCoverage, timeCoverages.get(dataset));
+        DateRange range = di.getTimeCoverage();
+        metadata.put(Dataset.TimeCoverage, range);
 
         // TODO: Need to be able to get this from the inventory
         List<ThreddsMetadata.Variable> catalogVars = new ArrayList<>();
