@@ -409,7 +409,7 @@ public abstract class Aggregation {
   public void getDetailInfo(Formatter f) {
     f.format("  Type=%s%n", type);
     f.format("  dimName=%s%n", dimName);
-    f.format("  Datasets%n");
+    f.format("  Datasets (%d) %n", datasets.size());
     for (Dataset ds : datasets)
       ds.show(f);
   }

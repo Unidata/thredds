@@ -13,6 +13,7 @@ import ucar.unidata.test.util.TestDir;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Formatter;
+import java.util.List;
 
 /**
  * Test caching of NetcdfDataset in context of aggregation
@@ -44,10 +45,20 @@ public class TestAggDatasetIsCached {
       ncd2.close();
       System.out.printf("==========%n");
     }
-
-    FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-    cache.showCache();
     assert ok;
+
+    Formatter f = new Formatter();
+    FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+    cache.showCache(f);
+    System.out.printf("%s%n", f);
+
+    List<String> cacheFiles = cache.showCache();
+    assert cacheFiles.size() == 6;
+    boolean gotit = false;
+    for (String name : cacheFiles) {
+      if (name.endsWith("wqb.ncml")) gotit = true;
+    }
+    assert gotit;
   }
 
   private void showModes(EnumSet<NetcdfDataset.Enhance> modes) {
