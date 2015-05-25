@@ -4,6 +4,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.time.*;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.EarthLocation;
 
 import java.io.File;
@@ -38,6 +39,8 @@ public class RadarDataInventory {
     private StationList stations;
     private CalendarPeriod nearestWindow, rangeAdjustment;
     private String name, description;
+    private DateRange timeCoverage;
+    private RadarServerConfig.RadarConfigEntry.GeoInfo geoCoverage;
 
     public RadarDataInventory(Path datasetRoot) {
         items = new EnumMap<>(DirType.class);
@@ -86,6 +89,22 @@ public class RadarDataInventory {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setTimeCoverage(DateRange range) {
+        this.timeCoverage = range;
+    }
+
+    public DateRange getTimeCoverage() {
+        return this.timeCoverage;
+    }
+
+    public void setGeoCoverage(RadarServerConfig.RadarConfigEntry.GeoInfo info) {
+        this.geoCoverage = info;
+    }
+
+    public RadarServerConfig.RadarConfigEntry.GeoInfo getGeoCoverage() {
+        return this.geoCoverage;
     }
 
     public boolean needsVar() {
@@ -360,6 +379,7 @@ public class RadarDataInventory {
 
         private CalendarDateRange rangeFromFormat(SimpleDateFormat fmt,
                                                   CalendarDateRange range) {
+            if (range == null) return null;
             CalendarDate newStart = reparseDate(fmt, range.getStart());
             CalendarDate newEnd = reparseDate(fmt, range.getEnd());
             return CalendarDateRange.of(newStart, newEnd.add(rangeAdjustment));

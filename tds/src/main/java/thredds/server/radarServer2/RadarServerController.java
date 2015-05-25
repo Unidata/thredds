@@ -55,8 +55,6 @@ public class RadarServerController {
     static final String entryPoint = "radarServer/";
     static final String URLbase = appName + entryPoint;
     static Map<String, List<RadarServerConfig.RadarConfigEntry.VarInfo>> vars;
-    static Map<String, DateRange> timeCoverages;
-    static Map<String, RadarServerConfig.RadarConfigEntry.GeoInfo> geoCoverages;
     boolean enabled = false;
 
     @Autowired
@@ -124,8 +122,6 @@ public class RadarServerController {
 
         data = new TreeMap<>();
         vars = new TreeMap<>();
-        timeCoverages = new TreeMap<>();
-        geoCoverages = new TreeMap<>();
         String contentPath = tdsContext.getContentDirectory().getPath();
         List<RadarServerConfig.RadarConfigEntry> configs = RadarServerConfig.readXML(contentPath + "/radar/radarCollections.xml");
         for (RadarServerConfig.RadarConfigEntry conf : configs) {
@@ -149,13 +145,13 @@ public class RadarServerController {
             di.addFileTime(conf.dateParseRegex, conf.dateFmt);
             di.setNearestWindow(CalendarPeriod.of(1, CalendarPeriod.Field.Hour));
 
-            // TODO: This needs to come from files instead
+            // TODO: These needs to come from files instead
             di.setDataFormat(conf.dataFormat);
+            di.setTimeCoverage(conf.timeCoverage);
+            di.setGeoCoverage(conf.spatialCoverage);
 
             data.put(conf.urlPath, di);
             vars.put(conf.urlPath, conf.vars);
-            timeCoverages.put(conf.urlPath, conf.timeCoverage);
-            geoCoverages.put(conf.urlPath, conf.spatialCoverage);
             StationList sl = di.getStationList();
             sl.loadFromXmlFile(contentPath + "/" + conf.stationFile);
         }
@@ -212,6 +208,17 @@ public class RadarServerController {
         return sub.toString();
     }
 
+    // Old IDV can't handle all that we put out as a time coverage. This
+    // function forces the DateRange to use fixed times rather than, e.g.,
+    // present and 14 days.
+    private DateRange idvCompatibleRange(DateRange range)
+    {
+        CalendarDate start = range.getStart().getCalendarDate();
+        CalendarDate end = range.getEnd().getCalendarDate();
+        return new DateRange(start.toDate(), end.toDate());
+    }
+
+
     private String parseDatasetFromURL(final HttpServletRequest request)
     {
         String match = (String) request.getAttribute(
@@ -264,8 +271,7 @@ public class RadarServerController {
         metadata.put(Dataset.Documentation, new Documentation(null, null, null,
                 "summary", di.getDescription()));
 
-        // TODO: Pull from inventory
-        RadarServerConfig.RadarConfigEntry.GeoInfo gi = geoCoverages.get(dataset);
+        RadarServerConfig.RadarConfigEntry.GeoInfo gi = di.getGeoCoverage();
         metadata.put(Dataset.GeospatialCoverage,
                 new ThreddsMetadata.GeospatialCoverage(
                         new ThreddsMetadata.GeospatialRange(gi.eastWest.start,
@@ -276,8 +282,9 @@ public class RadarServerController {
                                 gi.upDown.size, 0.0, gi.upDown.units),
                         new ArrayList<ThreddsMetadata.Vocab>(), null));
 
-        // TODO: Should come from inventory
-        metadata.put(Dataset.TimeCoverage, timeCoverages.get(dataset));
+        DateRange range = di.getTimeCoverage();
+        if (makeIDVCatalog) range = idvCompatibleRange(range);
+        metadata.put(Dataset.TimeCoverage, range);
 
         // TODO: Need to be able to get this from the inventory
         List<ThreddsMetadata.Variable> catalogVars = new ArrayList<>();
@@ -449,10 +456,23 @@ public class RadarServerController {
     {
         List<RadarDataInventory.Query.QueryResultItem> res = query.results();
         CatalogBuilder cb = new CatalogBuilder();
-        cb.addService(new Service("OPENDAP",
-                "/thredds/dodsC/" + dataset,
+
+        // At least the IDV needs to have the trailing slash included
+        if (!dataset.endsWith("/"))
+            dataset += "/";
+
+        Service dap = new Service("OPENDAP", "/thredds/dodsC/" + dataset,
                 ServiceType.OPENDAP.toString(), null, null,
-                new ArrayList<Service>(), new ArrayList<Property>()));
+                new ArrayList<Service>(), new ArrayList<Property>());
+        Service cdmr = new Service("CDMRemote", "/thredds/cdmremote/" + dataset,
+                ServiceType.CdmRemote.toString(), null, null,
+                new ArrayList<Service>(), new ArrayList<Property>());
+        Service files = new Service("HTTPServer", "/thredds/fileServer/" + dataset,
+                ServiceType.HTTPServer.toString(), null, null,
+                new ArrayList<Service>(), new ArrayList<Property>());
+        cb.addService(new Service("RadarServices", "",
+                ServiceType.Compound.toString(), null, null,
+                Arrays.asList(dap, files, cdmr), new ArrayList<Property>()));
         cb.setName("Radar " + inv.getName() + " datasets in near real time");
 
         DatasetBuilder mainDB = new DatasetBuilder(null);
@@ -465,7 +485,7 @@ public class RadarServerController {
         Map<String, Object> metadata = tmd.getFlds();
         metadata.put(Dataset.DataFormatType, inv.getDataFormat());
         metadata.put(Dataset.FeatureType, inv.getFeatureType().toString());
-        metadata.put(Dataset.ServiceName, "OPENDAP");
+        metadata.put(Dataset.ServiceName, "RadarServices");
         metadata.put(Dataset.Documentation, new Documentation(null, null, null,
                 null, res.size() + " datasets found for query"));
 
