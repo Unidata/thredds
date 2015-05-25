@@ -69,8 +69,10 @@ public class TestNetcdfFileCache {
   int count = 0;
 
   void loadFilesIntoCache(File dir, FileCache cache) {
-    if(dir.listFiles() != null)
-    for (File f : dir.listFiles())
+    File[] files = dir.listFiles();
+    if ( files == null) return;
+
+    for (File f : files) {
       if (f.isDirectory())
         loadFilesIntoCache(f, cache);
 
@@ -85,6 +87,7 @@ public class TestNetcdfFileCache {
           System.out.println(" *** failed on " + f.getPath());
         }
       }
+    }
   }
 
   @Test
@@ -213,7 +216,7 @@ public class TestNetcdfFileCache {
 
     // close all
     Map<Object, FileCache.CacheElement> map = cache.getCache();
-    List<FileCacheable> files = new ArrayList<FileCacheable>();
+    List<FileCacheable> files = new ArrayList<>();
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
       assert elem.list.size() == 1;
@@ -243,7 +246,7 @@ public class TestNetcdfFileCache {
   public void testConcurrentAccess() throws InterruptedException {
     loadFilesIntoCache(new File(TestDir.cdmLocalTestDataDir), cache);
     Map<Object, FileCache.CacheElement> map = cache.getCache();
-    List<String> files = new ArrayList<String>();
+    List<String> files = new ArrayList<>();
     for (Object key : map.keySet()) {
       FileCache.CacheElement elem = map.get(key);
       for (FileCache.CacheElement.CacheFile file : elem.list)
@@ -254,7 +257,7 @@ public class TestNetcdfFileCache {
     int nfiles = files.size();
 
     Formatter format = new Formatter(System.out);
-    ConcurrentLinkedQueue<Future> q = new ConcurrentLinkedQueue<Future>();
+    ConcurrentLinkedQueue<Future> q = new ConcurrentLinkedQueue<>();
     ExecutorService qexec = Executors.newFixedThreadPool(CONS_THREAD);
     qexec.submit(new Consumer(q, format));
 
@@ -279,15 +282,17 @@ public class TestNetcdfFileCache {
 
     int total = 0;
     int total_locks = 0;
-    HashSet<Object> checkUnique = new HashSet<Object>();
+    HashSet<Object> checkUnique = new HashSet<>();
     map = cache.getCache();
     for (Object key : map.keySet()) {
       assert !checkUnique.contains(key);
       checkUnique.add(key);
-      FileCache.CacheElement elem = map.get(key);
       int locks = 0;
-      for (FileCache.CacheElement.CacheFile file : elem.list)
-        if (file.isLocked.get()) locks++;
+      FileCache.CacheElement elem = map.get(key);
+      synchronized (elem) {
+        for (FileCache.CacheElement.CacheFile file : elem.list)
+          if (file.isLocked.get()) locks++;
+      }
       //System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
       total_locks += locks;
       total += elem.list.size();
