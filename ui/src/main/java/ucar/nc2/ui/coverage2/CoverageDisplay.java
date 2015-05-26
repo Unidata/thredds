@@ -4,19 +4,9 @@ package ucar.nc2.ui.coverage2;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.Dataset;
-//import thredds.client.catalog.tools.DataFactory;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-//import ucar.nc2.dataset.CoordinateAxis1D;
-//import ucar.nc2.dataset.CoordinateAxis1DTime;
-// import ucar.nc2.dataset.NetcdfDataset;
-//import ucar.nc2.ft.cover.Coverage;
-//import ucar.nc2.ft.cover.CoverageCS;
-//import ucar.nc2.ft.cover.CoverageDataset;
-//import ucar.nc2.ft.cover.impl.CoverageDatasetImpl;
-//import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.grid.*;
-import ucar.nc2.ft2.remote.CdmrFeatureDataset;
 import ucar.nc2.ui.event.ActionCoordinator;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
@@ -25,11 +15,9 @@ import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.util.Format;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
@@ -1475,7 +1463,7 @@ public class CoverageDisplay extends JPanel {
     public void run() {
       GridCoverageDataset gcd = null;
       try {
-        gcd = CdmrFeatureDataset.factory(FeatureType.GRID, endpoint.toString());
+        gcd = CoverageDatasetFactory.openGridCoverage(endpoint.toString());
       } catch (IOException e) {
         setError("Failed to open datset: "+e.getMessage());
       }

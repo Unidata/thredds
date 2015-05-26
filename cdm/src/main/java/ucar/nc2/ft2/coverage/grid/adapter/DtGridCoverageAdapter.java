@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid;
+package ucar.nc2.ft2.coverage.grid.adapter;
 
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -10,25 +10,22 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDataset.Gridset;
-import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ft2.coverage.grid.*;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
 import java.util.*;
 
 /**
- * Adapt ucar.nc2.dt.GridDataset to ucar.nc2.ft.cover.grid.GridCoverageDatasetIF
+ * Adapt ucar.nc2.dt.GeoGridDataset to ucar.nc2.ft.cover.grid.GridCoverageDataset
  *
  * @author caron
  * @since 5/1/2015
  */
-public class DtGridDatasetAdapter extends GridCoverageDataset {
-  private GridDataset proxy;
+public class DtGridCoverageAdapter extends GridCoverageDataset {
+  private GeoGridDataset proxy;
 
-  public DtGridDatasetAdapter(GridDataset proxy) {
+  public DtGridCoverageAdapter(GeoGridDataset proxy) {
     this.proxy = proxy;
     setName(proxy.getLocation());
     setGlobalAttributes(proxy.getGlobalAttributes());
@@ -37,19 +34,19 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
     setProjBoundingBox(proxy.getProjBoundingBox());
 
     List<GridCoverage> pgrids = new ArrayList<>();
-    for (GridDatatype dtGrid : proxy.getGrids())
+    for (GeoGrid dtGrid : proxy.getGrids())
       pgrids.add(new Grid(dtGrid));
     setGrids(pgrids);
 
     List<ucar.nc2.ft2.coverage.grid.GridCoordSys> pcoordSys = new ArrayList<>();
-    for (Gridset gset : proxy.getGridsets())
+    for (GeoGridDataset.Gridset gset : proxy.getGridsets())
       pcoordSys.add(new CoordSys(gset.getGeoCoordSystem()));
     setCoordSys(pcoordSys);
 
     Set<String> transformNames = new HashSet<>();
     List<GridCoordTransform> transforms = new ArrayList<>();
-    for (Gridset gset : proxy.getGridsets()) {
-      ucar.nc2.dt.GridCoordSystem gcs = gset.getGeoCoordSystem();
+    for (GeoGridDataset.Gridset gset : proxy.getGridsets()) {
+      GeoGridCoordSys gcs = gset.getGeoCoordSystem();
       for (ucar.nc2.dataset.CoordinateTransform ct : gcs.getCoordinateTransforms())
         if (!transformNames.contains(ct.getName())) {
           transforms.add(new Transform(ct));
@@ -60,8 +57,8 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
 
     Set<String> axisNames = new HashSet<>();
     List<GridCoordAxis> axes = new ArrayList<>();
-    for (Gridset gset : proxy.getGridsets()) {
-      ucar.nc2.dt.GridCoordSystem gcs = gset.getGeoCoordSystem();
+    for (GeoGridDataset.Gridset gset : proxy.getGridsets()) {
+      GeoGridCoordSys gcs = gset.getGeoCoordSystem();
       for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordinateAxes())
         if (!axisNames.contains(axis.getFullName())) {
           axes.add(new Axis(axis));
@@ -77,9 +74,9 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
   }
 
   private class Grid extends GridCoverage {
-    ucar.nc2.dt.GridDatatype dtGrid;
+    GeoGrid dtGrid;
 
-    Grid(ucar.nc2.dt.GridDatatype dtGrid) {
+    Grid(GeoGrid dtGrid) {
       this.dtGrid = dtGrid;
       setName(dtGrid.getName());
       setAtts(dtGrid.getAttributes());
@@ -91,7 +88,7 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
 
     @Override
     public Array readData(GridSubset subset) throws IOException {  // LOOK bogus
-      GridCoordSystem gcs = dtGrid.getCoordinateSystem();
+      GeoGridCoordSys gcs = dtGrid.getCoordinateSystem();
       int ens = -1;
       int level = -1;
       int time = -1;
@@ -131,9 +128,9 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
   }
 
   private class CoordSys extends GridCoordSys {
-    ucar.nc2.dt.GridCoordSystem dtCoordSys;
+    GeoGridCoordSys dtCoordSys;
 
-    CoordSys(ucar.nc2.dt.GridCoordSystem dtCoordSys) {
+    CoordSys(GeoGridCoordSys dtCoordSys) {
       this.dtCoordSys = dtCoordSys;
       setName(dtCoordSys.getName());
       for (CoordinateTransform ct : dtCoordSys.getCoordinateTransforms())

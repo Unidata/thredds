@@ -44,6 +44,9 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.grid.adapter.DtGridCoverageAdapter;
+import ucar.nc2.ft2.coverage.grid.adapter.GeoGridDataset;
 import ucar.nc2.grib.GribUtils;
 
 import java.io.IOException;
@@ -103,6 +106,32 @@ public class Grib1Collection extends GribCollectionImmutable {
         NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
         return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
+      }
+      return null;
+    }
+  }
+
+  @Override
+  public GridCoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
+                                                     Formatter errlog, org.slf4j.Logger logger) throws IOException {
+    if (filename == null) {
+      Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
+      NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation()+"#"+group.getId(), null);
+      NetcdfDataset ncd = new NetcdfDataset(ncfile);
+      GeoGridDataset gds = new GeoGridDataset(ncd);
+      return new DtGridCoverageAdapter(gds);
+
+    } else {
+      MFile wantFile = findMFileByName(filename);
+      if (wantFile != null) {
+        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
+        if (gc == null) return null;
+
+        Grib1Iosp iosp = new Grib1Iosp(gc);
+        NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
+        NetcdfDataset ncd = new NetcdfDataset(ncfile);
+        GeoGridDataset gds = new GeoGridDataset(ncd);
+        return new DtGridCoverageAdapter(gds);
       }
       return null;
     }

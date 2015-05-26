@@ -12,7 +12,6 @@ import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.catalog.writer.ThreddsMetadataExtractor;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
@@ -60,7 +59,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
 
   @Override
-  public FeatureDataset getFeatureDataset() {
+  public FeatureDatasetPoint getPointDataset(String matchPath) {
     return fd;
   }
 

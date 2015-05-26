@@ -34,7 +34,6 @@ package ucar.nc2.grib.grib1;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.collection.Grib1Iosp;
-import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 /**

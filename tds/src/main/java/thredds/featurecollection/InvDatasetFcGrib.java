@@ -44,7 +44,9 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
-import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft2.coverage.grid.adapter.DtGridCoverageAdapter;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
+import ucar.nc2.ft2.coverage.grid.adapter.GeoGridDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.time.CalendarDate;
@@ -123,11 +125,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
 
     state = new StateGrib(null);
-  }
-
-  @Override
-  public FeatureDataset getFeatureDataset() {
-    return null;
   }
 
   @Override
@@ -562,6 +559,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return null;
     }
 
+  }
+
+  public GridCoverageDataset getGridCoverage(String matchPath) throws IOException {
+    StateGrib localState = (StateGrib) checkState();
+
+    return (GridCoverageDataset) findDataset(matchPath, localState.gribCollection, new DatasetCreator() {
+      @Override
+      public Object obtain(GribCollectionImmutable gc, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) throws IOException {
+        return gc.getGridCoverage(ds, group, null, config, null, logger);
+      }
+    });
   }
 
   @Override

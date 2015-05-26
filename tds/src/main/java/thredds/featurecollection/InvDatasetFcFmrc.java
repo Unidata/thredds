@@ -13,7 +13,6 @@ import thredds.server.catalog.writer.ThreddsMetadataExtractor;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -434,11 +433,6 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     }
 
     return null;
-  }
-
-  @Override
-  public FeatureDataset getFeatureDataset() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
 }

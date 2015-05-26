@@ -51,7 +51,7 @@ public class NcssPointController extends AbstractNcssController {
       throw new BindException(validationResult);
 
     String datasetPath = getDatasetPath(req);
-    try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
+    try (FeatureDatasetPoint fd = TdsRequestedDataset.getPointDataset(req, res, datasetPath)) {
       if (fd == null) return;
 
       Formatter errs = new Formatter();
@@ -101,7 +101,7 @@ public class NcssPointController extends AbstractNcssController {
      boolean showPointForm = path.endsWith("/pointDataset.html");
      String datasetPath = getDatasetPath(req);
 
-     try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
+     try (FeatureDatasetPoint fd = TdsRequestedDataset.getPointDataset(req, res, datasetPath)) {
        if (fd == null) return null; // restricted dataset
        return ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
      }
@@ -111,7 +111,7 @@ public class NcssPointController extends AbstractNcssController {
    ModelAndView getStations(HttpServletRequest req, HttpServletResponse res, NcssPointParamsBean params) throws IOException {
 
      String datasetPath = getDatasetPath(req);
-     try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
+     try (FeatureDatasetPoint fd = TdsRequestedDataset.getPointDataset(req, res, datasetPath)) {
        if (fd == null) return null;
 
        if (fd.getFeatureType() != FeatureType.STATION)

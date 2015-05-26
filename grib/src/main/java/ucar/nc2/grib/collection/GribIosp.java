@@ -483,7 +483,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   }
 
-  static private enum  Time2DinfoType {off, intv, bounds, is1Dtime, reftime, timeAuxRef}
+  private enum  Time2DinfoType {off, intv, bounds, is1Dtime, reftime, timeAuxRef}
   static private class Time2Dinfo {
     Time2DinfoType which;
     CoordinateTime2D time2D;
@@ -1061,7 +1061,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
   }
 
-  static private interface DataReceiverIF {
+  private interface DataReceiverIF {
     void addData(float[] data, int resultIndex, int nx) throws IOException;
     void setDataToZero();
     Array getArray();

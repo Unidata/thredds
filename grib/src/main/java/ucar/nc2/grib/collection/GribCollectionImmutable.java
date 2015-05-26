@@ -43,6 +43,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;
@@ -86,7 +87,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     TwoD,              // PC: TwoD time partition                      [nruns, ntimes]
     Best,              // PC: Best time partition                      [ntimes]
     BestComplete,      // PC: Best complete time partition             [ntimes]
-    Analysis}          // PC: Analysis only time partition (not done)  [ntimes]
+    Analysis
+  }          // PC: Analysis only time partition (not done)  [ntimes]
 
   ////////////////////////////////////////////////////////////////
   protected final String name; // collection name; index filename must be directory/name.ncx2
@@ -117,11 +119,11 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     List<Dataset> work = new ArrayList<>(gc.datasets.size());
     for (GribCollectionMutable.Dataset gcDataset : gc.datasets) {
-      work.add( new Dataset(gcDataset.gctype, gcDataset.groups));
+      work.add(new Dataset(gcDataset.gctype, gcDataset.groups));
     }
-    this.datasets = Collections.unmodifiableList( work);
+    this.datasets = Collections.unmodifiableList(work);
 
-    this.horizCS = Collections.unmodifiableList( gc.horizCS);
+    this.horizCS = Collections.unmodifiableList(gc.horizCS);
     this.masterRuntime = gc.masterRuntime;
     this.fileMap = gc.fileMap;
     this.cust = gc.cust;
@@ -161,7 +163,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     for (Dataset ds : datasets) {
       if (ds.gctype != GribCollectionImmutable.Type.Best) return ds;
     }
-    throw new IllegalStateException("GC.getDatasetCanonical failed on="+name);
+    throw new IllegalStateException("GC.getDatasetCanonical failed on=" + name);
   }
 
   public String getName() {
@@ -294,9 +296,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.gctype = gctype;
       List<GroupGC> work = new ArrayList<>(groups.size());
       for (GribCollectionMutable.GroupGC gcGroup : groups) {
-        work.add( new GroupGC(this, gcGroup));
+        work.add(new GroupGC(this, gcGroup));
       }
-      this.groups = Collections.unmodifiableList( work);
+      this.groups = Collections.unmodifiableList(work);
     }
 
     public Iterable<GroupGC> getGroups() {
@@ -344,10 +346,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       List<VariableIndex> work = new ArrayList<>(gcVars.size());
       for (GribCollectionMutable.VariableIndex gcVar : gcVars) {
         VariableIndex vi = makeVariableIndex(this, gcVar);
-        work.add( vi);
+        work.add(vi);
         varMap.put(vi, vi);
       }
-      this.variList = Collections.unmodifiableList( work);
+      this.variList = Collections.unmodifiableList(work);
     }
 
     public boolean isTwoD() {
@@ -366,7 +368,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return GribCollectionImmutable.this;
     }
 
-        // human readable
+    // human readable
     public String getDescription() {
       return horizCoordSys.getDescription();
     }
@@ -406,18 +408,18 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public CalendarDateRange makeCalendarDateRange() {
-        CalendarDateRange result = null;
-        for (Coordinate coord : coords) {
-          switch (coord.getType()) {
-            case time:
-            case timeIntv:
-            case time2D:
-              CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
-              CalendarDateRange range = time.makeCalendarDateRange(null);
-              if (result == null) result = range;
-              else result = result.extend(range);
-          }
+      CalendarDateRange result = null;
+      for (Coordinate coord : coords) {
+        switch (coord.getType()) {
+          case time:
+          case timeIntv:
+          case time2D:
+            CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
+            CalendarDateRange range = time.makeCalendarDateRange(null);
+            if (result == null) result = range;
+            else result = result.extend(range);
         }
+      }
 
       return result;
     }
@@ -448,7 +450,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final long recordsPos;    // where the records array is stored in the index. 0 means no records
     final int recordsLen;
 
-        // stats
+    // stats
     final int ndups, nrecords, nmissing;
 
     // read in on demand
@@ -642,7 +644,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       int size = 1;
       for (int idx : coordIndex) {
         Coordinate c = group.coords.get(idx);
-        int csize = (c instanceof CoordinateTime2D) ? ((CoordinateTime2D)c).getNtimes(): c.getSize();
+        int csize = (c instanceof CoordinateTime2D) ? ((CoordinateTime2D) c).getNtimes() : c.getSize();
         size *= csize;
       }
       return size;
@@ -739,7 +741,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
   }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for FileCacheable
 
   public synchronized void close() throws java.io.IOException {
@@ -748,7 +750,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
   }
 
-    // release any resources like file handles
+  // release any resources like file handles
   public void release() throws IOException {
   }
 
@@ -822,7 +824,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           nmissing += v.nmissing;
         }
         if (nrecords == 0) nrecords = 1;
-        f.format("%s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, g.getDescription(), nrecords,  ndups, ((float)ndups/nrecords), nmissing, ((float)nmissing/nrecords));
+        f.format("%s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, g.getDescription(), nrecords, ndups, ((float) ndups / nrecords), nmissing, ((float) nmissing / nrecords));
       }
     } else {
       for (GroupGC g : ds.groups) {
@@ -834,8 +836,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         }
         f.format(" Group %s total nrecords=%d", g.getDescription(), nrecords);
         if (nrecords == 0) nrecords = 1;
-        f.format(", ndups=%d (%f)", ndups, ((float)ndups/nrecords));
-        f.format(", nmiss=%d (%f)%n", nmissing, ((float)nmissing/nrecords));
+        f.format(", ndups=%d (%f)", ndups, ((float) ndups / nrecords));
+        f.format(", nmiss=%d (%f)%n", nmissing, ((float) nmissing / nrecords));
       }
     }
 
@@ -925,38 +927,42 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   }
 
   public RandomAccessFile getDataRaf(int fileno) throws IOException {
-     // absolute location
-     MFile mfile = fileMap.get(fileno);
-     String filename = mfile.getPath();
-     File dataFile = new File(filename);
+    // absolute location
+    MFile mfile = fileMap.get(fileno);
+    String filename = mfile.getPath();
+    File dataFile = new File(filename);
 
-     // if data file does not exist, check reletive location - eg may be /upc/share instead of Q:
-     if (!dataFile.exists()) {
-       if (fileMap.size() == 1) {
-         dataFile = new File(directory, name); // single file case
-       } else {
-         dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
-       }
-     }
+    // if data file does not exist, check reletive location - eg may be /upc/share instead of Q:
+    if (!dataFile.exists()) {
+      if (fileMap.size() == 1) {
+        dataFile = new File(directory, name); // single file case
+      } else {
+        dataFile = new File(directory, dataFile.getName()); // must be in same directory as the ncx file
+      }
+    }
 
-     // data file not here
-     if (!dataFile.exists()) {
-       throw new FileNotFoundException("data file not found = " + dataFile.getPath());
-     }
+    // data file not here
+    if (!dataFile.exists()) {
+      throw new FileNotFoundException("data file not found = " + dataFile.getPath());
+    }
 
-     RandomAccessFile want = RandomAccessFile.acquire(dataFile.getPath());
-     want.order(RandomAccessFile.BIG_ENDIAN);
-     return want;
-   }
+    RandomAccessFile want = RandomAccessFile.acquire(dataFile.getPath());
+    want.order(RandomAccessFile.BIG_ENDIAN);
+    return want;
+  }
 
   ///////////////////////
 
-  // stuff for InvDatasetFcGrib
+  // stuff needed by InvDatasetFcGrib
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
-                                                                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
   public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
-                                                              FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+
+
+  public abstract GridCoverageDataset getGridCoverage(Dataset ds, GroupGC group, String filename,
+                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
 
 }

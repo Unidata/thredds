@@ -45,7 +45,8 @@ import thredds.inventory.MCollection;
 import thredds.server.catalog.FeatureCollectionRef;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.log.LoggerFactoryImpl;
@@ -551,6 +552,17 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
   /////////////////////////////////////////////////////////////////////////
 
   /**
+   * Get the associated Point Dataset, if any. called by DatasetHandler.openPointDataset()
+   *
+   * @param matchPath match.remaining
+   * @return Grid Dataset, or null if n/a
+   * @throws IOException on error
+   */
+  public FeatureDatasetPoint getPointDataset(String matchPath) throws IOException {
+    return null;
+  }
+
+  /**
    * Get the associated Grid Dataset, if any. called by DatasetHandler.openGridDataset()
    *
    * @param matchPath match.remaining
@@ -558,23 +570,12 @@ public abstract class InvDatasetFeatureCollection implements CollectionUpdateLis
    * @throws IOException on error
    */
   public ucar.nc2.dt.grid.GridDataset getGridDataset(String matchPath) throws IOException {
-    int pos = matchPath.indexOf('/');
-    String type = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
-    String name = (pos > -1) ? matchPath.substring(pos + 1) : "";
-
-    // this assumes that these are files. also might be remote datasets from a catalog
-    if (type.equalsIgnoreCase(FILES)) {
-      if (topDirectory == null) return null;
-
-      String filename = topDirectory + (topDirectory.endsWith("/") ? "" : "/") + name;
-      NetcdfDataset ncd = NetcdfDataset.acquireDataset(null, filename, null, -1, null, null); // no enhancement
-      return new ucar.nc2.dt.grid.GridDataset(ncd);
-    }
-
     return null;
   }
 
-  abstract public FeatureDataset getFeatureDataset();
+  public GridCoverageDataset getGridCoverage(String matchPath) throws IOException {
+    return null;
+  }
 
   ///////////////////////////////////////////////////////////////////////////////
   // handle individual files

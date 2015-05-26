@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+</style>
+</head>
+
+<body>
+<h1>Grid Coverage Datasets</h1>
+<p>Redo Grid Dataset in coordinate space. <strong>package ucar.nc2.ft2.coverage</strong></p>
+<h2><strong>CdmrFeature Subsetting Parameters for Grid</strong></h2>
+<table border="1">
+  <tr>
+    <th width="144">Parameter Name</th>
+    <th width="62">Required</th>
+    <th width="512">Description / possible values</th>
+    <th width="460">Constraints</th>
+    <th width="219">default</th>
+  </tr>
+  <tr>
+    <td>grid (or var)</td>
+    <td>yes</td>
+    <td><span>Name of <strong>grid</strong>, separated by ',' (comma), or &quot;all&quot;. string</span></td>
+    <td>Grid name must be in the dataset header. </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><p>latitude, longitude</p></td>
+    <td>no</td>
+    <td><span>Point location. units of degrees_east, degrees_north. double</span></td>
+    <td><span>Must be within the dataset bounding box.</span></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>north, south, east, west</td>
+    <td>no</td>
+    <td>Lat/lon bounding box, units of degrees_east, degrees_north. double</td>
+    <td>north &gt; south,  if crossing 180 meridian, use east boundary &gt; 180</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>minx, miny, maxx, maxy</td>
+    <td>no</td>
+    <td>Projection bounding box, in projection coordinate units. double</td>
+    <td> min &lt; max</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>horizStride</td>
+    <td>no</td>
+    <td>Take only every nth point (both x and y). integer</td>
+    <td>&nbsp;</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>time</td>
+    <td>no</td>
+    <td>Time as a <a rel="nofollow"
+                         href="#W3Cdate">W3C
+      date</a> or &quot;present&quot;. The time slice closest to the requested time is
+      returned. Or &quot;all&quot;: all times are returned.</td>
+    <td>Must be a time within the dataset time range</td>
+    <td><em>present</em></td>
+  </tr>
+  <tr>
+    <td>time_start, time_end, time_duration</td>
+    <td>no</td>
+    <td>Used to specify a time range. Time as
+      a <a rel="nofollow"
+                 href="#W3Cdate">W3C
+        date</a> or &quot;present&quot;.  Duration as a <a rel="nofollow" href="#W3Cduration">W3C time duration</a>. Two of these must be present.</td>
+    <td>The provided time range must intersect the
+      dataset time
+      range </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>timeStride</td>
+    <td>no</td>
+    <td>Take only every nth time in the available series. integer</td>
+    <td>&nbsp;</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>runtime</td>
+    <td>no</td>
+    <td>Restrict to specified runtime coordinate. <a rel="nofollow"
+                 href="#W3Cdate">W3C
+      date</a></td>
+    <td>Used only if Grid has a runtime coordinate.</td>
+    <td>All runtimes will be returned </td>
+  </tr>
+  <tr>
+    <td>offset</td>
+    <td>no</td>
+    <td>Restrict to specified time offset from runtime. double</td>
+    <td>Used only if Grid has a runtime coordinate.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td><em>coordName</em></td>
+    <td>no</td>
+    <td><p>coord value. closest</p>
+    <p>coord range. min, max </p>
+    <p>coord range with stride. min,max,stride</p></td>
+    <td>Used only if Grid has that coordinate.</td>
+    <td>All values will be returned </td>
+  </tr>
+</table>
+<h4><strong>Variable subsetting:</strong></h4>
+<ul>
+  <li>You <strong>must</strong> specify a list of valid variable names, or &quot;all&quot;.</li>
+  <li>variable names are case-sensitive and must be UTF8-escape encoded</li>
+</ul>
+<h4><strong> Horizontal spatial subsetting:</strong></h4>
+<ul>
+  <li>grids: you may specify a lat/lon bounding box or a projection bounding box. If none, return the entire
+    horizontal grid. </li>
+  <li>if you speccify a point location with the<em> latitude, longitude</em> parameters, then its a <em>grid as point</em> request.</li>
+</ul>
+<h4><strong>Arbitrary coordinate  subsetting (tentative):</strong></h4>
+<ul>
+  <li>point coordinate
+    <ul>
+      <li>single coord value: find closest.</li>
+      <li>coord range: min, max: all coordinates that intersect.</li>
+      <li>coord range with stride: min,max, integer stride,  all coordinates that intersect.</li>
+    </ul>
+  </li>
+  <li>interval coordinate
+    <ul>
+      <li>single coord value: find containing interval.</li>
+      <li>coord range: min, max: all intervals that intersect.</li>
+      <li>coord range with stride: min,max, integer stride,  all intervals that intersect.</li>
+    </ul>
+  </li>
+</ul>
+<h4><strong>Temporal subsetting:</strong></h4>
+<ul>
+  <li>Time coordinate
+    <ul>
+      <li>You may specify a time range, or a  time point (<em>time</em>). If both, only the time point is used. If neither, return the latest time.</li>
+      <li>A time range <em>(time_start, time_end, time_duration</em>) will request all times that intersect the range (<em>timeStride</em> is used if present).</li>
+      <li>A time point will request the time that is closest to that time.</li>
+      <li>If you set <em>time</em>=&quot;all&quot;, then  all times are returned (<em>timeStride</em> is used if present). All other time parameters are ignored.</li>
+      <li>time duration: 1)   udunit&#32;time&#32;unit&#32;string or&#32;2) <a rel="nofollow" href="#W3Cduration">W3C time duration</a></li>
+      <li>datetime: isoString or &quot;present&quot;</li>
+      <li>The dataset determines what Calendar is used, so you must use that calendar.</li>
+    </ul>
+  </li>
+  <li>Runtime coordinate (tentative)
+    <ul>
+      <li>Restrict to specified runtime coordinate</li>
+    </ul>
+  </li>
+  <li>Offset (tentative)
+    <ul>
+      <li>Restrict to specified offset reletive to runtime.</li>
+    </ul>
+  </li>
+</ul>
+<p>&nbsp;</p>
+<hr />
+<h3>GridCoverageDataset</h3>
+<ul>
+  <li>has a single calendar for the time coordinates (?)</li>
+  <li>all grids are subset by their independent axes</li>
+</ul>
+<h3>GridCoordSys</h3>
+<ul>
+  <li>has a single horiz coord system. maybe dataset has a single, seperable horiz coord system</li>
+</ul>
+<p>&nbsp;</p>
+<h3>GridCoordAxis</h3>
+<pre>
+  public enum <strong>DependenceType</strong> {
+    independent,             // time(time)
+    dependent,               // reftime(time), lat(x,y)
+    scalar,                  // reftime
+    twoD }                   // time(reftime, time): must have reftime(reftime) - maybe this is a subclass (FMRC)</pre>
+    stuff
+<pre>  public enum <strong>Spacing</strong> {
+    regular,                 // regularly spaced points or intervals (start, end, npts), edges halfway between coords
+    irregularPoint,          // irregular spaced points (values, npts), edges halfway between coords
+    contiguousInterval,      // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+    discontiguousInterval }  // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...</pre>
+<h3>Coverage</h3>
+<pre> // must have at least 2 coord axes
+ // must have lat/lon or have x,y and projection//  x and y both have rank &lt;= 2
+ // x and y both have size &gt; 1
+ // x and y have at least 2 dimensions between them ( this eliminates point data)
+ // A runtime axis must be one-dimensional
+ // time may be 0, 1 or 2 dimensional, but first dimension must agree with runtime
+
+other axes ok</pre>
+<pre>
+isLatLon &amp; x and y are both 2D {
+   t exists but no independent dimension == SWATH else == CURVILINEAR
+} else {
+   x,y are 1D &amp; z is 0 or 1D {
+     rt exists &amp; t is 2D == FMRC
+     !rt exists || t is 1D == GRID
+  } else {
+    CURVILINEAR // ?? possible ??
+  }
+}</pre>
+<pre>
+problem time dependence
+
+GRID all coord axes are 1D with independent dimension. z,t,rt may be scalar
+  problem z(x,y,z)
+  
+FMRC x,y,z are 1D &amp; rt exists and t is 2D
+  
+SWATH isLatLon &amp; x,y 2D &amp; t exists but not independent
+
+CURVILINEAR isLatLon &amp; x,y 2D &amp; t independent if it exists
+
+</pre>
+<p>&nbsp;</p>
+<hr width="100%" />
+<address>
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on March, 2013
+</address>
+</body>
+</html>

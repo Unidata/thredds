@@ -28,7 +28,7 @@ two levels of services: </p>
 coordname=value
 coordname=minvalue:maxvalue</pre>
 <h2><strong>Subsetting Parameters for Grid</strong> </h2>
-<table>
+<table border="1">
   <tr>
     <th width="144">Parameter Name</th>
     <th width="62">Required</th>
@@ -133,15 +133,6 @@ coordname=minvalue:maxvalue</pre>
     <td>All the
       ensembles will be returned </td>
   </tr>
-  <tr>
-    <td>accept</td>
-    <td>no</td>
-    <td>Specify the response format.
-   </td>
-    <td><p>Grid: <em>ncremote</em>, <em>netCDF</em> or <em>netCDF4</em>. </p>
-      <p>Point: <em>ncremote</em>, <em>netCDF</em>, <em>netCDF4</em>, <em>XML</em>, <em>CSV</em>, <em>WaterML2</em>.</p></td>
-    <td> <em>ncremote</em></td>
-  </tr>
 </table>
 <h4><strong>Variable subsetting:</strong></h4>
 <ul>
@@ -166,7 +157,7 @@ coordname=minvalue:maxvalue</pre>
   <li>If you set <em>time</em>=&quot;all&quot;, then  all times are returned (<em>timeStride</em> is used if present). All other time parameters are ignored.</li>
   <li>time duration: 1)   udunit&#32;time&#32;unit&#32;string or&#32;2) <a rel="nofollow" href="#W3Cduration">W3C time duration</a></li>
   <li>datetime: isoString or &quot;present&quot;</li>
-  <li>The dataset determines what Calendar is used.</li>
+  <li>The dataset determines what Calendar is used, so you must use that calendar.</li>
 </ul>
 <p>&nbsp;</p>
 <h3>PointDataset</h3>

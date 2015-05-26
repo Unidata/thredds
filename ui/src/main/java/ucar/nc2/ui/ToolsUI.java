@@ -54,8 +54,8 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.remote.CdmrFeatureDataset;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribIndexCache;
@@ -5051,7 +5051,7 @@ public class ToolsUI extends JPanel {
       boolean err = false;
 
       try {
-        gcd = CdmrFeatureDataset.factory(FeatureType.GRID, command);
+        gcd = CoverageDatasetFactory.openGridCoverage(command);
         setDataset(gcd);
 
       } catch (IOException e) {

@@ -33,14 +33,12 @@
 
 package thredds.core;
 
-import thredds.server.catalog.FeatureCollectionRef;
 import thredds.servlet.ServletUtil;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft2.coverage.grid.DtGridDatasetAdapter;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,17 +66,17 @@ public class TdsRequestedDataset {
 
   static private DatasetManager datasetManager;
 
-  public static FeatureCollectionRef getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+  /* public static FeatureCollectionRef getFeatureCollection(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     return trd.openAsFeatureCollection(request, response);
-  }
+  }  */
 
   // throw exception of error, return null if restricteed dataset
-  public static FeatureDataset getFeatureDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+  public static FeatureDatasetPoint getPointDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
-    return trd.openAsFeatureDataset(request, response);
+    return trd.openAsPointDataset(request, response);
   }
 
   public static GridDataset getGridDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
@@ -90,8 +88,7 @@ public class TdsRequestedDataset {
   public static GridCoverageDataset getGridCoverage(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
-    GridDataset gds =  trd.openAsGridDataset(request, response);
-    return new DtGridDatasetAdapter(gds);
+    return trd.openAsGridCoverage(request, response);
   }
 
   public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
@@ -133,12 +130,16 @@ public class TdsRequestedDataset {
     }
   }
 
-  public FeatureCollectionRef openAsFeatureCollection(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  /* public FeatureCollectionRef openAsFeatureCollection(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return datasetManager.getFeatureCollection(request, response, path);
+  } */
+
+  public FeatureDatasetPoint openAsPointDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    return datasetManager.openPointDataset(request, response, path);
   }
 
-  public FeatureDataset openAsFeatureDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    return datasetManager.getFeatureDataset(request, response, path);
+  public GridCoverageDataset openAsGridCoverage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    return datasetManager.openGridCoverage(request, response, path);
   }
 
   public GridDataset openAsGridDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -146,7 +147,7 @@ public class TdsRequestedDataset {
   }
 
   public NetcdfFile openAsNetcdfFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    return isRemote ? NetcdfDataset.openDataset(path) : datasetManager.getNetcdfFile(request, response, path);
+    return isRemote ? NetcdfDataset.openDataset(path) : datasetManager.openNetcdfFile(request, response, path);
   }
 
   public boolean isRemote() {
