@@ -91,7 +91,6 @@ public class TdsRequestedDataset {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
     if (path != null) trd.path = path;
     GridDataset gds =  trd.openAsGridDataset(request, response);
-    System.out.printf("GridCoverageDataset open %s%n", gds.getLocation());
     return new DtGridDatasetAdapter(gds);
   }
 

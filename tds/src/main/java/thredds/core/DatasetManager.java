@@ -250,11 +250,9 @@ public class DatasetManager implements InitializingBean  {
         ncfile = NetcdfDataset.acquireFile(location, null);
       else
         ncfile = NetcdfDataset.openFile(location, null);
-
-      if (ncfile == null) throw new FileNotFoundException(reqPath);
-
     }
 
+    if (ncfile == null) throw new FileNotFoundException(reqPath);
     return ncfile;
   }
 

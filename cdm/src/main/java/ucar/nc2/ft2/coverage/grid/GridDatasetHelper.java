@@ -88,13 +88,8 @@ public class GridDatasetHelper {
     List<Range> ranges = new ArrayList<>();
     for (String axisName : gridset.gcs.getAxisNames()) {
       GridCoordAxis axis = subsetDataset.findCoordAxis(axisName);
-      if (axis != null) {
-        if (axis.getAxisType() == null)
-          System.out.println("HEY");
-        ranges.add(new Range(axis.getAxisType().name(), (int) axis.getMinIndex(), (int) axis.getMaxIndex(), axis.getStride()));
-      } else {
-        System.out.printf("No axis found %s%n", axisName);
-      }
+      if (!(axis.getDependenceType() == GridCoordAxis.DependenceType.independent)) continue;
+      ranges.add(new Range(axis.getAxisType().name(), (int) axis.getMinIndex(), (int) axis.getMaxIndex(), axis.getStride()));
     }
     return ranges;
   }

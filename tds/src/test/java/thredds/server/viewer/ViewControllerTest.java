@@ -24,19 +24,12 @@ import static org.junit.Assert.assertEquals;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/WEB-INF/applicationContext-tdsConfig.xml",  loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations="/WEB-INF/applicationContext.xml",  loader = MockTdsContextLoader.class)
 @Category(NeedsContentRoot.class)
-public class ViewControllerTest{
+public class ViewControllerTest {
 	
 	@Autowired
 	private ViewerController viewerController;
-	
-		
-	@Before
-	public void setUp(){
-														
-				
-	}
 	
 	@Test
 	public void testLaunchViewerIDVRequest() throws IOException{

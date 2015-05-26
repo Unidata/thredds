@@ -11,7 +11,7 @@ import thredds.client.catalog.ServiceType;
  */
 public enum StandardService {
   cdmRemote(ServiceType.CdmRemote, "/cdmremote/"),
-  cdmrFeature(ServiceType.CdmrFeature, "/cdmrfeature/"),
+  cdmrFeatureGrid(ServiceType.CdmrFeature, "/cdmrfeature/grid/"),
   dap4(ServiceType.DAP4, "/dap4/"),
   httpServer(ServiceType.HTTPServer, "/fileServer/"),
   resolver(ServiceType.Resolver, ""),

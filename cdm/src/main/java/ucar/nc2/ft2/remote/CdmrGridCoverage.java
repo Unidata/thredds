@@ -30,7 +30,7 @@ public class CdmrGridCoverage extends GridCoverage {
   String endpoint;
   HTTPSession httpClient;
   boolean debug = false;
-  boolean showRequest = false;
+  boolean showRequest = true;
 
   CdmrGridCoverage(String endpoint) {
     this.endpoint = endpoint;

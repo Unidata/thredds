@@ -5057,19 +5057,6 @@ public class ToolsUI extends JPanel {
       } catch (IOException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(null, "CdmrFeatureDataset2.open cant open " + command);
-      /* NetcdfDataset newds;
-      try {
-        newds = NetcdfDataset.openDataset(command, true, null);
-        if (newds == null) {
-          JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command);
-          return false;
-        }
-        setDataset(newds);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + ioe.getMessage());
-        //ioe.printStackTrace();
-        err = true;    */
 
       } catch (Throwable ioe) {
         ioe.printStackTrace();

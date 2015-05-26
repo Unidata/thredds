@@ -5,6 +5,7 @@ import thredds.client.catalog.Access;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.Dataset;
 //import thredds.client.catalog.tools.DataFactory;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 //import ucar.nc2.dataset.CoordinateAxis1D;
 //import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -161,7 +162,7 @@ public class CoverageDisplay extends JPanel {
 
     try {
       // choosers
-      choosers = new ArrayList<Chooser>();
+      choosers = new ArrayList<>();
       fieldChooser = new SuperComboBox(root, "field", true, null);
       choosers.add(new Chooser("field", fieldChooser, true));
       levelChooser = new SuperComboBox(root, "level", false, null);
@@ -1077,13 +1078,13 @@ public class CoverageDisplay extends JPanel {
     currentField = gg;
 
     GridCoordSys gcs = coverageDataset.findCoordSys(gg.getCoordSysName());
-    GridCoordAxis vertAxis = coverageDataset.getZAxis(gcs);
     //gcs.setProjectionBoundingBox();
 
     // set levels
+    GridCoordAxis vertAxis = coverageDataset.getZAxis(gcs);
     if (vertAxis != null) {
       levelNames = vertAxis.getCoordValueNames();
-      if ((levelNames == null) || (currentLevel >= levelNames.size()))
+      if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
         currentLevel = 0;
       //vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
 
@@ -1098,25 +1099,24 @@ public class CoverageDisplay extends JPanel {
       coverageRenderer.setLevel(-1);
     }
 
-    /* set times
-    if (gcs.getTimeAxis() != null && gcs.getTimeAxis() instanceof CoordinateAxis1DTime) {
-      CoordinateAxis1DTime taxis = (CoordinateAxis1DTime) gcs.getTimeAxis();
-      timeNames = taxis.getNames();
-      if ((timeNames == null) || (currentTime >= timeNames.size()))
+    // set times
+    GridCoordAxisTime timeAxis = coverageDataset.getTimeAxis(gcs);
+    if (timeAxis != null) {
+      timeNames = timeAxis.getCoordValueNames();
+      if ((currentTime < 0) || (currentTime >= timeNames.size()))
         currentTime = 0;
       hasDependentTimeAxis = true;
 
       setChooserWanted("time", true);
-      java.util.List<NamedObject> names = taxis.getNames();
-      timeChooser.setCollection(names.iterator(), true);
-      NamedObject no = names.get(currentTime);
+      timeChooser.setCollection(timeNames.iterator(), true);
+      NamedObject no = timeNames.get(currentTime);
       timeChooser.setSelectedByName(no.getName());
 
-    } else {  */
+    } else {
       timeNames = new ArrayList<>();
       hasDependentTimeAxis = false;
       setChooserWanted("time", false);
-    // }
+    }
 
     /* set ensembles
     CoordinateAxis1D eaxis = gcs.getEnsembleAxis();

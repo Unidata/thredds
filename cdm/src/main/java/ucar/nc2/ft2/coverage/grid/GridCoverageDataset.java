@@ -224,6 +224,16 @@ public class GridCoverageDataset implements AutoCloseable {
     return null;
   }
 
+  public GridCoordAxisTime getTimeAxis(GridCoordSys gcs) {
+    for (String axisName : gcs.getAxisNames()) {
+       GridCoordAxis axis = findCoordAxis(axisName);
+       if (axis.getAxisType() == AxisType.Time) {
+         return axis instanceof GridCoordAxisTime ? (GridCoordAxisTime) axis : new GridCoordAxisTime(axis, getCalendar());
+       }
+     }
+    return null;
+  }
+
   public GridCoordAxis getAxis(GridCoordSys gcs, AxisType type) {
     for (String axisName : gcs.getAxisNames()) {
        GridCoordAxis axis = findCoordAxis(axisName);

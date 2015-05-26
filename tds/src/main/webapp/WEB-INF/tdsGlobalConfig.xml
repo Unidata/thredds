@@ -7,7 +7,7 @@
     <property name="allow">
       <map>
         <entry key="cdmRemote" value="true"/>
-        <entry key="cdmrFeature" value="true"/>
+        <entry key="cdmrFeatureGrid" value="true"/>
         <entry key="dap4" value="true"/>
         <entry key="httpServer" value="true"/>
         <entry key="resolver" value="true"/>
@@ -25,7 +25,7 @@
       <list>
         <value>opendap</value>
         <value>cdmRemote</value>
-        <value>cdmrFeature</value>
+        <value>cdmrFeatureGrid</value>
         <value>dap4</value>
         <value>netcdfSubsetGrid</value>
         <value>wms</value>

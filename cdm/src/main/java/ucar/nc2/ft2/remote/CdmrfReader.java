@@ -340,6 +340,8 @@ message GridCoverage {
         return GridCoordAxis.DependenceType.independent;
       case dependent:
         return GridCoordAxis.DependenceType.dependent;
+      case scalar:
+        return GridCoordAxis.DependenceType.scalar;
       case twoD:
         return GridCoordAxis.DependenceType.twoD;
     }

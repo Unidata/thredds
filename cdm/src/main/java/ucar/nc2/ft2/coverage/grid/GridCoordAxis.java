@@ -32,8 +32,18 @@ import java.util.List;
  * @since 5/4/2015
  */
 public class GridCoordAxis {
-  public enum Spacing {regular, irregularPoint, contiguousInterval, discontiguousInterval} // see Spacing below
-  public enum DependenceType {independent, dependent, twoD}
+
+  public enum Spacing {
+    regular,                // regularly spaced points or intervals (start, end, npts), edges halfway between coords
+    irregularPoint,         // irregular spaced points (values, npts), edges halfway between coords
+    contiguousInterval,     // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
+    discontiguousInterval }  // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
+
+  public enum DependenceType {
+    independent,             // time(time)
+    dependent,               // reftime(time), lat(x,y)
+    scalar,                  // reftime
+    twoD }                   // time(reftime, time)
 
   /*
   message CoordAxis {
@@ -319,7 +329,8 @@ public class GridCoordAxis {
   }
 
   public double getCoord(int index) {
-    if (index >= nvalues) throw new IllegalArgumentException("Index must be <" + nvalues);
+    if (index >= nvalues)
+      throw new IllegalArgumentException("Index must be <" + nvalues);
     switch (spacing) {
       case regular:
         return startValue + index * resolution;
@@ -393,10 +404,17 @@ public class GridCoordAxis {
     setDependenceType(from.getDependenceType());
     setDependsOn(from.getDependsOn());
     setDescription(from.getDescription());
+    setEndValue(from.getEndValue());
+    setMaxIndex(from.getMaxIndex());
+    setMinIndex(from.getMinIndex());
     setName(from.getName());
-    setSpacing(from.getSpacing());
+    setNvalues(from.getNvalues());
     setResolution(from.getResolution());
+    setSpacing(from.getSpacing());
+    setStartValue(from.getStartValue());
+    setStride(from.getStride());    // hmmmm
     setUnits(from.getUnits());
+    setValues(from.getValues());  // hmmm
   }
 
   public GridCoordAxis subset(double minValue, double maxValue) {
@@ -474,13 +492,13 @@ public class GridCoordAxis {
           throw new IllegalArgumentException("no points in subset: min > end");
 
         subsetValues = new double[count];
-        for (int i=minIndex; i<=maxIndex; i++) {
-          subsetValues[i] = getCoord(i);
+        for (int i=minIndex; i<maxIndex; i++) {
+          subsetValues[count2++] = getCoord(i);
         }
 
         result.setNvalues(count);
-         result.setMinIndex(minIndex);
-        result.setMaxIndex(maxIndex);
+        result.setMinIndex(minIndex);
+        result.setMaxIndex(maxIndex-1); // need closed interval
         result.setValues(subsetValues);
         result.setStartValue(subsetValues[0]);
         result.setEndValue(subsetValues[subsetValues.length - 1]);
@@ -524,7 +542,6 @@ public class GridCoordAxis {
           throw new IllegalArgumentException("no points in subset: min > end");
         maxIndex = minIndex+count-1;
 
-        count2 = 0;
         subsetValues = new double[2*count];                   // need 2*npts
         for (int i=minIndex; i<=maxIndex; i+=2) {
           subsetValues[count2++] = values[i];
@@ -532,7 +549,7 @@ public class GridCoordAxis {
         }
 
         result.setNvalues(count);
-         result.setMinIndex(minIndex);
+        result.setMinIndex(minIndex);
         result.setMaxIndex(maxIndex);
         result.setValues(subsetValues);
         result.setStartValue(subsetValues[0]);
@@ -579,10 +596,10 @@ public class GridCoordAxis {
         else {
           int idx = 0;
           for (double val : getValues()) {
-            if (val > want) break;
+            if (val >= want) break;
             idx++;
           }
-          if (spacing == Spacing.irregularPoint) {
+          if (spacing == Spacing.irregularPoint && idx+1 < getNvalues()) {  // see which one is closest
             double lower = want - getCoord(idx);
             double upper = getCoord(idx + 1) - want;
             want_index = (lower < upper) ? idx : idx + 1;

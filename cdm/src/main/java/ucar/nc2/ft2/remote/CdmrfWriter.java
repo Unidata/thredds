@@ -213,18 +213,18 @@ public class CdmrfWriter {
     CdmrFeatureProto.CoordAxis.Builder builder = CdmrFeatureProto.CoordAxis.newBuilder();
     builder.setName(axis.getName());
     builder.setDataType(NcStream.convertDataType(axis.getDataType()));
-    builder.setAxisType( convertAxisType(axis.getAxisType()));
+    builder.setAxisType(convertAxisType(axis.getAxisType()));
     builder.setNvalues(axis.getNvalues());
     if (axis.getUnits() != null) builder.setUnits(axis.getUnits());
     if (axis.getDescription() != null) builder.setDescription(axis.getDescription());
-    builder.setDepend( convertDependenceType(axis.getDependenceType()));
+    builder.setDepend(convertDependenceType(axis.getDependenceType()));
     if (axis.getDependsOn() != null)
-      builder.setDependsOn( axis.getDependsOn());
+      builder.setDependsOn(axis.getDependsOn());
 
     for (Attribute att : axis.getAttributes())
       builder.addAtts(NcStream.encodeAtt(att));
 
-    builder.setSpacing( convertSpacing(axis.getSpacing()));
+    builder.setSpacing(convertSpacing(axis.getSpacing()));
     builder.setStartValue(axis.getStartValue());
     builder.setEndValue(axis.getEndValue());
     builder.setResolution(axis.getResolution());
@@ -305,6 +305,8 @@ public class CdmrfWriter {
         return CdmrFeatureProto.DependenceType.independent;
       case dependent:
         return CdmrFeatureProto.DependenceType.dependent;
+      case scalar:
+        return CdmrFeatureProto.DependenceType.scalar;
       case twoD:
         return CdmrFeatureProto.DependenceType.twoD;
     }

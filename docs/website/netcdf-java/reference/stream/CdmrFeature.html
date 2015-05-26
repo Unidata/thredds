@@ -20,29 +20,11 @@ two levels of services: </p>
 <p></p>
 <h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol (Coordinate Space access)</h2>
 <p>As of version 5.0, the allowed queries match the NetCDF Subset Service queries. </p>
-<p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
-<pre>  <strong>req</strong>=( <strong></strong><strong>header</strong> | <strong>data</strong> <strong></strong>)
-  <strong>time_start,time_end</strong>=time range
-  <strong>north,south,east,west</strong>=bounding box
-  <strong>var</strong>=vars
-  <strong>stn</strong>=stns
-
-where:
-  vars := varName | varName[,varName] | &quot;all&quot;
-  stns := stnName | stnName[,stnName]
-  varName := valid variable name
-  stnName := valid station name</pre>
-<ul>
-  <li>request names are case-insensitive</li>
-  <li>capabilities lists the possible accept values</li>
-  <li>variable names are case-sensitive and must be UTF8-escape encoded</li>
-  <li>station names are case-sensitive and must be UTF8-escape encoded</li>
-  <li> literals are in bold</li>
-</ul>
+<p>The client forms requests of the form <strong>endpoint?query</strong>.</p>
 <h3>Grid</h3>
 <p>Possible requests are:</p>
-<pre>req=(header|data)
-var=vars
+<pre><strong>req=(header|data)</strong>
+<strong>var</strong>=vars
 coordname=value
 coordname=minvalue:maxvalue</pre>
 <h2><strong>Subsetting Parameters for Grid</strong> </h2>
@@ -164,6 +146,7 @@ coordname=minvalue:maxvalue</pre>
 <h4><strong>Variable subsetting:</strong></h4>
 <ul>
   <li>You <strong>must</strong> specify a list of valid variable names, or &quot;all&quot;.</li>
+  <li>variable names are case-sensitive and must be UTF8-escape encoded</li>
 </ul>
 <h4><strong> Horizontal spatial subsetting:</strong></h4>
 <ul>

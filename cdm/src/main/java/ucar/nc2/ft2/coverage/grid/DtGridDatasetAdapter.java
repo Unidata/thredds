@@ -166,8 +166,10 @@ public class DtGridDatasetAdapter extends GridCoverageDataset {
       setAxisType(dtCoordAxis.getAxisType());
       setUnits(dtCoordAxis.getUnitsString());
       setDescription(dtCoordAxis.getDescription());
-      if (dtCoordAxis.isCoordinateVariable() || dtCoordAxis.isScalar())
+      if (dtCoordAxis.isCoordinateVariable())
         setDependenceType(DependenceType.independent);
+      else if (dtCoordAxis.isScalar())
+        setDependenceType(DependenceType.scalar);
       else {
         setDependenceType(DependenceType.dependent);
         setDependsOn(dtCoordAxis.getDimension(0).toString());

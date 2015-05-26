@@ -6,7 +6,9 @@ import ucar.ma2.*;
 //import ucar.nc2.dataset.CoordinateAxis2D;
 //import ucar.nc2.ft.cover.Coverage;
 //import ucar.nc2.ft.cover.CoverageCS;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.grid.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -88,6 +90,8 @@ public class CoverageRenderer {
     GridCoordAxis xaxis;
     GridCoordAxis yaxis;
     GridCoordAxis zaxis;
+    GridCoordAxisTime taxis;
+    GridCoordAxis rtaxis;
 
     public DataState(GridCoverageDataset coverageDataset, GridCoverage grid) {
       this.coverageDataset = coverageDataset;
@@ -96,6 +100,7 @@ public class CoverageRenderer {
       this.xaxis = coverageDataset.getXAxis(geocs);
       this.yaxis = coverageDataset.getYAxis(geocs);
       this.zaxis = coverageDataset.getZAxis(geocs);
+      this.taxis = coverageDataset.getTimeAxis(geocs);
     }
   }
   private DataState dataState;
@@ -468,6 +473,11 @@ public class CoverageRenderer {
     if (level >= 0 && dataState.zaxis != null) {
       double levelVal = dataState.zaxis.getCoord(level);
       subset.set(GridSubset.vertCoord, levelVal);
+    }
+    if (time >= 0 && dataState.taxis != null) {
+      double timeVal = dataState.taxis.getCoord(time);
+      CalendarDate date = dataState.taxis.makeDate(timeVal);
+      subset.set(GridSubset.date, date);
     }
 
     try {

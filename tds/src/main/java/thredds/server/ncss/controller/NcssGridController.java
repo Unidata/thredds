@@ -56,7 +56,7 @@ public class NcssGridController extends AbstractNcssController {
     return StandardService.netcdfSubsetGrid.getBase();
   }
 
-  @RequestMapping("**")
+  @RequestMapping("**")     // data request
   public void handleRequest(HttpServletRequest req, HttpServletResponse res, @Valid NcssGridParamsBean params, BindingResult validationResult)
           throws BindException, IOException, ParseException, NcssException, InvalidRangeException {
 

@@ -6,6 +6,12 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.util.NamedAnything;
+import ucar.nc2.util.NamedObject;
+import ucar.unidata.util.Format;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * GridCoordAxis with type=AxisType.Time
@@ -28,6 +34,37 @@ public class GridCoordAxisTime extends GridCoordAxis {
   public double convert(CalendarDate date) {
     long msecs = date.getDifferenceInMsecs(runDate);
     return Math.round(msecs / duration);
+  }
+
+  @Override
+  public List<NamedObject> getCoordValueNames() {
+    getValues();
+    List<NamedObject> result = new ArrayList<>();
+    for (int i = 0; i < getNvalues(); i++) {
+      String valName = "";
+      double value;
+      switch (getSpacing()) {
+        case regular:
+        case irregularPoint:
+          value = getCoord(i);
+          valName = Format.d(value, 3);
+          result.add(new NamedAnything(valName, makeDate(value).toString()));
+          break;
+
+        case contiguousInterval:
+        case discontiguousInterval:
+          valName = Format.d(getCoordEdge1(i), 3) + "," + Format.d(getCoordEdge2(i), 3);
+          result.add(new NamedAnything(valName, valName + " " + getUnits()));
+          break;
+
+      }
+    }
+
+    return result;
+  }
+
+  public CalendarDate makeDate(double value) {
+    return dateUnit.makeCalendarDate(value);
   }
 
 }

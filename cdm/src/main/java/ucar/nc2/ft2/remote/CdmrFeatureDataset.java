@@ -33,8 +33,12 @@ public class CdmrFeatureDataset {
     if (endpoint.startsWith(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME)) {
       endpoint = endpoint.substring(ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME.length());
       isRemote = true;
+
+    } else if (endpoint.startsWith("http:")) {
+      isRemote = true;
+
     } else if (endpoint.startsWith("file:")) {
-          endpoint = endpoint.substring("file:".length());
+      endpoint = endpoint.substring("file:".length());
     }
 
     this.endpoint = endpoint;

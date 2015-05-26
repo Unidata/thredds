@@ -36,7 +36,8 @@ enum AxisSpacing {
 enum DependenceType {
   independent=1;     // has its own dimension, is a coordinate variable, eg x(x)
   dependent=2;       // aux coordinate, reftime(time) or time_bounds(time);
-  twoD=3;            // lat(x,y), time(reftime, time)
+  scalar=3;          // reftime
+  twoD=4;            // lat(x,y), time(reftime, time)
 }
 
 message CoordAxis {

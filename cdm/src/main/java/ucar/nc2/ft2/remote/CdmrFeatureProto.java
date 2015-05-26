@@ -320,13 +320,21 @@ public final class CdmrFeatureProto {
      */
     dependent(1, 2),
     /**
-     * <code>twoD = 3;</code>
+     * <code>scalar = 3;</code>
+     *
+     * <pre>
+     * reftime
+     * </pre>
+     */
+    scalar(2, 3),
+    /**
+     * <code>twoD = 4;</code>
      *
      * <pre>
      * lat(x,y), time(reftime, time)
      * </pre>
      */
-    twoD(2, 3),
+    twoD(3, 4),
     ;
 
     /**
@@ -346,13 +354,21 @@ public final class CdmrFeatureProto {
      */
     public static final int dependent_VALUE = 2;
     /**
-     * <code>twoD = 3;</code>
+     * <code>scalar = 3;</code>
+     *
+     * <pre>
+     * reftime
+     * </pre>
+     */
+    public static final int scalar_VALUE = 3;
+    /**
+     * <code>twoD = 4;</code>
      *
      * <pre>
      * lat(x,y), time(reftime, time)
      * </pre>
      */
-    public static final int twoD_VALUE = 3;
+    public static final int twoD_VALUE = 4;
 
 
     public final int getNumber() { return value; }
@@ -361,7 +377,8 @@ public final class CdmrFeatureProto {
       switch (value) {
         case 1: return independent;
         case 2: return dependent;
-        case 3: return twoD;
+        case 3: return scalar;
+        case 4: return twoD;
         default: return null;
       }
     }
@@ -11012,12 +11029,13 @@ public final class CdmrFeatureProto {
       "\014\022\023\n\017RadialElevation\020\r\022\014\n\010Spectral\020\016*a\n\013" +
       "AxisSpacing\022\013\n\007regular\020\001\022\022\n\016irregularPoi" +
       "nt\020\002\022\026\n\022contiguousInterval\020\003\022\031\n\025disconti" +
-      "guousInterval\020\004*:\n\016DependenceType\022\017\n\013ind" +
-      "ependent\020\001\022\r\n\tdependent\020\002\022\010\n\004twoD\020\003*t\n\010C" +
-      "alendar\022\r\n\tgregorian\020\001\022\027\n\023proleptic_greg" +
-      "orian\020\002\022\n\n\006noleap\020\003\022\014\n\010all_leap\020\004\022\020\n\014uni",
-      "form30day\020\005\022\n\n\006julian\020\006\022\010\n\004none\020\007B\'\n\023uca" +
-      "r.nc2.ft2.remoteB\020CdmrFeatureProto"
+      "guousInterval\020\004*F\n\016DependenceType\022\017\n\013ind" +
+      "ependent\020\001\022\r\n\tdependent\020\002\022\n\n\006scalar\020\003\022\010\n" +
+      "\004twoD\020\004*t\n\010Calendar\022\r\n\tgregorian\020\001\022\027\n\023pr" +
+      "oleptic_gregorian\020\002\022\n\n\006noleap\020\003\022\014\n\010all_l",
+      "eap\020\004\022\020\n\014uniform30day\020\005\022\n\n\006julian\020\006\022\010\n\004n" +
+      "one\020\007B\'\n\023ucar.nc2.ft2.remoteB\020CdmrFeatur" +
+      "eProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

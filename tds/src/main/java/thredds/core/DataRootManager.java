@@ -73,7 +73,7 @@ public class DataRootManager implements InitializingBean {
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootManager.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  static public final boolean debug = false;
+  static public final boolean debug = true;
 
   static public DataRootManager getInstance() {
     return new DataRootManager(); // Used for testing only

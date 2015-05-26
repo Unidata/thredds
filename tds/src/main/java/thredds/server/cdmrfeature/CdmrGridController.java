@@ -91,12 +91,12 @@ public class CdmrGridController implements LastModified {
     return TdsRequestedDataset.getLastModified(path);
   }
 
-  private Validator validator = new CdmrFeatureQueryBeanValidator();
+  /* private Validator validator = new CdmrFeatureQueryBeanValidator();
 
   @InitBinder
   protected void initBinder(WebDataBinder binder) {
     binder.setValidator(validator);
-  }
+  }  */
 
   ////////////////////////////////////////////////////////////////////
 
@@ -105,10 +105,10 @@ public class CdmrGridController implements LastModified {
     if (showReq)
       System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
 
-    if (!allowedServices.isAllowed(StandardService.cdmrFeature))
-      throw new ServiceNotAllowed(StandardService.cdmrFeature.toString());
+    if (!allowedServices.isAllowed(StandardService.cdmrFeatureGrid))
+      throw new ServiceNotAllowed(StandardService.cdmrFeatureGrid.toString());
 
-    String datasetPath = TdsPathUtils.extractPath(request, "/cdmrfeature");
+    String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
     try (GridCoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return;
@@ -122,8 +122,6 @@ public class CdmrGridController implements LastModified {
       if (showRes)
         System.out.printf(" CdmrFeatureController.getHeader sent, message size=%s%n", size);
 
-    } catch (Throwable t) {
-      t.printStackTrace();
     }
   }
 
@@ -138,13 +136,13 @@ public class CdmrGridController implements LastModified {
     if (showReq)
       System.out.printf("CdmrFeatureController '%s?%s'%n", request.getRequestURI(), request.getQueryString());
 
-    if (!allowedServices.isAllowed(StandardService.cdmrFeature))
-      throw new ServiceNotAllowed(StandardService.cdmrFeature.toString());
+    if (!allowedServices.isAllowed(StandardService.cdmrFeatureGrid))
+      throw new ServiceNotAllowed(StandardService.cdmrFeatureGrid.toString());
 
     if (validationResult.hasErrors())
       throw new BindException(validationResult);
 
-    String datasetPath = TdsPathUtils.extractPath(request, "/cdmrfeature");
+    String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
 
     try (GridCoverageDataset gridCoverageDataset = TdsRequestedDataset.getGridCoverage(request, response, datasetPath)) {
       if (gridCoverageDataset == null) return;
@@ -157,7 +155,7 @@ public class CdmrGridController implements LastModified {
       GridDatasetHelper helper = new GridDatasetHelper(gridCoverageDataset, qb.getVar());  // LOOK only one var ??
       GridCoverageDataset subsetDataset = helper.subset(subset);
 
-     // write the data to the new file.
+     // write the data to the stream
       for (GridDatasetHelper.Gridset gridset : helper.getGridsets()) {
         List<Range> ranges = helper.makeSubset(subsetDataset, gridset);
 

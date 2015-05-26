@@ -28,15 +28,6 @@ public class StandardCatalogUtils
             "idd/satellite.xml"
     };
 
-    public static Collection<Object[]> getIddDeepCatalogUrlArrayCollection()
-    {
-        List<Object[]> result = new ArrayList<Object[]>();
-        for ( String curCatalogUrl : iddDeepCatalogUrls )
-            result.add( new String[]{curCatalogUrl} );
-
-        return result;
-    }
-
     public static List<String> getIddDeepCatalogUrlList() {
         return Arrays.asList( iddDeepCatalogUrls);
     }
