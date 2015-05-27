@@ -5050,6 +5050,13 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
+      // close previous file
+      try {
+        if (gcd != null) gcd.close();
+      } catch (IOException ioe) {
+        System.out.printf("close failed %n");
+      }
+
       try {
         gcd = CoverageDatasetFactory.openGridCoverage(command);
         setDataset(gcd);
@@ -5073,6 +5080,7 @@ public class ToolsUI extends JPanel {
     void closeOpenFiles() throws IOException {
       if (gcd != null) gcd.close();
       gcd = null;
+      dsTable.clear();
     }
 
     /* void setDataset(NetcdfDataset newds) {
@@ -5101,11 +5109,6 @@ public class ToolsUI extends JPanel {
 
     void setDataset(GridCoverageDataset gds) {
       if (gds == null) return;
-      try {
-        if (gcd != null) gcd.close();
-      } catch (IOException ioe) {
-        System.out.printf("close failed %n");
-      }
 
       try {
         dsTable.setDataset(gds);

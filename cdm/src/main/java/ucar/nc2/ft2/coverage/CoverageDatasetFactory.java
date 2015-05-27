@@ -1,10 +1,10 @@
 /* Copyright */
 package ucar.nc2.ft2.coverage;
 
-import ucar.nc2.ft2.coverage.grid.adapter.DtGridCoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.CoverageAdapter;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.coverage.grid.adapter.GeoGridDataset;
-import ucar.nc2.ft2.remote.CdmrFeatureDataset;
+import ucar.nc2.ft2.coverage.adapter.CoverageDataset;
+import ucar.nc2.ft2.coverage.grid.remote.CdmrFeatureDataset;
 
 import java.io.IOException;
 
@@ -32,11 +32,11 @@ public class CoverageDatasetFactory {
       endpoint = endpoint.substring("file:".length());
     }
 
-    GeoGridDataset gds = GeoGridDataset.open(endpoint);
+    CoverageDataset gds = CoverageDataset.open(endpoint);
     if (gds.getGrids().size() > 0)
-      return new DtGridCoverageAdapter(gds);
-
+      return new CoverageAdapter(gds);
 
     return null;
   }
+
 }

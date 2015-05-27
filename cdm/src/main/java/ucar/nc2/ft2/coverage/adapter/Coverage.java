@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.adapter;
+package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
@@ -24,12 +24,12 @@ import java.util.List;
  * @author caron
  * @since 5/26/2015
  */
-public class GeoGrid implements IsMissingEvaluator {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGrid.class);
+public class Coverage implements IsMissingEvaluator {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Coverage.class);
   static private final boolean debugArrayShape = false;
 
-  private final GeoGridDataset dataset;
-  private final GeoGridCoordSys gcs;
+  private final CoverageDataset dataset;
+  private final CoverageCoordSys gcs;
   private final VariableDS vs;
   private int xDimOrgIndex = -1, yDimOrgIndex = -1, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
   private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1, rtDimNewIndex = -1;
@@ -42,7 +42,7 @@ public class GeoGrid implements IsMissingEvaluator {
    * @param dsvar   wraps this Variable
    * @param gcs     has this grid coordinate system
    */
-  public GeoGrid(GeoGridDataset dataset, VariableDS dsvar, GeoGridCoordSys gcs) {
+  public Coverage(CoverageDataset dataset, CoverageCoordSys gcs, VariableDS dsvar) {
     this.dataset = dataset;
     this.vs = dsvar;
     this.gcs = gcs;
@@ -291,7 +291,7 @@ public class GeoGrid implements IsMissingEvaluator {
   /**
    * get the GeoGridCoordSys for this GeoGrid.
    */
-  public GeoGridCoordSys getCoordinateSystem() {
+  public CoverageCoordSys getCoordinateSystem() {
     return gcs;
   }
 
@@ -331,13 +331,6 @@ public class GeoGrid implements IsMissingEvaluator {
     return (units == null) ? "" : units;
   }
 
-  /**
-   * @return getUnitsString()
-   * @deprecated use getUnitsString()
-   */
-  public java.lang.String getUnitString() {
-    return getUnitsString();
-  }
 
   //public ucar.unidata.geoloc.ProjectionImpl getProjection() { return gcs.getProjection(); }
 
@@ -390,85 +383,6 @@ public class GeoGrid implements IsMissingEvaluator {
    */
   public MAMath.MinMax getMinMaxSkipMissingData(Array a) {
     return MAMath.getMinMaxSkipMissingData(a, this);
-  }
-
-  /**
-   * Reads in the data "volume" at the given time index.
-   * If its a product set, put into canonical order (z-y-x).
-   * If not a product set, reorder to (z,i,j), where i, j are from the
-   * original
-   *
-   * @param t time index; ignored if no time axis.
-   * @return data[z, y, x] or data[y,x] if no z axis.
-   */
-  public Array readVolumeData(int t) throws java.io.IOException {
-    //if (gcs.isProductSet())
-    return readDataSlice(t, -1, -1, -1);
-    /* else { // 2D XY
-      int rank = vs.getRank();
-      int[] shape = vs.getShape();
-      int [] start = new int[rank];
-
-      CoordinateAxis taxis = gcs.getTimeAxis();
-      if (taxis != null) {
-        if ((t >= 0) && (t < taxis.getSize()))
-          shape[ tDim] = 1;  // fix t
-          start[ tDim] = t;
-      }
-
-      if (debugArrayShape) {
-        System.out.println("getDataVolume shape = ");
-        for (int i=0; i<rank; i++)
-          System.out.println("   start = "+start[i]+" shape = "+ shape[i]);
-      }
-
-      Array dataVolume;
-      try {
-        dataVolume = vs.read( start, shape);
-      } catch (Exception e) {
-        System.out.println("Exception: GeoGridImpl.getdataSlice() on dataset "+getName());
-        e.printStackTrace();
-        throw new java.io.IOException(e.getMessage());
-      }
-
-      // no reordering FIX
-      return dataVolume.reduce();
-    } */
-  }
-
-  /**
-   * Reads a Y-X "horizontal slice" at the given time and vertical index.
-   * If its a product set, put into canonical order (y-x).
-   *
-   * @param t time index; ignored if no time axis.
-   * @param z vertical index; ignored if no z axis.
-   * @return data[y, x]
-   * @throws java.io.IOException on read error
-   */
-  public Array readYXData(int t, int z) throws java.io.IOException {
-    return readDataSlice(t, z, -1, -1);
-  }
-
-
-  /**
-   * Reads a Z-Y "vertical slice" at the given time and x index.
-   * If its a product set, put into canonical order (z-y).
-   *
-   * @param t time index; ignored if no time axis.
-   * @param x x index; ignored if no x axis.
-   * @return data[z, y]
-   * @throws java.io.IOException on read error
-   */
-  public Array readZYData(int t, int x) throws java.io.IOException {
-    return readDataSlice(t, -1, -1, x);
-  }
-
-  /**
-   * @throws java.io.IOException on read error
-   * @deprecated use readDataSlice
-   */
-  public Array getDataSlice(int t, int z, int y, int x) throws java.io.IOException {
-    return readDataSlice(t, z, y, x);
   }
 
   /**
@@ -692,7 +606,7 @@ public class GeoGrid implements IsMissingEvaluator {
    * @return subsetted GeoGrid
    * @throws InvalidRangeException if bbox does not intersect GeoGrid
    */
-  public GeoGrid subset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
+  public Coverage subset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
 
     if ((z_range == null) && (z_stride > 1)) {
       Dimension zdim = getZDimension();
@@ -728,7 +642,7 @@ public class GeoGrid implements IsMissingEvaluator {
     return subset(t_range, z_range, y_range, x_range);
   }
 
-  public GeoGrid makeSubset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
+  public Coverage makeSubset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
     return subset(t_range, z_range, bbox, z_stride, y_stride, x_stride);
   }
 
@@ -742,11 +656,11 @@ public class GeoGrid implements IsMissingEvaluator {
    * @return subsetted GeoGrid
    * @throws InvalidRangeException if any of the ranges are invalid
    */
-  public GeoGrid subset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
-    return (GeoGrid) makeSubset(null, null, t_range, z_range, y_range, x_range);
+  public Coverage subset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
+    return (Coverage) makeSubset(null, null, t_range, z_range, y_range, x_range);
   }
 
-  public GeoGrid makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
+  public Coverage makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
     // get the ranges list
     int rank = getRank();
     Range[] ranges = new Range[rank];
@@ -772,10 +686,10 @@ public class GeoGrid implements IsMissingEvaluator {
     }
 
     // subset the axes in the GeoGridCoordSys
-    GeoGridCoordSys gcs_section = new GeoGridCoordSys(gcs, rt_range, e_range, t_range, z_range, y_range, x_range);
+    CoverageCoordSys gcs_section = new CoverageCoordSys(gcs, rt_range, e_range, t_range, z_range, y_range, x_range);
 
     // now we can make the geogrid
-    return new GeoGrid(dataset, v_section, gcs_section);
+    return new Coverage(dataset, gcs_section, v_section);
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -785,10 +699,10 @@ public class GeoGrid implements IsMissingEvaluator {
    */
   public boolean equals(Object oo) {
     if (this == oo) return true;
-    if (!(oo instanceof GeoGrid))
+    if (!(oo instanceof Coverage))
       return false;
 
-    GeoGrid d = (GeoGrid) oo;
+    Coverage d = (Coverage) oo;
     if (!getFullName().equals(d.getFullName())) return false;
     return getCoordinateSystem().equals(d.getCoordinateSystem());
   }
@@ -832,7 +746,7 @@ public class GeoGrid implements IsMissingEvaluator {
     return buf.toString();
   }
 
-  public int compareTo(GeoGrid g) {
+  public int compareTo(Coverage g) {
     return getFullName().compareTo(g.getFullName());
   }
 }

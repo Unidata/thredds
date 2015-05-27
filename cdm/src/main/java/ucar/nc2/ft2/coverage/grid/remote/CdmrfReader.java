@@ -1,10 +1,9 @@
 /* Copyright */
-package ucar.nc2.ft2.remote;
+package ucar.nc2.ft2.coverage.grid.remote;
 
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;

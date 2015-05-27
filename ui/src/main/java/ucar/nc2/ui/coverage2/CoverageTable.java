@@ -198,6 +198,13 @@ public class CoverageTable extends JPanel {
     }
   } */
 
+  public void clear() {
+    gridTable.clearBeans();
+    csTable.clearBeans();
+    axisTable.clearBeans();
+    transTable.clearBeans();
+  }
+
   public void save() {
     gridTable.saveState(false);
     csTable.saveState(false);
@@ -400,6 +407,11 @@ public class CoverageTable extends JPanel {
 
     public String getName() {
       return gcs.getName();
+    }
+
+    public String getType() {
+      GridCoordSys.Type type = gcs.getType();
+      return (type == null) ? "" : type.toString();
     }
 
     public int getNAxes() {

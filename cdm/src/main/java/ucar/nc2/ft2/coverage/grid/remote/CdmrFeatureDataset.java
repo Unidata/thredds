@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.remote;
+package ucar.nc2.ft2.coverage.grid.remote;
 
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;

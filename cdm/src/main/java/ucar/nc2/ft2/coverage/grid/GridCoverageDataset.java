@@ -259,8 +259,6 @@ public class GridCoverageDataset implements AutoCloseable {
     StringBuilder sb = new StringBuilder();
     for (String axisName : gcs.getAxisNames()) {
       GridCoordAxis axis = findCoordAxis(axisName);
-      if (axis == null)
-        System.out.println("HEY");
       if (!(axis.getDependenceType() == GridCoordAxis.DependenceType.independent)) continue;
       sb.append(axisName);
       sb.append(" ");

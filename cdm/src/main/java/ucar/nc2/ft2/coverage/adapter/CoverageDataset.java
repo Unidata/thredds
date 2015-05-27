@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.adapter;
+package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -7,9 +7,9 @@ import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
+import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -22,11 +22,7 @@ import java.util.*;
  * @author caron
  * @since 5/26/2015
  */
-public class GeoGridDataset {
-  
-  private NetcdfDataset ncd;
-  private ArrayList<GeoGrid> grids = new ArrayList<>();
-  private Map<String, Gridset> gridsetHash = new HashMap<>();
+public class CoverageDataset {
 
   /**
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
@@ -37,7 +33,7 @@ public class GeoGridDataset {
    * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public GeoGridDataset open(String location) throws java.io.IOException {
+  static public CoverageDataset open(String location) throws java.io.IOException {
     return open(location, NetcdfDataset.getDefaultEnhanceMode());
   }
 
@@ -45,16 +41,29 @@ public class GeoGridDataset {
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
    * and turn into a GridDataset.
    *
-   * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param location    netcdf dataset to open, using NetcdfDataset.acquireDataset().
    * @param enhanceMode open netcdf dataset with this enhanceMode
    * @return GridDataset
    * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public GeoGridDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
+  static public CoverageDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, location, enhanceMode, -1, null, null);
-    return new GeoGridDataset(ds, null);
+    return new CoverageDataset(ds, null);
   }
+
+  ////////////////////////////////////////
+
+  private NetcdfDataset ncd;
+  // private GridCoordSys.Type type;
+
+  private ArrayList<Coverage> grids = new ArrayList<>();
+  private Map<String, Gridset> gridsetHash = new HashMap<>();
+  private List<Gridset> gridSets = new ArrayList<>();
+
+  private LatLonRect llbbMax = null;
+  private CalendarDateRange dateRangeMax = null;
+  private ProjectionRect projBB = null;
 
   /**
    * Create a GridDataset from a NetcdfDataset.
@@ -62,70 +71,59 @@ public class GeoGridDataset {
    * @param ncd underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @throws java.io.IOException on read error
    */
-  public GeoGridDataset(NetcdfDataset ncd) throws IOException {
+  public CoverageDataset(NetcdfDataset ncd) throws IOException {
     this(ncd, null);
   }
 
   /**
    * Create a GridDataset from a NetcdfDataset.
    *
-   * @param ncd underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
+   * @param ncd       underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @param parseInfo put parse info here, may be null
    * @throws java.io.IOException on read error
    */
-  public GeoGridDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
+  public CoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
     this.ncd = ncd;
+
     // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
     Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
-    if(enhance == null || enhance.isEmpty()) enhance = NetcdfDataset.getDefaultEnhanceMode(); 
+    if (enhance == null || enhance.isEmpty()) enhance = NetcdfDataset.getDefaultEnhanceMode();
     ncd.enhance(enhance);
 
-    // look for geoGrids
-    if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids%n");
-    List<Variable> vars = ncd.getVariables();
-    for (Variable var : vars) {
-      VariableEnhanced varDS = (VariableEnhanced) var;
-      constructCoordinateSystems(ncd, varDS, parseInfo);
+    // type = CoverageCoordSysBuilder.classify(ncd, parseInfo);
+
+    for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
+      CoverageCoordSysBuilder fac = new CoverageCoordSysBuilder(ncd, cs, parseInfo);
+      if (fac.type == null) continue;
+      CoverageCoordSys ccs = fac.makeCoordSys(cs);
+      if (ccs == null) continue;
+      Gridset cset = new Gridset(ccs);
+      gridSets.add(cset);
+      gridsetHash.put(ccs.getName(), cset);
     }
-  }
 
-  private void constructCoordinateSystems(NetcdfDataset ds, VariableEnhanced v, Formatter parseInfo) {
-
-    if (v instanceof StructureDS) {
-      StructureDS s = (StructureDS) v;
-      List<Variable> members = s.getVariables();
-      for (Variable nested : members) {
-        // LOOK flatten here ??
-        constructCoordinateSystems(ds, (VariableEnhanced) nested, parseInfo);
-      }
-    } else {
-
-      // see if it has a GridCS
-      // LOOK: should add geogrid it multiple times if there are multiple geoCS ??
-      GeoGridCoordSys gcs = null;
-      List<CoordinateSystem> csys = v.getCoordinateSystems();
-      for (CoordinateSystem cs : csys) {
-        GeoGridCoordSys gcsTry = GeoGridCoordSys.makeGridCoordSys(parseInfo, cs, v);
-        if (gcsTry != null) {
-          gcs = gcsTry;
-          if (gcsTry.isProductSet()) break;
+    for (Variable v : ncd.getVariables()) {
+      VariableEnhanced ve = (VariableEnhanced) v;
+      List<CoordinateSystem> css = ve.getCoordinateSystems();
+      if (css.size() == 0) continue;
+      Collections.sort(css, new Comparator<CoordinateSystem>() { // take one with most axes
+        public int compare(CoordinateSystem o1, CoordinateSystem o2) {
+          return o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size();
         }
-      }
-
-      if (gcs != null)
-        addGeoGrid((VariableDS) v, gcs, parseInfo);
+      });
+      CoordinateSystem cs = css.get(0);    // the largest one
+      Gridset cset = gridsetHash.get(cs.getName());
+      if (cset == null) continue;
+      Coverage ci = new Coverage(this, cset.gcc, (VariableDS) ve);
+      cset.grids.add(ci);
+      grids.add(ci);
     }
-
   }
-
-  private LatLonRect llbbMax = null;
-  private CalendarDateRange dateRangeMax = null;
-  private ProjectionRect projBB = null;
 
   private void makeRanges() {
 
     for (Gridset gset : getGridsets()) {
-      GeoGridCoordSys gcs = gset.getGeoCoordSystem();
+      CoverageCoordSys gcs = gset.getGeoCoordSystem();
 
       ProjectionRect bb = gcs.getBoundingBox();
       if (projBB == null)
@@ -170,30 +168,6 @@ public class GeoGridDataset {
     return ncd.getLocation();
   }
 
-  /**
-   * @deprecated use getCalendarDateRange
-   */
-  public DateRange getDateRange() {
-    CalendarDateRange cdr = getCalendarDateRange();
-    return (cdr != null) ? cdr.toDateRange() : null;
-  }
-
-  /**
-   * @deprecated use getStartCalendarDate
-   */
-  public Date getStartDate() {
-    DateRange dr = getDateRange();
-    return (dr != null) ? dr.getStart().getDate() : null;
-  }
-
-  /**
-   * @deprecated use getEndCalendarDate
-   */
-  public Date getEndDate() {
-    DateRange dr = getDateRange();
-    return (dr != null) ? dr.getEnd().getDate() : null;
-  }
-
   public CalendarDateRange getCalendarDateRange() {
     if (dateRangeMax == null) makeRanges();
     return dateRangeMax;
@@ -232,10 +206,10 @@ public class GeoGridDataset {
   }
 
   public List<VariableSimpleIF> getDataVariables() {
-    List<VariableSimpleIF> result = new ArrayList<>( grids.size());
-    for (GeoGrid grid : getGrids()) {
+    List<VariableSimpleIF> result = new ArrayList<>(grids.size());
+    for (Coverage grid : getGrids()) {
       if (grid.getVariable() != null) // LOOK could make Adaptor if no variable
-        result.add( grid.getVariable());
+        result.add(grid.getVariable());
     }
     return result;
   }
@@ -248,22 +222,23 @@ public class GeoGridDataset {
     return ncd;
   }
 
-  private void addGeoGrid(VariableDS varDS, GeoGridCoordSys gcs, Formatter parseInfo) {
+  private void addGeoGrid(VariableDS varDS, CoverageCoordSys gcs, Formatter parseInfo) {
     Gridset gridset;
     if (null == (gridset = gridsetHash.get(gcs.getName()))) {
       gridset = new Gridset(gcs);
       gridsetHash.put(gcs.getName(), gridset);
-      if (parseInfo != null) parseInfo.format(" -make new GeoGridCoordSys= %s%n",gcs.getName());
+      if (parseInfo != null) parseInfo.format(" -make new GeoGridCoordSys= %s%n", gcs.getName());
       gcs.makeVerticalTransform(this, parseInfo); // delayed until now LOOK why for each grid ??
     }
 
-    GeoGrid geogrid = new GeoGrid(this, varDS, gridset.gcc);
+    Coverage geogrid = new Coverage(this, gridset.gcc, varDS);
     grids.add(geogrid);
     gridset.add(geogrid);
   }
 
   /**
    * the name of the dataset is the last part of the location
+   *
    * @return the name of the dataset
    */
   public String getName() {
@@ -271,7 +246,7 @@ public class GeoGridDataset {
     int pos = loc.lastIndexOf('/');
     if (pos < 0)
       pos = loc.lastIndexOf('\\');
-    return (pos < 0) ? loc : loc.substring(pos+1);
+    return (pos < 0) ? loc : loc.substring(pos + 1);
   }
 
   /**
@@ -284,11 +259,11 @@ public class GeoGridDataset {
   /**
    * @return the list of GeoGrid objects contained in this dataset.
    */
-  public List<GeoGrid> getGrids() {
+  public List<Coverage> getGrids() {
     return new ArrayList<>(grids);
   }
 
-  public GeoGrid findGridDatatype(String name) {
+  public Coverage findGridDatatype(String name) {
     return findGridByName(name);
   }
 
@@ -308,37 +283,37 @@ public class GeoGridDataset {
    * @param fullName find this GeoGrid by full name
    * @return the named GeoGrid, or null if not found
    */
-  public GeoGrid findGridByName(String fullName) {
-    for (GeoGrid ggi : grids) {
+  public Coverage findGridByName(String fullName) {
+    for (Coverage ggi : grids) {
       if (fullName.equals(ggi.getFullName()))
         return ggi;
     }
     return null;
   }
-  
+
   /**
    * find the named GeoGrid.
    *
    * @param shortName find this GeoGrid by short name
    * @return the named GeoGrid, or null if not found
    */
-  public GeoGrid findGridByShortName(String shortName) {
-    for (GeoGrid ggi : grids) {
+  public Coverage findGridByShortName(String shortName) {
+    for (Coverage ggi : grids) {
       if (shortName.equals(ggi.getShortName()))
         return ggi;
     }
     return null;
   }
 
-  public GeoGrid findGridDatatypeByAttribute(String attName, String attValue) {
-    for (GeoGrid ggi : grids) {
+  public Coverage findGridDatatypeByAttribute(String attName, String attValue) {
+    for (Coverage ggi : grids) {
       for (Attribute att : ggi.getAttributes())
         if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
           return ggi;
     }
     return null;
   }
-  
+
   /**
    * Get Details about the dataset.
    */
@@ -363,20 +338,21 @@ public class GeoGridDataset {
 
   /**
    * Show Grids and coordinate systems.
+   *
    * @param buf put info here
    */
   private void getInfo(Formatter buf) {
     int countGridset = 0;
 
     for (Gridset gs : gridsetHash.values()) {
-      GeoGridCoordSys gcs = gs.getGeoCoordSystem();
-      buf.format("%nGridset %d  coordSys=%s", countGridset,  gcs);
+      CoverageCoordSys gcs = gs.getGeoCoordSystem();
+      buf.format("%nGridset %d  coordSys=%s", countGridset, gcs);
       buf.format(" LLbb=%s ", gcs.getLatLonBoundingBox());
-      if ((gcs.getProjection() != null)  && !gcs.getProjection().isLatLon())
+      if ((gcs.getProjection() != null) && !gcs.getProjection().isLatLon())
         buf.format(" bb= %s", gcs.getBoundingBox());
       buf.format("%n");
       buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
-      for (GeoGrid grid : gs.getGrids()) {
+      for (Coverage grid : gs.getGrids()) {
         buf.format("%s%n", grid.getInfo());
       }
       countGridset++;
@@ -391,34 +367,34 @@ public class GeoGridDataset {
       buf.format("%n");
     }
   }
-  
+
   /**
    * This is a set of GeoGrids with the same GeoCoordSys.
    */
   public static class Gridset {
 
-    private GeoGridCoordSys gcc;
-    private List<GeoGrid> grids = new ArrayList<>();
+    private CoverageCoordSys gcc;
+    private List<Coverage> grids = new ArrayList<>();
 
-    private Gridset(GeoGridCoordSys gcc) {
+    private Gridset(CoverageCoordSys gcc) {
       this.gcc = gcc;
     }
 
-    private void add(GeoGrid grid) {
+    private void add(Coverage grid) {
       grids.add(grid);
     }
 
     /**
      * Get list of GeoGrid objects
      */
-    public List<GeoGrid> getGrids() {
+    public List<Coverage> getGrids() {
       return grids;
     }
 
     /**
      * all GeoGrid point to this GeoGridCoordSys
      */
-    public GeoGridCoordSys getGeoCoordSystem() {
+    public CoverageCoordSys getGeoCoordSystem() {
       return gcc;
     }
 
@@ -427,17 +403,16 @@ public class GeoGridDataset {
      *
      * @deprecated use getGeoCoordSystem() if possible.
      */
-    public GeoGridCoordSys getGeoCoordSys() {
+    public CoverageCoordSys getGeoCoordSys() {
       return gcc;
     }
   }
 
   public synchronized void close() throws java.io.IOException {
-
     try {
       if (ncd != null) ncd.close();
     } finally {
       ncd = null;
-      }
+    }
   }
 }

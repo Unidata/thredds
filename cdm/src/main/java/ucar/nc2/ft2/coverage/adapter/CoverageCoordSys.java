@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.adapter;
+package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
@@ -8,11 +8,9 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
+import ucar.nc2.ft2.coverage.grid.GridCoordSys;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.*;
@@ -33,194 +31,12 @@ import java.util.*;
  * @author caron
  * @since 5/26/2015
  */
-public class GeoGridCoordSys extends CoordinateSystem {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGridCoordSys.class);
+public class CoverageCoordSys extends CoordinateSystem {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageCoordSys.class);
   static private final boolean warnUnits = false;
 
-  /**
-   * Determine if this CoordinateSystem can be made into a GeoGridCoordSys. Optionally for a given variable.
-   * This currently assumes that the CoordinateSystem:
-   * <ol>
-   * <li> is georeferencing (cs.isGeoReferencing())
-   * <li> x, y are 1 or 2-dimensional axes.
-   * <li> z, t, if they exist, are 1-dimensional axes.
-   * <li> domain rank > 1
-   * </ol>
-   *
-   * @param sbuff place information messages here, may be null
-   * @param cs    the CoordinateSystem to test
-   * @param v     can it be used for this variable; v may be null
-   * @return true if it can be made into a GeoGridCoordSys.
-   * @see CoordinateSystem#isGeoReferencing
-   */
-  public static boolean isGridCoordSys(Formatter sbuff, CoordinateSystem cs, VariableEnhanced v) {
-    // must be at least 2 axes
-    if (cs.getRankDomain() < 2) {
-      if (sbuff != null) {
-        sbuff.format("%s: domain rank < 2%n", cs.getName());
-      }
-      return false;
-    }
-
-    // must be lat/lon or have x,y and projecction
-    if (!cs.isLatLon()) {
-      // do check for GeoXY ourself
-      if ((cs.getXaxis() == null) || (cs.getYaxis() == null)) {
-        if (sbuff != null) {
-          sbuff.format("%s: NO Lat,Lon or X,Y axis%n", cs.getName());
-        }
-        return false;
-      }
-      if (null == cs.getProjection()) {
-        if (sbuff != null) {
-          sbuff.format("%s: NO projection found%n", cs.getName());
-        }
-        return false;
-      }
-    }
-
-    // obtain the x,y or lat/lon axes. x,y normally must be convertible to km
-    CoordinateAxis xaxis, yaxis;
-    if (cs.isGeoXY()) {
-      xaxis = cs.getXaxis();
-      yaxis = cs.getYaxis();
-
-      // change to warning
-      ProjectionImpl p = cs.getProjection();
-      if (!(p instanceof RotatedPole)) {
-        if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
-          if (sbuff != null) {
-            sbuff.format("%s: X axis units are not convertible to km%n", cs.getName());
-          }
-          //return false;
-        }
-        if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
-          if (sbuff != null) {
-            sbuff.format("%s: Y axis units are not convertible to km%n", cs.getName());
-          }
-          //return false;
-        }
-      }
-    } else {
-      xaxis = cs.getLonAxis();
-      yaxis = cs.getLatAxis();
-    }
-
-    // check x,y rank <= 2
-    if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
-      if (sbuff != null)
-        sbuff.format("%s: X or Y axis rank must be <= 2%n", cs.getName());
-      return false;
-    }
-
-    // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
-    List<Dimension> xyDomain = CoordinateSystem.makeDomain(new CoordinateAxis[]{xaxis, yaxis});
-    if (xyDomain.size() < 2) {
-      if (sbuff != null)
-        sbuff.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
-      return false;
-    }
-
-    List<CoordinateAxis> testAxis = new ArrayList<>();
-    testAxis.add(xaxis);
-    testAxis.add(yaxis);
-
-    //int countRangeRank = 2;
-
-    CoordinateAxis z = cs.getHeightAxis();
-    if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getPressureAxis();
-    if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
-    if ((z != null) && !(z instanceof CoordinateAxis1D)) {
-      if (sbuff != null) {
-        sbuff.format("%s: Z axis must be 1D%n", cs.getName());
-      }
-      return false;
-    }
-    if (z != null)
-      testAxis.add(z);
-
-    // tom margolis 3/2/2010
-    // allow runtime independent of time
-    CoordinateAxis t = cs.getTaxis();
-    CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
-
-    // A runtime axis must be scalar or one-dimensional
-    if (rt != null) {
-      if (!rt.isScalar() && !(rt instanceof CoordinateAxis1D)) {
-        if (sbuff != null) sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
-          return false;
-      }
-    }
-
-    // If time axis is two-dimensional...
-    if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
-
-      if (rt != null) {
-        if (rt.getRank() != 1) {
-          if (sbuff != null) sbuff.format("%s: Runtime axis must be 1D%n", cs.getName());
-          return false;
-        }
-
-        // time first dimension must agree with runtime
-        if (!rt.getDimension(0).equals(t.getDimension(0))) {
-          if (sbuff != null) sbuff.format("%s: 2D Time axis first dimension must be runtime%n", cs.getName());
-          return false;
-        }
-      }
-    }
-
-    if (t != null)
-      testAxis.add(t);
-    if (rt != null)
-      testAxis.add(rt);
-
-    CoordinateAxis ens = cs.getEnsembleAxis();
-    if (ens != null)
-      testAxis.add(ens);
-
-    if (v != null) { // test to see that v doesnt have extra dimensions. LOOK RELAX THIS
-      List<Dimension> testDomain = new ArrayList<>();
-      for (CoordinateAxis axis : testAxis) {
-        for (Dimension dim : axis.getDimensions()) {
-          if (!testDomain.contains(dim))
-            testDomain.add(dim);
-        }
-      }
-      if (!CoordinateSystem.isSubset(v.getDimensionsAll(), testDomain)) {
-        if (sbuff != null) sbuff.format(" NOT complete%n");
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * Determine if the CoordinateSystem cs can be made into a GeoGridCoordSys for the Variable v.
-   *
-   * @param sbuff put debug information into this StringBuffer; may be null.
-   * @param cs    CoordinateSystem to check.
-   * @param v     Variable to check.
-   * @return the GeoGridCoordSys made from cs, else null.
-   */
-  public static GeoGridCoordSys makeGridCoordSys(Formatter sbuff, CoordinateSystem cs, VariableEnhanced v) {
-    if (sbuff != null) {
-      sbuff.format(" ");
-      v.getNameAndDimensions(sbuff, false, true);
-      sbuff.format(" check CS %s: ", cs.getName());
-    }
-
-    if (isGridCoordSys(sbuff, cs, v)) {
-      GeoGridCoordSys gcs = new GeoGridCoordSys(cs, sbuff);
-      if (sbuff != null) sbuff.format(" OK%n");
-      return gcs;
-    }
-
-    return null;
-  }
-
-
   /////////////////////////////////////////////////////////////////////////////
+  private CoverageCoordSysBuilder builder;
   private ProjectionImpl proj;
   private GeoGridCoordinate2D g2d;
   private CoordinateAxis horizXaxis, horizYaxis;
@@ -238,10 +54,10 @@ public class GeoGridCoordSys extends CoordinateSystem {
    * If theres a Projection, it will set its map area
    *
    * @param cs    create from this Coordinate System
-   * @param sbuff place information messages here, may be null
    */
-  public GeoGridCoordSys(CoordinateSystem cs, Formatter sbuff) {
+  public CoverageCoordSys(CoverageCoordSysBuilder builder, CoordinateSystem cs) {
     super();
+    this.builder = builder;
     this.ds = cs.getNetcdfDataset();
 
     if (cs.isGeoXY()) {
@@ -291,10 +107,6 @@ public class GeoGridCoordSys extends CoordinateSystem {
       if ((z_best == null) || !(z_best.getRank() > zAxis.getRank())) z_best = zAxis;
     }
 
-    if ((z_oneD == null) && (z_best != null)) { // cant find one-d z but have nD z
-      if (sbuff != null) sbuff.format("GeoGridCoordSys needs a 1D Coordinate, instead has %s%n", z_best.getNameAndDimensions());
-    }
-
     if (z_oneD != null) {
       vertZaxis = (CoordinateAxis1D) z_oneD;
       coordAxes.add(vertZaxis);
@@ -303,7 +115,7 @@ public class GeoGridCoordSys extends CoordinateSystem {
     }
 
     // timeTaxis must be CoordinateAxis1DTime
-    CoordinateAxis t = cs.getTaxis();
+    CoordinateAxis t = builder.timeAxis;
     if (t != null) {
 
       if (t instanceof CoordinateAxis1D) {
@@ -312,7 +124,7 @@ public class GeoGridCoordSys extends CoordinateSystem {
           if (t instanceof CoordinateAxis1DTime)
             timeTaxis = (CoordinateAxis1DTime) t;
           else {
-            timeTaxis = CoordinateAxis1DTime.factory(ds, t, sbuff);
+            timeTaxis = CoordinateAxis1DTime.factory(ds, t, null);
           }
 
           tAxis = timeTaxis;
@@ -320,8 +132,6 @@ public class GeoGridCoordSys extends CoordinateSystem {
           timeDim = t.getDimension(0);
 
         } catch (Exception e) {
-          if (sbuff != null)
-            sbuff.format("%s: Error reading time coord= %s err= %s%n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
           log.error(t.getDatasetLocation()+": Error reading time coord= "+t.getFullName(), e);
         }
 
@@ -343,14 +153,11 @@ public class GeoGridCoordSys extends CoordinateSystem {
         if (rtAxis instanceof CoordinateAxis1DTime)
           runTimeAxis = (CoordinateAxis1DTime) rtAxis;
         else
-          runTimeAxis = CoordinateAxis1DTime.factory(ds, rtAxis, sbuff);
+          runTimeAxis = CoordinateAxis1DTime.factory(ds, rtAxis, null);
 
         coordAxes.add(runTimeAxis);
 
       } catch (IOException e) {
-        if (sbuff != null) {
-          sbuff.format("Error reading runtime coord= %s err= %s%n", rtAxis.getFullName(), e.getMessage());
-        }
       }
     }
 
@@ -389,21 +196,6 @@ public class GeoGridCoordSys extends CoordinateSystem {
    * Create a GeoGridCoordSys as a section of an existing GeoGridCoordSys.
    * This will create sections of the corresponding CoordinateAxes.
    *
-   * @param from    copy this GeoGridCoordSys
-   * @param t_range subset the time dimension, or null if you want all of it
-   * @param z_range subset the vertical dimension, or null if you want all of it
-   * @param y_range subset the y dimension, or null if you want all of it
-   * @param x_range subset the x dimension, or null if you want all of it
-   * @throws InvalidRangeException if any of the ranges are illegal
-   */
-  public GeoGridCoordSys(GeoGridCoordSys from, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
-    this(from, null, null, t_range, z_range, y_range, x_range);
-  }
-
-  /**
-   * Create a GeoGridCoordSys as a section of an existing GeoGridCoordSys.
-   * This will create sections of the corresponding CoordinateAxes.
-   *
    * @param from     copy this GeoGridCoordSys
    * @param rt_range subset the runtime dimension, or null if you want all of it
    * @param e_range  subset the ensemble dimension, or null if you want all of it
@@ -413,7 +205,7 @@ public class GeoGridCoordSys extends CoordinateSystem {
    * @param x_range  subset the x dimension, or null if you want all of it
    * @throws InvalidRangeException if any of the ranges are illegal
    */
-  public GeoGridCoordSys(GeoGridCoordSys from, Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
+  public CoverageCoordSys(CoverageCoordSys from, Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
     super();
 
     CoordinateAxis xaxis = from.getXHorizAxis();
@@ -533,6 +325,8 @@ public class GeoGridCoordSys extends CoordinateSystem {
   private CoordinateAxis convertUnits(CoordinateAxis axis) {
     String units = axis.getUnitsString();
     SimpleUnit axisUnit = SimpleUnit.factory(units);
+    if (axisUnit == null) return axis;
+
     double factor;
     try {
       factor = axisUnit.convertTo(1.0, SimpleUnit.kmUnit);
@@ -576,6 +370,10 @@ public class GeoGridCoordSys extends CoordinateSystem {
     }
   }
 
+  public GridCoordSys.Type getType() {
+    return builder.type;
+  }
+
   /**
    * Get the vertical transform function, or null if none
    *
@@ -595,7 +393,7 @@ public class GeoGridCoordSys extends CoordinateSystem {
   }
 
   // we have to delay making these, since we dont identify the dimensions specifically until now
-  void makeVerticalTransform(GeoGridDataset gds, Formatter parseInfo) {
+  void makeVerticalTransform(CoverageDataset gds, Formatter parseInfo) {
     if (vt != null) return; // already done
     if (vCT == null) return;  // no vt
 
@@ -1043,15 +841,6 @@ public class GeoGridCoordSys extends CoordinateSystem {
 
   /**
    * Get Index Ranges for the given lat, lon bounding box.
-   *
-   * @deprecated use getRangesFromLatLonRect.
-   */
-  public List<Range> getLatLonBoundingBox(LatLonRect rect) throws InvalidRangeException {
-    return getRangesFromLatLonRect(rect);
-  }
-
-  /**
-   * Get Index Ranges for the given lat, lon bounding box.
    * For projection, only an approximation based on latlon corners.
    * Must have CoordinateAxis1D or 2D for x and y axis.
    *
@@ -1403,186 +1192,6 @@ public class GeoGridCoordSys extends CoordinateSystem {
       times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));
     }
     return times;
-  }
-
-   ///////////////////////////////////////////////////////////////////////////
-  // deprecated
-
-  /**
-   * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
-   *
-   * @deprecated use findXYindexFromCoord
-   */
-  public int[] findXYCoordElement(double x_coord, double y_coord, int[] result) {
-    return findXYindexFromCoord(x_coord, y_coord, result);
-  }
-
-  /**
-   * Get the date range
-   * @return date range
-   * @deprecated  use getCalendarDateRange
-   */
-  public DateRange getDateRange() {
-    Date[] dates = getTimeDates();
-    if (dates.length > 0)
-      return new DateRange(dates[0], dates[dates.length - 1]);
-    return null;
-  }
-
-  /**
-   * Get the list of times as Dates.
-   * If 2D, return list of unique dates.
-   *
-   * @return array of java.util.Date, or Date[0].
-   * @deprecated  use getCalendarDates
-   */
-  public java.util.Date[] getTimeDates() {
-    if ((timeTaxis != null) && (timeTaxis.getSize() > 0)) {
-      return timeTaxis.getTimeDates();
-
-    } else if ((tAxis != null) && (tAxis.getSize() > 0))  {
-      return makeTimes2D();
-    }
-
-    return new Date[0];
-  }
-
-  private Date[] makeTimes2D() {
-    Set<Date> dates = new HashSet<>();
-
-    try {
-      // common case: see if it has a valid udunits unit
-      String units = tAxis.getUnitsString();
-      if (units != null && SimpleUnit.isDateUnit(units) && tAxis.getDataType().isNumeric()) {
-        DateUnit du = new DateUnit(units);
-        Array data = tAxis.read();
-        data.resetLocalIterator();
-        while (data.hasNext()) {
-          Date d = du.makeDate(data.nextDouble());
-          dates.add(d);
-        }
-
-      } else if (tAxis.getDataType() == DataType.STRING) {
-        // otherwise, see if its a String or CHAR, and if we can parse the values as an ISO date
-        DateFormatter formatter = new DateFormatter();
-        Array data = tAxis.read();
-        data.resetLocalIterator();
-        while (data.hasNext()) {
-          Date d = formatter.getISODate((String) data.next());
-          dates.add(d);
-        }
-
-      } else if (tAxis.getDataType() == DataType.CHAR) {
-        DateFormatter formatter = new DateFormatter();
-        ArrayChar data = (ArrayChar) tAxis.read();
-        ArrayChar.StringIterator iter = data.getStringIterator();
-        while (iter.hasNext()) {
-          Date d = formatter.getISODate(iter.next());
-          dates.add(d);
-        }
-
-      } else {
-        return new Date[0];
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
-    // sorted list
-    int n = dates.size();
-    Date[] dd = dates.toArray(new Date[n]);
-    List<Date> dateList = Arrays.asList(dd);
-    Collections.sort(dateList);
-    Date[] timeDates = new Date[n];
-    int count=0;
-    for (Date d : dateList)
-      timeDates[count++] = d;
-
-    return timeDates;
-  }
-
-  /* old way
-  private boolean makeTimes1D() {
-    int n = (int) timeTaxis.getSize();
-    timeDates = new Date[n];
-
-    // common case: see if it has a valid udunits unit
-    try {
-      DateUnit du = null;
-      String units = timeTaxis.getUnitsString();
-      if (units != null)
-        du = new DateUnit(units);
-      for (int i = 0; i < n; i++) {
-        Date d = du.makeDate(timeTaxis.getCoordValue(i));
-        timeDates[i] = d;
-      }
-      isDate = true;
-      return true;
-    } catch (Exception e) {
-      // ok to fall through
-    }
-
-    // otherwise, see if its a String, and if we can parse the values as an ISO date
-    if ((timeTaxis.getDataType() == DataType.STRING) || (timeTaxis.getDataType() == DataType.CHAR)) {
-      DateFormatter formatter = new DateFormatter();
-      for (int i = 0; i < n; i++) {
-        String coordValue = timeTaxis.getCoordName(i);
-        Date d = formatter.getISODate(coordValue);
-        if (d == null) {
-          isDate = false;
-          return false;
-        } else {
-          timeDates[i] = d;
-        }
-      }
-      isDate = true;
-      return true;
-    }
-
-    return false;
-  }  */
-
-
-
-  /**
-   * Get the string name for the ith time coordinate.
-   *
-   * @param index which time coordinate
-   * @return time name.
-   * @deprecated
-   */
-  public String getTimeName(int index) {
-    List<CalendarDate> cdates = getCalendarDates();
-
-    if ((index < 0) || (index >= cdates.size()))
-      throw new IllegalArgumentException("getTimeName illegal index = " + index);
-
-    return cdates.get(index).toString();
-  }
-
-  /**
-   * Get the index corresponding to the time name.
-   *
-   * @param name time name
-   * @return time index, or -1 if not found
-   * @deprecated
-   */
-  public int getTimeIndex(String name) {
-    List<CalendarDate> cdates = getCalendarDates();
-    for (int i=0; i < cdates.size(); i++) {
-      if( cdates.get(i).toString().equals(name)) return i;
-    }
-
-    return -1;
-  }
-
-  /**
-   * Only works if coordsys has 1d time axis
-   * @deprecated use CoordinateAxis1DTime.findTimeIndexFromDate
-   */
-  public int findTimeIndexFromDate(java.util.Date d) {
-    if (timeTaxis == null) return -1;
-    return timeTaxis.findTimeIndexFromDate(d);
   }
 
   ///////////////////////////////////////////////////////////////////////

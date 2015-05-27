@@ -17,9 +17,13 @@ import java.util.*;
  * @since 5/2/2015
  */
 public class GridCoordSys {
+  public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
+
+  //////////////////////////////////////////////////
   String name;
   List<String> axisNames;
   List<String> transformNames;
+  Type type;
 
   public String getName() {
     return name;
@@ -53,6 +57,14 @@ public class GridCoordSys {
   public void addTransformName(String p) {
     if (transformNames == null) transformNames = new ArrayList<>();
     transformNames.add(p);
+  }
+
+  public Type getType() {
+    return type;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
   }
 
   @Override

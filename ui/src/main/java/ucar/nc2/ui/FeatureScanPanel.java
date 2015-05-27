@@ -35,7 +35,7 @@ package ucar.nc2.ui;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
-import ucar.nc2.ft.scan.FeatureScan;
+import ucar.nc2.ft2.scan.FeatureScan;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;

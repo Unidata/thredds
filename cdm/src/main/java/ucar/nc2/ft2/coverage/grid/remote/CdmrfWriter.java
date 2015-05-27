@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.remote;
+package ucar.nc2.ft2.coverage.grid.remote;
 
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;

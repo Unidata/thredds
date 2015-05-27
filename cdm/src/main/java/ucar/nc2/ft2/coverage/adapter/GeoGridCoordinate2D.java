@@ -1,5 +1,5 @@
 /* Copyright */
-package ucar.nc2.ft2.coverage.grid.adapter;
+package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.ma2.ArrayDouble;
@@ -19,8 +19,6 @@ import ucar.ma2.MAMath;
 public class GeoGridCoordinate2D {
   static private boolean debug = false;
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGridCoordinate2D.class);
-
-  static final String testfilename = "Q:/cdmUnitTest/ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
 
   private final CoordinateAxis2D latCoord, lonCoord;
   private final int nrows, ncols;

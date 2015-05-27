@@ -88,8 +88,11 @@ public class FeatureScan {
     if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))return;
 
     // get list of files
+    File[] fila= dir.listFiles();
+    if (fila == null) return;
+
     List<File> files = new ArrayList<>();
-    for (File f : dir.listFiles()) {
+    for (File f : fila) {
       if (!f.isDirectory()) {
         files.add(f);
       }
@@ -105,8 +108,8 @@ public class FeatureScan {
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.endsWith(".gbx") || name.endsWith(".gbx8") || name.endsWith(".pdf") || name.endsWith(".xml") || name.endsWith(".gbx9")
-                || name.endsWith(".ncx") || name.endsWith(".txt") || name.endsWith(".tar")) {
+        if (name.contains(".gbx") || name.contains(".ncx") ||
+                name.endsWith(".xml") || name.endsWith(".pdf") || name.endsWith(".txt") || name.endsWith(".tar")) {
           files2.remove(f);
 
         } else if (prev != null) {

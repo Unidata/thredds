@@ -45,8 +45,8 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.grid.GridCoverageDataset;
-import ucar.nc2.ft2.coverage.grid.adapter.DtGridCoverageAdapter;
-import ucar.nc2.ft2.coverage.grid.adapter.GeoGridDataset;
+import ucar.nc2.ft2.coverage.adapter.CoverageAdapter;
+import ucar.nc2.ft2.coverage.adapter.CoverageDataset;
 import ucar.nc2.grib.GribUtils;
 
 import java.io.IOException;
@@ -118,8 +118,8 @@ public class Grib1Collection extends GribCollectionImmutable {
       Grib1Iosp iosp = new Grib1Iosp(group, ds.getType());
       NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation()+"#"+group.getId(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
-      GeoGridDataset gds = new GeoGridDataset(ncd);
-      return new DtGridCoverageAdapter(gds);
+      CoverageDataset gds = new CoverageDataset(ncd);
+      return new CoverageAdapter(gds);
 
     } else {
       MFile wantFile = findMFileByName(filename);
@@ -130,8 +130,8 @@ public class Grib1Collection extends GribCollectionImmutable {
         Grib1Iosp iosp = new Grib1Iosp(gc);
         NetcdfFile ncfile = new NetcdfFileSubclass(iosp, null, getLocation(), null);
         NetcdfDataset ncd = new NetcdfDataset(ncfile);
-        GeoGridDataset gds = new GeoGridDataset(ncd);
-        return new DtGridCoverageAdapter(gds);
+        CoverageDataset gds = new CoverageDataset(ncd);
+        return new CoverageAdapter(gds);
       }
       return null;
     }
