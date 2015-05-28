@@ -94,6 +94,7 @@ public class DtCoverageDataset implements AutoCloseable {
     if (facc != null)
       this.coverageType = facc.type;
 
+    Map<String, Gridset> csHash = new HashMap<>();
     for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
       DtCoverageCSBuilder fac = new DtCoverageCSBuilder(ncd, cs, parseInfo);
       if (fac.type == null) continue;
@@ -102,6 +103,7 @@ public class DtCoverageDataset implements AutoCloseable {
       Gridset cset = new Gridset(ccs);
       gridSets.add(cset);
       gridsetHash.put(ccs.getName(), cset);
+      csHash.put(cs.getName(), cset);
     }
 
     for (Variable v : ncd.getVariables()) {
@@ -114,7 +116,7 @@ public class DtCoverageDataset implements AutoCloseable {
         }
       });
       CoordinateSystem cs = css.get(0);    // the largest one
-      Gridset cset = gridsetHash.get(cs.getName());
+      Gridset cset = csHash.get(cs.getName());
       if (cset == null) continue;
       DtCoverage ci = new DtCoverage(this, cset.gcc, (VariableDS) ve);
       cset.grids.add(ci);
