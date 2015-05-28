@@ -95,7 +95,7 @@ public class CoverageDataset {
     for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
       CoverageCoordSysBuilder fac = new CoverageCoordSysBuilder(ncd, cs, parseInfo);
       if (fac.type == null) continue;
-      CoverageCoordSys ccs = fac.makeCoordSys(cs);
+      CoverageCoordSys ccs = fac.makeCoordSys();
       if (ccs == null) continue;
       Gridset cset = new Gridset(ccs);
       gridSets.add(cset);

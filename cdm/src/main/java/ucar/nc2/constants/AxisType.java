@@ -42,63 +42,20 @@ package ucar.nc2.constants;
  */
 
 public enum AxisType {
-  /**
-   * represents the runTime coordinate
-   */
-  RunTime(0),
-  /**
-   * represents the ensemble coordinate
-   */
-  //Ensemble(1),
-  Ensemble(2),
-  /**
-   * represents the time coordinate
-   */
-  //Time(2),
+
+  RunTime(0, "R"),
+  Ensemble(2, "E"),
   Time(1, "T"),
-  /**
-   * represents a x coordinate
-   */
   GeoX(5, "X"),
-  /**
-   * represents a y coordinate
-   */
   GeoY(4, "Y"),
-  /**
-   * represents a z coordinate
-   */
-  GeoZ(3, "Z"),
-  /**
-   * represents a latitude coordinate
-   */
+  GeoZ(3, "Z"),    // typically "dimensionless" vertical coordinate
   Lat(4, "Y"),
-  /**
-   * represents a longitude coordinate
-   */
   Lon(5, "X"),
-  /**
-   * represents a vertical height coordinate
-   */
-  Height(3, "Z"),
-  /**
-   * represents a vertical pressure coordinate
-   */
-  Pressure(3, "Z"),
-  /**
-   * represents a radial azimuth coordinate
-   */
+  Height(3, "Z"),   // vertical height coordinate
+  Pressure(3, "Z"), // vertical pressure coordinate
   RadialAzimuth(7),
-  /**
-   * represents a radial distance coordinate
-   */
   RadialDistance(8),
-  /**
-   * represents a radial elevation coordinate
-   */
   RadialElevation(6),
-  /**
-   * represents a spectral coordinate
-   */
   Spectral(1);
 
   private final int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance

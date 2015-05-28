@@ -35,6 +35,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.CoverageCoordSysBuilder;
 
@@ -139,7 +140,7 @@ public class FeatureScan {
 
     // do subdirs
     if (subdirs) {
-      for (File f : dir.listFiles()) {
+      for (File f : fila) {
         if (f.isDirectory() && !f.getName().equals("exclude"))
           scanDirectory(f, result, errlog);
       }
@@ -164,7 +165,7 @@ public class FeatureScan {
     String coordSysBuilder;
     String ftImpl;
     Throwable problem;
-    String isCoverage;
+    CoverageCoordSysBuilder builder;
 
     // no-arg constructor
     public Bean() {
@@ -180,12 +181,13 @@ public class FeatureScan {
         coordSysBuilder = ds.findAttValueIgnoreCase(null, _Coordinate._CoordSysBuilder, "none");
 
         Formatter errlog = new Formatter();
-        isCoverage = CoverageCoordSysBuilder.describe(errlog, ds);
+        builder = CoverageCoordSysBuilder.classify(ds, errlog);
         info.append(errlog.toString());
 
         ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
 
-        /* try {
+        // old
+        try {
           errlog = new Formatter();
           FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
           info.append("FeatureDatasetFactoryManager errlog = ");
@@ -208,7 +210,7 @@ public class FeatureScan {
           ftype = " ERR: " + t.getMessage();
           info.append(errlog.toString());
           problem = t;
-        }  */
+        }
 
       } catch (Throwable t) {
         fileType = " ERR: " + t.getMessage();
@@ -258,20 +260,23 @@ public class FeatureScan {
       return (ftFromMetadata == null) ? "" : ftFromMetadata.toString();
     }
 
-    /* public String getFeatureType() {
+    public String getFeatureType() {
       return ftype;
     }
 
-    public String getFeatureImpl() {
+    /* public String getFeatureImpl() {
       return ftImpl;
-    }  */
+    } */
 
     public String getCoverage() {
-      return isCoverage == null ? "" : isCoverage;
+      return builder == null ? "" : builder.showSummary();
     }
 
     public void toString(Formatter f, boolean showInfo) {
       f.format("%s%n %s%n map = '%s'%n", getName(), getFileType(), getCoordMap());
+      f.format("%n%s%n", builder.toString());
+      f.format("%s%n", builder.makeCoordSys());
+
       if (showInfo && info != null) {
         f.format("%n%s", info);
       }

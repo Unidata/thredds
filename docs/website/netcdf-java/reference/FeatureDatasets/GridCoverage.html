@@ -15,47 +15,40 @@ dl {margin: 10px 5px 5px 15px;)
 <h1>Grid Coverage Datasets</h1>
 <p>Redo Grid Dataset in coordinate space. <strong>package ucar.nc2.ft2.coverage</strong></p>
 <h2>Coverage Types</h2>
-<p>All Coverages must have:</p>
+<h3>Definitions</h3>
+<ul>
+  <li><em>coordinate</em> and <em>axis</em> are the saame thing</li>
+  <li><em>coordinate system</em> consists of a list of axes and transforms.</li>
+  <li><em>rank</em> is the number of dimensions (abbreviated scalar, 1D, 2D etc) of an axis, grid, coordSys, etc</li>
+  <li><em>domain</em> is the set of unique dimensions used by an axis, grid, coordSys, etc</li>
+  <li>an axis is <em>independent</em> if its a coordinate variable: 1D with dimension same as variable name</li>
+  <ul>
+  <li>or may be a <em>coordinate variable alias</em>,  if the name doesnt match, but otherwise acts as a coordinate variable</li>
+  </ul>
+</ul>
+<h3>For all Coverages:</h3>
 <ul>
   <li> must have lat/lon or have x,y and projection</li>
   <li> x and y both have rank &lt;= 2</li>
-  <li> x and y both have size &gt; 1</li>
-  <li> x and y have at least 2 dimensions between them ( this eliminates point data)</li>
+  <li> x and y both have size &gt; 1; eliminates some miscoded point data</li>
+  <li> x and y have at least 2 dimensions between them (eliminates point data)</li>
   <li>A runtime axis must be scalar or one-dimensional</li>
-  <li>Time may be 0, 1 or 2 dimensional, but first dimension must agree with runtime</li>
-  <li>other independent coordinates (ie dimensions) are ok.</li>
+  <li>Time may be 0, 1 or 2 dimensional</li>
+  <li>If time is 2D and runtime exists,  first time dimension must agree with runtime</li>
+  <li>other  coordinates, dependent or independent (ie has another dimension) are ok.</li>
 </ul>
 <h3>Subtypes:</h3>
 <ul>
-  <li><strong>Grid</strong>: all coordinates are 1D with independent dimension. z, t ,rt may be scalar</li>
-  <li><strong>Fmrc</strong>: x,y,z are 1D &amp; rt exists and t is 2D</li>
+  <li><strong>Grid</strong>: all dimensions have a 1D coordinate(?). rank(independent coords) == rank(coordsys)</li>
+  <li><strong>Fmrc</strong>: rt exists and t is 2D</li>
   <li><strong>Swath</strong>:  isLatLon &amp; x,y 2D &amp; t exists but not independent</li>
-  <li>    <strong>Curvilinear:</strong>  isLatLon &amp; x,y 2D &amp; t independent if it exists</li>
+  <li><strong>Curvilinear:</strong>  isLatLon &amp; x,y 2D &amp; t independent if it exists</li>
 </ul>
-<p>must have at least 2 coord axes<br>
-  // must have lat/lon or have x,y and projection//  x and y both have rank &lt;= 2<br>
-  // x and y both have size &gt; 1<br>
-  // x and y have at least 2 dimensions between them ( this eliminates point data)<br>
-  // A runtime axis must be one-dimensional<br>
-  // time may be 0, 1 or 2 dimensional, but first dimension must agree with runtime<br>
-  <br>
-  other axes ok<br>
-  isLatLon &amp; x and y are both 2D {<br>
-  t exists but no independent dimension == SWATH else == CURVILINEAR<br>
-  } else {<br>
-  x,y are 1D &amp; z is 0 or 1D {<br>
-  rt exists &amp; t is 2D == FMRC<br>
-  !rt exists || t is 1D == GRID<br>
-  } else {<br>
-  CURVILINEAR // ?? possible ??<br>
-  }<br>
-}</p>
-<h3><br>
-  unsolved problems</h3>
+<h3>
+  Unsolved problems</h3>
 <ul>
   <li> time dependence of horizontal coordsys, eg moving grids.</li>
-  <li> problem z(x,y,z)</li>
-  <li><br>
+  <li> problem z(x,y,z)<br>
     <br>
   </li>
 </ul>

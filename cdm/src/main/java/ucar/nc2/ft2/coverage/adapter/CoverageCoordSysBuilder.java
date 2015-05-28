@@ -43,17 +43,19 @@ public class CoverageCoordSysBuilder {
 
   public static String describe(Formatter f, NetcdfDataset ds) {
     CoverageCoordSysBuilder fac = classify(ds, f);
-    return fac.type == null ? "" : fac.toString();
+    return (fac == null || fac.type == null) ? "" : fac.toString();
   }
 
   ////////////////////////////
+  CoordinateSystem cs;
   GridCoordSys.Type type;
-  CoordinateAxis vertAxis;
-  CoordinateAxis timeAxis;
-  List<CoordinateAxis> standardAxes;
+  CoordinateAxis vertAxis, timeAxis, rtAxis, ensAxis;
+  List<CoordinateAxis> independentAxes;
   List<CoordinateAxis> otherAxes;
+  List<CoordinateAxis> standardAxes;
 
   CoverageCoordSysBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
+    this.cs = cs; // LOOK gc ??
 
     // must be at least 2 axes
     if (cs.getRankDomain() < 2) {
@@ -114,10 +116,25 @@ public class CoverageCoordSysBuilder {
       if (errlog != null) errlog.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
       return;
     }
-
     standardAxes = new ArrayList<>();
     standardAxes.add(xaxis);
     standardAxes.add(yaxis);
+
+    independentAxes = new ArrayList<>();
+    otherAxes = new ArrayList<>();
+    for (CoordinateAxis axis : cs.getCoordinateAxes()) {
+      if (axis.isCoordinateVariable()) independentAxes.add(axis);
+      else otherAxes.add(axis);
+    }
+    Collections.sort(independentAxes, new Comparator<CoordinateAxis>() {  // sort by axis type
+       public int compare(CoordinateAxis o1, CoordinateAxis o2) {
+         AxisType t1 = o1.getAxisType();
+         AxisType t2 = o2.getAxisType();
+         if (t1 != null && t2 != null)
+           return t1.axisOrder() - t2.axisOrder();
+         return (t1 == null) ? ((t2 == null) ? 0 : -1) : 1;
+       }
+     });
 
     vertAxis = cs.getHeightAxis();
     if ((vertAxis == null) || (vertAxis.getRank() > 1)) {
@@ -132,11 +149,11 @@ public class CoverageCoordSysBuilder {
     // tom margolis 3/2/2010
     // allow runtime independent of time
     CoordinateAxis t = cs.getTaxis();
-    CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
+    rtAxis = cs.findAxis(AxisType.RunTime);
 
     // A runtime axis must be scalar or one-dimensional
-    if (rt != null) {
-      if (!rt.isScalar() && !(rt instanceof CoordinateAxis1D)) {
+    if (rtAxis != null) {
+      if (!rtAxis.isScalar() && !(rtAxis instanceof CoordinateAxis1D)) {
         if (errlog != null) errlog.format("%s: RunTime axis must be 1D or scalar%n", cs.getName());
         return;
       }
@@ -146,9 +163,9 @@ public class CoverageCoordSysBuilder {
     // If time axis is two-dimensional...
     if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
 
-      if (rt != null && rt.getRank() == 1) {
+      if (rtAxis != null && rtAxis.getRank() == 1) {
         // time first dimension must agree with runtime
-        if (!rt.getDimension(0).equals(t.getDimension(0))) {
+        if (!rtAxis.getDimension(0).equals(t.getDimension(0))) {
           if (errlog != null) errlog.format("%s: 2D Time axis first dimension must be runtime%n", cs.getName());
           return;
         }
@@ -177,26 +194,29 @@ public class CoverageCoordSysBuilder {
       }
     }
 
-    // Set the independent temporal axis LOOK not right
-    if (t != null && t.isCoordinateVariable()) {
+    // Set the standard axes
+    if (t != null && t.isCoordinateVariable())
       standardAxes.add(t);
-    } else if (rt != null && rt.isCoordinateVariable()) {
-      standardAxes.add(rt);
-    }
+    if (rtAxis != null && rtAxis.isCoordinateVariable())
+      standardAxes.add(rtAxis);
 
-    // construct list of non standard axes
-    List<CoordinateAxis> css = cs.getCoordinateAxes();
-    if (standardAxes.size() < css.size()) {
-      otherAxes = new ArrayList<>(3);
-      for (CoordinateAxis axis : css)
-        if (!standardAxes.contains(axis)) otherAxes.add(axis);
-    }
+    ensAxis = cs.findAxis(AxisType.Ensemble);
+    if (ensAxis != null && ensAxis.isCoordinateVariable())
+      standardAxes.add(ensAxis);
 
     // now to classify
+    boolean alloneD = true;
+    for (CoordinateAxis axis : standardAxes) {  // LOOK prob not right
+      if (!axis.isCoordinateVariable()) alloneD = false;
+    }
+    if (alloneD) {
+      this.type = GridCoordSys.Type.Grid;
+      return;
+    }
 
     // 2D x,y
     if (cs.isLatLon() && (xaxis.getRank() == 2) && (yaxis.getRank() == 2)) {
-      if ((rt != null) && (t != null && t.getRank() == 2))  // fmrc with curvilinear coordinates
+      if ((rtAxis != null) && (t != null && t.getRank() == 2))  // fmrc with curvilinear coordinates LOOK ??
         this.type = GridCoordSys.Type.Fmrc;
 
       else if (t != null) {  // is t independent or not
@@ -209,17 +229,16 @@ public class CoverageCoordSysBuilder {
 
     } else {
       if ((xaxis.getRank() == 1) && (yaxis.getRank() == 1) && (vertAxis == null || vertAxis.getRank() == 1)) {
-        if ((rt != null) && (t != null && t.getRank() == 2))
+        if ((rtAxis != null) && (t != null && t.getRank() == 2))
           this.type = GridCoordSys.Type.Fmrc;
-        else
-          this.type = GridCoordSys.Type.Grid;
       } else {
         this.type = GridCoordSys.Type.Coverage;
       }
     }
+    // default
   }
 
-  public CoverageCoordSys makeCoordSys(CoordinateSystem cs) {
+  public CoverageCoordSys makeCoordSys() {
     switch (type) {
       case Grid:
         return new GridCS(this, cs);
@@ -230,33 +249,55 @@ public class CoverageCoordSysBuilder {
       case Swath:
         return new SwathCS(this, cs);
     }
-
     return new CoverageCoordSys(this, cs);
   }
 
+  @Override
   public String toString() {
-    if (type == null) return "";
     Formatter f2 = new Formatter();
-    f2.format("%s", type);
+    f2.format("%s", type == null ? "" : type.toString());
+    f2.format("%n vert=%s", vertAxis == null ? "" : vertAxis.getNameAndDimensions());
+    f2.format("%n time=%s", timeAxis == null ? "" : timeAxis.getNameAndDimensions());
+    f2.format("%n rtime=%s", rtAxis == null ? "" : rtAxis.getNameAndDimensions());
+    f2.format("%n ensAxis=%s", ensAxis == null ? "" : ensAxis.getNameAndDimensions());
+    f2.format("%n independentAxes=(");
+    for (CoordinateAxis axis : independentAxes)
+      f2.format("%s,", axis.getShortName());
+    f2.format(") {");
+    for (Dimension dim : CoordinateSystem.makeDomain(independentAxes))
+      f2.format("%s,", dim.getShortName());
+    f2.format("}");
+    f2.format("%n otherAxes=(");
+    for (CoordinateAxis axis : otherAxes)
+      f2.format("%s,", axis.getShortName());
+    f2.format(") {");
+    for (Dimension dim : CoordinateSystem.makeDomain(otherAxes))
+      f2.format("%s,", dim.getShortName());
+    f2.format("}");
+    f2.format("%n standardAxes=(");
+    for (CoordinateAxis axis : standardAxes)
+      f2.format("%s,", axis.getShortName());
+    f2.format(") {");
+    for (Dimension dim : CoordinateSystem.makeDomain(standardAxes))
+      f2.format("%s,", dim.getShortName());
+    f2.format("}%n");
+
+    return f2.toString();
+  }
+
+  public String showSummary() {
+    Formatter f2 = new Formatter();
+    f2.format("%s", type == null ? "" : type.toString());
 
     f2.format("(");
     int count = 0;
-    Collections.sort(standardAxes, new Comparator<CoordinateAxis>() {  // sort by axis type
-      public int compare(CoordinateAxis o1, CoordinateAxis o2) {
-        AxisType t1 = o1.getAxisType();
-        AxisType t2 = o2.getAxisType();
-        if (t1 != null && t2 != null)
-          return t1.axisOrder() - t2.axisOrder();
-        return (t1 == null) ? ((t2 == null) ? 0 : -1) : 1;
-      }
-    });
     for (CoordinateAxis axis : standardAxes) {
       if (count++ > 0) f2.format(",");
-      f2.format("%s", axis.getAxisType() == null ? "none" : axis.getAxisType().getCFAxisName());
+      f2.format("%s", axis.getAxisType() == null ? axis.getShortName() : axis.getAxisType().getCFAxisName());
     }
     f2.format(")");
 
-    if (otherAxes != null && otherAxes.size() > 0) {
+    if (otherAxes.size() > 0) {
       f2.format(": ");
       count = 0;
       for (CoordinateAxis axis : otherAxes) {
@@ -266,4 +307,7 @@ public class CoverageCoordSysBuilder {
     }
     return f2.toString();
   }
+
+
+
 }
