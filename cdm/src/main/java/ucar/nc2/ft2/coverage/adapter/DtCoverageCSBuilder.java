@@ -12,15 +12,15 @@ import ucar.unidata.geoloc.projection.RotatedPole;
 import java.util.*;
 
 /**
- * Describe
+ * Move functionality of ft.CoverageCSFactory
  *
  * @author caron
  * @since 5/26/2015
  */
-public class CoverageCoordSysBuilder {
+public class DtCoverageCSBuilder {
 
   // classify based on largest coordinate system
-  public static CoverageCoordSysBuilder classify(NetcdfDataset ds, Formatter errlog) {
+  public static DtCoverageCSBuilder classify(NetcdfDataset ds, Formatter errlog) {
     if (errlog != null) errlog.format("CoverageFactory for '%s'%n", ds.getLocation());
 
     // sort by largest size first
@@ -31,9 +31,9 @@ public class CoverageCoordSysBuilder {
       }
     });
 
-    CoverageCoordSysBuilder fac = null;
+    DtCoverageCSBuilder fac = null;
     for (CoordinateSystem cs : css) {
-      fac = new CoverageCoordSysBuilder(ds, cs, errlog);
+      fac = new DtCoverageCSBuilder(ds, cs, errlog);
       if (fac.type != null) break;
     }
     if (fac == null) return null;
@@ -42,20 +42,25 @@ public class CoverageCoordSysBuilder {
   }
 
   public static String describe(Formatter f, NetcdfDataset ds) {
-    CoverageCoordSysBuilder fac = classify(ds, f);
+    DtCoverageCSBuilder fac = classify(ds, f);
     return (fac == null || fac.type == null) ? "" : fac.toString();
   }
 
-  ////////////////////////////
-  CoordinateSystem cs;
+  ////////////////////////////////////////////////////////////////////////////////////
   GridCoordSys.Type type;
-  CoordinateAxis vertAxis, timeAxis, rtAxis, ensAxis;
+
+  boolean isLatLon;
+  CoordinateAxis xaxis, yaxis, timeAxis;
+  CoordinateAxis1D vertAxis, ensAxis, timeOffsetAxis;
+  CoordinateAxis1DTime rtAxis;
   List<CoordinateAxis> independentAxes;
   List<CoordinateAxis> otherAxes;
   List<CoordinateAxis> standardAxes;
+  List<CoordinateTransform> coordTransforms;
+  ProjectionImpl orgProj;
 
-  CoverageCoordSysBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
-    this.cs = cs; // LOOK gc ??
+  DtCoverageCSBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
+    // this.cs = cs; // LOOK gc ??
 
     // must be at least 2 axes
     if (cs.getRankDomain() < 2) {
@@ -63,6 +68,8 @@ public class CoverageCoordSysBuilder {
       return;
     }
 
+    //////////////////////////////////////////////////////////////
+    // horiz
     // must be lat/lon or have x,y and projection
     if (!cs.isLatLon()) {
       // do check for GeoXY
@@ -77,7 +84,6 @@ public class CoverageCoordSysBuilder {
     }
 
     // obtain the x,y or lat/lon axes. x,y normally must be convertible to km
-    CoordinateAxis xaxis, yaxis;
     if (cs.isGeoXY()) {
       xaxis = cs.getXaxis();
       yaxis = cs.getYaxis();
@@ -96,6 +102,7 @@ public class CoverageCoordSysBuilder {
     } else {
       xaxis = cs.getLonAxis();
       yaxis = cs.getLatAxis();
+      isLatLon = true;
     }
 
     // check x,y rank <= 2
@@ -127,42 +134,52 @@ public class CoverageCoordSysBuilder {
       else otherAxes.add(axis);
     }
     Collections.sort(independentAxes, new Comparator<CoordinateAxis>() {  // sort by axis type
-       public int compare(CoordinateAxis o1, CoordinateAxis o2) {
-         AxisType t1 = o1.getAxisType();
-         AxisType t2 = o2.getAxisType();
-         if (t1 != null && t2 != null)
-           return t1.axisOrder() - t2.axisOrder();
-         return (t1 == null) ? ((t2 == null) ? 0 : -1) : 1;
-       }
-     });
+      public int compare(CoordinateAxis o1, CoordinateAxis o2) {
+        AxisType t1 = o1.getAxisType();
+        AxisType t2 = o2.getAxisType();
+        if (t1 != null && t2 != null)
+          return t1.axisOrder() - t2.axisOrder();
+        return (t1 == null) ? ((t2 == null) ? 0 : -1) : 1;
+      }
+    });
 
-    vertAxis = cs.getHeightAxis();
-    if ((vertAxis == null) || (vertAxis.getRank() > 1)) {
-      if (cs.getPressureAxis() != null) vertAxis = cs.getPressureAxis();
+    //////////////////////////////////////////////////////////////
+    // vert
+    CoordinateAxis zAxis = cs.getHeightAxis();
+    if ((zAxis == null) || (zAxis.getRank() > 1)) {
+      if (cs.getPressureAxis() != null) zAxis = cs.getPressureAxis();
     }
-    if ((vertAxis == null) || (vertAxis.getRank() > 1)) {
-      if (cs.getZaxis() != null) vertAxis = cs.getZaxis();
+    if ((zAxis == null) || (zAxis.getRank() > 1)) {
+      if (cs.getZaxis() != null) zAxis = cs.getZaxis();
     }
-    if (vertAxis != null)
+    if (zAxis != null && zAxis instanceof CoordinateAxis1D) {
+      vertAxis = (CoordinateAxis1D) zAxis;
       standardAxes.add(vertAxis);
+    }
 
-    // tom margolis 3/2/2010
-    // allow runtime independent of time
-    CoordinateAxis t = cs.getTaxis();
-    rtAxis = cs.findAxis(AxisType.RunTime);
-
-    // A runtime axis must be scalar or one-dimensional
-    if (rtAxis != null) {
-      if (!rtAxis.isScalar() && !(rtAxis instanceof CoordinateAxis1D)) {
+    //////////////////////////////////////////////////////////////
+    // time
+    CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
+    if (rt != null) {
+      if (!rt.isScalar() && !(rt instanceof CoordinateAxis1D)) {   // A runtime axis must be scalar or one-dimensional
         if (errlog != null) errlog.format("%s: RunTime axis must be 1D or scalar%n", cs.getName());
         return;
       }
-      // LOOK turn it into 1D ??
+      if (!(rt instanceof CoordinateAxis1DTime)) {    // convert to CoordinateAxis1DTime
+        try {
+          rtAxis = CoordinateAxis1DTime.factory(ds, rt, errlog);
+        } catch (Exception e) {
+          if (errlog != null)
+            errlog.format("%s: Error reading runtime coord= %s err= %s%n", rt.getDatasetLocation(), rt.getFullName(), e.getMessage());
+          return;
+        }
+      } else {
+        rtAxis = (CoordinateAxis1DTime) rt;
+      }
     }
 
-    // If time axis is two-dimensional...
-    if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
-
+    CoordinateAxis t = cs.getTaxis();
+    if ((t != null) && t.getRank() > 1) {  // If time axis is two-dimensional...
       if (rtAxis != null && rtAxis.getRank() == 1) {
         // time first dimension must agree with runtime
         if (!rtAxis.getDimension(0).equals(t.getDimension(0))) {
@@ -172,84 +189,85 @@ public class CoverageCoordSysBuilder {
       }
     }
 
-    // convert time axis if possible
     if (t != null) {
-
-      if (t instanceof CoordinateAxis1D) {
-
+      if (t instanceof CoordinateAxis1D && !(t instanceof CoordinateAxis1DTime)) {  // convert time axis into CoordinateAxis1DTime if possible
         try {
-          if (t instanceof CoordinateAxis1DTime)
-            timeAxis = t;
-          else {
-            t = timeAxis = CoordinateAxis1DTime.factory(ds, t, errlog);
-          }
-
+          timeAxis = CoordinateAxis1DTime.factory(ds, t, errlog);
         } catch (Exception e) {
           if (errlog != null)
             errlog.format("%s: Error reading time coord= %s err= %s%n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
+          return;
         }
-
-      } else { // 2d
+      } else {
         timeAxis = t;
       }
     }
-
-    // Set the standard axes
-    if (t != null && t.isCoordinateVariable())
+    if (timeAxis != null)
       standardAxes.add(t);
-    if (rtAxis != null && rtAxis.isCoordinateVariable())
+    if (rtAxis != null)
       standardAxes.add(rtAxis);
 
-    ensAxis = cs.findAxis(AxisType.Ensemble);
-    if (ensAxis != null && ensAxis.isCoordinateVariable())
+    CoordinateAxis toAxis = cs.findAxis(AxisType.TimeOffset);
+    if (toAxis != null && toAxis.getRank() == 1) {
+      timeOffsetAxis = (CoordinateAxis1D) toAxis;
+      standardAxes.add(timeOffsetAxis);
+    }
+
+    if (t == null && rtAxis != null && timeOffsetAxis != null) {
+      // LOOK create time coord ??
+    }
+
+    CoordinateAxis eAxis = cs.findAxis(AxisType.Ensemble);
+    if (eAxis != null && eAxis instanceof CoordinateAxis1D) {
+      ensAxis = (CoordinateAxis1D) eAxis;
       standardAxes.add(ensAxis);
+    }
+
+    this.type = classify(xyDomain);
+    this.coordTransforms = new ArrayList<>(cs.getCoordinateTransforms());
+    this.orgProj = cs.getProjection();
+  }
+
+  private GridCoordSys.Type classify (List<Dimension> xyDomain) {
 
     // now to classify
+    boolean is2Dtime = (rtAxis != null) && (timeOffsetAxis != null || (timeAxis != null && timeAxis.getRank() == 2));
+    if (is2Dtime) {
+      return GridCoordSys.Type.Fmrc;   // LOOK this would allow 2d horiz
+    }
+
+    boolean is2Dhoriz = isLatLon && (xaxis.getRank() == 2) && (yaxis.getRank() == 2);
+    if (is2Dhoriz) {
+      if (timeAxis != null && CoordinateSystem.isSubset(timeAxis.getDimensionsAll(), xyDomain))
+        return  GridCoordSys.Type.Swath;   // LOOK prob not exactly right
+      else
+        return  GridCoordSys.Type.Curvilinear;
+    }
+
     boolean alloneD = true;
     for (CoordinateAxis axis : standardAxes) {  // LOOK prob not right
       if (!axis.isCoordinateVariable()) alloneD = false;
     }
     if (alloneD) {
-      this.type = GridCoordSys.Type.Grid;
-      return;
+      return GridCoordSys.Type.Grid;
     }
 
-    // 2D x,y
-    if (cs.isLatLon() && (xaxis.getRank() == 2) && (yaxis.getRank() == 2)) {
-      if ((rtAxis != null) && (t != null && t.getRank() == 2))  // fmrc with curvilinear coordinates LOOK ??
-        this.type = GridCoordSys.Type.Fmrc;
-
-      else if (t != null) {  // is t independent or not
-        if (CoordinateSystem.isSubset(t.getDimensionsAll(), xyDomain))
-          this.type = GridCoordSys.Type.Swath;
-        else
-          this.type = GridCoordSys.Type.Curvilinear;
-      } else
-        this.type = GridCoordSys.Type.Curvilinear;   // if no time coordinate. call it curvilinear
-
-    } else {
-      if ((xaxis.getRank() == 1) && (yaxis.getRank() == 1) && (vertAxis == null || vertAxis.getRank() == 1)) {
-        if ((rtAxis != null) && (t != null && t.getRank() == 2))
-          this.type = GridCoordSys.Type.Fmrc;
-      } else {
-        this.type = GridCoordSys.Type.Coverage;
-      }
-    }
     // default
+    return GridCoordSys.Type.Coverage;
   }
 
-  public CoverageCoordSys makeCoordSys() {
+  public DtCoverageCS makeCoordSys() {
     switch (type) {
       case Grid:
-        return new GridCS(this, cs);
+        return new GridCS(this);
       case Fmrc:
-        return new FmrcCS(this, cs);
+        return new FmrcCS(this);
       case Curvilinear:
-        return new CurvilinearCS(this, cs);
+        return new CurvilinearCS(this);
       case Swath:
-        return new SwathCS(this, cs);
+        return new SwathCS(this);
     }
-    return new CoverageCoordSys(this, cs);
+    return new DtCoverageCS(this);
   }
 
   @Override
@@ -259,6 +277,7 @@ public class CoverageCoordSysBuilder {
     f2.format("%n vert=%s", vertAxis == null ? "" : vertAxis.getNameAndDimensions());
     f2.format("%n time=%s", timeAxis == null ? "" : timeAxis.getNameAndDimensions());
     f2.format("%n rtime=%s", rtAxis == null ? "" : rtAxis.getNameAndDimensions());
+    f2.format("%n timeOffset=%s", timeOffsetAxis == null ? "" : timeOffsetAxis.getNameAndDimensions());
     f2.format("%n ensAxis=%s", ensAxis == null ? "" : ensAxis.getNameAndDimensions());
     f2.format("%n independentAxes=(");
     for (CoordinateAxis axis : independentAxes)
@@ -286,8 +305,10 @@ public class CoverageCoordSysBuilder {
   }
 
   public String showSummary() {
+    if (type == null) return "";
+
     Formatter f2 = new Formatter();
-    f2.format("%s", type == null ? "" : type.toString());
+    f2.format("%s", type.toString());
 
     f2.format("(");
     int count = 0;

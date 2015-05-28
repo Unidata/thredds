@@ -75,6 +75,7 @@ public class CdmrfWriter {
   CdmrFeatureProto.GridCoverageDataset.Builder encodeHeader(GridCoverageDataset gridDataset) {
     CdmrFeatureProto.GridCoverageDataset.Builder builder = CdmrFeatureProto.GridCoverageDataset.newBuilder();
     builder.setName(location);
+    builder.setCoverageType(convertCoverageType(gridDataset.getCoverageType()));
     builder.setDateRange(encodeDateRange(gridDataset.getCalendarDateRange()));
     builder.setLatlonRect(encodeRectangle(gridDataset.getLatLonBoundingBox()));
     if (gridDataset.getProjBoundingBox() != null)
@@ -174,6 +175,7 @@ public class CdmrfWriter {
   CdmrFeatureProto.CoordSys.Builder encodeCoordSys(GridCoordSys gcs) {
     CdmrFeatureProto.CoordSys.Builder builder = CdmrFeatureProto.CoordSys.newBuilder();
     builder.setName(gcs.getName());
+    builder.setCoverageType(convertCoverageType(gcs.getType()));
 
     for (String axis : gcs.getAxisNames())
       builder.addAxisNames(axis);
@@ -298,6 +300,23 @@ public class CdmrfWriter {
     throw new IllegalStateException("illegal data type " + type);
   }
 
+    //   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
+
+  static public CdmrFeatureProto.CoverageType convertCoverageType(GridCoordSys.Type type) {
+    switch (type) {
+      case Coverage:
+        return CdmrFeatureProto.CoverageType.Coverage;
+      case Curvilinear:
+        return CdmrFeatureProto.CoverageType.Curvilinear;
+      case Grid:
+        return CdmrFeatureProto.CoverageType.Grid;
+      case Swath:
+        return CdmrFeatureProto.CoverageType.Swath;
+      case Fmrc:
+        return CdmrFeatureProto.CoverageType.Fmrc;
+    }
+    throw new IllegalStateException("illegal CoverageType " + type);
+  }
 
   static public CdmrFeatureProto.DependenceType convertDependenceType(GridCoordAxis.DependenceType type) {
     switch (type) {

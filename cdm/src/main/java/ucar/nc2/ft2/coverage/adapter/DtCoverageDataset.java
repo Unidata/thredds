@@ -17,12 +17,12 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Describe
+ * fork ucar.nc2.dt.grid for adaption of GridCoverage
  *
  * @author caron
  * @since 5/26/2015
  */
-public class CoverageDataset {
+public class DtCoverageDataset implements AutoCloseable {
 
   /**
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
@@ -33,7 +33,7 @@ public class CoverageDataset {
    * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public CoverageDataset open(String location) throws java.io.IOException {
+  static public DtCoverageDataset open(String location) throws java.io.IOException {
     return open(location, NetcdfDataset.getDefaultEnhanceMode());
   }
 
@@ -47,17 +47,17 @@ public class CoverageDataset {
    * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#acquireDataset
    */
-  static public CoverageDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
+  static public DtCoverageDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, location, enhanceMode, -1, null, null);
-    return new CoverageDataset(ds, null);
+    return new DtCoverageDataset(ds, null);
   }
 
   ////////////////////////////////////////
 
   private NetcdfDataset ncd;
-  // private GridCoordSys.Type type;
+  private GridCoordSys.Type coverageType;
 
-  private ArrayList<Coverage> grids = new ArrayList<>();
+  private ArrayList<DtCoverage> grids = new ArrayList<>();
   private Map<String, Gridset> gridsetHash = new HashMap<>();
   private List<Gridset> gridSets = new ArrayList<>();
 
@@ -71,7 +71,7 @@ public class CoverageDataset {
    * @param ncd underlying NetcdfDataset, will do Enhance.CoordSystems if not already done.
    * @throws java.io.IOException on read error
    */
-  public CoverageDataset(NetcdfDataset ncd) throws IOException {
+  public DtCoverageDataset(NetcdfDataset ncd) throws IOException {
     this(ncd, null);
   }
 
@@ -82,7 +82,7 @@ public class CoverageDataset {
    * @param parseInfo put parse info here, may be null
    * @throws java.io.IOException on read error
    */
-  public CoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
+  public DtCoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
     this.ncd = ncd;
 
     // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
@@ -90,12 +90,14 @@ public class CoverageDataset {
     if (enhance == null || enhance.isEmpty()) enhance = NetcdfDataset.getDefaultEnhanceMode();
     ncd.enhance(enhance);
 
-    // type = CoverageCoordSysBuilder.classify(ncd, parseInfo);
+    DtCoverageCSBuilder facc = DtCoverageCSBuilder.classify(ncd, parseInfo);
+    if (facc != null)
+      this.coverageType = facc.type;
 
     for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
-      CoverageCoordSysBuilder fac = new CoverageCoordSysBuilder(ncd, cs, parseInfo);
+      DtCoverageCSBuilder fac = new DtCoverageCSBuilder(ncd, cs, parseInfo);
       if (fac.type == null) continue;
-      CoverageCoordSys ccs = fac.makeCoordSys();
+      DtCoverageCS ccs = fac.makeCoordSys();
       if (ccs == null) continue;
       Gridset cset = new Gridset(ccs);
       gridSets.add(cset);
@@ -114,7 +116,7 @@ public class CoverageDataset {
       CoordinateSystem cs = css.get(0);    // the largest one
       Gridset cset = gridsetHash.get(cs.getName());
       if (cset == null) continue;
-      Coverage ci = new Coverage(this, cset.gcc, (VariableDS) ve);
+      DtCoverage ci = new DtCoverage(this, cset.gcc, (VariableDS) ve);
       cset.grids.add(ci);
       grids.add(ci);
     }
@@ -123,7 +125,7 @@ public class CoverageDataset {
   private void makeRanges() {
 
     for (Gridset gset : getGridsets()) {
-      CoverageCoordSys gcs = gset.getGeoCoordSystem();
+      DtCoverageCS gcs = gset.getGeoCoordSystem();
 
       ProjectionRect bb = gcs.getBoundingBox();
       if (projBB == null)
@@ -145,6 +147,10 @@ public class CoverageDataset {
           dateRangeMax.extend(dateRange);
       }
     }
+  }
+
+  public GridCoordSys.Type getCoverageType() {
+    return coverageType;
   }
 
   // stuff to satisfy ucar.nc2.dt.TypedDataset
@@ -207,7 +213,7 @@ public class CoverageDataset {
 
   public List<VariableSimpleIF> getDataVariables() {
     List<VariableSimpleIF> result = new ArrayList<>(grids.size());
-    for (Coverage grid : getGrids()) {
+    for (DtCoverage grid : getGrids()) {
       if (grid.getVariable() != null) // LOOK could make Adaptor if no variable
         result.add(grid.getVariable());
     }
@@ -222,7 +228,7 @@ public class CoverageDataset {
     return ncd;
   }
 
-  private void addGeoGrid(VariableDS varDS, CoverageCoordSys gcs, Formatter parseInfo) {
+  private void addGeoGrid(VariableDS varDS, DtCoverageCS gcs, Formatter parseInfo) {
     Gridset gridset;
     if (null == (gridset = gridsetHash.get(gcs.getName()))) {
       gridset = new Gridset(gcs);
@@ -231,7 +237,7 @@ public class CoverageDataset {
       gcs.makeVerticalTransform(this, parseInfo); // delayed until now LOOK why for each grid ??
     }
 
-    Coverage geogrid = new Coverage(this, gridset.gcc, varDS);
+    DtCoverage geogrid = new DtCoverage(this, gridset.gcc, varDS);
     grids.add(geogrid);
     gridset.add(geogrid);
   }
@@ -259,11 +265,11 @@ public class CoverageDataset {
   /**
    * @return the list of GeoGrid objects contained in this dataset.
    */
-  public List<Coverage> getGrids() {
+  public List<DtCoverage> getGrids() {
     return new ArrayList<>(grids);
   }
 
-  public Coverage findGridDatatype(String name) {
+  public DtCoverage findGridDatatype(String name) {
     return findGridByName(name);
   }
 
@@ -283,8 +289,8 @@ public class CoverageDataset {
    * @param fullName find this GeoGrid by full name
    * @return the named GeoGrid, or null if not found
    */
-  public Coverage findGridByName(String fullName) {
-    for (Coverage ggi : grids) {
+  public DtCoverage findGridByName(String fullName) {
+    for (DtCoverage ggi : grids) {
       if (fullName.equals(ggi.getFullName()))
         return ggi;
     }
@@ -297,16 +303,16 @@ public class CoverageDataset {
    * @param shortName find this GeoGrid by short name
    * @return the named GeoGrid, or null if not found
    */
-  public Coverage findGridByShortName(String shortName) {
-    for (Coverage ggi : grids) {
+  public DtCoverage findGridByShortName(String shortName) {
+    for (DtCoverage ggi : grids) {
       if (shortName.equals(ggi.getShortName()))
         return ggi;
     }
     return null;
   }
 
-  public Coverage findGridDatatypeByAttribute(String attName, String attValue) {
-    for (Coverage ggi : grids) {
+  public DtCoverage findGridDatatypeByAttribute(String attName, String attValue) {
+    for (DtCoverage ggi : grids) {
       for (Attribute att : ggi.getAttributes())
         if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
           return ggi;
@@ -345,14 +351,14 @@ public class CoverageDataset {
     int countGridset = 0;
 
     for (Gridset gs : gridsetHash.values()) {
-      CoverageCoordSys gcs = gs.getGeoCoordSystem();
+      DtCoverageCS gcs = gs.getGeoCoordSystem();
       buf.format("%nGridset %d  coordSys=%s", countGridset, gcs);
       buf.format(" LLbb=%s ", gcs.getLatLonBoundingBox());
       if ((gcs.getProjection() != null) && !gcs.getProjection().isLatLon())
         buf.format(" bb= %s", gcs.getBoundingBox());
       buf.format("%n");
       buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
-      for (Coverage grid : gs.getGrids()) {
+      for (DtCoverage grid : gs.getGrids()) {
         buf.format("%s%n", grid.getInfo());
       }
       countGridset++;
@@ -373,28 +379,28 @@ public class CoverageDataset {
    */
   public static class Gridset {
 
-    private CoverageCoordSys gcc;
-    private List<Coverage> grids = new ArrayList<>();
+    private DtCoverageCS gcc;
+    private List<DtCoverage> grids = new ArrayList<>();
 
-    private Gridset(CoverageCoordSys gcc) {
+    private Gridset(DtCoverageCS gcc) {
       this.gcc = gcc;
     }
 
-    private void add(Coverage grid) {
+    private void add(DtCoverage grid) {
       grids.add(grid);
     }
 
     /**
      * Get list of GeoGrid objects
      */
-    public List<Coverage> getGrids() {
+    public List<DtCoverage> getGrids() {
       return grids;
     }
 
     /**
      * all GeoGrid point to this GeoGridCoordSys
      */
-    public CoverageCoordSys getGeoCoordSystem() {
+    public DtCoverageCS getGeoCoordSystem() {
       return gcc;
     }
 
@@ -403,7 +409,7 @@ public class CoverageDataset {
      *
      * @deprecated use getGeoCoordSystem() if possible.
      */
-    public CoverageCoordSys getGeoCoordSys() {
+    public DtCoverageCS getGeoCoordSys() {
       return gcc;
     }
   }

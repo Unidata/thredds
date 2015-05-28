@@ -20,16 +20,17 @@ import java.util.List;
 
 /**
  * fork ucar.nc2.dt.grid for adaption of GridCoverage
+ * LOOK maybe can only be used for GRID ?
  *
  * @author caron
  * @since 5/26/2015
  */
-public class Coverage implements IsMissingEvaluator {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Coverage.class);
+public class DtCoverage implements IsMissingEvaluator {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DtCoverage.class);
   static private final boolean debugArrayShape = false;
 
-  private final CoverageDataset dataset;
-  private final CoverageCoordSys gcs;
+  private final DtCoverageDataset dataset;
+  private final DtCoverageCS gcs;
   private final VariableDS vs;
   private int xDimOrgIndex = -1, yDimOrgIndex = -1, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
   private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1, rtDimNewIndex = -1;
@@ -42,7 +43,7 @@ public class Coverage implements IsMissingEvaluator {
    * @param dsvar   wraps this Variable
    * @param gcs     has this grid coordinate system
    */
-  public Coverage(CoverageDataset dataset, CoverageCoordSys gcs, VariableDS dsvar) {
+  public DtCoverage(DtCoverageDataset dataset, DtCoverageCS gcs, VariableDS dsvar) {
     this.dataset = dataset;
     this.vs = dsvar;
     this.gcs = gcs;
@@ -60,8 +61,8 @@ public class Coverage implements IsMissingEvaluator {
 
     if (gcs.getVerticalAxis() != null) zDimOrgIndex = findDimension(gcs.getVerticalAxis().getDimension(0));
     if (gcs.getTimeAxis() != null) {
-      if (gcs.getTimeAxis1D() != null)
-        tDimOrgIndex = findDimension(gcs.getTimeAxis1D().getDimension(0));
+      if (gcs.getTimeAxis().getRank() == 1)
+        tDimOrgIndex = findDimension(gcs.getTimeAxis().getDimension(0));
       else
         tDimOrgIndex = findDimension(gcs.getTimeAxis().getDimension(1));
       // deal with swath where time not independent dimension LOOK rewrite ??
@@ -291,7 +292,7 @@ public class Coverage implements IsMissingEvaluator {
   /**
    * get the GeoGridCoordSys for this GeoGrid.
    */
-  public CoverageCoordSys getCoordinateSystem() {
+  public DtCoverageCS getCoordinateSystem() {
     return gcs;
   }
 
@@ -310,7 +311,7 @@ public class Coverage implements IsMissingEvaluator {
   }
 
   /**
-   * @return ArrayList of thredds.util.NamedObject, from the  GeoGridCoordSys.
+   * @return ArrayList of thredds.util.NamedObject, from the GeoGridCoordSys.
    */
   public List<NamedObject> getTimes() {
     return gcs.getTimes();
@@ -606,7 +607,7 @@ public class Coverage implements IsMissingEvaluator {
    * @return subsetted GeoGrid
    * @throws InvalidRangeException if bbox does not intersect GeoGrid
    */
-  public Coverage subset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
+  public DtCoverage subset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
 
     if ((z_range == null) && (z_stride > 1)) {
       Dimension zdim = getZDimension();
@@ -642,7 +643,7 @@ public class Coverage implements IsMissingEvaluator {
     return subset(t_range, z_range, y_range, x_range);
   }
 
-  public Coverage makeSubset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
+  public DtCoverage makeSubset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
     return subset(t_range, z_range, bbox, z_stride, y_stride, x_stride);
   }
 
@@ -656,11 +657,11 @@ public class Coverage implements IsMissingEvaluator {
    * @return subsetted GeoGrid
    * @throws InvalidRangeException if any of the ranges are invalid
    */
-  public Coverage subset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
-    return (Coverage) makeSubset(null, null, t_range, z_range, y_range, x_range);
+  public DtCoverage subset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
+    return (DtCoverage) makeSubset(null, null, t_range, z_range, y_range, x_range);
   }
 
-  public Coverage makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
+  public DtCoverage makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
     // get the ranges list
     int rank = getRank();
     Range[] ranges = new Range[rank];
@@ -686,10 +687,10 @@ public class Coverage implements IsMissingEvaluator {
     }
 
     // subset the axes in the GeoGridCoordSys
-    CoverageCoordSys gcs_section = new CoverageCoordSys(gcs, rt_range, e_range, t_range, z_range, y_range, x_range);
+    DtCoverageCS gcs_section = gcs.subset(rt_range, e_range, t_range, z_range, y_range, x_range);
 
     // now we can make the geogrid
-    return new Coverage(dataset, gcs_section, v_section);
+    return new DtCoverage(dataset, gcs_section, v_section);
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -699,10 +700,10 @@ public class Coverage implements IsMissingEvaluator {
    */
   public boolean equals(Object oo) {
     if (this == oo) return true;
-    if (!(oo instanceof Coverage))
+    if (!(oo instanceof DtCoverage))
       return false;
 
-    Coverage d = (Coverage) oo;
+    DtCoverage d = (DtCoverage) oo;
     if (!getFullName().equals(d.getFullName())) return false;
     return getCoordinateSystem().equals(d.getCoordinateSystem());
   }
@@ -746,7 +747,7 @@ public class Coverage implements IsMissingEvaluator {
     return buf.toString();
   }
 
-  public int compareTo(Coverage g) {
+  public int compareTo(DtCoverage g) {
     return getFullName().compareTo(g.getFullName());
   }
 }

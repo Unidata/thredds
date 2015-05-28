@@ -40,6 +40,8 @@ public class GridCoverageDataset implements AutoCloseable {
   List<GridCoordAxis> coordAxes;
   List<GridCoverage> grids;
 
+  GridCoordSys.Type coverageType;
+
   public void close() throws IOException {
     // NOOP
   }
@@ -62,6 +64,14 @@ public class GridCoverageDataset implements AutoCloseable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public GridCoordSys.Type getCoverageType() {
+    return coverageType;
+  }
+
+  public void setCoverageType(GridCoordSys.Type coverageType) {
+    this.coverageType = coverageType;
   }
 
   public List<Attribute> getGlobalAttributes() {

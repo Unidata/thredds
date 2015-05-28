@@ -12,11 +12,11 @@ import java.io.IOException;
  * @author John
  * @since 12/25/12
  */
-public class FmrcCS extends CoverageCoordSys  {
+public class FmrcCS extends DtCoverageCS {
   private CoordinateAxis1DTime[] timeAxisForRun;
 
-  protected FmrcCS(CoverageCoordSysBuilder builder, CoordinateSystem cs) {
-      super(builder, cs);
+  protected FmrcCS(DtCoverageCSBuilder builder) {
+      super(builder);
     }
 
   @Override
@@ -24,7 +24,7 @@ public class FmrcCS extends CoverageCoordSys  {
     return (CoordinateAxis2D) super.getTimeAxis();
   }
 
-  public CoordinateAxis1DTime getTimeAxisForRun(CalendarDate runTime) {
+  /* public CoordinateAxis1DTime getTimeAxisForRun(CalendarDate runTime) {
     CoordinateAxis1DTime runTimeAxis = getRunTimeAxis();
     if (runTimeAxis == null) return null;
     int runIndex = runTimeAxis.findTimeIndexFromCalendarDate(runTime);
@@ -53,6 +53,7 @@ public class FmrcCS extends CoverageCoordSys  {
     }
 
     return null;
-  }
+  } */
+
 
 }

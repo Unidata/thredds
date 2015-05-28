@@ -534,7 +534,8 @@ public class CoverageTable extends JPanel {
     }
 
     public String getSpacing() {
-      return axis.getSpacing().toString();
+      GridCoordAxis.Spacing sp = axis.getSpacing();
+      return (sp == null) ? "" : sp.toString();
     }
 
     public long getNvalues() {

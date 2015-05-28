@@ -5,7 +5,6 @@ import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NCdumpW;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.grid.GridCoordSys;
@@ -15,8 +14,6 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
-import ucar.unidata.geoloc.projection.RotatedLatLon;
-import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
@@ -31,21 +28,18 @@ import java.util.*;
  * @author caron
  * @since 5/26/2015
  */
-public class CoverageCoordSys extends CoordinateSystem {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageCoordSys.class);
+public class DtCoverageCS {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DtCoverageCS.class);
   static private final boolean warnUnits = false;
 
   /////////////////////////////////////////////////////////////////////////////
-  private CoverageCoordSysBuilder builder;
+  private DtCoverageCSBuilder builder;
+  private String name;
   private ProjectionImpl proj;
   private GeoGridCoordinate2D g2d;
-  private CoordinateAxis horizXaxis, horizYaxis;
-  private CoordinateAxis1D vertZaxis, ensembleAxis;
-  private CoordinateAxis1DTime timeTaxis, runTimeAxis;
   private VerticalCT vCT;
   private VerticalTransform vt;
   private Dimension timeDim;
-
   private boolean isLatLon = false;
 
   /**
@@ -53,117 +47,14 @@ public class CoverageCoordSys extends CoordinateSystem {
    * This will choose which axes are the XHoriz, YHoriz, Vertical, Time, RunTIme, Ensemble.
    * If theres a Projection, it will set its map area
    *
-   * @param cs    create from this Coordinate System
+   * @param builder    create from this
    */
-  public CoverageCoordSys(CoverageCoordSysBuilder builder, CoordinateSystem cs) {
+  public DtCoverageCS(DtCoverageCSBuilder builder) {
     super();
     this.builder = builder;
-    this.ds = cs.getNetcdfDataset();
-
-    if (cs.isGeoXY()) {
-      horizXaxis = xAxis = cs.getXaxis();
-      horizYaxis = yAxis = cs.getYaxis();
-
-      ProjectionImpl p = cs.getProjection();
-      if (!(p instanceof RotatedPole) && !(p instanceof RotatedLatLon)) {
-        // make a copy of the axes if they need to change
-        horizXaxis = convertUnits(horizXaxis);
-        horizYaxis = convertUnits(horizYaxis);
-      }
-    } else if (cs.isLatLon()) {
-      horizXaxis = lonAxis = cs.getLonAxis();
-      horizYaxis = latAxis = cs.getLatAxis();
-      isLatLon = true;
-
-      if (lonAxis instanceof CoordinateAxis1D) {
-        ((CoordinateAxis1D) lonAxis).correctLongitudeWrap();
-      }
-
-    } else
-      throw new IllegalArgumentException("CoordinateSystem is not geoReferencing");
-
-    coordAxes.add(horizXaxis);
-    coordAxes.add(horizYaxis);
-
-    // set canonical area
-    ProjectionImpl projOrig = cs.getProjection();
-    if (projOrig != null) {
-      proj = projOrig.constructCopy();
-      proj.setDefaultMapArea(getBoundingBox());  // LOOK too expensive for 2D
-    }
-
-   // LOOK: require 1D vertical - need to generalize to nD vertical.
-    CoordinateAxis z_oneD = hAxis = cs.getHeightAxis();
-    if ((z_oneD == null) || !(z_oneD instanceof CoordinateAxis1D)) z_oneD = pAxis = cs.getPressureAxis();
-    if ((z_oneD == null) || !(z_oneD instanceof CoordinateAxis1D)) z_oneD = zAxis = cs.getZaxis();
-    if ((z_oneD != null) && !(z_oneD instanceof CoordinateAxis1D))
-      z_oneD = null;
-
-    CoordinateAxis z_best = hAxis;
-    if (pAxis != null) {
-      if ((z_best == null) || !(z_best.getRank() > pAxis.getRank())) z_best = pAxis;
-    }
-    if (zAxis != null) {
-      if ((z_best == null) || !(z_best.getRank() > zAxis.getRank())) z_best = zAxis;
-    }
-
-    if (z_oneD != null) {
-      vertZaxis = (CoordinateAxis1D) z_oneD;
-      coordAxes.add(vertZaxis);
-    } else {
-      hAxis = pAxis = zAxis = null;
-    }
-
-    // timeTaxis must be CoordinateAxis1DTime
-    CoordinateAxis t = builder.timeAxis;
-    if (t != null) {
-
-      if (t instanceof CoordinateAxis1D) {
-
-        try {
-          if (t instanceof CoordinateAxis1DTime)
-            timeTaxis = (CoordinateAxis1DTime) t;
-          else {
-            timeTaxis = CoordinateAxis1DTime.factory(ds, t, null);
-          }
-
-          tAxis = timeTaxis;
-          coordAxes.add(timeTaxis);
-          timeDim = t.getDimension(0);
-
-        } catch (Exception e) {
-          log.error(t.getDatasetLocation()+": Error reading time coord= "+t.getFullName(), e);
-        }
-
-      } else { // 2d
-
-        tAxis = t;
-        timeTaxis = null;
-        coordAxes.add(t); // LOOK ??
-      }
-    }
-
-    // look for special axes
-    ensembleAxis = (CoordinateAxis1D) cs.findAxis(AxisType.Ensemble);
-    if (null != ensembleAxis) coordAxes.add(ensembleAxis);
-
-    CoordinateAxis rtAxis = cs.findAxis(AxisType.RunTime);
-    if (null != rtAxis) {
-      try {
-        if (rtAxis instanceof CoordinateAxis1DTime)
-          runTimeAxis = (CoordinateAxis1DTime) rtAxis;
-        else
-          runTimeAxis = CoordinateAxis1DTime.factory(ds, rtAxis, null);
-
-        coordAxes.add(runTimeAxis);
-
-      } catch (IOException e) {
-      }
-    }
 
     // look for VerticalCT
-    List<CoordinateTransform> list = cs.getCoordinateTransforms();
-    for (CoordinateTransform ct : list) {
+    for (CoordinateTransform ct : getCoordTransforms()) {
       if (ct instanceof VerticalCT) {
         vCT = (VerticalCT) ct;
         break;
@@ -171,32 +62,24 @@ public class CoverageCoordSys extends CoordinateSystem {
     }
 
     // make name based on coordinate
-    Collections.sort(coordAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
-    this.name = makeName(coordAxes);
-
-    // copy all coordinate transforms into here
-    this.coordTrans = new ArrayList<>(cs.getCoordinateTransforms());
-
-    // collect dimensions
-    for (CoordinateAxis axis : coordAxes) {
-      List<Dimension> dims = axis.getDimensions();
-      for (Dimension dim : dims) {
-        if (!domain.contains(dim))
-          domain.add(dim);
-      }
-    }
+    Collections.sort(builder.standardAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+    this.name = CoordinateSystem.makeName(builder.standardAxes);
 
     // WRF NMM
     Attribute att = getXHorizAxis().findAttribute(_Coordinate.Stagger);
     if (att != null)
       setHorizStaggerType(att.getStringValue());
+
+    if (builder.orgProj != null) {
+        proj = builder.orgProj.constructCopy();
+        proj.setDefaultMapArea( getBoundingBox());  // LOOK too expensive for 2D
+    }
   }
 
   /**
    * Create a GeoGridCoordSys as a section of an existing GeoGridCoordSys.
    * This will create sections of the corresponding CoordinateAxes.
    *
-   * @param from     copy this GeoGridCoordSys
    * @param rt_range subset the runtime dimension, or null if you want all of it
    * @param e_range  subset the ensemble dimension, or null if you want all of it
    * @param t_range  subset the time dimension, or null if you want all of it
@@ -205,8 +88,8 @@ public class CoverageCoordSys extends CoordinateSystem {
    * @param x_range  subset the x dimension, or null if you want all of it
    * @throws InvalidRangeException if any of the ranges are illegal
    */
-  public CoverageCoordSys(CoverageCoordSys from, Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
-    super();
+  public DtCoverageCS subset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
+    /* super();
 
     CoordinateAxis xaxis = from.getXHorizAxis();
     CoordinateAxis yaxis = from.getYHorizAxis();
@@ -304,8 +187,8 @@ public class CoverageCoordSys extends CoordinateSystem {
 
 
     // make name based on coordinate
-    Collections.sort(coordAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
-    this.name = makeName(coordAxes);
+    Collections.sort(builder.standardAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+    this.name = makeName(builder.standardAxes);
 
     this.coordTrans = new ArrayList<>(from.getCoordinateTransforms());
 
@@ -319,7 +202,9 @@ public class CoverageCoordSys extends CoordinateSystem {
       }
     }
 
-    setHorizStaggerType(from.getHorizStaggerType());
+    setHorizStaggerType(from.getHorizStaggerType()); */
+
+    return null;
   }
 
   private CoordinateAxis convertUnits(CoordinateAxis axis) {
@@ -370,8 +255,23 @@ public class CoverageCoordSys extends CoordinateSystem {
     }
   }
 
+  ////////////////////
+
+
+  public String getName() {
+    return name;
+  }
+
   public GridCoordSys.Type getType() {
     return builder.type;
+  }
+
+  public List<CoordinateAxis> getCoordAxes() {
+    return builder.standardAxes;
+  }
+
+  public List<CoordinateTransform> getCoordTransforms() {
+    return builder.coordTransforms;
   }
 
   /**
@@ -393,7 +293,7 @@ public class CoverageCoordSys extends CoordinateSystem {
   }
 
   // we have to delay making these, since we dont identify the dimensions specifically until now
-  void makeVerticalTransform(CoverageDataset gds, Formatter parseInfo) {
+  void makeVerticalTransform(DtCoverageDataset gds, Formatter parseInfo) {
     if (vt != null) return; // already done
     if (vCT == null) return;  // no vt
 
@@ -411,71 +311,44 @@ public class CoverageCoordSys extends CoordinateSystem {
    * get the X Horizontal axis (either GeoX or Lon)
    */
   public CoordinateAxis getXHorizAxis() {
-    return horizXaxis;
+    return builder.xaxis;
   }
 
   /**
    * get the Y Horizontal axis (either GeoY or Lat)
    */
   public CoordinateAxis getYHorizAxis() {
-    return horizYaxis;
+    return builder.yaxis;
   }
 
   /**
    * get the Vertical axis (either Geoz, Height, or Pressure)
    */
   public CoordinateAxis1D getVerticalAxis() {
-    return vertZaxis;
+    return builder.vertAxis;
   }
 
-  /**
-   * get the Time axis
-   */
+
   public CoordinateAxis getTimeAxis() {
-    return tAxis;
+    return builder.timeAxis;
   }
 
-  /**
-   * get the Time axis, if its 1-dimensional
-   */
-  public CoordinateAxis1DTime getTimeAxis1D() {
-    return timeTaxis;
-  }
 
-  /**
-   * get the RunTime axis, else null
-   */
   public CoordinateAxis1DTime getRunTimeAxis() {
-    return runTimeAxis;
+    return builder.rtAxis;
   }
 
-  /**
-   * get the Ensemble axis, else null
-   */
-  @Override
   public CoordinateAxis1D getEnsembleAxis() {
-    return ensembleAxis;
+    return builder.ensAxis;
   }
 
-  /**
-   * get the projection
-   */
-  @Override
   public ProjectionImpl getProjection() {
     return proj;
-  }
-
-  public void setProjectionBoundingBox() {
-    // set canonical area
-    if (proj != null) {
-      proj.setDefaultMapArea(getBoundingBox());  // LOOK too expensive for 2D
-    }
   }
 
   /**
    * is this a Lat/Lon coordinate system?
    */
-  @Override
   public boolean isLatLon() {
     return isLatLon;
   }
@@ -486,8 +359,8 @@ public class CoverageCoordSys extends CoordinateSystem {
    */
   public boolean isGlobalLon() {
     if (!isLatLon) return false;
-    if (!(horizXaxis instanceof CoordinateAxis1D)) return false;
-    CoordinateAxis1D lon = (CoordinateAxis1D) horizXaxis;
+    if (!(getXHorizAxis() instanceof CoordinateAxis1D)) return false;
+    CoordinateAxis1D lon = (CoordinateAxis1D) getXHorizAxis();
     double first = lon.getCoordEdge(0);
     double last = lon.getCoordEdge((int) lon.getSize());
     double min = Math.min(first, last);
@@ -495,9 +368,9 @@ public class CoverageCoordSys extends CoordinateSystem {
     return (max - min) >= 360;
   }
 
-  /**
+  /*
    * true if increasing z coordinate values means "up" in altitude
-   */
+   *
   public boolean isZPositive() {
     if (vertZaxis == null) return false;
     if (vertZaxis.getPositive() != null) {
@@ -505,7 +378,7 @@ public class CoverageCoordSys extends CoordinateSystem {
     }
     if (vertZaxis.getAxisType() == AxisType.Height) return true;
     return vertZaxis.getAxisType() != AxisType.Pressure;
-  }
+  } */
 
   /**
    * true if x and y axes are CoordinateAxis1D and are regular
@@ -545,6 +418,8 @@ public class CoverageCoordSys extends CoordinateSystem {
     if (result == null)
       result = new int[2];
 
+    CoordinateAxis horizXaxis = getXHorizAxis();
+    CoordinateAxis horizYaxis = getYHorizAxis();
     if ((horizXaxis instanceof CoordinateAxis1D) && (horizYaxis instanceof CoordinateAxis1D)) {
       result[0] = ((CoordinateAxis1D) horizXaxis).findCoordElement(x_coord);
       result[1] = ((CoordinateAxis1D) horizYaxis).findCoordElement(y_coord);
@@ -582,6 +457,8 @@ public class CoverageCoordSys extends CoordinateSystem {
     if (result == null)
       result = new int[2];
 
+    CoordinateAxis horizXaxis = getXHorizAxis();
+    CoordinateAxis horizYaxis = getYHorizAxis();
     if ((horizXaxis instanceof CoordinateAxis1D) && (horizYaxis instanceof CoordinateAxis1D)) {
       result[0] = ((CoordinateAxis1D) horizXaxis).findCoordElementBounded(x_coord);
       result[1] = ((CoordinateAxis1D) horizYaxis).findCoordElementBounded(y_coord);
@@ -633,49 +510,6 @@ public class CoverageCoordSys extends CoordinateSystem {
     return findXYindexFromCoordBounded(pp.getX(), pp.getY(), result);
   }
 
-  /**
-   * True if there is a Time Axis.
-   */
-  @Override
-  public boolean hasTimeAxis() {
-    return tAxis != null;
-  }
-
-  /**
-   * True if there is a Time Axis and it is 1D.
-   */
-  public boolean hasTimeAxis1D() {
-    return timeTaxis != null;
-  }
-
-  public CoordinateAxis1DTime getTimeAxisForRun(int run_index) {
-    if (!hasTimeAxis() || hasTimeAxis1D() || runTimeAxis == null) return null;
-    int nruns = (int) runTimeAxis.getSize();
-    if ((run_index < 0) || (run_index >= nruns))
-      throw new IllegalArgumentException("getTimeAxisForRun index out of bounds= " + run_index);
-
-    if (timeAxisForRun == null)
-      timeAxisForRun = new CoordinateAxis1DTime[nruns];
-
-    if (timeAxisForRun[run_index] == null)
-      timeAxisForRun[run_index] = makeTimeAxisForRun(run_index);
-
-    return timeAxisForRun[run_index];
-  }
-
-  private CoordinateAxis1DTime[] timeAxisForRun;
-
-  private CoordinateAxis1DTime makeTimeAxisForRun(int run_index) {
-    VariableDS section;
-    try {
-      section = (VariableDS) tAxis.slice(0, run_index);
-      return CoordinateAxis1DTime.factory(ds, section, null);
-    } catch (InvalidRangeException | IOException e) {
-      e.printStackTrace();
-    }
-
-    return null;
-  }
 
   private ProjectionRect mapArea = null;
 
@@ -685,6 +519,8 @@ public class CoverageCoordSys extends CoordinateSystem {
   public ProjectionRect getBoundingBox() {
     if (mapArea == null) {
 
+      CoordinateAxis horizXaxis = getXHorizAxis();
+      CoordinateAxis horizYaxis = getYHorizAxis();
       if ((horizXaxis == null) || !horizXaxis.isNumeric() || (horizYaxis == null) || !horizYaxis.isNumeric())
         return null; // impossible
 
@@ -734,6 +570,8 @@ public class CoverageCoordSys extends CoordinateSystem {
   public LatLonPoint getLatLon(int xindex, int yindex) {
     double x, y;
 
+    CoordinateAxis horizXaxis = getXHorizAxis();
+    CoordinateAxis horizYaxis = getYHorizAxis();
     if (horizXaxis instanceof CoordinateAxis1D) {
       CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizXaxis;
       x = horiz1D.getCoordValue(xindex);
@@ -769,6 +607,8 @@ public class CoverageCoordSys extends CoordinateSystem {
 
     if (llbb == null) {
 
+      CoordinateAxis horizXaxis = getXHorizAxis();
+      CoordinateAxis horizYaxis = getYHorizAxis();
       if (isLatLon()) {
         double startLat = horizYaxis.getMinValue();
         double startLon = horizXaxis.getMinValue();
@@ -1021,39 +861,22 @@ public class CoverageCoordSys extends CoordinateSystem {
   public void show(Formatter f, boolean showCoords) {
     f.format("Coordinate System (%s)%n", getName());
 
-    if (getRunTimeAxis() != null) {
-      f.format(" rt=%s (%s)", runTimeAxis.getNameAndDimensions(), runTimeAxis.getClass().getName());
-      if (showCoords) showCoords(runTimeAxis, f);
-      f.format("%n");
-    }
-    if (getEnsembleAxis() != null) {
-      f.format(" ens=%s (%s)", ensembleAxis.getNameAndDimensions(), ensembleAxis.getClass().getName());
-      if (showCoords) showCoords(ensembleAxis, f);
-      f.format("%n");
-    }
-    if (getTimeAxis() != null) {
-      f.format(" t=%s (%s)", tAxis.getNameAndDimensions(), tAxis.getClass().getName());
-      if (showCoords) showCoords(tAxis, f);
-      f.format("%n");
-    }
-    if (getVerticalAxis() != null) {
-      f.format(" z=%s (%s)", vertZaxis.getNameAndDimensions(), vertZaxis.getClass().getName());
-      if (showCoords) showCoords(vertZaxis, f);
-      f.format("%n");
-    }
-    if (getYHorizAxis() != null) {
-      f.format(" y=%s (%s)", horizYaxis.getNameAndDimensions(), horizYaxis.getClass().getName());
-      if (showCoords) showCoords(horizYaxis, f);
-      f.format("%n");
-    }
-    if (getXHorizAxis() != null) {
-      f.format(" x=%s (%s)", horizXaxis.getNameAndDimensions(), horizXaxis.getClass().getName());
-      if (showCoords) showCoords(horizXaxis, f);
-      f.format("%n");
-    }
+    showCoordinateAxis(getRunTimeAxis(), f, showCoords);
+    showCoordinateAxis(getEnsembleAxis(), f, showCoords);
+    showCoordinateAxis(getTimeAxis(), f, showCoords);
+    showCoordinateAxis(getVerticalAxis(), f, showCoords);
+    showCoordinateAxis(getYHorizAxis(), f, showCoords);
+    showCoordinateAxis(getXHorizAxis(), f, showCoords);
 
     if (proj != null)
       f.format(" Projection: %s %s%n", proj.getName(), proj.paramsToString());
+  }
+
+  private void showCoordinateAxis(CoordinateAxis axis, Formatter f, boolean showCoords) {
+    if (axis == null) return;
+    f.format(" rt=%s (%s)", axis.getNameAndDimensions(), axis.getClass().getName());
+    if (showCoords) showCoords(axis, f);
+    f.format("%n");
   }
 
   private void showCoords(CoordinateAxis axis, Formatter f) {
@@ -1083,52 +906,46 @@ public class CoverageCoordSys extends CoordinateSystem {
 
   /////////////////////////////////////////////////////////////////
 
-  public List<CalendarDate> getCalendarDates() {
-    if (timeTaxis != null)
-      return timeTaxis.getCalendarDates();
-
-    else if (getRunTimeAxis() != null)
-      return makeCalendarDates2D();
-
-    else
-      return new ArrayList<>();
+  /**
+   * Get the list of time names, to be used for user selection.
+   * The ith one refers to the ith time coordinate.
+   *
+   * @return List of ucar.nc2.util.NamedObject, or empty list.
+   */
+  public List<NamedObject> getTimes() {
+    List<CalendarDate> cdates = getCalendarDates();
+    List<NamedObject> times = new ArrayList<>( cdates.size());
+    for (CalendarDate cd: cdates) {
+      times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));
+    }
+    return times;
   }
 
   public CalendarDateRange getCalendarDateRange() {
-    if (timeTaxis != null)
-      return timeTaxis.getCalendarDateRange();
-
-    else if (getRunTimeAxis() != null) {
-      List<CalendarDate>  cd = makeCalendarDates2D();
-      int last = cd.size();
-      return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last-1)) : null;
-
-    } else
-      return null;
-  }
-
-  private List<CalendarDate> makeCalendarDates2D() {
-    Set<CalendarDate> dates = new HashSet<>();
+    CoordinateAxis timeTaxis = getTimeAxis();
+    if (timeTaxis != null && timeTaxis instanceof CoordinateAxis1DTime)
+      return ((CoordinateAxis1DTime)timeTaxis).getCalendarDateRange();
 
     CoordinateAxis1DTime rtaxis = getRunTimeAxis();
-    List<CalendarDate> runtimes = rtaxis.getCalendarDates();
-    for (int i = 0; i < runtimes.size(); i++) {
-      CoordinateAxis1DTime taxis = getTimeAxisForRun(i);
-      if (taxis == null) throw new IllegalStateException();
-      List<CalendarDate> times = taxis.getCalendarDates();
-      for (CalendarDate time : times) dates.add(time);
+    if (rtaxis != null) {
+      return rtaxis.getCalendarDateRange();
     }
 
-    // sorted list
-    int n = dates.size();
-    CalendarDate[] dd = dates.toArray(new CalendarDate[n]);
-    List<CalendarDate> dateList = Arrays.asList(dd);
-    Collections.sort(dateList);
-
-    return dateList;
+    return null;
   }
 
+  public List<CalendarDate> getCalendarDates() {
+    CoordinateAxis timeTaxis = getTimeAxis();
+    if (timeTaxis != null && timeTaxis instanceof CoordinateAxis1DTime)
+      return ((CoordinateAxis1DTime)timeTaxis).getCalendarDates();
 
+    CoordinateAxis1DTime rtaxis = getRunTimeAxis();
+    if (rtaxis != null) {
+      return rtaxis.getCalendarDates();
+    }
+
+    return null;
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////
   // cruft
@@ -1140,6 +957,7 @@ public class CoverageCoordSys extends CoordinateSystem {
    * @return List of ucar.nc2.util.NamedObject, or empty list.
    */
   public List<NamedObject> getLevels() {
+    CoordinateAxis1D vertZaxis = getVerticalAxis();
     if (vertZaxis == null)
       return new ArrayList<>(0);
 
@@ -1158,6 +976,7 @@ public class CoverageCoordSys extends CoordinateSystem {
    * @return level name
    */
   public String getLevelName(int index) {
+    CoordinateAxis1D vertZaxis = getVerticalAxis();
     if ((vertZaxis == null) || (index < 0) || (index >= vertZaxis.getSize()))
       throw new IllegalArgumentException("getLevelName = " + index);
     return vertZaxis.getCoordName(index).trim();
@@ -1170,6 +989,7 @@ public class CoverageCoordSys extends CoordinateSystem {
    * @return level index, or -1 if not found
    */
   public int getLevelIndex(String name) {
+    CoordinateAxis1D vertZaxis = getVerticalAxis();
     if ((vertZaxis == null) || (name == null)) return -1;
 
     for (int i = 0; i < vertZaxis.getSize(); i++) {
@@ -1177,21 +997,6 @@ public class CoverageCoordSys extends CoordinateSystem {
         return i;
     }
     return -1;
-  }
-
-  /**
-   * Get the list of time names, to be used for user selection.
-   * The ith one refers to the ith time coordinate.
-   *
-   * @return List of ucar.nc2.util.NamedObject, or empty list.
-   */
-  public List<NamedObject> getTimes() {
-    List<CalendarDate> cdates = getCalendarDates();
-    List<NamedObject> times = new ArrayList<>( cdates.size());
-    for (CalendarDate cd: cdates) {
-      times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));
-    }
-    return times;
   }
 
   ///////////////////////////////////////////////////////////////////////

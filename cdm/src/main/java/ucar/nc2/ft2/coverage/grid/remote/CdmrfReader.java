@@ -111,6 +111,8 @@ public class CdmrfReader {
   GridCoverageDataset decodeHeader(CdmrFeatureProto.GridCoverageDataset proto) {
     GridCoverageDataset result = new GridCoverageDataset();
     result.setName(endpoint);
+    if (proto.hasCoverageType())
+      result.setCoverageType(convertCoverageType(proto.getCoverageType()));
     result.setLatLonBoundingBox(decodeLatLonRectangle(proto.getLatlonRect()));
     result.setProjBoundingBox(decodeProjRectangle(proto.getProjRect()));
     if (proto.hasDateRange())
@@ -181,6 +183,7 @@ public class CdmrfReader {
     result.setName(proto.getName());
     result.setAxisNames(proto.getAxisNamesList());
     result.setTransformNames(proto.getTransformNamesList());
+    result.setType(convertCoverageType(proto.getCoverageType()));
 
     return result;
   }
@@ -331,6 +334,24 @@ message GridCoverage {
         return Calendar.none;
     }
     throw new IllegalStateException("illegal data type " + type);
+  }
+
+  //   public enum Type {Coverage, Curvilinear, Grid, Swath, Fmrc}
+
+  static public GridCoordSys.Type convertCoverageType(CdmrFeatureProto.CoverageType type) {
+    switch (type) {
+      case Coverage:
+        return GridCoordSys.Type.Coverage;
+      case Curvilinear:
+        return GridCoordSys.Type.Curvilinear;
+      case Grid:
+        return GridCoordSys.Type.Grid;
+      case Swath:
+        return GridCoordSys.Type.Swath;
+      case Fmrc:
+        return GridCoordSys.Type.Fmrc;
+    }
+    throw new IllegalStateException("illegal CoverageType " + type);
   }
 
   static public GridCoordAxis.DependenceType convertDependenceType(CdmrFeatureProto.DependenceType type) {

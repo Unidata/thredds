@@ -43,12 +43,12 @@ package ucar.nc2.constants;
 
 public enum AxisType {
 
-  RunTime(0, "R"),
+  RunTime(0, "R"),   // runtime / reference time
   Ensemble(2, "E"),
   Time(1, "T"),
   GeoX(5, "X"),
   GeoY(4, "Y"),
-  GeoZ(3, "Z"),    // typically "dimensionless" vertical coordinate
+  GeoZ(3, "Z"),     // typically "dimensionless" vertical coordinate
   Lat(4, "Y"),
   Lon(5, "X"),
   Height(3, "Z"),   // vertical height coordinate
@@ -56,7 +56,8 @@ public enum AxisType {
   RadialAzimuth(7),
   RadialDistance(8),
   RadialElevation(6),
-  Spectral(1);
+  Spectral(1),
+  TimeOffset(1,"TO");  // time offset from runtime / reference time
 
   private final int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
   private final String cfAxisName; // X, Y, Z, T from http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-types

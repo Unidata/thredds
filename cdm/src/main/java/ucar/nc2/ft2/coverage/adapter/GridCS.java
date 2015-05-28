@@ -1,7 +1,13 @@
 package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Grid Coordinate System Implementation
@@ -10,10 +16,10 @@ import ucar.nc2.dataset.CoordinateSystem;
  * @author John
  * @since 12/25/12
  */
-public class GridCS extends CoverageCoordSys {
+public class GridCS extends DtCoverageCS {
 
-  GridCS(CoverageCoordSysBuilder builder, CoordinateSystem cs) {
-    super(builder, cs);
+  GridCS(DtCoverageCSBuilder builder) {
+    super(builder);
   }
 
   @Override
@@ -21,20 +27,46 @@ public class GridCS extends CoverageCoordSys {
     return getXHorizAxis().isRegular() && getYHorizAxis().isRegular();
   }
 
+  @Override
   public CoordinateAxis1D getXHorizAxis() {
     return (CoordinateAxis1D) super.getXHorizAxis();
   }
 
+  @Override
   public CoordinateAxis1D getYHorizAxis() {
     return (CoordinateAxis1D) super.getYHorizAxis();
   }
 
-  public CoordinateAxis1D getVerticalAxis() {
-    return (CoordinateAxis1D) super.getVerticalAxis();
+  // LOOK another possibility is a scalar runtime and a 1D time offset
+
+  @Override
+  public CoordinateAxis1DTime getTimeAxis() {
+    return (CoordinateAxis1DTime) super.getTimeAxis();
   }
 
-  public CoordinateAxis1D getTimeAxis() {
-    return (CoordinateAxis1D) super.getTimeAxis();
+  @Override
+  public List<CalendarDate> getCalendarDates() {
+    if (getTimeAxis() != null)
+      return getTimeAxis().getCalendarDates();
+
+    else if (getRunTimeAxis() != null)
+      return getRunTimeAxis().getCalendarDates();
+
+    else
+      return new ArrayList<>();
   }
+
+  @Override
+  public CalendarDateRange getCalendarDateRange() {
+    if (getTimeAxis() != null)
+      return getTimeAxis().getCalendarDateRange();
+
+    else if (getRunTimeAxis() != null)
+      return getRunTimeAxis().getCalendarDateRange();
+
+    else
+      return null;
+  }
+
 
 }

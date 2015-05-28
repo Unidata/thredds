@@ -49,8 +49,7 @@ import ucar.unidata.geoloc.*;
  * Rotated-pole longitude-latitude grid.
  *
  * This is probably the same as rotated lat lon, using matrix to do rotation.
- * Follows CF convention with "north_pole lat/lon", whereas RotatedLatLon uses
- * south pole. LOOK
+ * Follows CF convention with "north_pole lat/lon", whereas RotatedLatLon uses south pole.
  *
  * @author Robert Schmunk
  * @author jcaron

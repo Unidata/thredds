@@ -14,8 +14,6 @@ import ucar.ma2.MAMath;
  * @author caron
  * @since Jul 10, 2009
  */
-
-
 public class GeoGridCoordinate2D {
   static private boolean debug = false;
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGridCoordinate2D.class);

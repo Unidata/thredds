@@ -9,20 +9,18 @@ import ucar.nc2.dataset.CoordinateSystem;
  * @author John
  * @since 12/25/12
  */
-public class CurvilinearCS extends CoverageCoordSys  {
+public class CurvilinearCS extends DtCoverageCS {
 
-  protected CurvilinearCS(CoverageCoordSysBuilder builder, CoordinateSystem cs) {
-    super(builder, cs);
+  protected CurvilinearCS(DtCoverageCSBuilder builder) {
+    super(builder);
   }
 
-  @Override
   public CoordinateAxis2D getLatAxis() {
-    return (CoordinateAxis2D) super.getLatAxis();
+    return (CoordinateAxis2D) super.getXHorizAxis();
   }
 
-  @Override
   public CoordinateAxis2D getLonAxis() {
-    return (CoordinateAxis2D) super.getLonAxis();
+    return (CoordinateAxis2D) super.getYHorizAxis();
   }
 
 }

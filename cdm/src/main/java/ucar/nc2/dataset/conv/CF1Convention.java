@@ -66,7 +66,7 @@ import java.io.IOException;
  */
 
 public class CF1Convention extends CSMConvention {
-  private static final String convName = "CF-1.";
+  private static final String convName = "CF-1.";   // start with
 
   /**
    * Get which CF version this is, ie CF-1.x
@@ -149,12 +149,17 @@ public class CF1Convention extends CSMConvention {
           continue;
         }
 
-        if (sname.equalsIgnoreCase("forecast_reference_time")) { // experimental
+        if (sname.equalsIgnoreCase(CF.TIME_REFERENCE)) {
           v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
           continue;
         }
 
-        if (sname.equalsIgnoreCase("ensemble")) {  // experimental
+        if (sname.equalsIgnoreCase(CF.TIME_OFFSET)) {
+          v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+          continue;
+        }
+
+        if (sname.equalsIgnoreCase("ensemble") || sname.equalsIgnoreCase("realization")) {
           v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Ensemble.toString()));
           continue;
         }
@@ -312,11 +317,17 @@ public class CF1Convention extends CSMConvention {
       if (sname.equalsIgnoreCase("longitude"))
         return AxisType.Lon;
 
-      if (sname.equalsIgnoreCase("projection_x_coordinate") || sname.equalsIgnoreCase("grid_longitude") || sname.equalsIgnoreCase("rotated_longitude"))
+      if (sname.equalsIgnoreCase(CF.PROJECTION_X_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LONGITUDE))
         return AxisType.GeoX;
 
-      if (sname.equalsIgnoreCase("projection_y_coordinate") || sname.equalsIgnoreCase("grid_latitude") || sname.equalsIgnoreCase("rotated_latitude"))
+      if (sname.equalsIgnoreCase(CF.PROJECTION_Y_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LATITUDE))
         return AxisType.GeoY;
+
+      if (sname.equalsIgnoreCase( CF.TIME_REFERENCE))
+        return AxisType.RunTime;
+
+      if (sname.equalsIgnoreCase( CF.TIME_OFFSET))
+        return AxisType.TimeOffset;
     }
 
     // check axis attribute - only for X, Y, Z

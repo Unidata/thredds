@@ -1,6 +1,6 @@
 import "ucar/nc2/stream/ncStream.proto";
 
-option java_package = "ucar.nc2.ft2.remote";
+option java_package = "ucar.nc2.ft2.coverage.grid.remote";
 option java_outer_classname = "CdmrFeatureProto";
 
 message CoordTransform {
@@ -9,7 +9,7 @@ message CoordTransform {
   repeated Attribute params = 3;
 }
 
-enum AxisType {
+enum AxisType {  // same as ucar.nc2.constants.AxisType
   RunTime=1;
   Ensemble=2;
   Time=3;
@@ -26,14 +26,22 @@ enum AxisType {
   Spectral=14;
 }
 
-enum AxisSpacing {
+enum AxisSpacing {  // same as GridCoordAxis.Spacing
   regular=1;
   irregularPoint=2;
   contiguousInterval=3;
   discontiguousInterval=4;
 }
 
-enum DependenceType {
+enum CoverageType {  // same as GridCoordSys.Type
+  Coverage=1;
+  Curvilinear=2;
+  Grid=3;
+  Swath=4;
+  Fmrc=5;
+}
+
+enum DependenceType {  // same as GridCoordAxis.DependenceType
   independent=1;     // has its own dimension, is a coordinate variable, eg x(x)
   dependent=2;       // aux coordinate, reftime(time) or time_bounds(time);
   scalar=3;          // reftime
@@ -64,6 +72,7 @@ message CoordSys {
   repeated string axisNames = 2;
   repeated string transformNames = 3;
   repeated CoordSys components = 4;        // factor out Horiz, Time ??
+  optional CoverageType coverageType = 5;
 }
 
 message GridCoverage {
@@ -109,7 +118,8 @@ message GridCoverageDataset {
   repeated CoordTransform coordTransforms = 7;
   repeated CoordAxis coordAxes = 8;
   repeated GridCoverage grids = 9;
+  optional CoverageType coverageType = 10;
 }
 
 //  cd c:/dev/github/thredds50/cdm/src/main/java
-//  protoc --proto_path=. --java_out=. ucar/nc2/ft2/remote/cdmrfeature.proto
+//  protoc --proto_path=. --java_out=. ucar/nc2/ft2/coverage/grid/remote/cdmrfeature.proto

@@ -20,32 +20,33 @@ import java.util.*;
  * @author caron
  * @since 5/1/2015
  */
-public class CoverageAdapter extends GridCoverageDataset {
-  private CoverageDataset proxy;
+public class DtCoverageAdapter extends GridCoverageDataset {
+  private DtCoverageDataset proxy;
 
-  public CoverageAdapter(CoverageDataset proxy) {
+  public DtCoverageAdapter(DtCoverageDataset proxy) {
     this.proxy = proxy;
     setName(proxy.getLocation());
+    setCoverageType(proxy.getCoverageType());
     setGlobalAttributes(proxy.getGlobalAttributes());
     setLatLonBoundingBox(proxy.getBoundingBox());
     setCalendarDateRange(proxy.getCalendarDateRange());
     setProjBoundingBox(proxy.getProjBoundingBox());
 
     List<GridCoverage> pgrids = new ArrayList<>();
-    for (Coverage dtGrid : proxy.getGrids())
+    for (DtCoverage dtGrid : proxy.getGrids())
       pgrids.add(new Grid(dtGrid));
     setGrids(pgrids);
 
     List<ucar.nc2.ft2.coverage.grid.GridCoordSys> pcoordSys = new ArrayList<>();
-    for (CoverageDataset.Gridset gset : proxy.getGridsets())
+    for (DtCoverageDataset.Gridset gset : proxy.getGridsets())
       pcoordSys.add(new CoordSys(gset.getGeoCoordSystem()));
     setCoordSys(pcoordSys);
 
     Set<String> transformNames = new HashSet<>();
     List<GridCoordTransform> transforms = new ArrayList<>();
-    for (CoverageDataset.Gridset gset : proxy.getGridsets()) {
-      CoverageCoordSys gcs = gset.getGeoCoordSystem();
-      for (ucar.nc2.dataset.CoordinateTransform ct : gcs.getCoordinateTransforms())
+    for (DtCoverageDataset.Gridset gset : proxy.getGridsets()) {
+      DtCoverageCS gcs = gset.getGeoCoordSystem();
+      for (ucar.nc2.dataset.CoordinateTransform ct : gcs.getCoordTransforms())
         if (!transformNames.contains(ct.getName())) {
           transforms.add(new Transform(ct));
           transformNames.add(ct.getName());
@@ -55,9 +56,9 @@ public class CoverageAdapter extends GridCoverageDataset {
 
     Set<String> axisNames = new HashSet<>();
     List<GridCoordAxis> axes = new ArrayList<>();
-    for (CoverageDataset.Gridset gset : proxy.getGridsets()) {
-      CoverageCoordSys gcs = gset.getGeoCoordSystem();
-      for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordinateAxes())
+    for (DtCoverageDataset.Gridset gset : proxy.getGridsets()) {
+      DtCoverageCS gcs = gset.getGeoCoordSystem();
+      for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordAxes())
         if (!axisNames.contains(axis.getFullName())) {
           if (axis instanceof CoordinateAxis1D)
             axes.add(new Axis1D( (CoordinateAxis1D) axis));
@@ -75,9 +76,9 @@ public class CoverageAdapter extends GridCoverageDataset {
   }
 
   private class Grid extends GridCoverage {
-    Coverage dtGrid;
+    DtCoverage dtGrid;
 
-    Grid(Coverage dtGrid) {
+    Grid(DtCoverage dtGrid) {
       this.dtGrid = dtGrid;
       setName(dtGrid.getName());
       setAtts(dtGrid.getAttributes());
@@ -89,7 +90,7 @@ public class CoverageAdapter extends GridCoverageDataset {
 
     @Override
     public Array readData(GridSubset subset) throws IOException {  // LOOK incomplete
-      CoverageCoordSys gcs = dtGrid.getCoordinateSystem();
+      GridCS gcs = (GridCS) dtGrid.getCoordinateSystem();
       int ens = -1;
       int level = -1;
       int time = -1;
@@ -99,7 +100,7 @@ public class CoverageAdapter extends GridCoverageDataset {
         switch (key) {
 
           case GridSubset.date: // CalendarDate
-            CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
+            CoordinateAxis1DTime taxis = gcs.getTimeAxis();
             if (taxis != null) time = taxis.findTimeIndexFromCalendarDate((CalendarDate) subset.get(key));
             break;
 
@@ -119,15 +120,15 @@ public class CoverageAdapter extends GridCoverageDataset {
   }
 
   private class CoordSys extends GridCoordSys {
-    CoverageCoordSys dtCoordSys;
+    DtCoverageCS dtCoordSys;
 
-    CoordSys(CoverageCoordSys dtCoordSys) {
+    CoordSys(DtCoverageCS dtCoordSys) {
       this.dtCoordSys = dtCoordSys;
       setType(dtCoordSys.getType());
       setName(dtCoordSys.getName());
-      for (CoordinateTransform ct : dtCoordSys.getCoordinateTransforms())
+      for (CoordinateTransform ct : dtCoordSys.getCoordTransforms())
         addTransformName(ct.getName());
-      for (CoordinateAxis axis : dtCoordSys.getCoordinateAxes()) // LOOK should be just the grid axes
+      for (CoordinateAxis axis : dtCoordSys.getCoordAxes()) // LOOK should be just the grid axes
         addAxisName(axis.getFullName());
     }
   }

@@ -43,116 +43,119 @@ import ucar.nc2.NetcdfFile;
 public interface CF {
 
   // attribute names
-  public static final String AXIS = "axis";
-  public static final String BOUNDS = "bounds";
-  public static final String CALENDAR = "calendar";
-  public static final String CELL_METHODS = "cell_methods";
-  public static final String CF_ROLE = "cf_role";
-  public final static String COORDINATES = "coordinates";
-  public static final String FEATURE_TYPE = "featureType";
-  public static final String POSITIVE = "positive";
-  public static final String STANDARD_NAME = "standard_name";
+  String AXIS = "axis";
+  String BOUNDS = "bounds";
+  String CALENDAR = "calendar";
+  String CELL_METHODS = "cell_methods";
+  String CF_ROLE = "cf_role";
+  String COORDINATES = "coordinates";
+  String FEATURE_TYPE = "featureType";
+  String POSITIVE = "positive";
+  String STANDARD_NAME = "standard_name";
   
-  public static final String FORMULA_TERMS = "formula_terms";
+  String FORMULA_TERMS = "formula_terms";
 
   // positive values
-  public final static String POSITIVE_UP = "up";
-  public final static String POSITIVE_DOWN = "down";
+  String POSITIVE_UP = "up";
+  String POSITIVE_DOWN = "down";
 
   // grid mapping names
-  public final static String ALBERS_CONICAL_EQUAL_AREA = "albers_conical_equal_area";
-  public final static String AZIMUTHAL_EQUIDISTANT = "azimuthal_equidistant";
-  public final static String GEOSTATIONARY = "geostationary";
-  public final static String LAMBERT_AZIMUTHAL_EQUAL_AREA = "lambert_azimuthal_equal_area";
-  public final static String LAMBERT_CONFORMAL_CONIC = "lambert_conformal_conic";
-  public final static String LAMBERT_CYLINDRICAL_EQUAL_AREA = "lambert_cylindrical_equal_area";
-  public final static String LATITUDE_LONGITUDE = "latitude_longitude";
-  public final static String MERCATOR = "mercator";
-  public final static String ORTHOGRAPHIC = "orthographic";
-  public final static String POLAR_STEREOGRAPHIC = "polar_stereographic";
-  public final static String ROTATED_LATITUDE_LONGITUDE = "rotated_latitude_longitude";
-  public final static String STEREOGRAPHIC = "stereographic";
-  public final static String SINUSOIDAL = "sinusoidal";       // NOY
-  public final static String TRANSVERSE_MERCATOR = "transverse_mercator";
-  public final static String VERTICAL_PERSPECTIVE = "vertical_perspective";
+  String ALBERS_CONICAL_EQUAL_AREA = "albers_conical_equal_area";
+  String AZIMUTHAL_EQUIDISTANT = "azimuthal_equidistant";
+  String GEOSTATIONARY = "geostationary";
+  String LAMBERT_AZIMUTHAL_EQUAL_AREA = "lambert_azimuthal_equal_area";
+  String LAMBERT_CONFORMAL_CONIC = "lambert_conformal_conic";
+  String LAMBERT_CYLINDRICAL_EQUAL_AREA = "lambert_cylindrical_equal_area";
+  String LATITUDE_LONGITUDE = "latitude_longitude";
+  String MERCATOR = "mercator";
+  String ORTHOGRAPHIC = "orthographic";
+  String POLAR_STEREOGRAPHIC = "polar_stereographic";
+  String ROTATED_LATITUDE_LONGITUDE = "rotated_latitude_longitude";
+  String STEREOGRAPHIC = "stereographic";
+  String SINUSOIDAL = "sinusoidal";       // NOY
+  String TRANSVERSE_MERCATOR = "transverse_mercator";
+  String VERTICAL_PERSPECTIVE = "vertical_perspective";
 
   // for grid_mappings
-  public final static String EARTH_RADIUS = "earth_radius";
-  public static final String FALSE_EASTING = "false_easting";
-  public static final String FALSE_NORTHING = "false_northing";
-  public static final String GRID_MAPPING = "grid_mapping";
-  public static final String FIXED_ANGLE_AXIS = "fixed_angle_axis";  //  geostationary
-  public static final String GRID_MAPPING_NAME = "grid_mapping_name";
-  public static final String GRID_NORTH_POLE_LATITUDE = "grid_north_pole_latitude";
-  public static final String GRID_NORTH_POLE_LONGITUDE = "grid_north_pole_longitude";
-  public static final String INVERSE_FLATTENING = "inverse_flattening";
-  public static final String LATITUDE_OF_PROJECTION_ORIGIN = "latitude_of_projection_origin";
-  public static final String LONGITUDE_OF_PROJECTION_ORIGIN = "longitude_of_projection_origin";
-  public static final String LATITUDE_OF_PRIME_MERIDIAN = "latitude_of_prime_meridian";
-  public static final String LONGITUDE_OF_PRIME_MERIDIAN = "longitude_of_prime_meridian";
-  public static final String LONGITUDE_OF_CENTRAL_MERIDIAN = "longitude_of_central_meridian";
-  public static final String NORTH_POLE_GRID_LONGITUDE = "north_pole_grid_longitude";
-  public static final String PERSPECTIVE_POINT_HEIGHT = "perspective_point_height";   // geostationary
-  public static final String SCALE_FACTOR_AT_CENTRAL_MERIDIAN = "scale_factor_at_central_meridian";
-  public static final String SCALE_FACTOR_AT_PROJECTION_ORIGIN = "scale_factor_at_projection_origin";
-  public static final String SEMI_MAJOR_AXIS = "semi_major_axis";
-  public static final String SEMI_MINOR_AXIS = "semi_minor_axis";
-  public static final String SWEEP_ANGLE_AXIS = "sweep_angle_axis"; // geostationary
-  public static final String STANDARD_PARALLEL = "standard_parallel";
-  public static final String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
+  String EARTH_RADIUS = "earth_radius";
+  String FALSE_EASTING = "false_easting";
+  String FALSE_NORTHING = "false_northing";
+  String GRID_LATITUDE = "grid_latitude ";
+  String GRID_LONGITUDE = "grid_longitude ";
+  String GRID_MAPPING = "grid_mapping";
+  String FIXED_ANGLE_AXIS = "fixed_angle_axis";  //  geostationary
+  String GRID_MAPPING_NAME = "grid_mapping_name";
+  String GRID_NORTH_POLE_LATITUDE = "grid_north_pole_latitude";   // rotated grid
+  String GRID_NORTH_POLE_LONGITUDE = "grid_north_pole_longitude"; // rotated grid
+  String INVERSE_FLATTENING = "inverse_flattening";
+  String LATITUDE_OF_PROJECTION_ORIGIN = "latitude_of_projection_origin";
+  String LONGITUDE_OF_PROJECTION_ORIGIN = "longitude_of_projection_origin";
+  String LATITUDE_OF_PRIME_MERIDIAN = "latitude_of_prime_meridian";
+  String LONGITUDE_OF_PRIME_MERIDIAN = "longitude_of_prime_meridian";
+  String LONGITUDE_OF_CENTRAL_MERIDIAN = "longitude_of_central_meridian";
+  String NORTH_POLE_GRID_LONGITUDE = "north_pole_grid_longitude";  // rotated grid synonym for GRID_NORTH_POLE_LONGITUDE
+  String PERSPECTIVE_POINT_HEIGHT = "perspective_point_height";   // geostationary
+  String SCALE_FACTOR_AT_CENTRAL_MERIDIAN = "scale_factor_at_central_meridian";
+  String SCALE_FACTOR_AT_PROJECTION_ORIGIN = "scale_factor_at_projection_origin";
+  String SEMI_MAJOR_AXIS = "semi_major_axis";
+  String SEMI_MINOR_AXIS = "semi_minor_axis";
+  String SWEEP_ANGLE_AXIS = "sweep_angle_axis"; // geostationary
+  String STANDARD_PARALLEL = "standard_parallel";
+  String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
 
   // vertical coordinate
-  public static final String atmosphere_ln_pressure_coordinate = "atmosphere_ln_pressure_coordinate";
-  public static final String atmosphere_sigma_coordinate = "atmosphere_sigma_coordinate";
-  public static final String atmosphere_hybrid_sigma_pressure_coordinate = "atmosphere_hybrid_sigma_pressure_coordinate";
-  public static final String atmosphere_hybrid_height_coordinate = "atmosphere_hybrid_height_coordinate";
-  public static final String atmosphere_sleve_coordinate = "atmosphere_sleve_coordinate";
-  public static final String ocean_sigma_coordinate = "ocean_sigma_coordinate";
-  public static final String ocean_s_coordinate = "ocean_s_coordinate";
-  public static final String ocean_sigma_z_coordinate = "ocean_sigma_z_coordinate";
-  public static final String ocean_double_sigma_coordinate = "ocean_double_sigma_coordinate";
+  String atmosphere_ln_pressure_coordinate = "atmosphere_ln_pressure_coordinate";
+  String atmosphere_sigma_coordinate = "atmosphere_sigma_coordinate";
+  String atmosphere_hybrid_sigma_pressure_coordinate = "atmosphere_hybrid_sigma_pressure_coordinate";
+  String atmosphere_hybrid_height_coordinate = "atmosphere_hybrid_height_coordinate";
+  String atmosphere_sleve_coordinate = "atmosphere_sleve_coordinate";
+  String ocean_sigma_coordinate = "ocean_sigma_coordinate";
+  String ocean_s_coordinate = "ocean_s_coordinate";
+  String ocean_sigma_z_coordinate = "ocean_sigma_z_coordinate";
+  String ocean_double_sigma_coordinate = "ocean_double_sigma_coordinate";
 
-  public static final String formula_terms = "formula_terms";
+  String formula_terms = "formula_terms";
 
   // standard_names
-  public static final String TIME = "time";                               // valid; time, obs time
-  public static final String TIME_REFERENCE = "forecast_reference_time";  // the "data time", the time of the analysis from which the forecast was made.
+  String TIME = "time";                               // valid; time, obs time
+  String TIME_REFERENCE = "forecast_reference_time";  // the "data time", the time of the analysis from which the forecast was made.
+  String TIME_OFFSET = "forecast_period";  // Forecast period is the time interval between the forecast reference time and the validity time. A period is an interval of time,
 
-  public static final String PROJECTION_X_COORDINATE = "projection_x_coordinate";
-  public static final String PROJECTION_Y_COORDINATE = "projection_y_coordinate";
+  String PROJECTION_X_COORDINATE = "projection_x_coordinate";
+  String PROJECTION_Y_COORDINATE = "projection_y_coordinate";
 
   // cf_role
-  public static final String PROFILE_ID = "profile_id";
-  public static final String TIMESERIES_ID = "timeseries_id"; // alias STATION_ID
-  public static final String TRAJECTORY_ID = "trajectory_id";
+  String PROFILE_ID = "profile_id";
+  String TIMESERIES_ID = "timeseries_id"; // alias STATION_ID
+  String TRAJECTORY_ID = "trajectory_id";
 
   // DSG
-  public static final String SAMPLE_DIMENSION = "sample_dimension";
-  public static final String INSTANCE_DIMENSION = "instance_dimension";
+  String SAMPLE_DIMENSION = "sample_dimension";
+  String INSTANCE_DIMENSION = "instance_dimension";
 
-  public static final String PLATFORM_NAME = "platform_name"; // instead of STATION_DESC
-  public static final String SURFACE_ALTITUDE = "surface_altitude"; // alias STATION_ALTITUDE
-  public static final String PLATFORM_ID = "platform_id";  // alias STATION_WMOID
+  String PLATFORM_NAME = "platform_name"; // instead of STATION_DESC
+  String SURFACE_ALTITUDE = "surface_altitude"; // alias STATION_ALTITUDE
+  String PLATFORM_ID = "platform_id";  // alias STATION_WMOID
 
   ///////////////////////////////////////////////////////////////////
   // DSG proposed - not adopted; here for backwards compatibility
-  public static final String RAGGED_ROWSIZE = "CF:ragged_row_count";
-  public static final String RAGGED_PARENTINDEX = "CF:ragged_parent_index";
+  String RAGGED_ROWSIZE = "CF:ragged_row_count";
+  String RAGGED_PARENTINDEX = "CF:ragged_parent_index";
 
   // proposed standard_names
-  public static final String STATION_ID = "station_id";
-  public static final String STATION_DESC = "station_description";
-  public static final String STATION_ALTITUDE = "station_altitude";
-  public static final String STATION_WMOID = "station_WMO_id";
+  String STATION_ID = "station_id";
+  String STATION_DESC = "station_description";
+  String STATION_ALTITUDE = "station_altitude";
+  String STATION_WMOID = "station_WMO_id";
 
-  public static final String featureTypeAtt2 = "CF:featureType";
-  public static final String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
+  String featureTypeAtt2 = "CF:featureType";
+  String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
   ///////////////////////////////////////////////////////////////////////
 
   /**
    * Map from CF feature type names to our FeatureType enums.
    */
-  public enum FeatureType {
+  enum FeatureType {
     point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile;
 
     public static FeatureType convert(ucar.nc2.constants.FeatureType ft) {
