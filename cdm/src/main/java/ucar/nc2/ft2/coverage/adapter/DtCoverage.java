@@ -304,7 +304,7 @@ public class DtCoverage implements IsMissingEvaluator {
   }
 
   /**
-   * @return ArrayList of thredds.util.NamedObject, from the  GeoGridCoordSys.
+   * @return List of thredds.util.NamedObject, from the vertical axis, or empty list if none.
    */
   public List<NamedObject> getLevels() {
     return gcs.getLevels();
@@ -658,7 +658,7 @@ public class DtCoverage implements IsMissingEvaluator {
    * @throws InvalidRangeException if any of the ranges are invalid
    */
   public DtCoverage subset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
-    return (DtCoverage) makeSubset(null, null, t_range, z_range, y_range, x_range);
+    return makeSubset(null, null, t_range, z_range, y_range, x_range);
   }
 
   public DtCoverage makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
