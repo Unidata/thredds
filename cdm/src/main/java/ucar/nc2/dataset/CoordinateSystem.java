@@ -422,26 +422,32 @@ public class CoordinateSystem {
     return true;
   }
 
-  public static List<Dimension> makeDomain(Variable[] axes) {
-    List<Dimension> domain = new ArrayList<>(10);
+  public static boolean isSubsetOf(List<Dimension> subset, Set<Dimension> set) {
+    for (Dimension d : subset) {
+      if (!(set.contains(d)))
+        return false;
+    }
+    return true;
+  }
+
+  public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes) {
+    Set<Dimension> domain = new HashSet<>();
     for (Variable axis : axes) {
       for (Dimension dim : axis.getDimensions()) {
-        if (!domain.contains(dim))
           domain.add(dim);
       }
     }
     return domain;
   }
 
-  public static List<Dimension> makeDomain(Iterable<? extends Variable> axes) {
-    List<Dimension> domain = new ArrayList<>(10);
+  public static int countDomain(Variable[] axes) {
+    Set<Dimension> domain = new HashSet<>();
     for (Variable axis : axes) {
       for (Dimension dim : axis.getDimensions()) {
-        if (!domain.contains(dim))
           domain.add(dim);
       }
     }
-    return domain;
+    return domain.size();
   }
 
   /**

@@ -37,6 +37,7 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 
 import java.io.File;
@@ -166,6 +167,7 @@ public class FeatureScan {
     String ftImpl;
     Throwable problem;
     DtCoverageCSBuilder builder;
+    int ngrids;
 
     // no-arg constructor
     public Bean() {
@@ -177,12 +179,12 @@ public class FeatureScan {
       if (debug) System.out.printf(" featureScan=%s%n", f.getPath());
       try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())){
         fileType = ds.getFileTypeId();
-        setCoordMap(ds.getCoordinateSystems());
         coordSysBuilder = ds.findAttValueIgnoreCase(null, _Coordinate._CoordSysBuilder, "none");
 
         Formatter errlog = new Formatter();
         builder = DtCoverageCSBuilder.classify(ds, errlog);
         info.append(errlog.toString());
+        setCoordMap();
 
         ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
 
@@ -245,14 +247,11 @@ public class FeatureScan {
       return coordSysBuilder;
     }
 
-    public void setCoordMap(java.util.List<CoordinateSystem> csysList) {
-      CoordinateSystem use = null;
-      for (CoordinateSystem csys : csysList) {
-        if (use == null) use = csys;
-        else if (csys.getCoordinateAxes().size() > use.getCoordinateAxes().size())
-          use = csys;
-      }
-      coordMap = (use == null) ? "" : "f:D(" + use.getRankDomain() + ")->R(" + use.getRankRange() + ")";
+    public void setCoordMap() {
+      if (builder == null) return;
+      DtCoverageCS cs = builder.makeCoordSys();
+      if (cs == null) return;
+      coordMap = "f:D(" + cs.getDomainRank() + ")->R(" + cs.getRangeRank() + ")";
     }
 
 
@@ -297,7 +296,7 @@ public class FeatureScan {
       Formatter ff = new Formatter();
       String type = null;
       try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())) {
-        type = DtCoverageCSBuilder.describe(ff, ds);
+        type = DtCoverageCSBuilder.describe(ds, ff);
 
       } catch (IOException e) {
         StringWriter sw = new StringWriter(10000);

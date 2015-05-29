@@ -45,15 +45,12 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ft.cover.CoverageCS;
-import ucar.nc2.ft.cover.impl.CoverageCSFactory;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -119,29 +116,6 @@ public class TestGridSubsetCoordinateSystem {
           System.err.printf("    %s: illegal dimension '%s' in axis %s%n", which, d.getFullName(), axis.getNameAndDimensions());
           assert false;
       }
-    }
-  }
-
-  @Test
-  public void testCoverageDomain() throws Exception {
-    System.err.printf("%nOpen %s grid='%s'%n", filename, gridName);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
-
-    try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
-      VariableDS vds = (VariableDS) ncd.findVariable(gridName);
-      for (CoordinateSystem cs : vds.getCoordinateSystems()) {
-        Formatter errlog = new Formatter();
-        CoverageCS cov = CoverageCSFactory.make(ncd, cs, errlog);
-        System.err.printf("%s errs='%s'%n", cov, errlog);
-        for (CoordinateAxis axis :  cov.getCoordinateAxes()) {
-          System.err.printf(" %s%n", axis.getNameAndDimensions());
-        }
-        // testDomain("coverage", cov.getDimensions(), gcsSubset.getCoordinateAxes());
-
-      }
-
-    } finally {
-      GribIosp.setDebugFlags(new DebugFlagsImpl(""));
     }
   }
 

@@ -37,7 +37,7 @@ import ucar.ma2.*;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft.cover.impl.CoverageCSFactory;
+import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -52,8 +52,6 @@ import ucar.util.prefs.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 import java.util.List;
 import java.io.IOException;
@@ -791,7 +789,7 @@ public class CoordSysTable extends JPanel {
       setDomainRank(cs.getDomain().size());
       setRangeRank(cs.getCoordinateAxes().size());
 
-      coverageType = CoverageCSFactory.describe(null, cs);
+      coverageType = DtCoverageCSBuilder.describe(ds, cs, null);
 
       if (GridCoordSys.isGridCoordSys(parseInfo, cs, null)) {
         addDataType("grid");
@@ -930,7 +928,7 @@ public class CoordSysTable extends JPanel {
     CoordinateSystem firstCoordSys = null;
     String name, desc, units, axisType = "", positive = "", incr = "";
     String dims, shape;
-    boolean isCoordVar;
+    boolean isIndCoord;
     boolean isLayer;
     boolean isInterval;
 
@@ -945,7 +943,7 @@ public class CoordSysTable extends JPanel {
       this.axis = v;
 
       setName(v.getFullName());
-      setCoordVar(v.isCoordinateVariable());
+      setCoordVar(v.isIndependentCoordinate());
       setDescription(v.getDescription());
       setUnits(v.getUnitsString());
 
@@ -989,12 +987,12 @@ public class CoordSysTable extends JPanel {
       this.name = name;
     }
 
-    public boolean isCoordVar() {
-      return isCoordVar;
+    public boolean isIndCoord() {
+      return isIndCoord;
     }
 
-    public void setCoordVar(boolean isCoordVar) {
-      this.isCoordVar = isCoordVar;
+    public void setCoordVar(boolean isIndCoord) {
+      this.isIndCoord = isIndCoord;
     }
 
     public boolean isContig() {

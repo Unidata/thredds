@@ -488,7 +488,7 @@ public class TableAnalyzer {
     // try the time dimension
     CoordinateAxis time = null;
     for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      if ((axis.getAxisType() == AxisType.Time) && axis.isCoordinateVariable()) {
+      if ((axis.getAxisType() == AxisType.Time) && axis.isIndependentCoordinate()) {
         time = axis;
         break;
       }

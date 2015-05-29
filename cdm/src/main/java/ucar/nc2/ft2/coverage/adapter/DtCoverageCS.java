@@ -62,8 +62,8 @@ public class DtCoverageCS {
     }
 
     // make name based on coordinate
-    Collections.sort(builder.standardAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
-    this.name = CoordinateSystem.makeName(builder.standardAxes);
+    Collections.sort(builder.allAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+    this.name = CoordinateSystem.makeName(builder.allAxes);
 
     // WRF NMM
     Attribute att = getXHorizAxis().findAttribute(_Coordinate.Stagger);
@@ -262,12 +262,12 @@ public class DtCoverageCS {
     return name;
   }
 
-  public GridCoordSys.Type getType() {
+  public GridCoordSys.Type getCoverageType() {
     return builder.type;
   }
 
   public List<CoordinateAxis> getCoordAxes() {
-    return builder.standardAxes;
+    return builder.allAxes;
   }
 
   public List<CoordinateTransform> getCoordTransforms() {
@@ -1070,5 +1070,13 @@ public class DtCoverageCS {
       llbb = new LatLonRect(llpt, urpt);
     }
     return llbb;
+  }
+
+  public int getDomainRank() {
+    return CoordinateSystem.makeDomain(builder.independentAxes).size();
+  }
+
+  public int getRangeRank() {
+    return builder.allAxes.size(); // not right
   }
 }

@@ -160,8 +160,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
-    List<Dimension> xyDomain = CoordinateSystem.makeDomain(new CoordinateAxis[]{xaxis, yaxis});
-    if (xyDomain.size() < 2) {
+    int xyDomainSize = CoordinateSystem.countDomain(new CoordinateAxis[]{xaxis, yaxis});
+    if (xyDomainSize < 2) {
       if (sbuff != null)
         sbuff.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
       return false;

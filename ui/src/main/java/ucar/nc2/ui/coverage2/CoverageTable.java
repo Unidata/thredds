@@ -256,7 +256,7 @@ public class CoverageTable extends JPanel {
 
     List<CoordSysBean> csList = new ArrayList<>();
     for (GridCoordSys gcs : gridDataset.getCoordSys())
-      csList.add(new CoordSysBean(gcs));
+      csList.add(new CoordSysBean(gridDataset, gcs));
     csTable.setBeans(csList);
 
     List<CoordTransBean> transList = new ArrayList<>();
@@ -386,12 +386,13 @@ public class CoverageTable extends JPanel {
   public class CoordSysBean {
     private GridCoordSys gcs;
     private String coordTrans, axisNames;
+    private int nIndAxis = 0;
 
     // no-arg constructor
     public CoordSysBean() {
     }
 
-    public CoordSysBean(GridCoordSys gcs) {
+    public CoordSysBean(GridCoverageDataset gds, GridCoordSys gcs) {
       this.gcs = gcs;
 
       Formatter buff = new Formatter();
@@ -400,8 +401,11 @@ public class CoverageTable extends JPanel {
       setCoordTransforms(buff.toString());
 
       Formatter f = new Formatter();
-      for (String ax : gcs.getAxisNames())
-        f.format("%s,", ax);
+      for (String name : gcs.getAxisNames()) {
+        f.format("%s,", name);
+        GridCoordAxis axis = gds.findCoordAxis(name);
+        if (axis.getDependenceType() == GridCoordAxis.DependenceType.independent) nIndAxis++;
+      }
       setAxisNames(f.toString());
     }
 
@@ -412,6 +416,10 @@ public class CoverageTable extends JPanel {
     public String getType() {
       GridCoordSys.Type type = gcs.getType();
       return (type == null) ? "" : type.toString();
+    }
+
+    public int getNIndCoords() {
+      return nIndAxis;
     }
 
     public int getNAxes() {

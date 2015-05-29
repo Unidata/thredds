@@ -1164,7 +1164,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       this.ds = ds;
       this.v = v;
       VariableEnhanced ve = (VariableEnhanced) v;
-      isCoordinateVariable = v.isCoordinateVariable();
+      isCoordinateVariable = v.isCoordinateVariable() || null != v.findAttribute(_Coordinate.AliasForDimension);
       if (isCoordinateVariable) {
         v.isCoordinateVariable(); // DEBUG
         addCoordinateVariable(v.getDimension(0), this);

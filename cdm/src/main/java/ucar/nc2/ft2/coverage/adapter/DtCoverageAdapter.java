@@ -124,7 +124,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
 
     CoordSys(DtCoverageCS dtCoordSys) {
       this.dtCoordSys = dtCoordSys;
-      setType(dtCoordSys.getType());
+      setType(dtCoordSys.getCoverageType());
       setName(dtCoordSys.getName());
       for (CoordinateTransform ct : dtCoordSys.getCoordTransforms())
         addTransformName(ct.getName());
@@ -156,7 +156,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
       setAxisType(dtCoordAxis.getAxisType());
       setUnits(dtCoordAxis.getUnitsString());
       setDescription(dtCoordAxis.getDescription());
-      if (dtCoordAxis.isCoordinateVariable())
+      if (dtCoordAxis.isIndependentCoordinate())
         setDependenceType(DependenceType.independent);
       else if (dtCoordAxis.isScalar())
         setDependenceType(DependenceType.scalar);
@@ -226,7 +226,7 @@ public class DtCoverageAdapter extends GridCoverageDataset {
       setAxisType(dtCoordAxis.getAxisType());
       setUnits(dtCoordAxis.getUnitsString());
       setDescription(dtCoordAxis.getDescription());
-      if (dtCoordAxis.isCoordinateVariable())
+      if (dtCoordAxis.isIndependentCoordinate())
         setDependenceType(DependenceType.independent);
       else if (dtCoordAxis.isScalar())
         setDependenceType(DependenceType.scalar);

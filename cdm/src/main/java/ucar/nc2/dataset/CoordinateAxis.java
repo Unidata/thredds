@@ -38,6 +38,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.conv.CF1Convention;
 import ucar.nc2.dataset.conv.COARDSConvention;
 import ucar.nc2.time.Calendar;
@@ -216,11 +217,11 @@ public class CoordinateAxis extends VariableDS {
     return false; // interval detection is done in subclasses
   }
 
-  // causes TDS ERROR thredds.server.opendap.NcDDS:  NcDDS: Variable time1_run missing coordinate variable in hash; dataset=fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd
-  //@Override
-  //public boolean isCoordinateVariable() {
-  //  return true;
-  //}
+
+  public boolean isIndependentCoordinate() {
+    if (isCoordinateVariable()) return true;
+    return null != findAttribute(_Coordinate.AliasForDimension);
+  }
 
   /*
    * Set if the edges are contiguous or disjoint.

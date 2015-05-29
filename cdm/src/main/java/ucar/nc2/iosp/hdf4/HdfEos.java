@@ -35,6 +35,7 @@ package ucar.nc2.iosp.hdf4;
 import ucar.ma2.ArrayObject;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -335,8 +336,8 @@ public class HdfEos {
         if (showWork) System.out.printf(" set coordinate %s %n", v);
       }
       if ((latAxis != null) && (lonAxis != null)) {
-        List<Dimension> xyDomain = CoordinateSystem.makeDomain(new Variable[] {latAxis, lonAxis});
-       if (xyDomain.size() < 2) featureType = FeatureType.PROFILE;  // ??
+        int xyDomainSize = CoordinateSystem.countDomain(new Variable[]{latAxis, lonAxis});
+        if (xyDomainSize < 2) featureType = FeatureType.PROFILE;  // ??
       }
 
     }

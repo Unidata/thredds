@@ -47,7 +47,6 @@ public interface VariableIF extends VariableSimpleIF {
     public void getNameAndDimensions(java.util.Formatter result, boolean useFullName, boolean strict);
 
     public boolean isUnlimited();
-    //public boolean isUnsigned();
     public ucar.ma2.DataType getDataType();
     public EnumTypedef getEnumTypedef();
     public int getRank();
