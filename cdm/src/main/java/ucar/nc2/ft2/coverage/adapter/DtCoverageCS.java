@@ -33,7 +33,7 @@ public class DtCoverageCS {
   static private final boolean warnUnits = false;
 
   /////////////////////////////////////////////////////////////////////////////
-  private DtCoverageCSBuilder builder;
+  protected DtCoverageCSBuilder builder;
   private String name;
   private ProjectionImpl proj;
   private GeoGridCoordinate2D g2d;

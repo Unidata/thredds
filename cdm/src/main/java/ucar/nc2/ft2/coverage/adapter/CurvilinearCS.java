@@ -23,4 +23,9 @@ public class CurvilinearCS extends DtCoverageCS {
     return (CoordinateAxis2D) super.getYHorizAxis();
   }
 
+  public int getDomainRank() {
+    return 2 + CoordinateSystem.makeDomain(builder.independentAxes).size();
+  }
+
+
 }

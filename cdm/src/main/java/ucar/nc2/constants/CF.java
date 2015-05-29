@@ -80,8 +80,8 @@ public interface CF {
   String EARTH_RADIUS = "earth_radius";
   String FALSE_EASTING = "false_easting";
   String FALSE_NORTHING = "false_northing";
-  String GRID_LATITUDE = "grid_latitude ";
-  String GRID_LONGITUDE = "grid_longitude ";
+  String GRID_LATITUDE = "grid_latitude";
+  String GRID_LONGITUDE = "grid_longitude";
   String GRID_MAPPING = "grid_mapping";
   String FIXED_ANGLE_AXIS = "fixed_angle_axis";  //  geostationary
   String GRID_MAPPING_NAME = "grid_mapping_name";

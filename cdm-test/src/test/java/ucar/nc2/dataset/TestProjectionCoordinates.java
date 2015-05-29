@@ -70,7 +70,7 @@ public class TestProjectionCoordinates {
 
   @Test
   public void testRotatedPole() throws IOException, InvalidRangeException {
-    testCoordinates(testDir + "rotatedPole/snow.DMI.ecctrl.ncml", 28.690059, -3.831161, 68.988028, 57.076276);
+    testCoordinates(testDir + "rotatedPole/snow.DMI.ecctrl.v5.ncml", 28.690059, -3.831161, 68.988028, 57.076276);
   }
 
   @Test

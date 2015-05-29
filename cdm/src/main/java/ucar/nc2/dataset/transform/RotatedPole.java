@@ -39,7 +39,7 @@ import ucar.nc2.dataset.ProjectionCT;
 
 /**
  * Create a RotatedPole Projection from the information in the Coordinate Transform Variable.
- *
+ * This is from CF. Grib is RotatedLatLon
  * @author caron
  */
 public class RotatedPole extends AbstractTransformBuilder implements HorizTransformBuilderIF {

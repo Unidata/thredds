@@ -250,7 +250,7 @@ public class FeatureScan {
     public void setCoordMap() {
       if (builder == null) return;
       DtCoverageCS cs = builder.makeCoordSys();
-      if (cs == null) return;
+      if (cs == null || cs.getCoverageType() == null) return;
       coordMap = "f:D(" + cs.getDomainRank() + ")->R(" + cs.getRangeRank() + ")";
     }
 

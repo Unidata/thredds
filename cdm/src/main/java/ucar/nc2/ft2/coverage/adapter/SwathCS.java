@@ -7,9 +7,10 @@ package ucar.nc2.ft2.coverage.adapter;
  * @author caron
  * @since 5/27/2015
  */
-public class SwathCS extends DtCoverageCS {
+public class SwathCS extends CurvilinearCS {
 
   SwathCS(DtCoverageCSBuilder builder) {
     super(builder);
   }
+
 }

@@ -230,20 +230,6 @@ public class DtCoverageDataset implements AutoCloseable {
     return ncd;
   }
 
-  private void addGeoGrid(VariableDS varDS, DtCoverageCS gcs, Formatter parseInfo) {
-    Gridset gridset;
-    if (null == (gridset = gridsetHash.get(gcs.getName()))) {
-      gridset = new Gridset(gcs);
-      gridsetHash.put(gcs.getName(), gridset);
-      if (parseInfo != null) parseInfo.format(" -make new GeoGridCoordSys= %s%n", gcs.getName());
-      gcs.makeVerticalTransform(this, parseInfo); // delayed until now LOOK why for each grid ??
-    }
-
-    DtCoverage geogrid = new DtCoverage(this, gridset.gcc, varDS);
-    grids.add(geogrid);
-    gridset.add(geogrid);
-  }
-
   /**
    * the name of the dataset is the last part of the location
    *

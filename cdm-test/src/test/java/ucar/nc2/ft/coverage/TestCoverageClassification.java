@@ -30,16 +30,19 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestCoverage {
+public class TestCoverageClassification {
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", GridCoordSys.Type.Grid, 4, 4, 31});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", GridCoordSys.Type.Grid, 4, 5, 5});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", GridCoordSys.Type.Fmrc, 6, 6, 1});
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", GridCoordSys.Type.Fmrc, 4, 4, 1});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", GridCoordSys.Type.Grid, 4, 4, 31});  // NUWG - has CoordinateAlias
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB", GridCoordSys.Type.Grid, 4, 5, 5});  // scalar runtime
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", GridCoordSys.Type.Fmrc, 6, 6, 1}); // ensemble, time-offset
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", GridCoordSys.Type.Fmrc, 4, 5, 1});              // scalar vert
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", GridCoordSys.Type.Curvilinear, 4, 4, 22});  // x,y axis but no projection
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", GridCoordSys.Type.Grid, 3, 3, 4});  // both x,y and lat,lon
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", GridCoordSys.Type.Curvilinear, 4, 5, 7});  // GRIB Curvilinear
 
     return result;
   }
@@ -49,7 +52,7 @@ public class TestCoverage {
   int domain, range, ncoverages;
 
 
-  public TestCoverage(String endpoint, GridCoordSys.Type expectType, int domain, int range, int ncoverages) {
+  public TestCoverageClassification(String endpoint, GridCoordSys.Type expectType, int domain, int range, int ncoverages) {
     this.endpoint = endpoint;
     this.expectType = expectType;
     this.domain = domain;
@@ -82,7 +85,7 @@ public class TestCoverage {
 
     try (GridCoverageDataset gds = CoverageDatasetFactory.openGridCoverage(endpoint)) {
       Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(ncoverages, gds.getGrids().size());
+      Assert.assertEquals("NGrids", ncoverages, gds.getGrids().size());
       Assert.assertEquals(expectType, gds.getCoverageType());
     }
   }

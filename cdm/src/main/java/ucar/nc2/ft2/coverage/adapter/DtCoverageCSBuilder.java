@@ -44,12 +44,12 @@ public class DtCoverageCSBuilder {
 
   public static String describe(NetcdfDataset ds, Formatter errlog) {
     DtCoverageCSBuilder fac = classify(ds, errlog);
-    return (fac == null || fac.type == null) ? "" : fac.toString();
+    return (fac == null || fac.type == null) ? "" : fac.showSummary();
   }
 
   public static String describe(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
     DtCoverageCSBuilder fac = new DtCoverageCSBuilder(ds, cs, errlog);
-    return fac.type == null ? "" : fac.toString();
+    return fac.type == null ? "" : fac.showSummary();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -136,6 +136,8 @@ public class DtCoverageCSBuilder {
     independentAxes = new ArrayList<>();
     otherAxes = new ArrayList<>();
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
+      // skip x,y if no projection
+      if ((axis.getAxisType() == AxisType.GeoZ || axis.getAxisType() == AxisType.GeoY) && isLatLon) continue;
       if (axis.isIndependentCoordinate()) independentAxes.add(axis);
       else otherAxes.add(axis);
     }
@@ -158,9 +160,10 @@ public class DtCoverageCSBuilder {
     if ((zAxis == null) || (zAxis.getRank() > 1)) {
       if (cs.getZaxis() != null) zAxis = cs.getZaxis();
     }
-    if (zAxis != null && zAxis instanceof CoordinateAxis1D) {
-      vertAxis = (CoordinateAxis1D) zAxis;
-      allAxes.add(vertAxis);
+    if (zAxis != null) {
+      if (zAxis instanceof CoordinateAxis1D)
+        vertAxis = (CoordinateAxis1D) zAxis;
+      allAxes.add(zAxis);
     }
 
     //////////////////////////////////////////////////////////////
@@ -209,14 +212,15 @@ public class DtCoverageCSBuilder {
       }
     }
     if (timeAxis != null)
-      allAxes.add(t);
+      allAxes.add(timeAxis);
     if (rtAxis != null)
       allAxes.add(rtAxis);
 
     CoordinateAxis toAxis = cs.findAxis(AxisType.TimeOffset);
-    if (toAxis != null && toAxis.getRank() == 1) {
-      timeOffsetAxis = (CoordinateAxis1D) toAxis;
-      allAxes.add(timeOffsetAxis);
+    if (toAxis != null) {
+      if (toAxis.getRank() == 1)
+        timeOffsetAxis = (CoordinateAxis1D) toAxis;
+      allAxes.add(toAxis);
     }
 
     if (t == null && rtAxis != null && timeOffsetAxis != null) {
@@ -224,9 +228,10 @@ public class DtCoverageCSBuilder {
     }
 
     CoordinateAxis eAxis = cs.findAxis(AxisType.Ensemble);
-    if (eAxis != null && eAxis instanceof CoordinateAxis1D) {
-      ensAxis = (CoordinateAxis1D) eAxis;
-      allAxes.add(ensAxis);
+    if (eAxis != null) {
+      if (eAxis instanceof CoordinateAxis1D)
+        ensAxis = (CoordinateAxis1D) eAxis;
+      allAxes.add(eAxis);
     }
 
     this.type = classify();
@@ -264,6 +269,8 @@ public class DtCoverageCSBuilder {
   }
 
   public DtCoverageCS makeCoordSys() {
+    if (type == null) return null;
+
     switch (type) {
       case Grid:
         return new GridCS(this);
@@ -288,26 +295,28 @@ public class DtCoverageCSBuilder {
     f2.format("%n rtAxis= %s", rtAxis == null ? "" : rtAxis.getNameAndDimensions());
     f2.format("%n toAxis= %s", timeOffsetAxis == null ? "" : timeOffsetAxis.getNameAndDimensions());
     f2.format("%n ensAxis=%s", ensAxis == null ? "" : ensAxis.getNameAndDimensions());
+    if (type == null) return f2.toString();
+
     f2.format("%n%n independentAxes=(");
     for (CoordinateAxis axis : independentAxes)
-      f2.format("%s,", axis.getShortName());
+      f2.format("%s, ", axis.getShortName());
     f2.format(") {");
     for (Dimension dim : CoordinateSystem.makeDomain(independentAxes))
-      f2.format("%s,", dim.getShortName());
+      f2.format("%s, ", dim.getShortName());
     f2.format("}");
     f2.format("%n otherAxes=(");
     for (CoordinateAxis axis : otherAxes)
-      f2.format("%s,", axis.getShortName());
+      f2.format("%s, ", axis.getShortName());
     f2.format(") {");
     for (Dimension dim : CoordinateSystem.makeDomain(otherAxes))
-      f2.format("%s,", dim.getShortName());
+      f2.format("%s, ", dim.getShortName());
     f2.format("}");
     f2.format("%n allAxes=(");
     for (CoordinateAxis axis : allAxes)
-      f2.format("%s,", axis.getShortName());
+      f2.format("%s, ", axis.getShortName());
     f2.format(") {");
     for (Dimension dim : CoordinateSystem.makeDomain(allAxes))
-      f2.format("%s,", dim.getShortName());
+      f2.format("%s, ", dim.getShortName());
     f2.format("}%n");
 
     return f2.toString();
