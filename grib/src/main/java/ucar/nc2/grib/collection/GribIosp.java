@@ -387,7 +387,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       }
       // do horiz coordinates
       dimNames.format("%s", horizDims);
-      coordinateAtt.format("%s", horizDims);
+      coordinateAtt.format("%s ", horizDims);
 
       String vname = makeVariableName(vindex);
       Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dimNames.toString());
