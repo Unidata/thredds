@@ -37,10 +37,11 @@ public class DtCoverageCS {
   private String name;
   private ProjectionImpl proj;
   private GeoGridCoordinate2D g2d;
-  private VerticalCT vCT;
-  private VerticalTransform vt;
-  private Dimension timeDim;
   private boolean isLatLon = false;
+
+  //private VerticalCT vCT;
+  //private VerticalTransform vt;
+  //private Dimension timeDim;
 
   /**
    * Create a GeoGridCoordSys from an existing Coordinate System.
@@ -53,13 +54,13 @@ public class DtCoverageCS {
     super();
     this.builder = builder;
 
-    // look for VerticalCT
+    /* look for VerticalCT
     for (CoordinateTransform ct : getCoordTransforms()) {
       if (ct instanceof VerticalCT) {
         vCT = (VerticalCT) ct;
         break;
       }
-    }
+    } */
 
     // make name based on coordinate
     Collections.sort(builder.standardAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes
@@ -278,16 +279,16 @@ public class DtCoverageCS {
    * Get the vertical transform function, or null if none
    *
    * @return the vertical transform function, or null if none
-   */
+   *
   public VerticalTransform getVerticalTransform() {
     return vt;
   }
 
-  /**
+  /*
    * Get the Coordinate Transform description.
    *
    * @return Coordinate Transform description, or null if none
-   */
+   *
   public VerticalCT getVerticalCT() {
     return vCT;
   }
@@ -305,7 +306,7 @@ public class DtCoverageCS {
     } else {
       if (parseInfo != null) parseInfo.format("  - VerticalTransform = %s%n", vCT.getVerticalTransformType());
     }
-  }
+  }   */
 
   /**
    * get the X Horizontal axis (either GeoX or Lon)
